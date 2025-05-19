@@ -11,6 +11,12 @@ Pre-packaged jobs are ready-to-use workflow jobs that help you automate common t
 
 Build your project into an Android or iOS app.
 
+Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
+
+### Prerequisites
+
+To successfully use the build job, you'll need to complete a build with EAS CLI using the same platform and profile as the pre-packaged job. Learn how to [create your first build](/build/setup/) to get started.
+
 ### Syntax
 
 ```yaml
@@ -18,8 +24,8 @@ jobs:
   build_app:
     type: build
     params:
-      platform: android | ios
-      profile: string
+      platform: android | ios # required
+      profile: string # optional, default: production
 ```
 
 #### Parameters
@@ -35,21 +41,21 @@ You can pass the following parameters into the `params` list:
 
 You can reference the following outputs in subsequent jobs:
 
-| Output            | Type   | Description                                                 |
-| ----------------- | ------ | ----------------------------------------------------------- |
-| build_id          | string | The ID of the created build.                                |
-| app_build_version | string | The build version of the app.                               |
-| app_identifier    | string | The bundle identifier/package name of the app.              |
-| app_version       | string | The version of the app.                                     |
-| channel           | string | The update channel used for the build.                      |
-| distribution      | string | The distribution method used. Can be `internal` or `store`. |
-| fingerprint_hash  | string | The fingerprint hash of the build.                          |
-| git_commit_hash   | string | The git commit hash used for the build.                     |
-| platform          | string | The platform the build was created for.                     |
-| profile           | string | The build profile used.                                     |
-| runtime_version   | string | The runtime version used.                                   |
-| sdk_version       | string | The SDK version used.                                       |
-| simulator         | string | Whether the build is for simulator.                         |
+| Output            | Type   | Description                                                        |
+| ----------------- | ------ | ------------------------------------------------------------------ |
+| build_id          | string | The ID of the created build.                                       |
+| app_build_version | string | The version code/build number of the app.                          |
+| app_identifier    | string | The bundle identifier/package name of the app.                     |
+| app_version       | string | The version of the app.                                            |
+| channel           | string | The update channel used for the build.                             |
+| distribution      | string | The distribution method used. Can be `internal` or `store`.        |
+| fingerprint_hash  | string | The fingerprint hash of the build.                                 |
+| git_commit_hash   | string | The git commit hash used for the build.                            |
+| platform          | string | The platform the build was created for. Either `android` or `ios`. |
+| profile           | string | The build profile used.                                            |
+| runtime_version   | string | The runtime version used.                                          |
+| sdk_version       | string | The SDK version used.                                              |
+| simulator         | string | Whether the build is for simulator.                                |
 
 ### Examples
 
@@ -162,7 +168,11 @@ jobs:
 
 ## Deploy
 
-Deploy your application using EAS Hosting.
+Deploy your application using [EAS Hosting](/eas/hosting/introduction).
+
+### Prerequisites
+
+To deploy your application using EAS Hosting, you'll need to set up your project. See [Get Started with EAS Hosting](/eas/hosting/get-started/#prerequisites) for more information.
 
 ### Syntax
 
@@ -171,18 +181,18 @@ jobs:
   deploy_web:
     type: deploy
     params:
-      alias: string
-      prod: boolean
+      alias: string # optional
+      prod: boolean # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type    | Description                                |
-| --------- | ------- | ------------------------------------------ |
-| alias     | string  | Optional. The alias to deploy to.          |
-| prod      | boolean | Optional. Whether to deploy to production. |
+| Parameter | Type    | Description                                                                        |
+| --------- | ------- | ---------------------------------------------------------------------------------- |
+| alias     | string  | Optional. The [alias](/eas/hosting/deployments-and-aliases/#aliases) to deploy to. |
+| prod      | boolean | Optional. Whether to deploy to production.                                         |
 
 ### Examples
 
@@ -223,65 +233,22 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="Deployment to preview environment">
-
-This workflow deploys your application to a preview environment using a custom alias.
-
-```yaml .eas/workflows/deploy-preview.yml
-name: Preview Deployment
-
-jobs:
-  deploy:
-    name: Deploy to Preview
-    type: deploy
-    params:
-      alias: preview
-      prod: false
-```
-
-</Collapsible>
-
-<Collapsible summary="Multi-alias deployment">
-
-This workflow deploys your application to both staging and production environments using different aliases.
-
-```yaml .eas/workflows/deploy-multi-alias.yml
-name: Multi-alias Deployment
-
-jobs:
-  deploy_staging:
-    name: Deploy to Staging
-    type: deploy
-    params:
-      alias: staging
-      prod: false
-
-  deploy_production:
-    name: Deploy to Production
-    type: deploy
-    params:
-      alias: production
-      prod: true
-```
-
-</Collapsible>
-
 ## Fingerprint
 
-Calculate fingerprint of Android and iOS builds.
+Calculates a fingerprint of your project.
 
-> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+> **Note** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
 
 ### Syntax
 
 ```yaml
 jobs:
-  calculate_fingerprint:
+  fingerprint:
     type: fingerprint
     params:
-      environment: production
-      env:
-        APP_VARIANT: staging
+      environment: production | preview | development # optional, defaults to production
+      env: # optional
+        APP_VARIANT: staging # just an example
 ```
 
 #### Parameters
@@ -315,7 +282,7 @@ name: Basic Fingerprint
 
 jobs:
   fingerprint:
-    name: Calculate Fingerprints
+    name: Calculate Fingerprint
     type: fingerprint
     params:
       environment: production
@@ -332,7 +299,7 @@ name: Fingerprint with Environment Variables
 
 jobs:
   fingerprint:
-    name: Calculate Fingerprints
+    name: Calculate Fingerprint
     type: fingerprint
     params:
       environment: production
@@ -354,18 +321,18 @@ jobs:
   get_build:
     type: get-build
     params:
-      platform: ios
-      profile: production
-      distribution: store
-      channel: production
-      app_identifier: com.example.app
-      app_build_version: 1
-      app_version: 1.0.0
-      git_commit_hash: abc123
-      fingerprint_hash: def456
-      sdk_version: 49.0.0
-      runtime_version: 1.0.0
-      simulator: false
+      platform: ios | android # optional
+      profile: string # optional
+      distribution: store | internal | simulator # optional
+      channel: string # optional
+      app_identifier: string # optional
+      app_build_version: string # optional
+      app_version: string # optional
+      git_commit_hash: string # optional
+      fingerprint_hash: string # optional
+      sdk_version: string # optional
+      runtime_version: string # optional
+      simulator: boolean # optional
 ```
 
 #### Parameters
@@ -474,7 +441,9 @@ jobs:
 
 Submit an Android or iOS build to the app store using EAS Submit.
 
-> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
+### Prerequisites
+
+Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
 
 ### Syntax
 
@@ -483,8 +452,8 @@ jobs:
   submit_to_store:
     type: submit
     params:
-      build_id: string
-      profile: production
+      build_id: string # required
+      profile: string # optional, default: production
 ```
 
 #### Parameters
@@ -548,7 +517,11 @@ jobs:
 
 ## Update
 
-Publish an update using EAS Update.
+Publish an update using [EAS Update](/eas-update/introduction/).
+
+### Prerequisites
+
+To publish update previews and to send over-the-air updates, you'll need to run `npx eas-cli@latest update:configure`, then create new builds. Learn more about [configuring EAS Update](/eas-update/getting-started/#prerequisites).
 
 ### Syntax
 
@@ -557,22 +530,22 @@ jobs:
   publish_update:
     type: update
     params:
-      message: string
-      platform: all
-      branch: production
-      channel: production
+      message: string # optional
+      platform: string # optional - android | ios | all, defaults to all
+      branch: string # optional
+      channel: string # optional - cannot be used with branch
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                                                                                                                                                                                          |
-| --------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| message   | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                           |
-| platform  | string | Optional. Platform to use for the update ("android", "ios" or "all").                                                                                                                                                                                |
-| branch    | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name }}`. Provide _either_ a branch or a channel, not both. |
-| channel   | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                           |
+| Parameter | Type   | Description                                                                                                                                                                                                                                                         |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message   | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                          |
+| platform  | string | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                     |
+| branch    | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both. |
+| channel   | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                          |
 
 #### Outputs
 
@@ -604,7 +577,6 @@ jobs:
     type: update
     params:
       channel: production
-      message: 'Production update: ${{ github.event.head_commit.message }}'
 ```
 
 </Collapsible>
@@ -627,7 +599,6 @@ jobs:
     params:
       platform: android
       channel: production
-      message: 'Android update: ${{ github.event.head_commit.message }}'
 
   update_ios:
     name: Update iOS
@@ -635,7 +606,6 @@ jobs:
     params:
       platform: ios
       channel: production
-      message: 'iOS update: ${{ github.event.head_commit.message }}'
 ```
 
 </Collapsible>
@@ -662,45 +632,9 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="Update with custom message and platform targeting">
-
-This workflow allows manual triggering of updates with custom platform selection and message, useful for controlled deployments.
-
-```yaml .eas/workflows/update-custom.yml
-name: Custom Update
-
-on:
-  workflow_dispatch:
-    inputs:
-      platform:
-        description: 'Platform to update'
-        required: true
-        default: 'all'
-        type: choice
-        options:
-          - all
-          - android
-          - ios
-      message:
-        description: 'Update message'
-        required: true
-        type: string
-
-jobs:
-  update_custom:
-    name: Custom Update
-    type: update
-    params:
-      platform: ${{ github.event.inputs.platform }}
-      channel: production
-      message: ${{ github.event.inputs.message }}
-```
-
-</Collapsible>
-
 ## Maestro
 
-Run Maestro tests on a build.
+Run Maestro tests on a Android emulator or iOS simulator build.
 
 > **important** Maestro tests are experimental and may experience flakiness.
 
@@ -710,13 +644,13 @@ Run Maestro tests on a build.
 jobs:
   run_maestro_tests:
     type: maestro
-    environment: preview
-    image: latest
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
     params:
-      build_id: string
-      flow_path: string
-      shards: 1
-      retries: 1
+      build_id: string # required
+      flow_path: string | string[] # required
+      shards: number # optional, defaults to 1
+      retries: number # optional, defaults to 1
 ```
 
 #### Parameters
@@ -736,7 +670,7 @@ Here are some practical examples of using the Maestro job:
 
 <Collapsible summary="Basic Maestro test">
 
-This workflow runs Maestro tests on an iOS build using the default settings.
+This workflow runs Maestro tests on an iOS simulator build using the default settings.
 
 ```yaml .eas/workflows/maestro-basic.yml
 name: Basic Maestro Test
@@ -746,9 +680,8 @@ jobs:
     name: Run Maestro Tests
     type: maestro
     environment: preview
-    image: latest
     params:
-      build_id: ${{ needs.build_ios.outputs.build_id }}
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
       flow_path: ./maestro/flows
 ```
 
@@ -756,7 +689,7 @@ jobs:
 
 <Collapsible summary="Maestro test with sharding">
 
-This workflow runs Maestro tests on an Android build with 4 shards and 2 retries for failed tests.
+This workflow runs Maestro tests on an Android emulator build with 4 shards and 2 retries for failed tests.
 
 ```yaml .eas/workflows/maestro-sharded.yml
 name: Sharded Maestro Test
@@ -766,9 +699,8 @@ jobs:
     name: Run Sharded Maestro Tests
     type: maestro
     environment: preview
-    image: latest
     params:
-      build_id: ${{ needs.build_android.outputs.build_id }}
+      build_id: ${{ needs.build_android_emulator.outputs.build_id }}
       flow_path: ./maestro/flows
       shards: 4
       retries: 2
@@ -778,7 +710,7 @@ jobs:
 
 ## Slack
 
-Send a message to a Slack channel using a webhook URL.
+Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).
 
 ### Syntax
 
@@ -787,26 +719,26 @@ jobs:
   send_slack_notification:
     type: slack
     params:
-      webhook_url: string
-      message: string
-      payload: object
+      webhook_url: string # required
+      message: string # required if payload is not provided
+      payload: object # required if message is not provided
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter   | Type   | Description                                                               |
-| ----------- | ------ | ------------------------------------------------------------------------- |
-| webhook_url | string | Required. The Slack webhook URL to send the message to.                   |
-| message     | string | Required if payload is not provided. The message to send.                 |
-| payload     | object | Required if message is not provided. The Slack Block Kit payload to send. |
+| Parameter   | Type   | Description                                                                                                                                                                |
+| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
+| message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://api.slack.com/block-kit) payload to send.                                                               |
 
 ### Examples
 
 Here are some practical examples of using the Slack job:
 
-<Collapsible summary="Simple build notification">
+<Collapsible summary="Basic build notification">
 
 This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs.
 
@@ -826,7 +758,7 @@ jobs:
     needs: build_ios
     type: slack
     params:
-      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
       message: 'Build completed for app ${{ needs.build_ios.outputs.app_identifier }} (version ${{ needs.build_ios.outputs.app_version }})'
 ```
 
@@ -852,101 +784,13 @@ jobs:
     needs: build_android
     type: slack
     params:
-      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
       payload:
         blocks:
           - type: header
             text:
               type: plain_text
               text: 'Build Completed'
-          - type: section
-            fields:
-              - type: mrkdwn
-                text: "*App:*\n${{ needs.build_android.outputs.app_identifier }}"
-              - type: mrkdwn
-                text: "*Version:*\n${{ needs.build_android.outputs.app_version }}"
-          - type: section
-            fields:
-              - type: mrkdwn
-                text: "*Build ID:*\n${{ needs.build_android.outputs.build_id }}"
-              - type: mrkdwn
-                text: "*Platform:*\n${{ needs.build_android.outputs.platform }}"
-          - type: section
-            text:
-              type: mrkdwn
-              text: 'Distribution: ${{ needs.build_android.outputs.distribution }}'
-```
-
-</Collapsible>
-
-<Collapsible summary="Test results summary">
-
-This workflow builds an iOS app and sends a test results summary using the build job outputs.
-
-```yaml .eas/workflows/slack-test-results.yml
-name: Test Results Notification
-
-jobs:
-  build_ios:
-    name: Build iOS
-    type: build
-    params:
-      platform: ios
-      profile: production
-
-  notify_tests:
-    name: Notify Test Results
-    needs: build_ios
-    type: slack
-    params:
-      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
-      payload:
-        blocks:
-          - type: header
-            text:
-              type: plain_text
-              text: 'Test Results'
-          - type: section
-            fields:
-              - type: mrkdwn
-                text: "*App:*\n${{ needs.build_ios.outputs.app_identifier }}"
-              - type: mrkdwn
-                text: "*Build ID:*\n${{ needs.build_ios.outputs.build_id }}"
-          - type: section
-            text:
-              type: mrkdwn
-              text: 'Platform: ${{ needs.build_ios.outputs.platform }}'
-```
-
-</Collapsible>
-
-<Collapsible summary="Deployment notification with environment">
-
-This workflow builds an Android app and sends a detailed deployment notification using the build job outputs.
-
-```yaml .eas/workflows/slack-deployment.yml
-name: Deployment Notification
-
-jobs:
-  build_android:
-    name: Build Android
-    type: build
-    params:
-      platform: android
-      profile: production
-
-  notify_deployment:
-    name: Notify Deployment
-    needs: build_android
-    type: slack
-    params:
-      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
-      payload:
-        blocks:
-          - type: header
-            text:
-              type: plain_text
-              text: '🚀 Deployment Complete'
           - type: section
             fields:
               - type: mrkdwn
