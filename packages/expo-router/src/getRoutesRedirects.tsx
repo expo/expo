@@ -4,7 +4,7 @@ import { createElement } from 'react';
 import { cleanPath } from './fork/getStateFromPath-forks';
 import { RedirectConfig } from './getRoutesCore';
 import type { StoreRedirects } from './global-state/router-store';
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+import { matchDynamicName } from './matchers';
 
 export function applyRedirects(
   url: string | null | undefined,
@@ -46,14 +46,14 @@ export function getRedirectModule(route: string) {
       let href = route
         .split('/')
         .map((part) => {
-          const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
-          if (!match) {
+          const dynamicName = matchDynamicName(part);
+          if (!dynamicName) {
             return part;
+          } else {
+            const param = params[dynamicName.name];
+            delete params[dynamicName.name];
+            return dynamicName.deep ? param : param?.split('/')[0];
           }
-
-          const param = params[match];
-          delete params[match];
-          return param;
         })
         .filter(Boolean)
         .join('/');
