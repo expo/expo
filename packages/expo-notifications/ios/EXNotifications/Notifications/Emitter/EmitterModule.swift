@@ -38,8 +38,9 @@ open class EmitterModule: Module, NotificationDelegate {
   }
 
   open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
-    lastResponse = serializedResponse(response)
-    self.sendEvent(onDidReceiveNotificationResponse, serializedResponse(response))
+    let notificationResponse = serializedResponse(response)
+    lastResponse = notificationResponse
+    self.sendEvent(onDidReceiveNotificationResponse, notificationResponse)
     completionHandler()
     return true
   }
