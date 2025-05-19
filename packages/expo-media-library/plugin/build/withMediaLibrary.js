@@ -8,11 +8,7 @@ const GRANULAR_PERMISSIONS_MAP = {
     video: 'android.permission.READ_MEDIA_VIDEO',
     audio: 'android.permission.READ_MEDIA_AUDIO',
 };
-const defaultGranularPermissions = [
-    'photo',
-    'video',
-    'audio',
-];
+const defaultGranularPermissions = ['photo', 'video', 'audio'];
 function modifyAndroidManifest(manifest) {
     // Starting with Android 10, the concept of scoped storage is introduced.
     // Currently, to make expo-media-library working with that change, you have to add

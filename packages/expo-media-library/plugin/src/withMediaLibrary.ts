@@ -15,11 +15,7 @@ const GRANULAR_PERMISSIONS_MAP: Record<GranularPermission, string> = {
   video: 'android.permission.READ_MEDIA_VIDEO',
   audio: 'android.permission.READ_MEDIA_AUDIO',
 };
-const defaultGranularPermissions: GranularPermission[] = [
-  'photo',
-  'video',
-  'audio',
-];
+const defaultGranularPermissions: GranularPermission[] = ['photo', 'video', 'audio'];
 
 export function modifyAndroidManifest(
   manifest: AndroidConfig.Manifest.AndroidManifest
