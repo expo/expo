@@ -25,7 +25,7 @@ export function testNotFound(name: string): boolean {
 
 /** Match `(page)` -> `page` */
 export function matchGroupName(name: string): string | undefined {
-  return name.match(/^(?:[^\\()])*?\(([^\\/]+)\).*?$/)?.[1];
+  return name.match(/^(?:[^\\()])*?\(([^\\/]+)\)/)?.[1];
 }
 
 /** Match `(app)/(page)` -> `page` */
@@ -35,7 +35,7 @@ export function matchLastGroupName(name: string): string | undefined {
 
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 export function matchArrayGroupName(name: string) {
-  return name.match(/(?:[^\\()])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];
+  return name.match(/(?:[^\\()])*?\(([^\\/]+,[^\\/]+)\)/)?.[1];
 }
 
 export function getNameFromFilePath(name: string): string {
