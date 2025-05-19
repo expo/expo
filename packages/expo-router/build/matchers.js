@@ -34,15 +34,15 @@ function testNotFound(name) {
 }
 /** Match `(page)` -> `page` */
 function matchGroupName(name) {
-    return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
+    return name.match(/^(?:[^\\()])*?\(([^\\/]+)\)/)?.[1];
 }
 /** Match `(app)/(page)` -> `page` */
 function matchLastGroupName(name) {
-    return name.match(/.*(?:\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+    return name.match(/.*(?:\/|^)\(([^\\/]+)\)[^\s]*$/)?.[1];
 }
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 function matchArrayGroupName(name) {
-    return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];
+    return name.match(/(?:[^\\()])*?\(([^\\/]+,[^\\/]+)\)/)?.[1];
 }
 function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));
