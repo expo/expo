@@ -1,19 +1,21 @@
 //  Copyright © 2024 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import UIKit
 import MachO
+import UIKit
 
 let onDidReceiveNotification = "onDidReceiveNotification"
 let onDidReceiveNotificationResponse = "onDidReceiveNotificationResponse"
 let onDidClearNotificationResponse = "onDidClearNotificationResponse"
 
 open class EmitterModule: Module, NotificationDelegate {
-  private var lastNotificationResponse: UNNotificationResponse?
+  private var lastResponse: [String: Any]?
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
-    Events([onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse])
+    Events([
+      onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse,
+    ])
 
     OnCreate {
       NotificationCenterManager.shared.addDelegate(self)
@@ -23,42 +25,35 @@ open class EmitterModule: Module, NotificationDelegate {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-    AsyncFunction("getLastNotificationResponseAsync") {() -> [String: Any]? in
-      if let lastResponse: UNNotificationResponse = lastNotificationResponse {
-        return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
-      }
-      return nil
-    }
-
-    AsyncFunction("clearLastNotificationResponseAsync") {
-      lastNotificationResponse = nil
-    }
-
-    Function("getLastNotificationResponse") {() -> [String: Any]? in
-      if let lastResponse: UNNotificationResponse = lastNotificationResponse {
-        return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
-      }
-      return nil
+    Function("getLastNotificationResponse") { () -> [String: Any]? in
+      return lastResponse
     }
 
     Function("clearLastNotificationResponse") {
-      lastNotificationResponse = nil
+      lastResponse = nil
     }
   }
 
-  public func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+  public func didReceive(
+    _ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+  ) -> Bool {
     completionHandler(.noData)
     return true
   }
 
-  open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
-    lastNotificationResponse = response
+  open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void)
+    -> Bool
+  {
+    lastResponse = serializedResponse(response)
     self.sendEvent(onDidReceiveNotificationResponse, serializedResponse(response))
     completionHandler()
     return true
   }
 
-  open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+  open func willPresent(
+    _ notification: UNNotification,
+    completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+  ) -> Bool {
     self.sendEvent(onDidReceiveNotification, serializedNotification(notification))
     return false
   }

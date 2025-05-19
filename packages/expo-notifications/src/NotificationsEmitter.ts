@@ -129,10 +129,10 @@ export function removeNotificationSubscription(subscription: EventSubscription) 
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
-  if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
-    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+  if (!NotificationsEmitterModule.getLastNotificationResponse) {
+    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponse');
   }
-  const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
+  const response = NotificationsEmitterModule.getLastNotificationResponse();
   const mappedResponse = response ? mapNotificationResponse(response) : response;
   return mappedResponse;
 }
@@ -164,10 +164,10 @@ export function getLastNotificationResponse(): NotificationResponse | null {
  * @return A promise that resolves if the native call was successful.
  */
 export async function clearLastNotificationResponseAsync(): Promise<void> {
-  if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
-    throw new UnavailabilityError('ExpoNotifications', 'clearLastNotificationResponseAsync');
+  if (!NotificationsEmitterModule.clearLastNotificationResponse) {
+    throw new UnavailabilityError('ExpoNotifications', 'clearLastNotificationResponse');
   }
-  await NotificationsEmitterModule.clearLastNotificationResponseAsync();
+  NotificationsEmitterModule.clearLastNotificationResponse();
   // Emit event to clear any useLastNotificationResponse hooks, after native call succeeds
   emitter.emit(didClearNotificationResponseEventName, []);
 }
