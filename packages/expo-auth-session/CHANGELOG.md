@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `rawResponse` to `TokenResponse`. ([#20284](https://github.com/expo/expo/pull/20284) by [@stefan-schweiger](https://github.com/stefan-schweiger))
+- Added `rawResponse` to `TokenResponse`, allows reading fields that are not part of RFC 6749. ([#20284](https://github.com/expo/expo/pull/20284) by [@stefan-schweiger](https://github.com/stefan-schweiger))
 
 ### 🐛 Bug fixes
 
