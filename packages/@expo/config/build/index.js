@@ -47,4 +47,15 @@ Object.keys(_Errors).forEach(function (key) {
     }
   });
 });
+var _buildCacheProvider = require("./buildCacheProvider");
+Object.keys(_buildCacheProvider).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  if (key in exports && exports[key] === _buildCacheProvider[key]) return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _buildCacheProvider[key];
+    }
+  });
+});
 //# sourceMappingURL=index.js.map

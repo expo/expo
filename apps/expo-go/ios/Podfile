@@ -19,13 +19,14 @@ prepare_react_native_project!
 
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
-  pod 'GoogleMaps', '~> 9.0'
-  pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/googlemaps/google-maps-ios-utils.git'
-  pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
 
   # transitive dependency of React-Core and we use it to get the `RCTInspectorPackagerConnection` state
   pod 'SocketRocket'
+
+  # Required by react-native-maps
+  # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md
+  pod 'react-native-google-maps', :path => '../../../node_modules/react-native-maps'
 
   # Required by firebase core versions 9.x / 10.x (included with SDK 47)
   # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
@@ -55,7 +56,6 @@ target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
-      'expo-audio',
       '@expo/ui'
     ],
     includeTests: true,
@@ -105,7 +105,7 @@ target 'Expo Go' do
       .each do |pod_name, target_installation_result|
 
       # Enable hermes debugger even on release builds
-      if pod_name == 'React-hermes' || pod_name == 'hermes-engine'
+      if ['React-hermes', 'hermes-engine', 'React-RuntimeHermes'].include?(pod_name)
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
@@ -117,22 +117,8 @@ target 'Expo Go' do
         config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
       end
 
-      # This is necessary for Xcode 14 that by default signs resource bundles when building for the device.
-      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
-        resource_bundle_target.build_configurations.each do |config|
-          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-        end
-      end
-
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
-      end
-
-      if pod_name == 'Branch'
-        target_installation_result.native_target.build_configurations.each do |config|
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
-        end
       end
 
       # On iOS, the Stripe dependency StripePaymentsUI can't seem to find a header that should be there.

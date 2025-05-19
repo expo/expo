@@ -101,8 +101,29 @@ export function getDefaultCustomizeFrame(): CustomizeFrameFunc {
       // The URL will also be unactionable in the app and therefore not very useful to the developer.
       if (
         frame.column === 3 &&
-        frame.methodName === 'global code' &&
+        frame.methodName &&
+        ['global', 'global code'].includes(frame.methodName) &&
         frame.file?.match(/^https?:\/\//g)
+      ) {
+        collapse = true;
+      } else if (frame.file === '<native>') {
+        collapse = true;
+      } else if (
+        // Some internal component stacks often don't have a file name.
+        frame.file === '<anonymous>' &&
+        frame.methodName &&
+        [
+          // React
+          'Suspense',
+          // React Native
+          'RCTView',
+          'RCTScrollView',
+          'RCTScrollContentView',
+          // React Native Screens
+          'RNSScreen',
+          'RNSScreenContentWrapper',
+          'RNSScreenNavigationContainer',
+        ].includes(frame.methodName)
       ) {
         collapse = true;
       }

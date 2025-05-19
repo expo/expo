@@ -7,7 +7,7 @@ import MachO
 let onHandleNotification = "onHandleNotification"
 let onHandleNotificationTimeout = "onHandleNotificationTimeout"
 
-public class HandlerModule: Module, NotificationDelegate, SingleNotificationHandlerTaskDelegate {
+open class HandlerModule: Module, NotificationDelegate, SingleNotificationHandlerTaskDelegate {
   var tasksMap: [String: SingleNotificationHandlerTask] = [:]
 
   public func definition() -> ModuleDefinition {
@@ -23,12 +23,12 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-    AsyncFunction("handleNotificationAsync") { (identifier: String, behavior: [String: Bool], promise: Promise) in
+    AsyncFunction("handleNotificationAsync") { (identifier: String, behavior: NotificationBehavior, promise: Promise) in
       guard let task = tasksMap[identifier] else {
         promise.reject("ERR_NOTIFICATION_HANDLED", "Failed to handle notification \(identifier) because it has already been handled")
         return
       }
-      if task.handleResponse(behavior) {
+      if task.processNotificationWithOptions(behavior.presentationOptions) {
         promise.resolve(nil)
       } else {
         promise.reject("ERR_NOTIFICATION_RESPONSE_TIMEOUT", "Notification has already been handled. Most probably the request has timed out.")
@@ -38,7 +38,7 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
 
   // MARK: - NotificationDelegate
 
-  public func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+  open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
     let task = SingleNotificationHandlerTask(notification: notification, completionHandler: completionHandler, delegate: self)
     tasksMap[task.identifier] = task
     task.start()
@@ -63,5 +63,36 @@ public class HandlerModule: Module, NotificationDelegate, SingleNotificationHand
       "id": notification.request.identifier,
       "notification": EXNotificationSerializer.serializedNotification(notification)
     ])
+  }
+}
+
+struct NotificationBehavior: Record {
+  @Field var shouldShowAlert: Bool = false
+  @Field var shouldShowBanner: Bool = false
+  @Field var shouldShowList: Bool = false
+  @Field var shouldPlaySound: Bool = false
+  @Field var shouldSetBadge: Bool = false
+
+  var presentationOptions: UNNotificationPresentationOptions {
+    var options: UNNotificationPresentationOptions = []
+
+    // Deprecated but kept for backward compatibility
+    if shouldShowAlert {
+      options.insert(.alert)
+    }
+    if shouldShowBanner {
+      options.insert(.banner)
+    }
+    if shouldShowList {
+      options.insert(.list)
+    }
+    if shouldPlaySound {
+      options.insert(.sound)
+    }
+    if shouldSetBadge {
+      options.insert(.badge)
+    }
+
+    return options
   }
 }

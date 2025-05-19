@@ -8,7 +8,36 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Remove restarting all services when CLLocationManager reports an error ([#35478](https://github.com/expo/expo/pull/35478) by [@chrfalch](https://github.com/chrfalch))
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 18.1.5 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `shouldUseForegroundService` being always `true`. ([#35875](https://github.com/expo/expo/pull/35875) by [@filipef101](https://github.com/filipef101))
+
+## 18.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
 - [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
 - [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
 
@@ -16,6 +45,18 @@
 
 - On Android, remove dependency on `smart-location-lib`. ([#33609](https://github.com/expo/expo/pull/33609) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Added missing dependency. ([#35822](https://github.com/expo/expo/pull/35822) by [@lukmccall](https://github.com/lukmccall))
+
+## 18.0.10 - 2025-04-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue with some permission request flows resolving too soon on iOS. ([#35693](https://github.com/expo/expo/pull/35693) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Remove restarting all services when CLLocationManager reports an error ([#35478](https://github.com/expo/expo/pull/35478) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.9 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 18.0.8 - 2025-03-14
 
@@ -406,7 +447,7 @@ _This version does not introduce any user-facing changes._
 - Add `scope` field in returned value to indicate whether background permissions are granted. Add `android.accuracy` field to determine whether `coarse` or `fine` location permission is granted. ([#9446](https://github.com/expo/expo/pull/9446) by [@mczernek](https://github.com/mczernek))
 - `getLastKnownPositionAsync` no longer rejects when the last known location is not available – now it returns `null`. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
 - Removed the deprecated `enableHighAccuracy` option of `getCurrentPositionAsync`. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
-- Removed `maximumAge` and `timeout` options from `getCurrentPositionAsync` – it's been Android only and the same behavior can be achieved on all platforms on the JavaScript side. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
+- Removed `maximumAge` and `timeout` options from `getCurrentPositionAsync` – it's been Android only and the same behavior can be achieved on all platforms on the JavaScript side. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
 - Made type and enum names more consistent and in line with our standards — they all are now prefixed by `Location`. The most common ones are still accessible without the prefix, but it's not the recommended way. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
 - `geocodeAsync` and `reverseGeocodeAsync` no longer falls back to Google Maps API on Android. ([#9444](https://github.com/expo/expo/pull/9444) by [@tsapeta](https://github.com/tsapeta))
 

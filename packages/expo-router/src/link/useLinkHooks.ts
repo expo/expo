@@ -172,8 +172,8 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    */
   push?: boolean;
   /**
-   * While in a stack, this will dismiss screens until the provided href is reached. If the href is not found,
-   * it will instead replace the current screen with the provided href.
+   * While in a stack, this will dismiss screens until the provided `href` is reached. If the href is not found,
+   * it will instead replace the current screen with the provided `href`.
    *
    * @example
    *```tsx
@@ -197,7 +197,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    */
   className?: string;
 
-  onPress?: (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
+  onPress?: (event: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
 
   /**
    * Relative URL references are either relative to the directory or the document.
@@ -219,6 +219,11 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
   dangerouslySingular?: SingularOptions;
+
+  /**
+   * Prefetches the route when the component is rendered on a focused screen.
+   */
+  prefetch?: boolean;
 }
 
 // Mutate the style prop to add the className on web.

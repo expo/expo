@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-class DateTimePickerProps: ExpoSwiftUI.ViewProps {
+final class DateTimePickerProps: ExpoSwiftUI.ViewProps {
   @Field var title: String = "Select Date"
   @Field var initialDate: Date?
   @Field var variant: PickerStyle = .automatic
@@ -11,9 +11,12 @@ class DateTimePickerProps: ExpoSwiftUI.ViewProps {
 }
 
 struct DateTimePickerView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: DateTimePickerProps
-  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  @ObservedObject var props: DateTimePickerProps
   @State private var date = Date()
+
+  init(props: DateTimePickerProps) {
+    self.props = props
+  }
 
   var body: some View {
     #if os(tvOS)
@@ -21,18 +24,16 @@ struct DateTimePickerView: ExpoSwiftUI.View {
     #else
     let displayedComponents = props.displayedComponents.toDatePickerComponent()
 
-    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
-      DatePicker(props.title, selection: $date, displayedComponents: displayedComponents)
-        .onAppear {
-          date = props.initialDate ?? Date()
-        }
-        .onChange(of: date, perform: { newDate in
-          props.onDateSelected(["date": newDate.timeIntervalSince1970 * 1000])
-        })
-        .applyDatePickerStyle(for: props.variant)
-        .tint(props.color)
-        .foregroundStyle(props.color ?? .accentColor)
-    }
+    DatePicker(props.title, selection: $date, displayedComponents: displayedComponents)
+      .onAppear {
+        date = props.initialDate ?? Date()
+      }
+      .onChange(of: date, perform: { newDate in
+        props.onDateSelected(["date": newDate.timeIntervalSince1970 * 1000])
+      })
+      .applyDatePickerStyle(for: props.variant)
+      .tint(props.color)
+      .foregroundStyle(props.color ?? .accentColor)
     #endif
   }
 }

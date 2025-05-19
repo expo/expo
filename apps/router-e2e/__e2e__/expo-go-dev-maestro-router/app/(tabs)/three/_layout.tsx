@@ -4,6 +4,6 @@ export const unstable_settings = {
   initialRouteName: 'orange',
 };
 
-export default function () {
+export default function Layout() {
   return <Stack />;
 }

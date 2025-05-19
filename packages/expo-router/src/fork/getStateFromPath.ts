@@ -5,8 +5,7 @@ import escape from 'escape-string-regexp';
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
-import { INTERNAL_SLOT_NAME } from '../getLinkingConfig';
-import { RouterStore } from '../global-state/router-store';
+import { INTERNAL_SLOT_NAME } from '../constants';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
@@ -68,15 +67,17 @@ type ConfigResources = {
  * @param options Extra options to fine-tune how to parse the path.
  */
 export function getStateFromPath<ParamList extends object>(
-  // START FORK
-  this: RouterStore | undefined | void,
-  // END FORK
   path: string,
-  options?: Options<ParamList>
+  options?: Options<ParamList>,
+  // START FORK
+  segments: string[] = []
+  // END FORK
 ): ResultState | undefined {
   const { initialRoutes, configs, configWithRegexes } = getConfigResources(
     options,
-    this?.routeInfo?.segments
+    // START FORK
+    segments
+    // END FORK
   );
 
   const screens = options?.screens;
@@ -86,15 +87,15 @@ export function getStateFromPath<ParamList extends object>(
   // END FORK
 
   // START FORK
-  let remaining = expoPath.nonstandardPathname
-    // let remaining = path
-    // END FORK
-    .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
-    .replace(/^\//, '') // Remove extra leading slash
-    .replace(/\?.*$/, ''); // Remove query params which we will handle later
+  let remaining = expo.cleanPath(expoPath.nonstandardPathname);
+  // let remaining = path
+  //   .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
+  //   .replace(/^\//, '') // Remove extra leading slash
+  //   .replace(/\?.*$/, ''); // Remove query params which we will handle later
 
-  // Make sure there is a trailing slash
-  remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+  // // Make sure there is a trailing slash
+  // remaining = remaining.endsWith('/') ? remaining : `${remaining}/`;
+  // END FORK
 
   const prefix = options?.path?.replace(/^\//, ''); // Remove extra leading slash
 
@@ -475,6 +476,7 @@ const createNormalizedConfigs = (
 
   parentScreens.push(screen);
 
+  // @ts-expect-error: TODO(@kitten): This is entirely untyped. The index access just flags this, but we're not typing the config properly here
   const config = routeConfig[screen];
 
   if (typeof config === 'string') {
@@ -547,20 +549,23 @@ const createConfigItem = (
   // Normalize pattern to remove any leading, trailing slashes, duplicate slashes etc.
   pattern = pattern.split('/').filter(Boolean).join('/');
 
-  const regex = pattern
-    ? new RegExp(
-        `^(${pattern
-          .split('/')
-          .map((it) => {
-            if (it.startsWith(':')) {
-              return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
-            }
+  // START FORK
+  const regex = pattern ? expo.routePatternToRegex(pattern) : undefined;
+  // const regex = pattern
+  //   ? new RegExp(
+  //       `^(${pattern
+  //         .split('/')
+  //         .map((it) => {
+  //           if (it.startsWith(':')) {
+  //             return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
+  //           }
 
-            return `${it === '*' ? '.*' : escape(it)}\\/`;
-          })
-          .join('')})`
-      )
-    : undefined;
+  //           return `${it === '*' ? '.*' : escape(it)}\\/`;
+  //         })
+  //         .join('')})`
+  //     )
+  //   : undefined;
+  // END FORK
 
   return {
     screen,

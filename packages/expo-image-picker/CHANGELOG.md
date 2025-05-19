@@ -6,12 +6,37 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 — 2025-04-04
+
+### 🎉 New features
+
 - Added support for ordered selection and default tab selection on Android. ([#34223](https://github.com/expo/expo/pull/34223) by [@fobos531](https://github.com/fobos531))
 - Add support for cameraType in web implementation ([#35221](https://github.com/expo/expo/pull/35221) by [@RyogaK](https://github.com/RyogaK))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix `getPendingResultAsync` incorrect return type ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
+- [iOS] Use preferred representation mode to support heic ([#35840](https://github.com/expo/expo/pull/35840) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

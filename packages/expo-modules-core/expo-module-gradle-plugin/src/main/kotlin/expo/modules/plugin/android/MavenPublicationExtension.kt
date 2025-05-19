@@ -3,7 +3,10 @@
 package expo.modules.plugin.android
 
 import expo.modules.plugin.androidLibraryExtension
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import expo.modules.plugin.publishingExtension
+import groovy.lang.Binding
+import groovy.lang.GroovyShell
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -84,10 +87,10 @@ internal fun PublicationContainer.createReleasePublication(publicationInfo: Publ
   }
 }
 
-internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo): TaskProvider<Task> {
+internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo, expoModulesExtension: ExpoModuleExtension, pathToRepository: String): TaskProvider<Task> {
   val taskProvider = tasks.register("expoPublish") { task ->
     task.doLast {
-      expoPublishBody(publicationInfo, isLocal = false)
+      expoPublishBody(publicationInfo, expoModulesExtension, pathToRepository = pathToRepository)
     }
   }
   taskProvider.configure { task ->
@@ -101,10 +104,10 @@ internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo): Ta
   return taskProvider
 }
 
-internal fun Project.createExpoPublishTask(error: Throwable): TaskProvider<Task> {
+internal fun Project.createEmptyExpoPublishTask(): TaskProvider<Task> {
   val taskProvider = tasks.register("expoPublish") { task ->
     task.doLast {
-      logger.error("Failed to publish the library to the GitHub Packages repository: ${error.message}", error)
+      logger.warn("Publishing is not configured for this project!")
     }
   }
   taskProvider.configure { task ->
@@ -115,10 +118,24 @@ internal fun Project.createExpoPublishTask(error: Throwable): TaskProvider<Task>
   return taskProvider
 }
 
-internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: PublicationInfo): TaskProvider<Task> {
+internal fun Project.createEmptyExpoPublishToMavenLocalTask(): TaskProvider<Task> {
   val taskProvider = tasks.register("expoPublishToMavenLocal") { task ->
     task.doLast {
-      expoPublishBody(publicationInfo, isLocal = true)
+      logger.warn("Publishing is not configured for this project!")
+    }
+  }
+  taskProvider.configure { task ->
+    task.group = "publishing"
+    task.description = "Publishes the library to the local Maven repository"
+  }
+
+  return taskProvider
+}
+
+internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: PublicationInfo, expoModulesExtension: ExpoModuleExtension): TaskProvider<Task> {
+  val taskProvider = tasks.register("expoPublishToMavenLocal") { task ->
+    task.doLast {
+      expoPublishBody(publicationInfo, expoModulesExtension)
     }
   }
   taskProvider.configure { task ->
@@ -132,8 +149,10 @@ internal fun Project.createExpoPublishToMavenLocalTask(publicationInfo: Publicat
   return taskProvider
 }
 
-private fun Project.expoPublishBody(publicationInfo: PublicationInfo, isLocal: Boolean) {
-  if (isLocal) {
+private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModulesExtension: ExpoModuleExtension, pathToRepository: String? = null) {
+  validateProjectConfiguration(expoModulesExtension)
+
+  if (pathToRepository == null) {
     val mavenLocal = publishingExtension().repositories.mavenLocal()
     val mavenLocalPath = mavenLocal.url.toPath()
     val publicationPath = publicationInfo.resolvePath(mavenLocalPath)
@@ -153,7 +172,7 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, isLocal: B
   }
 
   val jsonElement = json.parseToJsonElement(expoModuleConfig.readText()).jsonObject
-  val newJsonElement = modifyModuleConfig(projectName = name, jsonElement, publicationInfo, isLocal)
+  val newJsonElement = modifyModuleConfig(projectName = name, jsonElement, publicationInfo, pathToRepository)
 
   val newJsonString = json.encodeToString(JsonObject.serializer(), newJsonElement)
 
@@ -167,16 +186,30 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, isLocal: B
   }.result.get()
 }
 
-private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo, isLocal: Boolean): JsonObject {
+private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
+  val shouldUsePublicationScript = expoModulesExtension.autolinking.getShouldUsePublicationScriptPath(this)
+  // If the path to the script is not defined, we assume that we can publish the module.
+  if (shouldUsePublicationScript == null) {
+    return
+  }
+
+  val binding = Binding()
+  binding.setVariable("providers", project.providers)
+  val shell = GroovyShell(javaClass.classLoader, binding)
+
+  val shouldUsePublication = shell.run(shouldUsePublicationScript, emptyArray<String>()) as? Boolean == true
+
+  if (!shouldUsePublication) {
+    throw IllegalStateException("The publication script returned false. Please check the script or your project configuration. You're trying to precompile a non-default configuration.")
+  }
+}
+
+private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo, pathToRepository: String?): JsonObject {
   val publicationObject = JsonObject(mapOf(
     "groupId" to publicationInfo.groupId.toJsonElement(),
     "artifactId" to publicationInfo.artifactId.toJsonElement(),
     "version" to publicationInfo.version.toJsonElement(),
-    "repository" to if (isLocal) {
-      "mavenLocal"
-    } else {
-      "https://maven.pkg.github.com/expo/expo"
-    }.toJsonElement(),
+    "repository" to (pathToRepository ?: "mavenLocal").toJsonElement(),
   ))
 
   val androidObject = currentConfig.getOrDefault("android", JsonObject(emptyMap())).jsonObject.mutate {

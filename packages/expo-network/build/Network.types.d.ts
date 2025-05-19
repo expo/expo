@@ -78,6 +78,6 @@ export type NetworkStateEvent = NetworkState;
  * @hidden
  */
 export type NetworkEvents = {
-    onNetworkStateChanged(event: NetworkStateEvent): any;
+    onNetworkStateChanged(event: NetworkStateEvent): void;
 };
 //# sourceMappingURL=Network.types.d.ts.map

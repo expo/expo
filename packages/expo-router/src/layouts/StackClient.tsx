@@ -20,6 +20,7 @@ import { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { SingularOptions, getSingularId } from '../useScreens';
+import { Protected } from '../views/Protected';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -234,6 +235,7 @@ const Stack = Object.assign(
     Screen: RNStack.Screen as (
       props: ComponentProps<typeof RNStack.Screen> & { singular?: boolean }
     ) => null,
+    Protected,
   }
 );
 

@@ -84,6 +84,17 @@ export async function loadMetroConfigAsync(
     process.env.EXPO_USE_FAST_RESOLVER = '1';
   }
 
+  const isReactCanaryEnabled =
+    (exp.experiments?.reactServerComponentRoutes ||
+      serverActionsEnabled ||
+      exp.experiments?.reactCanary) ??
+    false;
+
+  if (isReactCanaryEnabled) {
+    // The fast resolver is required for React canary to work as it can switch the node_modules location for react imports.
+    process.env.EXPO_USE_FAST_RESOLVER = '1';
+  }
+
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
@@ -150,11 +161,7 @@ export async function loadMetroConfigAsync(
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isFastResolverEnabled: env.EXPO_USE_FAST_RESOLVER,
     isExporting,
-    isReactCanaryEnabled:
-      (exp.experiments?.reactServerComponentRoutes ||
-        serverActionsEnabled ||
-        exp.experiments?.reactCanary) ??
-      false,
+    isReactCanaryEnabled,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
@@ -186,17 +193,17 @@ export async function instantiateMetroAsync(
 }> {
   const projectRoot = metroBundler.projectRoot;
 
-  const { config: metroConfig, setEventReporter } = await loadMetroConfigAsync(
-    projectRoot,
-    options,
-    {
-      exp,
-      isExporting,
-      getMetroBundler() {
-        return metro.getBundler().getBundler();
-      },
-    }
-  );
+  const {
+    config: metroConfig,
+    setEventReporter,
+    reporter,
+  } = await loadMetroConfigAsync(projectRoot, options, {
+    exp,
+    isExporting,
+    getMetroBundler() {
+      return metro.getBundler().getBundler();
+    },
+  });
 
   // Create the core middleware stack for Metro, including websocket listeners
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
@@ -207,7 +214,10 @@ export async function instantiateMetroAsync(
     prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
-    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(metroBundler);
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(
+      metroBundler,
+      reporter
+    );
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
@@ -423,8 +433,8 @@ function pruneCustomTransformOptions(
 
   if (
     transformOptions.customTransformOptions?.clientBoundaries &&
-    // The client boundaries are only used in `@expo/metro-runtime/src/virtual.js` for production RSC exports.
-    !filePath.match(/\/@expo\/metro-runtime\/rsc\/virtual\.js$/)
+    // The client boundaries are only used in `expo/virtual/rsc.js` for production RSC exports.
+    !filePath.match(/\/expo\/virtual\/rsc\.js$/)
   ) {
     delete transformOptions.customTransformOptions.clientBoundaries;
   }

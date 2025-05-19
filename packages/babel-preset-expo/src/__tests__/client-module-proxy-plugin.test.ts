@@ -88,7 +88,7 @@ function transformReactServer(sourceCode: string) {
 }
 
 describe('use server', () => {
-  it(`collects metadata with React Server Action references`, () => {
+  it(`collects metadata with React Server Function references`, () => {
     const sourceCode = `
     "use server";
     
@@ -106,9 +106,58 @@ describe('use server', () => {
     expect(res.code).toMatchInlineSnapshot(`
       "import { createServerReference } from 'react-server-dom-webpack/client';
       import { callServerRSC } from 'expo-router/rsc/internal';
-      export var greet = createServerReference("file:///unknown#greet", callServerRSC);
-      export default createServerReference("file:///unknown#default", callServerRSC);"
+      export var greet = createServerReference("./unknown#greet", callServerRSC);
+      export default createServerReference("./unknown#default", callServerRSC);"
     `);
+  });
+  it(`asserts when using re-export for server function references`, () => {
+    const sourceCode = `
+    "use server";
+    
+    export * from './foo';
+    
+    `;
+
+    expect(() => transformClient(sourceCode)).toThrow(
+      /Re-exporting all modules is not supported in a/
+    );
+  });
+
+  it(`asserts when using module.exports for server function references`, () => {
+    const sourceCode = `
+    "use server";
+    
+    module.exports = async function doThing() {}
+    
+    `;
+
+    expect(() => transformClient(sourceCode)).toThrow(
+      /Assignment to `module.exports` or `exports` is not allowed in a "use server" file./
+    );
+  });
+  it(`asserts when using exports for server function references`, () => {
+    const sourceCode = `
+    "use server";
+    
+    exports.foo = async function doThing() {}
+    `;
+
+    expect(() => transformClient(sourceCode)).toThrow(
+      /Assignment to `module.exports` or `exports` is not allowed in a "use server" file./
+    );
+  });
+  it(`asserts when using Object.assign for server function references`, () => {
+    const sourceCode = `
+    "use server";
+    
+    Object.assign(exports, {
+      foo: async function doThing() {}
+    });
+    `;
+
+    expect(() => transformClient(sourceCode)).toThrow(
+      /Assignment to `module.exports` or `exports` is not allowed in a "use server" file./
+    );
   });
   // TODO: Assert that server action functions must be async.
 });
@@ -140,10 +189,14 @@ describe('use client', () => {
     const res = transformReactServer(sourceCode);
     expect(res.metadata.proxyExports).toEqual(['foo', 'default']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;
-      export const foo = proxy["foo"];
-      export default proxy["default"];"
+      export const foo = require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call foo() of /unknown from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "foo");
+      export default require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call the default export of /unknown from the server but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "default");"
     `);
   });
 
@@ -154,9 +207,11 @@ describe('use client', () => {
     `);
     expect(res.metadata.proxyExports).toEqual(['default']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;
-      export default proxy["default"];"
+      export default require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call the default export of /unknown from the server but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "default");"
     `);
   });
 
@@ -167,9 +222,11 @@ describe('use client', () => {
     `);
     expect(res.metadata.proxyExports).toEqual(['Pattern']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;
-      export const Pattern = proxy["Pattern"];"
+      export const Pattern = require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call Pattern() of /unknown from the server but Pattern is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "Pattern");"
     `);
   });
 
@@ -207,10 +264,14 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['Pattern', 'default']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;
-      export const Pattern = proxy["Pattern"];
-      export default proxy["default"];"
+      export const Pattern = require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call Pattern() of /unknown from the server but Pattern is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "Pattern");
+      export default require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call the default export of /unknown from the server but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "default");"
     `);
   });
 
@@ -221,8 +282,23 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual([]);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;"
+    `);
+  });
+
+  it(`exports * as namespace from module`, () => {
+    const res = transformReactServer(`
+    "use client";    
+    export * as Namespace from "client-only"
+    `);
+    expect(res.metadata.proxyExports).toEqual(['Namespace']);
+    expect(res.code).toMatchInlineSnapshot(`
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      module.exports = proxy;
+      export const Namespace = require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call Namespace() of /unknown from the server but Namespace is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "Namespace");"
     `);
   });
 
@@ -239,9 +315,11 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['foo']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;
-      export const foo = proxy["foo"];"
+      export const foo = require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call foo() of /unknown from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "foo");"
     `);
   });
 
@@ -264,7 +342,7 @@ export default Svg;
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents?.metadata).toEqual({ hasCjsExports: false });
+    expect(contents?.metadata).toEqual({ hasCjsExports: false, publicEnvVars: [] });
 
     expect(contents?.code).not.toMatch('react-server-dom-webpack');
   });
@@ -282,9 +360,11 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['foo']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("file:///unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
       module.exports = proxy;
-      export const foo = proxy["foo"];"
+      export const foo = require("react-server-dom-webpack/server").registerClientReference(function () {
+        throw new Error("Attempted to call foo() of /unknown from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+      }, "./unknown", "foo");"
     `);
   });
 });

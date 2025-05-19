@@ -1,4 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
 import type { NativeResponse } from './NativeRequest';
 declare const ConcreteNativeResponse: typeof NativeResponse;
 export type AbortSubscriptionCleanupFunction = () => void;
@@ -19,6 +18,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     blob(): Promise<Blob>;
     formData(): Promise<UniversalFormData>;
     json(): Promise<any>;
+    bytes(): Promise<Uint8Array>;
     toString(): string;
     toJSON(): object;
     clone(): Response;

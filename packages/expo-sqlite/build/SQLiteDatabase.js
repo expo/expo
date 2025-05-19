@@ -69,6 +69,7 @@ export class SQLiteDatabase {
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
      * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
+     *
      * @example
      * ```ts
      * db.withTransactionAsync(async () => {
@@ -106,8 +107,14 @@ export class SQLiteDatabase {
      * As long as the transaction is converted into a write transaction,
      * the other async write queries will abort with `database is locked` error.
      *
+     * > **Note:** This function is not supported on web.
+     *
      * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
      * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
      *
      * @example
      * ```ts
@@ -186,10 +193,10 @@ export class SQLiteDatabase {
     }
     /**
      * Create a new session for the database.
-     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
      *
+     * @see [`sqlite3session_create`](https://www.sqlite.org/session/sqlite3session_create.html)
      * @param dbName The name of the database to create a session for. The default value is `main`.
      */
     createSessionSync(dbName = 'main') {
@@ -329,7 +336,7 @@ export const defaultDatabaseDirectory = ExpoSQLite.defaultDatabaseDirectory;
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
- * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`. This parameter is not supported on web.
  */
 export async function openDatabaseAsync(databaseName, options, directory) {
     const openOptions = options ?? {};
@@ -346,7 +353,7 @@ export async function openDatabaseAsync(databaseName, options, directory) {
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.
- * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`.
+ * @param directory The directory where the database file is located. The default value is `defaultDatabaseDirectory`. This parameter is not supported on web.
  */
 export function openDatabaseSync(databaseName, options, directory) {
     const openOptions = options ?? {};
@@ -409,10 +416,11 @@ export function deleteDatabaseSync(databaseName, directory) {
  *
  * @see https://www.sqlite.org/c3ref/backup_finish.html
  *
- * @param sourceDatabase The source database to backup from.
- * @param sourceDatabaseName The name of the source database. The default value is `main`.
- * @param destDatabase The destination database to backup to.
- * @param destDatabaseName The name of the destination database. The default value is `main`.
+ * @param options - The backup options
+ * @param options.sourceDatabase - The source database to backup from
+ * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
+ * @param options.destDatabase - The destination database to backup to
+ * @param options.destDatabaseName - The name of the destination database. The default value is `m
  */
 export function backupDatabaseAsync({ sourceDatabase, sourceDatabaseName, destDatabase, destDatabaseName, }) {
     return ExpoSQLite.backupDatabaseAsync(destDatabase.nativeDatabase, destDatabaseName ?? 'main', sourceDatabase.nativeDatabase, sourceDatabaseName ?? 'main');
@@ -420,14 +428,15 @@ export function backupDatabaseAsync({ sourceDatabase, sourceDatabaseName, destDa
 /**
  * Backup a database to another database.
  *
- * @see https://www.sqlite.org/c3ref/backup_finish.html
- *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
  *
- * @param sourceDatabase The source database to backup from.
- * @param sourceDatabaseName The name of the source database. The default value is `main`.
- * @param destDatabase The destination database to backup to.
- * @param destDatabaseName The name of the destination database. The default value is `main`.
+ * @see https://www.sqlite.org/c3ref/backup_finish.html
+ *
+ * @param options - The backup options
+ * @param options.sourceDatabase - The source database to backup from
+ * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
+ * @param options.destDatabase - The destination database to backup to
+ * @param options.destDatabaseName - The name of the destination database. The default value is `m
  */
 export function backupDatabaseSync({ sourceDatabase, sourceDatabaseName, destDatabase, destDatabaseName, }) {
     return ExpoSQLite.backupDatabaseSync(destDatabase.nativeDatabase, destDatabaseName ?? 'main', sourceDatabase.nativeDatabase, sourceDatabaseName ?? 'main');

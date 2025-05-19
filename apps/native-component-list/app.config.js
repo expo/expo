@@ -7,21 +7,13 @@
 //   - This can be debugged with `EXPO_DEBUG=1` and `DEBUG=expo:*`
 // 5. `EXPO_SDK_VERSION=43.0.0 expo run:android`
 export default ({ config }) => {
-  config.version = '43.0.0';
   // app.json defines the sdkVersion as UNVERSIONED, we can override it here dynamically if we need to,
   // for example with an environment variable.
   if (process.env.EXPO_SDK_VERSION) {
     config.sdkVersion = process.env.EXPO_SDK_VERSION;
   }
   config.plugins = [
-    // iOS plugins
-    // Add a plugin to modify the AppDelegate.
-    './plugins/withNotFoundModule',
-    // Add the React DevMenu back to the client.
-    './plugins/withDevMenu',
-
     // Android plugins
-
     // expo-modules-test-core requires kotlin, so additional setup must be executed.
     'expo-modules-test-core',
     [
@@ -29,7 +21,7 @@ export default ({ config }) => {
       {
         // Increase default java VM size so it can handle building all the Expo packages.
         'org.gradle.jvmargs':
-          '-Xmx3g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
+          '-Xmx8g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8',
       },
     ],
     [
@@ -55,6 +47,13 @@ export default ({ config }) => {
       icon: './assets/icons/notificationIcon.png',
       color: '#5539cc',
       sounds: ['./assets/sounds/cat.wav'],
+    },
+  ]);
+
+  config.plugins.push([
+    'expo-calendar',
+    {
+      calendarPermission: 'The app needs to access your calendar.',
     },
   ]);
 

@@ -92,13 +92,6 @@ function _expoNavigationBar() {
   };
   return data;
 }
-function _expoNotifications() {
-  const data = _interopRequireDefault(require("./unversioned/expo-notifications/expo-notifications"));
-  _expoNotifications = function () {
-    return data;
-  };
-  return data;
-}
 function _expoSplashScreen() {
   const data = _interopRequireDefault(require("./unversioned/expo-splash-screen/expo-splash-screen"));
   _expoSplashScreen = function () {
@@ -116,6 +109,13 @@ function _expoSystemUi() {
 function _expoUpdates() {
   const data = _interopRequireDefault(require("./unversioned/expo-updates"));
   _expoUpdates = function () {
+    return data;
+  };
+  return data;
+}
+function _withEdgeToEdge() {
+  const data = _interopRequireDefault(require("./unversioned/react-native-edge-to-edge/withEdgeToEdge"));
+  _withEdgeToEdge = function () {
     return data;
   };
   return data;
@@ -183,7 +183,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // Dangerous -- these plugins run in reverse order.
   _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid, _ReactNative78CompatPlugin().withSdk52ReactNative78CompatAndroid,
   // Modify colors.xml and styles.xml
-  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withAndroidIcons().withAndroidIcons,
+  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, config => (0, _withEdgeToEdge().default)(config, props), _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
   // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
   _configPlugins().AndroidConfig.Package.withPackageRefactor]);
@@ -191,9 +191,9 @@ const withAndroidExpoPlugins = (config, props) => {
 
 // Must keep in sync with `withVersionedExpoSDKPlugins`
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
-const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
+const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
 const withVersionedExpoSDKPlugins = config => {
-  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
+  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoUpdates().default, _expoDocumentPicker().default,
   // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
   _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default]);

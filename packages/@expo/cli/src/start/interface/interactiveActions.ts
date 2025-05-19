@@ -2,16 +2,11 @@ import chalk from 'chalk';
 
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 import * as Log from '../../log';
-import { delayAsync } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
 import { openBrowserAsync } from '../../utils/open';
 import { ExpoChoice, selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
-import {
-  addReactDevToolsReloadListener,
-  startReactDevToolsProxyAsync,
-} from '../server/ReactDevToolsProxy';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
@@ -144,11 +139,6 @@ export class DevServerManagerActions {
         { title: 'Toggle performance monitor', value: 'togglePerformanceMonitor' },
         { title: 'Toggle developer menu', value: 'toggleDevMenu' },
         { title: 'Reload app', value: 'reload' },
-        {
-          title: 'Open React devtools',
-          value: 'openReactDevTools',
-          action: this.openReactDevToolsAsync.bind(this),
-        },
         // TODO: Maybe a "View Source" option to open code.
       ];
       const pluginMenuItems = (
@@ -181,22 +171,6 @@ export class DevServerManagerActions {
     } finally {
       printHelp();
     }
-  }
-
-  async openReactDevToolsAsync() {
-    await startReactDevToolsProxyAsync();
-    const url = this.devServerManager.getDefaultDevServer().getReactDevToolsUrl();
-    await openBrowserAsync(url);
-    addReactDevToolsReloadListener(() => {
-      this.reconnectReactDevTools();
-    });
-    this.reconnectReactDevTools();
-  }
-
-  async reconnectReactDevTools() {
-    // Wait a little time for react-devtools to be initialized in browser
-    await delayAsync(3000);
-    this.devServerManager.broadcastMessage('sendDevCommand', { name: 'reconnectReactDevTools' });
   }
 
   toggleDevMenu() {

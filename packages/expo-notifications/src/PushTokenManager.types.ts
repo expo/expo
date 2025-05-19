@@ -1,6 +1,10 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import { NativeModule } from 'expo-modules-core';
 
-export interface PushTokenManagerModule extends ProxyNativeModule {
+export type PushTokenManagerModuleEvents = {
+  onDevicePushToken: (params: { devicePushToken: string }) => void;
+};
+
+export class PushTokenManagerModule extends NativeModule<PushTokenManagerModuleEvents> {
   getDevicePushTokenAsync?: () => Promise<string>;
   unregisterForNotificationsAsync?: () => Promise<void>;
 }

@@ -34,8 +34,10 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
       error.name = 'NotAllowedError';
       throw error;
     };
-
   return new Promise((resolve, reject) => {
+    // TODO(@kitten): The types indicates that this is incorrect.
+    // Please check whether this is correct!
+    // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
 }
@@ -80,8 +82,8 @@ async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
       canAskAgain: true,
       granted: true,
     };
-  } catch ({ message }) {
-    return handleGetUserMediaError({ message });
+  } catch (error: any) {
+    return handleGetUserMediaError(error.message);
   }
 }
 
@@ -197,9 +199,7 @@ export default {
   async getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]> {
     return await camera.getAvailablePictureSizes(ratio);
   },
-  /* async getSupportedRatios(camera: ExponentCameraRef): Promise<string[]> {
-    // TODO: Support on web
-  },
+  /*
   async record(
     options?: CameraRecordingOptions,
     camera: ExponentCameraRef
@@ -235,8 +235,8 @@ export default {
         canAskAgain: true,
         granted: true,
       };
-    } catch ({ message }) {
-      return handleGetUserMediaError({ message });
+    } catch (error: any) {
+      return handleGetUserMediaError(error.message);
     }
   },
 };

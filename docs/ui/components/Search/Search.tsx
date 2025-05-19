@@ -39,7 +39,10 @@ export const Search = () => {
           },
         ]}
       />
-      <CommandMenuTrigger setOpen={setOpen} className="mb-2.5" />
+      <CommandMenuTrigger
+        setOpen={setOpen}
+        className="mb-2.5 hocus:bg-element hocus:dark:bg-subtle"
+      />
     </>
   );
 };

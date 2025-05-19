@@ -50,6 +50,7 @@ export const Notifier = () => {
         importance: AndroidImportance.HIGH,
         sound: 'pop_sound.wav',
         enableVibrate: true,
+        showBadge: true,
         vibrationPattern: [0, 3000, 250, 250],
       })
         .then((value) => {
@@ -159,6 +160,7 @@ const extractNotificationResponse = (response: NotificationResponse) => {
     {
       actionIdentifier: response.actionIdentifier,
       title: response.notification.request.content.title,
+      userText: response.userText,
     },
     null,
     2

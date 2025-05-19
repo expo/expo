@@ -1,57 +1,141 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reconstructState = void 0;
-const queryString = __importStar(require("query-string"));
-function reconstructState(state, getState, options) {
+exports.defaultRouteInfo = void 0;
+exports.getRouteInfoFromState = getRouteInfoFromState;
+const constants_1 = require("../constants");
+const getPathFromState_forks_1 = require("../fork/getPathFromState-forks");
+exports.defaultRouteInfo = {
+    unstable_globalHref: '',
+    searchParams: new URLSearchParams(),
+    pathname: '/',
+    params: {},
+    segments: [],
+    pathnameWithParams: '/',
+    // TODO: Remove this, it is not used anywhere
+    isIndex: false,
+};
+function getRouteInfoFromState(state) {
+    if (!state)
+        return exports.defaultRouteInfo;
+    let route = state.routes[0];
+    if (route.name !== constants_1.INTERNAL_SLOT_NAME) {
+        throw new Error(`Expected the first route to be ${constants_1.INTERNAL_SLOT_NAME}, but got ${route.name}`);
+    }
+    state = route.state;
     const segments = [];
-    const allParams = {};
-    while (state?.routes?.length) {
-        const route = state.routes[state.routes.length - 1];
-        segments.push(...route.name.split('/'));
+    const params = Object.create(null);
+    while (state) {
+        route = state.routes['index' in state && state.index ? state.index : 0];
+        Object.assign(params, route.params);
+        let routeName = route.name;
+        if (routeName.startsWith('/')) {
+            routeName = routeName.slice(1);
+        }
+        segments.push(...routeName.split('/'));
         state = route.state;
-        if (route.params) {
-            const { screen, params, ...other } = route.params;
-            Object.assign(allParams, other);
-            if (screen) {
-                state = {
-                    routeNames: [screen],
-                    routes: [{ name: screen, params }],
-                };
-            }
+    }
+    /**
+     * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
+     * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
+     */
+    let routeParams = route.params;
+    while (routeParams && 'screen' in routeParams) {
+        if (typeof routeParams.screen === 'string') {
+            const screen = routeParams.screen.startsWith('/')
+                ? routeParams.screen.slice(1)
+                : routeParams.screen;
+            segments.push(...screen.split('/'));
+        }
+        if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
+            routeParams = routeParams.params;
+        }
+        else {
+            routeParams = undefined;
         }
     }
-    if (segments.length && segments[segments.length - 1] === 'index') {
+    if (route.params && 'screen' in route.params && route.params.screen === 'string') {
+        const screen = route.params.screen.startsWith('/')
+            ? route.params.screen.slice(1)
+            : route.params.screen;
+        segments.push(...screen.split('/'));
+    }
+    if (segments[segments.length - 1] === 'index') {
         segments.pop();
     }
-    let path = `/${segments.filter(Boolean).join('/')}`;
-    const query = queryString.stringify(allParams, { sort: false });
-    if (query) {
-        path += `?${query}`;
+    delete params['screen'];
+    delete params['params'];
+    const pathParams = new Set();
+    const pathname = '/' +
+        segments
+            .filter((segment) => {
+            return !(segment.startsWith('(') && segment.endsWith(')'));
+        })
+            .flatMap((segment) => {
+            if (segment === '+not-found') {
+                const notFoundPath = params['not-found'];
+                pathParams.add('not-found');
+                if (typeof notFoundPath === 'undefined') {
+                    // Not founds are optional, do nothing if its not present
+                    return [];
+                }
+                else if (Array.isArray(notFoundPath)) {
+                    return notFoundPath;
+                }
+                else {
+                    return [notFoundPath];
+                }
+            }
+            else if (segment.startsWith('[...') && segment.endsWith(']')) {
+                let paramName = segment.slice(4, -1);
+                // Legacy for React Navigation optional params
+                if (paramName.endsWith('?')) {
+                    paramName = paramName.slice(0, -1);
+                }
+                const values = params[paramName];
+                pathParams.add(paramName);
+                // Catchall params are optional
+                return values || [];
+            }
+            else if (segment.startsWith('[') && segment.endsWith(']')) {
+                const paramName = segment.slice(1, -1);
+                const value = params[paramName];
+                pathParams.add(paramName);
+                // Optional params are optional
+                return value ? [value] : [];
+            }
+            else {
+                return [segment];
+            }
+        })
+            .join('/');
+    const searchParams = new URLSearchParams(Object.entries(params).flatMap(([key, value]) => {
+        // Search params should not include path params
+        if (pathParams.has(key)) {
+            return [];
+        }
+        else if (Array.isArray(value)) {
+            return value.map((v) => [key, v]);
+        }
+        return [[key, value]];
+    }));
+    let hash;
+    if (searchParams.has('#')) {
+        hash = searchParams.get('#') || undefined;
+        searchParams.delete('#');
     }
-    return getState(path, options);
+    // We cannot use searchParams.size because it is not included in the React Native polyfill
+    const searchParamString = searchParams.toString();
+    let pathnameWithParams = searchParamString ? pathname + '?' + searchParamString : pathname;
+    pathnameWithParams = hash ? pathnameWithParams + '#' + hash : pathnameWithParams;
+    return {
+        segments,
+        pathname,
+        params,
+        unstable_globalHref: (0, getPathFromState_forks_1.appendBaseUrl)(pathnameWithParams),
+        searchParams,
+        pathnameWithParams,
+        // TODO: Remove this, it is not used anywhere
+        isIndex: false,
+    };
 }
-exports.reconstructState = reconstructState;
 //# sourceMappingURL=routeInfo.js.map

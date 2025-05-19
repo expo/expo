@@ -87,7 +87,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
           data-text="true"
         >
           <svg
-            class="translate-z icon-sm text-icon-secondary"
+            class="translate-z shrink-0 icon-sm text-icon-secondary"
             fill="none"
             role="img"
             stroke="currentColor"

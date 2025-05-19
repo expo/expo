@@ -35,7 +35,7 @@ open class ExpoReactDelegateHandler: NSObject {
    Otherwise return nil.
    */
   @objc
-  open func createRootViewController(reactDelegate: ExpoReactDelegate) -> UIViewController? {
+  open func createRootViewController() -> UIViewController? {
     return nil
   }
 }

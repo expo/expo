@@ -38,6 +38,11 @@ public class RemoteMessageSerializer {
 
   private static Bundle toBundle(Map<String, String> data) {
     Bundle serializedData = new Bundle();
+    // we put the dataString in the bundle to achieve a cross-platform behavior
+    // users can call JSON.parse() on the dataString to get the data in JS.
+    // Converting to Bundle which would seem to be the equivalent of JSON.parse
+    // lacks some dynamic properties of JSON.parse so we don't do it.
+    serializedData.putString("dataString", data.getOrDefault("body", null));
     for (Map.Entry<String, String> dataEntry : data.entrySet()) {
       serializedData.putString(dataEntry.getKey(), dataEntry.getValue());
     }
@@ -95,7 +100,7 @@ public class RemoteMessageSerializer {
     serializedNotification.putStringArray("titleLocalizationArgs", notification.getTitleLocalizationArgs());
     serializedNotification.putString("titleLocalizationKey", notification.getTitleLocalizationKey());
     if (notification.getVibrateTimings() != null) {
-      serializedNotification.putIntArray("vibrateTimings", intArrayFromLongArray(notification.getVibrateTimings()));
+      serializedNotification.putLongArray("vibrateTimings", notification.getVibrateTimings());
     }
     if (notification.getVisibility() != null) {
       serializedNotification.putInt("visibility", notification.getVisibility());
@@ -103,13 +108,5 @@ public class RemoteMessageSerializer {
       serializedNotification.putString("visibility", null);
     }
     return serializedNotification;
-  }
-
-  public static int[] intArrayFromLongArray(long[] longArray) {
-    int[] intArray = new int[longArray.length];
-    for (int i = 0; i < longArray.length; i++) {
-      intArray[i] = (int)(longArray[i]);
-    }
-    return intArray;
   }
 }

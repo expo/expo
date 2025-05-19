@@ -15,6 +15,7 @@ type BabelPresetExpoPlatformOptions = {
     jsxImportSource?: string;
     lazyImports?: boolean;
     disableImportExportTransform?: boolean;
+    disableDeepImportWarnings?: boolean;
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
@@ -67,6 +68,14 @@ type BabelPresetExpoPlatformOptions = {
     };
     /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
     minifyTypeofWindow?: boolean;
+    /**
+     * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
+     *
+     * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+     *
+     * @default `false` on client and `true` on server.
+     */
+    unstable_transformImportMeta?: boolean;
 };
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
     /** Web-specific settings. */

@@ -8,7 +8,7 @@ class AsyncFunctionWithPromiseComponent(
   name: String,
   desiredArgsTypes: Array<AnyType>,
   private val body: (args: Array<out Any?>, promise: Promise) -> Unit
-) : AsyncFunction(name, desiredArgsTypes) {
+) : AsyncFunctionComponent(name, desiredArgsTypes) {
   override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
     body(convertArgs(args, appContext), promise)
   }

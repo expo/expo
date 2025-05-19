@@ -62,6 +62,30 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Polyline',
+      route: 'expo-maps/polyline',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsPolylineScreen'));
+      },
+    },
+    {
+      name: 'Polygon',
+      route: 'expo-maps/polygon',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsPolygonScreen'));
+      },
+    },
+    {
+      name: 'Circle',
+      route: 'expo-maps/circle',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsCircleScreen'));
+      },
+    },
+    {
       name: 'Maps events',
       route: 'expo-maps/events',
       options: {},
@@ -101,6 +125,14 @@ export const MapsScreens = Platform.select({
       options: {},
       getComponent() {
         return optionalRequire(() => require('./apple/MapsCameraControlsScreen'));
+      },
+    },
+    {
+      name: 'Look around',
+      route: 'expo-maps/look-around',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsLookAroundScreen'));
       },
     },
     {
@@ -149,6 +181,30 @@ export const MapsScreens = Platform.select({
       options: {},
       getComponent() {
         return optionalRequire(() => require('./apple/MapsMarkerScreen'));
+      },
+    },
+    {
+      name: 'Polyline',
+      route: 'expo-maps/polyline',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPolylineScreen'));
+      },
+    },
+    {
+      name: 'Polygon',
+      route: 'expo-maps/polygon',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPolygonScreen'));
+      },
+    },
+    {
+      name: 'Circle',
+      route: 'expo-maps/circle',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsCircleScreen'));
       },
     },
     {

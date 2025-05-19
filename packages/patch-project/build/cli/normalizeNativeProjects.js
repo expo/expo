@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.revertNormalizeNativeProjectsAsync = exports.normalizeNativeProjectsAsync = void 0;
+exports.normalizeNativeProjectsAsync = normalizeNativeProjectsAsync;
+exports.revertNormalizeNativeProjectsAsync = revertNormalizeNativeProjectsAsync;
 const config_plugins_1 = require("expo/config-plugins");
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -16,14 +17,12 @@ async function normalizeNativeProjectsAsync(params) {
     }
     return {};
 }
-exports.normalizeNativeProjectsAsync = normalizeNativeProjectsAsync;
 /**
  * Revert the changes made by `normalizeNativeProjectsAsync()`.
  */
 async function revertNormalizeNativeProjectsAsync(backupFileMappings) {
     await Promise.all(Object.entries(backupFileMappings).map(([originalPath, backupPath]) => promises_1.default.copyFile(backupPath, originalPath)));
 }
-exports.revertNormalizeNativeProjectsAsync = revertNormalizeNativeProjectsAsync;
 /**
  * `normalizeNativeProjectsAsync()` implementation for iOS.
  */

@@ -2,7 +2,7 @@
 
 import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import {
@@ -20,9 +20,10 @@ let loggedDefaultSourceDeprecationWarning = false;
 let loggedRenderingChildrenWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
-  nativeViewRef;
-  containerViewRef;
-  constructor(props) {
+  nativeViewRef: React.RefObject<ExpoImage | null>;
+  containerViewRef: React.RefObject<View | null>;
+
+  constructor(props: ImageProps) {
     super(props);
     this.nativeViewRef = createSnapshotFriendlyRef();
     this.containerViewRef = createSnapshotFriendlyRef();
@@ -147,7 +148,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    */
   async startAnimating(): Promise<void> {
-    await this.nativeViewRef.current.startAnimating();
+    await this.nativeViewRef.current?.startAnimating();
   }
 
   /**
@@ -156,7 +157,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    */
   async stopAnimating(): Promise<void> {
-    await this.nativeViewRef.current.stopAnimating();
+    await this.nativeViewRef.current?.stopAnimating();
   }
 
   /**
@@ -167,7 +168,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform web
    */
   static async loadAsync(
-    source: ImageSource | string,
+    source: ImageSource | string | number,
     options?: ImageLoadOptions
   ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;

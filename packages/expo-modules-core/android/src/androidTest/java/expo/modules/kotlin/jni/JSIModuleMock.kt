@@ -163,14 +163,18 @@ class SingleTestContext(
   fun classProperty(className: String, propertyName: String) =
     jsiInterop.evaluateScript("(new $moduleRef.$className()).$propertyName")
 
-  fun callAsync(functionName: String, args: String = "") = jsiInterop.waitForAsyncFunction(
-    methodQueue,
-    "$moduleRef.$functionName($args)"
-  )
+  fun callAsync(functionName: String, args: String = "", shouldBeResolved: Boolean = true) =
+    jsiInterop.waitForAsyncFunction(
+      methodQueue,
+      "$moduleRef.$functionName($args)",
+      shouldBeResolved
+    )
 
-  fun getLastPromiseResult() = global().getProperty("promiseResult")
+  fun clearLastPromise() = jsiInterop.clearPendingPromise()
 
-  fun callClassAsync(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
+  fun getLastPromiseResult() = jsiInterop.getPendingPromise()
+
+  fun callClassAsync(className: String, functionName: String? = null, args: String = ""): JavaScriptValue? {
     if (functionName == null) {
       return jsiInterop.evaluateScript("new $moduleRef.$className()")
     }
@@ -178,9 +182,30 @@ class SingleTestContext(
     return jsiInterop.waitForAsyncFunction(methodQueue, "(new $moduleRef.$className()).$functionName($args)")
   }
 
-  fun callViewAsync(viewName: String, functionName: String, args: String = ""): JavaScriptValue {
-    return jsiInterop.waitForAsyncFunction(methodQueue, "$moduleRef.$viewName.$functionName($args)")
+  fun callViewAsync(viewName: String, functionName: String, args: String = "", shouldBeResolved: Boolean = true): JavaScriptValue {
+    return jsiInterop.waitForAsyncFunction(methodQueue, "$moduleRef.$viewName.$functionName($args)", shouldBeResolved)
   }
+}
+
+internal inline fun withSingleModule(
+  module: Module,
+  numberOfReloads: Int = 1,
+  block: SingleTestContext.() -> Unit
+) {
+  withJSIInterop(
+    module,
+    numberOfReloads = numberOfReloads,
+    block = { methodQueue ->
+      val appContext = runtimeContextHolder.get()?.appContext ?: throw IllegalStateException("AppContext is not available")
+      val moduleList = appContext.registry.registry.toList()
+      if (moduleList.size != 1) {
+        throw IllegalStateException("Module list should contain only one module")
+      }
+      val (moduleName) = moduleList.first()
+      val testContext = SingleTestContext(moduleName, this, methodQueue)
+      block.invoke(testContext)
+    }
+  )
 }
 
 internal inline fun withSingleModule(
@@ -217,13 +242,44 @@ internal inline fun inlineModule(
   override fun definition() = ModuleDefinition { block.invoke(this) }
 }
 
+@Throws(PromiseException::class)
+internal fun JSIContext.getPendingPromise(
+  shouldBeResolved: Boolean = true
+): JavaScriptValue = with(global()) {
+  if (hasProperty("promiseError")) {
+    val jsError = getProperty("promiseError").getObject()
+    val code = jsError.getProperty("code").getString()
+    val errorMessage = jsError.getProperty("message").getString()
+    throw PromiseException(code, errorMessage)
+  }
+
+  if (!hasProperty("promiseResult")) {
+    if (shouldBeResolved == true) {
+      throw PromiseException("ERR_PROMISE", "Promise wasn't resolved, but it should be.")
+    }
+  }
+
+  return getProperty("promiseResult")
+}
+
+private fun JSIContext.clearPendingPromise() {
+  evaluateScript(
+    """
+    delete global.promiseResult
+    delete global.promiseError
+    """.trimIndent()
+  )
+}
+
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(ExperimentalCoroutinesApi::class)
 @Throws(PromiseException::class)
 internal inline fun JSIContext.waitForAsyncFunction(
   methodQueue: TestScope,
-  jsCode: String
+  jsCode: String,
+  shouldBeResolved: Boolean = true
 ): JavaScriptValue {
+  clearPendingPromise()
   evaluateScript(
     """
     $jsCode.then(r => global.promiseResult = r).catch(e => global.promiseError = e)
@@ -233,17 +289,7 @@ internal inline fun JSIContext.waitForAsyncFunction(
   methodQueue.testScheduler.advanceUntilIdle()
   drainJSEventLoop()
 
-  if (global().hasProperty("promiseError")) {
-    val jsError = global().getProperty("promiseError").getObject()
-    val code = jsError.getProperty("code").getString()
-    val errorMessage = jsError.getProperty("message").getString()
-    throw PromiseException(code, errorMessage)
-  }
-
-  Truth
-    .assertWithMessage("Promise wasn't resolved")
-    .that(global().hasProperty("promiseResult")).isTrue()
-  return global().getProperty("promiseResult")
+  return getPendingPromise(shouldBeResolved)
 }
 
 class PromiseException(code: String, message: String) : CodedException(code, message, null)

@@ -30,10 +30,8 @@ function useSlug(id: string | undefined, children: ReactNode) {
   const slugger = useContext(AnchorContext)!;
   let slugText = id;
 
-  if (!slugText) {
-    slugText = getTextFromChildren(children);
-    /** Eventually, we want to get rid of the auto-generating ID */
-  }
+  // Eventually, we want to get rid of the auto-generating ID
+  slugText ??= getTextFromChildren(children);
 
   return slugger.slug(slugText);
 }

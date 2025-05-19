@@ -1,8 +1,8 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "declaration": true,
     "strictNullChecks": true,

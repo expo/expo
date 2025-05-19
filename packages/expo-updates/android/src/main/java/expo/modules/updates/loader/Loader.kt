@@ -233,12 +233,8 @@ abstract class Loader protected constructor(
       }
 
       // if we already have a local copy of this asset, don't try to download it again!
-      if (assetEntity.relativePath != null && loaderFiles.fileExists(
-          File(
-            updatesDirectory,
-            assetEntity.relativePath
-          )
-        )
+      if (assetEntity.relativePath != null &&
+        loaderFiles.fileExists(context, updatesDirectory, assetEntity.relativePath)
       ) {
         handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ALREADY_EXISTS)
         continue

@@ -32,6 +32,8 @@ it(`sorts different route types`, () => {
         file: './b+api.tsx',
       }),
     ],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       expect.objectContaining({
         file: './a.js',
@@ -58,6 +60,8 @@ it(`converts a server manifest`, () => {
         routeKeys: { post: 'post' },
       },
     ],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [{ file: './home.js', namedRegex: '^/home(?:/)?$', page: '/home', routeKeys: {} }],
     notFoundRoutes: [],
   });
@@ -67,6 +71,8 @@ it(`converts a server manifest`, () => {
 it(`converts a server manifest with nested root group and layout`, () => {
   expect(getServerManifest(getRoutesFor(['./(root)/index.js', './(root)/_layout.js']))).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(root)/index.js',
@@ -81,6 +87,8 @@ it(`converts a server manifest with nested root group and layout`, () => {
 it(`converts a server manifest with nested root group without layout`, () => {
   expect(getServerManifest(getRoutesFor(['./(root)/index.js']))).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(root)/index.js',
@@ -95,6 +103,8 @@ it(`converts a server manifest with nested root group without layout`, () => {
 it(`converts a server manifest with nested root group and root layout`, () => {
   expect(getServerManifest(getRoutesFor(['./_layout.js', './(root)/index.js']))).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(root)/index.js',
@@ -135,6 +145,8 @@ it(`sorts api routes after normal routes`, () => {
 it(`supports groups`, () => {
   expect(getServerManifest(getRoutesFor(['./(a)/b.tsx']))).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(a)/b.tsx',
@@ -152,6 +164,8 @@ it(`converts index routes`, () => {
     getServerManifest(getRoutesFor(['./index.tsx', './a/index/b.tsx', './a/index/index.js']))
   ).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       { file: './index.tsx', namedRegex: '^/(?:/)?$', page: '/index', routeKeys: {} },
       {
@@ -224,8 +238,9 @@ it(`matches expected with safe names that collide`, () => {
 
 // TODO: Maybe assert sooner?
 it(`asserts duplicate keys eventually`, () => {
-  const matcher = getServerManifest(getRoutesFor(['./[a]/b/[a].tsx']))[0];
-  expect(() => new RegExp(matcher.namedRegex)).toThrowError();
+  const routeNode = getRoutesFor(['./[a]/b/[a].tsx']);
+  const route = getServerManifest(routeNode).htmlRoutes[0];
+  expect(() => new RegExp(route.namedRegex)).toThrowError();
 });
 
 it(`converts dynamic routes`, () => {
@@ -233,6 +248,8 @@ it(`converts dynamic routes`, () => {
     getServerManifest(getRoutesFor(['./[a].tsx', './[...b].tsx', './c/[d]/e/[...f].js']))
   ).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './c/[d]/e/[...f].js',
@@ -263,6 +280,8 @@ it(`converts dynamic routes on same level with specificity`, () => {
   );
   expect(routesManifest).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './index.tsx',
@@ -349,6 +368,8 @@ it(`converts array syntax API routes`, () => {
         page: '/(b)/foo',
       },
     ],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [],
     notFoundRoutes: [],
   });
@@ -406,6 +427,8 @@ it(`converts array syntax HTML routes`, () => {
   const routesManifest = getServerManifest(routesFor);
   expect(routesManifest).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(a,b)/foo.tsx',
@@ -447,6 +470,8 @@ it(`converts top-level array syntax HTML routes`, () => {
   const routesManifest = getServerManifest(getRoutesFor(['./(a,b)/index.tsx']));
   expect(routesManifest).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(a,b)/index.tsx',
@@ -481,6 +506,8 @@ it(`converts nested array syntax HTML routes`, () => {
   const routesManifest = getServerManifest(routesFor);
   expect(routesManifest).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './(a,b)/(c, d)/foo.tsx',
@@ -541,6 +568,8 @@ it(`matches top-level catch-all before +not-found route`, () => {
   const routesManifest = getServerManifest(getRoutesFor(['./[...a].tsx', './+not-found.tsx']));
   expect(routesManifest).toEqual({
     apiRoutes: [],
+    redirects: [],
+    rewrites: [],
     htmlRoutes: [
       {
         file: './[...a].tsx',
@@ -566,8 +595,8 @@ it(`matches top-level catch-all before +not-found route`, () => {
     ['/a', './[...a].tsx'],
     ['/b/c/', './[...a].tsx'],
   ]) {
-    expect(routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher)).file).toBe(
-      page
-    );
+    expect(
+      routesManifest.htmlRoutes.find((r) => new RegExp(r.namedRegex).test(matcher))?.file
+    ).toBe(page);
   }
 });

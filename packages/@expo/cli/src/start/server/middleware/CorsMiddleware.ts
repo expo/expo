@@ -27,7 +27,7 @@ export function createCorsMiddleware(exp: ExpoConfig) {
           new Error(
             `Unauthorized request from ${req.headers.origin}. ` +
               'This may happen because of a conflicting browser extension to intercept HTTP requests. ' +
-              'Please try again without browser extensions or using incognito mode.'
+              'Disable browser extensions or use incognito mode and try again.'
           )
         );
         return;

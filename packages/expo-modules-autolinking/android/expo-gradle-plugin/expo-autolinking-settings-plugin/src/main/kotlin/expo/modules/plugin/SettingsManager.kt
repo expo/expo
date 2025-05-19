@@ -9,6 +9,7 @@ import expo.modules.plugin.gradle.beforeProject
 import expo.modules.plugin.gradle.beforeRootProject
 import expo.modules.plugin.gradle.linkAarProject
 import expo.modules.plugin.gradle.linkBuildDependence
+import expo.modules.plugin.gradle.linkLocalMavenRepository
 import expo.modules.plugin.gradle.linkMavenRepository
 import expo.modules.plugin.gradle.linkPlugin
 import expo.modules.plugin.gradle.linkProject
@@ -37,7 +38,7 @@ class SettingsManager(
 
   private val groovyShell by lazy {
     val binding = Binding()
-    binding.setVariable("settings", settings)
+    binding.setVariable("providers", settings.providers)
     GroovyShell(javaClass.classLoader, binding)
   }
 
@@ -111,10 +112,36 @@ class SettingsManager(
     }
 
     settings.gradle.beforeRootProject { rootProject: Project ->
-      config.allPlugins.forEach(rootProject::linkBuildDependence)
-      config.extraDependencies.forEach { mavenConfig ->
+      val extraDependency = config.extraDependencies
+      extraDependency.forEach { mavenConfig ->
         rootProject.logger.quiet("Adding extra maven repository: ${mavenConfig.url}")
-        rootProject.linkMavenRepository(mavenConfig)
+
+      }
+      rootProject.allprojects { project ->
+        extraDependency.forEach { mavenConfig ->
+          project.linkMavenRepository(mavenConfig)
+        }
+      }
+
+      config.allPlugins.forEach(rootProject::linkBuildDependence)
+
+      // Adds maven repositories for all projects that are using the publication.
+      // It most likely means that we will add "https://maven.pkg.github.com/expo/expo" to the repositories.
+      val localRepositories = config
+        .allProjects
+        .filter { it.usePublication && it.publication?.repository != "mavenLocal" }
+        .mapNotNull {
+          val publication = it.publication
+            ?: return@mapNotNull null
+
+          "${it.sourceDir}/../${publication.repository}" to publication
+        }
+        .groupBy({ it.first }, { it.second })
+
+      rootProject.allprojects { project ->
+        localRepositories.forEach { (path, publications) ->
+          project.linkLocalMavenRepository(path, publications)
+        }
       }
     }
 

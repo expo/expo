@@ -2,7 +2,11 @@ import { Platform } from 'expo-modules-core';
 
 export type LocalAuthenticationResult =
   | { success: true }
-  | { success: false; error: string; warning?: string };
+  | {
+      success: false;
+      error: LocalAuthenticationError;
+      warning?: string;
+    };
 
 // @needsAudit
 export enum AuthenticationType {
@@ -57,7 +61,7 @@ Object.defineProperty(SecurityLevel, 'BIOMETRIC', {
         ? '. `SecurityLevel.BIOMETRIC` is currently an alias for `SecurityLevel.BIOMETRIC_WEAK` on Android, which might lead to unexpected behaviour.'
         : '';
     console.warn(
-      '`SecurityLevel.BIOMETRIC` has been deprecated. Please use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
+      '`SecurityLevel.BIOMETRIC` has been deprecated. Use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
         additionalMessage
     );
     return Platform.OS === 'android'
@@ -86,8 +90,8 @@ export type LocalAuthenticationOptions = {
    * After several failed attempts the system will fallback to the device passcode. This setting
    * allows you to disable this option and instead handle the fallback yourself. This can be
    * preferable in certain custom authentication workflows. This behaviour maps to using the iOS
-   * [LAPolicyDeviceOwnerAuthenticationWithBiometrics](https://developer.apple.com/documentation/localauthentication/lapolicy/lapolicydeviceownerauthenticationwithbiometrics?language=objc)
-   * policy rather than the [LAPolicyDeviceOwnerAuthentication](https://developer.apple.com/documentation/localauthentication/lapolicy/lapolicydeviceownerauthentication?language=objc)
+   * [`LAPolicyDeviceOwnerAuthenticationWithBiometrics`](https://developer.apple.com/documentation/localauthentication/lapolicy/deviceownerauthenticationwithbiometrics)
+   * policy rather than the [`LAPolicyDeviceOwnerAuthentication`](https://developer.apple.com/documentation/localauthentication/lapolicy/deviceownerauthentication?language=objc)
    * policy. Defaults to `false`.
    */
   disableDeviceFallback?: boolean;
@@ -114,3 +118,22 @@ export type LocalAuthenticationOptions = {
    */
   fallbackLabel?: string;
 };
+
+/**
+ * One of the error values returned by the [`LocalAuthenticationResult`](#localauthenticationresult) object.
+ */
+export type LocalAuthenticationError =
+  | 'not_enrolled'
+  | 'user_cancel'
+  | 'app_cancel'
+  | 'not_available'
+  | 'lockout'
+  | 'no_space'
+  | 'timeout'
+  | 'unable_to_process'
+  | 'unknown'
+  | 'system_cancel'
+  | 'user_fallback'
+  | 'invalid_context'
+  | 'passcode_not_set'
+  | 'authentication_failed';

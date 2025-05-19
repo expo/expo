@@ -149,6 +149,36 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     client?.urlProtocol(self, didReceive: challengeWithSender)
   }
 
+  public func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didSendBodyData bytesSent: Int64,
+    totalBytesSent: Int64,
+    totalBytesExpectedToSend: Int64
+  ) {
+    // swiftlint:disable line_length
+    // Apple does not support sending upload progress from URLProtocol back to URLProtocolClient.
+    // > Similarly, there is no way for your NSURLProtocol subclass to call the NSURLConnection delegate's -connection:needNewBodyStream: or -connection:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite: methods (<rdar://problem/9226155> and <rdar://problem/9226157>).  The latter is not a serious concern--it just means that your clients don't get upload progress--but the former is a real issue.  If you're in a situation where you might need a second copy of a request body, you will need your own logic to make that copy, including the case where the body is a stream.
+    // See: https://developer.apple.com/library/archive/samplecode/CustomHTTPProtocol/Listings/Read_Me_About_CustomHTTPProtocol_txt.html
+    //
+    // Workaround to get the original task's URLSessionDelegate through the internal property and send upload process
+    // Fixes https://github.com/expo/expo/issues/28269
+    // swiftlint:enable line_length
+    guard let task = self.task else {
+      return
+    }
+    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = task.delegate {
+      // For the case if the task has a dedicated delegate than the default delegate from its URLSession
+      delegate.urlSession?(session, task: task, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+      return
+    }
+    guard let session = task.value(forKey: "session") as? URLSession,
+      let delegate = session.delegate as? URLSessionTaskDelegate else {
+      return
+    }
+    delegate.urlSession?(session, task: task, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+  }
+
   /**
    Data structure to save the response for redirection
    */

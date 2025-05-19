@@ -8,6 +8,38 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 8.1.6 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the app becoming unresponsive when the orientation listener is used in `Split View` on iPad. ([#36667](https://github.com/expo/expo/pull/36667) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 8.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 8.1.0 — 2025-04-04
+
 ### 💡 Others
 
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))

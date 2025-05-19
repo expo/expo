@@ -11,7 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **Warning** TV development is available only in SDK 50 and above. Not all Expo features and SDK libraries are available on TV. For more details, check the [See which libraries are supported](#see-which-libraries-are-supported).
+> **Warning** Not all Expo features and SDK libraries are available on TV. For more details, check the [See which libraries are supported](#see-which-libraries-are-supported).
 
 React Native is supported on Android TV and Apple TV through the [React Native TV project](https://github.com/react-native-tvos/react-native-tvos). This technology extends beyond TV, offering a comprehensive core repo fork with support for phone and TV targets, including Hermes and Fabric.
 
@@ -84,15 +84,20 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [LinearGradient](/versions/latest/sdk/linear-gradient/)
 - [Localization](/versions/latest/sdk/localization/)
 - [Manifests](/versions/latest/sdk/manifests/)
+- [MediaLibrary](/versions/latest/sdk/media-library/)
 - [NetInfo](/versions/latest/sdk/netinfo/)
+- [Network](/versions/latest/sdk/network/)
 - [Reanimated](/versions/latest/sdk/reanimated/)
 - [SafeAreaContext](/versions/latest/sdk/safe-area-context/)
+- [SecureStore](/versions/latest/sdk/securestore/)
 - [SplashScreen](/versions/latest/sdk/splash-screen/)
 - [Svg](/versions/latest/sdk/svg/)
+- [SystemUI](/versions/latest/sdk/system-ui/)
+- [TrackingTransparency](/versions/latest/sdk/tracking-transparency/)
 - [Updates](/versions/latest/sdk/updates/)
 - [Video](/versions/latest/sdk/video/)
 
-TV also works with [`react-navigation`](https://reactnavigation.org/), [`react-native-video`](https://github.com/react-native-video/react-native-video), and many other commonly used third-party React Native libraries. See [React Native directory](https://reactnative.directory/?tvos=true) to learn more about supported third-party libraries.
+TV also works with [React Navigation](https://reactnavigation.org/), [React Native Skia](https://shopify.github.io/react-native-skia/), and many other commonly used third-party React Native libraries. See [React Native directory](https://reactnative.directory/?tvos=true) to learn more about supported third-party libraries.
 
 #### Limitations
 
@@ -265,11 +270,25 @@ The following example **eas.json** shows how to extend existing profiles (`devel
 
 </Step>
 
-## More
+## Examples and demonstration projects
 
 <BoxLink
   title="IgniteTV"
-  description="A complete example is available on GitHub."
+  description="A project generated with the Ignite CLI that can be built for mobile or TV."
   href="https://github.com/react-native-tvos/IgniteTV"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title="SkiaMultiplatform"
+  description="Demonstrates React Native Skia on mobile, TV, and web."
+  href="https://github.com/react-native-tvos/SkiaMultiplatform"
+  Icon={GithubIcon}
+/>
+
+<BoxLink
+  title="NativewindMultiplatform"
+  description="Demonstrates using TailwindCSS styling on mobile, TV, and web."
+  href="https://github.com/react-native-tvos/NativewindMultiplatform"
   Icon={GithubIcon}
 />

@@ -36,7 +36,7 @@ describe(getEnvVarDevString, () => {
         EXPO_PUBLIC_TEST: 'test\nvalue',
       })
     ).toMatchInlineSnapshot(
-      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_TEST": { value: "test\\nvalue" }});"`
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_TEST": { enumerable: true, value: "test\\nvalue" }});"`
     );
   });
   it(`formats multiple env vars`, () => {
@@ -46,7 +46,7 @@ describe(getEnvVarDevString, () => {
         EXPO_PUBLIC_B: 'b',
       })
     ).toMatchInlineSnapshot(
-      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_A": { value: "a" },"EXPO_PUBLIC_B": { value: "b" }});"`
+      `"/* HMR env vars from Expo CLI (dev-only) */ process.env=Object.defineProperties(process.env, {"EXPO_PUBLIC_A": { enumerable: true, value: "a" },"EXPO_PUBLIC_B": { enumerable: true, value: "b" }});"`
     );
   });
 });

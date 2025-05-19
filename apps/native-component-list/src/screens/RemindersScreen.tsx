@@ -120,6 +120,9 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   render() {
+    if (!this.props.route.params?.calendar) {
+      return <Text>Access this screen from the "Calendars" screen.</Text>;
+    }
     if (this.state.reminders.length) {
       return (
         <ScrollView style={styles.container}>

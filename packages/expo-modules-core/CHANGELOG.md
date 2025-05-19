@@ -4,6 +4,100 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [iOS] Add module registry encoder for JSON. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
+- [Android] New custom Type Converter API ([#36823](https://github.com/expo/expo/pull/36823) by [@jakex7](https://github.com/jakex7))
+- [iOS] Natively support `rgb` color conversions. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 2.3.13 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `getSharedObjectId` for devices running android 7 and below. ([#36698](https://github.com/expo/expo/pull/36698) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed missing upload progress from `XMLHttpRequest` when network inspector is enabled. ([#36715](https://github.com/expo/expo/pull/36715) by [@kudo](https://github.com/kudo))
+
+## 2.3.12 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.3.11 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.10 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.3.9 — 2025-04-25
+
+### 💡 Others
+
+- Removes `Jetpack Compose` integration if not needed. ([#36353](https://github.com/expo/expo/pull/36353) by [@lukmccall](https://github.com/lukmccall))
+- Refined `Children` return type for SwiftUI integration. ([#36377](https://github.com/expo/expo/pull/36377) by [@kudo](https://github.com/kudo))
+
+## 2.3.8 — 2025-04-23
+
+### 💡 Others
+
+- Droped support for Kotlin < `2.0.0`. ([#36323](https://github.com/expo/expo/pull/36323) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.3.7 — 2025-04-22
+
+### 🐛 Bug fixes
+
+- Fixed adding SwiftUI views to navigation header ([#36305](https://github.com/expo/expo/pull/36305) by [@jakex7](https://github.com/jakex7))
+
+## 2.3.6 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- Fixed build errors on Windows. ([#36211](https://github.com/expo/expo/pull/36211) by [@kudo](https://github.com/kudo))
+
+## 2.3.5 — 2025-04-14
+
+### 🐛 Bug fixes
+
+- Fixed `UnwrappedChildren` not get the unwrapped content view for SwiftUI integration. ([#36112](https://github.com/expo/expo/pull/36112) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed the limitation to use `collapsable={false}` when hosting a UIView in SwiftUI views. ([#36153](https://github.com/expo/expo/pull/36153) by [@kudo](https://github.com/kudo))
+
+## 2.3.4 — 2025-04-11
+
+### 🐛 Bug fixes
+
+- Change registerWebModule to work with minified classes. ([#35946](https://github.com/expo/expo/pull/35946) by [@aleqsio](https://github.com/aleqsio))
+
+## 2.3.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.2 — 2025-04-09
+
+### 💡 Others
+
+- [Android] Migrate `AppLoaderProvider` to kotlin. ([#36035](https://github.com/expo/expo/pull/36035) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.3.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix support for react-native-macos 0.78 ([#35688](https://github.com/expo/expo/pull/35688) by [@gabrieldonadel](https://github.com/gabrieldonadel))
@@ -21,6 +115,8 @@
 - Add common constants to the CoreModule ([#35057](https://github.com/expo/expo/pull/35057) by [@jakex7](https://github.com/jakex7))
 - [Android] Add Constant API ([#35157](https://github.com/expo/expo/pull/35157) by [@jakex7](https://github.com/jakex7))
 - [iOS] Add Constant API ([#35199](https://github.com/expo/expo/pull/35199) by [@jakex7](https://github.com/jakex7))
+- [Android] Added support for custom queues for async functions. ([#35838](https://github.com/expo/expo/pull/35838) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Allow undefined props on ExpoSwiftUIView ([#35852](https://github.com/expo/expo/pull/35852) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -35,6 +131,7 @@
 
 ### 💡 Others
 
+- [iOS] Updated UnwrappedChildren to return a ForEach type, allowing support for modifiers such as onDelete. ([#35222](https://github.com/expo/expo/pull/35222) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 - [Android] make ReactNativeFeatureFlags injectable by wrapping it in an interface to make some tests pass ([#34363](https://github.com/expo/expo/pull/34363) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fixed failing unit tests after internal API change that adds support for named views. ([#34384](https://github.com/expo/expo/pull/34384) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Enable named view exports. ([#34293](https://github.com/expo/expo/pull/34293) by [@aleqsio](https://github.com/aleqsio))
@@ -47,6 +144,8 @@
 - [Android] Remove `BarCodeScannerInterface`. ([#34966](https://github.com/expo/expo/pull/34966) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Make ExpoComposeView builder function optional. ([#34907](https://github.com/expo/expo/pull/34907) by [@janicduplessis](https://github.com/janicduplessis))
 - Refactored `RCTReactNativeFactory` integration. ([#35679](https://github.com/expo/expo/pull/35679) by [@kudo](https://github.com/kudo))
+- [Android] Used `compileOnly` to depend on the `expo-modules-core` when applying default dependencies. ([#35822](https://github.com/expo/expo/pull/35822) by [@lukmccall](https://github.com/lukmccall))
+- Removed extra `UIView` from SwiftUI integration. ([#35553](https://github.com/expo/expo/pull/35553) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

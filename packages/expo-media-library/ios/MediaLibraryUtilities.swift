@@ -264,6 +264,41 @@ func createAlbum(with title: String, completion: @escaping (PHAssetCollection?, 
   }
 }
 
+func createAsset(uri: URL, appContext: AppContext?, completion: @escaping (PHAsset?, Error?) -> Void) {
+  let assetType = assetType(for: uri)
+
+  if uri.pathExtension.isEmpty {
+    completion(nil, EmptyFileExtensionException())
+    return
+  }
+
+  if assetType == .unknown || assetType == .audio {
+    completion(nil, UnsupportedAssetTypeException(uri.absoluteString))
+    return
+  }
+
+  if !FileSystemUtilities.permissions(appContext, for: uri).contains(.read) {
+    completion(nil, UnreadableAssetException(uri.absoluteString))
+    return
+  }
+
+  var assetPlaceholder: PHObjectPlaceholder?
+  PHPhotoLibrary.shared().performChanges {
+    let changeRequest = assetType == .video
+    ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
+    : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
+
+    assetPlaceholder = changeRequest?.placeholderForCreatedAsset
+  } completionHandler: { success, error in
+    if success {
+      let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
+      completion(asset, nil)
+    } else {
+      completion(nil, SaveAssetException(error))
+    }
+  }
+}
+
 func assetType(for localUri: URL) -> PHAssetMediaType {
   guard let type = UTType(filenameExtension: localUri.pathExtension) else {
     return assetTypeExtension(for: localUri.pathExtension)

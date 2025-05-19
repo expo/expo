@@ -4,19 +4,104 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
+
+### 🐛 Bug fixes
+
+- Disable `minifyTypeofWindow` for Web to prevent breaking Web Worker targets ([#36773](https://github.com/expo/expo/pull/36773) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 13.1.11 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.10 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.9 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Force disable `enableBabelRuntime` for when (new) Babel caller `type` input is `'script'` ([#36463](https://github.com/expo/expo/pull/36463) by [@kitten](https://github.com/kitten))
+
+## 13.1.8 — 2025-04-28
+
+### 🎉 New features
+
+- Always enable `import.meta` polyfill for server bundles. ([#36380](https://github.com/expo/expo/pull/36380) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Remove absolute paths from server components output. ([#35276](https://github.com/expo/expo/pull/35276) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.6 — 2025-04-23
+
+### 🎉 New features
+
+- Add hot reloading for environment variables. ([#36189](https://github.com/expo/expo/pull/36189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.5 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.3 — 2025-04-11
+
+### 💡 Others
+
+- Throwing an error if people having `import.meta` in code but not enabled `unstable_transformImportMeta`. ([#36074](https://github.com/expo/expo/pull/36074) by [@kudo](https://github.com/kudo))
+
+## 13.1.2 — 2025-04-11
+
+### 🎉 New features
+
+- Update React Compiler support for React 19. ([#36081](https://github.com/expo/expo/pull/36081) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2025-04-08
+
+### 🎉 New features
+
+- Use `registerClientReference` for client components and assert unsupported syntax. ([#35957](https://github.com/expo/expo/pull/35957) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 
+- Add add support for TypeScript exports in React Server Actions. ([#35859](https://github.com/expo/expo/pull/35859) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `decorators` option to configure the `@babel/plugin-proposal-decorators` plugin. ([#34647](https://github.com/expo/expo/pull/34647) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `babel-plugin-syntax-hermes-parser` to the server preset for native RSC. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `displayName` to DOM components for better debugging. ([#33369](https://github.com/expo/expo/pull/33369) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `import.meta` transform plugin. ([#34756](https://github.com/expo/expo/pull/34756) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
+- Fix namespace type export stripping. ([#35859](https://github.com/expo/expo/pull/35859) by [@EvanBacon](https://github.com/EvanBacon))
 - Add all missing dependencies for package resolution with NPM. ([#34628](https://github.com/expo/expo/pull/34628) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 💡 Others
+## 12.0.10 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 12.0.9 - 2025-02-20
 

@@ -1,9 +1,24 @@
+import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 // Flag to warn about running on Apple simulator
 let warnAboutRunningOniOSSimulator = false;
+let warnedAboutExpoGo = false;
+function _validate(taskName) {
+    if (isRunningInExpoGo()) {
+        if (!warnedAboutExpoGo) {
+            const message = '`Background Task` functionality is not available in Expo Go:\n' +
+                'You can use this API and any others in a development build. Learn more: https://expo.fyi/dev-client.';
+            console.warn(message);
+            warnedAboutExpoGo = true;
+        }
+    }
+    if (!taskName || typeof taskName !== 'string') {
+        throw new TypeError('`taskName` must be a non-empty string.');
+    }
+}
 // @needsAudit
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
@@ -15,7 +30,9 @@ export const getStatusAsync = async () => {
     if (!ExpoBackgroundTaskModule.getStatusAsync) {
         throw new UnavailabilityError('BackgroundTask', 'getStatusAsync');
     }
-    return ExpoBackgroundTaskModule.getStatusAsync();
+    return isRunningInExpoGo()
+        ? BackgroundTaskStatus.Restricted
+        : ExpoBackgroundTaskModule.getStatusAsync();
 };
 // @needsAudit
 /**
@@ -63,7 +80,10 @@ export async function registerTaskAsync(taskName, options = {}) {
         }
         return;
     }
-    console.log('Calling ExpoBackgroundTaskModule.registerTaskAsync', { taskName, options });
+    _validate(taskName);
+    if (await TaskManager.isTaskRegisteredAsync(taskName)) {
+        return;
+    }
     await ExpoBackgroundTaskModule.registerTaskAsync(taskName, options);
 }
 // @needsAudit
@@ -76,27 +96,31 @@ export async function unregisterTaskAsync(taskName) {
     if (!ExpoBackgroundTaskModule.unregisterTaskAsync) {
         throw new UnavailabilityError('BackgroundTask', 'unregisterTaskAsync');
     }
-    console.log('Calling ExpoBackgroundTaskModule.unregisterTaskAsync', taskName);
+    _validate(taskName);
+    if (!(await TaskManager.isTaskRegisteredAsync(taskName))) {
+        return;
+    }
     await ExpoBackgroundTaskModule.unregisterTaskAsync(taskName);
 }
 // @needsAudit
 /**
  * When in debug mode this function will trigger running the background tasks.
  * This function will only work for apps built in debug mode.
- * @todo(chrfalch): When we have a usable devtools plugin we can enable this function.
+ * This method is only available in development mode. It will not work in production builds.
  * @returns A promise which fulfils when the task is triggered.
  */
-// export async function triggerTaskWorkerForTestingAsync(): Promise<boolean> {
-//   if (__DEV__) {
-//     if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
-//       throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
-//     }
-//     console.log('Calling triggerTaskWorkerForTestingAsync');
-//     return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
-//   } else {
-//     return Promise.resolve(false);
-//   }
-// }
+export async function triggerTaskWorkerForTestingAsync() {
+    if (__DEV__) {
+        if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
+            throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
+        }
+        console.log('Calling triggerTaskWorkerForTestingAsync');
+        return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
+    }
+    else {
+        return Promise.resolve(false);
+    }
+}
 // Export types
 export { BackgroundTaskStatus, BackgroundTaskResult, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.js.map

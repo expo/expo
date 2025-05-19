@@ -9,7 +9,7 @@
  * https://github.com/facebook/metro/blob/96c6b893eb77b5929b6050d7189905232ddf6d6d/packages/metro-transform-worker/src/index.js#L679
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.countLinesAndTerminateMap = void 0;
+exports.countLinesAndTerminateMap = countLinesAndTerminateMap;
 function countLinesAndTerminateMap(code, map) {
     const NEWLINE = /\r\n?|\n|\u2028|\u2029/g;
     let lineCount = 1;
@@ -40,5 +40,4 @@ function countLinesAndTerminateMap(code, map) {
     }
     return { lineCount, map: [...map] };
 }
-exports.countLinesAndTerminateMap = countLinesAndTerminateMap;
 //# sourceMappingURL=count-lines.js.map

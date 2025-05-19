@@ -3,7 +3,7 @@ import NotificationScheduler from './NotificationScheduler';
 import { SchedulableTriggerInputTypes, } from './Notifications.types';
 /**
  * Schedules a notification to be triggered in the future.
- * > **Note:** Please note that this does not mean that the notification will be presented when it is triggered.
+ * > **Note:** This does not mean that the notification will be presented when it is triggered.
  * For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler)
  * that will return an appropriate notification behavior. For more information see the example below.
  * @param request An object describing the notification to be triggered.
@@ -45,15 +45,18 @@ import { SchedulableTriggerInputTypes, } from './Notifications.types';
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * const trigger = new Date(Date.now() + 60 * 60 * 1000);
- * trigger.setMinutes(0);
- * trigger.setSeconds(0);
+ * const date = new Date(Date.now() + 60 * 60 * 1000);
+ * date.setMinutes(0);
+ * date.setSeconds(0);
  *
  * Notifications.scheduleNotificationAsync({
  *   content: {
  *     title: 'Happy new hour!',
  *   },
- *   trigger,
+ *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.DATE,
+ *     date
+ *   },
  * });
  * ```
  * @header schedule
@@ -100,7 +103,7 @@ export function parseTrigger(userFacingTrigger) {
         return timeIntervalTrigger;
     }
     return Platform.select({
-        default: null,
+        default: null, // There's no notion of channels on platforms other than Android.
         android: {
             type: 'channel',
             channelId: typeof userFacingTrigger === 'object' &&
@@ -117,7 +120,7 @@ function parseCalendarTrigger(trigger) {
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.CALENDAR) {
         const { repeats, ...calendarTrigger } = trigger;
-        return { type: 'calendar', value: calendarTrigger, repeats };
+        return { ...calendarTrigger, repeats: !!repeats, type: 'calendar' };
     }
     return undefined;
 }

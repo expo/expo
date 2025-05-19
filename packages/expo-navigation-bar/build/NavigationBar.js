@@ -1,15 +1,5 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { processColor } from 'react-native';
-import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
-import ExpoNavigationBar from './ExpoNavigationBar';
-let shouldWarnAboutEdgeToEdge = Platform.OS === 'android' && isEdgeToEdge();
-function potentiallyWarnAboutEdgeToEdge() {
-    if (shouldWarnAboutEdgeToEdge) {
-        shouldWarnAboutEdgeToEdge = false; // warn once
-        console.warn('Using expo-navigation-bar in apps with edge-to-edge layout enabled may cause unexpected behavior. Instead, use the SystemBars component from react-native-edge-to-edge. Learn more: https://expo.fyi/edge-to-edge-system-bars');
-    }
-}
 /**
  * Observe changes to the system navigation bar.
  * Due to platform constraints, this callback will also be triggered when the status bar visibility changes.
@@ -22,17 +12,12 @@ function potentiallyWarnAboutEdgeToEdge() {
  * ```
  */
 export function addVisibilityListener(listener) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    // Assert so the type is non-nullable.
-    if (!ExpoNavigationBar.addListener) {
-        throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
-    }
-    return ExpoNavigationBar.addListener('ExpoNavigationBar.didChange', listener);
+    throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
 }
 /**
  * Changes the navigation bar's background color.
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -41,37 +26,28 @@ export function addVisibilityListener(listener) {
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBackgroundColorAsync(color) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setBackgroundColorAsync` is only available on Android');
-        return;
-    }
-    const colorNumber = processColor(color);
-    return await ExpoNavigationBar.setBackgroundColorAsync(colorNumber);
+    console.warn('`setBackgroundColorAsync` is only available on Android');
 }
 /**
  * Gets the navigation bar's background color.
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
  * const color = await NavigationBar.getBackgroundColorAsync();
  * ```
  * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
+ *
  */
 export async function getBackgroundColorAsync() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`getBackgroundColorAsync` is only available on Android');
-        return `#00000000`;
-    }
-    return await ExpoNavigationBar.getBackgroundColorAsync();
+    console.warn('`getBackgroundColorAsync` is only available on Android');
+    return `#00000000`;
 }
 /**
  * Changes the navigation bar's border color.
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -80,18 +56,12 @@ export async function getBackgroundColorAsync() {
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBorderColorAsync(color) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setBorderColorAsync` is only available on Android');
-        return;
-    }
-    const colorNumber = processColor(color);
-    await ExpoNavigationBar.setBorderColorAsync(colorNumber);
+    console.warn('`setBorderColorAsync` is only available on Android');
 }
 /**
  * Gets the navigation bar's top border color, also known as the "divider color".
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -100,14 +70,8 @@ export async function setBorderColorAsync(color) {
  * @returns Navigation bar top border color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
 export async function getBorderColorAsync() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`getBorderColorAsync` is only available on Android');
-        return `#00000000`;
-    }
-    return await ExpoNavigationBar.getBorderColorAsync();
+    console.warn('`getBorderColorAsync` is only available on Android');
+    return `#00000000`;
 }
 /**
  * Set the navigation bar's visibility.
@@ -117,19 +81,14 @@ export async function getBorderColorAsync() {
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
  * @param visibility Based on CSS visibility property.
+ * @platform android
  */
 export async function setVisibilityAsync(visibility) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setVisibilityAsync` is only available on Android');
-        return;
-    }
-    await ExpoNavigationBar.setVisibilityAsync(visibility);
+    console.warn('`setVisibilityAsync` is only available on Android');
 }
 /**
  * Get the navigation bar's visibility.
+ *
  *
  * @example
  * ```ts
@@ -138,17 +97,13 @@ export async function setVisibilityAsync(visibility) {
  * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  */
 export async function getVisibilityAsync() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`getVisibilityAsync` is only available on Android');
-        return 'hidden';
-    }
-    return ExpoNavigationBar.getVisibilityAsync();
+    console.warn('`getVisibilityAsync` is only available on Android');
+    return 'hidden';
 }
 /**
  * Changes the navigation bar's button colors between white (`light`) and a dark gray color (`dark`).
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -157,17 +112,12 @@ export async function getVisibilityAsync() {
  * @param style Dictates the color of the foreground element color.
  */
 export async function setButtonStyleAsync(style) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setButtonStyleAsync` is only available on Android');
-        return;
-    }
-    await ExpoNavigationBar.setButtonStyleAsync(style);
+    console.warn('`setButtonStyleAsync` is only available on Android');
 }
 /**
  * Gets the navigation bar's button color styles.
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -176,14 +126,8 @@ export async function setButtonStyleAsync(style) {
  * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
 export async function getButtonStyleAsync() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`getButtonStyleAsync` is only available on Android');
-        return 'light';
-    }
-    return await ExpoNavigationBar.getButtonStyleAsync();
+    console.warn('`getButtonStyleAsync` is only available on Android');
+    return 'light';
 }
 /**
  * Sets positioning method used for the navigation bar (and status bar).
@@ -191,6 +135,8 @@ export async function getButtonStyleAsync() {
  * whereas position `relative` will shrink the screen to inline the navigation bar.
  *
  * When drawing behind the status and navigation bars, ensure the safe area insets are adjusted accordingly.
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -202,14 +148,7 @@ export async function getButtonStyleAsync() {
  * @param position Based on CSS position property.
  */
 export async function setPositionAsync(position) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setPositionAsync` is only available on Android');
-        return;
-    }
-    await ExpoNavigationBar.setPositionAsync(position);
+    console.warn('`setPositionAsync` is only available on Android');
 }
 /**
  * Whether the navigation and status bars float above the app (absolute) or sit inline with it (relative).
@@ -218,6 +157,8 @@ export async function setPositionAsync(position) {
  * This method is unstable because the position can be set via another native module and get out of sync.
  * Alternatively, you can get the position by measuring the insets returned by `react-native-safe-area-context`.
  *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ *
  * @example
  * ```ts
  * await NavigationBar.unstable_getPositionAsync()
@@ -225,14 +166,8 @@ export async function setPositionAsync(position) {
  * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
  */
 export async function unstable_getPositionAsync() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`unstable_getPositionAsync` is only available on Android');
-        return 'relative';
-    }
-    return await ExpoNavigationBar.unstable_getPositionAsync();
+    console.warn('`unstable_getPositionAsync` is only available on Android');
+    return 'relative';
 }
 /**
  * Sets the behavior of the status bar and navigation bar when they are hidden and the user wants to reveal them.
@@ -244,6 +179,8 @@ export async function unstable_getPositionAsync() {
  * - `'inset-swipe'`: Reveals the System UI after a swipe gesture (bottom or top) and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  * - `'inset-touch'`: Reveals the System UI after a touch anywhere on the screen and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ *
  * @example
  * ```ts
  * await NavigationBar.setBehaviorAsync('overlay-swipe')
@@ -251,17 +188,12 @@ export async function unstable_getPositionAsync() {
  * @param behavior Dictates the interaction behavior of the navigation bar.
  */
 export async function setBehaviorAsync(behavior) {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`setBehaviorAsync` is only available on Android');
-        return;
-    }
-    return await ExpoNavigationBar.setBehaviorAsync(behavior);
+    console.warn('`setBehaviorAsync` is only available on Android');
 }
 /**
  * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
+ *
+ * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
  *
  * @example
  * ```ts
@@ -270,14 +202,22 @@ export async function setBehaviorAsync(behavior) {
  * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
  */
 export async function getBehaviorAsync() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
-    if (Platform.OS !== 'android') {
-        console.warn('`getBehaviorAsync` is only available on Android');
-        return 'inset-touch';
-    }
-    return await ExpoNavigationBar.getBehaviorAsync();
+    console.warn('`getBehaviorAsync` is only available on Android');
+    return 'inset-touch';
+}
+/**
+ * Sets the style of the navigation bar.
+ * > This will have an effect when the following conditions are met:
+ * > - Edge-to-edge is enabled
+ * > - The `enforceNavigationBarContrast` option of the `react-native-edge-to-edge` plugin is set to `false`.
+ * > - The device is using the three-button navigation bar.
+ *
+ * > Due to a bug in the Android 15 emulator this function may have no effect. Try a physical device or an emulator with a different version of Android.
+ *
+ * @platform android
+ */
+export function setStyle(style) {
+    console.warn('`setStyle` method is only available on Android');
 }
 /**
  * React hook that statefully updates with the visibility of the system navigation bar.
@@ -292,30 +232,9 @@ export async function getBehaviorAsync() {
  * @returns Visibility of the navigation bar, `null` during async initialization.
  */
 export function useVisibility() {
-    if (__DEV__) {
-        potentiallyWarnAboutEdgeToEdge();
-    }
     const [visibility, setVisible] = useState(null);
     useEffect(() => {
-        let isMounted = true;
-        if (Platform.OS !== 'android') {
-            setVisible('hidden');
-            return;
-        }
-        getVisibilityAsync().then((visibility) => {
-            if (isMounted) {
-                setVisible(visibility);
-            }
-        });
-        const listener = addVisibilityListener(({ visibility }) => {
-            if (isMounted) {
-                setVisible(visibility);
-            }
-        });
-        return () => {
-            listener.remove();
-            isMounted = false;
-        };
+        setVisible('hidden');
     }, []);
     return visibility;
 }

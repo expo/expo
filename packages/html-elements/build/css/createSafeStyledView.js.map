@@ -1,1 +1,0 @@
-{"version":3,"file":"createSafeStyledView.js","sourceRoot":"","sources":["../../src/css/createSafeStyledView.tsx"],"names":[],"mappings":"AAAA,MAAM,UAAU,oBAAoB,CAAQ,IAAW;IACrD,wBAAwB;IACxB,OAAO,IAAI,CAAC;AACd,CAAC","sourcesContent":["export function createSafeStyledView<TView>(View: TView) {\n  // Do nothing by default\n  return View;\n}\n"]}

@@ -139,7 +139,7 @@ export default {
   },
   async getCurrentPositionAsync(options: LocationOptions): Promise<LocationObject> {
     return new Promise<LocationObject>((resolve, reject) => {
-      const resolver = (position) => {
+      const resolver: PositionCallback = (position) => {
         lastKnownPosition = geolocationPositionToJSON(position);
         resolve(lastKnownPosition);
       };
@@ -150,10 +150,10 @@ export default {
       });
     });
   },
-  async removeWatchAsync(watchId): Promise<void> {
+  async removeWatchAsync(watchId: number): Promise<void> {
     navigator.geolocation.clearWatch(watchId);
   },
-  async watchDeviceHeading(headingId): Promise<void> {
+  async watchDeviceHeading(_headingId: number): Promise<void> {
     console.warn('Location.watchDeviceHeading: is not supported on web');
   },
   async hasServicesEnabledAsync(): Promise<boolean> {
@@ -165,10 +165,9 @@ export default {
   async reverseGeocodeAsync(): Promise<any[]> {
     throw new GeocoderError();
   },
-  async watchPositionImplAsync(watchId: string, options: LocationOptions): Promise<string> {
-    return new Promise<string>((resolve) => {
-      // @ts-ignore: the types here need to be fixed
-      watchId = global.navigator.geolocation.watchPosition(
+  async watchPositionImplAsync(watchId: number, options: PositionOptions): Promise<number> {
+    return new Promise((resolve) => {
+      watchId = navigator.geolocation.watchPosition(
         (position) => {
           lastKnownPosition = geolocationPositionToJSON(position);
           LocationEventEmitter.emit('Expo.locationChanged', {

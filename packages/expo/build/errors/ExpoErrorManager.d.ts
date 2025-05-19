@@ -1,4 +1,5 @@
-export declare function createErrorHandler(originalHandler: any): (error: any, isFatal: any) => any;
+import type { ErrorHandlerCallback } from 'react-native';
+export declare function createErrorHandler(originalHandler: ErrorHandlerCallback): ErrorHandlerCallback;
 /**
  * @hidden
  * @deprecated Will be removed in the future.

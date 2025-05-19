@@ -29,7 +29,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
   Icon={NotificationBoxIcon}
 />
 
-> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go from SDK 53. A [development build](/develop/development-builds/introduction/) will be required to use push notifications. Local notifications (in-app notifications) will remain available in Expo Go.
+> **warning** Push notifications (remote notifications) functionality provided by `expo-notifications` will be unavailable in Expo Go on Android from SDK 53. A [development build](/develop/development-builds/introduction/) will be required to use push notifications. Local notifications (in-app notifications) will remain available in Expo Go.
 
 ## Features
 
@@ -227,7 +227,7 @@ If you'd like to deep link to a specific screen in your app when you receive a p
 
 <Tab label="Expo Router">
 
-You can use Expo Router's [built-in deep linking](/router/create-pages) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
+You can use Expo Router's [built-in deep linking](/router/basics/core-concepts/#2-all-pages-have-a-url) to handle incoming URLs from push notifications. Simply configure the root layout to listen for incoming and initial notification events.
 
 ```tsx app/_layout.tsx
 import { useEffect } from 'react';
@@ -427,7 +427,7 @@ Here is an example of using the config plugin in the app config file:
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/main/packages/expo-notifications#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/sdk-52/packages/expo-notifications#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

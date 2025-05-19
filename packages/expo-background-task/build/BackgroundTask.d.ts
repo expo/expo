@@ -44,8 +44,9 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
 /**
  * When in debug mode this function will trigger running the background tasks.
  * This function will only work for apps built in debug mode.
- * @todo(chrfalch): When we have a usable devtools plugin we can enable this function.
+ * This method is only available in development mode. It will not work in production builds.
  * @returns A promise which fulfils when the task is triggered.
  */
+export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
 export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map

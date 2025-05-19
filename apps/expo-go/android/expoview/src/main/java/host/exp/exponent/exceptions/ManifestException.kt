@@ -14,13 +14,17 @@ private const val SNACK_STAGING = "2dce2748-c51f-4865-bae0-392af794d60a"
 private const val SNACK_PROD = "933fd9c0-1666-11e7-afca-d980795c5824"
 
 class ManifestException : ExponentException {
-  private val manifestUrl: String
   private var errorJSON: JSONObject? = null
-  private lateinit var errorMessage: String
-  private var fixInstructions: String? = null
   private val isSnackURL: Boolean
     get() =
       manifestUrl.contains(SNACK_STAGING) || manifestUrl.contains(SNACK_PROD)
+
+  val manifestUrl: String
+  lateinit var errorMessage: String
+    private set
+
+  var fixInstructions: String? = null
+    private set
 
   var canRetry: Boolean = true
   val errorHeader: String?

@@ -10,9 +10,59 @@
 
 ### 💡 Others
 
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 5.1.8 — 2025-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.7 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.5 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.3 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.1.0 — 2025-04-04
+
+### 💡 Others
+
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
 - [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
+
+## 5.0.18 - 2025-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.17 - 2025-04-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.16 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 5.0.15 - 2025-03-18
 

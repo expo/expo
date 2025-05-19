@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-class SliderProps: ExpoSwiftUI.ViewProps {
+final class SliderProps: ExpoSwiftUI.ViewProps {
   @Field var value: Float?
   @Field var steps: Int = 0
   @Field var min: Float = 0.0
@@ -22,8 +22,12 @@ func getStep(_ min: Float, _ max: Float, _ steps: Int) -> Float {
 }
 
 struct SliderView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: SliderProps
+  @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
+
+  init(props: SliderProps) {
+    self.props = props
+  }
 
   var body: some View {
     #if !os(tvOS)

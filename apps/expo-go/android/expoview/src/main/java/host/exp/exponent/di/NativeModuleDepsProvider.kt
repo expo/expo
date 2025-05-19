@@ -14,6 +14,7 @@ import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.storage.ExponentSharedPreferences
+import kotlinx.coroutines.Dispatchers
 import java.lang.reflect.Field
 import javax.inject.Inject
 
@@ -48,7 +49,7 @@ class NativeModuleDepsProvider(application: Application) {
 
   @Inject
   @DoNotStrip
-  val mUpdatesDatabaseHolder: DatabaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(mContext))
+  val mUpdatesDatabaseHolder: DatabaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(mContext, Dispatchers.IO))
 
   private val classToInstanceMap = mutableMapOf<Class<*>, Any>()
 

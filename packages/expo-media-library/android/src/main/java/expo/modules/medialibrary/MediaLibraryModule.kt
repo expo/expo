@@ -33,6 +33,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
 import expo.modules.medialibrary.albums.AddAssetsToAlbum
 import expo.modules.medialibrary.albums.CreateAlbum
+import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
 import expo.modules.medialibrary.albums.DeleteAlbums
 import expo.modules.medialibrary.albums.GetAlbum
 import expo.modules.medialibrary.albums.GetAlbums
@@ -40,7 +41,7 @@ import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
 import expo.modules.medialibrary.albums.getAssetsInAlbums
 import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
 import expo.modules.medialibrary.albums.migration.MigrateAlbum
-import expo.modules.medialibrary.assets.CreateAsset
+import expo.modules.medialibrary.assets.CreateAssetWithAlbumId
 import expo.modules.medialibrary.assets.DeleteAssets
 import expo.modules.medialibrary.assets.GetAssetInfo
 import expo.modules.medialibrary.assets.GetAssets
@@ -104,16 +105,16 @@ class MediaLibraryModule : Module() {
     AsyncFunction("saveToLibraryAsync") { localUri: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise, false)
+          CreateAssetWithAlbumId(context, localUri, promise, false)
             .execute()
         }
       }
     }
 
-    AsyncFunction("createAssetAsync") { localUri: String, promise: Promise ->
+    AsyncFunction("createAssetAsync") { localUri: String, albumId: String?, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise)
+          CreateAssetWithAlbumId(context, localUri, promise, true, albumId)
             .execute()
         }
       }
@@ -151,7 +152,7 @@ class MediaLibraryModule : Module() {
               .execute()
           }
         }
-        runActionWithPermissions(assetsId, action)
+        runActionWithPermissions(assetsId, action, useDeletePermission = true)
       }
     }
 
@@ -180,15 +181,27 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
+    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri?, promise: Promise ->
       throwUnlessPermissionsGranted {
         val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
-            CreateAlbum(context, albumName, assetId, copyAsset, promise)
-              .execute()
+            assetId?.let {
+              CreateAlbum(context, albumName, assetId, copyAsset, promise)
+                .execute()
+            }
+
+            initialAssetUri?.let {
+              CreateAlbumWithInitialFileUri(context, albumName, it, promise)
+                .execute()
+            }
           }
         }
-        runActionWithPermissions(if (copyAsset) emptyList() else listOf(assetId), action)
+        val assetIdList = if (!copyAsset && assetId != null) {
+          listOf(assetId)
+        } else {
+          emptyList()
+        }
+        runActionWithPermissions(assetIdList, action)
       }
     }
 
@@ -320,7 +333,7 @@ class MediaLibraryModule : Module() {
     }
 
     OnActivityResult { _, payload ->
-      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE }?.let {
+      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE || payload.requestCode == DELETE_REQUEST_CODE }?.let {
         it.runWithPermissions(payload.resultCode == Activity.RESULT_OK)
         awaitingAction = null
       }
@@ -458,7 +471,7 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private fun runActionWithPermissions(assetsId: List<String>, action: Action) {
+  private fun runActionWithPermissions(assetsId: List<String>, action: Action, useDeletePermission: Boolean = false) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
         .filter { uri ->
@@ -470,14 +483,17 @@ class MediaLibraryModule : Module() {
         }
 
       if (pathsWithoutPermissions.isNotEmpty()) {
-        val deleteRequest =
+        val request = if (useDeletePermission) {
+          MediaStore.createDeleteRequest(context.contentResolver, pathsWithoutPermissions)
+        } else {
           MediaStore.createWriteRequest(context.contentResolver, pathsWithoutPermissions)
+        }
 
         try {
           awaitingAction = action
           appContext.throwingActivity.startIntentSenderForResult(
-            deleteRequest.intentSender,
-            WRITE_REQUEST_CODE,
+            request.intentSender,
+            if (useDeletePermission) DELETE_REQUEST_CODE else WRITE_REQUEST_CODE,
             null,
             0,
             0,
@@ -537,6 +553,7 @@ class MediaLibraryModule : Module() {
 
   companion object {
     private const val WRITE_REQUEST_CODE = 7463
+    private const val DELETE_REQUEST_CODE = 7464
     internal val TAG = MediaLibraryModule::class.java.simpleName
   }
 }

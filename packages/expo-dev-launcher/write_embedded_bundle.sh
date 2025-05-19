@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export NODE_ENV=production
 export EXPO_USE_FAST_RESOLVER=1

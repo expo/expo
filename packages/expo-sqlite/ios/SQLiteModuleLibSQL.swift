@@ -7,6 +7,8 @@ private typealias SQLiteColumnNames = [String]
 private typealias SQLiteColumnValues = [Any]
 private let MEMORY_DB_NAME = ":memory:"
 
+private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
+
 public final class SQLiteModule: Module {
   // Store unmanaged (SQLiteModule, Database) pairs for sqlite callbacks,
   // will release the pair when `closeDatabase` is called.
@@ -48,7 +50,7 @@ public final class SQLiteModule: Module {
 
     AsyncFunction("deleteDatabaseAsync") { (databasePath: String) in
       try deleteDatabase(databasePath: databasePath)
-    }
+    }.runOnQueue(moduleQueue)
     Function("deleteDatabaseSync") { (databasePath: String) in
       try deleteDatabase(databasePath: databasePath)
     }
@@ -65,18 +67,18 @@ public final class SQLiteModule: Module {
       }
       try? fileManager.removeItem(atPath: path.absoluteString)
       try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
-    }
+    }.runOnQueue(moduleQueue)
 
     AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
       try ensureDatabasePathExists(path: databasePath)
-    }
+    }.runOnQueue(moduleQueue)
     Function("ensureDatabasePathExistsSync") { (databasePath: String) in
       try ensureDatabasePathExists(path: databasePath)
     }
 
     AsyncFunction("backupDatabaseAsync") { (_: NativeDatabase, _: String, _: NativeDatabase, _: String) in
       throw UnsupportedOperationException()
-    }
+    }.runOnQueue(moduleQueue)
     Function("backupDatabaseSync") { (_: NativeDatabase, _: String, _: NativeDatabase, _: String) in
       throw UnsupportedOperationException()
     }
@@ -95,6 +97,7 @@ public final class SQLiteModule: Module {
         } else {
           // Try to find opened database for fast refresh
           if let cachedDb = findCachedDatabase(where: { $0.databasePath == databasePath && $0.openOptions == options && !options.useNewConnection }) {
+            cachedDb.addRef()
             return cachedDb
           }
 
@@ -145,51 +148,55 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("initAsync") { (database: NativeDatabase) in
         try initDb(database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("initSync") { (database: NativeDatabase) in
         try initDb(database: database)
       }
 
       AsyncFunction("isInTransactionAsync") { (_: NativeDatabase) -> Bool in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("isInTransactionSync") { (_: NativeDatabase) -> Bool in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        removeCachedDatabase(of: database)
-        try closeDatabase(database)
-      }
+        try maybeThrowForClosedDatabase(database)
+        if let db = removeCachedDatabase(of: database) {
+          try closeDatabase(db)
+        }
+      }.runOnQueue(moduleQueue)
       Function("closeSync") { (database: NativeDatabase) in
-        removeCachedDatabase(of: database)
-        try closeDatabase(database)
+        try maybeThrowForClosedDatabase(database)
+        if let db = removeCachedDatabase(of: database) {
+          try closeDatabase(db)
+        }
       }
 
       AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
         try exec(database: database, source: source)
-      }
+      }.runOnQueue(moduleQueue)
       Function("execSync") { (database: NativeDatabase, source: String) in
         try exec(database: database, source: source)
       }
 
       AsyncFunction("serializeAsync") { (database: NativeDatabase, databaseName: String) in
         try serialize(database: database, databaseName: databaseName)
-      }
+      }.runOnQueue(moduleQueue)
       Function("serializeSync") { (database: NativeDatabase, databaseName: String) in
         try serialize(database: database, databaseName: databaseName)
       }
 
       AsyncFunction("prepareAsync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
-      }
+      }.runOnQueue(moduleQueue)
       Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
         try prepareStatement(database: database, statement: statement, source: source)
       }
 
       AsyncFunction("createSessionAsync") { (_: NativeDatabase, _: NativeSession, _: String) in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("createSessionSync") { (_: NativeDatabase, _: NativeSession, _: String) in
         throw UnsupportedOperationException()
       }
@@ -200,7 +207,7 @@ public final class SQLiteModule: Module {
           let err = convertLibSqlErrorToString(errMsg)
           throw SQLiteErrorException(convertLibSqlErrorToString(errMsg))
         }
-      }
+      }.runOnQueue(moduleQueue)
     }
 
     // MARK: - NativeStatement
@@ -215,7 +222,7 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
-      }
+      }.runOnQueue(moduleQueue)
       Function("runSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
@@ -224,35 +231,35 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("stepAsync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
         return try step(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("stepSync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
         return try step(statement: statement, database: database)
       }
 
       AsyncFunction("getAllAsync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database)
       }
 
       AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
         try reset(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("resetSync") { (statement: NativeStatement, database: NativeDatabase) in
         try reset(statement: statement, database: database)
       }
 
       AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> SQLiteColumnNames in
         return try getColumnNames(statement: statement)
-      }
+      }.runOnQueue(moduleQueue)
       Function("getColumnNamesSync") { (statement: NativeStatement) -> SQLiteColumnNames in
         return try getColumnNames(statement: statement)
       }
 
       AsyncFunction("finalizeAsync") { (statement: NativeStatement, database: NativeDatabase) in
         try finalize(statement: statement, database: database)
-      }
+      }.runOnQueue(moduleQueue)
       Function("finalizeSync") { (statement: NativeStatement, database: NativeDatabase) in
         try finalize(statement: statement, database: database)
       }
@@ -268,49 +275,49 @@ public final class SQLiteModule: Module {
 
       AsyncFunction("attachAsync") { (_: NativeSession, _: NativeDatabase, _: String?) in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("attachSync") { (_: NativeSession, _: NativeDatabase, _: String?) in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("enableAsync") { (_: NativeSession, _: NativeDatabase, _: Bool) in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("enableSync") { (_: NativeSession, _: NativeDatabase, _: Bool) in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("closeAsync") { (_: NativeSession, _: NativeDatabase) in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("closeSync") { (_: NativeSession, _: NativeDatabase) in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("createChangesetAsync") { (_: NativeSession, _: NativeDatabase) -> Data in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("createChangesetSync") { (_: NativeSession, _: NativeDatabase) -> Data in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("createInvertedChangesetAsync") { (_: NativeSession, _: NativeDatabase) -> Data in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("createInvertedChangesetSync") { (_: NativeSession, _: NativeDatabase) -> Data in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("applyChangesetAsync") { (_: NativeSession, _: NativeDatabase, _: Data) in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("applyChangesetSync") { (_: NativeSession, _: NativeDatabase, _: Data) in
         throw UnsupportedOperationException()
       }
 
       AsyncFunction("invertChangesetAsync") { (_: NativeSession, _: NativeDatabase, _: Data) -> Data in
         throw UnsupportedOperationException()
-      }
+      }.runOnQueue(moduleQueue)
       Function("invertChangesetSync") { (_: NativeSession, _: NativeDatabase, _: Data) -> Data in
         throw UnsupportedOperationException()
       }
@@ -375,6 +382,13 @@ public final class SQLiteModule: Module {
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [String: Any] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
+
+    // The statement with parameter bindings is stateful,
+    // we have to guard with a critical section for thread safety.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
 
     if let rows = statement.extraPointer {
       libsql_free_rows(rows)
@@ -492,7 +506,6 @@ public final class SQLiteModule: Module {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(db)
     for removedStatement in maybeRemoveAllCachedStatements(database: db) {
       if let rows = removedStatement.extraPointer {
         libsql_free_rows(rows)
@@ -698,9 +711,11 @@ public final class SQLiteModule: Module {
   private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
     return Self.lockQueue.sync {
       if let index = cachedDatabases.firstIndex(of: database) {
-        let database = cachedDatabases[index]
-        cachedDatabases.remove(at: index)
-        return database
+        let db = cachedDatabases[index]
+        if db.release() == 0 {
+          cachedDatabases.remove(at: index)
+          return db
+        }
       }
       return nil
     }

@@ -8,7 +8,7 @@ let onDidReceiveNotification = "onDidReceiveNotification"
 let onDidReceiveNotificationResponse = "onDidReceiveNotificationResponse"
 let onDidClearNotificationResponse = "onDidClearNotificationResponse"
 
-public class EmitterModule: Module, NotificationDelegate {
+open class EmitterModule: Module, NotificationDelegate {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
@@ -22,16 +22,15 @@ public class EmitterModule: Module, NotificationDelegate {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
-    AsyncFunction("getLastNotificationResponseAsync") {(promise: Promise) in
+    AsyncFunction("getLastNotificationResponseAsync") {() -> [String: Any]? in
       if let lastResponse: UNNotificationResponse = NotificationCenterManager.shared.lastResponse {
-        promise.resolve(EXNotificationSerializer.serializedNotificationResponse(lastResponse))
+        return EXNotificationSerializer.serializedNotificationResponse(lastResponse)
       }
-      promise.resolve(nil)
+      return nil
     }
 
-    AsyncFunction("clearLastNotificationResponseAsync") {(promise: Promise) in
+    AsyncFunction("clearLastNotificationResponseAsync") {
       NotificationCenterManager.shared.lastResponse = nil
-      promise.resolve(nil)
     }
   }
 
@@ -40,20 +39,25 @@ public class EmitterModule: Module, NotificationDelegate {
     return true
   }
 
-  public func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
+  open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     NotificationCenterManager.shared.lastResponse = response
-    // TODO: convert serialization to Records
-    let serializedResponse = EXNotificationSerializer.serializedNotificationResponse(response)
-    self.sendEvent(onDidReceiveNotificationResponse, serializedResponse as [String: Any])
+    self.sendEvent(onDidReceiveNotificationResponse, serializedResponse(response))
     completionHandler()
     return true
   }
 
-  public func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+  open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
+    self.sendEvent(onDidReceiveNotification, serializedNotification(notification))
+    return false
+  }
+
+  open func serializedNotification(_ notification: UNNotification) -> [String: Any] {
     // TODO: convert serialization to Records
-    let serializedNotification = EXNotificationSerializer.serializedNotification(notification)
-    self.sendEvent(onDidReceiveNotification, serializedNotification as [String: Any])
-    completionHandler([])
-    return true
+    return EXNotificationSerializer.serializedNotification(notification)
+  }
+
+  open func serializedResponse(_ response: UNNotificationResponse) -> [String: Any] {
+    // TODO: convert serialization to Records
+    return EXNotificationSerializer.serializedNotificationResponse(response)
   }
 }

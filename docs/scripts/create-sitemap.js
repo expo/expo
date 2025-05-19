@@ -2,10 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SitemapStream } from 'sitemap';
 
-const IGNORED_PAGES = [
+const IGNORED_PAGES = new Set([
   '/404', // We don't want to add the 404 error page as sitemap entry
   '/versions', // Skip the redirect to latest, use `/versions/latest` instead
-];
+]);
 
 /**
  * Create a sitemap for crawlers like Algolia Docsearch.
@@ -28,9 +28,7 @@ export default function createSitemap({ pathMap, domain, output, pathsPriority, 
 
   // Get a list of URLs from the pathMap that we can use in the sitemap
   const urls = Object.keys(pathMap)
-    .filter(
-      url => !IGNORED_PAGES.includes(url) && !pathsHidden.some(hidden => url.startsWith(hidden))
-    )
+    .filter(url => !IGNORED_PAGES.has(url) && !pathsHidden.some(hidden => url.startsWith(hidden)))
     .map(pathWithTrailingSlash)
     .sort((a, b) => pathSortedByPriority(a, b, pathsPriority));
 

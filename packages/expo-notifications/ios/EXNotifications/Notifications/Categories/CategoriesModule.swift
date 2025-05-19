@@ -4,45 +4,52 @@ import ExpoModulesCore
 import UIKit
 import MachO
 
-public class CategoriesModule: Module {
+open class CategoriesModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationCategoriesModule")
 
-    AsyncFunction("getNotificationCategoriesAsync") { (promise: Promise) in
-      UNUserNotificationCenter.current().getNotificationCategories { categories in
-        let existingCategories = categories.map { category in
-          return CategoryRecord(category)
-        }
-        promise.resolve(existingCategories)
-      }
+    AsyncFunction("getNotificationCategoriesAsync") {
+      let categories = await UNUserNotificationCenter.current().notificationCategories()
+      return filterAndSerializeCategories(categories)
     }
 
-    AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?, promise: Promise) in
-      let categoryRecord = CategoryRecord(identifier, actions: actions, options: options)
-      let newNotificationCategory = categoryRecord.toUNNotificationCategory()
-      UNUserNotificationCenter.current().getNotificationCategories { oldcategories in
-        let newCategories = Set(oldcategories.filter { oldCategory in
+    AsyncFunction("setNotificationCategoryAsync") { (identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) in
+      return await setNotificationCategoryAsync(identifier: identifier, actions: actions, options: options)
+    }
+
+    AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String) in
+      return await deleteNotificationCategoryAsync(identifier: identifier)
+    }
+  }
+
+  open func filterAndSerializeCategories(_ categories: Set<UNNotificationCategory>) -> [CategoryRecord] {
+    return categories.map { CategoryRecord($0) }
+  }
+
+  open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) async -> CategoryRecord {
+    let categoryRecord = CategoryRecord(identifier, actions: actions, options: options)
+    let newNotificationCategory = categoryRecord.toUNNotificationCategory()
+    let oldCategories = await UNUserNotificationCenter.current().notificationCategories()
+    let newCategories = oldCategories
+        .filter { oldCategory in
           return oldCategory.identifier != newNotificationCategory.identifier
         }
-        .union([newNotificationCategory]))
-        UNUserNotificationCenter.current().setNotificationCategories(newCategories)
-        promise.resolve(CategoryRecord(newNotificationCategory))
-      }
-    }
+        .union([newNotificationCategory])
+    UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+    return CategoryRecord(newNotificationCategory)
+  }
 
-    AsyncFunction("deleteNotificationCategoryAsync") { (identifier: String, promise: Promise) in
-      UNUserNotificationCenter.current().getNotificationCategories { oldCategories in
-        let didDelete = oldCategories.contains { oldCategory in
-          return oldCategory.identifier == identifier
-        }
-        if didDelete {
-          let newCategories = Set(oldCategories.filter { oldCategory in
-            return oldCategory.identifier != identifier
-          })
-          UNUserNotificationCenter.current().setNotificationCategories(newCategories)
-        }
-        promise.resolve(didDelete)
-      }
+  open func deleteNotificationCategoryAsync(identifier: String) async -> Bool {
+    let oldCategories = await UNUserNotificationCenter.current().notificationCategories()
+    let didDelete = oldCategories.contains { oldCategory in
+      return oldCategory.identifier == identifier
     }
+    if didDelete {
+      let newCategories = oldCategories.filter { oldCategory in
+        return oldCategory.identifier != identifier
+      }
+      UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+    }
+    return didDelete
   }
 }

@@ -183,7 +183,11 @@ public extension UIDevice {
 
   // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
   var isSimulator: Bool {
-    return TARGET_OS_SIMULATOR != 0
+#if targetEnvironment(simulator)
+    return true
+#else
+    return false
+#endif
   }
 
   var isJailbroken: Bool {

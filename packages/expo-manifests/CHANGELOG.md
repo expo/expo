@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 0.16.5 — 2025-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.2 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.0 — 2025-04-04
+
+### 💡 Others
+
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.15.7 - 2025-02-21

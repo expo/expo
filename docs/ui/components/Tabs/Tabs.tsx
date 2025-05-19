@@ -43,7 +43,7 @@ const InnerTabs = ({
   const tabTitles = tabs ?? generateTabLabels(children);
 
   const layoutId = useMemo(
-    () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).substring(5)}-`),
+    () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).slice(5)}-`),
     []
   );
 

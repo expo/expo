@@ -57,6 +57,7 @@ class AssetModule : Module() {
       try {
         val inputStream = when {
           uri.toString().contains(":").not() -> openAssetResourceStream(context, uri.toString())
+          uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE) -> openAndroidResStream(context, uri.toString())
           else -> uri.toURL().openStream()
         }
         inputStream.use { input ->
@@ -75,7 +76,7 @@ class AssetModule : Module() {
     Name("ExpoAsset")
 
     AsyncFunction("downloadAsync") Coroutine { uri: URI, md5Hash: String?, type: String ->
-      if (uri.scheme === "file") {
+      if (uri.scheme === "file" && !uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
         return@Coroutine uri
       }
 

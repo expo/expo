@@ -1,20 +1,7 @@
-import { isRunningInExpoGo } from 'expo';
 import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
-import { Platform } from 'react-native';
 import ExpoTaskManager from './ExpoTaskManager';
 const tasks = new Map();
-let warnedAboutExpoGo = false;
 function _validate(taskName) {
-    if (isRunningInExpoGo()) {
-        if (!warnedAboutExpoGo) {
-            const message = '`TaskManager` functionality is limited in Expo Go:\n' +
-                'On Android, it is not available at all.\n' +
-                'On iOS, it is limited to foreground execution.\n' +
-                'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
-            console.warn(message);
-            warnedAboutExpoGo = true;
-        }
-    }
     if (!taskName || typeof taskName !== 'string') {
         throw new TypeError('`taskName` must be a non-empty string.');
     }
@@ -161,7 +148,7 @@ if (ExpoTaskManager) {
             }
         }
         else {
-            console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Please make sure that "TaskManager.defineTask" is called during initialization phase.`);
+            console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Make sure that "TaskManager.defineTask" is called during initialization phase.`);
             // No tasks defined -> we need to notify about finish anyway.
             await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
             // We should also unregister such tasks automatically as the task might have been removed
@@ -179,9 +166,6 @@ if (ExpoTaskManager) {
  * On the web, it always returns `false`.
  */
 export async function isAvailableAsync() {
-    if (Platform.OS === 'android') {
-        return !isRunningInExpoGo() && ExpoTaskManager.isAvailableAsync();
-    }
     return ExpoTaskManager.isAvailableAsync();
 }
 //# sourceMappingURL=TaskManager.js.map

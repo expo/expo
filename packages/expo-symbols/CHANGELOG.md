@@ -8,6 +8,36 @@
 
 ### 🐛 Bug fixes
 
+- Use `processColor` to accept all valid color strings. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 0.4.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- [Android] Fix platform misconfiguration in the `expo-modules.config`. ([#35849](https://github.com/expo/expo/pull/35849) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 - [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))

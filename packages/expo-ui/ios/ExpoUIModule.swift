@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-public class ExpoUIModule: Module {
+public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
@@ -20,5 +20,15 @@ public class ExpoUIModule: Module {
     View(TextInputView.self)
     View(ProgressView.self)
     View(GaugeView.self)
+    View(ListView.self)
+    View(LabelView.self)
+    View(HostView.self)
+
+    // Preview components in the "primitives" exports
+    View(FormView.self)
+    View(HStackView.self)
+    View(VStackView.self)
+    View(SectionPrimitiveView.self)
+    View(TextView.self)
   }
 }

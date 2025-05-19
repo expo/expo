@@ -7,15 +7,23 @@
  */
 // This module is bundled with Metro in web/react-server mode and redirects to platform specific renderers.
 import type { RenderRscArgs } from '@expo/server/build/middleware/rsc';
-import { asyncServerImport } from 'expo-router/_async-server-import';
+import Constants from 'expo-constants';
 import path from 'node:path';
 
 import { renderRsc } from './rsc-renderer';
+
+declare const $$require_external: typeof require;
 
 const debug = require('debug')('expo:server:rsc-renderer');
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
+
+function serverRequire<T = any>(...targetOutputModulePath: string[]): T {
+  // NOTE(@kitten): This `__dirname` will be located in the output file system, e.g. `dist/server/*`
+  const filePath = path.join(__dirname, ...targetOutputModulePath);
+  return $$require_external(filePath);
+}
 
 function getRscRenderContext(platform: string) {
   // NOTE(EvanBacon): We memoize this now that there's a persistent server storage cache for Server Actions.
@@ -29,53 +37,38 @@ function getRscRenderContext(platform: string) {
   return context;
 }
 
-function interopDefault(mod: any) {
-  if ('default' in mod && typeof mod.default === 'object' && mod.default) {
-    const def = mod.default;
-    if ('default' in def && typeof def.default === 'object' && def.default) {
-      return def.default;
-    }
-    return mod.default;
-  }
-  return mod;
-}
-
-async function getServerActionManifest(
-  distFolder: string,
+function getServerActionManifest(
+  _distFolder: string,
   platform: string
-): Promise<
-  Record<
-    // Input ID
+): Record<
+  // Input ID
+  string,
+  [
+    // Metro ID
     string,
-    [
-      // Metro ID
-      string,
-      // Chunk location.
-      string,
-    ]
-  >
+    // Chunk location.
+    string,
+  ]
 > {
   const filePath = `../../rsc/${platform}/action-manifest.js`;
-  return interopDefault(await asyncServerImport(filePath));
+  return serverRequire(filePath);
 }
 
-async function getSSRManifest(
-  distFolder: string,
+function getSSRManifest(
+  _distFolder: string,
   platform: string
-): Promise<
-  Record<
-    // Input ID
+): Record<
+  // Input ID
+  string,
+  [
+    // Metro ID
     string,
-    [
-      // Metro ID
-      string,
-      // Chunk location.
-      string,
-    ]
-  >
+    // Chunk location.
+    string,
+  ]
 > {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
-  return interopDefault(await asyncServerImport(filePath));
+  return serverRequire(filePath);
 }
 
 // The import map allows us to use external modules from different bundling contexts.
@@ -96,10 +89,14 @@ export async function renderRscWithImportsAsync(
   const context = getRscRenderContext(platform);
   context['__expo_requestHeaders'] = headers;
 
-  const entries = await imports.router();
+  const router = await imports.router();
+  const entries = router.default({
+    redirects: Constants.expoConfig?.extra?.router?.redirects,
+    rewrites: Constants.expoConfig?.extra?.router?.rewrites,
+  });
 
-  const ssrManifest = await getSSRManifest(distFolder, platform);
-  const actionManifest = await getServerActionManifest(distFolder, platform);
+  const ssrManifest = getSSRManifest(distFolder, platform);
+  const actionManifest = getServerActionManifest(distFolder, platform);
   return renderRsc(
     {
       body: body ?? undefined,
@@ -141,14 +138,8 @@ export async function renderRscWithImportsAsync(
       },
       async loadServerModuleRsc(file) {
         debug('loadServerModuleRsc', file);
-        const filePath = path.join('../../../', file);
-        const m = await asyncServerImport(filePath);
-
-        // TODO: This is a hack to workaround a cloudflare/metro issue where there's an extra `default` wrapper.
-        if (typeof caches !== 'undefined') {
-          return m.default;
-        }
-        return m;
+        // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
+        return serverRequire('../../../', file);
       },
 
       entries: entries!,
@@ -165,9 +156,8 @@ export async function renderRscAsync(
     distFolder,
     {
       router: () => {
-        // Assumes this file is saved to: `dist/server/_expo/functions/_flight/[...rsc].js`
-        const filePath = `../../rsc/${platform}/router.js`;
-        return asyncServerImport(filePath);
+        // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
+        return serverRequire(`../../rsc/${platform}/router.js`);
       },
     },
     args

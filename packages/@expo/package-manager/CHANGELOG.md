@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.8.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 1.8.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.8.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 1.8.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 1.8.0 — 2025-04-04
+
+### 💡 Others
+
 - Remove unused `sudo-prompt` dependency ([#34559](https://github.com/expo/expo/pull/34559) by [@kitten](https://github.com/kitten))
 - Remove unused dependencies. ([#35038](https://github.com/expo/expo/pull/35038) by [@kitten](https://github.com/kitten))
 

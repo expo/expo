@@ -2,10 +2,10 @@ const { withProjectBuildGradle } = require('@expo/config-plugins');
 const kotlinClassPath = 'org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion';
 
 const withKotlinGradle = (config, version) => {
-  return withProjectBuildGradle(config, config => {
+  return withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
-      config.modResults.contents = setKotlinVersion(config.modResults.contents, version);
       config.modResults.contents = setKotlinClassPath(config.modResults.contents);
+      config.modResults.contents = setKotlinVersion(config.modResults.contents, version);
     } else {
       throw new Error('Cannot setup kotlin because the build.gradle is not groovy');
     }
@@ -21,9 +21,9 @@ function setKotlinVersion(buildGradle, version) {
     return buildGradle.replace(pattern, replacement);
   }
   return buildGradle.replace(
-    /ext\s?{/,
-    `ext {
-        ${replacement}`
+    /dependencies\s?{/,
+    `dependencies {
+        def ${replacement}`
   );
 }
 
@@ -40,7 +40,7 @@ function setKotlinClassPath(buildGradle) {
 }
 
 const withUnimodulesTestCore = (config) => {
-    return withKotlinGradle(config, '1.3.50');
-}
+  return withKotlinGradle(config, '1.3.50');
+};
 
 module.exports = withUnimodulesTestCore;

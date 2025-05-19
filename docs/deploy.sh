@@ -106,7 +106,6 @@ redirects[development/use-development-builds]=develop/development-builds/use-dev
 redirects[development/development-workflows]=develop/development-builds/development-workflows
 redirects[debugging]=debugging/runtime-issues
 redirects[debugging/runtime-issue]=debugging/runtime-issues
-redirects[develop/development-builds/installation]=develop/development-builds/create-a-build
 redirects[develop/development-builds/parallel-installation]=build-reference/variants
 redirects[guides/assets]=develop/user-interface/assets
 
@@ -122,28 +121,23 @@ redirects[build/automating-submissions]=build/automate-submissions
 redirects[workflow/run-on-device]=build/internal-distribution
 redirects[archive/workflow/customizing]=workflow/customizing
 redirects[guides/building-standalone-apps]=build/setup
-redirects[versions/latest/sdk/permissions#expopermissionscamera_roll]=guides/permissions
+redirects[versions/latest/sdk/permissions]=guides/permissions
 redirects[push-notifications/using-fcm]=push-notifications/push-notifications-setup
 
 # Redirects reported from SEO tools list (MOZ, SEMRush, GSC, etc.)
-redirects[development/development-workflows]=develop/development-builds/development-workflows
 redirects[bare/installing-unimodules]=bare/installing-expo-modules
 redirects[versions/latest/sdk/admob]=versions/latest
 redirects[workflow/publishing]=archive/classic-updates/publishing
 redirects[workflow/already-used-react-native]=workflow/overview
-redirects[eas-update/how-eas-update-works]=eas-update/how-it-works
 redirects[development/installation]=develop/development-builds/create-a-build
 redirects[bare/updating-your-app]=eas-update/getting-started
 redirects[technical-specs/expo-updates-0]=technical-specs/expo-updates-1
 redirects[archive/expokit/eject]=archive/glossary
 redirects[archive/expokit/overview]=archive/glossary
 redirects[expokit/overview]=archive/glossary
-redirects[eas-update/eas-update-with-local-build]=eas-update/standalone-service
 redirects[bare/existing-apps]=bare/installing-expo-modules
 redirects[bare/exploring-bare-workflow]=bare/overview
-redirects[t/cant-upgrade-to-the-lastest-expo-cli-3-19-2]=faq
 redirects[build-reference/custom-build-config]=custom-builds/get-started
-redirects[workflow/run-on-device]=build/internal-distribution
 redirects[build-reference/how-tos]=build-reference/private-npm-packages
 redirects[eas-update/migrate-codepush-to-eas-update]=eas-update/codepush
 redirects[guides/testing-on-devices]=build/internal-distribution
@@ -168,7 +162,6 @@ redirects[archive/classic-updates/getting-started]=eas-update/getting-started
 redirects[archive/classic-updates/building-standalone-apps]=build/setup
 
 # EAS Update
-redirects[technical-specs/expo-updates-0]=archive/technical-specs/expo-updates-0
 redirects[eas-update/developing-with-eas-update]=eas-update/develop-faster
 redirects[eas-update/eas-update-with-local-build]=eas-update/standalone-service
 redirects[eas-update/eas-update-and-eas-cli]=eas-update/eas-cli
@@ -189,10 +182,10 @@ redirects[routing/introduction]=router/introduction
 redirects[routing/installation]=router/installation
 redirects[routing/create-pages]=router/create-pages
 redirects[routing/navigating-pages]=router/navigating-pages
-redirects[routing/layouts]=router/layouts
+redirects[routing/layouts]=router/basics/layout
 redirects[routing/appearance]=router/introduction
 redirects[routing/error-handling]=router/error-handling
-redirects[router/advance/root-layout]=router/advanced/root-layout
+redirects[router/advance/root-layout]=router/basics/layout/#root-layout
 redirects[router/advance/stack]=router/advanced/stack
 redirects[router/advance/tabs]=router/advanced/tabs
 redirects[router/advance/drawer]=router/advanced/drawer
@@ -220,7 +213,6 @@ redirects[versions/latest/sdk/google]=guides/authentication
 redirects[versions/latest/sdk/amplitude]=guides/using-analytics
 redirects[versions/latest/sdk/util]=versions/latest
 redirects[versions/latest/introduction/faq]=faq
-redirects[versions/v50.0.0/sdk/in-app-purchases]=guides/in-app-purchases/
 redirects[versions/latest/sdk/in-app-purchases]=guides/in-app-purchases/
 
 # Redirects based on Sentry reports
@@ -237,19 +229,13 @@ redirects[versions/latest/sdk/shared-element]=versions/latest
 redirects[workflow/hermes]=guides/using-hermes
 
 # Redirects based on Algolia 404 report
-redirects[versions/latest/sdk/permissions]=guides/permissions
 redirects[workflow/build/building-on-ci]=build/building-on-ci
 redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
 redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
-redirects[versions/v50.0.0/sdk/taskmanager]=versions/v50.0.0/sdk/task-manager
-redirects[versions/v49.0.0/sdk/taskmanager]=versions/v49.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
-redirects[versions/v49.0.0/sdk/filesystem.md]=versions/v49.0.0/sdk/filesystem
 redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
-redirects[versions/v50.0.0/sdk]=versions/v50.0.0
-redirects[versions/v49.0.0/sdk]=versions/v49.0.0
 redirects[guides/authentication.md]=guides/authentication
 redirects[versions/latest/workflow/linking/]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
@@ -270,7 +256,7 @@ redirects[develop/user-interface/app-icons]=develop/user-interface/splash-screen
 redirects[develop/user-interface/splash-screen]=develop/user-interface/splash-screen-and-app-icon
 
 # Preview section
-redirects[/preview/support]=preview/introduction
+redirects[preview/support]=preview/introduction
 redirects[preview/react-compiler]=guides/react-compiler
 
 # Archived
@@ -324,6 +310,9 @@ redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
 redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
 
+# After moving e2e-tests to eas/workflows/reference
+redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
+
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites
 
@@ -353,6 +342,14 @@ redirects[router/advanced/root-layout]=router/basics/layout/#root-layout
 redirects[router/reference/not-found]=router/error-handling
 redirects[router/navigating-pages]=router/basics/navigation
 redirects[router/create-pages]=router/basics/core-concepts
+
+# After merging registerRootComponent info in `expo` API reference
+redirects[versions/v53.0.0/sdk/register-root-component]=versions/latest/sdk/expo/#registerrootcomponentcomponent
+redirects[versions/v53.0.0/sdk/url]=versions/v53.0.0/sdk/expo/#url-api
+redirects[versions/v53.0.0/sdk/encoding]=versions/v53.0.0/sdk/expo/#encoding-api
+
+# After adding System bars
+redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

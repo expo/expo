@@ -1,5 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
-
 import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeResponse } from './NativeRequest';
 
@@ -110,6 +108,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
   async json(): Promise<any> {
     const text = await this.text();
     return JSON.parse(text);
+  }
+
+  async bytes(): Promise<Uint8Array> {
+    return new Uint8Array(await this.arrayBuffer());
   }
 
   toString(): string {

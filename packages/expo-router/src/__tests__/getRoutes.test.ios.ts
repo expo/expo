@@ -247,7 +247,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./a.tsx" and "./a.js" conflict on the route "/a". Please remove or rename one of these files."`
+      `"The route files "./a.tsx" and "./a.js" conflict on the route "/a". Remove or rename one of these files."`
     );
   });
 
@@ -284,7 +284,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./test/folder/b.js" and "./test/folder/b.tsx" conflict on the route "/test/folder/b". Please remove or rename one of these files."`
+      `"The route files "./test/folder/b.js" and "./test/folder/b.tsx" conflict on the route "/test/folder/b". Remove or rename one of these files."`
     );
   });
 
@@ -297,7 +297,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./(a,b)/b.tsx" and "./(a)/b.tsx" conflict on the route "/(a)/b". Please remove or rename one of these files."`
+      `"The route files "./(a,b)/b.tsx" and "./(a)/b.tsx" conflict on the route "/(a)/b". Remove or rename one of these files."`
     );
   });
 
@@ -334,7 +334,7 @@ describe('+html', () => {
         { internal_stripLoadRoute: true, skipGenerated: true }
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Please rename to folder/html.js""`
+      `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Rename it to folder/html.js""`
     );
   });
 });
@@ -784,7 +784,7 @@ it('ignores API routes with platform extensions', () => {
       }
     );
   }).toThrowErrorMatchingInlineSnapshot(
-    `"Api routes cannot have platform extensions. Please remove '.web' from './folder/two+api.web.tsx'"`
+    `"API routes cannot have platform extensions. Remove '.web' from './folder/two+api.web.tsx'"`
   );
 });
 
@@ -1009,6 +1009,113 @@ describe('group expansion', () => {
       generated: true,
       type: 'layout',
       route: '',
+    });
+  });
+});
+
+describe('redirects', () => {
+  it('can add redirects', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+        }),
+        {
+          internal_stripLoadRoute: true,
+          skipGenerated: true,
+          redirects: [{ source: '/old', destination: '/(app)/index' }],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: 'old',
+          destinationContextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          generated: true,
+          type: 'redirect',
+          route: 'old',
+          permanent: false,
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
+  it('can add dynamic redirects', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+          './(app)/[slug]': () => null,
+        }),
+        {
+          internal_stripLoadRoute: true,
+          skipGenerated: true,
+          redirects: [{ source: '/old/[slug]', destination: '/(app)/[slug]' }],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(app)/[slug].js',
+          dynamic: [
+            {
+              deep: false,
+              name: 'slug',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/[slug].js'],
+          route: '(app)/[slug]',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: 'old/[slug]',
+          destinationContextKey: './(app)/[slug].js',
+          dynamic: [
+            {
+              deep: false,
+              name: 'slug',
+            },
+          ],
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/[slug].js'],
+          generated: true,
+          permanent: false,
+          route: 'old/[slug]',
+          type: 'redirect',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
     });
   });
 });

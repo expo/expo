@@ -98,7 +98,11 @@ const renderInterfacePropertyRow = (
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        {type ? (
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        ) : (
+          <CODE>undefined</CODE>
+        )}
       </Cell>
       <Cell>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>
@@ -111,7 +115,7 @@ const renderInterface = (
 ): JSX.Element | null => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
-  if (!interfaceChildren.length) {
+  if (interfaceChildren.length === 0) {
     return null;
   }
 

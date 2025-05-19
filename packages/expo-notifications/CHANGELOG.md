@@ -8,9 +8,81 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- improve test environment condition to avoid warning ([#33982](https://github.com/expo/expo/pull/33982) by [@PiotrBorowski](https://github.com/PiotrBorowski))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.31.2 — 2025-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.1 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.0 — 2025-04-25
+
+### 🛠 Breaking changes
+
+- support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- deprecate `removePushTokenSubscription` and `removeNotificationSubscription` ([#36371](https://github.com/expo/expo/pull/36371) by [@vonovak](https://github.com/vonovak))
+
+## 0.30.7 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.6 — 2025-04-22
+
+### 🛠 Breaking changes
+
+- [Android] support action buttons when not in foreground. This is breaking because notification background tasks on Android run not only in response to an incoming notification but also in response to an action button press. ([#35295](https://github.com/expo/expo/pull/35295) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- correctly include `NotificationContent.data` in `NotificationHandler` ([#36195](https://github.com/expo/expo/pull/36195) by [@vonovak](https://github.com/vonovak))
+
+## 0.30.5 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.2 — 2025-04-09
+
+### 🐛 Bug fixes
+
+- [Android] Defer calling `addTokenListener` until `OnCreate`. ([#36052](https://github.com/expo/expo/pull/36052) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.30.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- improve notification response handling ([#36027](https://github.com/expo/expo/pull/36027) by [@vonovak](https://github.com/vonovak))
+- remove unneeded Long conversions on Android ([#35976](https://github.com/expo/expo/pull/35976) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] fix data serialization ([#35975](https://github.com/expo/expo/pull/35975) by [@vonovak](https://github.com/vonovak))
+- simplify push token event management ([#35944](https://github.com/expo/expo/pull/35944) by [@vonovak](https://github.com/vonovak))
+- fix Android `NotificationContent` not containing JSON data object ([#35942](https://github.com/expo/expo/pull/35942) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] fix regressions in `CalendarTriggerRecord` ([#35937](https://github.com/expo/expo/pull/35937) by [@vonovak](https://github.com/vonovak))
+- remove deprecated `presentNotificationAsync` ([#35900](https://github.com/expo/expo/pull/35900) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] UNTextInputNotificationAction wasn't provided with options ([#35903](https://github.com/expo/expo/pull/35903) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] event emitter should not influence notification presentation ([#35858](https://github.com/expo/expo/pull/35858) by [@vonovak](https://github.com/vonovak))
 - correctly serialize `null` trigger on iOS ([#35672](https://github.com/expo/expo/pull/35672) by [@vonovak](https://github.com/vonovak))
 - restore `useLastNotificationResponse` return value behavior ([#35504](https://github.com/expo/expo/pull/35504) by [@vonovak](https://github.com/vonovak))
-- fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
+- [post-swift-conversion] fix ios textInput action missing title ([#34866](https://github.com/expo/expo/pull/34866) by [@vonovak](https://github.com/vonovak))
 - [ios] Fixed incorrect `EXNotifications-Swift.h` import. ([#34987](https://github.com/expo/expo/pull/34987) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] fix notification response listener emitting duplicate response events ([#34849](https://github.com/expo/expo/pull/34849) by [@xc2](https://github.com/xc2))
 
@@ -31,6 +103,7 @@
 - [iOS] Swift conversion 7: Handler and Emitter. ([#35564](https://github.com/expo/expo/pull/35564) by [@douglowder](https://github.com/douglowder))
 - [iOS] Swift conversion 8: Background module. ([#35695](https://github.com/expo/expo/pull/35695) by [@douglowder](https://github.com/douglowder))
 - [iOS] Swift conversion 9: Permissions module. ([#35719](https://github.com/expo/expo/pull/35719) by [@douglowder](https://github.com/douglowder))
+- [iOS] Swift conversion 10: Refactor for Expo Go. ([#35862](https://github.com/expo/expo/pull/35862) by [@douglowder](https://github.com/douglowder))
 
 ## 0.29.14 - 2025-03-11
 
@@ -600,9 +673,11 @@ _This version does not introduce any user-facing changes._
 - Changed class responsible for handling Firebase events from `FirebaseMessagingService` to `.service.NotificationsService` on Android. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override `FirebaseMessagingService` to implement some custom handling logic.
+
 - Changed how you can override ways in which a notification is reinterpreted from a [`StatusBarNotification`](https://developer.android.com/reference/android/service/notification/StatusBarNotification) and in which a [`Notification`](https://developer.android.com/reference/android/app/Notification.html?hl=en) is built from defining an `expo.modules.notifications#NotificationsScoper` meta-data value in `AndroidManifest.xml` to implementing a `BroadcastReceiver` subclassing `NotificationsService` delegating those responsibilities to your custom `PresentationDelegate` instance. ([#10558](https://github.com/expo/expo/pull/10558) by [@sjchmiela](https://github.com/sjchmiela))
 
   > Note that this change most probably will not affect you — it only affects projects that override those methods to implement some custom handling logic.
+
 - Removed `removeAllNotificationListeners` method. You can (and should) still remove listeners using `remove` method on `Subscription` objects returned by `addNotification…Listener`. ([#10883](https://github.com/expo/expo/pull/10883) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier being used to fetch Expo push token being backed up on Android which resulted in multiple devices having the same `deviceId` (and eventually, Expo push token). ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed device identifier used when fetching Expo push token being different than `Constants.installationId` in managed workflow apps which resulted in different Expo push tokens returned for the same experience across old and new Expo API and the device push token not being automatically updated on Expo push servers which lead to Expo push tokens corresponding to outdated Firebase tokens. ([#11005](https://github.com/expo/expo/pull/11005) by [@sjchmiela](https://github.com/sjchmiela))

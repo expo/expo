@@ -1,7 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
-import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
@@ -201,8 +200,6 @@ export function getDefaultConfig(
     sourceExts.push('scss', 'sass', 'css');
   }
 
-  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV, { silent: true });
-
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   const nodeModulesPaths = getModulesPaths(projectRoot);
@@ -216,7 +213,6 @@ export function getDefaultConfig(
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
-    console.log(`- Env Files: ${envFiles}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
     console.log();
@@ -261,8 +257,8 @@ export function getDefaultConfig(
     },
     cacheStores: [cacheStore],
     watcher: {
-      // strip starting dot from env files
-      additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
+      // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
+      additionalExts: ['env', 'local', 'development'],
     },
     serializer: {
       isThirdPartyModule(module) {
@@ -287,9 +283,11 @@ export function getDefaultConfig(
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter');
+        const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
         if (stdRuntime) {
           preModules.push(stdRuntime);
+        } else {
+          debug('@expo/metro-runtime not found, this may cause issues');
         }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
@@ -297,6 +295,8 @@ export function getDefaultConfig(
         const metroRuntime = resolveFrom.silent(projectRoot, '@expo/metro-runtime');
         if (metroRuntime) {
           preModules.push(metroRuntime);
+        } else {
+          debug('@expo/metro-runtime not found, this may cause issues');
         }
 
         return preModules;

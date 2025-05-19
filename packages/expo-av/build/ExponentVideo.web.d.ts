@@ -43,13 +43,21 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     onFullscreenChange: (isFullscreen: boolean) => void;
     onStatusUpdate: () => Promise<void>;
     onLoadStart: () => void;
-    onLoadedData: (event: any) => void;
-    onError: (event: any) => void;
+    onLoadedData: (event: {
+        nativeEvent: AVPlaybackStatus;
+    }) => void;
+    onError: (event: {
+        nativeEvent: {
+            error: string;
+        };
+    }) => void;
     onProgress: () => void;
     onSeeking: () => void;
     onEnded: () => void;
     onLoadedMetadata: () => void;
-    onCanPlay: (event: any) => void;
+    onCanPlay: (event: {
+        nativeEvent: VideoReadyForDisplayEvent;
+    }) => void;
     onStalled: () => void;
     onRef: (ref: HTMLVideoElement | null) => void;
     render(): React.JSX.Element;

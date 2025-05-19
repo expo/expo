@@ -364,7 +364,8 @@ class ExpoCameraView(
               when (event.error) {
                 VideoRecordEvent.Finalize.ERROR_FILE_SIZE_LIMIT_REACHED,
                 VideoRecordEvent.Finalize.ERROR_DURATION_LIMIT_REACHED,
-                VideoRecordEvent.Finalize.ERROR_NONE -> {
+                VideoRecordEvent.Finalize.ERROR_NONE,
+                VideoRecordEvent.Finalize.ERROR_SOURCE_INACTIVE -> {
                   promise.resolve(
                     Bundle().apply {
                       putString("uri", event.outputResults.outputUri.toString())

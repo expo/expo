@@ -1,5 +1,3 @@
-import { ReadableStream, WritableStream } from 'web-streams-polyfill';
-
 import ExpoFileSystem from './ExpoFileSystem';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -28,8 +26,15 @@ export class Paths extends PathUtilities {
   }
 }
 
+/**
+ * @hidden
+ */
 export class FileBlob extends Blob {
   file: File;
+
+  /**
+   * @internal
+   */
   key: string = 'FileBlob';
 
   constructor(file: File) {
@@ -41,6 +46,9 @@ export class FileBlob extends Blob {
     return this.file.size ?? 0;
   }
 
+  /**
+   * @internal
+   */
   get name(): string {
     return this.file.name;
   }
@@ -73,7 +81,7 @@ export class FileBlob extends Blob {
 export class File extends ExpoFileSystem.FileSystemFile {
   /**
    * Creates an instance of a file.
-   * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+   * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
    * @example
    * ```ts
    * const file = new File("file:///path/to/file.txt");
@@ -85,7 +93,7 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 
   /*
-   * Returns the file as a Blob. The blob can be used in `@expo/fetch` to send files over network and for other uses.
+   * Returns the file as a `Blob`. The blob can be used in `@expo/fetch` to send files over network and for other uses.
    */
   blob(): Blob {
     return new FileBlob(this);
@@ -114,7 +122,7 @@ export class File extends ExpoFileSystem.FileSystemFile {
   }
 
   readableStream() {
-    return new ReadableStream<Uint8Array>(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
   }
 
   writableStream() {
@@ -163,7 +171,7 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()
-      .map(({ isDirectory, path }) => (isDirectory ? new Directory(path) : new File(path)));
+      .map(({ isDirectory, uri }) => (isDirectory ? new Directory(uri) : new File(uri)));
   }
 
   /**
