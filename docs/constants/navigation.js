@@ -399,7 +399,7 @@ export const eas = [
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/limitations.mdx'),
-    makeGroup('More', [makePage('eas/workflows/reference/e2e-tests.mdx')]),
+    makeGroup('Reference', [makePage('eas/workflows/reference/e2e-tests.mdx')]),
   ]),
   makeSection('EAS Build', [
     makePage('build/introduction.mdx'),
