@@ -96,14 +96,14 @@ export function mergeVariablesWithPath(path: string, params: Record<string, stri
   return path
     .split('/')
     .map((part) => {
-      const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
-      if (!match) {
+      const dynamicName = matchDynamicName(part);
+      if (!dynamicName) {
         return part;
+      } else {
+        const param = params[dynamicName.name];
+        delete params[dynamicName.name];
+        return param;
       }
-
-      const param = params[match];
-      delete params[match];
-      return param;
     })
     .filter(Boolean)
     .join('/');
