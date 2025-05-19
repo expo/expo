@@ -8,16 +8,20 @@ import { Href } from './types';
  * @example
  * ```tsx app/index.tsx
  * import { useNavigation } from 'expo-router';
+ * import { DrawerNavigationProp } from 'expo-router/drawer';
  *
  * export default function Route() {
  *   // Access the current navigation object for the current route.
  *   const navigation = useNavigation();
  *
+ *   // Navigators with custom actions will need a NavigationProp type.
+ *   const drawerNavigation = useNavigation<DrawerNavigationProp>();
+ *
  *   return (
  *     <View>
  *       <Text onPress={() => {
  *         // Open the drawer view.
- *         navigation.openDrawer();
+ *         drawerNavigation.openDrawer();
  *       }}>
  *         Open Drawer
  *       </Text>
