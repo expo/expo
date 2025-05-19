@@ -196,7 +196,6 @@ dependencies {
 
   if (shouldIncludeCompose) {
     implementation 'androidx.compose.foundation:foundation-android:1.7.6'
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.8.0'
   }
 
   implementation("androidx.tracing:tracing-ktx:1.2.0")
