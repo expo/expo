@@ -4,54 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Link = void 0;
-exports.Redirect = Redirect;
+exports.Link = exports.Redirect = void 0;
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const href_1 = require("./href");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
-const hooks_1 = require("../hooks");
-const useFocusEffect_1 = require("../useFocusEffect");
 const useLinkHooks_1 = require("./useLinkHooks");
 const Prefetch_1 = require("../Prefetch");
 const Slot_1 = require("../ui/Slot");
-/**
- * Redirects to the `href` as soon as the component is mounted.
- *
- * @example
- * ```tsx
- * import { View, Text } from 'react-native';
- * import { Redirect } from 'expo-router';
- *
- * export default function Page() {
- *  const { user } = useAuth();
- *
- *  if (!user) {
- *    return <Redirect href="/login" />;
- *  }
- *
- *  return (
- *    <View>
- *      <Text>Welcome Back!</Text>
- *    </View>
- *  );
- * }
- * ```
- */
-function Redirect({ href, relativeToDirectory, withAnchor }) {
-    const router = (0, hooks_1.useRouter)();
-    (0, useFocusEffect_1.useFocusEffect)(() => {
-        try {
-            router.replace(href, { relativeToDirectory, withAnchor });
-        }
-        catch (error) {
-            console.error(error);
-        }
-    });
-    return null;
-}
+var Redirect_1 = require("./Redirect");
+Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Redirect_1.Redirect; } });
 /**
  * Component that renders a link using [`href`](#href) to another route.
  * By default, it accepts children and wraps them in a `<Text>` component.
