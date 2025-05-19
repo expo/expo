@@ -83,11 +83,6 @@ export async function setVisibilityAsync(visibility: NavigationBarVisibility): P
 }
 
 export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
-  if (SystemBars != null) {
-    console.warn('`getVisibilityAsync` is not supported with edge-to-edge enabled.');
-    return 'hidden';
-  }
-
   return ExpoNavigationBar.getVisibilityAsync();
 }
 
