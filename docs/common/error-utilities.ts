@@ -502,8 +502,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // Temporary redirects
   '/router/advanced/singular/': '/preview/singular/',
 
-  // After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
-  '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
   // After adding System bars
   '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',
+
+  // After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
+  '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 };
