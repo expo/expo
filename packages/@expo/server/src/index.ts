@@ -259,13 +259,6 @@ export function createRequestHandler(
   };
 }
 
-/** Match `[page]` -> `page` */
-// Ported from `expo-router/src/matchers.tsx`
-function matchDynamicName(name: string): string | undefined {
-  // Don't match `[` or `]` inside the brackets
-  return name.match(/^\[([^[\]]+?)\]$/)?.[1];
-}
-
 function updateRequestWithConfig(
   request: Request,
   config: ExpoRouterServerManifestV1FunctionRoute
@@ -283,6 +276,9 @@ function updateRequestWithConfig(
   return params;
 }
 
+/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+const dynamicNameRe = /^\[([^[\]]+?)\]$/;
+
 function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) {
   const params = updateRequestWithConfig(request, route);
 
@@ -291,7 +287,7 @@ function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) 
   let location = route.page
     .split('/')
     .map((segment) => {
-      let paramName = matchDynamicName(segment);
+      let paramName = segment.match(dynamicNameRe)?.[1];
       if (!paramName) {
         return segment;
       } else if (paramName.startsWith('...')) {
