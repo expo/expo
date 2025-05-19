@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '13.1.2'
+version = '13.1.4'
 
 android {
   namespace "expo.modules.sms"
   defaultConfig {
     versionCode 28
-    versionName "13.1.2"
+    versionName "13.1.4"
   }
 }
 

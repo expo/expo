@@ -168,7 +168,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform web
    */
   static async loadAsync(
-    source: ImageSource | string,
+    source: ImageSource | string | number,
     options?: ImageLoadOptions
   ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;

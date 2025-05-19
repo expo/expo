@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+
 ### 💡 Others
+
+## 1.0.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
 
 ## 1.0.3 — 2025-04-14
 

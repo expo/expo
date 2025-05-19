@@ -21,7 +21,7 @@ import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
 
-const betaVersion = 'betaVersion' in packageJson ? packageJson.betaVersion : undefined;
+const betaVersion = 'betaVersion' in packageJson ? (packageJson.betaVersion as string) : undefined;
 const latestVersion = 'version' in packageJson ? packageJson.version : undefined;
 const newestVersion = betaVersion ?? latestVersion;
 

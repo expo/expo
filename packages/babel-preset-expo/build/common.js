@@ -15,10 +15,12 @@ exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
 exports.getIsServer = getIsServer;
+exports.getMetroSourceType = getMetroSourceType;
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 exports.getAsyncRoutes = getAsyncRoutes;
 exports.createAddNamedImportOnce = createAddNamedImportOnce;
+exports.toPosixPath = toPosixPath;
 // @ts-expect-error: missing types
 const helper_module_imports_1 = require("@babel/helper-module-imports");
 const node_path_1 = __importDefault(require("node:path"));
@@ -113,6 +115,10 @@ function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
 }
+function getMetroSourceType(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.metroSourceType;
+}
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);
     const rootModuleId = caller?.routerRoot ?? './app';
@@ -163,4 +169,11 @@ function createAddNamedImportOnce(t) {
         // this is a helper for that.
         return didCreate ? identifier : t.cloneNode(identifier);
     };
+}
+const REGEXP_REPLACE_SLASHES = /\\/g;
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath) {
+    return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }

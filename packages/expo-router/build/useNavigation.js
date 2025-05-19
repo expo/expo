@@ -1,14 +1,9 @@
 "use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigation = useNavigation;
 const native_1 = require("@react-navigation/native");
-const react_1 = __importDefault(require("react"));
-const router_store_1 = require("./global-state/router-store");
-const hooks_1 = require("./hooks");
+const constants_1 = require("./constants");
 const href_1 = require("./link/href");
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
@@ -64,64 +59,64 @@ const href_1 = require("./link/href");
  */
 function useNavigation(parent) {
     let navigation = (0, native_1.useNavigation)();
-    const initialNavigation = navigation;
-    const segments = (0, hooks_1.useSegments)();
-    let targetNavigatorContextKey = react_1.default.useMemo(() => {
-        if (!parent) {
-            return;
-        }
-        if (typeof parent === 'object') {
-            parent = (0, href_1.resolveHref)(parent);
-        }
-        if (parent === '/') {
-            return '';
-        }
-        let state = router_store_1.store.getStateFromPath(parent.startsWith('../') ? segments.join('/') : parent);
-        // Reconstruct the context key from the state
-        let contextKey = '';
+    let state = (0, native_1.useStateForPath)();
+    if (parent === undefined) {
+        // If no parent is provided, return the current navigation object
+        return navigation;
+    }
+    // Check for the top-level navigator - we cannot fetch anything higher!
+    const currentId = navigation.getId();
+    if (currentId === '' || currentId === `/expo-router/build/views/Navigator`) {
+        return navigation;
+    }
+    if (typeof parent === 'object') {
+        parent = (0, href_1.resolveHref)(parent);
+    }
+    if (parent === '/') {
+        // This is the root navigator
+        return navigation.getParent(`/expo-router/build/views/Navigator`) ?? navigation.getParent(``);
+    }
+    else if (parent?.startsWith('../')) {
         const names = [];
         while (state) {
-            const routes = state.routes;
-            const route = routes[state.index ?? routes.length - 1];
-            if (route.state) {
-                contextKey = `${contextKey}/${route.name}`;
+            const route = state.routes[0];
+            state = route.state;
+            // Don't include the last router, as thats the current route
+            if (state) {
                 names.push(route.name);
-                if (parent === contextKey) {
-                    break;
-                }
-                state = route.state;
-            }
-            else {
-                break;
             }
         }
-        if (parent.startsWith('../')) {
-            const parentSegments = parent.split('/').filter(Boolean);
-            for (const segment of parentSegments) {
-                if (segment === '..') {
-                    names.pop();
-                }
-                else {
-                    throw new Error("Relative parent paths may only contain '..' and cannot contain other segments");
-                }
-            }
-            contextKey = names.length > 0 ? `/${names.join('/')}` : '';
+        // Removing the trailing slash to make splitting easier
+        const originalParent = parent;
+        if (parent.endsWith('/')) {
+            parent = parent.slice(0, -1);
         }
-        return contextKey;
-    }, [segments, parent]);
-    // Remove the root Slot to generate the correct context key
-    targetNavigatorContextKey = targetNavigatorContextKey?.replace('/__root', '');
-    if (targetNavigatorContextKey !== undefined) {
-        navigation = navigation.getParent(targetNavigatorContextKey);
+        const segments = parent.split('/');
+        if (!segments.every((segment) => segment === '..')) {
+            throw new Error(`Invalid parent path "${originalParent}". Only "../" segments are allowed when using relative paths.`);
+        }
+        const levels = segments.length;
+        const index = names.length - 1 - levels;
+        if (index < 0) {
+            throw new Error(`Invalid parent path "${originalParent}". Cannot go up ${levels} levels from the current route.`);
+        }
+        parent = names[index];
+        // Expo Router navigators use the context key as the name which has a leading `/`
+        // The exception to this is the INTERNAL_SLOT_NAME, and the root navigator which uses ''
+        if (parent && parent !== constants_1.INTERNAL_SLOT_NAME) {
+            parent = `/${parent}`;
+        }
     }
-    if (!navigation) {
-        const ids = [];
-        navigation = initialNavigation;
-        while (navigation) {
-            ids.push(navigation.getId() || '/');
-            navigation = navigation.getParent();
+    navigation = navigation.getParent(parent);
+    if (process.env.NODE_ENV !== 'production') {
+        if (!navigation) {
+            const ids = [];
+            while (navigation) {
+                ids.push(navigation.getId() || '/');
+                navigation = navigation.getParent();
+            }
+            throw new Error(`Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`);
         }
-        throw new Error(`Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`);
     }
     return navigation;
 }

@@ -263,3 +263,4 @@ exceptions:
   - Drizzle ORM
   - architecture?
   - index.tsx files
+  - registerRootComponent

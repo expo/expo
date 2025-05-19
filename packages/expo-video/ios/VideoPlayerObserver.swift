@@ -338,8 +338,8 @@ class VideoPlayerObserver {
       status = .loading
     case .failed:
       // The AVPlayerItem.error can't be modified, so we have a custom field for caching errors
-      let playerItemError = (playerItem as? VideoPlayerItem)?.cachingError ?? error
-      error = PlayerItemLoadException(playerItemError?.description)
+      let playerItemError = (playerItem as? VideoPlayerItem)?.urlAsset.cachingError ?? error
+      error = PlayerItemLoadException(playerItemError?.localizedDescription)
       status = .error
     case .readyToPlay:
       if playerItem.isPlaybackBufferEmpty {

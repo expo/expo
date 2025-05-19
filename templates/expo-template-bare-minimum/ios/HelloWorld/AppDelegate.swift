@@ -4,6 +4,11 @@ import ReactAppDependencyProvider
 
 @UIApplicationMain
 public class AppDelegate: ExpoAppDelegate {
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
   public override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -12,12 +17,13 @@ public class AppDelegate: ExpoAppDelegate {
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    reactNativeFactoryDelegate = delegate
+    reactNativeDelegate = delegate
     reactNativeFactory = factory
+    bindReactNativeFactory(factory)
 
 #if os(iOS) || os(tvOS)
     window = UIWindow(frame: UIScreen.main.bounds)
-    reactNativeFactory?.startReactNative(
+    factory.startReactNative(
       withModuleName: "main",
       in: window,
       launchOptions: launchOptions)

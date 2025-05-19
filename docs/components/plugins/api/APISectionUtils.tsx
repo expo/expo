@@ -398,7 +398,7 @@ export const resolveTypeName = (
   }
 };
 
-export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
+export const parseParamName = (name: string) => (name.startsWith('__') ? name.slice(2) : name);
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters
@@ -453,7 +453,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
           tag,
           content: [
             {
-              text: tag.substring(1),
+              text: tag.slice(1),
               tag,
             } as CommentContentData,
           ],
@@ -471,7 +471,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
       }
       return tag;
     })
-    .filter(tag => tag.tag.substring(1) === tagName);
+    .filter(tag => tag.tag.slice(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
@@ -524,7 +524,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
 const getMonospaceHeader = (
   element: ComponentType<any>,
   baseNestingLevel: number,
-  className: string | undefined = undefined
+  className?: string
 ) => {
   return createPermalinkedComponent(element, {
     baseNestingLevel,
@@ -536,7 +536,7 @@ const getMonospaceHeader = (
 export function getCodeHeadingWithBaseNestingLevel(
   baseNestingLevel: number,
   Element: ComponentType<any>,
-  className: string | undefined = undefined
+  className?: string
 ) {
   return getMonospaceHeader(Element, baseNestingLevel, className);
 }
@@ -575,12 +575,17 @@ export function defineLiteralType(types: TypeDefinitionData[]) {
           return td.head;
         } else if ('value' in td) {
           return td.value && typeof td.value;
+        } else if ('name' in td) {
+          return td.name;
         }
       })
     )
   );
-  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
+  if (uniqueTypes.length === 1) {
     return <CODE>{uniqueTypes[0]}</CODE>;
+  }
+  if (uniqueTypes.filter(Boolean).every(type => typeof type === 'string')) {
+    return <CODE>union</CODE>;
   }
   return null;
 }

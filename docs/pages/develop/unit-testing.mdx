@@ -5,7 +5,7 @@ description: Learn how to set up and configure the jest-expo library to write un
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -23,11 +23,7 @@ You will also use the [`jest-expo`](https://github.com/expo/expo/tree/main/packa
 
 ## Installation and configuration
 
-If you have created your project using the [default Expo template](/get-started/create-a-project/), you can skip this section. The `jest-expo` and other required dev dependencies are already installed and configured.
-
-<Collapsible summary={<>Manual installation instructions for <CODE>jest-expo</CODE></>}>
-
-If you have created your project using [different template](/more/create-expo/#--template), follow the instructions below to install and configure `jest-expo` in your project.
+After creating your Expo project, follow the instructions below to install and configure `jest-expo` in your project:
 
 <Step label="1">
 
@@ -71,7 +67,19 @@ Open **package.json**, add a script for running tests, and add the preset for us
 
 </Step>
 
-</Collapsible>
+<Step label="3">
+
+In **package.json**, add `jest-expo` as a preset so that a base for Jest's configuration is set up:
+
+```json package.json
+{
+  "jest": {
+    "preset": "jest-expo"
+  }
+}
+```
+
+</Step>
 
 <Collapsible summary={<>Additional configuration for using <CODE>transformIgnorePatterns</CODE></>}>
 
@@ -137,7 +145,7 @@ To install it, run the following command:
 
 </Tabs>
 
-> **warning** **Deprecated:** If you are using the default Expo template, after installing this library, you can uninstall the `react-test-renderer` and `@types/react-test-renderer` from your project's dev dependencies. The `react-test-renderer` has been deprecated and will no longer be maintained in the future. See [React's documentation for more information](https://react.dev/warnings/react-test-renderer).
+> **warning** **Deprecated:** `@testing-library/react-native` replaces the deprecated `react-test-renderer` because `react-test-renderer` does not support React 19 and above. Remove the deprecated library from your project if you are currently using it. See [React's documentation for more information](https://react.dev/warnings/react-test-renderer).
 
 ## Unit test
 
@@ -240,6 +248,8 @@ It's all about preferences, and it is up to you to decide how you want to organi
 
 ## Snapshot test
 
+> **info** **Note:** For UI testing, we recommend end-to-end tests instead of snapshot unit tests. See the [E2E tests with Maestro](/eas/workflows/reference/e2e-tests/) guide.
+
 A [snapshot test](https://jestjs.io/docs/en/snapshot-testing) is used to make sure that UI stays consistent, especially when a project is working with global styles that are potentially shared across components.
 
 To add a snapshot test for `<HomeScreen />`, add the following code snippet in the `describe()` in **HomeScreen-test.tsx**:
@@ -325,7 +335,7 @@ For more information, see [CLI Options](https://jestjs.io/docs/en/cli) in Jest d
   title="E2E tests with EAS Workflows"
   description="Learn how to set up and run E2E tests on EAS Workflows with Maestro."
   href="/eas/workflows/reference/e2e-tests/"
-  Icon={Dataflow01Icon}
+  Icon={Dataflow03Icon}
 />
 
 </TabsGroup>

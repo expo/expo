@@ -15,6 +15,7 @@ type BabelPresetExpoPlatformOptions = {
     jsxImportSource?: string;
     lazyImports?: boolean;
     disableImportExportTransform?: boolean;
+    disableDeepImportWarnings?: boolean;
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
@@ -72,7 +73,7 @@ type BabelPresetExpoPlatformOptions = {
      *
      * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
      *
-     * @default `false`
+     * @default `false` on client and `true` on server.
      */
     unstable_transformImportMeta?: boolean;
 };

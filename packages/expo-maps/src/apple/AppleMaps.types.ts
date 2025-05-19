@@ -1,6 +1,6 @@
 import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import { CameraPosition, Coordinates } from '../shared.types';
 
@@ -8,6 +8,11 @@ import { CameraPosition, Coordinates } from '../shared.types';
  * @platform ios
  */
 export type AppleMapsMarker = {
+  /**
+   * The unique identifier for the marker. This can be used to identify the clicked marker in the `onMarkerClick` event.
+   */
+  id?: string;
+
   /**
    * The SF Symbol to display for the marker.
    */
@@ -75,9 +80,30 @@ export enum AppleMapsMapType {
 }
 
 /**
+ * The style of the polyline.
+ * @platform ios
+ */
+export enum AppleMapsContourStyle {
+  /**
+   * A straight line.
+   */
+  STRAIGHT = 'STRAIGHT',
+  /**
+   * A geodesic line.
+   */
+  GEODESIC = 'GEODESIC',
+}
+
+/**
  * @platform ios
  */
 export type AppleMapsProperties = {
+  /**
+   * Whether the user location is shown on the map.
+   * @default false
+   */
+  isMyLocationEnabled?: boolean;
+
   /**
    * Whether the traffic layer is enabled on the map.
    */
@@ -92,6 +118,14 @@ export type AppleMapsProperties = {
    * If true, the user can select a location on the map to get more information.
    */
   selectionEnabled?: boolean;
+
+  /**
+   * The maximum distance in meters from a tap of a polyline for it to be considered a hit.
+   * If the distance is greater than the threshold, the polyline is not considered a hit.
+   * If a hit occurs, the `onPolylineClick` event will be triggered.
+   * Defaults to 20 meters.
+   */
+  polylineTapThreshold?: number;
 };
 
 /**
@@ -119,6 +153,102 @@ export type AppleMapsAnnotation = {
 /**
  * @platform ios
  */
+export type AppleMapsPolyline = {
+  /**
+   * The unique identifier for the polyline. This can be used to identify the clicked polyline in the `onPolylineClick` event.
+   */
+  id?: string;
+  /**
+   * The coordinates of the polyline.
+   */
+  coordinates: Coordinates[];
+  /**
+   * The color of the polyline.
+   */
+  color?: ProcessedColorValue | string;
+  /**
+   * The width of the polyline.
+   */
+  width?: number;
+  /**
+   * The style of the polyline.
+   */
+  contourStyle?: AppleMapsContourStyle;
+};
+
+/**
+ * @platform ios
+ */
+export type AppleMapsCircle = {
+  /**
+   * The unique identifier for the circle. This can be used to identify the clicked circle in the `onCircleClick` event.
+   */
+  id?: string;
+
+  /**
+   * The coordinates of the circle.
+   */
+  center: Coordinates;
+
+  /**
+   * The radius of the circle (in meters).
+   */
+  radius: number;
+
+  /**
+   * The color of the circle.
+   */
+  color?: ProcessedColorValue | string;
+
+  /**
+   * The width of the circle.
+   */
+  width?: number;
+
+  /**
+   * The color of the circle line.
+   */
+  lineColor?: ProcessedColorValue | string;
+
+  /**
+   * The width of the circle line.
+   */
+  lineWidth?: number;
+};
+
+/**
+ * @platform ios
+ */
+export type AppleMapsPolygon = {
+  /**
+   * The unique identifier for the polygon. This can be used to identify the clicked polygon in the `onPolygonClick` event.
+   */
+  id?: string;
+
+  /**
+   * The coordinates of the circle.
+   */
+  coordinates: Coordinates[];
+
+  /**
+   * The color of the polygon.
+   */
+  color?: ProcessedColorValue | string;
+
+  /**
+   * The width of the polygon.
+   */
+  lineWidth?: number;
+
+  /**
+   * The color of the polygon.
+   */
+  lineColor?: ProcessedColorValue | string;
+};
+
+/**
+ * @platform ios
+ */
 export type AppleMapsViewProps = {
   ref?: Ref<AppleMapsViewType>;
   style?: StyleProp<ViewStyle>;
@@ -132,6 +262,21 @@ export type AppleMapsViewProps = {
    * The array of markers to display on the map.
    */
   markers?: AppleMapsMarker[];
+
+  /**
+   * The array of polylines to display on the map.
+   */
+  polylines?: AppleMapsPolyline[];
+
+  /**
+   * The array of polygons to display on the map.
+   */
+  polygons?: AppleMapsPolygon[];
+
+  /**
+   * The array of circles to display on the map.
+   */
+  circles?: AppleMapsCircle[];
 
   /**
    * The array of annotations to display on the map.
@@ -156,8 +301,27 @@ export type AppleMapsViewProps = {
 
   /**
    * Lambda invoked when the marker is clicked
+   * @platform ios 18.0+
    */
   onMarkerClick?: (event: AppleMapsMarker) => void;
+
+  /**
+   * Lambda invoked when the polyline is clicked
+   * @platform ios 18.0+
+   */
+  onPolylineClick?: (event: AppleMapsPolyline) => void;
+
+  /**
+   * Lambda invoked when the polygon is clicked
+   * @platform ios 18.0+
+   */
+  onPolygonClick?: (event: AppleMapsPolygon) => void;
+
+  /**
+   * Lambda invoked when the circle is clicked
+   * @platform ios 18.0+
+   */
+  onCircleClick?: (event: AppleMapsCircle) => void;
 
   /**
    * Lambda invoked when the map was moved by the user.
@@ -181,4 +345,11 @@ export type AppleMapsViewType = {
    * @param config New camera postion.
    */
   setCameraPosition: (config?: CameraPosition) => void;
+
+  /**
+   * Opens the look around view at specified coordinates.
+   *
+   * @param coordinates The coordinates of the location to open the look around view at.
+   */
+  openLookAroundAsync: (coordinates: Coordinates) => Promise<void>;
 };

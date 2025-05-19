@@ -6,6 +6,7 @@ const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const withLayoutContext_1 = require("./withLayoutContext");
 const useScreens_1 = require("../useScreens");
+const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
@@ -168,6 +169,7 @@ const Stack = Object.assign((props) => {
     return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
 }, {
     Screen: RNStack.Screen,
+    Protected: Protected_1.Protected,
 });
 exports.default = Stack;
 const StackRouter = (options) => {

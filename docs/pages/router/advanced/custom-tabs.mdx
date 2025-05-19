@@ -206,34 +206,41 @@ type Icon = ComponentProps<typeof FontAwesome>['name'];
 
 export type TabButtonProps = TabTriggerSlotProps & {
   icon?: Icon;
+  ref: Ref<View>;
 };
 
-export const TabButton = forwardRef(
-  ({ icon, children, isFocused, ...props }: TabButtonProps, ref: Ref<View>) => {
-    return (
-      <Pressable
-        ref={ref}
-        {...props}
-        style={[
-          {
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexDirection: 'column',
-            gap: 5,
-            padding: 10,
-          },
-          isFocused ? { backgroundColor: 'white' } : undefined,
-        ]}>
-        <FontAwesome name={icon} />
-        <Text style={[{ fontSize: 16 }, isFocused ? { color: 'white' } : undefined]}>
-          {children}
-        </Text>
-      </Pressable>
-    );
-  }
-);
+export function TabButton({ icon, children, isFocused, ...props }: TabButtonProps) {
+  return (
+    <Pressable
+      {...props}
+      style={[
+        {
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexDirection: 'column',
+          gap: 5,
+          padding: 10,
+        },
+        isFocused ? { backgroundColor: 'white' } : undefined,
+      ]}>
+      <FontAwesome name={icon} />
+      <Text style={[{ fontSize: 16 }, isFocused ? { color: 'white' } : undefined]}>{children}</Text>
+    </Pressable>
+  );
+}
 ```
+
+<Collapsible summary="Expo SDK 52 / React 18 and below">
+
+In Expo SDK 52 and below (React 18), use the legacy `forwardRef` function to access the `ref` handle.
+
+```diff
+- export function TabButton({ ref }) {
++ export const TabButton = forwardRef((props: TabButtonProps, ref: Ref<View>) => {
+```
+
+</Collapsible>
 
 ### Hooks
 

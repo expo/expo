@@ -6,11 +6,35 @@
 
 ### 🎉 New features
 
-- [Android] Add an option to choose the surface type. ([#36212](https://github.com/expo/expo/pull/36212) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 2.1.9 — 2025-05-08
+
+### 🛠 Breaking changes
+
+- [web] Add crossOrigin prop, change default value to no CORS. ([#36713](https://github.com/expo/expo/pull/36713) by [@aleqsio](https://github.com/aleqsio))
+
+## 2.1.8 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.7 — 2025-04-28
+
+### 🎉 New features
+
+- Introduce `replaceAsync` method, which doesn't load the asset on the main thread. ([#36308](https://github.com/expo/expo/pull/36308) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix main thread being locked while the VideoPlayer is replacing or being created with a source. ([#36308](https://github.com/expo/expo/pull/36308) by [@behenate](https://github.com/behenate))
+
+## 2.1.6 — 2025-04-25
+
+### 🎉 New features
+
+- [Android] Add an option to choose the surface type. ([#36212](https://github.com/expo/expo/pull/36212) by [@behenate](https://github.com/behenate))
 
 ## 2.1.5 — 2025-04-23
 
@@ -49,6 +73,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [Android] Fix ConcurrentModificationException app crashes ([#35356](https://github.com/expo/expo/pull/35356) by [@voslartomas](https://github.com/voslartomas))
 - [Web] Fix `playbackRate` not being applied in the setup function.([#34182](https://github.com/expo/expo/pull/34182) by [@behenate](https://github.com/behenate))
 - Fix safe area insets not updating for native controls on iOS. ([#32864](https://github.com/expo/expo/pull/32864) by [@behenate](https://github.com/behenate))
 - [iOS] Fix the Now Playing notification disappearing after the video is paused. ([#35273](https://github.com/expo/expo/pull/35273) by [@behenate](https://github.com/behenate))

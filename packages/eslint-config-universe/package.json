@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "15.0.2",
+  "version": "15.0.3",
   "description": "Shared ESLint configs for internal Expo projects.",
   "main": "default.js",
   "scripts": {

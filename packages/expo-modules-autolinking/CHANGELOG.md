@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 2.1.10 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [Android] Fixed project properties were not being resolved correctly. ([#36666](https://github.com/expo/expo/pull/36666) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.8 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- Fixed `react-native-config` linked result order. ([#36442](https://github.com/expo/expo/pull/36442) by [@kudo](https://github.com/kudo))
+
+## 2.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 2.1.6 — 2025-04-23
 
 _This version does not introduce any user-facing changes._

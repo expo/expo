@@ -1,22 +1,29 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import SwiftUI
 import ExpoModulesCore
 import MapKit
+import SwiftUI
 
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
+  @Field var polylines: [ExpoAppleMapPolyline] = []
+  @Field var polygons: [Polygon] = []
+  @Field var circles: [Circle] = []
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
+  let onPolylineClick = EventDispatcher()
+  let onPolygonClick = EventDispatcher()
+  let onCircleClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }
 
 protocol AppleMapsViewProtocol: View {
   func setCameraPosition(config: CameraPosition?)
+  func openLookAround(coordinate: Coordinate) async throws
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, AppleMapsViewProtocol {
@@ -26,7 +33,9 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
   init(props: AppleMapsViewProps) {
     self.props = props
     if #available(iOS 18.0, *) {
-      appleMapsView = AppleMapsView()
+      appleMapsView = AppleMapsViewiOS18()
+    } else if #available(iOS 17.0, *) {
+      appleMapsView = AppleMapsViewiOS17()
     } else {
       appleMapsView = nil
     }
@@ -36,127 +45,17 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
     appleMapsView?.setCameraPosition(config: config)
   }
 
+  func openLookAround(coordinate: Coordinate) async throws {
+    try await appleMapsView?.openLookAround(coordinate: coordinate)
+  }
+
   var body: some View {
-    if #available(iOS 18.0, *) {
-      if let appleMapsView = appleMapsView as? AppleMapsView {
-        appleMapsView.environmentObject(props)
-      }
+    if #available(iOS 18.0, *), let mapsView18 = appleMapsView as? AppleMapsViewiOS18 {
+      mapsView18.environmentObject(props)
+    } else if #available(iOS 17.0, *), let mapsView17 = appleMapsView as? AppleMapsViewiOS17 {
+      mapsView17.environmentObject(props)
     } else {
       EmptyView()
-    }
-  }
-}
-
-@available(iOS 18.0, *)
-struct AppleMapsView: View, AppleMapsViewProtocol {
-  @EnvironmentObject var props: AppleMapsViewProps
-  @ObservedObject var state = AppleMapsViewState()
-
-  func setCameraPosition(config: CameraPosition?) {
-    withAnimation {
-      state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
-    }
-  }
-
-  var body: some View {
-    let properties = props.properties
-    let uiSettings = props.uiSettings
-
-    // swiftlint:disable:next closure_body_length
-    MapReader { reader in
-      Map(position: $state.mapCameraPosition, selection: $state.selection) {
-        ForEach(props.markers) { marker in
-          Marker(
-            marker.title,
-            systemImage: marker.systemImage,
-            coordinate: marker.clLocationCoordinate2D
-          )
-          .tint(marker.tintColor)
-          .tag(MapSelection(marker.mapItem))
-        }
-
-        ForEach(props.annotations) { annotation in
-          Annotation(
-            annotation.title,
-            coordinate: annotation.clLocationCoordinate2D
-          ) {
-            ZStack {
-              if let icon = annotation.icon {
-                Image(uiImage: icon.ref)
-                  .resizable()
-                  .frame(width: 50, height: 50)
-              } else {
-                RoundedRectangle(cornerRadius: 5)
-                  .fill(annotation.backgroundColor)
-              }
-              Text(annotation.text)
-                .foregroundStyle(annotation.textColor)
-                .padding(5)
-            }
-          }
-        }
-        UserAnnotation()
-      }
-      .onTapGesture(coordinateSpace: .local) { position in
-        if let coordinate = reader.convert(position, from: .local) {
-          props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
-          ])
-        }
-      }
-      .mapControls {
-        if uiSettings.compassEnabled {
-          MapCompass()
-        }
-        if uiSettings.scaleBarEnabled {
-          MapScaleView()
-        }
-        if uiSettings.togglePitchEnabled {
-          MapPitchToggle()
-        }
-        if uiSettings.myLocationButtonEnabled {
-          MapUserLocationButton()
-        }
-      }
-      .onChange(of: props.cameraPosition) { _, newValue in
-        state.mapCameraPosition = convertToMapCamera(position: newValue)
-      }
-      .onChange(of: state.selection) { _, newValue in
-        if let marker = props.markers.first(where: { $0.mapItem == newValue?.value }) {
-          props.onMarkerClick([
-            "title": marker.title,
-            "tintColor": marker.tintColor,
-            "systemImage": marker.systemImage,
-            "coordinates": [
-              "latitude": marker.coordinates.latitude,
-              "longitude": marker.coordinates.longitude
-            ]
-          ])
-        }
-      }
-      .onMapCameraChange(frequency: .onEnd) { context in
-        let cameraPosition = context.region.center
-        let longitudeDelta = context.region.span.longitudeDelta
-        let zoomLevel = log2(360 / longitudeDelta)
-
-        props.onCameraMove([
-          "coordinates": [
-            "latitude": cameraPosition.latitude,
-            "longitude": cameraPosition.longitude
-          ],
-          "zoom": zoomLevel,
-          "tilt": context.camera.pitch,
-          "bearing": context.camera.heading
-        ])
-      }
-      .mapFeatureSelectionAccessory(props.properties.selectionEnabled ? .automatic : nil)
-      .mapStyle(properties.mapType.toMapStyle(
-        showsTraffic: properties.isTrafficEnabled
-      ))
-      .onAppear {
-        state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
-      }
     }
   }
 }

@@ -6,7 +6,40 @@
 
 ### 🎉 New features
 
+- [iOS] Add module registry encoder for JSON. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
+- [Android] New custom Type Converter API ([#36823](https://github.com/expo/expo/pull/36823) by [@jakex7](https://github.com/jakex7))
+- [iOS] Natively support `rgb` color conversions. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
+
+- [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 2.3.13 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `getSharedObjectId` for devices running android 7 and below. ([#36698](https://github.com/expo/expo/pull/36698) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed missing upload progress from `XMLHttpRequest` when network inspector is enabled. ([#36715](https://github.com/expo/expo/pull/36715) by [@kudo](https://github.com/kudo))
+
+## 2.3.12 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed `extraMavenRepos` not applied on Gradle subprojects. ([#36500](https://github.com/expo/expo/pull/36500) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.3.11 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.10 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fix concurrent functions on views. ([#36431](https://github.com/expo/expo/pull/36431) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.3.9 — 2025-04-25
 
 ### 💡 Others
 

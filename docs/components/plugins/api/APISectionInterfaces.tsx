@@ -115,7 +115,7 @@ const renderInterface = (
 ): JSX.Element | null => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
-  if (!interfaceChildren.length) {
+  if (interfaceChildren.length === 0) {
     return null;
   }
 

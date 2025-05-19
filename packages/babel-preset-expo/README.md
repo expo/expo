@@ -33,7 +33,7 @@ Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the
 
 ### `minifyTypeofWindow`
 
-Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your code, e.g. `if (typeof window === 'undefined')` -> `if (true)` in servers. This is useful when you're using libraries that mock the window object on native or in the server.
+Set `minifyTypeofWindow: true` to transform `typeof window` checks in your code, e.g. `if (typeof window === 'object')` -> `if (true)` in clients. This is useful when you're using libraries that mock the window object on native or in the server.
 
 ```js
 [
@@ -47,7 +47,7 @@ Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your co
 ];
 ```
 
-Defaults to `false` for server environments and web, `true` for native platforms to support legacy browser polyfills.
+Defaults to `true` for server environments, and `false` for client environments to support legacy browser polyfills and web workers.
 
 ### `reanimated`
 
@@ -150,7 +150,7 @@ Changes the engine preset in `@react-native/babel-preset` based on the JavaScrip
 
 ### `unstable_transformImportMeta`
 
-Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`, defaults to `false`.
+Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`, defaults to `false` in client bundles and `true` for server bundles.
 
 > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
 

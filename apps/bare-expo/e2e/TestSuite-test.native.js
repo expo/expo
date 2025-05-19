@@ -1,7 +1,7 @@
 /**
  * The test cases for bare-expo E2E testing.
  */
-export const TESTS = [
+const TESTS = [
   'Basic',
   // 'Asset',
   // 'FileSystem',
@@ -26,3 +26,5 @@ export const TESTS = [
   'FileSystem@next',
   'Fetch',
 ];
+
+module.exports = { TESTS };

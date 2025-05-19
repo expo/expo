@@ -64,7 +64,7 @@ export async function transform(
     const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
     return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
   }
-  if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+  if (posixFilename.match(/(^|\/)expo\/virtual\/rsc\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
 
@@ -147,6 +147,13 @@ export async function transform(
     }
 
     if (
+      // Noop the streams polyfill in the server environment.
+      !isClientEnvironment &&
+      filename.match(/\/expo\/virtual\/streams\.js$/)
+    ) {
+      return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+    }
+    if (
       // Parsing the virtual env is client-only, on the server we use `process.env` directly.
       isClientEnvironment &&
       // Finally match the virtual env file.
@@ -166,9 +173,10 @@ export async function transform(
         // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
         // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
         const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
-    export const env = { ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+    
+    export const env = !dotEnvModules.keys().length ? process.env : { ...process.env, ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
       return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
-    }, {}), ...process.env };`;
+    }, {}) };`;
         return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
       } else {
         // Add a fallback in production for sanity and better errors if something goes wrong or the user manually imports the virtual module somehow.

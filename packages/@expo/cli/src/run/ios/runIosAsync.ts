@@ -4,26 +4,25 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../../log';
-import { hasDirectDevClientDependency } from '../../start/detectDevClient';
-import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
-import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
-import { setNodeEnv } from '../../utils/nodeEnv';
-import { ensurePortAvailabilityAsync } from '../../utils/port';
-import { profile } from '../../utils/profile';
-import { getSchemesForIosAsync } from '../../utils/scheme';
-import { ensureNativeProjectAsync } from '../ensureNativeProject';
-import { logProjectLogsLocation } from '../hints';
-import { uploadRemoteBuildCache, resolveRemoteBuildCache } from '../remoteBuildCache';
-import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 import { exportEagerAsync } from '../../export/embed/exportEager';
+import * as Log from '../../log';
+import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
+import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
+import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { CommandError } from '../../utils/errors';
+import { setNodeEnv } from '../../utils/nodeEnv';
+import { ensurePortAvailabilityAsync } from '../../utils/port';
+import { profile } from '../../utils/profile';
+import { getSchemesForIosAsync } from '../../utils/scheme';
+import { ensureNativeProjectAsync } from '../ensureNativeProject';
+import { logProjectLogsLocation } from '../hints';
+import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:ios');
 
@@ -43,11 +42,12 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
 
   const projectConfig = getConfig(projectRoot);
-  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache && props.isSimulator) {
-    const localPath = await resolveRemoteBuildCache(projectRoot, {
+  if (!options.binary && props.buildCacheProvider && props.isSimulator) {
+    const localPath = await resolveBuildCache({
+      projectRoot,
       platform: 'ios',
-      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
       runOptions: options,
+      provider: props.buildCacheProvider,
     });
     if (localPath) {
       options.binary = localPath;
@@ -184,11 +184,13 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     await manager.stopAsync();
   }
 
-  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
-    await uploadRemoteBuildCache(projectRoot, {
+  if (shouldUpdateBuildCache && props.buildCacheProvider) {
+    await uploadBuildCache({
+      projectRoot,
       platform: 'ios',
-      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      provider: props.buildCacheProvider,
       buildPath: binaryPath,
+      runOptions: options,
     });
   }
 }

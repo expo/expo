@@ -106,10 +106,10 @@ function useTabsWithChildren(options) {
 function useTabsWithTriggers(options) {
     const { triggers, ...rest } = options;
     // Ensure we extend the parent triggers, so we can trigger them as well
-    const parentTriggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
+    const parentTriggerMap = (0, react_1.use)(TabContext_1.TabTriggerMapContext);
     const routeNode = (0, Route_1.useRouteNode)();
     const contextKey = (0, Route_1.useContextKey)();
-    const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
+    const linking = (0, react_1.use)(native_1.LinkingContext).options;
     const routeInfo = (0, hooks_1.useRouteInfo)();
     if (!routeNode || !linking) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');

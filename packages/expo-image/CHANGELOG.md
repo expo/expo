@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `CUICatalog: Invalid asset name supplied: ''` error on iOS when the path is empty. ([#36294](https://github.com/expo/expo/pull/36294) by [@Innei](https://github.com/Innei))
+- Fix React Server Components support. ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Fix PhotoLibrary assets being scaled twice. ([#36776](https://github.com/expo/expo/pull/36776) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Don't add transformers when unnecessary. ([#36884](https://github.com/expo/expo/pull/36884) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
+
+## 2.1.7 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.5 — 2025-04-25
+
+### 🐛 Bug fixes
+
+- Fixed `CUICatalog: Invalid asset name supplied: ''` error on iOS when the path is empty. ([#36294](https://github.com/expo/expo/pull/36294) by [@Innei](https://github.com/Innei))
 
 ## 2.1.4 — 2025-04-14
 

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.14.1'
+version = '0.14.3'
 
 expoModule {
   canBePublished false
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.easclient"
   defaultConfig {
     versionCode 1
-    versionName "0.14.1"
+    versionName "0.14.3"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   testOptions {
