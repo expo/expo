@@ -79,9 +79,13 @@ export class TokenResponse implements TokenResponseConfig {
   state?: string;
   idToken?: string;
   issuedAt: number;
-  rawResponse?: any;
+  /**
+   * Contains the unprocessed token response. Use it to access properties which aren't part of RFC 6749.
+   * */
+  rawResponse?: unknown;
 
-  constructor(response: TokenResponseConfig, rawResponse?: any) {
+  constructor(response: TokenResponseConfig, rawResponse?: unknown) {
+    this.rawResponse = rawResponse;
     this.accessToken = response.accessToken;
     this.tokenType = response.tokenType ?? 'bearer';
     this.expiresIn = response.expiresIn;
@@ -90,7 +94,6 @@ export class TokenResponse implements TokenResponseConfig {
     this.state = response.state;
     this.idToken = response.idToken;
     this.issuedAt = response.issuedAt ?? getCurrentTimeInSeconds();
-    this.rawResponse = rawResponse;
   }
 
   private applyResponseConfig(response: TokenResponseConfig) {
