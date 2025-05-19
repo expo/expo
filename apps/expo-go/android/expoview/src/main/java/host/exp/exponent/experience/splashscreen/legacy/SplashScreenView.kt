@@ -106,6 +106,7 @@ fun SplashScreenImage(
     modifier = Modifier
       .width(width)
       .height(height)
+      .background(Color.White)
       .shadow(4.dp, RoundedCornerShape(30.dp))
   )
 }
