@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Update dynamic name matching to be in line with `expo-router` changes ([#36961](https://github.com/expo/expo/pull/36961) by [@kitten](https://github.com/kitten))
 
 ## 0.6.2 — 2025-04-11
 
