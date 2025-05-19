@@ -38,6 +38,7 @@ describe(matchGroupName, () => {
     expect(matchGroupName('leading/(...foobar)/trailing')).toEqual('...foobar');
     expect(matchGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
     expect(matchGroupName('leading/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
+    expect(matchGroupName('leading/(foo bar)/trailing')).toEqual('foo bar');
   });
 });
 describe(matchLastGroupName, () => {
@@ -69,6 +70,7 @@ describe(matchLastGroupName, () => {
     expect(matchLastGroupName('leading/(app)/(foo/,bar)')).toEqual('app');
     expect(matchLastGroupName('leading/(app)/(foo(,bar)')).toEqual('foo(,bar');
     expect(matchLastGroupName('leading/(app)/(foo(,bar)/trailing')).toEqual('foo(,bar');
+    expect(matchLastGroupName('leading/(foo bar)/trailing')).toEqual('foo bar');
   });
 });
 describe(matchDynamicName, () => {
