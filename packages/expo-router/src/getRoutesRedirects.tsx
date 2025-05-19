@@ -52,7 +52,7 @@ export function getRedirectModule(route: string) {
           } else {
             const param = params[dynamicName.name];
             delete params[dynamicName.name];
-            return dynamicName.deep ? param : param?.split('/')[0];
+            return param;
           }
         })
         .filter(Boolean)
@@ -77,17 +77,14 @@ export function convertRedirect(path: string, config: RedirectConfig) {
   const sourceParts = config.source.split('/');
 
   for (const [index, sourcePart] of sourceParts.entries()) {
-    let match = matchDynamicName(sourcePart);
-
-    if (match) {
-      params[match] = parts[index];
+    const dynamicName = matchDynamicName(sourcePart);
+    if (!dynamicName) {
       continue;
-    }
-
-    match = matchDeepDynamicRouteName(sourcePart);
-
-    if (match) {
-      params[match] = parts.slice(index);
+    } else if (!dynamicName.deep) {
+      params[dynamicName.name] = parts[index];
+      continue;
+    } else {
+      params[dynamicName.name] = parts.slice(index);
       break;
     }
   }
