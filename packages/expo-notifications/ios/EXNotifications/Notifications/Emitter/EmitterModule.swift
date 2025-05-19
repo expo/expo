@@ -1,8 +1,8 @@
 //  Copyright © 2024 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import MachO
 import UIKit
+import MachO
 
 let onDidReceiveNotification = "onDidReceiveNotification"
 let onDidReceiveNotificationResponse = "onDidReceiveNotificationResponse"
@@ -13,9 +13,7 @@ open class EmitterModule: Module, NotificationDelegate {
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationsEmitter")
 
-    Events([
-      onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse,
-    ])
+    Events([onDidReceiveNotification, onDidReceiveNotificationResponse, onDidClearNotificationResponse])
 
     OnCreate {
       NotificationCenterManager.shared.addDelegate(self)
@@ -34,26 +32,19 @@ open class EmitterModule: Module, NotificationDelegate {
     }
   }
 
-  public func didReceive(
-    _ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void
-  ) -> Bool {
+  public func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
     completionHandler(.noData)
     return true
   }
 
-  open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void)
-    -> Bool
-  {
+  open func didReceive(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) -> Bool {
     lastResponse = serializedResponse(response)
     self.sendEvent(onDidReceiveNotificationResponse, serializedResponse(response))
     completionHandler()
     return true
   }
 
-  open func willPresent(
-    _ notification: UNNotification,
-    completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-  ) -> Bool {
+  open func willPresent(_ notification: UNNotification, completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) -> Bool {
     self.sendEvent(onDidReceiveNotification, serializedNotification(notification))
     return false
   }
