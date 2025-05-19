@@ -1,5 +1,5 @@
 import { ViewStyle } from 'react-native';
-export type ShapeParameters = {
+export type ShapeProps = {
     /**
      * Corner rounding percentage. Multiplied by the shorter dimension of the view to produce pixel values.
      * @default 0.0
@@ -25,32 +25,24 @@ export type ShapeParameters = {
      * @default 1.0
      */
     radius?: number;
-};
-type StarProps = ShapeParameters & {
-    type: 'STAR';
-};
-type PillStarProps = ShapeParameters & {
-    type: 'PILL_STAR';
-};
-type PillProps = Pick<ShapeParameters, 'smoothing'> & {
-    type: 'PILL';
-};
-type CircleProps = Pick<ShapeParameters, 'smoothing' | 'verticesCount'> & {
-    type: 'CIRCLE';
-};
-type RectangleProps = Pick<ShapeParameters, 'smoothing' | 'cornerRounding'> & {
-    type: 'RECTANGLE';
-};
-type PolygonProps = Pick<ShapeParameters, 'smoothing' | 'cornerRounding' | 'verticesCount'> & {
-    type: 'POLYGON';
-};
-type ShapeProps = {
+    /** Style of the component */
     style?: ViewStyle;
+    /** Color of the shape */
     color?: string;
-} & (StarProps | PillStarProps | PillProps | CircleProps | RectangleProps | PolygonProps);
-/**
- * Displays a native shape component.
- */
-export declare function Shape(props: ShapeProps): import("react").JSX.Element;
+};
+declare function Star(props: ShapeProps): import("react").JSX.Element;
+declare function PillStar(props: ShapeProps): import("react").JSX.Element;
+declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>): import("react").JSX.Element;
+declare function Circle(props: Pick<ShapeProps, 'smoothing' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
+declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>): import("react").JSX.Element;
+declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
+export declare const Shape: {
+    Star: typeof Star;
+    PillStar: typeof PillStar;
+    Pill: typeof Pill;
+    Circle: typeof Circle;
+    Rectangle: typeof Rectangle;
+    Polygon: typeof Polygon;
+};
 export {};
 //# sourceMappingURL=index.d.ts.map

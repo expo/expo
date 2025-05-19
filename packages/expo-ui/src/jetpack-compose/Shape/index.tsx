@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { ViewStyle } from 'react-native';
 
-export type ShapeParameters = {
+export type ShapeProps = {
   /**
    * Corner rounding percentage. Multiplied by the shorter dimension of the view to produce pixel values.
    * @default 0.0
@@ -27,31 +27,45 @@ export type ShapeParameters = {
    * @default 1.0
    */
   radius?: number;
-};
-
-type StarProps = ShapeParameters & { type: 'STAR' };
-type PillStarProps = ShapeParameters & { type: 'PILL_STAR' };
-type PillProps = Pick<ShapeParameters, 'smoothing'> & { type: 'PILL' };
-type CircleProps = Pick<ShapeParameters, 'smoothing' | 'verticesCount'> & { type: 'CIRCLE' };
-type RectangleProps = Pick<ShapeParameters, 'smoothing' | 'cornerRounding'> & { type: 'RECTANGLE' };
-type PolygonProps = Pick<ShapeParameters, 'smoothing' | 'cornerRounding' | 'verticesCount'> & {
-  type: 'POLYGON';
-};
-
-type ShapeProps = {
+  /** Style of the component */
   style?: ViewStyle;
+  /** Color of the shape */
   color?: string;
-} & (StarProps | PillStarProps | PillProps | CircleProps | RectangleProps | PolygonProps);
+};
 
-/**
- * @hidden
- */
+const ShapeNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'ShapeView');
 
-const ShapeNativeView: React.ComponentType<ShapeProps> = requireNativeView('ExpoUI', 'ShapeView');
-
-/**
- * Displays a native shape component.
- */
-export function Shape(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} />;
+function Star(props: ShapeProps) {
+  return <ShapeNativeView {...props} style={props.style} type="STAR" />;
 }
+
+function PillStar(props: ShapeProps) {
+  return <ShapeNativeView {...props} style={props.style} type="PILL_STAR" />;
+}
+
+function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
+  return <ShapeNativeView {...props} style={props.style} type="PILL" />;
+}
+
+function Circle(props: Pick<ShapeProps, 'smoothing' | 'verticesCount' | 'style' | 'color'>) {
+  return <ShapeNativeView {...props} style={props.style} type="CIRCLE" />;
+}
+
+function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>) {
+  return <ShapeNativeView {...props} style={props.style} type="RECTANGLE" />;
+}
+
+function Polygon(
+  props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>
+) {
+  return <ShapeNativeView {...props} style={props.style} type="POLYGON" />;
+}
+
+export const Shape = {
+  Star,
+  PillStar,
+  Pill,
+  Circle,
+  Rectangle,
+  Polygon,
+};

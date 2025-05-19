@@ -1,12 +1,29 @@
 import { requireNativeView } from 'expo';
-/**
- * @hidden
- */
 const ShapeNativeView = requireNativeView('ExpoUI', 'ShapeView');
-/**
- * Displays a native shape component.
- */
-export function Shape(props) {
-    return <ShapeNativeView {...props} style={props.style}/>;
+function Star(props) {
+    return <ShapeNativeView {...props} style={props.style} type="STAR"/>;
 }
+function PillStar(props) {
+    return <ShapeNativeView {...props} style={props.style} type="PILL_STAR"/>;
+}
+function Pill(props) {
+    return <ShapeNativeView {...props} style={props.style} type="PILL"/>;
+}
+function Circle(props) {
+    return <ShapeNativeView {...props} style={props.style} type="CIRCLE"/>;
+}
+function Rectangle(props) {
+    return <ShapeNativeView {...props} style={props.style} type="RECTANGLE"/>;
+}
+function Polygon(props) {
+    return <ShapeNativeView {...props} style={props.style} type="POLYGON"/>;
+}
+export const Shape = {
+    Star,
+    PillStar,
+    Pill,
+    Circle,
+    Rectangle,
+    Polygon,
+};
 //# sourceMappingURL=index.js.map

@@ -1,7 +1,6 @@
 import { Shape } from '@expo/ui/jetpack-compose';
-import { duration } from 'moment';
 import * as React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, {
   Easing,
   useSharedValue,
@@ -10,9 +9,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Page, Section } from '../../components/Page';
+import { Page } from '../../components/Page';
 
-const AnimatedShape = Animated.createAnimatedComponent(Shape);
+const AnimatedPolygon = Animated.createAnimatedComponent(Shape.Polygon);
+const AnimatedRectangle = Animated.createAnimatedComponent(Shape.Rectangle);
+const AnimatedStar = Animated.createAnimatedComponent(Shape.Star);
 
 const pastelPalette = {
   color1: '#541388',
@@ -23,7 +24,7 @@ const pastelPalette = {
 };
 
 export default function UIScreen() {
-  const oneToZero = useSharedValue<number>(1);
+  const oneToZero = useSharedValue<number | undefined>(1);
 
   React.useEffect(() => {
     oneToZero.set(
@@ -38,7 +39,7 @@ export default function UIScreen() {
     );
   }, []);
 
-  const zeroToPointTwo = useSharedValue<number>(1);
+  const zeroToPointTwo = useSharedValue<number | undefined>(1);
 
   React.useEffect(() => {
     zeroToPointTwo.set(
@@ -53,7 +54,7 @@ export default function UIScreen() {
     );
   }, []);
 
-  const oneToPointEight = useSharedValue<number>(1);
+  const oneToPointEight = useSharedValue<number | undefined>(1);
 
   React.useEffect(() => {
     oneToPointEight.set(
@@ -76,17 +77,15 @@ export default function UIScreen() {
           flexDirection: 'row',
           flexWrap: 'wrap',
         }}>
-        <AnimatedShape
+        <AnimatedPolygon
           style={{ width: 180, height: 180 }}
-          type="POLYGON"
           smoothing={1}
           cornerRounding={zeroToPointTwo}
           verticesCount={3}
           color={pastelPalette.color1}
         />
-        <AnimatedShape
+        <AnimatedStar
           style={{ width: 180, height: 180 }}
-          type="STAR"
           innerRadius={oneToPointEight}
           smoothing={1}
           radius={1}
@@ -95,9 +94,8 @@ export default function UIScreen() {
           color={pastelPalette.color2}
         />
         <View style={{ width: 180, height: 180, justifyContent: 'center' }}>
-          <AnimatedShape
+          <Shape.PillStar
             style={{ width: 180, height: 100 }}
-            type="PILL_STAR"
             radius={1}
             innerRadius={0.7}
             smoothing={1}
@@ -107,23 +105,18 @@ export default function UIScreen() {
           />
         </View>
 
-        <AnimatedShape
+        <AnimatedPolygon
           style={{ width: 180, height: 180 }}
-          type="POLYGON"
           cornerRounding={zeroToPointTwo}
           smoothing={1}
           verticesCount={6}
           color={pastelPalette.color4}
         />
         <View style={{ width: 180, height: 180, alignItems: 'center' }}>
-          <AnimatedShape
+          <AnimatedRectangle
             style={{ width: 100, height: 180, transform: [{ rotate: '45deg' }] }}
-            type="RECTANGLE"
-            radius={1}
-            innerRadius={0.7}
             smoothing={1}
             cornerRounding={oneToZero}
-            verticesCount={12}
             color={pastelPalette.color5}
           />
         </View>
@@ -131,18 +124,3 @@ export default function UIScreen() {
     </Page>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    width: 150,
-    margin: 5,
-    overflow: 'visible',
-  },
-  stretch: {
-    alignSelf: 'stretch',
-  },
-  columnWrapper: {
-    justifyContent: 'space-around',
-    alignContent: 'space-around',
-  },
-});
