@@ -1,8 +1,7 @@
-import { Link, useNavigation } from 'expo-router';
+import { Link } from 'expo-router';
 import { useScrollOnSelect } from 'expo-router/build/ui/NativeBottomTabs/useScrollOnSelect';
 import { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const colors = [
   { bg: '#f00', text: '#fff' },
@@ -12,13 +11,8 @@ const colors = [
 
 export default function Index() {
   const items = useMemo(() => Array.from({ length: 50 }, (_, i) => i), []);
-  const navigation = useNavigation();
-  const { top } = useSafeAreaInsets();
 
-  const { scrollViewRef } = useScrollOnSelect({
-    navigation,
-    topInset: top,
-  });
+  const { scrollViewRef } = useScrollOnSelect();
 
   return (
     <ScrollView

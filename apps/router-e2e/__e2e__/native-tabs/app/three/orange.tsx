@@ -1,17 +1,13 @@
-import { useHeaderHeight } from '@react-navigation/elements';
-import { Link, router, useNavigation } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useScrollOnSelect } from 'expo-router/build/ui/NativeBottomTabs/useScrollOnSelect';
 import { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 export default function Orange() {
   const items = useMemo(() => Array.from({ length: 50 }, (_, i) => i), []);
-  const tabNavigation = useNavigation().getParent();
-  const height = useHeaderHeight();
 
   const { scrollViewRef } = useScrollOnSelect({
-    navigation: tabNavigation,
-    topInset: height,
+    withHeader: true,
   });
 
   return (

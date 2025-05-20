@@ -1,13 +1,9 @@
-import { NavigationProp, NavigationState } from '@react-navigation/native';
 import { ScrollView } from 'react-native';
-import type { useNavigation } from '../../useNavigation';
 interface Args {
-    navigation: ReturnType<typeof useNavigation<Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
-        getState(): NavigationState | undefined;
-    }>>;
-    topInset: number;
+    noInset?: boolean;
+    withHeader?: boolean;
 }
-export declare function useScrollOnSelect({ navigation, topInset }: Args): {
+export declare function useScrollOnSelect(args?: Args): {
     scrollViewRef: import("react").RefObject<ScrollView | null>;
 };
 export {};

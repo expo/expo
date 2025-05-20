@@ -1,34 +1,40 @@
-import { NavigationProp, NavigationState } from '@react-navigation/native';
-import { useEffect, useRef, useState } from 'react';
+import { HeaderHeightContext } from '@react-navigation/elements';
+import { use, useEffect, useRef, useState } from 'react';
 import { ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { useNavigation } from '../../useNavigation';
+import { useNavigation } from '../../useNavigation';
 
 interface Args {
-  navigation: ReturnType<
-    typeof useNavigation<
-      Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
-        getState(): NavigationState | undefined;
-      }
-    >
-  >;
-  topInset: number;
+  noInset?: boolean;
+  withHeader?: boolean;
 }
 
-export function useScrollOnSelect({ navigation, topInset }: Args) {
+export function useScrollOnSelect(args?: Args) {
+  const { noInset, withHeader } = args ?? {};
   const [isFocused, setIsFocused] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  const insets = useSafeAreaInsets();
+  const headerHeight = withHeader && HeaderHeightContext ? (use(HeaderHeightContext) ?? 0) : 0;
+  const topInset = noInset ? 0 : withHeader ? headerHeight : insets.top;
+
+  const navigation = useNavigation();
+
   useEffect(() => {
-    const handleTabSelected = () => {
+    let tabNavigation = navigation;
+    while (tabNavigation && tabNavigation.getState()?.type !== 'tab') {
+      tabNavigation = tabNavigation.getParent();
+    }
+    if (!tabNavigation) {
+      return;
+    }
+    const unsubscribe = tabNavigation.addListener('tabSelected' as any, () => {
       if (isFocused && scrollViewRef.current) {
         scrollViewRef.current.scrollTo({ y: -topInset, animated: true });
       }
-    };
-    navigation.addListener('tabSelected' as any, handleTabSelected);
-    return () => {
-      navigation.removeListener('tabSelected' as any, handleTabSelected);
-    };
+    });
+    return unsubscribe;
   }, [navigation, isFocused, scrollViewRef, topInset]);
 
   useEffect(() => {
