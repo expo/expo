@@ -59,7 +59,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
-    JavaScriptSharedObjectBinding {
+    JavaScriptSharedObjectBinding.init {
       // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
       if let sharedObject = result as? SharedObject {
         // If the JS object already exists, just return it.
@@ -83,7 +83,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   var description: String {
     return "SharedObject<\(innerType)>"
   }
-  
+
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if let value = value as? JavaScriptSharedObjectBinding {
       return try JavaScriptValue.from(value.get(), runtime: appContext.runtime)
