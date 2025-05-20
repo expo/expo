@@ -184,8 +184,13 @@ public struct Conversions {
     appContext: AppContext? = nil,
     dynamicType: AnyDynamicType? = nil
   ) -> Any {
-    if let appContext, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
-      return result
+    if let appContext {
+      if dynamicType as? DynamicVoidType == nil, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
+        return result
+      }
+      if let value = value as? AnyArgument {
+        return try! type(of: value).getDynamicType().convertResult(value as Any, appContext: appContext)
+      }
     }
     return convertFunctionResultInRuntime(value, appContext: appContext)
   }
