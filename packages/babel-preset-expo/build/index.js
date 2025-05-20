@@ -213,6 +213,7 @@ function babelPresetExpo(api, options = {}) {
                     // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
                     withDevTools: false,
                     disableImportExportTransform: platformOptions.disableImportExportTransform,
+                    disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
                     lazyImportExportTransform: lazyImportsOption === true
                         ? (importModuleSpecifier) => {
                             // Do not lazy-initialize packages that are local imports (similar to `lazy: true`

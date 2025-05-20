@@ -25,6 +25,7 @@ export {
   VideoThumbnailOptions,
   VideoSize,
   SubtitleTrack,
+  AudioTrack,
   VideoTrack,
   ContentType,
 } from './VideoPlayer.types';

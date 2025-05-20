@@ -41,6 +41,8 @@ type BabelPresetExpoPlatformOptions = {
 
   disableImportExportTransform?: boolean;
 
+  disableDeepImportWarnings?: boolean;
+
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -364,6 +366,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
+          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           lazyImportExportTransform:
             lazyImportsOption === true
               ? (importModuleSpecifier: string) => {
