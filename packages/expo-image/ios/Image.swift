@@ -8,7 +8,11 @@ internal final class Image: SharedRef<UIImage> {
   }
 
   var isAnimated: Bool {
+#if os(iOS) || os(tvOS)
     return !(ref.images?.isEmpty ?? true)
+#else
+    return false
+#endif
   }
 
   override func getAdditionalMemoryPressure() -> Int {

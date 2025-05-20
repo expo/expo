@@ -36,6 +36,7 @@ enum ContentFit: String, Enumerable {
    */
   case scaleDown = "scale-down"
 
+#if os(iOS) || os(tvOS)
   /**
    `ContentFit` cases can be directly translated to the native `UIView.ContentMode`
    except `scaleDown` that needs to be handled differently at the later step of rendering.
@@ -52,4 +53,5 @@ enum ContentFit: String, Enumerable {
       return .center
     }
   }
+  #endif
 }

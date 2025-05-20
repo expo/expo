@@ -106,12 +106,29 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
  Resizes a static image to fit in the given size and scale.
  */
 func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
+  #if canImport(UIKit)
   let format = UIGraphicsImageRendererFormat()
   format.scale = scale
-
   return UIGraphicsImageRenderer(size: size, format: format).image { _ in
-    image.draw(in: CGRect(origin: .zero, size: size))
-  }
+      image.draw(in: CGRect(origin: .zero, size: size))
+    }
+  #elseif canImport(AppKit)
+  // On macOS, NSImage size is in points; drawing into a Bitmap-backed image respects DPI.
+  let targetSize = size
+  let newImage = NSImage(size: targetSize)
+  newImage.lockFocus()
+  NSGraphicsContext.current?.imageInterpolation = .high
+  // Draw the source into the target rect
+  image.draw(in: CGRect(origin: .zero, size: targetSize),
+             from: .zero,
+             operation: .copy,
+             fraction: 1.0)
+  newImage.unlockFocus()
+  return newImage
+  #else
+  // Fallback: return original
+  return image
+  #endif
 }
 
 /**

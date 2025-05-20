@@ -39,7 +39,7 @@ internal final class WebPCoder: NSObject, SDAnimatedImageCoder {
     return self.coder.canDecode(from: data)
   }
 
-  func decodedImage(with data: Data?, options: [SDImageCoderOption: Any]? = nil) -> UIImage? {
+  func decodedImage(with data: Data?, options: [SDImageCoderOption: Any]? = nil) -> NSImage? {
     return self.coder.decodedImage(with: data, options: options)
   }
 
@@ -47,7 +47,7 @@ internal final class WebPCoder: NSObject, SDAnimatedImageCoder {
     return self.coder.canEncode(to: format)
   }
 
-  func encodedData(with image: UIImage?, format: SDImageFormat, options: [SDImageCoderOption: Any]? = nil) -> Data? {
+  func encodedData(with image: NSImage?, format: SDImageFormat, options: [SDImageCoderOption: Any]? = nil) -> Data? {
     return self.coder.encodedData(with: image, format: format, options: options)
   }
 
@@ -63,7 +63,7 @@ internal final class WebPCoder: NSObject, SDAnimatedImageCoder {
     return self.coder.animatedImageLoopCount
   }
 
-  func animatedImageFrame(at index: UInt) -> UIImage? {
+  func animatedImageFrame(at index: UInt) -> NSImage? {
     return self.coder.animatedImageFrame(at: index)
   }
 

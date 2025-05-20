@@ -38,10 +38,10 @@ class ThumbhashLoader: NSObject, SDImageLoader {
     }
 
     DispatchQueue.global(qos: .userInitiated).async {
-      let image = image(fromThumbhash: thumbhashData)
-      DispatchQueue.main.async {
-        completedBlock?(image, nil, nil, true)
-      }
+//      let image = image(fromThumbhash: thumbhashData)
+//      DispatchQueue.main.async {
+//        completedBlock?(image, nil, nil, true)
+//      }
     }
     return nil
   }

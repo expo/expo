@@ -8,6 +8,7 @@ import SDWebImage
 final class AnimatedImage: SDAnimatedImage {
   var frames: [SDImageFrame]?
 
+  #if os(iOS) || os(tvOS)
   // MARK: - UIImage
 
   override var images: [UIImage]? {
@@ -19,6 +20,7 @@ final class AnimatedImage: SDAnimatedImage {
     preloadAllFrames()
     return frames?.reduce(0, { $0 + $1.duration }) ?? 0.0
   }
+  #endif
 
   // MARK: - SDAnimatedImage
 

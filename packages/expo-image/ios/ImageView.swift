@@ -93,13 +93,20 @@ public final class ImageView: ExpoView {
     super.init(appContext: appContext)
 
     clipsToBounds = true
+#if os(iOS) || os(tvOS)
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    sdImageView.layer.masksToBounds = false
+    sdImageView.layer?.masksToBounds = false
+    #else
+    sdImageView.autoresizingMask = [.width, .height]
+    sdImageView.translatesAutoresizingMaskIntoConstraints = false 
+
+    
+    #endif
 
     // Apply trilinear filtering to smooth out mis-sized images.
-    sdImageView.layer.magnificationFilter = .trilinear
-    sdImageView.layer.minificationFilter = .trilinear
+    sdImageView.layer?.magnificationFilter = .trilinear
+    sdImageView.layer?.minificationFilter = .trilinear
 
     addSubview(sdImageView)
   }
@@ -127,7 +134,10 @@ public final class ImageView: ExpoView {
       return
     }
     if sdImageView.image == nil {
+      
+#if os(iOS) || os(tvOS)
       sdImageView.contentMode = contentFit.toContentMode()
+      #endif
     }
     var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy)
 
@@ -217,7 +227,11 @@ public final class ImageView: ExpoView {
         ]
       ])
 
+#if os(iOS) || os(tvOS)
       let scale = window?.screen.scale ?? UIScreen.main.scale
+#else
+      let scale = 1.0
+      #endif
       let idealSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
@@ -354,7 +368,7 @@ public final class ImageView: ExpoView {
         sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
         return image
       }
-      return resize(image: image, toSize: idealSize, scale: scale)
+      return image
     }
     return image
   }
@@ -366,6 +380,8 @@ public final class ImageView: ExpoView {
    */
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
+    
+#if os(iOS) || os(tvOS)
     if sdImageView.layer.mask != nil {
       // In New Architecture mode, React Native adds a mask layer to image subviews.
       // When moving the layer frame, we must move the mask layer with a compensation value.
@@ -379,7 +395,9 @@ public final class ImageView: ExpoView {
       CATransaction.commit()
     } else {
       sdImageView.layer.frame.origin = offset
+     
     }
+    #endif
   }
 
   internal func renderSourceImage(_ image: UIImage?) {
@@ -387,6 +405,7 @@ public final class ImageView: ExpoView {
     sourceImage = image
 
     if let transition = transition, transition.duration > 0 {
+#if os(iOS) || os(tvOS)
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 
@@ -395,13 +414,19 @@ public final class ImageView: ExpoView {
           self.setImage(image, contentFit: self.contentFit, isPlaceholder: false)
         }
       }
+      #endif
     } else {
       setImage(image, contentFit: contentFit, isPlaceholder: false)
     }
   }
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
+    
+#if os(iOS) || os(tvOS)
     sdImageView.contentMode = contentFit.toContentMode()
+    #else
+    sdImageView.sizeToFit()
+    #endif
 
     if isPlaceholder {
       sdImageView.autoPlayAnimatedImage = true
@@ -410,10 +435,15 @@ public final class ImageView: ExpoView {
     }
 
     if let imageTintColor, !isPlaceholder {
+#if os(iOS) || os(tvOS)
       sdImageView.tintColor = imageTintColor
       sdImageView.image = image?.withRenderingMode(.alwaysTemplate)
+      #endif
     } else {
+      
+#if os(iOS) || os(tvOS)
       sdImageView.tintColor = nil
+      #endif
       sdImageView.image = image
     }
 
@@ -421,7 +451,7 @@ public final class ImageView: ExpoView {
       onDisplay()
     }
 
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
     if enableLiveTextInteraction {
       analyzeImage()
     }
@@ -440,7 +470,11 @@ public final class ImageView: ExpoView {
    or the main scale if the view is not mounted yet.
    */
   var screenScale: Double {
+#if os(iOS) || os(tvOS)
     return window?.screen.scale as? Double ?? UIScreen.main.scale
+    #else
+    return 1.0
+    #endif
   }
 
   /**
@@ -466,25 +500,29 @@ public final class ImageView: ExpoView {
 
   // MARK: - Live Text Interaction
 #if !os(tvOS)
-  @available(iOS 16.0, macCatalyst 17.0, *)
+  @available(iOS 16.0, macCatalyst 17.0, *, macOS 13.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
   var enableLiveTextInteraction: Bool = false {
     didSet {
-      guard #available(iOS 16.0, macCatalyst 17.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
+      guard #available(iOS 16.0, macCatalyst 17.0, *, macOS 13.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
         return
       }
+      
+#if os(iOS) || os(tvOS)
       if enableLiveTextInteraction {
         let imageAnalysisInteraction = ImageAnalysisInteraction()
         sdImageView.addInteraction(imageAnalysisInteraction)
       } else if let interaction = findImageAnalysisInteraction() {
         sdImageView.removeInteraction(interaction)
       }
+      #endif
     }
   }
 
+#if os(iOS) || os(tvOS)
   private func analyzeImage() {
-    guard #available(iOS 16.0, macCatalyst 17.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
+    guard #available(iOS 16.0, macCatalyst 17.0, *, macOS 13.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
       return
     }
 
@@ -495,7 +533,7 @@ public final class ImageView: ExpoView {
       let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
 
       do {
-        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+        let imageAnalysis = try await imageAnalyzer.analyze(image, orientation: .up, configuration: configuration)
 
         // Make sure the image haven't changed in the meantime.
         if image == sdImageView.image {
@@ -507,7 +545,9 @@ public final class ImageView: ExpoView {
       }
     }
   }
+#endif
 
+#if os(iOS) || os(tvOS)
   @available(iOS 16.0, macCatalyst 17.0, *)
   private func findImageAnalysisInteraction() -> ImageAnalysisInteraction? {
     let interaction = sdImageView.interactions.first {
@@ -515,5 +555,6 @@ public final class ImageView: ExpoView {
     }
     return interaction as? ImageAnalysisInteraction
   }
+#endif
 #endif
 }

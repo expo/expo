@@ -34,7 +34,12 @@ class BlurhashLoader: NSObject, SDImageLoader {
     DispatchQueue.global(qos: .userInitiated).async {
       if let image = image(fromBlurhash: blurhash, size: size) {
         DispatchQueue.main.async {
+          
+#if os(iOS) || os(tvOS)
           completedBlock?(UIImage(cgImage: image), nil, nil, true)
+          #else
+          completedBlock?(UIImage(cgImage: image, size: size), nil, nil, true)
+          #endif
         }
       } else {
         let error = makeNSError(description: "Unable to generate an image from the given blurhash")

@@ -3,9 +3,13 @@
 // - https://github.com/woltapp/blurhash/blob/master/Swift/BlurHashDecode.swift
 // - https://github.com/woltapp/blurhash/blob/master/Swift/BlurHashEncode.swift
 // See https://blurha.sh for more details about the blurhash.
-
+#if canImport(UIKit)
 import UIKit
-
+public typealias PlatformImage = UIImage
+#elseif canImport(AppKit)
+import AppKit
+public typealias PlatformImage = NSImage
+#endif
 // swiftlint:disable force_unwrapping
 
 internal func image(fromBlurhash blurhash: String, size: CGSize, punch: Float = 1.0) -> CGImage? {
@@ -95,7 +99,7 @@ internal func image(fromBlurhash blurhash: String, size: CGSize, punch: Float = 
   return cgImage
 }
 
-internal func blurhash(fromImage image: UIImage, numberOfComponents components: (Int, Int)) -> String? {
+internal func blurhash(fromImage image: PlatformImage, numberOfComponents components: (Int, Int)) -> String? {
   let size = image.size
   let scale = image.scale
 
@@ -114,9 +118,11 @@ internal func blurhash(fromImage image: UIImage, numberOfComponents components: 
   context.scaleBy(x: scale, y: -scale)
   context.translateBy(x: 0, y: -size.height)
 
+#if os(iOS) || os(tvOS)
   UIGraphicsPushContext(context)
   image.draw(at: .zero)
   UIGraphicsPopContext()
+#endif
 
   guard let cgImage = context.makeImage(),
     let dataProvider = cgImage.dataProvider,

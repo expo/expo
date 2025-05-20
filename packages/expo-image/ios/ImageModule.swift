@@ -88,11 +88,17 @@ public final class ImageModule: Module {
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
+        
+#if os(iOS) || os(tvOS)
         view.sdImageView.isAccessibilityElement = accessible ?? false
+        #endif
+        
       }
 
       Prop("accessibilityLabel") { (view, label: String?) in
+#if os(iOS) || os(tvOS)
         view.sdImageView.accessibilityLabel = label
+#endif
       }
 
       Prop("recyclingKey") { (view, key: String?) in
@@ -108,11 +114,15 @@ public final class ImageModule: Module {
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
+#if os(iOS) || os(tvOS)
         view.sdImageView.startAnimating()
+#endif
       }
 
       AsyncFunction("stopAnimating") { (view: ImageView) in
+#if os(iOS) || os(tvOS)
         view.sdImageView.stopAnimating()
+#endif
       }
 
       OnViewDidUpdateProps { view in
