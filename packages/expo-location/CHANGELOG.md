@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+### 🎉 New features
+- [android] Ongoing Notification Feature. ([#36984](https://github.com/expo/expo/pull/36984) by [@riadhriadh](https://github.com/riadhriadh))
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
@@ -109,7 +112,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Migrated the native module to Swift. ([#30388](https://github.com/expo/expo/pull/30388) by [@tsapeta](https://github.com/tsapeta))
-- [android] Ongoing Notification Feature. ([#36984](https://github.com/expo/expo/pull/36984) by [@riadhriadh](https://github.com/riadhriadh))
 
 ### 🐛 Bug fixes
 
