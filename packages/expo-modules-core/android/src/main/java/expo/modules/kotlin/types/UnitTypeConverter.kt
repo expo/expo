@@ -5,7 +5,7 @@ import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
 class UnitTypeConverter : TypeConverter<Unit>() {
-  override fun convert(value: Any?, context: AppContext?) = Unit
+  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean) = Unit
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.ANY)
 }

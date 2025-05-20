@@ -15,7 +15,7 @@ class ViewTypeConverter<T : View>(
   val type: KType
 ) : TypeConverter<T>() {
 
-  override fun convert(value: Any?, context: AppContext?): T? {
+  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): T? {
     val appContext = context.toStrongReference()
     appContext.assertMainThread()
 
