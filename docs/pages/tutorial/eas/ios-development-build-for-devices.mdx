@@ -44,7 +44,7 @@ With EAS CLI, run the command to register a new Apple device:
 
 <Terminal cmd={['$ eas device:create']} />
 
-This command prompts us with the following questions
+This command prompts us with the following questions:
 
 - **You're inside the project directory. Would you like to use the** **your-account-name** **account?** Press <kbd>Y</kbd>.
 - **Apple ID.** For this step, enter your Apple ID. It will then log in to our Apple Developer account. Follow the steps in the terminal window.
@@ -104,8 +104,10 @@ To create a development build on an iOS device, make sure that under the `build.
 This command prompts us with the following questions when we create the build for the first time:
 
 - **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#package) in **app.json** if it isn't already defined.
-- **Log in to our Apple Developer account**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd>.
+- **Do you want to log in to your Apple account?**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd> both times.
 - **Select a device for ad hoc build**. This is the key part, which is why we had to register a provisioning profile before. We can select one or all of our registered devices here and then press return to install that build on those devices later.
+
+> **info** **Only if you have skipped [iOS Simulator chapter](/tutorial/eas/ios-development-build-for-simulators/):** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
 
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the Expo dashboard:
 
