@@ -47,13 +47,13 @@ export default function ImageImperativeApiScreen() {
         }}
       />
       <Button
-        title="lock resource"
+        title="lock image refresh"
         onPress={() => {
           ref.current?.lockResourceAsync();
         }}
       />
       <Button
-        title="unlock resource"
+        title="unlock image"
         onPress={() => {
           ref.current?.unlockResourceAsync();
         }}

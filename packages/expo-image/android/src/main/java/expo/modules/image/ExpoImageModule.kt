@@ -288,7 +288,6 @@ class ExpoImageModule : Module() {
         view.rerenderIfNeeded(force = true)
       }
 
-
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
         view.rerenderIfNeeded()
       }
