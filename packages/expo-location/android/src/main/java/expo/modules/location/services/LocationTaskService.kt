@@ -71,6 +71,7 @@ class LocationTaskService : Service() {
     val title = serviceOptions.getString("notificationTitle")
     val body = serviceOptions.getString("notificationBody")
     val color = colorStringToInteger(serviceOptions.getString("notificationColor"))
+    val ongoing = serviceOptions.getBoolean("ongoing", false)
 
     title?.let { builder.setContentTitle(title) }
     body?.let { builder.setContentText(body) }
@@ -79,7 +80,7 @@ class LocationTaskService : Service() {
     } ?: run {
       builder.setColorized(false)
     }
-
+    builder.setOngoing(ongoing) // This is the "ongoing" flag, which makes the notification always visible
     mParentContext.packageManager.getLaunchIntentForPackage(mParentContext.packageName)?.let {
       it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
