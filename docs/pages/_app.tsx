@@ -40,9 +40,9 @@ Sentry.init({
     /https:\/\/expo\.nodejs\.cn/,
   ],
   integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
-  tracesSampleRate: 0.002,
-  replaysSessionSampleRate: 0.0001,
-  replaysOnErrorSampleRate: 0.05,
+  tracesSampleRate: 0.0001,
+  replaysSessionSampleRate: 0.000005,
+  replaysOnErrorSampleRate: 0.002,
 });
 
 await import('@sentry/react').then(lazyLoadedSentry => {
