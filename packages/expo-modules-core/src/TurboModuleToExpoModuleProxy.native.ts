@@ -1,12 +1,6 @@
 // Copyright © 2024 650 Industries.
 import type { TurboModule, EventSubscription } from 'react-native';
 
-function addListener(eventName: string, listener: (...args: any[]) => any): EventSubscription
-{
-  const eventEmitter = this[eventName];
-  return eventEmitter(listener);
-}
-
 export function createTurboModuleToExpoProxy(turboModule: TurboModule | null, name: string) {
   if (!turboModule)
     return null;
@@ -16,17 +10,21 @@ export function createTurboModuleToExpoProxy(turboModule: TurboModule | null, na
   };
 
   Object.keys(Object.getPrototypeOf(turboModule)).forEach((prop) => {
-    expoModuleProxy[prop] = turboModule[prop];
+    expoModuleProxy[prop] = (turboModule as any)[prop];
   });
 
   if (turboModule.getConstants) {
     const constants = turboModule.getConstants();
     Object.keys(constants).forEach((prop) => {
-      expoModuleProxy[prop] = constants[prop];
+      expoModuleProxy[prop] = (constants as any)[prop];
     });
   }
 
-  expoModuleProxy.addListener = addListener.bind(turboModule);
+  expoModuleProxy.addListener = (eventName: string, listener: (...args: any[]) => any): EventSubscription =>
+  {
+    const eventEmitter = (turboModule as any)[eventName];
+    return eventEmitter(listener);
+  };
 
   return expoModuleProxy;
 }
