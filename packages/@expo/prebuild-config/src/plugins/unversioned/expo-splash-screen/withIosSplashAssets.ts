@@ -71,6 +71,13 @@ async function configureImageAssets({
 }) {
   const imagePath = enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH;
   const imageSetPath = path.resolve(iosNamedProjectRoot, imagePath);
+
+  // remove legacy imageSet if it is not used
+  if (!enableFullScreenImage) {
+    const legacyImageSetPath = path.resolve(iosNamedProjectRoot, LEGACY_IMAGESET_PATH);
+    await fs.promises.rm(legacyImageSetPath, { force: true, recursive: true });
+  }
+
   // ensure old SplashScreen imageSet is removed
   await fs.promises.rm(imageSetPath, { force: true, recursive: true });
 
