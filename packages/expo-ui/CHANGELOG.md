@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Update docs ([#36130](https://github.com/expo/expo/pull/36130) by [@benjaminkomen](https://github.com/benjaminkomen)
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
