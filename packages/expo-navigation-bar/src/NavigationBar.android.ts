@@ -27,11 +27,6 @@ if (isEdgeToEdge()) {
 export function addVisibilityListener(
   listener: (event: NavigationBarVisibilityEvent) => void
 ): EventSubscription {
-  if (SystemBars != null) {
-    console.warn('`addVisibilityListener` is not supported with edge-to-edge enabled.');
-    return { remove: () => {} };
-  }
-
   return ExpoNavigationBar.addListener('ExpoNavigationBar.didChange', listener);
 }
 
@@ -155,11 +150,6 @@ export function useVisibility(): NavigationBarVisibility | null {
   const [visibility, setVisible] = useState<NavigationBarVisibility | null>(null);
 
   useEffect(() => {
-    if (SystemBars != null) {
-      console.warn('`useVisibility` is not supported with edge-to-edge enabled.');
-      return;
-    }
-
     let isMounted = true;
 
     getVisibilityAsync().then((visibility) => {
