@@ -81,6 +81,7 @@ function getStatusFromMedia(media) {
     return status;
 }
 async function setStatusForMedia(media, status) {
+    console.log('media', media);
     if (status.positionMillis !== undefined) {
         media.currentTime = status.positionMillis / 1000;
     }
