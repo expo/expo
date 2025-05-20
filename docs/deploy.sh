@@ -351,6 +351,9 @@ redirects[versions/v53.0.0/sdk/encoding]=versions/v53.0.0/sdk/expo/#encoding-api
 # After adding System bars
 redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 
+# After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
+redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-privacy-protection
+
 echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

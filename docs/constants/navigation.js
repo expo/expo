@@ -376,7 +376,6 @@ export const general = [
     makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
     makePage('regulatory-compliance/gdpr.mdx'),
     makePage('regulatory-compliance/hipaa.mdx'),
-    makePage('regulatory-compliance/privacy-shield.mdx'),
   ]),
 ];
 
