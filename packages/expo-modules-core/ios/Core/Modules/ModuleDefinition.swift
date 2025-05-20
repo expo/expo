@@ -19,6 +19,8 @@ public final class ModuleDefinition: ObjectDefinition {
   let eventListeners: [EventListener]
 
   let views: [String: AnyViewDefinition]
+  
+  let permissions: [String: AnyPermissionDefinition]
 
   /**
    Names of the events that the module can send to JavaScript.
@@ -51,6 +53,10 @@ public final class ModuleDefinition: ObjectDefinition {
 
     self.eventObservers = definitions
       .compactMap { $0 as? AnyEventObservingDefinition }
+    
+    let permissionDefinitions: [AnyPermissionDefinition] = definitions
+      .compactMap { $0 as? AnyPermissionDefinition }
+    self.permissions = Dictionary(uniqueKeysWithValues: permissionDefinitions.map { ($0.name, $0) })
 
     super.init(definitions: definitions)
   }
@@ -86,6 +92,22 @@ public final class ModuleDefinition: ObjectDefinition {
       try EventObservingDecorator(definitions: eventObservers)
         .decorate(object: object, appContext: appContext)
     }
+    
+    let permissionsObject = try appContext.runtime.createObject()
+    object.setProperty("permissions", value: permissionsObject)
+
+    permissions.forEach { name, permission in
+      try? permission.decorate(object: permissionsObject, appContext: appContext)
+    }
+    
+//    functions.forEach { name, function in
+//      try? function.requiredPermissionNames.forEach { permissionName in
+//        guard let permission = permissions[permissionName] else {
+//          fatalError("Permission \(permissionName) required by function \(name) in module \(self) not defined.")
+//        }
+//        function.requiredPermissionDefinitions.append(permission)
+//      }
+//    }
 
     object.setProperty("ViewPrototypes", value: viewPrototypesObject)
     // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.

@@ -17,6 +17,8 @@ public final class AppContext: NSObject {
    */
   public let config: AppContextConfig
 
+  public let permissionRegistry: PermissionRegistry
+
   /**
    The module registry for the app context.
    */
@@ -124,7 +126,7 @@ public final class AppContext: NSObject {
    */
   public init(config: AppContextConfig? = nil) {
     self.config = config ?? AppContextConfig(documentDirectory: nil, cacheDirectory: nil, appGroups: appCodeSignEntitlements.appGroups)
-
+    self.permissionRegistry = PermissionRegistry()
     super.init()
     listenToClientAppNotifications()
   }
