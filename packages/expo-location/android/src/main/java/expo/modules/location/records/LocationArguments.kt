@@ -64,14 +64,16 @@ internal class LocationTaskServiceOptions(
   @Field var notificationTitle: String? = null,
   @Field var notificationBody: String? = null,
   @Field var killServiceOnDestroy: Boolean? = null,
-  @Field var notificationColor: String? = null
+  @Field var notificationColor: String? = null,
+  @Field var ongoing: Boolean? = null,
 ) : Record, Serializable {
 
   internal fun toMutableMap() = mutableMapOf(
     "notificationTitle" to notificationTitle,
     "notificationBody" to notificationBody,
     "killServiceOnDestroy" to killServiceOnDestroy,
-    "notificationColor" to notificationColor
+    "notificationColor" to notificationColor,
+    "ongoing" to ongoing
   )
 }
 
