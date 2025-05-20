@@ -9,6 +9,7 @@
 - [iOS] Add module registry encoder for JSON. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
 - [Android] New custom Type Converter API ([#36823](https://github.com/expo/expo/pull/36823) by [@jakex7](https://github.com/jakex7))
 - [iOS] Natively support `rgb` color conversions. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+- Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
 
 ### 🐛 Bug fixes
 
