@@ -5,8 +5,9 @@ import {
   TabRouterOptions,
   useNavigationBuilder,
 } from '@react-navigation/native';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { BottomTabs, enableFreeze } from 'react-native-screens';
+import { BottomTabsProps } from 'react-native-screens/lib/typescript/components/BottomTabs';
 import BottomTabsScreen from 'react-native-screens/src/components/BottomTabsScreen';
 
 enableFreeze(false);
@@ -16,7 +17,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   icon?: string;
 }
 
-export type NativeTabsViewProps = {
+export type NativeTabsViewProps = BottomTabsProps & {
   builder: ReturnType<
     typeof useNavigationBuilder<
       TabNavigationState<ParamListBase>,
@@ -28,8 +29,9 @@ export type NativeTabsViewProps = {
   >;
 };
 
-export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
-  const { state, descriptors, navigation } = props.builder;
+export function NativeTabsView(props: NativeTabsViewProps) {
+  const { builder, ...rest } = props;
+  const { state, descriptors, navigation } = builder;
   const { routes } = state;
 
   const children = routes
@@ -64,5 +66,5 @@ export function NativeTabsView(props: PropsWithChildren<NativeTabsViewProps>) {
       );
     });
 
-  return <BottomTabs tabBarBlurEffect="systemThickMaterialLight">{children}</BottomTabs>;
+  return <BottomTabs {...rest}>{children}</BottomTabs>;
 }

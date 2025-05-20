@@ -1,7 +1,8 @@
 import { ParamListBase } from '@react-navigation/native';
 import React, { ComponentProps, PropsWithChildren } from 'react';
+import { BottomTabsProps } from 'react-native-screens/lib/typescript/components/BottomTabs';
 import { NativeTabOptions } from './NativeTabsView';
-declare function NativeTabsNavigator({ children }: PropsWithChildren): React.JSX.Element;
+declare function NativeTabsNavigator({ children, ...rest }: PropsWithChildren<BottomTabsProps>): React.JSX.Element;
 export declare const createNativeTabNavigator: (config?: any) => any;
 export declare const NativeTabs: ((props: ComponentProps<typeof NativeTabsNavigator>) => React.JSX.Element) & {
     Tab: (props: import("../..").ScreenProps<NativeTabOptions, Readonly<{

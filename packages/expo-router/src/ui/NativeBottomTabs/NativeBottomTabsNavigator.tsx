@@ -8,6 +8,7 @@ import {
 } from '@react-navigation/native';
 import React, { ComponentProps, PropsWithChildren } from 'react';
 import { enableFreeze } from 'react-native-screens';
+import { BottomTabsProps } from 'react-native-screens/lib/typescript/components/BottomTabs';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabOptions, NativeTabsView } from './NativeTabsView';
@@ -15,7 +16,7 @@ import { withLayoutContext } from '../..';
 
 enableFreeze(true);
 
-function NativeTabsNavigator({ children }: PropsWithChildren) {
+function NativeTabsNavigator({ children, ...rest }: PropsWithChildren<BottomTabsProps>) {
   const builder = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
@@ -26,7 +27,7 @@ function NativeTabsNavigator({ children }: PropsWithChildren) {
     children,
   });
 
-  return <NativeTabsView builder={builder} />;
+  return <NativeTabsView builder={builder} {...rest} />;
 }
 
 export const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);

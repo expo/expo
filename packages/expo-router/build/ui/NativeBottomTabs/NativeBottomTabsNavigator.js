@@ -11,11 +11,11 @@ const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
 const NativeTabsView_1 = require("./NativeTabsView");
 const __1 = require("../..");
 (0, react_native_screens_1.enableFreeze)(true);
-function NativeTabsNavigator({ children }) {
+function NativeTabsNavigator({ children, ...rest }) {
     const builder = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
     });
-    return <NativeTabsView_1.NativeTabsView builder={builder}/>;
+    return <NativeTabsView_1.NativeTabsView builder={builder} {...rest}/>;
 }
 exports.createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
 const NTN = (0, __1.withLayoutContext)((0, exports.createNativeTabNavigator)().Navigator, (screens) => {

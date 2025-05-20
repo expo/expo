@@ -9,7 +9,8 @@ const react_native_screens_1 = require("react-native-screens");
 const BottomTabsScreen_1 = __importDefault(require("react-native-screens/src/components/BottomTabsScreen"));
 (0, react_native_screens_1.enableFreeze)(false);
 function NativeTabsView(props) {
-    const { state, descriptors, navigation } = props.builder;
+    const { builder, ...rest } = props;
+    const { state, descriptors, navigation } = builder;
     const { routes } = state;
     const children = routes
         .filter(({ key }) => descriptors[key].options?.tabBarItemStyle?.display !== 'none')
@@ -33,6 +34,6 @@ function NativeTabsView(props) {
           {descriptor.render()}
         </BottomTabsScreen_1.default>);
     });
-    return <react_native_screens_1.BottomTabs tabBarBlurEffect="systemThickMaterialLight">{children}</react_native_screens_1.BottomTabs>;
+    return <react_native_screens_1.BottomTabs {...rest}>{children}</react_native_screens_1.BottomTabs>;
 }
 //# sourceMappingURL=NativeTabsView.js.map
