@@ -2,8 +2,6 @@
   "name": "@expo/app-integrity",
   "version": "0.0.1",
   "description": "A native module that helps assert app integrity on mobile platforms",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
@@ -20,6 +18,9 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-app-integrity"
   },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -32,6 +33,8 @@
     "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

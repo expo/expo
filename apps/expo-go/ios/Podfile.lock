@@ -63,6 +63,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoAppIntegrity (0.0.1):
+    - ExpoModulesCore
   - ExpoAppleAuthentication (7.2.4):
     - ExpoModulesCore
   - ExpoAsset (11.1.5):
@@ -3566,6 +3568,7 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
+  - ExpoAppIntegrity (from `../../../packages/expo-app-integrity/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
@@ -3801,6 +3804,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   Expo:
     :path: "../../../packages/expo"
+  ExpoAppIntegrity:
+    :path: "../../../packages/expo-app-integrity/ios"
   ExpoAppleAuthentication:
     :path: "../../../packages/expo-apple-authentication/ios"
   ExpoAsset:
