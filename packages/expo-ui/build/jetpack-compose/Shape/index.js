@@ -1,22 +1,22 @@
 import { requireNativeView } from 'expo';
 const ShapeNativeView = requireNativeView('ExpoUI', 'ShapeView');
 function Star(props) {
-    return <ShapeNativeView {...props} style={props.style} type="STAR"/>;
+    return <ShapeNativeView {...props} style={props.style} type="star"/>;
 }
 function PillStar(props) {
-    return <ShapeNativeView {...props} style={props.style} type="PILL_STAR"/>;
+    return <ShapeNativeView {...props} style={props.style} type="pillStar"/>;
 }
 function Pill(props) {
-    return <ShapeNativeView {...props} style={props.style} type="PILL"/>;
+    return <ShapeNativeView {...props} style={props.style} type="pill"/>;
 }
 function Circle(props) {
-    return <ShapeNativeView {...props} style={props.style} type="CIRCLE"/>;
+    return <ShapeNativeView {...props} style={props.style} type="circle"/>;
 }
 function Rectangle(props) {
-    return <ShapeNativeView {...props} style={props.style} type="RECTANGLE"/>;
+    return <ShapeNativeView {...props} style={props.style} type="rectangle"/>;
 }
 function Polygon(props) {
-    return <ShapeNativeView {...props} style={props.style} type="POLYGON"/>;
+    return <ShapeNativeView {...props} style={props.style} type="polygon"/>;
 }
 export const Shape = {
     Star,

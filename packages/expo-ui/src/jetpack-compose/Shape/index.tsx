@@ -36,29 +36,29 @@ export type ShapeProps = {
 const ShapeNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'ShapeView');
 
 function Star(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} type="STAR" />;
+  return <ShapeNativeView {...props} style={props.style} type="star" />;
 }
 
 function PillStar(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} type="PILL_STAR" />;
+  return <ShapeNativeView {...props} style={props.style} type="pillStar" />;
 }
 
 function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="PILL" />;
+  return <ShapeNativeView {...props} style={props.style} type="pill" />;
 }
 
-function Circle(props: Pick<ShapeProps, 'smoothing' | 'verticesCount' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="CIRCLE" />;
+function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>) {
+  return <ShapeNativeView {...props} style={props.style} type="circle" />;
 }
 
 function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="RECTANGLE" />;
+  return <ShapeNativeView {...props} style={props.style} type="rectangle" />;
 }
 
 function Polygon(
   props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>
 ) {
-  return <ShapeNativeView {...props} style={props.style} type="POLYGON" />;
+  return <ShapeNativeView {...props} style={props.style} type="polygon" />;
 }
 
 export const Shape = {

@@ -27,13 +27,13 @@ import androidx.graphics.shapes.star
 import expo.modules.kotlin.types.Enumerable
 import android.graphics.Color as GraphicsColor
 
-enum class ShapeType : Enumerable {
-  STAR,
-  PILL_STAR,
-  PILL,
-  CIRCLE,
-  RECTANGLE,
-  POLYGON
+enum class ShapeType(val value: String) : Enumerable {
+  STAR("star"),
+  PILL_STAR("pillStar"),
+  PILL("pill"),
+  CIRCLE("circle"),
+  RECTANGLE("rectangle"),
+  POLYGON("polygon")
 }
 
 data class ShapeProps(

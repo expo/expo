@@ -33,7 +33,7 @@ export type ShapeProps = {
 declare function Star(props: ShapeProps): import("react").JSX.Element;
 declare function PillStar(props: ShapeProps): import("react").JSX.Element;
 declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>): import("react").JSX.Element;
-declare function Circle(props: Pick<ShapeProps, 'smoothing' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
+declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
 declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>): import("react").JSX.Element;
 declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>): import("react").JSX.Element;
 export declare const Shape: {

@@ -1,5 +1,5 @@
 import { Shape } from '@expo/ui/jetpack-compose';
-import * as React from 'react';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {
   Easing,
@@ -26,7 +26,7 @@ const pastelPalette = {
 export default function UIScreen() {
   const oneToZero = useSharedValue<number | undefined>(1);
 
-  React.useEffect(() => {
+  useEffect(() => {
     oneToZero.set(
       withRepeat(
         withSequence(
@@ -41,7 +41,7 @@ export default function UIScreen() {
 
   const zeroToPointTwo = useSharedValue<number | undefined>(1);
 
-  React.useEffect(() => {
+  useEffect(() => {
     zeroToPointTwo.set(
       withRepeat(
         withSequence(
@@ -56,7 +56,7 @@ export default function UIScreen() {
 
   const oneToPointEight = useSharedValue<number | undefined>(1);
 
-  React.useEffect(() => {
+  useEffect(() => {
     oneToPointEight.set(
       withRepeat(
         withSequence(
