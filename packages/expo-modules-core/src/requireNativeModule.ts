@@ -1,5 +1,7 @@
 import NativeModulesProxy from './NativeModulesProxy';
+import { TurboModuleRegistry } from 'react-native';
 import { ensureNativeModulesAreInstalled } from './ensureNativeModulesAreInstalled';
+import { createTurboModuleToExpoProxy } from "./TurboModuleToExpoModuleProxy";
 
 /**
  * Imports the native module registered with given name. In the first place it tries to load
@@ -31,5 +33,5 @@ export function requireOptionalNativeModule<ModuleType = any>(
 ): ModuleType | null {
   ensureNativeModulesAreInstalled();
 
-  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? null;
+  return globalThis.expo?.modules?.[moduleName] ?? NativeModulesProxy[moduleName] ?? createTurboModuleToExpoProxy(TurboModuleRegistry.get(moduleName), moduleName) ?? null;
 }
