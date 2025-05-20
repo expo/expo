@@ -198,5 +198,4 @@ export declare function setStyle(style: NavigationBarStyle): void;
  * @returns Visibility of the navigation bar, `null` during async initialization.
  */
 export declare function useVisibility(): NavigationBarVisibility | null;
-export * from './NavigationBar.types';
 //# sourceMappingURL=NavigationBar.d.ts.map

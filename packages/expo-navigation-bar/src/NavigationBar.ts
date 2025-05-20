@@ -266,5 +266,3 @@ export function useVisibility(): NavigationBarVisibility | null {
 
   return visibility;
 }
-
-export * from './NavigationBar.types';
