@@ -9,15 +9,6 @@ import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlat
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
 
-const asResolver = (v: any) => {
-  assert(typeof v === 'function', 'Expected a function');
-  return v as (
-    context: CustomResolutionContext & { dev?: boolean },
-    path: string,
-    platform: string | null
-  ) => any;
-};
-
 class FailedToResolveNameError extends Error {
   extraPaths: string[] = [];
 
@@ -44,7 +35,7 @@ function getDefaultRequestContext(): CustomResolutionContext {
   return getResolverContext();
 }
 
-function getMetroBundlerGetter(): any {
+function getMetroBundlerGetter() {
   return jest.fn(() => {
     const transformFile = jest.fn();
     // @ts-expect-error
@@ -123,17 +114,12 @@ describe(withExtendedResolver, () => {
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
       isTsconfigPathsEnabled: false,
-      isFabricEnabled: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'ios';
 
-    asResolver(modified.resolver.resolveRequest)(
-      getDefaultRequestContext(),
-      'react-native',
-      platform
-    );
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
@@ -157,18 +143,12 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: true,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'ios';
 
-    asResolver(modified.resolver.resolveRequest)(
-      getDefaultRequestContext(),
-      'react-native',
-      platform
-    );
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
 
@@ -189,18 +169,12 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: { baseUrl: '/src' },
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: true,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'ios';
 
-    asResolver(modified.resolver.resolveRequest)(
-      getDefaultRequestContext(),
-      'react-native',
-      platform
-    );
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
 
@@ -221,18 +195,12 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: true,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
-    asResolver(modified.resolver.resolveRequest)(
-      getDefaultRequestContext(),
-      'react-native',
-      platform
-    );
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
@@ -250,18 +218,12 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: {},
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: false,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
-    asResolver(modified.resolver.resolveRequest)(
-      getDefaultRequestContext(),
-      'react-native',
-      platform
-    );
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
@@ -279,14 +241,12 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: {},
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: false,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
-    asResolver(modified.resolver.resolveRequest)(
+    modified.resolver.resolveRequest!(
       getDefaultRequestContext(),
       'react-native/Libraries/Image/resolveAssetSource',
       platform
@@ -317,12 +277,10 @@ describe(withExtendedResolver, () => {
 
         const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
           tsconfig: {},
-          isFabricEnabled: {},
           isTsconfigPathsEnabled: false,
-          getMetroBundler: getMetroBundlerGetter(),
         });
 
-        asResolver(modified.resolver.resolveRequest)(
+        modified.resolver.resolveRequest!(
           {
             ...getDefaultRequestContext(),
             dev: true,
@@ -336,172 +294,15 @@ describe(withExtendedResolver, () => {
       });
     });
 
-    it(`mocks legacy react native renderer when bundling for new architecture`, async () => {
-      mockMinFs();
-
-      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
-        isFabricEnabled: {
-          ios: true,
-        },
-        isTsconfigPathsEnabled: false,
-        isExporting: true,
-        isFastResolverEnabled: false,
-        isReactCanaryEnabled: false,
-        isReactServerComponentsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
-      });
-
-      expect(
-        asResolver(modified.resolver.resolveRequest)(
-          {
-            ...getDefaultRequestContext(),
-            dev: false,
-            originModulePath:
-              '/Users/path/to/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js',
-          },
-          '../implementations/ReactNativeRenderer-prod',
-          'ios'
-        )
-      ).toEqual({
-        type: 'empty',
-      });
-
-      // Also the dev renderer.
-      expect(
-        asResolver(modified.resolver.resolveRequest)(
-          {
-            ...getDefaultRequestContext(),
-            dev: true,
-            originModulePath: '/Users/path/to/node_modules/react-native/Libraries/something.js',
-          },
-          '../implementations/ReactNativeRenderer-dev',
-          'ios'
-        )
-      ).toEqual({
-        type: 'empty',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(0);
-    });
-
-    it(`mocks legacy react native renderer for a single platform when bundling for new architecture`, async () => {
-      mockMinFs();
-
-      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
-        isFabricEnabled: {
-          ios: true,
-          android: false,
-        },
-        isTsconfigPathsEnabled: false,
-        isExporting: true,
-        isFastResolverEnabled: false,
-        isReactCanaryEnabled: false,
-        isReactServerComponentsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
-      });
-
-      expect(
-        asResolver(modified.resolver.resolveRequest)(
-          {
-            ...getDefaultRequestContext(),
-            dev: false,
-            originModulePath:
-              '/Users/path/to/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js',
-          },
-          '../implementations/ReactNativeRenderer-prod',
-          'ios'
-        )
-      ).toEqual({
-        type: 'empty',
-      });
-      expect(getResolveFunc()).toHaveBeenCalledTimes(0);
-
-      expect(
-        asResolver(modified.resolver.resolveRequest)(
-          {
-            ...getDefaultRequestContext(),
-            dev: false,
-            originModulePath:
-              '/Users/path/to/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js',
-          },
-          '../implementations/ReactNativeRenderer-prod',
-          'android'
-        )
-      ).toEqual({
-        type: 'empty',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-      expect(getResolveFunc()).toHaveBeenCalledWith(
-        expect.anything(),
-        '../implementations/ReactNativeRenderer-prod',
-        'android'
-      );
-    });
-
-    it(`does not mock legacy react native renderer when bundling without new architecture`, async () => {
-      mockMinFs();
-      vol.fromJSON(
-        {
-          'node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js':
-            '',
-
-          'node_modules/@react-native/assets-registry/registry.js': '',
-
-          mock: '',
-        },
-        '/'
-      );
-
-      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
-        isFabricEnabled: {
-          ios: false,
-        },
-        isTsconfigPathsEnabled: false,
-        isExporting: false,
-        isFastResolverEnabled: false,
-        isReactCanaryEnabled: false,
-        isReactServerComponentsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
-      });
-
-      expect(
-        asResolver(modified.resolver.resolveRequest)(
-          {
-            ...getDefaultRequestContext(),
-            dev: true,
-            originModulePath:
-              '/Users/path/to/node_modules/react-native/Libraries/Renderer/shims/ReactNative.js',
-          },
-          '../implementations/ReactNativeRenderer-dev',
-          'ios'
-        )
-      ).toEqual({
-        type: 'empty',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-      expect(getResolveFunc()).toHaveBeenCalledWith(
-        expect.anything(),
-        '../implementations/ReactNativeRenderer-dev',
-        'ios'
-      );
-    });
-
     it(`does not mock native files on web`, async () => {
       mockMinFs();
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
-        isFabricEnabled: {},
         isTsconfigPathsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         {
           ...getDefaultRequestContext(),
           dev: false,
@@ -520,12 +321,10 @@ describe(withExtendedResolver, () => {
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
-        isFabricEnabled: {},
         isTsconfigPathsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         {
           ...getDefaultRequestContext(),
           dev: false,
@@ -551,12 +350,10 @@ describe(withExtendedResolver, () => {
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
-        isFabricEnabled: {},
         isTsconfigPathsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         getDefaultRequestContext(),
         'react-native-vector-icons',
         platform
@@ -582,12 +379,10 @@ describe(withExtendedResolver, () => {
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
-        isFabricEnabled: {},
         isTsconfigPathsEnabled: false,
-        getMetroBundler: getMetroBundlerGetter(),
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         getDefaultRequestContext(),
         'react-native-vector-icons/FontAwesome',
         platform
@@ -612,12 +407,10 @@ describe(withExtendedResolver, () => {
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         tsconfig: {},
-        isFabricEnabled: {},
         isTsconfigPathsEnabled: true,
-        getMetroBundler: getMetroBundlerGetter(),
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         getDefaultRequestContext(),
         'react-native-vector-icons',
         platform
@@ -642,16 +435,10 @@ describe(withExtendedResolver, () => {
     const platform = 'ios';
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: {},
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: true,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
-    asResolver(modified.resolver.resolveRequest)(
-      getDefaultRequestContext(),
-      '@expo/vector-icons',
-      platform
-    );
+    modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.anything(),
       '@expo/vector-icons',
@@ -669,19 +456,13 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: false,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
     expect(
-      asResolver(modified.resolver.resolveRequest)(
-        getDefaultRequestContext(),
-        'node:path',
-        platform
-      )
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'node:path', platform)
     ).toEqual({
       type: 'empty',
     });
@@ -710,19 +491,13 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: false,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
     expect(
-      asResolver(modified.resolver.resolveRequest)(
-        getDefaultRequestContext(),
-        'node:path',
-        platform
-      )
+      modified.resolver.resolveRequest!(getDefaultRequestContext(), 'node:path', platform)
     ).toEqual({
       filePath: 'node_modules/path/index.js',
       type: 'sourceFile',
@@ -745,14 +520,12 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
-      isFabricEnabled: {},
       isTsconfigPathsEnabled: false,
-      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
-    asResolver(modified.resolver.resolveRequest)(
+    modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
         customResolverOptions: {
@@ -782,13 +555,12 @@ describe(withExtendedResolver, () => {
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
       isTsconfigPathsEnabled: false,
-      isFabricEnabled: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'ios';
 
-    asResolver(modified.resolver.resolveRequest)(
+    modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
         customResolverOptions: {
@@ -825,13 +597,12 @@ describe(withExtendedResolver, () => {
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
       isTsconfigPathsEnabled: false,
-      isFabricEnabled: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
-    asResolver(modified.resolver.resolveRequest)(
+    modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
         customResolverOptions: {
@@ -868,13 +639,12 @@ describe(withExtendedResolver, () => {
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       tsconfig: null,
       isTsconfigPathsEnabled: false,
-      isFabricEnabled: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
 
-    asResolver(modified.resolver.resolveRequest)(
+    modified.resolver.resolveRequest!(
       {
         ...getDefaultRequestContext(),
         customResolverOptions: {
@@ -939,11 +709,10 @@ describe(withExtendedResolver, () => {
       tsconfig: {},
       isTsconfigPathsEnabled: false,
       isReactCanaryEnabled: true,
-      isFabricEnabled: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
-    const result = asResolver(modified.resolver.resolveRequest)(
+    const result = modified.resolver.resolveRequest!(
       getDefaultRequestContext(),
       '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
       'web'
@@ -969,7 +738,6 @@ describe(withExtendedResolver, () => {
         isExporting: props.isExporting,
         isTsconfigPathsEnabled: false,
         isReactCanaryEnabled: false,
-        isFabricEnabled: {},
         getMetroBundler: getMetroBundlerGetter(),
       });
     }
@@ -981,7 +749,7 @@ describe(withExtendedResolver, () => {
         describe(platform, () => {
           ['react/123', 'expo'].forEach((name) => {
             it(`does not extern ${name} to virtual node shim`, () => {
-              const result = asResolver(config.resolver.resolveRequest)(
+              const result = config.resolver.resolveRequest!(
                 // Context
                 getNodeResolverContext(),
                 // Module
@@ -1029,7 +797,7 @@ describe(withExtendedResolver, () => {
             'inline-style-prefixer/index.js',
           ].forEach((name) => {
             it(`externs ${name} to virtual node shim`, () => {
-              const result = asResolver(config.resolver.resolveRequest)(
+              const result = config.resolver.resolveRequest!(
                 // Context
                 getNodeResolverContext(),
                 // Module
@@ -1049,7 +817,7 @@ describe(withExtendedResolver, () => {
           });
 
           it(`externs @babel/runtime/xxx subpaths `, () => {
-            const result = asResolver(config.resolver.resolveRequest)(
+            const result = config.resolver.resolveRequest!(
               getNodeResolverContext(),
               '@babel/runtime/xxx/foo.js',
               platform
@@ -1078,7 +846,7 @@ describe(withExtendedResolver, () => {
 
       const config = getModifiedConfig();
 
-      const result = asResolver(config.resolver.resolveRequest)(
+      const result = config.resolver.resolveRequest!(
         getNodeResolverContext({
           originModulePath: '/index.css',
         }),
@@ -1094,7 +862,7 @@ describe(withExtendedResolver, () => {
     });
 
     it(`does not extern source-map-support in server environments that are bundling for standalone exports`, async () => {
-      const result = asResolver(getModifiedConfig({ isExporting: true }).resolver.resolveRequest)(
+      const result = getModifiedConfig({ isExporting: true }).resolver.resolveRequest!(
         getNodeResolverContext({
           customResolverOptions: {
             exporting: true,
@@ -1112,7 +880,7 @@ describe(withExtendedResolver, () => {
     });
 
     it(`does not extern source-map-support in client environment`, async () => {
-      const result = asResolver(getModifiedConfig().resolver.resolveRequest)(
+      const result = getModifiedConfig().resolver.resolveRequest!(
         getResolverContext(),
         'source-map-support',
         'web'
@@ -1162,11 +930,10 @@ describe(withExtendedResolver, () => {
         tsconfig: {},
         isTsconfigPathsEnabled: false,
         isReactCanaryEnabled: true,
-        isFabricEnabled: {},
         getMetroBundler: getMetroBundlerGetter(),
       });
 
-      const result = asResolver(modified.resolver.resolveRequest)(
+      const result = modified.resolver.resolveRequest!(
         getDefaultRequestContext(),
         '/node_modules/react-native/Libraries/Renderer/implementations/ReactNativeRenderer-dev.js',
         platform
@@ -1192,7 +959,6 @@ describe(withExtendedResolver, () => {
         tsconfig: {},
         isTsconfigPathsEnabled: false,
         isReactCanaryEnabled: true,
-        isFabricEnabled: {},
         getMetroBundler: getMetroBundlerGetter() as any,
       });
     }
@@ -1216,7 +982,7 @@ describe(withExtendedResolver, () => {
         }
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         getResolverContext({
           getPackage(name) {
             if (name.endsWith('expo/package.json')) {
@@ -1282,7 +1048,7 @@ describe(withExtendedResolver, () => {
         }
       });
 
-      asResolver(modified.resolver.resolveRequest)(
+      modified.resolver.resolveRequest!(
         getResolverContext({
           getPackage(name) {
             if (name.endsWith('expo/package.json')) {
@@ -1353,11 +1119,7 @@ describe(withExtendedResolver, () => {
       });
 
       expect(() => {
-        asResolver(modified.resolver.resolveRequest)(
-          getDefaultRequestContext(),
-          'example',
-          platform
-        );
+        modified.resolver.resolveRequest!(getDefaultRequestContext(), 'example', platform);
       }).toThrow();
 
       expect(getResolveFunc()).toHaveBeenCalledTimes(3);
@@ -1411,11 +1173,7 @@ describe(withExtendedResolver, () => {
       });
 
       expect(() => {
-        asResolver(modified.resolver.resolveRequest)(
-          getDefaultRequestContext(),
-          'example',
-          platform
-        );
+        modified.resolver.resolveRequest!(getDefaultRequestContext(), 'example', platform);
       }).toThrow();
 
       expect(getResolveFunc()).toHaveBeenCalledTimes(3);

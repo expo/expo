@@ -74,12 +74,17 @@ function createConfig(screen, pattern, routeNames, config = {}) {
     const parts = [];
     let isDynamic = false;
     const isIndex = screen === 'index' || screen.endsWith('/index');
+    let staticPartCount = 0;
     for (const part of pattern.split('/')) {
         if (part) {
             // If any part is dynamic, then the route is dynamic
-            isDynamic ||= part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
+            const isDynamicPart = part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
+            isDynamic ||= isDynamicPart;
             if (!(0, matchers_1.matchGroupName)(part)) {
                 parts.push(part);
+                if (!isDynamicPart) {
+                    staticPartCount++;
+                }
             }
         }
     }
@@ -87,12 +92,14 @@ function createConfig(screen, pattern, routeNames, config = {}) {
     const type = hasChildren ? 'layout' : isDynamic ? 'dynamic' : 'static';
     if (isIndex) {
         parts.push('index');
+        staticPartCount++;
     }
     return {
         type,
         isIndex,
         hasChildren,
         parts,
+        staticPartCount,
         userReadableName: [...routeNames.slice(0, -1), config.path || screen].join('/'),
         // Don't include the __root route name
         expandedRouteNames: routeNames.slice(1).flatMap((name) => {
@@ -252,6 +259,12 @@ function getRouteConfigSorter(previousSegments = []) {
         }
         else if (a.type !== 'static' && b.type === 'static') {
             return 1;
+        }
+        /*
+         * If the routes have any static segments, the one the most static segments should be higher
+         */
+        if (a.staticPartCount !== b.staticPartCount) {
+            return b.staticPartCount - a.staticPartCount;
         }
         /*
          * If both are static/dynamic or a layout file, then we check group similarity

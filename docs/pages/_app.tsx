@@ -2,7 +2,7 @@ import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
 import { AppProps } from 'next/app';
-import { Inter, Fira_Code } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
@@ -24,8 +24,7 @@ export const regularFont = Inter({
   display: 'swap',
   subsets: ['latin'],
 });
-export const monospaceFont = Fira_Code({
-  weight: ['400', '500'],
+export const monospaceFont = JetBrains_Mono({
   display: 'swap',
   subsets: ['latin'],
 });
