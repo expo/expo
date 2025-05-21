@@ -15,7 +15,7 @@ export interface ImageProps extends CommonViewModifierProps {
   size?: number;
   /**
    * The color of the system image.
-   * Can be a color name like 'red', 'blue', etc.
+   * Can be a color name like '#ff00ff', 'red', 'blue', etc.
    */
   color?: string;
 
