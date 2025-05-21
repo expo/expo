@@ -55,8 +55,8 @@ private fun createStarPath(size: Size, cornerRounding: Float, smoothing: Float, 
     numVerticesPerRadius = verticesCount,
     innerRadius = size.minDimension * 0.5f * innerRadius.coerceAtMost(radius - 0.001f).coerceAtLeast(0.001f),
     radius = size.minDimension * 0.5f * radius.coerceAtLeast(0.002f),
-    centerX = size.centerX,
-    centerY = size.centerY,
+    centerX = size.centerX(),
+    centerY = size.centerY(),
     rounding = rounding
   ).toPath().asComposePath()
 }
@@ -68,16 +68,16 @@ private fun createPillStarPath(size: Size, cornerRounding: Float, smoothing: Flo
     width = size.width / 2,
     height = size.height / 2,
     innerRadiusRatio = innerRadius.coerceAtMost(1f - 0.001f).coerceAtLeast(0.001f),
-    centerX = size.centerX,
-    centerY = size.centerY,
+    centerX = size.centerX(),
+    centerY = size.centerY(),
     rounding = rounding
   ).toPath().asComposePath()
 }
 
 private fun createPillPath(size: Size, smoothing: Float): Path {
   return RoundedPolygon.pill(
-    centerX = size.centerX,
-    centerY = size.centerY,
+    centerX = size.centerX(),
+    centerY = size.centerY(),
     width = size.width,
     height = size.height,
     smoothing = smoothing
@@ -89,16 +89,16 @@ private fun createPolygonPath(size: Size, cornerRounding: Float, smoothing: Floa
   return RoundedPolygon(
     numVertices = verticesCount.coerceAtLeast(3),
     radius = size.minDimension / 2,
-    centerX = size.centerX,
-    centerY = size.centerY,
+    centerX = size.centerX(),
+    centerY = size.centerY(),
     rounding = rounding,
   ).toPath().asComposePath()
 }
 
 private fun createCirclePath(size: Size, radius: Float, verticesCount: Int): Path {
   return RoundedPolygon.circle(
-    centerX = size.centerX,
-    centerY = size.centerY,
+    centerX = size.centerX(),
+    centerY = size.centerY(),
     radius = size.minDimension * 0.5f * radius.coerceAtLeast(0.002f),
     numVertices = verticesCount.coerceAtLeast(3),
   ).toPath().asComposePath()
@@ -107,8 +107,8 @@ private fun createCirclePath(size: Size, radius: Float, verticesCount: Int): Pat
 private fun createRectanglePath(size: Size, cornerRounding: Float, smoothing: Float): Path {
   val rounding = CornerRounding(size.minDimension * cornerRounding, smoothing = smoothing)
   return RoundedPolygon.rectangle(
-    centerX = size.centerX,
-    centerY = size.centerY,
+    centerX = size.centerX(),
+    centerY = size.centerY(),
     rounding = rounding,
     width = size.width,
     height = size.height,
