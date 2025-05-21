@@ -6,7 +6,7 @@
   "version": "53.0.27",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
+    "android": "expo start --android --device",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll"
