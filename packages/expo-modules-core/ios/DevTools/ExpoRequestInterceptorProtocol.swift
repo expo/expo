@@ -175,14 +175,18 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
     if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = dataTask.delegate {
       // For the case if the task has a dedicated delegate than the default delegate from its URLSession
-      delegate.urlSession?(session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+      delegate.urlSession?(
+        session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+      )
       return
     }
     guard let session = task.value(forKey: "session") as? URLSession,
       let delegate = session.delegate as? URLSessionTaskDelegate else {
       return
     }
-    delegate.urlSession?(session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+    delegate.urlSession?(
+      session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+    )
   }
 
   /**
