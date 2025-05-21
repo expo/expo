@@ -72,8 +72,7 @@ Both of these records are equivalent, however some DNS providers do not allow CN
 
 > **info** If you had a custom domains set up already before **19 March 2025**, you must press the "Refresh" button in your project's [Hosting settings](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings) before following instructions for setting up wildcard domains.
 
-After following the above steps, your custom domain will handle requests and is assigned to the production deployment.
-You can set up further subdomain DNS records to handle requests for other aliases than the production alias.
+While only a single custom domain can be set up per project, you can set up further subdomain DNS records to handle requests for other aliases than just the production alias.
 As long as a subdomain record is set up with a label that matches an alias in your hosting project, requests will be handled by that alias' deployment.
 
 For example, after [creating a `staging` alias](/eas/hosting/deployments-and-aliases/#aliases), you may set up CNAME record for your alias:
