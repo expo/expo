@@ -106,12 +106,7 @@ export function removeNotificationSubscription(subscription) {
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
  */
 export async function getLastNotificationResponseAsync() {
-    if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
-        throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
-    }
-    const response = await NotificationsEmitterModule.getLastNotificationResponseAsync();
-    const mappedResponse = response ? mapNotificationResponse(response) : response;
-    return mappedResponse;
+    return getLastNotificationResponse();
 }
 /**
  * Gets the notification response that was received most recently
@@ -139,12 +134,7 @@ export function getLastNotificationResponse() {
  * @return A promise that resolves if the native call was successful.
  */
 export async function clearLastNotificationResponseAsync() {
-    if (!NotificationsEmitterModule.clearLastNotificationResponseAsync) {
-        throw new UnavailabilityError('ExpoNotifications', 'clearLastNotificationResponseAsync');
-    }
-    await NotificationsEmitterModule.clearLastNotificationResponseAsync();
-    // Emit event to clear any useLastNotificationResponse hooks, after native call succeeds
-    emitter.emit(didClearNotificationResponseEventName, []);
+    clearLastNotificationResponse();
 }
 /**
  * Clears the notification response that was received most recently. May be used
