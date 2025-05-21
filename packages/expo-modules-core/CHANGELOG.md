@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent crash on failed networked requests ([#36896](https://github.com/expo/expo/pull/36896) by [@adrum](https://github.com/adrum))
+
 ### 💡 Others
 
 ## 2.3.13 — 2025-05-08
