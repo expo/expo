@@ -12,12 +12,25 @@ class ConcreteViewProp<ViewType : View, PropType>(
   propType: AnyType,
   private val setter: (view: ViewType, prop: PropType) -> Unit
 ) : AnyViewProp(name, propType) {
+  private var defaultValue: PropType? = null
+
+  constructor(
+    name: String,
+    propType: AnyType,
+    defaultValue: PropType,
+    setter: (view: ViewType, prop: PropType) -> Unit
+  ) : this(name, propType, setter) {
+    this.defaultValue = defaultValue
+  }
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
     exceptionDecorator({
       PropSetException(name, onView::class, it)
     }) {
+      if (prop.isNull && defaultValue != null) {
+        return setter(onView as ViewType, defaultValue as PropType)
+      }
       setter(onView as ViewType, type.convert(prop, appContext) as PropType)
     }
   }
