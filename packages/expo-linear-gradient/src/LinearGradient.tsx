@@ -58,7 +58,7 @@ export type LinearGradientProps = ViewProps & {
    */
   start?: LinearGradientPoint | null;
   /**
-   * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the bottom.
+   * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the top.
    *
    * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the end position.
    * @default { x: 0.5, y: 1.0 }
