@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Re-throw error in `handleInstanceException` if nothing is registered to handle the error.
+- [Android] Re-throw error in `handleInstanceException` if nothing is registered to handle it. ([#37021](https://github.com/expo/expo/pull/37021) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
