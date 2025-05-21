@@ -363,7 +363,8 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     "onPictureInPictureStart",
     "onPictureInPictureStop",
     "onFullscreenEnter",
-    "onFullscreenExit"
+    "onFullscreenExit",
+    "onFirstFrameRender"
   )
   Prop("player") { view: T, player: VideoPlayer ->
     view.videoPlayer = player
