@@ -26,3 +26,10 @@ export async function generateAssertion(key: string, json: string) {
   }
   return IntegrityModule.generateAssertion(key, json);
 }
+
+export async function requestIntegrityCheck(challenge: string) {
+  if (Platform.OS !== 'android') {
+    throw new Error('requestIntegrityCheck is only available on Android');
+  }
+  return IntegrityModule.requestIntegrityCheck(challenge);
+}

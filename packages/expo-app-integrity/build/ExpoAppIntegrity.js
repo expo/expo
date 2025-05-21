@@ -21,4 +21,10 @@ export async function generateAssertion(key, json) {
     }
     return IntegrityModule.generateAssertion(key, json);
 }
+export async function requestIntegrityCheck(challenge) {
+    if (Platform.OS !== 'android') {
+        throw new Error('requestIntegrityCheck is only available on Android');
+    }
+    return IntegrityModule.requestIntegrityCheck(challenge);
+}
 //# sourceMappingURL=ExpoAppIntegrity.js.map
