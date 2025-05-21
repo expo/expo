@@ -1,0 +1,1 @@
+{"version":3,"file":"DisclosureGroup.d.ts","sourceRoot":"","sources":["../../src/swift-ui-primitives/DisclosureGroup.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,KAAK,uBAAuB,EAAE,MAAM,SAAS,CAAC;AAEvD,MAAM,WAAW,oBAAqB,SAAQ,uBAAuB;IACnE,KAAK,EAAE,MAAM,CAAC;IACd,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B;AAOD,wBAAgB,eAAe,CAAC,KAAK,EAAE,oBAAoB,+BAE1D"}
