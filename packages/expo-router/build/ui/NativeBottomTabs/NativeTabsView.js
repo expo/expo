@@ -17,10 +17,7 @@ function NativeTabsView(props) {
         .map((route, index) => {
         const descriptor = descriptors[route.key];
         const isFocused = state.index === index;
-        const icon = descriptor.options?.icon;
-        const label = descriptor.options?.label;
-        const title = label ? label : !icon ? descriptor.route.name : undefined;
-        return (<BottomTabsScreen_1.default key={route.key} isFocused={isFocused} title={title} icon={icon} onDidSelect={() => {
+        return (<BottomTabsScreen_1.default {...descriptor.options} key={route.key} isFocused={isFocused} onDidSelect={() => {
                 navigation.emit({ type: 'tabSelected', target: descriptor.route.key });
             }} onWillAppear={() => {
                 navigation.dispatch({

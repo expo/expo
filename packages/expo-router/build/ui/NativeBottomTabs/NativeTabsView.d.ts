@@ -1,8 +1,13 @@
 import { DefaultRouterOptions, ParamListBase, TabNavigationState, TabRouterOptions, useNavigationBuilder } from '@react-navigation/native';
 import React from 'react';
 import { BottomTabsProps } from 'react-native-screens/lib/typescript/components/BottomTabs';
+import { BottomTabsScreenProps } from 'react-native-screens/src/components/BottomTabsScreen';
 export interface NativeTabOptions extends DefaultRouterOptions {
-    label?: string;
+    placeholder?: React.ReactNode | undefined;
+    badgeValue?: string;
+    badgeColor?: BottomTabsScreenProps['badgeColor'];
+    title?: string;
+    tabBarItemAppearance?: BottomTabsScreenProps['tabBarItemAppearance'];
     icon?: string;
 }
 export type NativeTabsViewProps = BottomTabsProps & {

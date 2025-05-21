@@ -8,12 +8,18 @@ import {
 import React from 'react';
 import { BottomTabs, enableFreeze } from 'react-native-screens';
 import { BottomTabsProps } from 'react-native-screens/lib/typescript/components/BottomTabs';
-import BottomTabsScreen from 'react-native-screens/src/components/BottomTabsScreen';
+import BottomTabsScreen, {
+  BottomTabsScreenProps,
+} from 'react-native-screens/src/components/BottomTabsScreen';
 
 enableFreeze(false);
 
 export interface NativeTabOptions extends DefaultRouterOptions {
-  label?: string;
+  placeholder?: React.ReactNode | undefined;
+  badgeValue?: string;
+  badgeColor?: BottomTabsScreenProps['badgeColor'];
+  title?: string;
+  tabBarItemAppearance?: BottomTabsScreenProps['tabBarItemAppearance'];
   icon?: string;
 }
 
@@ -40,15 +46,11 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       const descriptor = descriptors[route.key];
       const isFocused = state.index === index;
 
-      const icon = descriptor.options?.icon;
-      const label = descriptor.options?.label;
-      const title = label ? label : !icon ? descriptor.route.name : undefined;
       return (
         <BottomTabsScreen
+          {...descriptor.options}
           key={route.key}
           isFocused={isFocused}
-          title={title}
-          icon={icon}
           onDidSelect={() => {
             navigation.emit({ type: 'tabSelected', target: descriptor.route.key });
           }}
