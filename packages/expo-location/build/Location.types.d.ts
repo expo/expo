@@ -194,9 +194,11 @@ export type LocationTaskServiceOptions = {
      * Boolean value whether to destroy the foreground service if the app is killed.
      */
     killServiceOnDestroy?: boolean;
-      /**
-   * Boolean value whether to show the notification in the status bar.
-   */
+    /**
+     * Boolean value whether to show the notification in the status bar. Defaults to false.
+     *
+     * @android
+     */
     ongoing?: boolean;
 };
 /**
