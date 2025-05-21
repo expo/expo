@@ -63,7 +63,7 @@ Both records are created on a subdomain of the custom domain you're setting up.
 
 Lastly, the third DNS entry that the dashboard presents will always be the actual DNS record that points your domain at EAS Hosting.
 
-- For apex domains the dashboard typically recommends an **A record** to `172.66.0.241`
+- For apex domains, the dashboard typically recommends an **A record** to `172.66.0.241`
 - For subdomains, the dashboard typically recommends a **CNAME record** to `fallback.expo.app`
 
 Both of these records are equivalent, however some DNS providers do not allow CNAME records to be set up on apex domains.
@@ -83,8 +83,8 @@ For example, after [creating a `staging` alias](/eas/hosting/deployments-and-ali
 If you'd like to direct any subdomain request to any alias you've created, you may instead set up a wildcard CNAME record:
 
 - If you've set up an apex domain, for example `example.com`, create a CNAME record on `*.example.com` set to `fallback.expo.app`
-- If you've set up subdomain domain, for example `anything.example.com`, create a CNAME record on `*.anything.example.com` set to `fallback.expo.app`
+- If you've set up a subdomain domain, for example `anything.example.com`, create a CNAME record on `*.anything.example.com` set to `fallback.expo.app`
 
 A wildcard CNAME record always starts with `*` and stands for any subdomain. As long as subdomains on your custom domain are set to `fallback.expo.app`, EAS Hosting will attempt to send the request to the deployment assigned to an alias with a matching name.
 
-The exception are `www` subdomains. If you've set up a `www` subdomain, and no alias named `www` exists, the request will be redirect to the custom domain with a 308 response and be treated as request to the production deployment. If you wish to only set up an automatic redirection for the `www` subdomain on your custom domain, create a CNAME record on `www.<yourdomain>` set to `fallback.expo.app`.
+The exceptions are `www` subdomains. If you've set up a `www` subdomain, and no alias named `www` exists, the request will be redirected to the custom domain with a 308 response and be treated as a request to the production deployment. If you wish to only set up an automatic redirection for the `www` subdomain on your custom domain, create a CNAME record on `www.<yourdomain>` set to `fallback.expo.app`.
