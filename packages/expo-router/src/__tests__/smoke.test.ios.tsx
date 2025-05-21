@@ -310,3 +310,22 @@ it('can redirect during the initial render', () => {
   expect(screen).toHavePathname('/test');
   expect(screen.getByTestId('test')).toBeOnTheScreen();
 });
+
+it('will pick a static route over the dynamic route in the same group', () => {
+  const A = jest.fn(() => <Text>Index</Text>);
+  const B = jest.fn(() => <Text>Dynamic</Text>);
+
+  renderRouter({
+    _layout: () => <Stack />,
+    'messages/[id]': A,
+
+    // Starting route is inside a group
+    '(group)/index': () => null,
+    '(group)/[type]/[id]': B,
+  });
+
+  act(() => router.push('/messages/1'));
+
+  expect(A).toHaveBeenCalled();
+  expect(B).not.toHaveBeenCalled();
+});

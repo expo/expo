@@ -11,11 +11,9 @@ const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
-const Route_1 = require("../Route");
-const router_store_1 = require("../global-state/router-store");
 const imperative_api_1 = require("../imperative-api");
+const useSitemap_1 = require("./useSitemap");
 const Link_1 = require("../link/Link");
-const matchers_1 = require("../matchers");
 const statusbar_1 = require("../utils/statusbar");
 const INDENT = 20;
 function getNavOptions() {
@@ -59,45 +57,20 @@ function Sitemap() {
     </react_native_1.View>);
 }
 function FileSystemView() {
+    const sitemap = (0, useSitemap_1.useSitemap)();
     // This shouldn't occur, as the user should be on the tutorial screen
-    if (!router_store_1.store.routeNode)
+    if (!sitemap)
         return null;
-    const children = router_store_1.store.routeNode.children.filter(({ internal }) => !internal).sort(Route_1.sortRoutes);
-    return children.map((route) => (<react_native_1.View testID="sitemap-item-container" key={route.contextKey} style={styles.itemContainer}>
-      <FileItem route={route}/>
+    const children = sitemap.children.filter(({ isInternal }) => !isInternal);
+    return children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
+      <FileItem node={child}/>
     </react_native_1.View>));
 }
-function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
-    const disabled = route.children.length > 0;
-    const segments = react_1.default.useMemo(() => [...parents, ...route.route.split('/')], [parents, route.route]);
-    const href = react_1.default.useMemo(() => {
-        return ('/' +
-            segments
-                .map((segment) => {
-                // add an extra layer of entropy to the url for deep dynamic routes
-                if ((0, matchers_1.matchDeepDynamicRouteName)(segment)) {
-                    return segment + '/' + Date.now();
-                }
-                // index must be erased but groups can be preserved.
-                return segment === 'index' ? '' : segment;
-            })
-                .filter(Boolean)
-                .join('/'));
-    }, [segments, route.route]);
-    const filename = react_1.default.useMemo(() => {
-        const segments = route.contextKey.split('/');
-        // join last two segments for layout routes
-        if (route.contextKey.match(/_layout\.[jt]sx?$/)) {
-            return segments[segments.length - 2] + '/' + segments[segments.length - 1];
-        }
-        const routeSegmentsCount = route.route.split('/').length;
-        // Join the segment count in reverse order
-        // This presents files without layout routes as children with all relevant segments.
-        return segments.slice(-routeSegmentsCount).join('/');
-    }, [route]);
-    const info = isInitial ? 'Initial' : route.generated ? 'Virtual' : '';
+function FileItem({ node, level = 0, isInitial = false, }) {
+    const disabled = node.children.length > 0;
+    const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
     return (<>
-      {!route.internal && (<Link_1.Link accessibilityLabel={route.contextKey} href={href} onPress={() => {
+      {!node.isInternal && (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
                 if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
                     // Ensure the modal pops
                     imperative_api_1.router.back();
@@ -116,8 +89,8 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
                     disabled && { opacity: 0.4 },
                 ]}>
                 <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {route.children.length ? <PkgIcon /> : <FileIcon />}
-                  <react_native_1.Text style={styles.filename}>{filename}</react_native_1.Text>
+                  {node.children.length ? <PkgIcon /> : <FileIcon />}
+                  <react_native_1.Text style={styles.filename}>{node.filename}</react_native_1.Text>
                 </react_native_1.View>
 
                 <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -127,7 +100,7 @@ function FileItem({ route, level = 0, parents = [], isInitial = false, }) {
               </react_native_1.View>)}
           </Pressable_1.Pressable>
         </Link_1.Link>)}
-      {route.children.map((child) => (<FileItem key={child.contextKey} route={child} isInitial={route.initialRouteName === child.route} parents={segments} level={level + (route.generated ? 0 : 1)}/>))}
+      {node.children.map((child) => (<FileItem key={child.contextKey} node={child} isInitial={child.isInitial} level={level + (child.isGenerated ? 0 : 1)}/>))}
     </>);
 }
 function FileIcon() {

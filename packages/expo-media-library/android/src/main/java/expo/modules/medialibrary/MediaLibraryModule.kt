@@ -152,7 +152,7 @@ class MediaLibraryModule : Module() {
               .execute()
           }
         }
-        runActionWithPermissions(assetsId, action, true)
+        runActionWithPermissions(assetsId, action, useDeletePermission = true)
       }
     }
 

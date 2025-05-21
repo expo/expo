@@ -10,17 +10,11 @@ Babel is used as the JavaScript compiler to transform modern JavaScript (ES6+) i
 
 Each new Expo project created using `npx create-expo-app` configures Babel automatically and uses [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo) as the default preset. There is no need to create a **babel.config.js** file unless you need to customize the Babel configuration.
 
-## Create babel.config.js
+1. Navigate to the root of your project and run the following command inside a terminal. This will generate a **babel.config.js** file in the root of your project.
 
-If your project requires a custom Babel configuration, you need to create the **babel.config.js** file in your project by following the steps below:
+<Terminal cmd={['$ npx expo customize babel.config.js']} />
 
-1. Navigate to the root of your project, run the following command inside a terminal:
-
-<Terminal cmd={['$ npx expo customize']} />
-
-2. This command prompts generating different config files. Select **babel.config.js**.
-
-3. The **babel.config.js** file is created in the root of your project with the default configuration as shown below:
+2. The **babel.config.js** file contains the following default configuration:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -31,7 +25,7 @@ module.exports = function (api) {
 };
 ```
 
-4. If you make a change to the **babel.config.js** file, you need to restart the Metro bundler to apply the changes and use `--clear` option from Expo CLI to clear the Metro bundler cache:
+3. If you make a change to the **babel.config.js** file, you need to restart the Metro bundler to apply the changes and use `--clear` option from Expo CLI to clear the Metro bundler cache:
 
 <Terminal cmd={['$ npx expo start --clear']} />
 

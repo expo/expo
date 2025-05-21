@@ -36,7 +36,11 @@ export declare class TokenResponse implements TokenResponseConfig {
     state?: string;
     idToken?: string;
     issuedAt: number;
-    constructor(response: TokenResponseConfig);
+    /**
+     * Contains the unprocessed token response. Use it to access properties which aren't part of RFC 6749.
+     * */
+    rawResponse?: unknown;
+    constructor(response: TokenResponseConfig, rawResponse?: unknown);
     private applyResponseConfig;
     getRequestConfig(): TokenResponseConfig;
     refreshAsync(config: Omit<TokenRequestConfig, 'grantType' | 'refreshToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;

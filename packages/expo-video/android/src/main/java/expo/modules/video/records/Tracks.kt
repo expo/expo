@@ -29,6 +29,27 @@ class SubtitleTrack(
   }
 }
 
+class AudioTrack(
+  @Field val id: String,
+  @Field val language: String?,
+  @Field val label: String?
+) : Record, Serializable {
+  companion object {
+    fun fromFormat(format: Format?): AudioTrack? {
+      format ?: return null
+      val id = format.id ?: return null
+      val language = format.language
+      val label = language?.let { Locale(it).displayLanguage } ?: "Unknown"
+
+      return AudioTrack(
+        id = id,
+        language = language,
+        label = label
+      )
+    }
+  }
+}
+
 @OptIn(UnstableApi::class)
 class VideoTrack(
   @Field val id: String,

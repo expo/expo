@@ -30,7 +30,7 @@ export function addVisibilityListener(
 /**
  * Changes the navigation bar's background color.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -45,7 +45,7 @@ export async function setBackgroundColorAsync(color: string): Promise<void> {
 /**
  * Gets the navigation bar's background color.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -62,7 +62,7 @@ export async function getBackgroundColorAsync(): Promise<string> {
 /**
  * Changes the navigation bar's border color.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -77,7 +77,7 @@ export async function setBorderColorAsync(color: string): Promise<void> {
 /**
  * Gets the navigation bar's top border color, also known as the "divider color".
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -122,8 +122,6 @@ export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
 /**
  * Changes the navigation bar's button colors between white (`light`) and a dark gray color (`dark`).
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
- *
  * @example
  * ```ts
  * NavigationBar.setButtonStyleAsync("light");
@@ -137,7 +135,7 @@ export async function setButtonStyleAsync(style: NavigationBarButtonStyle): Prom
 /**
  * Gets the navigation bar's button color styles.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -157,7 +155,7 @@ export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
  *
  * When drawing behind the status and navigation bars, ensure the safe area insets are adjusted accordingly.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -179,7 +177,7 @@ export async function setPositionAsync(position: NavigationBarPosition): Promise
  * This method is unstable because the position can be set via another native module and get out of sync.
  * Alternatively, you can get the position by measuring the insets returned by `react-native-safe-area-context`.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -202,7 +200,7 @@ export async function unstable_getPositionAsync(): Promise<NavigationBarPosition
  * - `'inset-swipe'`: Reveals the System UI after a swipe gesture (bottom or top) and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  * - `'inset-touch'`: Reveals the System UI after a touch anywhere on the screen and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -217,7 +215,7 @@ export async function setBehaviorAsync(behavior: NavigationBarBehavior): Promise
 /**
  * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -266,5 +264,3 @@ export function useVisibility(): NavigationBarVisibility | null {
 
   return visibility;
 }
-
-export * from './NavigationBar.types';

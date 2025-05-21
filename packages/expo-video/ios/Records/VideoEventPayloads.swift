@@ -43,6 +43,16 @@ internal struct SubtitleTrackChangedEventPayload: Record {
   @Field var oldSubtitleTrack: SubtitleTrack? = nil
 }
 
+internal struct AudioTracksChangedEventPayload: Record {
+  @Field var availableAudioTracks: [AudioTrack] = []
+  @Field var oldAvailableAudioTracks: [AudioTrack] = []
+}
+
+internal struct AudioTrackChangedEventPayload: Record {
+  @Field var audioTrack: AudioTrack? = nil
+  @Field var oldAudioTrack: AudioTrack? = nil
+}
+
 internal struct TimeUpdate: Record {
   @Field var currentTime: Double = 0
   @Field var currentLiveTimestamp: Double? = nil
@@ -60,6 +70,7 @@ internal struct VideoSourceLoadedEventPayload: Record {
   @Field var duration: Double? = nil
   @Field var availableVideoTracks: [VideoTrack]? = nil
   @Field var availableSubtitleTracks: [SubtitleTrack]? = nil
+  @Field var availableAudioTracks: [AudioTrack]? = nil
 }
 
 // swiftlint:enable redundant_optional_initialization

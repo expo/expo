@@ -63,7 +63,9 @@ class AudioModule : Module() {
       AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
         focusAcquired = false
         players.values.forEach {
-          it.player.pause()
+          runOnMain {
+            it.player.pause()
+          }
         }
       }
 
@@ -71,7 +73,9 @@ class AudioModule : Module() {
         focusAcquired = false
         if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
           players.values.forEach {
-            it.player.volume /= 2f
+            runOnMain {
+              it.player.volume /= 2f
+            }
           }
         }
       }
@@ -147,7 +151,7 @@ class AudioModule : Module() {
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
       audioEnabled = enabled
       if (!enabled) {
-        appContext.mainQueue.launch {
+        runOnMain {
           players.values.forEach {
             if (it.player.isPlaying) {
               it.player.pause()
