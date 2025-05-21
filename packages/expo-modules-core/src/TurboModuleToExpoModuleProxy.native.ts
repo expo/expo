@@ -2,8 +2,7 @@
 import type { TurboModule, EventSubscription } from 'react-native';
 
 export function createTurboModuleToExpoProxy(turboModule: TurboModule | null, name: string) {
-  if (!turboModule)
-    return null;
+  if (!turboModule) return null;
 
   const expoModuleProxy: any = {
     __turboModule: turboModule,
@@ -20,8 +19,10 @@ export function createTurboModuleToExpoProxy(turboModule: TurboModule | null, na
     });
   }
 
-  expoModuleProxy.addListener = (eventName: string, listener: (...args: any[]) => any): EventSubscription =>
-  {
+  expoModuleProxy.addListener = (
+    eventName: string,
+    listener: (...args: any[]) => any
+  ): EventSubscription => {
     const eventEmitter = (turboModule as any)[eventName];
     return eventEmitter(listener);
   };
