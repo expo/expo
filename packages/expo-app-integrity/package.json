@@ -25,7 +25,9 @@
     "react-native",
     "expo",
     "integrity",
-    "app-integrity"
+    "app-integrity",
+    "ios",
+    "android"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",

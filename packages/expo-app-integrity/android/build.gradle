@@ -7,14 +7,10 @@ group = 'expo.modules.integrity'
 version = '0.0.0'
 
 android {
-  namespace "expo.modules.integrity"
+  namespace 'expo.modules.integrity'
   defaultConfig {
     versionCode 1
     versionName "0.0.0"
-  }
-
-  compileOptions {
-    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
 
