@@ -59,7 +59,7 @@ The **SSL CNAME** record proves ownership of your domain to a certificate author
 Both records are created on a subdomain of the custom domain you're setting up.
 
 - If you're setting up `example.com`, the records must be created on `_cf-custom-hostname.example.com` and `_acme-challenge.example.com` respectively
-- If you're setting up `anything.example.com`, the records must be created on `_cf-custom-hostname.anything.example.com` and `_acme-challenge.example.com` respectively
+- If you're setting up `anything.example.com`, the records must be created on `_cf-custom-hostname.anything.example.com` and `_acme-challenge.anything.example.com` respectively
 
 Lastly, the third DNS entry that the dashboard presents will always be the actual DNS record that points your domain at EAS Hosting.
 
@@ -70,10 +70,10 @@ Both of these records are equivalent, however some DNS providers do not allow CN
 
 ### Alias and wildcard subdomains
 
-> **info** If you had a custom domains set up already before **19 March 2025**, you must press the "Refresh" button in your project's [Hosting settings](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings) before following instructions for setting up wildcard domains.
+> **info** If you had a custom domain set up already before **March 19, 2025**, you must press the "Refresh" button in your project's [Hosting settings](https://expo.dev/accounts/[accountName]/projects/[projectName]/hosting/settings) before following instructions for setting up wildcard domains.
 
 While only a single custom domain can be set up per project, you can set up further subdomain DNS records to handle requests for other aliases than just the production alias.
-As long as a subdomain record is set up with a label that matches an alias in your hosting project, requests will be handled by that alias' deployment.
+Requests will be routed to the deployment whose alias matches the subdomain.
 
 For example, after [creating a `staging` alias](/eas/hosting/deployments-and-aliases/#aliases), you may set up CNAME record for your alias:
 
