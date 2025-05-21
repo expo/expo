@@ -68,9 +68,11 @@ function SitemapItem({ node, level = 0 }) {
     return <StandardSitemapItem node={node} level={level} info={info}/>;
 }
 function LayoutSitemapItem({ node, level, info }) {
+    const [isCollapsed, setIsCollapsed] = react_1.default.useState(true);
     return (<>
-      <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} filename={node.filename} level={level} info={info}/>
-      {node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
+      <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} rightIcon={<ArrowIcon rotation={isCollapsed ? 0 : 180}/>} filename={node.filename} level={level} info={info} onPress={() => setIsCollapsed((prev) => !prev)}/>
+      {!isCollapsed &&
+            node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
     </>);
 }
 function StandardSitemapItem({ node, info, level }) {
@@ -114,6 +116,14 @@ function ForwardIcon() {
 }
 function SitemapIcon() {
     return <react_native_1.Image style={styles.image} source={require('expo-router/assets/sitemap.png')}/>;
+}
+function ArrowIcon({ rotation = 0 }) {
+    return (<react_native_1.Image style={[
+            styles.image,
+            {
+                transform: [{ rotate: `${rotation}deg` }],
+            },
+        ]} source={require('expo-router/assets/arrow_down.png')}/>);
 }
 const styles = react_native_1.StyleSheet.create({
     container: {
