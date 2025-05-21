@@ -139,7 +139,7 @@ jobs:
 
 <Collapsible summary="Build with different profiles">
 
-This workflow creates two different Android builds using different profiles - one for internal distribution and one for store submission.
+This workflow creates two different Android builds using different profiles - one for internal distribution and one for store submission using the development and production profiles.
 
 ```yaml .eas/workflows/build-profiles.yml
 name: Build with different profiles
@@ -149,19 +149,19 @@ on:
     branches: ['main']
 
 jobs:
-  build_android_internal:
-    name: Build Android Internal
+  build_android_development:
+    name: Build Android Development
     type: build
     params:
       platform: android
-      profile: internal
+      profile: development
 
-  build_android_store:
-    name: Build Android Store
+  build_android_production:
+    name: Build Android Production
     type: build
     params:
       platform: android
-      profile: store
+      profile: production
 ```
 
 </Collapsible>
@@ -211,6 +211,27 @@ jobs:
     type: deploy
     params:
       prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Deploy to production only on merges to the `main` branch">
+
+This workflow deploys your application to production when you merge to the main branch, and makes a non-production deployment on all other branches.
+
+```yaml .eas/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  deploy:
+    name: Deploy
+    type: deploy
+    params:
+      prod: ${{ github.ref_name == 'main' }}
 ```
 
 </Collapsible>
@@ -487,9 +508,17 @@ This workflow submits an iOS build to the App Store using the production submit 
 name: Submit iOS Build
 
 jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
   submit:
     name: Submit to App Store
     type: submit
+    needs: [build_ios]
     params:
       build_id: ${{ needs.build_ios.outputs.build_id }}
       profile: production
@@ -505,9 +534,17 @@ This workflow submits an Android build to the Play Store using the production su
 name: Submit Android Build
 
 jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
   submit:
     name: Submit to Play Store
     type: submit
+    needs: [build_android]
     params:
       build_id: ${{ needs.build_android.outputs.build_id }}
       profile: production
@@ -657,12 +694,12 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                            |
-| --------- | ------ | ---------------------------------------------------------------------- |
-| build_id  | string | Required. The ID of the build to test.                                 |
-| flow_path | string | Required. The path to the Maestro flow file(s) to run.                 |
-| shards    | number | Optional. The number of shards to split the tests into. Defaults to 1. |
-| retries   | number | Optional. The number of times to retry failed tests. Defaults to 1.    |
+| Parameter | Type   | Description                                                                             |
+| --------- | ------ | --------------------------------------------------------------------------------------- |
+| build_id  | string | Required. The ID of the build to test.                                                  |
+| flow_path | string | Required. The path to the Maestro flow file(s) to run.                                  |
+| shards    | number | Optional and experimental. The number of shards to split the tests into. Defaults to 1. |
+| retries   | number | Optional. The number of times to retry failed tests. Defaults to 1.                     |
 
 ### Examples
 
@@ -689,7 +726,7 @@ jobs:
 
 <Collapsible summary="Maestro test with sharding">
 
-This workflow runs Maestro tests on an Android emulator build with 4 shards and 2 retries for failed tests.
+This workflow runs Maestro tests on an Android emulator build with 3 shards and 2 retries for failed tests.
 
 ```yaml .eas/workflows/maestro-sharded.yml
 name: Sharded Maestro Test
@@ -699,10 +736,11 @@ jobs:
     name: Run Sharded Maestro Tests
     type: maestro
     environment: preview
+    runs_on: linux-large-nested-virtualization
     params:
       build_id: ${{ needs.build_android_emulator.outputs.build_id }}
       flow_path: ./maestro/flows
-      shards: 4
+      shards: 3
       retries: 2
 ```
 
@@ -755,7 +793,7 @@ jobs:
 
   notify_build:
     name: Notify Build Status
-    needs: build_ios
+    needs: [build_ios]
     type: slack
     params:
       webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
@@ -781,7 +819,7 @@ jobs:
 
   notify_build:
     name: Notify Build Status
-    needs: build_android
+    needs: [build_android]
     type: slack
     params:
       webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
