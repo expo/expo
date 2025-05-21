@@ -1,6 +1,6 @@
 {
   "name": "@expo/app-integrity",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "A native module that helps assert app integrity on mobile platforms",
   "sideEffects": false,
   "scripts": {
@@ -24,7 +24,8 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-app-integrity"
+    "integrity",
+    "app-integrity"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -33,8 +34,6 @@
     "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*",
-    "react": "*",
-    "react-native": "*"
+    "expo": "*"
   }
 }
