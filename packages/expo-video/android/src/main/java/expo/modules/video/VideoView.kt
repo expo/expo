@@ -72,10 +72,10 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
   var useExoShutter: Boolean? = null
     set(value) {
-      if (value == false) {
-        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
-      } else {
+      if (value == true) {
         playerView.setShutterBackgroundColor(Color.BLACK)
+      } else {
+        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
       }
       applySurfaceViewVisibility()
       field = value
@@ -156,7 +156,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   }
 
   fun applySurfaceViewVisibility() {
-    if (useExoShutter == false && shouldHideSurfaceView) {
+    if (useExoShutter != true && shouldHideSurfaceView) {
       playerView.videoSurfaceView?.alpha = 0f
     } else {
       playerView.videoSurfaceView?.alpha = 1f
