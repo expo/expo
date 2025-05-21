@@ -44,7 +44,8 @@ You will need to own a domain name you want to use.
 5. Press the refresh button until all checks pass. Depending on your DNS provider, this step usually only takes a couple of minutes.
 
 > If you require for the domain name switchover to be **zero downtime**, it's important to fill out these records one by one in the order they are presented in the table.
-> That is, add the **TXT** record for verification, press the refresh button until the UI says verification is successful, then proceed to the next one.
+> That is, add the **Verification TXT** record first, and press "Refresh" until the UI confirms the verification record. Then add the **SSL CNAME** record next until
+> it is confirmed, and set up the third record last.
 > If downtime isn't important or relevant, you may add all three DNS records at once.
 
 After assigning a custom domain to your app, the custom domain will route to your **production** deployment.
