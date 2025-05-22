@@ -19,7 +19,6 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   badgeValue?: string;
   badgeColor?: BottomTabsScreenProps['badgeColor'];
   title?: string;
-  tabBarItemAppearance?: BottomTabsScreenProps['tabBarItemAppearance'];
   icon?: string;
 }
 
@@ -50,6 +49,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         <BottomTabsScreen
           {...descriptor.options}
           key={route.key}
+          tabKey={route.key}
           isFocused={isFocused}
           onDidSelect={() => {
             navigation.emit({ type: 'tabSelected', target: descriptor.route.key });

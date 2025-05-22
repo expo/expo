@@ -7,7 +7,6 @@ export interface NativeTabOptions extends DefaultRouterOptions {
     badgeValue?: string;
     badgeColor?: BottomTabsScreenProps['badgeColor'];
     title?: string;
-    tabBarItemAppearance?: BottomTabsScreenProps['tabBarItemAppearance'];
     icon?: string;
 }
 export type NativeTabsViewProps = BottomTabsProps & {
