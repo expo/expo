@@ -14,9 +14,13 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
   @ObservedObject var props: DisclosureGroupViewProps
 
   var body: some View {
+    #if os(tvOS)
+    Text("DisclosureGroupView is not supported on tvOS")
+    #else
     DisclosureGroup(props.label) {
       Children()
     }
     .modifier(CommonViewModifiers(props: props))
+    #endif
   }
 }
