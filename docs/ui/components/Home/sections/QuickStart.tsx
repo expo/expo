@@ -92,8 +92,8 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] border-[#c9e9d9] bg-[#f0f9f0] !bg-cell-quickstart-pattern bg-blend-multiply',
-            'dark:border-[#2a5240] dark:bg-[#1d392c] dark:!bg-cell-quickstart-pattern dark:bg-blend-multiply',
+            'min-h-[250px] border-palette-green6 bg-[#f0f9f0] !bg-cell-quickstart-pattern bg-blend-multiply',
+            'dark:border-palette-green7 dark:bg-[#1d392c] dark:!bg-cell-quickstart-pattern dark:bg-blend-multiply',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div
