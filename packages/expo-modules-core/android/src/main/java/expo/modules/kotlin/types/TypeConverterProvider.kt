@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -205,19 +206,19 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       String::class to createTrivialTypeConverter(
         isOptional, ExpectedType(CppType.STRING)
-      ) { it.asString() },
+      ) { it.asString() ?: throw DynamicCastException("string") },
 
       ReadableArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType(CppType.READABLE_ARRAY)
-      ) { it.asArray() },
+      ) { it.asArray() ?: throw DynamicCastException("array") },
       ReadableMap::class to createTrivialTypeConverter(
         isOptional, ExpectedType(CppType.READABLE_MAP)
-      ) { it.asMap() },
+      ) { it.asMap() ?: throw DynamicCastException("map") },
 
       IntArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.INT)
       ) {
-        val jsArray = it.asArray()
+        val jsArray = it.asArray() ?: throw DynamicCastException("array")
         IntArray(jsArray.size()) { index ->
           jsArray.getInt(index)
         }
@@ -225,7 +226,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       LongArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.LONG)
       ) {
-        val jsArray = it.asArray()
+        val jsArray = it.asArray() ?: throw DynamicCastException("array")
         LongArray(jsArray.size()) { index ->
           jsArray.getDouble(index).toLong()
         }
@@ -233,7 +234,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       DoubleArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.DOUBLE)
       ) {
-        val jsArray = it.asArray()
+        val jsArray = it.asArray() ?: throw DynamicCastException("array")
         DoubleArray(jsArray.size()) { index ->
           jsArray.getDouble(index)
         }
@@ -241,7 +242,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       FloatArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.FLOAT)
       ) {
-        val jsArray = it.asArray()
+        val jsArray = it.asArray() ?: throw DynamicCastException("array")
         FloatArray(jsArray.size()) { index ->
           jsArray.getDouble(index).toFloat()
         }
@@ -249,7 +250,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       BooleanArray::class to createTrivialTypeConverter(
         isOptional, ExpectedType.forPrimitiveArray(CppType.BOOLEAN)
       ) {
-        val jsArray = it.asArray()
+        val jsArray = it.asArray() ?: throw DynamicCastException("array")
         BooleanArray(jsArray.size()) { index ->
           jsArray.getBoolean(index)
         }

@@ -5,6 +5,7 @@ import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
@@ -27,7 +28,7 @@ class MapTypeConverter(
   )
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?): Map<*, *> {
-    val jsMap = value.asMap()
+    val jsMap = value.asMap() ?: throw DynamicCastException("map")
     return convertFromReadableMap(jsMap, context)
   }
 

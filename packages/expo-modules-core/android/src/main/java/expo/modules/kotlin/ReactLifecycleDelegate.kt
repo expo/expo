@@ -37,7 +37,7 @@ class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener, A
     appContextHolder.get()?.onActivityResult(activity, requestCode, resultCode, data)
   }
 
-  override fun onNewIntent(intent: Intent?) {
+  override fun onNewIntent(intent: Intent) {
     appContextHolder.get()?.onNewIntent(intent)
   }
 }
