@@ -97,7 +97,7 @@
     "expo-module-scripts": "^4.1.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.0-rc.1",
+    "react-native": "0.80.0-rc.2",
     "web-streams-polyfill": "^3.3.2",
     "ws": "^8.18.0"
   },
