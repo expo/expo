@@ -80,7 +80,7 @@ export function QuickStart() {
           />
           <div className="relative z-10 flex flex-col gap-4">
             <RawH2 className="flex items-center gap-2 !font-bold !text-palette-purple10">
-              <AppleAppStoreIcon className="text-palette-purple10" /> Deploy to TestFlight
+              <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
             </RawH2>
             <div>
               <Terminal cmd={['$ npx testflight']} />
@@ -104,8 +104,8 @@ export function QuickStart() {
           />
           <div className="relative z-10 flex flex-col gap-4">
             <RawH2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] dark:!text-[#4eca8c]">
-              <Cloud01DuotoneIcon className="text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy your web
-              app
+              <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
+              your web app
             </RawH2>
             <div>
               <Terminal cmd={['$ npx eas-cli deploy']} />
