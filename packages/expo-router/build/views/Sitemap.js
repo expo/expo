@@ -11,7 +11,6 @@ const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Pressable_1 = require("./Pressable");
-const imperative_api_1 = require("../imperative-api");
 const useSitemap_1 = require("./useSitemap");
 const Link_1 = require("../link/Link");
 const statusbar_1 = require("../utils/statusbar");
@@ -49,59 +48,62 @@ function getNavOptions() {
     };
 }
 function Sitemap() {
+    const sitemap = (0, useSitemap_1.useSitemap)();
+    const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
     return (<react_native_1.View style={styles.container}>
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
-        <FileSystemView />
+        {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
+            <SitemapItem node={child}/>
+          </react_native_1.View>))}
       </react_native_1.ScrollView>
     </react_native_1.View>);
 }
-function FileSystemView() {
-    const sitemap = (0, useSitemap_1.useSitemap)();
-    // This shouldn't occur, as the user should be on the tutorial screen
-    if (!sitemap)
-        return null;
-    const children = sitemap.children.filter(({ isInternal }) => !isInternal);
-    return children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
-      <FileItem node={child}/>
-    </react_native_1.View>));
+function SitemapItem({ node, level = 0 }) {
+    const isLayout = react_1.default.useMemo(() => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/), [node]);
+    const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+    if (isLayout) {
+        return <LayoutSitemapItem node={node} level={level} info={info}/>;
+    }
+    return <StandardSitemapItem node={node} level={level} info={info}/>;
 }
-function FileItem({ node, level = 0, isInitial = false, }) {
-    const disabled = node.children.length > 0;
-    const info = isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+function LayoutSitemapItem({ node, level, info }) {
+    const [isCollapsed, setIsCollapsed] = react_1.default.useState(true);
     return (<>
-      {!node.isInternal && (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} onPress={() => {
-                if (react_native_1.Platform.OS !== 'web' && imperative_api_1.router.canGoBack()) {
-                    // Ensure the modal pops
-                    imperative_api_1.router.back();
-                }
-            }} disabled={disabled} asChild 
-        // Ensure we replace the history so you can't go back to this page.
-        replace>
-          <Pressable_1.Pressable>
-            {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
-                    styles.itemPressable,
-                    {
-                        paddingLeft: INDENT + level * INDENT,
-                        backgroundColor: hovered ? '#202425' : 'transparent',
-                    },
-                    pressed && { backgroundColor: '#26292b' },
-                    disabled && { opacity: 0.4 },
-                ]}>
-                <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {node.children.length ? <PkgIcon /> : <FileIcon />}
-                  <react_native_1.Text style={styles.filename}>{node.filename}</react_native_1.Text>
-                </react_native_1.View>
-
-                <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  {!!info && (<react_native_1.Text style={[styles.virtual, !disabled && { marginRight: 8 }]}>{info}</react_native_1.Text>)}
-                  {!disabled && <ForwardIcon />}
-                </react_native_1.View>
-              </react_native_1.View>)}
-          </Pressable_1.Pressable>
-        </Link_1.Link>)}
-      {node.children.map((child) => (<FileItem key={child.contextKey} node={child} isInitial={child.isInitial} level={level + (child.isGenerated ? 0 : 1)}/>))}
+      <SitemapItemPressable style={{ opacity: 0.4 }} leftIcon={<PkgIcon />} rightIcon={<ArrowIcon rotation={isCollapsed ? 0 : 180}/>} filename={node.filename} level={level} info={info} onPress={() => setIsCollapsed((prev) => !prev)}/>
+      {!isCollapsed &&
+            node.children.map((child) => (<SitemapItem key={child.contextKey} node={child} level={level + (node.isGenerated ? 0 : 1)}/>))}
     </>);
+}
+function StandardSitemapItem({ node, info, level }) {
+    return (<Link_1.Link accessibilityLabel={node.contextKey} href={node.href} asChild 
+    // Ensure we replace the history so you can't go back to this page.
+    replace>
+      <SitemapItemPressable leftIcon={<FileIcon />} rightIcon={<ForwardIcon />} filename={node.filename} level={level} info={info}/>
+    </Link_1.Link>);
+}
+function SitemapItemPressable({ style, leftIcon, rightIcon, filename, level, info, ...pressableProps }) {
+    return (<Pressable_1.Pressable {...pressableProps}>
+      {({ pressed, hovered }) => (<react_native_1.View testID="sitemap-item" style={[
+                styles.itemPressable,
+                {
+                    paddingLeft: INDENT + level * INDENT,
+                    backgroundColor: hovered ? '#202425' : 'transparent',
+                },
+                pressed && { backgroundColor: '#26292b' },
+                style,
+            ]}>
+          <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {leftIcon}
+            <react_native_1.Text style={styles.filename}>{filename}</react_native_1.Text>
+          </react_native_1.View>
+
+          <react_native_1.View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {!!info && <react_native_1.Text style={[styles.virtual, { marginRight: 8 }]}>{info}</react_native_1.Text>}
+            {rightIcon}
+          </react_native_1.View>
+        </react_native_1.View>)}
+    </Pressable_1.Pressable>);
 }
 function FileIcon() {
     return <react_native_1.Image style={styles.image} source={require('expo-router/assets/file.png')}/>;
@@ -114,6 +116,14 @@ function ForwardIcon() {
 }
 function SitemapIcon() {
     return <react_native_1.Image style={styles.image} source={require('expo-router/assets/sitemap.png')}/>;
+}
+function ArrowIcon({ rotation = 0 }) {
+    return (<react_native_1.Image style={[
+            styles.image,
+            {
+                transform: [{ rotate: `${rotation}deg` }],
+            },
+        ]} source={require('expo-router/assets/arrow_down.png')}/>);
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

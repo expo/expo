@@ -152,7 +152,7 @@ You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
 ## Search
 
-We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used both in the docs and on the Expo dashboard.
+We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used both in the docs, expo.dev, and EAS dashboard.
 
 Besides the query, the results are also filtered based on the `version` tag. This tag represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
 
@@ -164,7 +164,7 @@ Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['ver
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
 
-- Manually defined paths for Expo dashboard located in `ui/components/Search/expoEntries.ts`
+- Manually defined paths for EAS dashboard located in `ui/components/Search/expoEntries.ts`
 - Public Algolia index for React Native website
 - React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details
 - Expo Blog public API

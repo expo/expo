@@ -40,6 +40,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     _video?: HTMLVideoElement;
     _removeFullscreenListener?: () => any;
     componentWillUnmount(): void;
+    getVideoElement: () => HTMLVideoElement | undefined;
     onFullscreenChange: (isFullscreen: boolean) => void;
     onStatusUpdate: () => Promise<void>;
     onLoadStart: () => void;

@@ -363,7 +363,8 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     "onPictureInPictureStart",
     "onPictureInPictureStop",
     "onFullscreenEnter",
-    "onFullscreenExit"
+    "onFullscreenExit",
+    "onFirstFrameRender"
   )
   Prop("player") { view: T, player: VideoPlayer ->
     view.videoPlayer = player
@@ -384,6 +385,9 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     val linearPlayback = requiresLinearPlayback ?: false
     view.playerView.applyRequiresLinearPlayback(linearPlayback)
     view.videoPlayer?.requiresLinearPlayback = linearPlayback
+  }
+  Prop("useExoShutter") { view: T, useExoShutter: Boolean? ->
+    view.useExoShutter = useExoShutter
   }
   AsyncFunction("enterFullscreen") { view: T ->
     view.enterFullscreen()

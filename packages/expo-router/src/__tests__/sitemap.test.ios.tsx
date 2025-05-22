@@ -1,7 +1,7 @@
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
-import { act, fireEvent, renderRouter, screen, within } from '../testing-library';
+import { act, fireEvent, renderRouter, screen, waitFor, within } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 test('given no routes, unmatched route', () => {
@@ -52,7 +52,7 @@ test('given nested layout without children, renders layout header', () => {
   expect(containers[2]).toHaveTextContent('nested/_layout.js');
 });
 
-test('given nested route, renders nested routes in same container ', () => {
+test('renders collapsed header for nested layout', () => {
   renderRouter({
     _layout: () => <Slot />,
     index: () => <Text />,
@@ -66,15 +66,38 @@ test('given nested route, renders nested routes in same container ', () => {
   expect(containers).toHaveLength(3);
   expect(containers[0]).toHaveTextContent('index.js');
   expect(containers[1]).toHaveTextContent('about.js');
+  expect(containers[2]).toHaveTextContent('nested/_layout.js');
+});
+
+test('expands nested route when the layout header is pressed', async () => {
+  renderRouter({
+    _layout: () => <Slot />,
+    index: () => <Text />,
+    about: () => <Text />,
+    'nested/_layout': () => <Slot />,
+    'nested/index': () => <Text />,
+    'nested/one': () => <Text />,
+  });
+  act(() => router.replace('/_sitemap'));
+  const containers = screen.getAllByTestId('sitemap-item-container');
+
   const nestedContainer = containers[2];
+  const layoutHeader = within(nestedContainer).getByTestId('sitemap-item');
+  act(() => fireEvent.press(layoutHeader));
+  await waitFor(() => {
+    expect(within(nestedContainer).getAllByTestId('sitemap-item')).toHaveLength(3);
+  });
+
   const nestedItems = within(nestedContainer).getAllByTestId('sitemap-item');
+  expect(containers[0]).toHaveTextContent('index.js');
+  expect(containers[1]).toHaveTextContent('about.js');
   expect(nestedItems).toHaveLength(3);
   expect(nestedItems[0]).toHaveTextContent('nested/_layout.js');
   expect(nestedItems[1]).toHaveTextContent('index.js');
   expect(nestedItems[2]).toHaveTextContent('one.js');
 });
 
-test('given deeply nested route, renders all levels of ', () => {
+test('renders and expands all levels of a deeply nested route on presses on headers', async () => {
   renderRouter({
     _layout: () => <Slot />,
     index: () => <Text />,
@@ -87,10 +110,23 @@ test('given deeply nested route, renders all levels of ', () => {
   act(() => router.replace('/_sitemap'));
   const containers = screen.getAllByTestId('sitemap-item-container');
   expect(containers).toHaveLength(3);
-  expect(containers[0]).toHaveTextContent('index.js');
-  expect(containers[1]).toHaveTextContent('about.js');
+
   const nestedContainer = containers[2];
-  const nestedItems = within(nestedContainer).getAllByTestId('sitemap-item');
+  const layoutHeader = within(nestedContainer).getByTestId('sitemap-item');
+  act(() => fireEvent.press(layoutHeader));
+  await waitFor(() => {
+    expect(within(nestedContainer).getAllByTestId('sitemap-item')).toHaveLength(3);
+  });
+
+  let nestedItems = within(nestedContainer).getAllByTestId('sitemap-item');
+  const deepLayoutHeader = nestedItems[2];
+
+  act(() => fireEvent.press(deepLayoutHeader));
+  await waitFor(() => {
+    expect(within(nestedContainer).getAllByTestId('sitemap-item')).toHaveLength(4);
+  });
+
+  nestedItems = within(nestedContainer).getAllByTestId('sitemap-item');
   expect(nestedItems).toHaveLength(4);
   expect(nestedItems[0]).toHaveTextContent('nested/_layout.js');
   expect(nestedItems[1]).toHaveTextContent('index.js');
@@ -122,18 +158,22 @@ describe('links', () => {
     act(() => fireEvent.press(link));
     expect(screen).toHavePathname('/about');
   });
-  // The first link in the nested container is the layout route, which should not be clickable.
-  describe('nested container', () => {
-    test('clicking the first link (nested _layout) within the nested container keeps the user on the sitemap', () => {
-      const links = within(containers[2]).getAllByRole('link');
-      const link = links[0];
-      expect(link).toHaveTextContent('nested/_layout.js');
-      act(() => fireEvent.press(link));
-      expect(screen).toHavePathname('/_sitemap');
+  describe('nested links', () => {
+    let nestedContainer: ReturnType<typeof screen.getByTestId>;
+    beforeEach(async () => {
+      nestedContainer = containers[2];
+      const layoutHeader = within(nestedContainer).getByTestId('sitemap-item');
+      act(() => fireEvent.press(layoutHeader));
+      await waitFor(() => {
+        expect(within(nestedContainer).getAllByTestId('sitemap-item')).toHaveLength(2);
+      });
     });
-    test('clicking the second link (nested index) within the nested container navigates to the nested index page', () => {
-      const links = within(containers[2]).getAllByRole('link');
-      const link = links[1];
+    test('only one link is rendered in the nested container', () => {
+      const links = within(nestedContainer).getAllByRole('link');
+      expect(links).toHaveLength(1);
+    });
+    test('clicking the link within the nested container navigates to the nested index page', () => {
+      const link = within(nestedContainer).getByRole('link');
       expect(link).toHaveTextContent('index.js');
       act(() => fireEvent.press(link));
       expect(screen).toHavePathname('/nested');

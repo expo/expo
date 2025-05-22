@@ -115,6 +115,18 @@ public final class ImageModule: Module {
         view.sdImageView.stopAnimating()
       }
 
+      AsyncFunction("lockResourceAsync") { (view: ImageView) in
+        view.lockResource = true
+      }
+
+      AsyncFunction("unlockResourceAsync") { (view: ImageView) in
+        view.lockResource = false
+      }
+
+      AsyncFunction("reloadAsync") { (view: ImageView) in
+        view.reload(force: true)
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }

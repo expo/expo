@@ -45,7 +45,6 @@ function getLargeConfig(): ExportedConfig {
     name: 'my cool app',
     slug: 'mycoolapp',
     description: 'my app is great because it uses expo',
-    // owner?: string;
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
     runtimeVersion: '1.0',
