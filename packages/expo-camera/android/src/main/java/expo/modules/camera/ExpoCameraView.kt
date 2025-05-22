@@ -415,12 +415,12 @@ class ExpoCameraView(
     val cameraProvider = ProcessCameraProvider.awaitInstance(context)
 
     ratio?.let {
-//      previewView.scaleType =
-//        if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
-//          PreviewView.ScaleType.FIT_CENTER
-//        } else {
-//          PreviewView.ScaleType.FILL_CENTER
-//        }
+      previewView.scaleType =
+        if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+          PreviewView.ScaleType.FIT_CENTER
+        } else {
+          PreviewView.ScaleType.FILL_CENTER
+        }
     }
 
     val resolutionSelector = buildResolutionSelector()
