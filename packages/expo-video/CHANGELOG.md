@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `onFirstFrameRender` not being emitted for sources with `pixelWidthHeightRatio` different than 1. ([#37009](https://github.com/expo/expo/pull/37009) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 2.1.9 — 2025-05-08
