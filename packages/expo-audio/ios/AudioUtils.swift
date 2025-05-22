@@ -164,7 +164,6 @@ struct AudioUtils {
       try data.write(to: fileURL)
       return fileURL
     } catch {
-      print("Error saving base64 data to file: \(error)")
       return nil
     }
   }
