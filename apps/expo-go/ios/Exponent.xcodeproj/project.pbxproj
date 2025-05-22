@@ -3,7 +3,6 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
 	objectVersion = 54;
 	objects = {
 
@@ -449,13 +448,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		2D1A6CC92D9B38910007E94A /* Notifications */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
 		2D1A6CC92D9B38910007E94A /* Notifications */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
