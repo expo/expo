@@ -163,8 +163,6 @@ class ViewDefinitionBuilder<T : View>(
     )
   }
 
-  // Prop("x", 0) { view, prop: Int -> }
-
   inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(
     vararg props: Pair<String, CustomValueType>,
     noinline body: (view: ViewType, value: CustomValueType, prop: PropType) -> Unit
