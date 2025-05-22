@@ -10,7 +10,7 @@ import expo.modules.kotlin.types.AnyType
 open class ConcreteViewProp<ViewType : View, PropType>(
   name: String,
   propType: AnyType,
-  protected val setter: (view: ViewType, prop: PropType) -> Unit,
+  protected val setter: (view: ViewType, prop: PropType) -> Unit
 ) : AnyViewProp(name, propType) {
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
