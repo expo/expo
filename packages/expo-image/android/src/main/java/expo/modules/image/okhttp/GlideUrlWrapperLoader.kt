@@ -28,7 +28,7 @@ class GlideUrlWrapperLoader(
             originalResponse
               .newBuilder()
               .body(
-                ProgressResponseBody(originalResponse.body) { bytesWritten, contentLength, done ->
+                ProgressResponseBody(originalResponse.body ?: throw NullPointerException()) { bytesWritten, contentLength, done ->
                   model.progressListener?.onProgress(bytesWritten, contentLength, done)
                 }
               )

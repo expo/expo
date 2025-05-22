@@ -248,6 +248,13 @@ internal class CollectionElementCastException private constructor(
 }
 
 @DoNotStrip
+class DynamicCastException(
+  typeName: String
+) : CodedException(
+  message = "Could not cast dynamic value to '$typeName'."
+)
+
+@DoNotStrip
 class JavaScriptEvaluateException(
   message: String,
   val jsStack: String

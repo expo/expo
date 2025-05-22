@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.ExpectedType
@@ -38,7 +39,7 @@ class EnumTypeConverter(
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(value.asString(), enumConstants)
+      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException("string"), enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
         value,

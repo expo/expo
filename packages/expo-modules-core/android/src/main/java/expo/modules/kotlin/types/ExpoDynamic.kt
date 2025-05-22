@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.DynamicCastException
 
 class ExpoDynamic(private val dynamic: Dynamic) {
   enum class Type {
@@ -32,7 +33,7 @@ class ExpoDynamic(private val dynamic: Dynamic) {
     }
 
   fun asArray(): List<Any?> {
-    return dynamic.asArray().toArrayList()
+    return (dynamic.asArray() ?: throw DynamicCastException("array")).toArrayList()
   }
 
   fun asBoolean(): Boolean {
@@ -48,10 +49,10 @@ class ExpoDynamic(private val dynamic: Dynamic) {
   }
 
   fun asMap(): Map<String, Any?> {
-    return dynamic.asMap().toHashMap()
+    return (dynamic.asMap() ?: throw DynamicCastException("map")).toHashMap()
   }
 
   fun asString(): String {
-    return dynamic.asString()
+    return dynamic.asString() ?: throw DynamicCastException("string")
   }
 }
