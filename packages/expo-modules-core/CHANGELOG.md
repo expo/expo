@@ -9,13 +9,12 @@
 - [iOS] Add module registry encoder for JSON. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
 - [Android] New custom Type Converter API ([#36823](https://github.com/expo/expo/pull/36823) by [@jakex7](https://github.com/jakex7))
 - [iOS] Natively support `rgb` color conversions. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Add default values to prop definition. ([#37011](https://github.com/expo/expo/pull/37011) by [@jakex7](https://github.com/jakex7))
+- Add default values to prop definition. ([#37011](https://github.com/expo/expo/pull/37011), [#37013](https://github.com/expo/expo/pull/37013) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
 - [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Prevent crash on failed networked requests ([#36896](https://github.com/expo/expo/pull/36896) by [@adrum](https://github.com/adrum))
-
 
 ### 💡 Others
 
