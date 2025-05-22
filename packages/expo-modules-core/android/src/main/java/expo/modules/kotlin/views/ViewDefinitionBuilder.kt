@@ -155,13 +155,15 @@ class ViewDefinitionBuilder<T : View>(
     defaultValue: PropType,
     noinline body: (view: ViewType, prop: PropType) -> Unit
   ) {
-    props[name] = ConcreteViewProp(
+    props[name] = ConcreteViewPropWithDefault(
       name,
       toAnyType<PropType>(),
-      defaultValue,
-      body
+      body,
+      defaultValue
     )
   }
+
+  // Prop("x", 0) { view, prop: Int -> }
 
   inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(
     vararg props: Pair<String, CustomValueType>,
