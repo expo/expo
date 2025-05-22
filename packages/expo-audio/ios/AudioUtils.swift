@@ -90,7 +90,13 @@ struct AudioUtils {
       } else {
         url
       }
-      let asset = AVURLAsset(url: finalUrl, options: source.headers)
+
+      var options: [String: Any]?
+      if let headers = source.headers {
+        options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+      }
+
+      let asset = AVURLAsset(url: finalUrl, options: options)
       let item = AVPlayerItem(asset: asset)
       return AVPlayer(playerItem: item)
     }
@@ -106,7 +112,13 @@ struct AudioUtils {
     } else {
       url
     }
-    let asset = AVURLAsset(url: finalUrl, options: source.headers)
+
+    var options: [String: Any]?
+    if let headers = source.headers {
+      options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+    }
+    
+    let asset = AVURLAsset(url: finalUrl, options: options)
     return AVPlayerItem(asset: asset)
   }
 
