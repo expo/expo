@@ -132,7 +132,7 @@ export interface VideoViewProps extends ViewProps {
      * Setting this property to `false` makes the Android behavior the same as iOS.
      *
      * @platform android
-     * @default true
+     * @default false
      */
     useExoShutter?: boolean;
     /**

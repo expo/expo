@@ -385,6 +385,9 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     view.playerView.applyRequiresLinearPlayback(linearPlayback)
     view.videoPlayer?.requiresLinearPlayback = linearPlayback
   }
+  Prop("useExoShutter") { view: T, useExoShutter: Boolean? ->
+    view.useExoShutter = useExoShutter
+  }
   AsyncFunction("enterFullscreen") { view: T ->
     view.enterFullscreen()
   }.runOnQueue(Queues.MAIN)
