@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Support base64 strings as an audio source.
+
 ### 💡 Others
 
 ## 0.4.5 — 2025-05-08
