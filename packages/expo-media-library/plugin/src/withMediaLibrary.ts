@@ -1,9 +1,9 @@
 import {
-  ConfigPlugin,
-  withAndroidManifest,
   AndroidConfig,
+  ConfigPlugin,
   createRunOncePlugin,
   IOSConfig,
+  withAndroidManifest,
   withInfoPlist,
 } from 'expo/config-plugins';
 
@@ -27,12 +27,44 @@ const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
   });
 };
 
+type GranularPermissions =
+  | {
+      images?: boolean;
+      video?: boolean;
+      audio?: boolean;
+      visual_user_selected?: boolean;
+    }
+  | false;
+
+const getGranularPermissions = (granularPermissions?: GranularPermissions) => {
+  // If no granular permissions are provided, we default to the full set of permissions for backwards compatibility.
+  if (granularPermissions === undefined) {
+    return [
+      'android.permission.READ_MEDIA_IMAGES',
+      'android.permission.READ_MEDIA_VIDEO',
+      'android.permission.READ_MEDIA_AUDIO',
+      'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
+    ];
+  }
+
+  if (granularPermissions === false) {
+    return [];
+  }
+
+  return Object.entries(granularPermissions).reduce<string[]>(
+    (acc, [key, value]) =>
+      value ? [...acc, `android.permission.READ_MEDIA_${key.toUpperCase()}`] : acc,
+    []
+  );
+};
+
 const withMediaLibrary: ConfigPlugin<
   {
     photosPermission?: string | false;
     savePhotosPermission?: string | false;
     isAccessMediaLocationEnabled?: boolean;
     preventAutomaticLimitedAccessAlert?: boolean;
+    granularPermissions?: GranularPermissions;
   } | void
 > = (
   config,
@@ -41,6 +73,7 @@ const withMediaLibrary: ConfigPlugin<
     savePhotosPermission,
     isAccessMediaLocationEnabled,
     preventAutomaticLimitedAccessAlert,
+    granularPermissions,
   } = {}
 ) => {
   IOSConfig.Permissions.createPermissionsPlugin({
@@ -57,6 +90,7 @@ const withMediaLibrary: ConfigPlugin<
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
       isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
+      ...getGranularPermissions(granularPermissions),
     ].filter(Boolean) as string[]
   );
 
