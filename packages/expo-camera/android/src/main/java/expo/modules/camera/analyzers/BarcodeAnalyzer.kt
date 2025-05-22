@@ -59,8 +59,8 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
               raw,
               extra,
               cornerPoints,
-              image.width,
-              image.height
+              imageProxy.width,
+              imageProxy.height
             )
           )
         }
