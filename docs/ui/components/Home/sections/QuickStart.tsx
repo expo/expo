@@ -45,53 +45,6 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
-            'max-md-gutters:min-h-[200px]'
-          )}>
-          <div
-            className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-subtle from-15% to-[#21262d00]',
-              'dark:from-[#181a1b]'
-            )}
-          />
-          <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="flex items-center gap-2 !font-bold">
-              <AppleIcon /> Deploy to TestFlight
-            </RawH2>
-            <div>
-              <Terminal cmd={['$ npx testflight']} />
-              <CALLOUT theme="secondary">
-                This is iOS only command that will upload your app to TestFlight.
-              </CALLOUT>
-            </div>
-          </div>
-        </GridCell>
-        <GridCell
-          className={mergeClasses(
-            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
-            'max-md-gutters:min-h-[200px]'
-          )}>
-          <div
-            className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-subtle from-15% to-[#21262d00]',
-              'dark:from-[#181a1b]'
-            )}
-          />
-          <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="flex items-center gap-2 !font-bold">
-              <Cloud01Icon /> Deploy your web app
-            </RawH2>
-            <div>
-              <Terminal cmd={['$ npx eas-cli deploy']} />
-              <CALLOUT theme="secondary">
-                For prerequisites and complete instructions, see{' '}
-                <A href="/deploy/web/#export-your-web-project/">Deploy web apps</A>.
-              </CALLOUT>
-            </div>
-          </div>
-        </GridCell>
-        <GridCell
-          className={mergeClasses(
             'relative z-0 min-h-[250px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
             'dark:bg-palette-blue3',
             'max-md-gutters:min-h-[200px]'
@@ -112,6 +65,53 @@ export function QuickStart() {
             rightSlot={<ArrowRightIcon className="icon-md" />}>
             Start Tutorial
           </HomeButton>
+        </GridCell>
+        <GridCell
+          className={mergeClasses(
+            'min-h-[250px] bg-palette-purple4 !bg-cell-quickstart-pattern bg-blend-multiply',
+            'max-md-gutters:min-h-[200px]'
+          )}>
+          <div
+            className={mergeClasses(
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-palette-purple3 from-15% to-transparent',
+              'dark:from-palette-purple3'
+            )}
+          />
+          <div className="relative z-10 flex flex-col gap-4">
+            <RawH2 className="flex items-center gap-2 !font-bold !text-palette-purple10">
+              <AppleIcon className="text-palette-purple10" /> Deploy to TestFlight
+            </RawH2>
+            <div>
+              <Terminal cmd={['$ npx testflight']} />
+              <CALLOUT theme="secondary">
+                This is iOS only command that will upload your app to TestFlight.
+              </CALLOUT>
+            </div>
+          </div>
+        </GridCell>
+        <GridCell
+          className={mergeClasses(
+            'min-h-[250px] bg-[#f0f9f0] !bg-cell-quickstart-pattern bg-blend-multiply',
+            'max-md-gutters:min-h-[200px]'
+          )}>
+          <div
+            className={mergeClasses(
+              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-[#e8f5e8] from-15% to-transparent',
+              'dark:from-[#e8f5e8]'
+            )}
+          />
+          <div className="relative z-10 flex flex-col gap-4">
+            <RawH2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f]">
+              <Cloud01Icon className="text-[#1e8a5f]" /> Deploy your web app
+            </RawH2>
+            <div>
+              <Terminal cmd={['$ npx eas-cli deploy']} />
+              <CALLOUT theme="secondary">
+                For prerequisites and complete instructions, see{' '}
+                <A href="/deploy/web/#export-your-web-project/">Deploy web apps</A>.
+              </CALLOUT>
+            </div>
+          </div>
         </GridCell>
         <GridCell
           className={mergeClasses(
@@ -144,30 +144,30 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[172px] border-palette-purple6 bg-palette-purple3',
-            'selection:bg-palette-purple5',
+            'relative z-0 min-h-[172px] border-palette-orange6 bg-palette-orange3',
+            'selection:bg-palette-orange5',
             'max-md-gutters:min-h-[200px]'
           )}>
           <PlanEnterpriseIcon
             className={mergeClasses(
               'absolute -bottom-12 -left-20 size-[350px] rotate-[40deg] opacity-[0.12]',
-              'text-palette-purple7'
+              'text-palette-orange7'
             )}
           />
           <PlanEnterpriseIcon
             className={mergeClasses(
               'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-2',
-              'border-palette-purple5 bg-palette-purple4 text-palette-purple8'
+              'border-palette-orange5 bg-palette-orange4 text-palette-orange8'
             )}
           />
-          <RawH2 className="relative z-10 max-w-[22ch] !text-lg !text-palette-purple11">
+          <RawH2 className="relative z-10 max-w-[22ch] !text-lg !text-palette-orange11">
             Speed up your development with Expo Application Services
           </RawH2>
           <HomeButton
-            className="border-palette-purple10 bg-palette-purple10 hocus:bg-palette-purple9 dark:text-palette-purple2"
+            className="border-palette-orange10 bg-palette-orange10 hocus:bg-palette-orange9 dark:text-palette-orange2"
             href="/tutorial/eas/introduction/"
             size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-purple2" />}>
+            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-orange2" />}>
             <span className="max-sm-gutters:hidden">Start&nbsp;</span>EAS Tutorial
           </HomeButton>
         </GridCell>
