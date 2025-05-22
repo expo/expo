@@ -110,11 +110,11 @@ open class KEventEmitterWrapper(
   private class UIEvent(
     surfaceId: Int,
     viewId: Int,
-    private val eventName: String,
+    private val eventNameInternal: String,
     private val eventBody: WritableMap?,
     private val coalescingKey: Short?
   ) : com.facebook.react.uimanager.events.Event<UIEvent>(surfaceId, viewId) {
-    override fun getEventName(): String = normalizeEventName(eventName)
+    override fun getEventName(): String = normalizeEventName(eventNameInternal)
     override fun canCoalesce(): Boolean = coalescingKey != null
     override fun getCoalescingKey(): Short = coalescingKey ?: 0
     override fun getEventData(): WritableMap = eventBody ?: Arguments.createMap()

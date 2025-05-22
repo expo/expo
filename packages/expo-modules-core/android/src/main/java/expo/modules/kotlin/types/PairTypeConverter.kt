@@ -4,6 +4,7 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -29,7 +30,7 @@ class PairTypeConverter(
   )
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Pair<*, *> {
-    val jsArray = value.asArray()
+    val jsArray = value.asArray() ?: throw DynamicCastException("array")
     return convertFromReadableArray(jsArray, context, forceConversion)
   }
 

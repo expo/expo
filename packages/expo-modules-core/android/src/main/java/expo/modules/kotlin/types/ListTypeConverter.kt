@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
@@ -36,7 +37,7 @@ class ListTypeConverter(
       )
     }
 
-    val jsArray = value.asArray()
+    val jsArray = value.asArray() ?: throw DynamicCastException("array")
     return convertFromReadableArray(jsArray, context, forceConversion)
   }
 
