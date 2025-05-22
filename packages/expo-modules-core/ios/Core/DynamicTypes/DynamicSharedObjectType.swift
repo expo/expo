@@ -59,6 +59,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    // Postpone object creation to execute on the JS thread.
     JavaScriptSharedObjectBinding.init {
       // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
       if let sharedObject = result as? SharedObject {
@@ -67,6 +68,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
           return jsObject
         }
         guard let jsObject = try? appContext.newObject(nativeClassId: typeIdentifier) else {
+          // Throwing is not possible here due to swift-objC interop.
           log.warn("Unable to create a JS object for \(description)")
           return JavaScriptObject()
         }

@@ -185,9 +185,11 @@ public struct Conversions {
     dynamicType: AnyDynamicType? = nil
   ) -> Any {
     if let appContext {
+      // Dynamic type is provided
       if dynamicType as? DynamicVoidType == nil, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
         return result
       }
+      // Dynamic type can be obtained from the value
       if let value = value as? AnyArgument, let result = try? type(of: value).getDynamicType().convertResult(value as Any, appContext: appContext) {
         return result
       }
