@@ -1,5 +1,6 @@
 import ExpoModulesCore
 
+#if os(iOS)
 enum CornerStyle: String, Enumerable {
   case dynamic
   case fixed
@@ -64,3 +65,4 @@ enum AcceptedTypes: String, Enumerable {
     }
   }
 }
+#endif

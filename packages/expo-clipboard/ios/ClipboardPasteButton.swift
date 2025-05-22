@@ -1,6 +1,7 @@
 import ExpoModulesCore
 import UniformTypeIdentifiers
 
+#if os(iOS)
 class ClipboardPasteButton: ExpoView {
   let onPastePressed = EventDispatcher()
 
@@ -171,3 +172,4 @@ class ClipboardPasteButton: ExpoView {
     }
   }
 }
+#endif

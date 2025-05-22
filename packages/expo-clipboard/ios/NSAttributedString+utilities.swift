@@ -1,6 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if canImport(MobileCoreServices)
 import MobileCoreServices
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 extension NSAttributedString {
   @objc

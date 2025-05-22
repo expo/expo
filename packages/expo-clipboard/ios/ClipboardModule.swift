@@ -1,7 +1,12 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if os(iOS)
 import UIKit
+#elseif os(macOS)
+import AppKit
+typealias UIPasteboard = NSPasteboard
+#endif
 
 let onClipboardChanged = "onClipboardChanged"
 
@@ -56,7 +61,13 @@ public class ClipboardModule: Module {
             let image = UIImage(data: data) else {
         throw InvalidImageException(content)
       }
+      // #if os(iOS)
+      // guard let image = UIImage(data: data) else { throw InvalidImageException(content) }
+      // UIPasteboard.general.image = image
+      // #else
+      // guard let image = NSImage(data: data) else { throw InvalidImageException(content) }
       UIPasteboard.general.image = image
+      // #endif
     }
 
     AsyncFunction("hasImageAsync") { () -> Bool in
@@ -64,9 +75,13 @@ public class ClipboardModule: Module {
     }
 
     AsyncFunction("getImageAsync") { (options: GetImageOptions) -> [String: Any]? in
-      guard let image = UIPasteboard.general.image else {
-        return nil
-      }
+      #if os(iOS)
+      guard let image = UIPasteboard.general.image else { return nil }
+      #else
+      guard let nsImage = UIPasteboard.general.image,
+            let tiff = nsImage.tiffRepresentation,
+            let image = UIImage(data: tiff) else { return nil }
+      #endif
       guard let data = imageToData(image, options: options) else {
         throw PasteFailureException()
       }
@@ -83,32 +98,37 @@ public class ClipboardModule: Module {
     }
 
     Property("isPasteButtonAvailable") { () -> Bool in
-      if #available(iOS 16.0, *) {
-        return true
-      }
+      #if os(iOS)
+      if #available(iOS 16.0, *) { return true }
       return false
+      #else
+      return false
+      #endif
     }
 
+  #if os(iOS)
     // MARK: - Events
 
     Events(onClipboardChanged)
 
     OnStartObserving {
-      NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
-      NotificationCenter.default.addObserver(
-        self,
-        selector: #selector(self.clipboardChangedListener),
-        name: UIPasteboard.changedNotification,
-        object: nil
-      )
+     NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
+     NotificationCenter.default.addObserver(
+       self,
+       selector: #selector(self.clipboardChangedListener),
+       name: UIPasteboard.changedNotification,
+       object: nil
+     )
     }
 
     OnStopObserving {
-      NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
+     NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
     }
+  #endif
 
     // MARK: - View
 
+#if os(iOS)
     View(ClipboardPasteButton.self) {
       Events("onPastePressed")
 
@@ -144,6 +164,7 @@ public class ClipboardModule: Module {
         view.update()
       }
     }
+    #endif
   }
 
   @objc
@@ -155,10 +176,14 @@ public class ClipboardModule: Module {
 }
 
 private func imageToData(_ image: UIImage, options: GetImageOptions) -> Data? {
+  #if os(iOS)
   switch options.imageFormat {
     case .jpeg: return image.jpegData(compressionQuality: options.jpegQuality)
     case .png: return image.pngData()
   }
+  #else
+  return Data()
+  #endif
 }
 
 private func availableContentTypes() -> [String] {
@@ -179,3 +204,44 @@ private enum ContentType: String {
   case image = "image"
   case url = "url"
 }
+
+if os(macOS)
+extension UIPasteboard  {
+  var string: String? {
+    get { self.string(forType: .string) }
+    set {
+      self.clearContents()
+      if let str = newValue {
+        self.setString(str, forType: .string)
+      }
+    }
+  }
+
+  var url: URL? {
+    get {
+      if let str = self.string(forType: .URL), let url = URL(string: str) {
+        return url
+      }
+      return nil
+    }
+    set {
+      self.clearContents()
+      if let url = newValue {
+        self.writeObjects([url as NSPasteboardWriting])
+      }
+    }
+  }
+  var image: NSImage? {
+    get { self.readObjects(forClasses: [NSImage.self], options: nil)? .first as? NSImage }
+    set {
+      self.clearContents()
+      if let img = newValue {
+        self.writeObjects([img])
+      }
+    }
+  }
+  var hasStrings: Bool { self.canReadItem(withDataConformingToTypes: [NSPasteboard.PasteboardType.string.rawValue]) }
+  var hasURLs: Bool { self.canReadItem(withDataConformingToTypes: [NSPasteboard.PasteboardType.URL.rawValue]) }
+  var hasImages: Bool { self.canReadObject(forClasses: [NSImage.self], options: nil) }
+}
+#endif
