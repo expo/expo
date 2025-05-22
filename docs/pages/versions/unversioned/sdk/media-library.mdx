@@ -80,6 +80,12 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
         'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.',
       default: 'false',
     },
+    {
+      name: 'granularPermissions',
+      platform: 'android',
+      description:
+        'Controls which READ_MEDIA_* permissions are added to AndroidManifest.xml. By default, all are included. Set to false to exclude them entirely (e.g. if you only use `saveToLibraryAsync`), or pass an object like { images: true, video: true } to include only specific permissions.',
+    },
   ]}
 />
 
