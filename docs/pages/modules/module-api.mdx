@@ -446,6 +446,7 @@ Defines a setter for the view prop of given name.
 #### Arguments
 
 - **name**: `String` — Name of view prop that you want to define a setter.
+- **defaultValue**: `ValueType` — Optional default value used when the setter is called with `null`.
 - **setter**: `(view: ViewType, value: ValueType) -> ()` — Closure that is invoked when the view rerenders.
 
 This property can only be used within a [`View`](#view) closure.
@@ -460,6 +461,24 @@ Prop("background") { (view: UIView, color: UIColor) in
 
 ```kotlin
 Prop("background") { view: View, @ColorInt color: Int ->
+  view.setBackgroundColor(color)
+}
+```
+
+</CodeBlocksTable>
+
+Prop definition with default value.
+
+<CodeBlocksTable>
+
+```swift
+Prop("background", UIColor.black) { (view: UIView, color: UIColor) in
+  view.backgroundColor = color
+}
+```
+
+```kotlin
+Prop("background", Color.BLACK) { view: View, @ColorInt color: Int ->
   view.setBackgroundColor(color)
 }
 ```

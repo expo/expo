@@ -146,6 +146,23 @@ class ViewDefinitionBuilder<T : View>(
     )
   }
 
+  /**
+   * Creates a view prop that defines its name, default value and setter.
+   */
+  @JvmName("PropGeneric")
+  inline fun <reified ViewType : View, reified PropType> Prop(
+    name: String,
+    defaultValue: PropType,
+    noinline body: (view: ViewType, prop: PropType) -> Unit
+  ) {
+    props[name] = ConcreteViewPropWithDefault(
+      name,
+      toAnyType<PropType>(),
+      body,
+      defaultValue
+    )
+  }
+
   inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(
     vararg props: Pair<String, CustomValueType>,
     noinline body: (view: ViewType, value: CustomValueType, prop: PropType) -> Unit
