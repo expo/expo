@@ -1,8 +1,8 @@
 import { RouterLogo, mergeClasses } from '@expo/styleguide';
-import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
+import { Cloud01DuotoneIcon } from '@expo/styleguide-icons/duotone/Cloud01DuotoneIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
-import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 
 import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
@@ -68,18 +68,19 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] bg-palette-purple4 !bg-cell-quickstart-pattern bg-blend-multiply',
+            'min-h-[250px] border-palette-purple6 bg-palette-purple4 !bg-cell-quickstart-pattern bg-blend-multiply',
+            'dark:border-palette-purple7 dark:bg-palette-purple4',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div
             className={mergeClasses(
               'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-palette-purple3 from-15% to-transparent',
-              'dark:from-palette-purple3'
+              'dark:from-palette-purple3 dark:to-transparent'
             )}
           />
           <div className="relative z-10 flex flex-col gap-4">
             <RawH2 className="flex items-center gap-2 !font-bold !text-palette-purple10">
-              <AppleIcon className="text-palette-purple10" /> Deploy to TestFlight
+              <AppleAppStoreIcon className="text-palette-purple10" /> Deploy to TestFlight
             </RawH2>
             <div>
               <Terminal cmd={['$ npx testflight']} />
@@ -91,18 +92,20 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] bg-[#f0f9f0] !bg-cell-quickstart-pattern bg-blend-multiply',
+            'min-h-[250px] border-[#c9e9d9] bg-[#f0f9f0] !bg-cell-quickstart-pattern bg-blend-multiply',
+            'dark:border-[#2a5240] dark:bg-[#1d392c] dark:!bg-cell-quickstart-pattern dark:bg-blend-multiply',
             'max-md-gutters:min-h-[200px]'
           )}>
           <div
             className={mergeClasses(
               'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-[#e8f5e8] from-15% to-transparent',
-              'dark:from-[#e8f5e8]'
+              'dark:from-[#1d392c] dark:to-transparent'
             )}
           />
           <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f]">
-              <Cloud01Icon className="text-[#1e8a5f]" /> Deploy your web app
+            <RawH2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] dark:!text-[#4eca8c]">
+              <Cloud01DuotoneIcon className="text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy your web
+              app
             </RawH2>
             <div>
               <Terminal cmd={['$ npx eas-cli deploy']} />
