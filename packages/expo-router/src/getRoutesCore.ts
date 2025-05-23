@@ -34,7 +34,13 @@ export type Options = {
   preserveRedirectAndRewrites?: boolean;
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
-  getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>, defaults?: RouteNode) => RouteNode;
+  getSystemRoute: (
+    route: Pick<RouteNode, 'route' | 'type'> & {
+      defaults?: RouteNode;
+      redirectConfig?: RedirectConfig;
+      rewriteConfig?: RewriteConfig;
+    }
+  ) => RouteNode;
 };
 
 type DirectoryNode = {
@@ -122,8 +128,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   if (options.preserveRedirectAndRewrites) {
     if (options.redirects) {
       for (const redirect of options.redirects) {
-        // Remove the leading `./` or `/`
-        const source = redirect.source.replace(/^\.?\//, '');
+        const source = removeFileSystemDots(
+          removeSupportedExtensions(redirect.source.replace(/^\.?\//, ''))
+        );
 
         const isExternalRedirect = shouldLinkExternally(redirect.destination);
 
@@ -131,45 +138,37 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           ? redirect.destination
           : stripInvisibleSegmentsFromPath(
               removeFileSystemDots(
-                removeFileSystemExtensions(redirect.destination.replace(/^\.?\/?/, ''))
+                removeFileSystemExtensions(redirect.destination.replace(/^\.?\//, ''))
               )
             );
 
-        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
-
-        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+        if (ignoreList.some((regex) => regex.test(source))) {
           continue;
         }
 
         // Loop over this once and cache the valid destinations
         validRedirectDestinations ??= contextKeys.map((key) => {
           return [
-            stripInvisibleSegmentsFromPath(removeFileSystemDots(removeSupportedExtensions(key))),
+            stripInvisibleSegmentsFromPath(
+              removeFileSystemDots(removeSupportedExtensions(key))
+            ).replace(/^\.?\//, ''),
             key,
           ];
         });
 
         const destination = isExternalRedirect
           ? targetDestination
-          : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[1];
+          : validRedirectDestinations.find((key) => key[0] === targetDestination)?.[0];
 
         if (!destination) {
-          /*
-           * Only throw the error when we are preserving the api routes
-           * When doing a static export, API routes will not exist so the redirect destination may not exist.
-           * The desired behavior for this error is to warn the user when running `expo start`, so its ok if
-           * `expo export` swallows this error.
-           */
-          if (options.preserveApiRoutes) {
+          if (options.preserveRedirectAndRewrites) {
             throw new Error(`Redirect destination "${redirect.destination}" does not exist.`);
           }
 
           continue;
         }
 
-        const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(source));
-        contextKeys.push(fakeContextKey);
-        redirects[fakeContextKey] = {
+        redirects[source] = {
           source,
           destination,
           permanent: Boolean(redirect.permanent),
@@ -181,15 +180,15 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
     if (options.rewrites) {
       for (const rewrite of options.rewrites) {
-        // Remove the leading `./` or `/`
-        const source = rewrite.source.replace(/^\.?\//, '');
+        const source = removeFileSystemDots(
+          removeSupportedExtensions(rewrite.source.replace(/^\.?\//, ''))
+        );
+
         const targetDestination = stripInvisibleSegmentsFromPath(
           removeFileSystemDots(removeSupportedExtensions(rewrite.destination))
         );
 
-        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
-
-        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+        if (ignoreList.some((regex) => regex.test(source))) {
           continue;
         }
 
@@ -219,13 +218,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           continue;
         }
 
-        // Add a fake context key
-        const fakeContextKey = `./${source}.tsx`;
-        contextKeys.push(fakeContextKey);
-        rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
+        rewrites[source] = { source, destination, methods: rewrite.methods };
       }
     }
   }
+
+  const processedRedirectsRewrites = new Set<string>();
 
   for (const filePath of contextKeys) {
     if (ignoreList.some((regex) => regex.test(filePath))) {
@@ -245,6 +243,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
       loadRoute() {
         let routeModule: any;
+
         if (options.ignoreRequireErrors) {
           try {
             routeModule = contextModule(filePath);
@@ -292,40 +291,52 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     };
 
     if (meta.isRedirect) {
-      node.destinationContextKey = redirects[filePath].destination;
-      node.permanent = redirects[filePath].permanent;
+      if (processedRedirectsRewrites.has(meta.route)) {
+        continue;
+      }
+
+      const redirect = redirects[meta.route];
+      node.destinationContextKey = redirect.destination;
+      node.permanent = redirect.permanent;
       node.generated = true;
       if (node.type === 'route') {
-        node = options.getSystemRoute(
-          {
-            type: 'redirect',
-            route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
-          },
-          node
-        );
+        node = options.getSystemRoute({
+          type: 'redirect',
+          route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
+          defaults: node,
+          redirectConfig: redirect,
+        });
       }
-      if (redirects[filePath].methods) {
-        node.methods = redirects[filePath].methods;
+      if (redirect.methods) {
+        node.methods = redirect.methods;
       }
       node.type = 'redirect';
+      processedRedirectsRewrites.add(meta.route);
     }
 
     if (meta.isRewrite) {
-      node.destinationContextKey = rewrites[filePath].destination;
+      if (processedRedirectsRewrites.has(meta.route)) {
+        continue;
+      }
+
+      const rewrite = rewrites[meta.route];
+      node.destinationContextKey = rewrite.destination;
       node.generated = true;
       if (node.type === 'route') {
-        node = options.getSystemRoute(
-          {
+        node = {
+          ...node,
+          ...options.getSystemRoute({
             type: 'rewrite',
-            route: removeFileSystemDots(removeSupportedExtensions(node.destinationContextKey)),
-          },
-          node
-        );
+            route: node.destinationContextKey,
+            rewriteConfig: rewrite,
+          }),
+        };
       }
-      if (redirects[filePath].methods) {
-        node.methods = redirects[filePath].methods;
+      if (rewrite.methods) {
+        node.methods = rewrite.methods;
       }
       node.type = 'rewrite';
+      processedRedirectsRewrites.add(meta.route);
     }
 
     if (process.env.NODE_ENV === 'development') {

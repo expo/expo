@@ -18,7 +18,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type }, defaults) {
+        getSystemRoute({ route, type, defaults }) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {

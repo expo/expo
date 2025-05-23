@@ -1,0 +1,42 @@
+"use strict";
+'use client';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Redirect = Redirect;
+const imperative_api_1 = require("../imperative-api");
+const useFocusEffect_1 = require("../useFocusEffect");
+/**
+ * Redirects to the `href` as soon as the component is mounted.
+ *
+ * @example
+ * ```tsx
+ * import { View, Text } from 'react-native';
+ * import { Redirect } from 'expo-router';
+ *
+ * export default function Page() {
+ *  const { user } = useAuth();
+ *
+ *  if (!user) {
+ *    return <Redirect href="/login" />;
+ *  }
+ *
+ *  return (
+ *    <View>
+ *      <Text>Welcome Back!</Text>
+ *    </View>
+ *  );
+ * }
+ * ```
+ */
+function Redirect({ href, relativeToDirectory, withAnchor }) {
+    (0, useFocusEffect_1.useFocusEffect)(() => {
+        try {
+            imperative_api_1.router.replace(href, { relativeToDirectory, withAnchor });
+        }
+        catch (error) {
+            console.error(error);
+        }
+    });
+    return null;
+}
+exports.default = Redirect;
+//# sourceMappingURL=Redirect.js.map

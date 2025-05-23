@@ -17,7 +17,7 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
   return getRoutesCore(contextModule, {
-    getSystemRoute({ route, type }, defaults) {
+    getSystemRoute({ route, type, defaults, redirectConfig }) {
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
         return {
@@ -60,11 +60,11 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
           children: [],
         };
-      } else if ((type === 'redirect' || type === 'rewrite') && defaults) {
+      } else if ((type === 'redirect' || type === 'rewrite') && defaults && redirectConfig) {
         return {
           ...defaults,
           loadRoute() {
-            return require('./getRoutesRedirects').getRedirectModule(route);
+            return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
           },
         };
       }

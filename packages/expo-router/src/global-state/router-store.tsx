@@ -142,6 +142,7 @@ export function useStore(
     ...config,
     ignoreEntryPoints: true,
     platform: Platform.OS,
+    preserveRedirectAndRewrites: true,
   });
 
   const redirects: StoreRedirects[] = [config?.redirects, config?.rewrites]

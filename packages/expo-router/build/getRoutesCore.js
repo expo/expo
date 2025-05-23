@@ -58,14 +58,12 @@ function getDirectoryTree(contextModule, options) {
     if (options.preserveRedirectAndRewrites) {
         if (options.redirects) {
             for (const redirect of options.redirects) {
-                // Remove the leading `./` or `/`
-                const source = redirect.source.replace(/^\.?\//, '');
+                const source = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(redirect.source.replace(/^\.?\//, '')));
                 const isExternalRedirect = (0, url_1.shouldLinkExternally)(redirect.destination);
                 const targetDestination = isExternalRedirect
                     ? redirect.destination
                     : (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeFileSystemExtensions)(redirect.destination.replace(/^\.?\/?/, ''))));
-                const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
-                if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+                if (ignoreList.some((regex) => regex.test(source))) {
                     continue;
                 }
                 // Loop over this once and cache the valid destinations
@@ -90,9 +88,7 @@ function getDirectoryTree(contextModule, options) {
                     }
                     continue;
                 }
-                const fakeContextKey = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
-                contextKeys.push(fakeContextKey);
-                redirects[fakeContextKey] = {
+                redirects[source] = {
                     source,
                     destination,
                     permanent: Boolean(redirect.permanent),
@@ -103,11 +99,9 @@ function getDirectoryTree(contextModule, options) {
         }
         if (options.rewrites) {
             for (const rewrite of options.rewrites) {
-                // Remove the leading `./` or `/`
-                const source = rewrite.source.replace(/^\.?\//, '');
+                const source = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(rewrite.source.replace(/^\.?\//, '')));
                 const targetDestination = (0, matchers_1.stripInvisibleSegmentsFromPath)((0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(rewrite.destination)));
-                const normalizedSource = (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(source));
-                if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+                if (ignoreList.some((regex) => regex.test(source))) {
                     continue;
                 }
                 // Loop over this once and cache the valid destinations
@@ -130,13 +124,11 @@ function getDirectoryTree(contextModule, options) {
                     }
                     continue;
                 }
-                // Add a fake context key
-                const fakeContextKey = `./${source}.tsx`;
-                contextKeys.push(fakeContextKey);
-                rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
+                rewrites[source] = { source, destination, methods: rewrite.methods };
             }
         }
     }
+    const processedRedirectsRewrites = new Set();
     for (const filePath of contextKeys) {
         if (ignoreList.some((regex) => regex.test(filePath))) {
             continue;
@@ -187,33 +179,49 @@ function getDirectoryTree(contextModule, options) {
             children: [], // While we are building the directory tree, we don't know the node's children just yet. This is added during hoisting
         };
         if (meta.isRedirect) {
-            node.destinationContextKey = redirects[filePath].destination;
-            node.permanent = redirects[filePath].permanent;
+            if (processedRedirectsRewrites.has(meta.route)) {
+                continue;
+            }
+            const redirect = redirects[meta.route];
+            node.destinationContextKey = redirect.destination;
+            node.permanent = redirect.permanent;
             node.generated = true;
             if (node.type === 'route') {
                 node = options.getSystemRoute({
                     type: 'redirect',
                     route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
-                }, node);
+                    defaults: node,
+                    redirectConfig: redirect,
+                });
             }
-            if (redirects[filePath].methods) {
-                node.methods = redirects[filePath].methods;
+            if (redirect.methods) {
+                node.methods = redirect.methods;
             }
             node.type = 'redirect';
+            processedRedirectsRewrites.add(meta.route);
         }
         if (meta.isRewrite) {
-            node.destinationContextKey = rewrites[filePath].destination;
+            if (processedRedirectsRewrites.has(meta.route)) {
+                continue;
+            }
+            const rewrite = rewrites[meta.route];
+            node.destinationContextKey = rewrite.destination;
             node.generated = true;
             if (node.type === 'route') {
-                node = options.getSystemRoute({
-                    type: 'rewrite',
-                    route: (0, matchers_1.removeFileSystemDots)((0, matchers_1.removeSupportedExtensions)(node.destinationContextKey)),
-                }, node);
+                node = {
+                    ...node,
+                    ...options.getSystemRoute({
+                        type: 'rewrite',
+                        route: node.destinationContextKey,
+                        rewriteConfig: rewrite,
+                    }),
+                };
             }
-            if (redirects[filePath].methods) {
-                node.methods = redirects[filePath].methods;
+            if (rewrite.methods) {
+                node.methods = rewrite.methods;
             }
             node.type = 'rewrite';
+            processedRedirectsRewrites.add(meta.route);
         }
         if (process.env.NODE_ENV === 'development') {
             // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
