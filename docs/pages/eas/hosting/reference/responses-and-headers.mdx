@@ -64,7 +64,7 @@ EAS Hosting will respond with an error page in these cases. The error page will 
 
 ## Request headers
 
-**EAS Hosting** will add a couple of headers to every request, before they're forwarded to your API routes. These headers generally add more information about who made the request.
+**EAS Hosting** will add the following headers to every request, before they're forwarded to your API routes. These headers generally add more information about who made the request.
 
 | Request header      | Description                                                                                                                                                                                                                                |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -89,7 +89,7 @@ EAS Hosting will respond with an error page in these cases. The error page will 
 
 EAS Hosting routes requests from several hostnames to your deployments. [Aliases](/eas/hosting/deployments-and-aliases) and [Custom domains](/eas/hosting/custom-domain) mean that there may be a difference between the **incoming** URL that clients have used to make a request, and the **target** URL that your API routes receive.
 
-For example, while a client may make a request to an alias URL such as `https://my-app--staging.expo.app/`, the worker deployment that may receive the request will have a URL containing its deployment ID, such as `https://my-app--or1170q9ix.expo.app/`.
+For example, while a client may make a request to an alias URL such as `https://my-app--staging.expo.app/`, the worker deployment that will receive the request will have a URL containing its deployment ID, such as `https://my-app--or1170q9ix.expo.app/`.
 
 This difference is also present in the `Request`'s URL and headers that you receive in your API routes. While the `request.url` will be your worker deployment's URL, the `Origin` and `X-Forwarded-Host` header will be set to the incoming URL that the client used to make the request.
 
@@ -107,7 +107,7 @@ export async function GET(request) {
 The request contains several headers to identify the IP address of the user's device that made the request:
 
 - `Forwarded` contains a comma-separated list of semicolon-separated parameters. Each entry in the list represents a proxy that forwarded the request. Therefore, the first entry's `for` parameter is likely the original client's IP address.
-- `X-Forwarded-For` only contains a comma-separated list of IP addressed. Each entry in the list represents a proxy that forwarded the request as well.
+- `X-Forwarded-For` only contains a comma-separated list of IP addresses. Each entry in the list represents a proxy that forwarded the request as well.
 - `X-Real-IP` contains only the original request's IP address
 
 For example, to retrieve the IP address of the user's browser that is calling your API route, read the `X-Real-IP` header from the request:
