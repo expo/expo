@@ -21,18 +21,22 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition {
    */
   @discardableResult
   func call(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [JavaScriptValue]) throws -> JavaScriptValue
+  
+  var name: String { get }
 }
 
 /**
  Represents a function that can only be called synchronously.
  */
-public final class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunctionDefinition {
+public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunctionDefinition {
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
    The underlying closure to run when the function is called.
    */
   let body: ClosureType
+  
+  var requiredPermissions: [String] = []
 
   init(
     _ name: String,
