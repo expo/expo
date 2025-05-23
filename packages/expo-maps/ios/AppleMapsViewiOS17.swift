@@ -88,8 +88,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
           props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
+            "coordinates": [
+              "latitude": coordinate.latitude,
+              "longitude": coordinate.longitude
+            ]
           ])
         }
       }
