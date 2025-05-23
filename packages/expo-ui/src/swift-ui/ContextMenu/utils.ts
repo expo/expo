@@ -1,7 +1,7 @@
 import { Children, isValidElement, ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
-import { ContextMenuElementBase, EventHandlers, Submenu, SubmenuProps } from './index';
+import { ContextMenuElementBase, EventHandlers } from './index';
 import {
   Button,
   ButtonPrimitive,
@@ -11,6 +11,7 @@ import {
 } from '../Button';
 import { Picker, PickerPrimitive, PickerProps } from '../Picker';
 import { Switch, SwitchPrimitive, SwitchProps } from '../Switch';
+import { Submenu, SubmenuProps } from './submenu';
 
 // We use this slightly odd typing for the elements to make unpacking the elements easier on the native side
 type ButtonMenuElement = {

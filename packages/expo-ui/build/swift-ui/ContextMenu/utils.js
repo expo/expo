@@ -1,8 +1,8 @@
 import { Children, isValidElement } from 'react';
-import { Submenu } from './index';
 import { Button, ButtonPrimitive, transformButtonProps, } from '../Button';
 import { Picker, PickerPrimitive } from '../Picker';
 import { Switch, SwitchPrimitive } from '../Switch';
+import { Submenu } from './submenu';
 // Maps the react children to NativeMenuElement[] which is used to render out the native menu
 // TODO: Ideally we want to pass the children directly to the native side without having to do this
 export function transformChildrenToElementArray(children, eventHandlersMap) {

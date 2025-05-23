@@ -6,13 +6,6 @@ const MenuNativeView = requireNativeView('ExpoUI', 'ContextMenu');
 const MenuNativeTriggerView = requireNativeView('ExpoUI', 'ContextMenuActivationElement');
 const MenuNativePreviewView = requireNativeView('ExpoUI', 'ContextMenuPreview');
 /**
- * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
- * Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple titled sections.
- */
-export function Submenu(props) {
-    return <></>;
-}
-/**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
  * `Button`, `Switch` and `Submenu` components are supported on both Android and iOS.
  * The `Picker` component is supported only on iOS. Remember to use components from the `@expo/ui` library.

@@ -105,6 +105,76 @@ struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View>: 
   }
 }
 
+struct PeekAndPop<ActivationElement: View, Preview: View>: UIViewRepresentable {
+    let elements: [ContextMenuElement]?
+    let activationElement: ActivationElement
+    let preview: Preview
+    let props: ContextMenuProps?
+    let onPreviewTap: () -> Void
+
+    func makeUIView(context: Context) -> UIView {
+        let containerView = UIView()
+
+        // Embed the SwiftUI activationElement in UIKit
+        let hostingController = UIHostingController(rootView: activationElement)
+        context.coordinator.hostingController = hostingController
+
+        // Add the hostingController's view to the container
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(hostingController.view)
+
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            hostingController.view.topAnchor.constraint(equalTo: containerView.topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        let interaction = UIContextMenuInteraction(delegate: context.coordinator)
+        containerView.addInteraction(interaction)
+
+        return containerView
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        // No-op
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(preview: preview, elements: elements, onPreviewTap: onPreviewTap)
+    }
+
+    class Coordinator: NSObject, UIContextMenuInteractionDelegate {
+        var hostingController: UIHostingController<ActivationElement>?
+        let preview: Preview
+        let elements: [ContextMenuElement]?
+        let onPreviewTap: () -> Void
+
+        init(preview: Preview, elements: [ContextMenuElement]?, onPreviewTap: @escaping () -> Void) {
+            self.preview = preview
+            self.elements = elements
+            self.onPreviewTap = onPreviewTap
+        }
+
+        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+                let hosting = UIHostingController(rootView: self.preview)
+                hosting.view.backgroundColor = .clear
+                return hosting
+            }, actionProvider: { _ in
+                UIMenu(title: "", children: [])
+            })
+        }
+
+        func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+            animator.addCompletion {
+                self.onPreviewTap()
+            }
+        }
+    }
+}
+
+
 struct ContextMenuPreview: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuPreviewProps
 
@@ -142,11 +212,12 @@ struct ContextMenu: ExpoSwiftUI.View {
         .compactMap { $0.childView as? ContextMenuActivationElement }
         .first
       if preview != nil {
-        LongPressContextMenuWithPreview(
+      PeekAndPop(
           elements: props.elements,
           activationElement: activationElement,
           preview: preview,
-          props: props
+          props: props,
+          onPreviewTap: { props.onPreviewTap() }
         )
       } else {
         LongPressContextMenu(

@@ -7,6 +7,7 @@ import { MenuElement, transformChildrenToElementArray } from './utils';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
+import { SubmenuProps } from './submenu';
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 
@@ -58,24 +59,11 @@ export type ContextMenuProps = {
    * Determines how the context menu will be activated.
    */
   activationMethod?: ActivationMethod;
+  onPreviewTap?: () => void;
 
   /**
    * The contents of the submenu are used as an anchor for the context menu.
    * The children will be wrapped in a pressable element, which triggers opening of the context menu.
-   */
-  children: ReactNode;
-};
-
-/**
- * Props of the `Submenu` component.
- */
-export type SubmenuProps = {
-  /**
-   * The button that will be used to expand the submenu. On Android the `text` prop of the `Button` will be used as a section title.
-   */
-  button: ReactElement<ButtonProps>;
-  /**
-   * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
    */
   children: ReactNode;
 };
@@ -102,14 +90,6 @@ export type NativeMenuProps = ContextMenuProps & {
     }>
   ) => void;
 };
-
-/**
- * The `Submenu` component is used to create a nested context menu. Submenus can be infinitely nested.
- * Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple titled sections.
- */
-export function Submenu(props: SubmenuProps) {
-  return <></>;
-}
 
 /**
  * Items visible inside the context menu. Pass input components as immidiate children of the tag.
