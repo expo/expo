@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] fixed `updateContactAsync()` removing contact rawDates / birthday ([#37054](https://github.com/expo/expo/pull/37054) by [@NorseGaud](https://github.com/NorseGaud)
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
