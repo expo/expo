@@ -317,8 +317,9 @@ class AnyType(
     }
   }
 
-  fun convert(value: Any?, appContext: AppContext? = null): Any? =
-    converter.convert(value, appContext)
+  fun convert(value: Any?, appContext: AppContext? = null): Any? {
+    return converter.convert(value, appContext)
+  }
 
   fun getCppRequiredTypes(): ExpectedType = converter.getCppRequiredTypes()
 

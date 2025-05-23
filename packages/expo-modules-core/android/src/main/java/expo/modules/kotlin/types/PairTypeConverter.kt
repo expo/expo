@@ -14,7 +14,7 @@ import kotlin.reflect.KType
 class PairTypeConverter(
   converterProvider: TypeConverterProvider,
   private val pairType: KType
-) : DynamicAwareTypeConverters<Pair<*, *>>(pairType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<Pair<*, *>>() {
   private val converters = listOf(
     converterProvider.obtainTypeConverter(
       requireNotNull(pairType.arguments.getOrNull(0)?.type) {

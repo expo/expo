@@ -170,9 +170,7 @@ private val namedColors = mapOf(
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-class ColorTypeConverter(
-  isOptional: Boolean
-) : DynamicAwareTypeConverters<Color>(isOptional) {
+class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())

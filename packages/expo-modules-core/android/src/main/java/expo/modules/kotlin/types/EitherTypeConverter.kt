@@ -34,7 +34,7 @@ private fun tryToConvert(typeConverter: TypeConverter<*>, value: Any, context: A
     } else {
       typeConverter.convert(value, context)
     }
-  } catch (e: Throwable) {
+  } catch (_: Throwable) {
     null
   }
 }
@@ -66,7 +66,7 @@ private fun createDeferredValues(
 class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType
-) : NullAwareTypeConverter<Either<FirstType, SecondType>>(eitherType.isMarkedNullable) {
+) : NonNullableTypeConverter<Either<FirstType, SecondType>>() {
   private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
   private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
@@ -78,7 +78,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   private val firstType = firstTypeConverter.getCppRequiredTypes()
   private val secondType = secondTypeConverter.getCppRequiredTypes()
 
-  override fun convertNonOptional(value: Any, context: AppContext?): Either<FirstType, SecondType> {
+  override fun convertNonNullable(value: Any, context: AppContext?): Either<FirstType, SecondType> {
     val typeList = listOf(firstJavaType, secondJavaType)
 
     val deferredValues = createDeferredValues(
@@ -107,7 +107,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
 class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType
-) : NullAwareTypeConverter<EitherOfThree<FirstType, SecondType, ThirdType>>(eitherType.isMarkedNullable) {
+) : NonNullableTypeConverter<EitherOfThree<FirstType, SecondType, ThirdType>>() {
   private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
   private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
   private val thirdJavaType = requireNotNull(eitherType.arguments.getOrNull(2)?.type)
@@ -124,7 +124,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
   private val secondType = secondTypeConverter.getCppRequiredTypes()
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
 
-  override fun convertNonOptional(value: Any, context: AppContext?): EitherOfThree<FirstType, SecondType, ThirdType> {
+  override fun convertNonNullable(value: Any, context: AppContext?): EitherOfThree<FirstType, SecondType, ThirdType> {
     val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType)
     val deferredValues = createDeferredValues(
       value,
@@ -151,7 +151,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
 class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType
-) : NullAwareTypeConverter<EitherOfFour<FirstType, SecondType, ThirdType, FourthType>>(eitherType.isMarkedNullable) {
+) : NonNullableTypeConverter<EitherOfFour<FirstType, SecondType, ThirdType, FourthType>>() {
   private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
   private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
   private val thirdJavaType = requireNotNull(eitherType.arguments.getOrNull(2)?.type)
@@ -173,7 +173,7 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
   private val thirdType = thirdTypeConverter.getCppRequiredTypes()
   private val fourthType = fourthTypeConverter.getCppRequiredTypes()
 
-  override fun convertNonOptional(value: Any, context: AppContext?): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
+  override fun convertNonNullable(value: Any, context: AppContext?): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
     val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType, fourthJavaType)
     val deferredValues = createDeferredValues(
       value,
