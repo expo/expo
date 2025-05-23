@@ -76,6 +76,7 @@ Any modules that aren't mentioned here are unavailable or unsupported, and your 
 
 | JavaScript runtime globals | Supported     | Implementation notes                                                                                                          |
 | -------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `origin`                  | <YesIcon />    | Will always be the same as the incoming request's `Origin` header                                                             |
 | `process`                  | <YesIcon />   |                                                                                                                               |
 | `process.env`              | <YesIcon />   | Populated with EAS Hosting environment variables                                                                              |
 | `process.stdout`           | <YesIcon />   | Will redirect output to the Console API (`console.log`) for logging                                                           |
