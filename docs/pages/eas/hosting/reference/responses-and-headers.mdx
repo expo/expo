@@ -94,9 +94,10 @@ This difference is also present in the `Request`'s URL and headers that you rece
 
 ```js
 export async function GET(request) {
-  const url = request.url; // 'https://my-app--or1170q9ix.expo.app/'
-  const origin = request.headers.get('Origin'); // 'https://my-app--staging.expo.app/'
-  const host = request.headers.get('X-Forwarded-Host'); // 'my-app--staging.expo.app'
+  request.url; // 'https://my-app--or1170q9ix.expo.app/'
+  request.headers.get('Origin'); // 'https://my-app--staging.expo.app/'
+  request.headers.get('X-Forwarded-Host'); // 'my-app--staging.expo.app'
+  origin; // 'https://my-app--staging.expo.app/'
 }
 ```
 
