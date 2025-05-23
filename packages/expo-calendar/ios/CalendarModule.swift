@@ -156,6 +156,45 @@ public class CalendarModule: Module {
       return serialize(attendees: attendees)
     }
 
+    Permission("readReminders") {
+      Checker {
+        do {
+          try self.checkRemindersPermissions()
+          return PermissionStatus(granted: true)
+        } catch {
+          return PermissionStatus(granted: false)
+        }
+      }
+
+      Requester {
+        return try await withCheckedThrowingContinuation { continuation in
+          if #available(iOS 17.0, *) {
+            self.eventStore.requestFullAccessToEvents { [weak self] _, error in
+              guard let self else {
+                return continuation.resume(returning: PermissionStatus(granted: false))
+              }
+              if error != nil {
+                continuation.resume(returning: PermissionStatus(granted: false))
+              } else {
+                continuation.resume(returning: PermissionStatus(granted: true))
+              }
+            }
+          } else {
+            self.eventStore.requestAccess(to: .event) { [weak self] _, error in
+              guard let self else {
+                return continuation.resume(returning: PermissionStatus(granted: false))
+              }
+              if error != nil {
+                continuation.resume(returning: PermissionStatus(granted: false))
+              } else {
+                continuation.resume(returning: PermissionStatus(granted: true))
+              }
+            }
+          }
+        }
+      }
+    }
+
     AsyncFunction("getRemindersAsync") { (startDateStr: String?, endDateStr: String?, calendarIds: [String?], status: String?, promise: Promise) in
       try checkRemindersPermissions()
       var reminderCalendars = [EKCalendar]()
@@ -181,7 +220,8 @@ public class CalendarModule: Module {
           promise.resolve([])
         }
       }
-    }
+    }.requires("readReminders")
+
 
     AsyncFunction("getReminderByIdAsync") { (reminderId: String) -> [String: Any?]  in
       try checkRemindersPermissions()
