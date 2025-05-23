@@ -1,4 +1,4 @@
 import { MeshGradientViewProps } from './MeshGradient.types';
-declare const _default: import("react").ComponentType<MeshGradientViewProps>;
-export default _default;
+declare const MeshGradientView: (props: MeshGradientViewProps) => import("react").JSX.Element;
+export default MeshGradientView;
 //# sourceMappingURL=MeshGradientView.d.ts.map
