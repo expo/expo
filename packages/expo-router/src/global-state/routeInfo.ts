@@ -56,7 +56,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   state = route.state;
 
   const segments: string[] = [];
-  const params: UrlObject['params'] = Object.create(null);
+  let params: UrlObject['params'] = Object.create(null);
 
   while (state) {
     route = state.routes['index' in state && state.index ? state.index : 0];
@@ -71,6 +71,31 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     segments.push(...routeName.split('/'));
     state = route.state;
   }
+
+  params = Object.fromEntries(
+    Object.entries(params).map(([key, value]) => {
+      try {
+        if (typeof value === 'string') {
+          return [key, decodeURIComponent(value)];
+        } else if (Array.isArray(value)) {
+          return [
+            key,
+            value.map((v) => {
+              try {
+                return typeof v === 'string' ? decodeURIComponent(v) : v;
+              } catch {
+                return v;
+              }
+            }),
+          ];
+        } else {
+          return [key, value];
+        }
+      } catch {
+        return [key, value];
+      }
+    })
+  );
 
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)

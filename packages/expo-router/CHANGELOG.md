@@ -13,6 +13,7 @@
 - Fix RSC middleware not requiring output modules from a stable base path resulting in missing modules ([#36819](https://github.com/expo/expo/pull/36819) by [@kitten](https://github.com/kitten))
 - Prioritize static routes over dynamic routes within same group ([#36765](https://github.com/expo/expo/pull/36765) by [@marklawlor](https://github.com/marklawlor))
 - Fix deep linking showing incorrect screen ([#36864](https://github.com/expo/expo/pull/36864) by [@marklawlor](https://github.com/marklawlor))
+- Fix inconsistent global param decoding ([#36973](https://github.com/expo/expo/pull/36973) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
