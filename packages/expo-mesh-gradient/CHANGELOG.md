@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add mesh gradient
+- [Android] Add mesh gradient on Android. ([#37056](https://github.com/expo/expo/pull/37056) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
