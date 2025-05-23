@@ -10,32 +10,27 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-class TypeConverterComponent<Type : Any>(val notNullableType: KType, val nullableType: KType) {
-  val nonNullableConverter = lazy { TypeConverterCollection<Type>(notNullableType, false) }
-  val nullableConverter = lazy { TypeConverterCollection<Type>(nullableType, true) }
+class TypeConverterComponent<Type : Any>(val desireType: KType) {
+  val desireTypeConverter = lazy { TypeConverterCollection<Type>(desireType) }
 
   inline fun <reified P0 : Any> from(crossinline body: (p0: P0) -> Type): TypeConverterComponent<Type> {
-    nonNullableConverter.value.from(body)
-    nullableConverter.value.from(body)
+    desireTypeConverter.value.from(body)
     return this
   }
 
-  fun build(): List<Pair<KType, TypeConverter<*>>> {
-    if (nonNullableConverter.isInitialized() && nullableConverter.isInitialized()) {
-      return listOf(
-        notNullableType to nonNullableConverter.value,
-        nullableType to nullableConverter.value
-      )
+  fun build(): Pair<KType, TypeConverter<*>>? {
+    if (desireTypeConverter.isInitialized()) {
+      val typeConverter = TypeConverterCollection<Type>(desireType)
+      typeConverter.converters = desireTypeConverter.value.converters
+      return desireType to typeConverter
     }
-
-    return emptyList()
+    return null
   }
 }
 
 class TypeConverterCollection<Type : Any>(
-  val type: KType,
-  isOptional: Boolean
-) : NullAwareTypeConverter<Type>(isOptional) {
+  val type: KType
+) : NonNullableTypeConverter<Type>() {
   @PublishedApi
   internal var converters: MutableMap<KType, (Any?) -> Type> = mutableMapOf()
 
@@ -48,7 +43,7 @@ class TypeConverterCollection<Type : Any>(
     return this
   }
 
-  override fun convertNonOptional(value: Any, context: AppContext?, forceConversion: Boolean): Type {
+  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Type {
     val possibleConverters = converters
       .map { (key, converter) -> key to converter }
       .filter { (key, _) ->
@@ -92,6 +87,8 @@ class TypeConverterCollection<Type : Any>(
       inputTypeConverter.convert(value, context, forceConversion)
     )
   }
+
+  override fun isTrivial(): Boolean = false
 
   override fun getCppRequiredTypes(): ExpectedType {
     return ExpectedType.merge(

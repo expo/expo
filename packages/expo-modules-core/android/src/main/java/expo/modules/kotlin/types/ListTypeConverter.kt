@@ -13,7 +13,7 @@ import kotlin.reflect.KType
 class ListTypeConverter(
   converterProvider: TypeConverterProvider,
   private val listType: KType
-) : DynamicAwareTypeConverters<List<*>>(listType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<List<*>>() {
   private val elementConverter = converterProvider.obtainTypeConverter(
     requireNotNull(listType.arguments.first().type) {
       "The list type should contain the type of elements."

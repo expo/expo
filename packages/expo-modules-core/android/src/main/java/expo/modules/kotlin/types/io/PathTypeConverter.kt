@@ -11,7 +11,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 @RequiresApi(Build.VERSION_CODES.O)
-class PathTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Path>(isOptional) {
+class PathTypeConverter : DynamicAwareTypeConverters<Path>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Path {
     val stringPath = value.asString()
     return Paths.get(stringPath)
