@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add mesh gradient
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
