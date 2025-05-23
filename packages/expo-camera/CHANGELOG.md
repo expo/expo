@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Make `createCamera` a suspend function. ([#37038](https://github.com/expo/expo/pull/37038) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 16.1.6 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
