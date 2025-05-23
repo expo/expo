@@ -16,8 +16,8 @@ class PointData(
   val offsets: MutableList<Offset>
   val colors: MutableList<Color>
   val indices: List<Int>
-  private val xLength: Int = (points[0].size * stepsX) - (stepsX - 1)
-  private val yLength: Int = (points.size * stepsY) - (stepsY - 1)
+  private val xLength: Int = points[0].size * stepsX - stepsX - 1
+  private val yLength: Int = points.size * stepsY - stepsY - 1
   private val measure = PathMeasure()
 
   private val indicesBlocks: List<IndicesBlock>
@@ -39,12 +39,10 @@ class PointData(
       buildList {
         for (y in 0..yLength - 2) {
           for (x in 0..xLength - 2) {
-
-            val a = (y * xLength) + x
+            val a = y * xLength + x
             val b = a + 1
-            val c = ((y + 1) * xLength) + x
+            val c = (y + 1) * xLength + x
             val d = c + 1
-
             add(
               IndicesBlock(
                 indices = buildList {
@@ -72,7 +70,6 @@ class PointData(
       for (x in 0..points[y].lastIndex) {
         this[x * stepsX, y * stepsY] = points[y][x].first
         this[x * stepsX, y * stepsY] = points[y][x].second
-
         if (x != points[y].lastIndex) {
           val path = cubicPathX(
             point1 = points[y][x].first,
@@ -84,7 +81,6 @@ class PointData(
             }
           )
           measure.setPath(path, false)
-
           for (i in 1..<stepsX) {
             measure.getPosition(i / stepsX.toFloat() * measure.length).let {
               this[(x * stepsX) + i, (y * stepsY)] = Offset(it.x, it.y)
@@ -116,9 +112,7 @@ class PointData(
           val point3 = measure.getPosition(i / stepsY.toFloat() * measure.length).let {
             Offset(it.x, it.y)
           }
-
           this[x, ((y * stepsY) + i)] = point3
-
           this[x, ((y * stepsY) + i)] = interpolateColor(
             this.getColor(x, y * stepsY),
             this.getColor(x, (y + 1) * stepsY),
@@ -132,22 +126,22 @@ class PointData(
   data class IndicesBlock(val indices: List<Int>, val x: Int, val y: Int)
 
   operator fun get(x: Int, y: Int): Offset {
-    val index = (y * xLength) + x
+    val index = y * xLength + x
     return offsets[index]
   }
 
   private fun getColor(x: Int, y: Int): Color {
-    val index = (y * xLength) + x
+    val index = y * xLength + x
     return colors[index]
   }
 
   private operator fun set(x: Int, y: Int, offset: Offset) {
-    val index = (y * xLength) + x
+    val index = y * xLength + x
     offsets[index] = Offset(offset.x, offset.y)
   }
 
   private operator fun set(x: Int, y: Int, color: Color) {
-    val index = (y * xLength) + x
+    val index = y * xLength + x
     colors[index] = color
   }
 
@@ -177,7 +171,6 @@ private fun cubicPathX(point1: Offset, point2: Offset, position: Int): Path {
         point2.x,
         point2.y
       )
-
       2 -> cubicTo(
         point1.x + delta,
         point1.y,
@@ -186,7 +179,6 @@ private fun cubicPathX(point1: Offset, point2: Offset, position: Int): Path {
         point2.x,
         point2.y
       )
-
       else -> cubicTo(
         point1.x + delta,
         point1.y,
@@ -196,7 +188,6 @@ private fun cubicPathX(point1: Offset, point2: Offset, position: Int): Path {
         point2.y
       )
     }
-
     lineTo(point2.x, point2.y)
   }
   return path
@@ -215,7 +206,6 @@ private fun cubicPathY(point1: Offset, point2: Offset, position: Int): Path {
         point2.x,
         point2.y
       )
-
       2 -> cubicTo(
         point1.x,
         point1.y + delta,
@@ -224,7 +214,6 @@ private fun cubicPathY(point1: Offset, point2: Offset, position: Int): Path {
         point2.x,
         point2.y
       )
-
       else -> cubicTo(
         point1.x,
         point1.y + delta,
@@ -234,7 +223,6 @@ private fun cubicPathY(point1: Offset, point2: Offset, position: Int): Path {
         point2.y
       )
     }
-
     lineTo(point2.x, point2.y)
   }
   return path
