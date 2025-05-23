@@ -1,6 +1,9 @@
 {
-  "platforms": ["apple"],
+  "platforms": ["apple", "android"],
   "apple": {
     "modules": ["MeshGradientModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.meshgradient.MeshGradientModule"]
   }
 }
