@@ -13,7 +13,7 @@ import kotlin.reflect.KType
 class MapTypeConverter(
   converterProvider: TypeConverterProvider,
   private val mapType: KType
-) : DynamicAwareTypeConverters<Map<*, *>>(mapType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<Map<*, *>>() {
   init {
     require(mapType.arguments.first().type?.classifier == String::class) {
       "The map key type should be String, but received ${mapType.arguments.first()}."

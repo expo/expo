@@ -27,6 +27,7 @@ enum CppType {
   VIEW_TAG = 1 << 15,
   SHARED_OBJECT_ID = 1 << 16,
   JS_FUNCTION = 1 << 17,
-  ANY = 1 << 18
+  ANY = 1 << 18,
+  NULLABLE = 1 << 19,
 };
 } // namespace expo

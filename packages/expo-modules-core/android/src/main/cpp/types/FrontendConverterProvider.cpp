@@ -54,6 +54,10 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
     return result->second;
   }
 
+  if (combinedType == CppType::NULLABLE) {
+    return std::make_shared<NullableFrontendConverter>(expectedType->getFirstType());
+  }
+
   if (combinedType == CppType::PRIMITIVE_ARRAY) {
     return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType->getFirstType());
   }

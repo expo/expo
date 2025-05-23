@@ -8,7 +8,7 @@ import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import java.net.URI
 
-class UriTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Uri>(isOptional) {
+class UriTypeConverter : DynamicAwareTypeConverters<Uri>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?): Uri {
     val stringUri = value.asString()
     return Uri.parse(stringUri)
@@ -24,7 +24,7 @@ class UriTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Uri>(is
   override fun isTrivial() = false
 }
 
-class JavaURITypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<URI>(isOptional) {
+class JavaURITypeConverter : DynamicAwareTypeConverters<URI>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?): URI {
     val stringUri = value.asString()
     return URI.create(stringUri)
