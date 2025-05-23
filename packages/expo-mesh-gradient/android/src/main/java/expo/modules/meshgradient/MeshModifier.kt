@@ -16,8 +16,8 @@ class PointData(
   val offsets: MutableList<Offset>
   val colors: MutableList<Color>
   val indices: List<Int>
-  private val xLength: Int = points[0].size * stepsX - stepsX - 1
-  private val yLength: Int = points.size * stepsY - stepsY - 1
+  private val xLength: Int = (points[0].size * stepsX) - (stepsX - 1)
+  private val yLength: Int = (points.size * stepsY) - (stepsY - 1)
   private val measure = PathMeasure()
 
   private val indicesBlocks: List<IndicesBlock>
@@ -39,9 +39,9 @@ class PointData(
       buildList {
         for (y in 0..yLength - 2) {
           for (x in 0..xLength - 2) {
-            val a = y * xLength + x
+            val a = (y * xLength) + x
             val b = a + 1
-            val c = (y + 1) * xLength + x
+            val c = ((y + 1) * xLength) + x
             val d = c + 1
             add(
               IndicesBlock(
@@ -126,22 +126,22 @@ class PointData(
   data class IndicesBlock(val indices: List<Int>, val x: Int, val y: Int)
 
   operator fun get(x: Int, y: Int): Offset {
-    val index = y * xLength + x
+    val index = (y * xLength) + x
     return offsets[index]
   }
 
   private fun getColor(x: Int, y: Int): Color {
-    val index = y * xLength + x
+    val index = (y * xLength) + x
     return colors[index]
   }
 
   private operator fun set(x: Int, y: Int, offset: Offset) {
-    val index = y * xLength + x
+    val index = (y * xLength) + x
     offsets[index] = Offset(offset.x, offset.y)
   }
 
   private operator fun set(x: Int, y: Int, color: Color) {
-    val index = y * xLength + x
+    val index = (y * xLength) + x
     colors[index] = color
   }
 
