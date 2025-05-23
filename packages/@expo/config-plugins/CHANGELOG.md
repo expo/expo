@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- improved error message for `ERR_PACKAGE_PATH_NOT_EXPORTED` resolution errors ([#36676](https://github.com/expo/expo/pull/36676) by [@vonovak](https://github.com/vonovak))
 - Add missing `package.json:types` and `package.json:exports` fields ([#36774](https://github.com/expo/expo/pull/36774) by [@kitten](https://github.com/kitten))
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
