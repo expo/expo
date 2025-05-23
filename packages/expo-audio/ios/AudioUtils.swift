@@ -117,7 +117,7 @@ struct AudioUtils {
     if let headers = source.headers {
       options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
     }
-    
+
     let asset = AVURLAsset(url: finalUrl, options: options)
     return AVPlayerItem(asset: asset)
   }
