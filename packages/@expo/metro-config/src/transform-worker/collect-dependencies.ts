@@ -720,6 +720,11 @@ function getNearestLocFromPath(path: NodePath<any>): t.SourceLocation | null {
   while (current && !current.node.loc && !current.node.METRO_INLINE_REQUIRES_INIT_LOC) {
     current = current.parentPath;
   }
+  // Avoid using the location of the `Program` node,
+  // to avoid conflating locations of single line code
+  if (current && t.isProgram(current.node)) {
+    current = null;
+  }
   return current?.node.METRO_INLINE_REQUIRES_INIT_LOC ?? current?.node.loc;
 }
 

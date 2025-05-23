@@ -231,9 +231,15 @@ export function useLocalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {
-  const params = React.useContext(LocalRouteParamsContext) ?? {};
+  const params = React.use(LocalRouteParamsContext) ?? {};
   return Object.fromEntries(
     Object.entries(params).map(([key, value]) => {
+      // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
+      // navigation.setParams as it shallow merges. Hence, we hide them here
+      if (value === undefined) {
+        return [key, undefined];
+      }
+
       if (Array.isArray(value)) {
         return [
           key,

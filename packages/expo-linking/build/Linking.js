@@ -109,6 +109,7 @@ export async function canOpenURL(url) {
 // @needsAudit
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useLinkingURL` hook instead.
  * @return Returns the initial URL or `null`.
  */
 export function useURL() {

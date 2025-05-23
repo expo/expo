@@ -123,6 +123,7 @@ it('runs `npx expo export:embed`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
@@ -193,6 +194,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
@@ -254,6 +256,7 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
@@ -318,6 +321,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
+    'drawable-mdpi/__packages_exporouter_assets_arrow_down.png',
     'drawable-mdpi/__packages_exporouter_assets_error.png',
     'drawable-mdpi/__packages_exporouter_assets_file.png',
     'drawable-mdpi/__packages_exporouter_assets_forward.png',

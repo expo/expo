@@ -33,6 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.routingQueue = void 0;
 exports.navigate = navigate;
 exports.reload = reload;
 exports.prefetch = prefetch;
@@ -60,6 +61,39 @@ function assertIsReady() {
         throw new Error('Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.');
     }
 }
+exports.routingQueue = {
+    queue: [],
+    subscribers: new Set(),
+    subscribe(callback) {
+        exports.routingQueue.subscribers.add(callback);
+        return () => {
+            exports.routingQueue.subscribers.delete(callback);
+        };
+    },
+    snapshot() {
+        return exports.routingQueue.queue;
+    },
+    add(action) {
+        // Reset the identity of the queue.
+        if (exports.routingQueue.queue.length === 0) {
+            exports.routingQueue.queue = [];
+        }
+        exports.routingQueue.queue.push(action);
+        for (const callback of exports.routingQueue.subscribers) {
+            callback();
+        }
+    },
+    run() {
+        const queue = exports.routingQueue.queue;
+        if (queue.length === 0 || !router_store_1.store.navigationRef) {
+            return;
+        }
+        exports.routingQueue.queue = [];
+        for (const action of queue) {
+            router_store_1.store.navigationRef.dispatch(action);
+        }
+    },
+};
 function navigate(url, options) {
     return linkTo((0, href_1.resolveHref)(url), { ...options, event: 'NAVIGATE' });
 }
@@ -77,7 +111,7 @@ function dismiss(count = 1) {
     if ((0, emitDomEvent_1.emitDomDismiss)(count)) {
         return;
     }
-    router_store_1.store.navigationRef?.dispatch({ type: 'POP', payload: { count } });
+    exports.routingQueue.add({ type: 'POP', payload: { count } });
 }
 function dismissTo(href, options) {
     return linkTo((0, href_1.resolveHref)(href), { ...options, event: 'POP_TO' });
@@ -89,14 +123,14 @@ function dismissAll() {
     if ((0, emitDomEvent_1.emitDomDismissAll)()) {
         return;
     }
-    router_store_1.store.navigationRef?.dispatch({ type: 'POP_TO_TOP' });
+    exports.routingQueue.add({ type: 'POP_TO_TOP' });
 }
 function goBack() {
     if ((0, emitDomEvent_1.emitDomGoBack)()) {
         return;
     }
     assertIsReady();
-    router_store_1.store.navigationRef?.current?.goBack();
+    exports.routingQueue.add({ type: 'GO_BACK' });
 }
 function canGoBack() {
     if (dom_1.IS_DOM) {
@@ -172,7 +206,7 @@ function linkTo(originalHref, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    return navigationRef.dispatch(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular));
+    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular));
 }
 function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular) {
     /**
@@ -236,8 +270,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
     else if (navigationState.type === 'expo-tab') {
         type = 'JUMP_TO';
     }
-    else if (type === 'REPLACE' &&
-        (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
+    else if (type === 'REPLACE' && navigationState.type === 'drawer') {
         type = 'JUMP_TO';
     }
     if (withAnchor !== undefined) {

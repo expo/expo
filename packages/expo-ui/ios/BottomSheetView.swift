@@ -44,15 +44,33 @@ struct BottomSheetView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
+      // When children contain a UIView (UIViewRepresentable),
+      // SwiftUI will try to expand the UIView size to match the SwiftUI layout.
+      // This breaks the `ReadHeightModifier()` size measurement.
+      // In this case, we must measure the current view directly.
+      let hasHostingChildren = (props.children ?? []).first { ExpoSwiftUI.isHostingView($0) } != nil
+
       Rectangle().hidden()
-        .modifier(ReadHeightModifier())
-        .onPreferenceChange(HeightPreferenceKey.self) { height in
-          if let height {
-            self.height = height
-          }
+        .if(hasHostingChildren) {
+          $0
+            .modifier(ReadHeightModifier())
+            .onPreferenceChange(HeightPreferenceKey.self) { height in
+              if let height {
+                self.height = height
+              }
+            }
         }
         .sheet(isPresented: $isOpened) {
           Children()
+            .if(!hasHostingChildren) {
+              $0
+                .modifier(ReadHeightModifier())
+                .onPreferenceChange(HeightPreferenceKey.self) { height in
+                  if let height {
+                    self.height = height
+                  }
+                }
+            }
             .presentationDetents([.height(self.height)])
         }
         .onChange(of: isOpened, perform: { newIsOpened in

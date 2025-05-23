@@ -4,6 +4,9 @@ description: Learn the different ways to link to and navigate to pages in Expo R
 sidebar_title: Navigation
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -34,6 +37,13 @@ With Expo Router, you refer to pages by their URL, or their position relative to
     ['app/profile/index.tsx', 'router.navigate("/profile")'],
     ['app/profile/friends.tsx', 'router.navigate("/profile/friends")'],
   ]}
+/>
+
+<BoxLink
+  title="Router imperative navigation API reference"
+  description="Learn how to use all the functions available for imperative navigation."
+  href="/versions/latest/sdk/router/#router"
+  Icon={BookOpen02Icon}
 />
 
 ## Links and buttons
@@ -77,6 +87,13 @@ export default function Page() {
   );
 }
 ```
+
+<BoxLink
+  title="Link API reference"
+  description="Learn the options available when using Links for navigation."
+  href="/versions/latest/sdk/router/#link"
+  Icon={BookOpen02Icon}
+/>
 
 ## Relative routes
 
@@ -128,10 +145,18 @@ export default function Page() {
         href={{
           pathname: '/user/[id]',
           params: { id: 'bacon' }
-        }}>
+        }}
+      >
         View user (id in params in href)
       </Link>
-      <Pressable onPress={() => router.navigate('/user', { id: 'bacon' })}>
+      <Pressable
+        onPress={() =>
+          router.navigate({
+            pathname: '/user',
+            params: { id: 'bacon' }
+          })
+        }
+      >
         <Text>View user (imperative)</Text>
       </Pressable>
     </View>
@@ -195,6 +220,13 @@ Query parameters can be updated without navigating to a new page. This can be do
 </Pressable>
 ```
 
+<BoxLink
+  title="Using URL parameters"
+  description="Learn more about how to set and use URL parameters in Expo Router."
+  href="/router/reference/url-parameters/"
+  Icon={BookOpen02Icon}
+/>
+
 ## Redirects
 
 You can immediately redirect to another route from a page or layout with the `Redirect` component. This functions like the `replace` imperative navigation function. A redirect will navigate to the new route without rendering the current page.
@@ -206,6 +238,57 @@ export default function Page() {
   return <Redirect href="/about" />;
 }
 ```
+
+## Prefetching
+
+The `prefetch` prop on a `<Link />` component enables prefetching of the target screen when the component is rendered. This allows for faster navigation by preparing the screen in advance.
+
+```tsx
+import { Redirect } from 'expo-router';
+
+export default function Page() {
+  return <Link href="/about" prefetch />;
+}
+```
+
+When `prefetch` is set, Expo Router will attempt to render the target screen off-screen. The exact behavior depends on the type of navigator used:
+
+- **Expo Router Navigators**: Render the target screen off-screen to enable preloading.
+- **Custom Navigators**: May implement prefetching differently or not support it at all.
+
+When a screen is preloaded in a stack navigator, it will have a few limitations:
+
+- It cannot use the imperative `router` API.
+- It cannot update options with `useNavigation().setOptions()`
+- It cannot listen to events from the navigator (for example focus, tabPress, and so on).
+
+The navigation object will be updated once you navigate to the screen. So if you have an event listener in a useEffect hook, and have a dependency on navigation, it will add any listeners when the screen is navigated to:
+
+```tsx
+const navigation = useNavigation();
+
+useEffect(() => {
+  const unsubscribe = navigation.addListener('tabPress', () => {
+    // do something
+  });
+
+  return () => {
+    unsubscribe();
+  };
+}, [navigation]);
+```
+
+Similarly, for dispatching actions or updating options, you can check if the screen is focused before doing so:
+
+```tsx
+const navigation = useNavigation();
+
+if (navigation.isFocused()) {
+  navigation.setOptions({ title: 'Updated title' });
+}
+```
+
+For more information, refer to the [React Navigation preload docs](https://reactnavigation.org/docs/navigation-object/#preload)
 
 ## Deep links
 

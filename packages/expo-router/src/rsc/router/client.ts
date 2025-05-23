@@ -14,7 +14,7 @@ import { Slot as ReactSlot } from '@radix-ui/react-slot';
 import {
   startTransition,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useRef,
   useTransition,
@@ -288,7 +288,7 @@ export function useRouter_UNSTABLE(): ClassicExpoRouterType &
     forward: () => void;
     prefetch: (href: Href) => void;
   } {
-  const router = useContext(RouterContext);
+  const router = use(RouterContext);
   if (!router) {
     throw new Error('Missing Router');
   }
@@ -530,7 +530,7 @@ function ExpoRouterLink(
     return resolveHref(href);
   }, [href]);
 
-  const router = useContext(RouterContext);
+  const router = use(RouterContext);
   const changeRoute = router
     ? router.changeRoute
     : () => {

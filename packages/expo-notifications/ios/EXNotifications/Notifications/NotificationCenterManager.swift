@@ -41,7 +41,6 @@ public class NotificationCenterManager: NSObject,
   @objc
   public static let shared = NotificationCenterManager()
 
-  var lastResponse: UNNotificationResponse?
   var delegates: [NotificationDelegate] = []
   var pendingResponses: [UNNotificationResponse] = []
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
@@ -52,7 +51,7 @@ public class NotificationCenterManager: NSObject,
       NSLog(
         "[expo-notifications] NotificationCenterManager encountered already present delegate of " +
         "UNUserNotificationCenter. NotificationCenterManager will not overwrite the value not to break other " +
-        "features of your app.  In return, expo-notifications may not work properly.  To fix this problem either " +
+        "features of your app. In return, expo-notifications may not work properly. To fix this problem either " +
         "remove setting of the second delegate, or set the delegate to an instance of NotificationCenterManager " +
         "manually afterwards."
       )

@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "52.0.0",
-  "betaVersion": "53.0.0",
+  "version": "53.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -30,8 +29,8 @@
   "dependencies": {
     "@expo/styleguide": "^9.1.2",
     "@expo/styleguide-base": "^2.0.3",
-    "@expo/styleguide-icons": "^2.2.0",
-    "@expo/styleguide-search-ui": "^2.3.4",
+    "@expo/styleguide-icons": "^2.2.2",
+    "@expo/styleguide-search-ui": "^2.3.6",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/mdx": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
@@ -100,7 +99,7 @@
     "eslint-plugin-mdx": "^3.4.1",
     "eslint-plugin-tailwindcss": "^3.18.0",
     "eslint-plugin-testing-library": "^7.1.1",
-    "eslint-plugin-unicorn": "^56.0.1",
+    "eslint-plugin-unicorn": "^59.0.0",
     "fs-extra": "^11.3.0",
     "http-server": "^14.1.1",
     "jest": "^29.7.0",

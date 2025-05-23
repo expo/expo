@@ -75,7 +75,7 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+          return `global.$$require_external = typeof require !== "undefined" ? require : () => null;`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
@@ -690,6 +690,7 @@ export function withExtendedResolver(
     // If at this point, we haven't resolved a module yet, if it's a module specifier for a known dependency
     // of either `expo` or `expo-router`, attempt to resolve it from these origin modules instead
     createFallbackModuleResolver({
+      projectRoot: config.projectRoot,
       originModuleNames: ['expo', 'expo-router'],
       getStrictResolver,
     }),

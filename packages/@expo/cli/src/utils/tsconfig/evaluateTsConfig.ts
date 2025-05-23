@@ -25,8 +25,15 @@ export function evaluateTsConfig(ts: typeof import('typescript'), tsConfigPath: 
     );
 
     if (jsonFileContents.errors) {
-      // filter out "no inputs were found in config file" error
-      jsonFileContents.errors = jsonFileContents.errors.filter(({ code }) => code !== 18003);
+      jsonFileContents.errors = jsonFileContents.errors
+        .filter(({ code }) => {
+          // TS18003: filter out "no inputs were found in config file" error */
+          // TS6046: filter out "Argument for '--module' option must be" error
+          //         this error can be ignored since we're only typically interested in `paths` and `baseUrl`
+          return code !== 18003 && code !== 6046;
+        })
+        // filter out non-error diagnostics
+        .filter(({ category }) => category !== 1 /*DiagnosticCategory.Error = 1*/);
     }
 
     if (jsonFileContents.errors?.length) {

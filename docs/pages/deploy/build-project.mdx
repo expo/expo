@@ -47,7 +47,7 @@ To create a production build, run the following command for a platform:
   </Tab>
 </Tabs>
 
-You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the Expo dashboard. It comes in handy when you want to specify the purpose of the build for your team.
+You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the EAS dashboard. It comes in handy when you want to specify the purpose of the build for your team.
 
 Alternatively, you can use `--platform all` option to build for Android and iOS at the same time:
 
@@ -92,6 +92,38 @@ By default, the `eas build` command will wait for your build to complete, but yo
 <Terminal cmd={['$ eas build:list']} />
 
 If you are a member of an organization and your build is on its behalf, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
+
+## Create builds automatically
+
+You can automatically create builds on commits to specific branches with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/create-builds.yml** at the root of your project, then add the following workflow configuration:
+
+```yaml .eas/workflows/create-builds.yml
+name: Create builds
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android app
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS app
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+The workflow above will create Android and iOS builds on every commit to your project's `main` branch. You can also run this workflow manually with the following EAS CLI command:
+
+<Terminal cmd={['$ eas workflow:run create-builds.yml']} />
+
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
 
 ## Production builds locally
 

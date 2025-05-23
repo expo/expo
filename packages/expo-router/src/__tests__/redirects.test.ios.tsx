@@ -62,7 +62,7 @@ it('deep link to a redirect', () => {
           routes: [
             {
               name: 'bar',
-              path: 'bar',
+              path: '/bar',
             },
           ],
           stale: true,
@@ -105,7 +105,7 @@ it('deep link to a dynamic redirect', () => {
               params: {
                 slug: 'bar',
               },
-              path: 'deeply/nested/route/bar',
+              path: '/deeply/nested/route/bar',
             },
           ],
           stale: true,
@@ -142,7 +142,7 @@ it('keeps extra params as query params', () => {
           routes: [
             {
               name: 'bar',
-              path: 'bar',
+              path: '/bar',
             },
           ],
           stale: true,
@@ -185,7 +185,7 @@ it('can redirect from single to catch all', () => {
               params: {
                 slug: ['bar'],
               },
-              path: 'bar/bar',
+              path: '/bar/bar',
             },
           ],
           stale: true,

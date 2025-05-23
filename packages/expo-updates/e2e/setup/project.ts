@@ -368,13 +368,13 @@ async function preparePackageJson(
       '@types/react': '~19.0.10',
       ...extraDevDependencies,
       ...packageJson.devDependencies,
-      'ts-node': '10.9.1',
-      typescript: '5.2.2',
+      'ts-node': '10.9.2',
+      typescript: '5.8.3',
     },
     resolutions: {
       ...expoResolutions,
       ...packageJson.resolutions,
-      typescript: '5.2.2',
+      typescript: '5.8.3',
       '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
     },
   };
@@ -501,10 +501,9 @@ function transformAppJsonForE2E(
     expo: {
       ...appJson.expo,
       name: projectName,
-      owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
@@ -522,7 +521,7 @@ function transformAppJsonForE2E(
   };
 }
 
-export function transformAppJsonForE2EWithCustomInit(
+export function transformAppJsonForE2EWithOldArch(
   appJson: any,
   projectName: string,
   runtimeVersion: string,
@@ -533,7 +532,7 @@ export function transformAppJsonForE2EWithCustomInit(
     ...transformedForE2E,
     expo: {
       ...transformedForE2E.expo,
-      newArchEnabled: true,
+      newArchEnabled: false,
     },
   };
 }
@@ -632,10 +631,9 @@ export function transformAppJsonForUpdatesDisabledE2E(
     expo: {
       ...appJson.expo,
       name: projectName,
-      owner: 'expo-ci',
       runtimeVersion,
       plugins,
-      newArchEnabled: false,
+      newArchEnabled: true,
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {

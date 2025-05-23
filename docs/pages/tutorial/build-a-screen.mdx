@@ -136,11 +136,11 @@ Let's divide the code into multiple files as we add more components to this scre
 
 {/* prettier-ignore */}
 ```tsx components/ImageViewer.tsx|collapseHeight=280
-import { StyleSheet } from 'react-native';
-import { Image, type ImageSource } from 'expo-image';
+import { ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 
 type Props = {
-  imgSource: ImageSource;
+  imgSource: ImageSourcePropType;
 };
 
 export default function ImageViewer({ imgSource }: Props) {

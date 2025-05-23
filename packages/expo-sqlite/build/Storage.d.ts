@@ -1,8 +1,4 @@
 /**
- * @hidden
- */
-export declare function checkValidInput(...input: unknown[]): void;
-/**
  * Update function for the [`setItemAsync()`](#setitemasynckey-value) or [`setItemSync()`](#setitemsynckey-value) method. It computes the new value based on the previous value. The function returns the new value to set for the key.
  * @param prevValue The previous value associated with the key, or `null` if the key was not set.
  * @returns The new value to set for the key.
@@ -14,6 +10,7 @@ export type SQLiteStorageSetItemUpdateFunction = (prevValue: string | null) => s
 export declare class SQLiteStorage {
     private readonly databaseName;
     private db;
+    private readonly awaitLock;
     constructor(databaseName: string);
     /**
      * Retrieves the value associated with the given key asynchronously.
@@ -111,12 +108,15 @@ export declare class SQLiteStorage {
      * Alias for [`closeAsync()`](#closeasync-1) method.
      */
     close(): Promise<void>;
+    private getDbAsync;
     private getDbSync;
+    private maybeMigrateDbAsync;
     private maybeMigrateDbSync;
     /**
      * Recursively merge two JSON objects.
      */
     private static mergeDeep;
+    private checkValidInput;
 }
 /**
  * This default instance of the [`SQLiteStorage`](#sqlitestorage-1) class is used as a drop-in replacement for the `AsyncStorage` module from [`@react-native-async-storage/async-storage`](https://github.com/react-native-async-storage/async-storage).

@@ -42,6 +42,8 @@ exports.Slot = Slot;
 exports.DefaultNavigator = DefaultNavigator;
 const native_1 = require("@react-navigation/native");
 const React = __importStar(require("react"));
+const react_1 = require("react");
+const react_native_is_edge_to_edge_1 = require("react-native-is-edge-to-edge");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
@@ -91,7 +93,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
  * @hidden
  */
 function useNavigatorContext() {
-    const context = React.useContext(exports.NavigatorContext);
+    const context = React.use(exports.NavigatorContext);
     if (!context) {
         throw new Error('useNavigatorContext must be used within a <Navigator />');
     }
@@ -123,7 +125,7 @@ function SlotNavigator(props) {
  */
 function Slot(props) {
     const contextKey = (0, Route_1.useContextKey)();
-    const context = React.useContext(exports.NavigatorContext);
+    const context = React.use(exports.NavigatorContext);
     if (context?.contextKey !== contextKey) {
         // The _layout has changed since the last navigator
         return <SlotNavigator {...props}/>;
@@ -142,13 +144,14 @@ function NavigatorSlot() {
     const { state, descriptors } = context;
     return descriptors[state.routes[state.index].key]?.render() ?? null;
 }
+const SlotNavigatorWrapper = process.env.EXPO_OS === 'android' && (0, react_native_is_edge_to_edge_1.isEdgeToEdge)() ? react_1.Fragment : react_native_safe_area_context_1.SafeAreaView;
 /**
  * The default navigator for the app when no root _layout is provided.
  */
 function DefaultNavigator() {
-    return (<react_native_safe_area_context_1.SafeAreaView style={{ flex: 1 }}>
+    return (<SlotNavigatorWrapper style={{ flex: 1 }}>
       <SlotNavigator />
-    </react_native_safe_area_context_1.SafeAreaView>);
+    </SlotNavigatorWrapper>);
 }
 Navigator.Slot = NavigatorSlot;
 Navigator.useContext = useNavigatorContext;

@@ -17,6 +17,11 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
   private let propType: AnyDynamicType
 
   /**
+   Default prop value
+   */
+  private let defaultValue: PropType?
+
+  /**
    Closure to call to set the actual property on the given view.
    */
   private let setter: SetterType
@@ -24,6 +29,14 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
   internal init(name: String, propType: AnyDynamicType, setter: @escaping SetterType) {
     self.name = name
     self.propType = propType
+    self.defaultValue = nil
+    self.setter = setter
+  }
+
+  internal init(name: String, propType: AnyDynamicType, defaultValue: PropType, setter: @escaping SetterType) {
+    self.name = name
+    self.propType = propType
+    self.defaultValue = defaultValue
     self.setter = setter
   }
 
@@ -35,6 +48,9 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
     // Given view must be castable to the generic `ViewType` type.
     guard let view = view as? ViewType else {
       throw IncompatibleViewException((propName: name, viewType: ViewType.self))
+    }
+    if Optional.isNil(value), let defaultValue {
+      return setter(view, defaultValue)
     }
     guard let value = try propType.cast(value, appContext: appContext) as? PropType else {
       throw Conversions.CastingException<PropType>(value)

@@ -4,10 +4,6 @@ import type { ImageNativeModule, ImageRef, ImageSource } from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
 class ImageModule extends NativeModule implements ImageNativeModule {
-  // TODO: Remove once no longer needed for compatibility with current modules core.
-  // @ts-ignore: Overrides the built-in `Function.name` property
-  static name = 'ExpoImage';
-
   Image: typeof ImageRef = ImageRefWeb;
 
   async prefetch(urls: string | string[], _: unknown, __: unknown): Promise<boolean> {

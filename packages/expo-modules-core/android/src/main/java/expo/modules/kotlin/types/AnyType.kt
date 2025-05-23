@@ -145,6 +145,15 @@ object AnyTypeProvider {
   }
 }
 
+inline fun <reified T> lazyTypeOf() = { typeOf<T>() }.toLazyType<T>()
+
+inline fun <reified T> (() -> KType).toLazyType() =
+  LazyKType(
+    classifier = T::class,
+    isMarkedNullable = null is T,
+    kTypeProvider = this
+  )
+
 inline fun <reified T> (() -> KType).toAnyType(converterProvider: TypeConverterProvider? = null) =
   AnyType(
     LazyKType(

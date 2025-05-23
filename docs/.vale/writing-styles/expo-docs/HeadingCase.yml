@@ -76,6 +76,7 @@ exceptions:
   - '.*Developer Mode.*'
   - '.*Dynamic.*'
   - '.*detach.*'
+  - '.*DNS.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'

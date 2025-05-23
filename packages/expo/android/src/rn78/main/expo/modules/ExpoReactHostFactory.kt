@@ -68,8 +68,12 @@ object ExpoReactHostFactory {
       get() = reactNativeHostWrapper.packages
 
     override fun handleInstanceException(error: Exception) {
+      val handlers = reactNativeHostWrapper.reactNativeHostHandlers
+      if (handlers.isEmpty()) {
+        throw error
+      }
       val useDeveloperSupport = reactNativeHostWrapper.useDeveloperSupport
-      reactNativeHostWrapper.reactNativeHostHandlers.forEach { handler ->
+      handlers.forEach { handler ->
         handler.onReactInstanceException(useDeveloperSupport, error)
       }
     }

@@ -57,13 +57,13 @@ const useLoadedNavigation_1 = require("./link/useLoadedNavigation");
  *     // Callback should be wrapped in `React.useCallback` to avoid running the effect too often.
  *     useCallback(() => {
  *       // Invoked whenever the route is focused.
- *       console.log('Hello, I'm focused!');
+ *       console.log("Hello, I'm focused!");
  *
  *       // Return function is invoked whenever the route gets out of focus.
  *       return () => {
  *         console.log('This route is now unfocused.');
  *       };
- *     }, []);
+ *     }, []),
  *    );
  *
  *  return </>;

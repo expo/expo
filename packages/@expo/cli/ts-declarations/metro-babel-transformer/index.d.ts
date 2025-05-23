@@ -13,6 +13,7 @@ declare module 'metro-babel-transformer/src/index' {
   };
   export type TransformProfile = 'default' | 'hermes-stable' | 'hermes-canary';
   type BabelTransformerOptions = Readonly<{
+    type?: 'script' | 'module' | 'asset';
     customTransformOptions?: CustomTransformOptions;
     dev: boolean;
     enableBabelRCLookup?: boolean;

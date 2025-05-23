@@ -7,7 +7,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { A } from '~/ui/components/Text';
 
-> SDK 49 was the last version to support Classic Updates. To continue using the deprecated `expo publish` command, set [`updates.useClassicUpdates`](/versions/latest/config/app/#useclassicupdates) in your app config.
+> **warning** SDK 49 was the last version to support Classic Updates. To continue using the deprecated `expo publish` command, set [`updates.useClassicUpdates`](/versions/latest/config/app/#useclassicupdates) in your app config.
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
@@ -15,9 +15,9 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
 
 EAS Update requires the following versions or greater:
 
+- Expo SDK >= 45.0.0
 - Expo CLI >= 5.3.0
 - EAS CLI >= 0.50.0
-- Expo SDK >= 45.0.0
 - expo-updates >= 0.13.0
 
 ## Install EAS CLI
@@ -103,7 +103,7 @@ After making a change to your project locally, you're ready to publish an update
   cmdCopy="eas update --channel [channel-name] --message [message]"
 />
 
-Once published, you can see the update in the [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/updates).
+Once published, you can see the update in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/updates).
 
 ## Additional migration steps
 

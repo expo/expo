@@ -90,6 +90,7 @@ export const home = [
       [
         makePage('develop/user-interface/splash-screen-and-app-icon.mdx'),
         makePage('develop/user-interface/safe-areas.mdx'),
+        makePage('develop/user-interface/system-bars.mdx'),
         makePage('develop/user-interface/fonts.mdx'),
         makePage('develop/user-interface/assets.mdx'),
         makePage('develop/user-interface/color-themes.mdx'),
@@ -174,13 +175,17 @@ export const general = [
       }
     ),
     makeGroup(
-      'Custom native code',
+      'Write native code',
       [makePage('workflow/customizing.mdx'), makePage('guides/adopting-prebuild.mdx')],
       { expanded: false }
     ),
     makeGroup(
-      'Local app',
-      [makePage('guides/local-app-development.mdx'), makePage('guides/local-app-production.mdx')],
+      'Compile locally',
+      [
+        makePage('guides/local-app-development.mdx'),
+        makePage('guides/local-app-production.mdx'),
+        makePage('guides/cache-builds-remotely.mdx'),
+      ],
       {
         expanded: false,
       }
@@ -249,9 +254,11 @@ export const general = [
       makePage('router/advanced/tabs.mdx'),
       makePage('router/advanced/drawer.mdx'),
       makePage('router/advanced/authentication.mdx'),
+      makePage('router/advanced/authentication-rewrites.mdx'),
       makePage('router/advanced/nesting-navigators.mdx'),
       makePage('router/advanced/modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
+      makePage('router/advanced/protected.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
@@ -370,7 +377,6 @@ export const general = [
     makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
     makePage('regulatory-compliance/gdpr.mdx'),
     makePage('regulatory-compliance/hipaa.mdx'),
-    makePage('regulatory-compliance/privacy-shield.mdx'),
   ]),
 ];
 
@@ -389,8 +395,10 @@ export const eas = [
   makeSection('EAS Workflows', [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/examples.mdx'),
+    makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
+    makePage('eas/workflows/limitations.mdx'),
     makeGroup('Reference', [makePage('eas/workflows/reference/e2e-tests.mdx')]),
   ]),
   makeSection('EAS Build', [
@@ -487,7 +495,6 @@ export const eas = [
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
-      makePage('eas-update/continuous-deployment.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
     makeGroup('Concepts', [
