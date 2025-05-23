@@ -13,7 +13,7 @@ const routeHref = (route, parents) => '/' +
     routeSegments(route, parents)
         .map((segment) => {
         // add an extra layer of entropy to the url for deep dynamic routes
-        if ((0, matchers_1.matchDeepDynamicRouteName)(segment)) {
+        if ((0, matchers_1.matchDynamicName)(segment)?.deep) {
             return segment + '/' + Date.now();
         }
         // index must be erased but groups can be preserved.
