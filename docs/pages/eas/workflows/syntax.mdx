@@ -68,6 +68,8 @@ With the `branches` list, you can trigger the workflow only when those specified
 
 With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
 
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+
 When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
 ```yaml
@@ -86,6 +88,12 @@ on:
       - v2*
       - !v2-preview** # other tag names and globs
 
+
+    paths:
+      - apps/mobile/**
+      - packages/shared/**
+      - !**/*.md # ignore markdown files
+
 ```
 
 ### `on.pull_request`
@@ -101,6 +109,8 @@ With the `types` list, you can trigger the workflow only on the specified pull r
 - `synchronize`
 - `labeled`
 
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+
 ```yaml
 on:
   # @info #
@@ -115,6 +125,12 @@ on:
     types:
       - opened
       # other event types
+
+    paths:
+      - apps/mobile/**
+      - packages/shared/**
+      - !**/*.md # ignore markdown files
+
 ```
 
 ### `on.pull_request_labeled`
@@ -659,6 +675,11 @@ jobs:
       flow_path: string | string[] # required
       shards: number # optional, defaults to 1
       retries: number # optional, defaults to 1
+      record_screen: boolean # optional, defaults to false. If true, uploads a screen recording of the tests.
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_system_image_package: string # optional. Android emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`.
 ```
 
 #### `slack`
@@ -821,6 +842,20 @@ jobs:
     steps:
       # @info #
       - run: echo "Hello World"
+        # @end #
+```
+
+### `jobs.<job_id>.steps.<step>.shell`
+
+The shell to use for running the command. Defaults to `bash`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - run: echo "Hello World"
+        shell: bash
         # @end #
 ```
 
