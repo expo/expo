@@ -6,7 +6,7 @@ import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
 import expo.modules.contacts.Columns
 import java.util.Locale
-import android.util.Log
+
 const val BIRTHDAY = "birthday"
 private const val ANNIVERSARY = "anniversary"
 private const val OTHER = "other"
@@ -51,33 +51,15 @@ open class DateModel : BaseModel() {
   }
 
   private fun formatDateString(): String? {
-    var year = map.getDouble("year", -1.0).toInt().takeIf { it > 0 }
-    var month = map.getDouble("month", -1.0).toInt().takeIf { it >= 0 }?.plus(1) // URI month is 1-indexed
-    var day = map.getDouble("day", -1.0).toInt().takeIf { it > 0 }
-
-    // If year, month, or day are not in the map (e.g., when loaded from DB rather than JS object),
-    // try to parse them from the raw `data` field.
-    if ((year == null || month == null || day == null) && this.data != null) {
-      val dateStr = this.data!!
-      try {
-        if (dateStr.startsWith("--")) { // Format like --MM-DD
-          if (dateStr.length >= "--MM-DD".length) {
-            month = dateStr.substring(2, 4).toInt().takeIf { it in 1..12 }
-            day = dateStr.substring(5, 7).toInt().takeIf { it in 1..31 }
-            year = null // Explicitly null for no-year format
-          }
-        } else { // Format like YYYY-MM-DD
-          if (dateStr.length >= "YYYY-MM-DD".length) {
-            year = dateStr.substring(0, 4).toInt().takeIf { it > 0 }
-            month = dateStr.substring(5, 7).toInt().takeIf { it in 1..12 }
-            day = dateStr.substring(8, 10).toInt().takeIf { it in 1..31 }
-          }
-        }
-      } catch (e: NumberFormatException) {
-        Log.e("DateModel", "Error parsing date string: $dateStr", e)
-        // Log or handle parsing error if necessary, otherwise proceed with potentially null components
-      }
+    val existingFormattedDate = this.data
+    if (existingFormattedDate != null) {
+      // when the date is loaded from an existing contact (from cursor)
+      return existingFormattedDate
     }
+
+    val year = map.getDouble("year", -1.0).toInt().takeIf { it > 0 }
+    val month = map.getDouble("month", -1.0).toInt().takeIf { it >= 0 }?.plus(1)
+    val day = map.getDouble("day", -1.0).toInt().takeIf { it > 0 }
 
     return when {
       year != null && month != null && day != null ->

@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed isFavorite changes/updates nulling the rawDates/birthday for contacts ([#36863][https://github.com/expo/expo/issues/36863]) by [@NorseGaud](https://github.com/NorseGaud)
+- [Android] fixed `updateContactAsync()` removing contact rawDates / birthday ([#36863][https://github.com/expo/expo/issues/36863]) by [@NorseGaud](https://github.com/NorseGaud)
 
 ### 💡 Others
 
