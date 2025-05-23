@@ -25,6 +25,10 @@ export default function AudioScreen(props: any) {
       <AudioPlayer
         source={{
           uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
+          headers: {
+            'Test-Header': 'Some-header',
+            Auth: 'Bearer some-token',
+          },
         }}
         style={styles.player}
       />
