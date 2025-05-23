@@ -84,6 +84,22 @@ EAS Hosting will respond with an error page in these cases. The error page will 
 | `eas-ip-timezone`   | Timezone of the client. For example, `Europe/London`                                                                                                                                                                                       |
 | `eas-ip-eu`         | Set to `1` when the request likely originated in the jurisdictional area of the European Union                                                                                                                                             |
 
+### Request URL and origin
+
+EAS Hosting routes requests from several hostnames to your deployments. [Aliases](/eas/hosting/deployments-and-aliases) and [Custom domains](/eas/hosting/custom-domain) mean that there may be a difference between the **incoming** URL that clients have used to make a request, and the **target** URL that your API routes receive.
+
+For example, while a client may make a request to an alias URL such as `https://my-app--staging.expo.app/`, the worker deployment that may receive the request will have a URL containing its deployment ID, such as `https://my-app--or1170q9ix.expo.app/`.
+
+This difference is also present in the `Request`'s URL and headers that you receive in your API routes. While the `request.url` will be your worker deployment's URL, the `Origin` and `X-Forwarded-Host` header will be set to the incoming URL that the client used to make the request.
+
+```js
+export async function GET(request) {
+  const url = request.url; // 'https://my-app--or1170q9ix.expo.app/'
+  const origin = request.headers.get('Origin'); // 'https://my-app--staging.expo.app/'
+  const host = request.headers.get('X-Forwarded-Host'); // 'my-app--staging.expo.app'
+}
+```
+
 ### IP headers
 
 The request contains several headers to identify the IP address of the user's device that made the request:
