@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix onMapClick and onMapLongClick nesting. ([#37059](https://github.com/expo/expo/pull/37059) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 0.10.0 — 2025-05-08
