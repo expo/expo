@@ -36,7 +36,7 @@ private fun tryToConvert(typeConverter: TypeConverter<*>, value: Any, context: A
       // For example, if we convert a `List<String | Int>`, we can't cast it to `List<String>`.
       // When we don't enforce conversion, our code will assume that the data from C++ is correct and
       // will fail later when we try to access a list element.
-      typeConverter.convert(value, context, forceConversion = true)    
+      typeConverter.convert(value, context, forceConversion = true)
     }
   } catch (_: Throwable) {
     null

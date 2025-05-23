@@ -63,7 +63,6 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
     return@lazy null
   }
 
-
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
     val sharedObject = sharedObjectTypeConverter.convert(value, context)
 

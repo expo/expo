@@ -77,11 +77,11 @@ class NullableTypeConversionTest {
 
   @Test
   fun should_convert_null_in_deep_nested_structure() {
-    class NestedRecord: Record {
+    class NestedRecord : Record {
       @Field
       var a: Int? = 10
     }
-    class MyRecord: Record {
+    class MyRecord : Record {
       @Field
       val nestedRecord: NestedRecord = NestedRecord()
     }
@@ -97,9 +97,8 @@ class NullableTypeConversionTest {
         Truth.assertThat(first.nestedRecord.a).isNull()
         Truth.assertThat(second.nestedRecord.a).isEqualTo(20)
       },
-      map = { it },
+      map = { it }
     )
-
   }
 
   private inline fun <reified NativeType : Any> convertFromNullTest() = conversionTest<NativeType?>(
