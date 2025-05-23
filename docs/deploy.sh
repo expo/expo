@@ -343,6 +343,9 @@ redirects[router/reference/not-found]=router/error-handling
 redirects[router/navigating-pages]=router/basics/navigation
 redirects[router/create-pages]=router/basics/core-concepts
 
+# After updating config plugin section
+redirects[config-plugins/plugins-and-mods]=config-plugins/plugins
+
 # After merging registerRootComponent info in `expo` API reference
 redirects[versions/v53.0.0/sdk/register-root-component]=versions/latest/sdk/expo/#registerrootcomponentcomponent
 redirects[versions/v53.0.0/sdk/url]=versions/v53.0.0/sdk/expo/#url-api
