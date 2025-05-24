@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add shims for React 19 meta tags on native. ([#36279](https://github.com/expo/expo/pull/36279) by [@EvanBacon](https://github.com/EvanBacon))
+- Add improved error messages for React DOM elements on native. ([#36279](https://github.com/expo/expo/pull/36279) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - [iOS] Call `createRootViewController` from the `ExpoReactNativeFactoryDelegate`. ([#36787](https://github.com/expo/expo/pull/36787) by [@alanjhughes](https://github.com/alanjhughes))
