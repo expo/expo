@@ -149,6 +149,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
 function Content() {
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
+        id: constants_1.INTERNAL_SLOT_NAME,
     });
     return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
 }
