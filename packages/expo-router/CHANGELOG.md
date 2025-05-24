@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
+- Export navigator NavigationProp types ([#36958](https://github.com/expo/expo/pull/36958) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
