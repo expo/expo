@@ -1,24 +1,65 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+import React, { useState } from 'react';
+import { SafeAreaView, TextInput, FlatList, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { WebView } from 'react-native-webview';
 
-import { Terminal } from '~/ui/components/Snippet';
+const App = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
-System requirements:
+  const videos = [
+    { id: '1', title: 'React Native Tutorial', url: 'https://www.youtube.com/embed/0-S5a0eXPoc' },
+    { id: '2', title: 'Expo Crash Course', url: 'https://www.youtube.com/embed/F6jHc3vZs4g' },
+    { id: '3', title: 'Tailwind CSS Basics', url: 'https://www.youtube.com/embed/UBOj6rqRUME' },
+  ];
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+  const filteredVideos = videos.filter(video =>
+    video.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>ICW - Video App</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Search videos..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+      {selectedVideo ? (
+        <View style={styles.videoContainer}>
+          <WebView
+            style={{ flex: 1 }}
+            javaScriptEnabled={true}
+            source={{ uri: selectedVideo.url }}
+          />
+          <TouchableOpacity style={styles.backButton} onPress={() => setSelectedVideo(null)}>
+            <Text style={styles.backButtonText}>Back to List</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredVideos}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.card} onPress={() => setSelectedVideo(item)}>
+              <Text style={styles.title}>{item.title}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+    </SafeAreaView>
+  );
+};
 
-To create a new project, run the following command:
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 10, backgroundColor: '#f0f0f0' },
+  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
+  input: { padding: 8, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 10 },
+  card: { backgroundColor: '#fff', padding: 15, marginVertical: 5, borderRadius: 5 },
+  title: { fontSize: 16, fontWeight: '600' },
+  videoContainer: { flex: 1 },
+  backButton: { padding: 10, backgroundColor: 'blue', alignItems: 'center' },
+  backButtonText: { color: 'white', fontWeight: 'bold' },
+});
 
-<Terminal cmd={['$ npx create-expo-app@latest']} />
-
-> You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
-
-## Next step
-
-You have a project. Now it's time to set up your development environment so that you can start developing.
+export default App;
