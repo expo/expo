@@ -404,15 +404,11 @@ export function applyImageToSplashScreenXML(
     }
   );
 
-  // Add resource
-  xml.document.resources[0].image = xml.document.resources[0].image ?? [];
-  const imageSection = xml.document.resources[0].image;
+  // Clear existing images
+  xml.document.resources[0].image = [];
 
-  const existingImageIndex = imageSection.findIndex((image) => image.$.name === imageName);
-  if (existingImageIndex > -1) {
-    debug(`Removing existing IB image asset at index ${existingImageIndex}`);
-    imageSection.splice(existingImageIndex, 1);
-  }
+  // Add resource
+  const imageSection = xml.document.resources[0].image;
   imageSection.push({
     $: {
       name: imageName,
@@ -434,7 +430,9 @@ export function applyImageToSplashScreenXML(
   });
 
   // Clear existing named colors
-  const namedColorSection = [];
+  xml.document.resources[0].namedColor = [];
+
+  const namedColorSection = xml.document.resources[0].namedColor;
   // Add background named color reference
   const color = parseColor(backgroundColor);
 
@@ -455,8 +453,6 @@ export function applyImageToSplashScreenXML(
       },
     ],
   });
-
-  xml.document.resources[0].namedColor = namedColorSection;
 
   return xml;
 }
