@@ -7,16 +7,17 @@ import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import java.net.URI
+import androidx.core.net.toUri
 
 class UriTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Uri>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Uri {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Uri {
     val stringUri = value.asString()
-    return Uri.parse(stringUri)
+    return stringUri.toUri()
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Uri {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Uri {
     val stringUri = value as String
-    return Uri.parse(stringUri)
+    return stringUri.toUri()
   }
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.STRING)
@@ -25,12 +26,12 @@ class UriTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Uri>(is
 }
 
 class JavaURITypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<URI>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): URI {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): URI {
     val stringUri = value.asString()
     return URI.create(stringUri)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): URI {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): URI {
     val stringUri = value as String
     return URI.create(stringUri)
   }

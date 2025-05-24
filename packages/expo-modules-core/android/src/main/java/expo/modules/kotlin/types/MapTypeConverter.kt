@@ -26,13 +26,13 @@ class MapTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Map<*, *> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Map<*, *> {
     val jsMap = value.asMap()
-    return convertFromReadableMap(jsMap, context)
+    return convertFromReadableMap(jsMap, context, forceConversion)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Map<*, *> {
-    return if (valueConverter.isTrivial()) {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Map<*, *> {
+    return if (valueConverter.isTrivial() && !forceConversion) {
       value as Map<*, *>
     } else {
       (value as Map<*, *>).mapValues { (_, v) ->
@@ -44,13 +44,13 @@ class MapTypeConverter(
             cause
           )
         }) {
-          valueConverter.convert(v, context)
+          valueConverter.convert(v, context, forceConversion)
         }
       }
     }
   }
 
-  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?): Map<*, *> {
+  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): Map<*, *> {
     val result = mutableMapOf<String, Any?>()
 
     jsMap.entryIterator.forEach { (key, value) ->
@@ -58,7 +58,7 @@ class MapTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(mapType, mapType.arguments[1].type!!, type, cause)
         }) {
-          result[key] = valueConverter.convert(this, context)
+          result[key] = valueConverter.convert(this, context, forceConversion)
         }
       }
     }

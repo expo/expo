@@ -26,6 +26,10 @@ class CustomTypeConvertersTest {
           Truth.assertThat(listOfNumber).isEqualTo(listOf(1, 2, 3))
           CustomType()
         }
+        .from { listOfString: List<String> ->
+          Truth.assertThat(listOfString).isEqualTo(listOf("a", "b", "c"))
+          CustomType()
+        }
     }
 
     override fun definition() = ModuleDefinition {
@@ -55,6 +59,10 @@ class CustomTypeConvertersTest {
 
     Truth.assertThat(
       call("convert", "[1, 2, 3]").getBool()
+    ).isTrue()
+
+    Truth.assertThat(
+      call("convert", "['a', 'b', 'c']").getBool()
     ).isTrue()
   }
 }

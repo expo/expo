@@ -37,7 +37,7 @@ class EnumTypeConverter(
 
   override fun isTrivial() = false
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Enum<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value.asString(), enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
@@ -51,7 +51,7 @@ class EnumTypeConverter(
     throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Enum<*> {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value as String, enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {

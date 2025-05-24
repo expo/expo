@@ -132,12 +132,15 @@ class ExpectedType(
   override operator fun equals(other: Any?): Boolean {
     if (other !is ExpectedType) return false
 
-    if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) return false
+    if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) {
+      return false
+    }
+
     for (i in this.innerPossibleTypes.indices) {
       if (this.innerPossibleTypes[i].expectedCppType != other.innerPossibleTypes[i].expectedCppType) {
         return false
       }
-      if (this.innerPossibleTypes[i].getFirstParameterType() != other.innerPossibleTypes[i].getFirstParameterType()) {
+      if (this.innerPossibleTypes[i] != other.innerPossibleTypes[i]) {
         return false
       }
     }

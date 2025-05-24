@@ -19,13 +19,13 @@ class SetTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Set<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Set<*> {
     val jsArray = value.asArray()
-    return convertFromReadableArray(jsArray, context)
+    return convertFromReadableArray(jsArray, context, forceConversion)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Set<*> {
-    return if (elementConverter.isTrivial()) {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Set<*> {
+    return if (elementConverter.isTrivial() && !forceConversion) {
       (value as List<*>).toSet()
     } else {
       (value as List<*>).map {
@@ -37,13 +37,13 @@ class SetTypeConverter(
             cause
           )
         }) {
-          elementConverter.convert(it, context)
+          elementConverter.convert(it, context, forceConversion)
         }
       }.toSet()
     }
   }
 
-  private fun convertFromReadableArray(jsArray: ReadableArray, context: AppContext?): Set<*> {
+  private fun convertFromReadableArray(jsArray: ReadableArray, context: AppContext?, forceConversion: Boolean): Set<*> {
     return List(jsArray.size()) { index ->
       jsArray.getDynamic(index).recycle {
         exceptionDecorator({ cause ->
@@ -54,7 +54,7 @@ class SetTypeConverter(
             cause
           )
         }) {
-          elementConverter.convert(this, context)
+          elementConverter.convert(this, context, forceConversion)
         }
       }
     }.toSet()

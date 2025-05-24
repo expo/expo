@@ -19,7 +19,7 @@ class ArrayTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Array<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Array<*> {
     val jsArray = value.asArray()
     val array = createTypedArray(jsArray.size())
     for (i in 0 until jsArray.size()) {
@@ -29,15 +29,15 @@ class ArrayTypeConverter(
           exceptionDecorator({ cause ->
             CollectionElementCastException(arrayType, arrayType.arguments.first().type!!, type, cause)
           }) {
-            arrayElementConverter.convert(this, context)
+            arrayElementConverter.convert(this, context, forceConversion)
           }
         }
     }
     return array
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Array<*> {
-    return if (arrayElementConverter.isTrivial()) {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Array<*> {
+    return if (arrayElementConverter.isTrivial() && !forceConversion) {
       value as Array<*>
     } else {
       (value as Array<*>).map {
@@ -49,7 +49,7 @@ class ArrayTypeConverter(
             cause
           )
         }) {
-          arrayElementConverter.convert(it, context)
+          arrayElementConverter.convert(it, context, forceConversion)
         }
       }.toTypedArray()
     }

@@ -15,7 +15,7 @@ abstract class TypeConverter<Type : Any> {
   /**
    * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
    */
-  abstract fun convert(value: Any?, context: AppContext? = null): Type?
+  abstract fun convert(value: Any?, context: AppContext? = null, forceConversion: Boolean = false): Type?
 
   /**
    * Returns a list of [ExpectedType] types that can be converted to the desired type.
@@ -39,21 +39,21 @@ abstract class NullAwareTypeConverter<Type : Any>(
    */
   private val isOptional: Boolean
 ) : TypeConverter<Type>() {
-  override fun convert(value: Any?, context: AppContext?): Type? {
+  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       if (isOptional) {
         return null
       }
       throw NullArgumentException()
     }
-    return convertNonOptional(value, context)
+    return convertNonOptional(value, context, forceConversion)
   }
 
   /**
    * Tries to convert from [Any] to the desired type.
    * We know in that place that we're not dealing with `null`.
    */
-  abstract fun convertNonOptional(value: Any, context: AppContext?): Type
+  abstract fun convertNonOptional(value: Any, context: AppContext?, forceConversion: Boolean): Type
 }
 
 /**
@@ -62,15 +62,15 @@ abstract class NullAwareTypeConverter<Type : Any>(
  * stop using the bridge to pass data between JS and Kotlin.
  */
 abstract class DynamicAwareTypeConverters<T : Any>(isOptional: Boolean) : NullAwareTypeConverter<T>(isOptional) {
-  override fun convertNonOptional(value: Any, context: AppContext?): T =
+  override fun convertNonOptional(value: Any, context: AppContext?, forceConversion: Boolean): T =
     if (value is Dynamic) {
-      convertFromDynamic(value, context)
+      convertFromDynamic(value, context, forceConversion)
     } else {
-      convertFromAny(value, context)
+      convertFromAny(value, context, forceConversion)
     }
 
-  abstract fun convertFromDynamic(value: Dynamic, context: AppContext?): T
-  abstract fun convertFromAny(value: Any, context: AppContext?): T
+  abstract fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T
+  abstract fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): T
 }
 
 inline fun <reified T : Any> createTrivialTypeConverter(
@@ -79,11 +79,11 @@ inline fun <reified T : Any> createTrivialTypeConverter(
   crossinline dynamicFallback: (Dynamic) -> T = { throw UnsupportedClass(T::class) }
 ): TypeConverter<T> {
   return object : DynamicAwareTypeConverters<T>(isOptional) {
-    override fun convertFromDynamic(value: Dynamic, context: AppContext?): T {
+    override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T {
       return dynamicFallback(value)
     }
 
-    override fun convertFromAny(value: Any, context: AppContext?): T {
+    override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): T {
       return value as T
     }
 
