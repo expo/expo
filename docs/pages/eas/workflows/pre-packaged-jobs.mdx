@@ -746,6 +746,25 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Using Maestro prefixed environment variables">
+
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    env:
+      MAESTRO_APP_ID: 'com.yourhost.yourapp'
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+```
+
+</Collapsible>
+
 ## Slack
 
 Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).
