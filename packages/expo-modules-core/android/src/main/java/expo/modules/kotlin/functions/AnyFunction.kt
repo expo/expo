@@ -73,7 +73,7 @@ abstract class AnyFunction(
       throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size, requiredArgumentsCount)
     }
 
-    val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
+    val finalArgs = arrayOfNulls<Any?>(desiredArgsTypes.size)
     val argIterator = args.iterator()
     for (index in 0 until args.size()) {
       val desiredType = desiredArgsTypes[index]
@@ -100,10 +100,13 @@ abstract class AnyFunction(
       throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
 
-    val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
-    val argIterator = args.iterator()
+    val finalArgs = if (desiredArgsTypes.size == args.size) {
+      args
+    } else {
+      arrayOfNulls<Any?>(desiredArgsTypes.size)
+    }
     for (index in args.indices) {
-      val element = argIterator.next()
+      val element = args[index]
       val desiredType = desiredArgsTypes[index]
       exceptionDecorator({ cause ->
         ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
