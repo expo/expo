@@ -17,7 +17,7 @@ public class ExpoReactDelegate: NSObject {
     initialProperties: [AnyHashable: Any]?,
     launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> UIView {
-    return self.handlers.lazy
+    return self.handlers
       .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
       .first(where: { _ in true })
       ?? {
