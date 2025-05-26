@@ -152,6 +152,10 @@ class SingleTestContext(
     "$moduleRef.$functionName($args)"
   )
 
+  fun callVoid(functionName: String, args: String = "") = jsiInterop.evaluateVoidScript(
+    "$moduleRef.$functionName($args)"
+  )
+
   fun callClass(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
     if (functionName == null) {
       return jsiInterop.evaluateScript("new $moduleRef.$className()")

@@ -91,6 +91,8 @@ public:
    */
   jni::local_ref<JavaScriptValue::javaobject> evaluateScript(jni::JString script);
 
+  void evaluateVoidScript(jni::JString script);
+
   /**
    * Exposes a `JavaScriptRuntime::global` function to Kotlin
    */
