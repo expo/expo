@@ -73,6 +73,15 @@ using namespace facebook::react;
       }];
 }
 
+- (void) contextMenuInteraction:(UIContextMenuInteraction *) interaction
+willPerformPreviewActionForMenuWithConfiguration:(UIContextMenuConfiguration *) configuration
+                       animator:(id<UIContextMenuInteractionCommitAnimating>) animator {
+  NSLog(@"Preview tapped!");
+  
+  // 👉 Handle your custom logic here
+  // You can send an event to JS or trigger any native behavior
+}
+
 #pragma mark - Context Menu Helpers
 
 - (UIViewController *)createPreviewViewController {
