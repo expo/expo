@@ -91,6 +91,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo Atlas with Cedric van Putten',
+    event: 'React Native Radio #333',
+    description: 'Cedric van Putten',
+    thumbnail: 'rnr-333.jpg',
+    link: 'https://infinite.red/react-native-radio/rnr-333-expo-atlas-with-cedric-van-putten',
+  },
+  {
     title: 'Expo Router, RSC & DOM Components',
     event: 'Rocket Ship #059',
     description: 'Evan Bacon',
@@ -116,21 +123,21 @@ export const PODCASTS = [
     event: 'React Native Radio #316',
     description: 'Cedric van Putten',
     thumbnail: 'rnr-316.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-316-debugging-the-debugger-with-cedric-van-putten-and-alex-hunt',
+    link: 'https://infinite.red/react-native-radio/rnr-316-debugging-the-debugger-with-cedric-van-putten-and-alex-hunt',
   },
   {
     title: 'What to do without App Center',
     event: 'React Native Radio #315',
     description: 'Quinlan Jung',
     thumbnail: 'rnr-315.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-315-what-to-do-without-app-center',
+    link: 'https://infinite.red/react-native-radio/rnr-315-what-to-do-without-app-center',
   },
   {
     title: 'Expo Workflows with Jon Samp',
     event: 'React Native Radio #314',
     description: 'Jon Samp',
     thumbnail: 'rnr-314.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-314-announcing-expo-workflows-with-jon-samp',
+    link: 'https://infinite.red/react-native-radio/rnr-314-announcing-expo-workflows-with-jon-samp',
   },
   {
     title: 'How to Handle App Center Retirement',
@@ -192,14 +199,14 @@ export const PODCASTS = [
     event: 'React Native Radio #277',
     description: 'Doug Lowder, Gabriel Donadel',
     thumbnail: 'rnr-277.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-277-expo-launch-party',
+    link: 'https://infinite.red/react-native-radio/rnr-277-expo-launch-party',
   },
   {
     title: 'Expo Router with Evan Bacon',
     event: 'React Native Radio #256',
     description: 'Evan Bacon',
     thumbnail: 'rnr-256.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-256-expo-router-with-evan-bacon',
+    link: 'https://infinite.red/react-native-radio/rnr-256-expo-router-with-evan-bacon',
   },
   {
     title: 'Expo, Router & Debugging',
@@ -331,6 +338,11 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to publish your AI app to the app store | No code needed',
+    event: 'Expo Tutorials',
+    videoId: 'T1akm3DPNus',
+  },
   {
     title: 'Learn how to build with the new expo-maps library',
     event: 'Expo Tutorials',
