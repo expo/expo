@@ -20,6 +20,7 @@
 
 - Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937) by [@kudo](https://github.com/kudo))
 - [iOS] Use dynamic type for AsyncFunction result conversion ([#36986](https://github.com/expo/expo/pull/36986) by [@jakex7](https://github.com/jakex7))
+- [Android] Improve time to retrieve the Expo module.
 
 ## 2.3.13 — 2025-05-08
 
