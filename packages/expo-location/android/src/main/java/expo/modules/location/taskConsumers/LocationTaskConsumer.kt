@@ -109,7 +109,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
         coordsBundle.putAll(persistableLocationBundle.getPersistableBundle("coords"))
         locationBundle.putAll(persistableLocationBundle)
         locationBundle.putBundle("coords", coordsBundle)
-        locationBundles.add(locationBundle)
+        locationextrBundles.add(locationBundle)
       }
     }
     executeTaskWithLocationBundles(locationBundles) { jobService.jobFinished(params, false) }
@@ -197,6 +197,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       extras.putString("appId", task.appScopeKey)
       extras.putString("taskName", task.name)
       extras.putBoolean("killService", serviceOptions.getBoolean("killServiceOnDestroy", false))
+      extras.putBoolean("ongoing", serviceOptions.getBoolean("ongoing", false))
       serviceIntent.putExtras(extras)
       context.startForegroundService(serviceIntent)
       context.bindService(
