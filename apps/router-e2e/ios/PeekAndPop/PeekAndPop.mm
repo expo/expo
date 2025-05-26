@@ -7,6 +7,7 @@
 
 #import "PeekAndPop.h"
 
+#import <UIKit/UIKit.h>
 #import <react/renderer/components/AppSpec/ComponentDescriptors.h>
 #import <react/renderer/components/AppSpec/EventEmitters.h>
 #import <react/renderer/components/AppSpec/Props.h>
@@ -14,56 +15,87 @@
 
 using namespace facebook::react;
 
+@interface PeekAndPop () <RCTPeekAndPopViewProtocol,
+                          UIContextMenuInteractionDelegate>
+@end
+
 @implementation PeekAndPop {
-  UIButton *_linkButton;
 }
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    [self setupLinkButton];
+- (instancetype)initWithFrame:(CGRect)frame {
+  if (self = [super initWithFrame:frame]) {
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    [button setTitle:@"Click Me" forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [button setBackgroundColor:[UIColor systemBlueColor]];
+    button.frame = CGRectMake(0, 0, 100, 40);
+    button.layer.cornerRadius = 8;
+    [button addTarget:self
+                  action:@selector(linkButtonTapped)
+        forControlEvents:UIControlEventTouchUpInside];
+
+    UIContextMenuInteraction *interaction =
+        [[UIContextMenuInteraction alloc] initWithDelegate:self];
+    [button addInteraction:interaction];
+
+    [self addSubview:button];
   }
   return self;
 }
 
-- (void)setupLinkButton
-{
-  _linkButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [_linkButton setTitle:@"Link" forState:UIControlStateNormal];
-  [_linkButton addTarget:self action:@selector(linkButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-  
-  [self addSubview:_linkButton];
-}
-
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-
-  // Layout the button, for example at the bottom center
-  CGFloat buttonWidth = 100;
-  CGFloat buttonHeight = 44;
-  CGFloat x = (self.bounds.size.width - buttonWidth) / 2;
-  CGFloat y = self.bounds.size.height - buttonHeight - 10;
-  _linkButton.frame = CGRectMake(x, y, buttonWidth, buttonHeight);
-}
-
-- (void)linkButtonTapped
-{
+- (void)linkButtonTapped {
   NSLog(@"Link button tapped");
-  // You can add delegate/event bridge to JS here if needed
+  // Optional: trigger an event to JS
 }
 
-
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
-{
-  const auto &oldViewProps = *std::static_pointer_cast<PeekAndPopProps const>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<PeekAndPopProps const>(props);
+- (void)updateProps:(Props::Shared const &)props
+           oldProps:(Props::Shared const &)oldProps {
+  const auto &oldViewProps =
+      *std::static_pointer_cast<PeekAndPopProps const>(_props);
+  const auto &newViewProps =
+      *std::static_pointer_cast<PeekAndPopProps const>(props);
 
   [super updateProps:props oldProps:oldProps];
 }
 
-+ (ComponentDescriptorProvider)componentDescriptorProvider
-{
+#pragma mark - UIContextMenuInteractionDelegate
+
+- (UIContextMenuConfiguration *)contextMenuInteraction:
+                                    (UIContextMenuInteraction *)interaction
+                        configurationForMenuAtLocation:(CGPoint)location {
+  return [UIContextMenuConfiguration configurationWithIdentifier:nil
+      previewProvider:^UIViewController *_Nullable {
+        // Create the preview view controller
+        UIViewController *previewVC = [UIViewController new];
+        previewVC.view =
+            [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
+        previewVC.view.backgroundColor = [UIColor systemGreenColor];
+
+        UILabel *label = [[UILabel alloc] initWithFrame:previewVC.view.bounds];
+        label.text = @"Preview Content";
+        label.textAlignment = NSTextAlignmentCenter;
+        label.textColor = [UIColor whiteColor];
+        label.autoresizingMask =
+            UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+        [previewVC.view addSubview:label];
+        return previewVC;
+      }
+      actionProvider:^UIMenu *_Nullable(
+          NSArray<UIMenuElement *> *_Nonnull suggestedActions) {
+        // Menu items
+        UIAction *action1 =
+            [UIAction actionWithTitle:@"Action 1"
+                                image:nil
+                           identifier:nil
+                              handler:^(__kindof UIAction *_Nonnull action) {
+                                NSLog(@"Action 1 selected");
+                              }];
+        return [UIMenu menuWithTitle:@"" children:@[ action1 ]];
+      }];
+}
+
++ (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<PeekAndPopComponentDescriptor>();
 }
 
