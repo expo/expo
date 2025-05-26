@@ -26,6 +26,7 @@ export async function notificationAsync(
  * and on iOS, it is directly mapped to [`UIImpactFeedbackStyle`](https://developer.apple.com/documentation/uikit/uiimpactfeedbackgenerator/feedbackstyle).
  * You can use one of `Haptics.ImpactFeedbackStyle.{Light, Medium, Heavy, Rigid, Soft}`.
  * @return A `Promise` which fulfils once native size haptics functionality is triggered.
+ * @see Android's `Vibrator` API is not recommended for implementing haptics feedback. **Instead, you should use [`performAndroidHapticsAsync`](#hapticsperformandroidhapticsasynctype), which is similar to iOS haptic feedback and does not require `VIBRATE` permission.**
  */
 export async function impactAsync(
   style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium
