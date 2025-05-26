@@ -46,13 +46,13 @@ class RecordTypeConverter<T : Record>(
       .toMap()
   }
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): T =
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T =
     exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
       val jsMap = value.asMap()
       return convertFromReadableMap(jsMap, context)
     }
 
-  override fun convertFromAny(value: Any, context: AppContext?): T {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): T {
     if (value is ReadableMap) {
       return convertFromReadableMap(value, context)
     }

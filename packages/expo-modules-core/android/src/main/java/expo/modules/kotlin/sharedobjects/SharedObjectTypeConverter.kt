@@ -17,7 +17,7 @@ class SharedObjectTypeConverter<T : SharedObject>(
   val type: KType
 ) : NullAwareTypeConverter<T>(type.isMarkedNullable) {
   @Suppress("UNCHECKED_CAST")
-  override fun convertNonOptional(value: Any, context: AppContext?): T {
+  override fun convertNonOptional(value: Any, context: AppContext?, forceConversion: Boolean): T {
     val id = SharedObjectId(
       if (value is Dynamic) {
         value.asInt()
@@ -64,7 +64,7 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
     return@lazy null
   }
 
-  override fun convertNonOptional(value: Any, context: AppContext?): T {
+  override fun convertNonOptional(value: Any, context: AppContext?, forceConversion: Boolean): T {
     val sharedObject = sharedObjectTypeConverter.convert(value, context)
     if (sharedObject !is SharedRef<*>) {
       throw InvalidSharedObjectTypeException(type)

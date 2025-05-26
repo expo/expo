@@ -8,12 +8,12 @@ import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import java.net.URL
 
 class URLTypConverter(isOptional: Boolean) : DynamicAwareTypeConverters<URL>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): URL {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): URL {
     val stringURL = value.asString()
     return URL(stringURL)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): URL {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): URL {
     val stringURL = value as String
     return URL(stringURL)
   }

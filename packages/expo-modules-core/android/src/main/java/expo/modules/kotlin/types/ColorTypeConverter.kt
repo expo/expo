@@ -10,6 +10,7 @@ import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
+import androidx.core.graphics.toColorInt
 
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
@@ -173,7 +174,7 @@ private val namedColors = mapOf(
 class ColorTypeConverter(
   isOptional: Boolean
 ) : DynamicAwareTypeConverters<Color>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Color {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(value.asString())
@@ -185,7 +186,7 @@ class ColorTypeConverter(
     }
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Color {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Color {
     return when (value) {
       is Int -> {
         colorFromInt(value)
@@ -220,7 +221,7 @@ class ColorTypeConverter(
       )
     }
 
-    return Color.valueOf(Color.parseColor(value))
+    return Color.valueOf(value.toColorInt())
   }
 
   override fun getCppRequiredTypes(): ExpectedType =
