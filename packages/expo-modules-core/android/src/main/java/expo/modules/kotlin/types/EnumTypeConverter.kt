@@ -12,9 +12,8 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
-  private val enumClass: KClass<Enum<*>>,
-  isOptional: Boolean
-) : DynamicAwareTypeConverters<Enum<*>>(isOptional) {
+  private val enumClass: KClass<Enum<*>>
+) : DynamicAwareTypeConverters<Enum<*>>() {
   private val enumConstants = requireNotNull(enumClass.java.enumConstants) {
     "Passed type is not an enum type"
   }.also {

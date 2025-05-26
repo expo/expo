@@ -603,4 +603,33 @@ jobject AnyFrontendConvert::convert(
 bool AnyFrontendConvert::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
   return true;
 }
+
+NullableFrontendConverter::NullableFrontendConverter(
+  jni::local_ref<SingleType::javaobject> expectedType
+) : parameterConverter(
+  FrontendConverterProvider::instance()->obtainConverter(
+    expectedType->getFirstParameterType()
+  )
+) {}
+
+bool NullableFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  return value.isNull() || value.isUndefined() ||
+         parameterConverter->canConvert(rt, value);
+}
+
+jobject NullableFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  if (value.isNull() || value.isUndefined()) {
+    return nullptr;
+  }
+
+  return parameterConverter->convert(rt, env, value);
+}
+
 } // namespace expo

@@ -15,7 +15,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
-class DateTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<LocalDate>(isOptional) {
+class DateTypeConverter : DynamicAwareTypeConverters<LocalDate>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): LocalDate {
     return when (value.type) {
       ReadableType.String -> LocalDate.parse(value.asString(), DateTimeFormatter.ISO_DATE_TIME)

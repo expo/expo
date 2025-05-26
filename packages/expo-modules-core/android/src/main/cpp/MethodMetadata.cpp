@@ -96,10 +96,6 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
       auto converterValue = type->converter->convert(rt, env, arg);
       env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
       env->DeleteLocalRef(converterValue);
-    } else if (arg.isNull() || arg.isUndefined()) {
-      // If value is null or undefined, we just passes a null
-      // Kotlin code will check if expected type is nullable.
-      continue;
     } else {
       auto stringRepresentation = arg.toString(rt).utf8(rt);
       throwNewJavaException(

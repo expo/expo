@@ -12,7 +12,7 @@ import kotlin.reflect.KType
 class SetTypeConverter(
   converterProvider: TypeConverterProvider,
   private val setType: KType
-) : DynamicAwareTypeConverters<Set<*>>(setType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<Set<*>>() {
   private val elementConverter = converterProvider.obtainTypeConverter(
     requireNotNull(setType.arguments.first().type) {
       "The set type should contain the type of elements."

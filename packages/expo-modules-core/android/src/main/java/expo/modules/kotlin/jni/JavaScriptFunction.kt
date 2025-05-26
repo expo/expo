@@ -37,7 +37,7 @@ class JavaScriptFunction<ReturnType : Any?> @DoNotStrip private constructor(@DoN
     val expectedReturnType = converter.getCppRequiredTypes()
     val result = invoke(thisValue, convertedArgs, expectedReturnType)
     @Suppress("UNCHECKED_CAST")
-    return converter.convert(result, appContext) as ReturnType
+    return converter.convert(result, appContext, false) as ReturnType
   }
 
   @Throws(Throwable::class)
