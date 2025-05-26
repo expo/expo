@@ -13,6 +13,7 @@ import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
 import { Href } from '../types';
 import { tabRouterOverride } from './TabRouter';
+import { Protected } from '../views/Protected';
 
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;
@@ -71,6 +72,7 @@ const Tabs = Object.assign(
   },
   {
     Screen: ExpoTabs.Screen,
+    Protected,
   }
 );
 
