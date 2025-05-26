@@ -85,7 +85,7 @@ export function QuickStart() {
             <div>
               <Terminal cmd={['$ npx testflight']} />
               <CALLOUT theme="secondary">
-                This is iOS only command that will upload your app to TestFlight.
+                This is an iOS-only command that will upload your app to TestFlight.
               </CALLOUT>
             </div>
           </div>
