@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix typo in CLI error message when `expo-router` is not installed. ([#36608](https://github.com/expo/expo/pull/36608) by [@abraj](https://github.com/abraj))
+
 ## 0.24.11 — 2025-05-03
 
 _This version does not introduce any user-facing changes._
@@ -23,7 +25,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Improve error format when `npx expo export` (native) fails. ([#36533](https://github.com/expo/expo/pull/36533) by [@EvanBacon](https://github.com/EvanBacon))
-- Fix typo in CLI error message when `expo-router` is not installed. ([#36608](https://github.com/expo/expo/pull/36608) by [@abraj](https://github.com/abraj))
 
 ## 0.24.9 — 2025-04-30
 
