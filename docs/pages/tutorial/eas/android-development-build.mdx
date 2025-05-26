@@ -1,4 +1,46 @@
----
+---import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+
+export default function LoginScreen() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {
+    if (username === 'admin' && password === '1234') {
+      Alert.alert('Login Successful');
+      // Navigate to home screen
+    } else {
+      Alert.alert('Invalid credentials');
+    }
+  };
+
+  return (
+    <View className="flex-1 justify-center items-center bg-black px-5">
+      <Text className="text-white text-3xl font-bold mb-8">Cyber Toolkit Login</Text>
+
+      <TextInput
+        placeholder="Username"
+        placeholderTextColor="#aaa"
+        value={username}
+        onChangeText={setUsername}
+        className="w-full bg-gray-800 text-white p-3 rounded-xl mb-4"
+      />
+
+      <TextInput
+        placeholder="Password"
+        placeholderTextColor="#aaa"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        className="w-full bg-gray-800 text-white p-3 rounded-xl mb-6"
+      />
+
+      <TouchableOpacity onPress={handleLogin} className="bg-green-600 px-6 py-3 rounded-xl">
+        <Text className="text-white text-lg font-bold">Login</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 title: Create and run a cloud build for Android
 sidebar_title: Android development build
 description: Learn how to configure a development build for Android devices and emulators using EAS Build.
