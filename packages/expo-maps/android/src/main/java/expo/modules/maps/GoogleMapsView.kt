@@ -59,8 +59,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
   private val onMapLoaded by EventDispatcher<Unit>()
 
-  private val onMapClick by EventDispatcher<Coordinates>()
-  private val onMapLongClick by EventDispatcher<Coordinates>()
+  private val onMapClick by EventDispatcher<MapClickEvent>()
+  private val onMapLongClick by EventDispatcher<MapClickEvent>()
   private val onPOIClick by EventDispatcher<POIRecord>()
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
   private val onPolylineClick by EventDispatcher<PolylineRecord>()
@@ -94,12 +94,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         },
         onMapClick = { latLng ->
           onMapClick(
-            Coordinates(latLng.latitude, latLng.longitude)
+            MapClickEvent(
+              Coordinates(latLng.latitude, latLng.longitude)
+            )
           )
         },
         onMapLongClick = { latLng ->
           onMapLongClick(
-            Coordinates(latLng.latitude, latLng.longitude)
+            MapClickEvent(
+              Coordinates(latLng.latitude, latLng.longitude)
+            )
           )
         },
         onPOIClick = { poi ->
