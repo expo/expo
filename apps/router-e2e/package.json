@@ -22,6 +22,19 @@
     "ios": "expo run:ios",
     "lint": "expo lint __e2e__"
   },
+  "codegenConfig": {
+    "name": "AppSpec",
+    "type": "components",
+    "jsSrcsDir": "specs",
+    "android": {
+      "javaPackageName": "com.peekandpop"
+    },
+    "ios": {
+      "componentProvider": {
+        "PeekAndPop": "PeekAndPop"
+      }
+    }
+  },
   "dependencies": {
     "@expo/dom-webview": "0.1.4",
     "expo": "~53.0.9",
