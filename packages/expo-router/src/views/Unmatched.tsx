@@ -1,6 +1,9 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { ParamListBase, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createURL } from 'expo-linking';
 import React from 'react';
 import { StyleSheet, Text, View, Platform, Image } from 'react-native';
@@ -8,9 +11,8 @@ import { StyleSheet, Text, View, Platform, Image } from 'react-native';
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
 import { useNavigation } from '../useNavigation';
+import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 import { Pressable } from '../views/Pressable';
-
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
 
 /**
  * Default screen for unmatched routes.
@@ -21,7 +23,13 @@ export function Unmatched() {
   const [render, setRender] = React.useState(false);
 
   const router = useRouter();
-  const navigation = useNavigation();
+  const route = useRoute();
+
+  // The type of this is *any* NavigationProp, but its typed like this to get the types for preloadedRoutes
+  const navigation = useNavigation<
+    BottomTabNavigationProp<ParamListBase> | NativeStackNavigationProp<ParamListBase>
+  >();
+
   const pathname = usePathname();
   const url = createURL(pathname);
 
@@ -29,11 +37,21 @@ export function Unmatched() {
     setRender(true);
   }, []);
 
-  useLayoutEffect(() => {
+  const isFocused = navigation.isFocused();
+  const navigationState = navigation.getState();
+  const isPreloaded =
+    'preloadedRoutes' in navigationState
+      ? navigationState.preloadedRoutes?.some((preloaded) => {
+          return preloaded.key === route.key;
+        })
+      : false;
+
+  /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
+  useSafeLayoutEffect(() => {
     navigation.setOptions({
       title: 'Not Found',
     });
-  }, [navigation]);
+  }, [isFocused, isPreloaded, navigation]);
 
   return (
     <View style={styles.container}>

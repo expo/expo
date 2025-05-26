@@ -1,7 +1,11 @@
 'use client';
-import React, { isValidElement, ReactElement, ReactNode } from 'react';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { ParamListBase, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { isValidElement, ReactElement, ReactNode } from 'react';
 
 import { useNavigation } from '../useNavigation';
+import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /**
@@ -16,22 +20,32 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
   options?: TOptions;
 };
 
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
-
 /** Component for setting the current screen's options dynamically. */
 export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {
-  const navigation = useNavigation(name);
+  const route = useRoute();
+  // The type of this is *any* NavigationProp, but its typed like this to get the types for preloadedRoutes
+  const navigation = useNavigation<
+    BottomTabNavigationProp<ParamListBase> | NativeStackNavigationProp<ParamListBase>
+  >();
 
-  useLayoutEffect(() => {
-    if (
-      options &&
+  const isFocused = navigation.isFocused();
+  const navigationState = navigation.getState();
+  const isPreloaded =
+    'preloadedRoutes' in navigationState
+      ? navigationState.preloadedRoutes?.some((preloaded) => {
+          return preloaded.key === route.key;
+        })
+      : false;
+
+  useSafeLayoutEffect(() => {
+    if (options && Object.keys(options).length) {
       // React Navigation will infinitely loop in some cases if an empty object is passed to setOptions.
       // https://github.com/expo/router/issues/452
-      Object.keys(options).length
-    ) {
-      navigation.setOptions(options);
+      if (!isPreloaded || (isPreloaded && isFocused)) {
+        navigation.setOptions(options);
+      }
     }
-  }, [navigation, options]);
+  }, [isFocused, isPreloaded, navigation, options]);
 
   return null;
 }

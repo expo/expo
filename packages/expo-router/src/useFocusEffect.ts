@@ -4,6 +4,7 @@
 import * as React from 'react';
 
 import { useOptionalNavigation } from './link/useLoadedNavigation';
+import { useNavigation } from './useNavigation';
 
 /**
  * Memoized callback containing the effect, should optionally return a cleanup function.
@@ -45,7 +46,8 @@ export type EffectCallback = () => undefined | void | (() => void);
  * @param do_not_pass_a_second_prop
  */
 export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop?: never) {
-  const navigation = useOptionalNavigation();
+  const optionalNavigation = useOptionalNavigation();
+  const navigation = useNavigation();
 
   if (do_not_pass_a_second_prop !== undefined) {
     const message =
@@ -62,7 +64,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
   }
 
   React.useEffect(() => {
-    if (!navigation) {
+    if (!navigation || !optionalNavigation) {
       return;
     }
 
@@ -145,5 +147,5 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
       unsubscribeFocus();
       unsubscribeBlur();
     };
-  }, [effect, navigation]);
+  }, [effect, navigation, optionalNavigation, navigation.isFocused()]);
 }
