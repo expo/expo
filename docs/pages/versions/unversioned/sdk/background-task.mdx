@@ -128,7 +128,7 @@ export default function BackgroundTaskScreen() {
   const updateAsync = async () => {
     const status = await BackgroundTask.getStatusAsync();
     setStatus(status);
-    const isRegistered = await BackgroundTask.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER);
+    const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER);
     setIsRegistered(isRegistered);
   };
 
