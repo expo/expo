@@ -65,34 +65,42 @@ using namespace facebook::react;
                         configurationForMenuAtLocation:(CGPoint)location {
   return [UIContextMenuConfiguration configurationWithIdentifier:nil
       previewProvider:^UIViewController *_Nullable {
-        // Create the preview view controller
-        UIViewController *previewVC = [UIViewController new];
-        previewVC.view =
-            [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
-        previewVC.view.backgroundColor = [UIColor systemGreenColor];
-
-        UILabel *label = [[UILabel alloc] initWithFrame:previewVC.view.bounds];
-        label.text = @"Preview Content";
-        label.textAlignment = NSTextAlignmentCenter;
-        label.textColor = [UIColor whiteColor];
-        label.autoresizingMask =
-            UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-        [previewVC.view addSubview:label];
-        return previewVC;
+        return [self createPreviewViewController];
       }
       actionProvider:^UIMenu *_Nullable(
           NSArray<UIMenuElement *> *_Nonnull suggestedActions) {
-        // Menu items
-        UIAction *action1 =
-            [UIAction actionWithTitle:@"Action 1"
-                                image:nil
-                           identifier:nil
-                              handler:^(__kindof UIAction *_Nonnull action) {
-                                NSLog(@"Action 1 selected");
-                              }];
-        return [UIMenu menuWithTitle:@"" children:@[ action1 ]];
+        return [self createContextMenu];
       }];
+}
+
+#pragma mark - Context Menu Helpers
+
+- (UIViewController *)createPreviewViewController {
+  UIViewController *previewVC = [UIViewController new];
+  previewVC.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
+  previewVC.view.backgroundColor = [UIColor systemGreenColor];
+
+  UILabel *label = [[UILabel alloc] initWithFrame:previewVC.view.bounds];
+  label.text = @"Preview Content";
+  label.textAlignment = NSTextAlignmentCenter;
+  label.textColor = [UIColor whiteColor];
+  label.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+  [previewVC.view addSubview:label];
+  return previewVC;
+}
+
+- (UIMenu *)createContextMenu {
+  UIAction *action1 =
+      [UIAction actionWithTitle:@"Action 1"
+                          image:nil
+                     identifier:nil
+                        handler:^(__kindof UIAction *_Nonnull action) {
+                          NSLog(@"Action 1 selected");
+                        }];
+
+  return [UIMenu menuWithTitle:@"" children:@[ action1 ]];
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider {
