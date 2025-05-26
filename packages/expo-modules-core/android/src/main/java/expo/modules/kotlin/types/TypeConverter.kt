@@ -15,7 +15,7 @@ interface TypeConverter<Type : Any> {
   /**
    * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
    */
-  abstract fun convert(value: Any?, context: AppContext? = null, forceConversion: Boolean): Type?
+  fun convert(value: Any?, context: AppContext? = null, forceConversion: Boolean = false): Type?
 
   /**
    * Returns a list of [ExpectedType] types that can be converted to the desired type.

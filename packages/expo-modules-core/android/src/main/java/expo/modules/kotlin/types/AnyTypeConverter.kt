@@ -14,7 +14,7 @@ import expo.modules.kotlin.jni.ExpectedType
  * In that way, we produce the same output for JSI and bridge implementation.
  */
 class AnyTypeConverter : DynamicAwareTypeConverters<Any>() {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext, forceConversion: Boolean?): Any {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Any {
     return when (value.type) {
       ReadableType.Boolean -> value.asBoolean()
       ReadableType.Number -> value.asDouble()

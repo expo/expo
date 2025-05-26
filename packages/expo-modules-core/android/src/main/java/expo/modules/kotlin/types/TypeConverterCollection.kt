@@ -55,7 +55,7 @@ class TypeConverterCollection<Type : Any>(
       // We don't have a converter for Dynamic, but we can try to convert it to ExpoDynamic
       // and see if we have a converter for that.
       if (value is Dynamic) {
-        return convertNonOptional(ExpoDynamic(value), context, forceConversion)
+        return convertNonNullable(ExpoDynamic(value), context, forceConversion)
       }
 
       throw MissingTypeConverter(type)

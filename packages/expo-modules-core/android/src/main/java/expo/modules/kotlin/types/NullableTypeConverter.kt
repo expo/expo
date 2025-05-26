@@ -10,12 +10,12 @@ class NullableTypeConverter<Type : Any>(
   private val innerConverter: TypeConverter<Type>
 ) : TypeConverter<Type> {
 
-  override fun convert(value: Any?, context: AppContext?): Type? {
+  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       return null
     }
 
-    return innerConverter.convert(value, context)
+    return innerConverter.convert(value, context, forceConversion)
   }
 
   override fun isTrivial(): Boolean = innerConverter.isTrivial()

@@ -64,7 +64,7 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
   }
 
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
-    val sharedObject = sharedObjectTypeConverter.convert(value, context)
+    val sharedObject = sharedObjectTypeConverter.convert(value, context, forceConversion)
 
     @Suppress("UNCHECKED_CAST")
     return checkInnerRef(sharedObject) as T
