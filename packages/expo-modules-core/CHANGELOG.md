@@ -20,7 +20,8 @@
 
 - Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937) by [@kudo](https://github.com/kudo))
 - [iOS] Use dynamic type for AsyncFunction result conversion ([#36986](https://github.com/expo/expo/pull/36986) by [@jakex7](https://github.com/jakex7))
-- [Android] Reduce the memory footprint of calling function from the native module.
+- [Android] Improve time to retrieve the Expo module. ([#37082](https://github.com/expo/expo/pull/37082) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Reduce the memory footprint of calling function from the native module. ([#37080](https://github.com/expo/expo/pull/37080) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.3.13 — 2025-05-08
 

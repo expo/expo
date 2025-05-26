@@ -169,6 +169,7 @@ function ContextNavigator({
 function Content() {
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+    id: INTERNAL_SLOT_NAME,
   });
 
   return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
