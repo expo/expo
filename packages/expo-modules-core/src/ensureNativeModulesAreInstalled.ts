@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { TurboModuleRegistry, Platform } from 'react-native';
 
 import { registerWebGlobals } from './web';
 
@@ -18,7 +18,9 @@ export function ensureNativeModulesAreInstalled(): void {
       // TODO: ExpoModulesCore shouldn't be optional here,
       // but to keep backwards compatibility let's just ignore it in SDK 50.
       // In most cases the modules were already installed from the native side.
-      NativeModules.ExpoModulesCore?.installModules();
+      (
+        TurboModuleRegistry.get('ExpoModulesCore') as { installModules: () => void } | null
+      )?.installModules();
     }
   } catch (error) {
     console.error(`Unable to install Expo modules: ${error}`);
