@@ -139,6 +139,36 @@ export function AppLayout() {
 
 Here, because the **index** screen is protected and the **protected** is **false**, the router redirects to the first available screen &mdash; **login**.
 
+## Tabs and Drawer
+
+Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.
+
+```tsx app/_layout.tsx
+import { Tabs } from 'expo-router';
+
+const isLoggedIn = false;
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" options={{ tabBarLabel: "Home" }} />
+      <Tabs.Protected guard={isLoggedIn}>
+        <Tabs.Screen name="private" options={{ tabBarLabel: "Private" }} />
+        <Tabs.Screen name="profile" options={{ tabBarLabel: "Profile" }} />
+      </Tabs.Protected>
+
+      <Tabs.Protected guard={!isLoggedIn}>
+        <Tabs.Screen name="login" options={{ tabBarLabel: "Login" }} />
+      </Tabs.Screen>
+    </Tabs>
+  );
+}
+```
+
+## Custom navigators
+
+`Protected` is also available for [custom navigators](/router/migrate/from-react-navigation/#rewrite-custom-navigators) using the `withLayoutContext` hook.
+
 ## Static rendering considerations
 
 Protected screens are evaluated on the client side only. During static site generation, no HTML files are created for protected routes. However, if users know the URLs of these routes, they can still request the corresponding HTML or JavaScript files directly. Protected screens are not a replacement for server-side authentication or access control.
