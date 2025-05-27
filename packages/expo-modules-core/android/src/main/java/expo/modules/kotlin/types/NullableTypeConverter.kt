@@ -15,6 +15,11 @@ class NullableTypeConverter<Type : Any>(
       return null
     }
 
+    if (innerConverter.isTrivial() && !forceConversion && value !is Dynamic) {
+      @Suppress("UNCHECKED_CAST")
+      return value as Type
+    }
+
     return innerConverter.convert(value, context, forceConversion)
   }
 

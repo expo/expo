@@ -99,7 +99,7 @@ try {                             \
     CONVERT(thisValue, thisType, 0)
 
     for (size_t argIndex = 1; argIndex < count; argIndex++) {
-      const jsi::Value &arg = args[argIndex];
+      const jsi::Value &arg = args[argIndex - 1];
       auto &type = info.argTypes[argIndex];
       CONVERT(arg, type, argIndex)
     }
