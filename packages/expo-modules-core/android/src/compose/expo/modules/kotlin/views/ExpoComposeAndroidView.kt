@@ -12,7 +12,7 @@ import expo.modules.kotlin.AppContext
 /**
  * An ExpoComposeView for [AndroidView] wrapping with existing view
  */
-class ExpoComposeAndroidView(private val view: View, appContext: AppContext) : ExpoComposeView<ComposeProps>(view.context, appContext) {
+internal class ExpoComposeAndroidView(private val view: View, appContext: AppContext) : ExpoComposeView<ComposeProps>(view.context, appContext) {
   @Composable
   override fun Content() {
     AndroidView(
