@@ -1,4 +1,4 @@
-import { Container, Column, Row, Text } from '@expo/ui/jetpack-compose';
+import { Container, Column, Row, Text } from '@expo/ui/jetpack-compose-primitives';
 import { useState } from 'react';
 import { Button, View, StyleSheet, Text as RNText } from 'react-native';
 
