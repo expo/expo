@@ -1,5 +1,13 @@
+import {
+  Link,
+  // Slot,
+  Stack,
+  router,
+  useGlobalSearchParams,
+  usePathname,
+  useSegments,
+} from 'expo-router';
 import { Pressable, Text } from 'react-native';
-import { Link, Slot, router, useGlobalSearchParams, usePathname, useSegments } from 'expo-router';
 export default function Layout() {
   const { '#': hash } = useGlobalSearchParams();
   return (
@@ -14,7 +22,7 @@ export default function Layout() {
       <Pressable testID="e2e-back" onPress={() => router.back()}>
         <Text>Go back</Text>
       </Pressable>
-      <Slot />
+      <Stack screenOptions={{ animation: 'none' }} />
     </>
   );
 }

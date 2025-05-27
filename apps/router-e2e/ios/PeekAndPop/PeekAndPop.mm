@@ -7,6 +7,8 @@
 
 #import "PeekAndPop.h"
 
+#import <RNScreens/RNSScreen.h>
+#import <RNScreens/RNSScreenStack.h>
 #import <UIKit/UIKit.h>
 #import <react/renderer/components/AppSpec/ComponentDescriptors.h>
 #import <react/renderer/components/AppSpec/EventEmitters.h>
@@ -45,7 +47,6 @@ using namespace facebook::react;
 
 - (void)linkButtonTapped {
   NSLog(@"Link button tapped");
-  // Optional: trigger an event to JS
 }
 
 - (void)updateProps:(Props::Shared const &)props
@@ -73,11 +74,42 @@ using namespace facebook::react;
       }];
 }
 
-- (void) contextMenuInteraction:(UIContextMenuInteraction *) interaction
-willPerformPreviewActionForMenuWithConfiguration:(UIContextMenuConfiguration *) configuration
-                       animator:(id<UIContextMenuInteractionCommitAnimating>) animator {
+- (void)contextMenuInteraction:(UIContextMenuInteraction *)interaction
+    willPerformPreviewActionForMenuWithConfiguration:
+        (UIContextMenuConfiguration *)configuration
+                                            animator:
+                                                (id<UIContextMenuInteractionCommitAnimating>)
+                                                    animator {
   NSLog(@"Preview tapped!");
-  
+  UIResponder *responder = self;
+  while (responder) {
+    responder = [responder nextResponder];
+    if ([responder isKindOfClass:[RNSScreenStackView class]]) {
+      RNSScreenStackView *stack = (RNSScreenStackView *)responder;
+      NSArray<UIView *> *subviews = stack.reactSubviews;
+      NSLog(@"Number of subviews: %lu", (unsigned long)subviews.count);
+      NSMutableArray<RNSScreenView *> *screenSubviews = [NSMutableArray array];
+      for (UIView *subview in subviews) {
+        if ([subview isKindOfClass:[RNSScreenView class]]) {
+          [screenSubviews addObject:(RNSScreenView *)subview];
+        }
+      }
+      RNSScreenView *preloadedScreenView = nil;
+      for (RNSScreenView *screenView in screenSubviews) {
+        NSLog(@"ScreenView activityState: %ld", (long)screenView.activityState);
+        if (screenView.activityState == 0) {
+          preloadedScreenView = screenView;
+        }
+      }
+      [preloadedScreenView setActivityState:2];
+      [stack markChildUpdated];
+      RNSScreen *controller = preloadedScreenView.controller;
+      //      [controller.navigationController pushViewController:controller
+      //      animated:YES];
+      break;
+    }
+  }
+
   // 👉 Handle your custom logic here
   // You can send an event to JS or trigger any native behavior
 }

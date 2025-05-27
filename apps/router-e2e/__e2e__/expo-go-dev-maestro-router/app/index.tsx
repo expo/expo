@@ -1,42 +1,26 @@
-import { ContextMenu, Button, Link, useRouter } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Link, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { Text, useWindowDimensions, View } from 'react-native';
 
 import PreviewIndex from './(stack)/index';
+import PeekAndPopNativeComponent from '@/specs/PeekAndPopNativeComponent';
 
 export default function Index() {
   const router = useRouter();
+  const { height, width } = useWindowDimensions();
+  useEffect(() => {
+    setTimeout(() => {
+      router.prefetch('/(stack)');
+    }, 100);
+  }, []);
   return (
     <>
       <Text>Index</Text>
       <Link href="/(stack)">/(stack)</Link>
       <Link href="/(tabs)">/(tabs)</Link>
-      <ContextMenu
-        style={{ width: 150, height: 50 }}
-        activationMethod="longPress"
-        onPreviewTap={() => {
-          router.push('/(stack)');
-        }}>
-        <ContextMenu.Items>
-          <Button
-            systemImage="person.crop.circle.badge.xmark"
-            onPress={() => console.log('Pressed1')}>
-            Hello
-          </Button>
-          <Button variant="bordered" systemImage="heart" onPress={() => console.log('Pressed2')}>
-            Love it
-          </Button>
-        </ContextMenu.Items>
-        <ContextMenu.Preview>
-          <View>
-            <PreviewIndex />
-          </View>
-        </ContextMenu.Preview>
-        <ContextMenu.Trigger>
-          <Button variant="bordered" style={{ width: 150, height: 50 }}>
-            Show Menu
-          </Button>
-        </ContextMenu.Trigger>
-      </ContextMenu>
+      <View style={{ marginTop: 300, width: 100, height: 50 }}>
+        <PeekAndPopNativeComponent style={{ width: 100, height: 50, marginLeft: 100 }} />
+      </View>
     </>
   );
 }
