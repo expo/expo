@@ -5,9 +5,10 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.provider.DocumentsContract
 import java.io.File
+import java.io.IOException
 
 class DocumentDetailsReader(private val context: Context) {
-  fun read(uri: Uri): DocumentInfo? {
+  fun read(uri: Uri): DocumentInfo {
     context
       .contentResolver
       .query(uri, null, null, null, null)
@@ -47,7 +48,6 @@ class DocumentDetailsReader(private val context: Context) {
         }
 
         return DocumentInfo(uri, name, mimeType, size, lastModified)
-      }
-    return null
+      } ?: throw IOException("Failed to read document details for URI: $uri")
   }
 }
