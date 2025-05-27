@@ -14,6 +14,7 @@ import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Size
@@ -43,7 +44,7 @@ data class ShapeProps(
   val innerRadius: MutableState<Float> = mutableFloatStateOf(0.0f),
   val radius: MutableState<Float> = mutableFloatStateOf(0.0f),
   val type: MutableState<ShapeType> = mutableStateOf(ShapeType.CIRCLE),
-  val color: MutableState<GraphicsColor?> = mutableStateOf(null),
+  val color: MutableState<GraphicsColor?> = mutableStateOf(null)
 ) : ComposeProps
 
 private fun Size.centerX() = this.width / 2
@@ -91,7 +92,7 @@ private fun createPolygonPath(size: Size, cornerRounding: Float, smoothing: Floa
     radius = size.minDimension / 2,
     centerX = size.centerX(),
     centerY = size.centerY(),
-    rounding = rounding,
+    rounding = rounding
   ).toPath().asComposePath()
 }
 
@@ -100,7 +101,7 @@ private fun createCirclePath(size: Size, radius: Float, verticesCount: Int): Pat
     centerX = size.centerX(),
     centerY = size.centerY(),
     radius = size.minDimension * 0.5f * radius.coerceAtLeast(0.002f),
-    numVertices = verticesCount.coerceAtLeast(3),
+    numVertices = verticesCount.coerceAtLeast(3)
   ).toPath().asComposePath()
 }
 
@@ -111,39 +112,39 @@ private fun createRectanglePath(size: Size, cornerRounding: Float, smoothing: Fl
     centerY = size.centerY(),
     rounding = rounding,
     width = size.width,
-    height = size.height,
+    height = size.height
   ).toPath().asComposePath()
 }
 
-class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext) {
+class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext, withHostingView = true) {
   override val props = ShapeProps()
-  init {
-    setContent {
-      val (smoothing) = props.smoothing
-      val (cornerRounding) = props.cornerRounding
-      val (innerRadius) = props.innerRadius
-      val (radius) = props.radius
-      val (shapeType) = props.type
-      val (verticesCount) = props.verticesCount
-      val (color) = props.color
-      Box(
-        modifier = Modifier
-          .drawWithCache {
-            val path = when (shapeType) {
-              ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
-              ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
-              ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
-              ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
-              ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
-              ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
-            }
 
-            onDrawBehind {
-              drawPath(path, color = color.composeOrNull ?: Color.Transparent)
-            }
+  @Composable
+  override fun Content() {
+    val (smoothing) = props.smoothing
+    val (cornerRounding) = props.cornerRounding
+    val (innerRadius) = props.innerRadius
+    val (radius) = props.radius
+    val (shapeType) = props.type
+    val (verticesCount) = props.verticesCount
+    val (color) = props.color
+    Box(
+      modifier = Modifier
+        .drawWithCache {
+          val path = when (shapeType) {
+            ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
+            ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
+            ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
+            ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
+            ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
+            ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
           }
-          .fillMaxSize()
-      )
-    }
+
+          onDrawBehind {
+            drawPath(path, color = color.composeOrNull ?: Color.Transparent)
+          }
+        }
+        .fillMaxSize()
+    )
   }
 }
