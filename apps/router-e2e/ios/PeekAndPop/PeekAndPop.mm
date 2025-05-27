@@ -22,6 +22,19 @@ using namespace facebook::react;
 @end
 
 @implementation PeekAndPop {
+  NSMutableArray<UIView *> *children;
+}
+
+- (void)mountChildComponentView:
+            (UIView<RCTComponentViewProtocol> *)childComponentView
+                          index:(NSInteger)index {
+  [children insertObject:childComponentView atIndex:index];
+}
+
+- (void)unmountChildComponentView:
+            (UIView<RCTComponentViewProtocol> *)childComponentView
+                            index:(NSInteger)index {
+  [children removeObjectAtIndex:index];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -41,6 +54,7 @@ using namespace facebook::react;
     [button addInteraction:interaction];
 
     [self addSubview:button];
+    children = [NSMutableArray array];
   }
   return self;
 }
@@ -118,17 +132,10 @@ using namespace facebook::react;
 
 - (UIViewController *)createPreviewViewController {
   UIViewController *previewVC = [UIViewController new];
-  previewVC.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 100)];
-  previewVC.view.backgroundColor = [UIColor systemGreenColor];
 
-  UILabel *label = [[UILabel alloc] initWithFrame:previewVC.view.bounds];
-  label.text = @"Preview Content";
-  label.textAlignment = NSTextAlignmentCenter;
-  label.textColor = [UIColor whiteColor];
-  label.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-  [previewVC.view addSubview:label];
+  for (UIView *child in children) {
+    [previewVC.view addSubview:child];
+  }
   return previewVC;
 }
 
