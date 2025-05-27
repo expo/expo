@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default.
+
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
