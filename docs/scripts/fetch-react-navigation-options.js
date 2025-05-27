@@ -4,9 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const MARKDOWN_URL =
   'https://raw.githubusercontent.com/react-navigation/react-navigation.github.io/main/versioned_docs/version-7.x/native-stack-navigator.md';
 const OUTPUT_FILE = path.join(__dirname, '../public/data/react-navigation-options.json');
@@ -27,13 +25,20 @@ function parseOptionsFromMarkdown(markdown) {
   }
 
   const optionsSection = optionsMatch[1];
-  const optionMatches = optionsSection.matchAll(
-    /#### `([^`]+)`([\S\s]*?)(?=#### |##### |### |## |$)/g
-  );
+  const h5Properties = new Set();
+  const h5Matches = optionsSection.matchAll(/##### `([^`]+)`/g);
+  for (const match of h5Matches) {
+    h5Properties.add(match[1]);
+  }
+
+  const optionMatches = optionsSection.matchAll(/#### `([^`]+)`([\S\s]*?)(?=#### `[^`]+`|### |$)/g);
 
   for (const match of optionMatches) {
     const [, optionName, content] = match;
 
+    if (h5Properties.has(optionName)) {
+      continue;
+    }
     if (
       optionName.includes('Event') ||
       optionName.includes('Helper') ||
@@ -45,14 +50,26 @@ function parseOptionsFromMarkdown(markdown) {
       continue;
     }
 
+    let rawContent = content;
+
+    if (optionName === 'headerSearchBarOptions') {
+      const startIndex = optionsSection.indexOf('#### `headerSearchBarOptions`');
+      const nextHeaderIndex = optionsSection.indexOf('#### `header`', startIndex);
+      if (startIndex !== -1 && nextHeaderIndex !== -1) {
+        rawContent = optionsSection
+          .slice(startIndex, nextHeaderIndex)
+          .replace('#### `headerSearchBarOptions`', '');
+      }
+    }
+
     let platform = 'Both';
-    if (content.includes('Only supported on iOS')) {
+    if (rawContent.includes('Only supported on iOS')) {
       platform = 'iOS only';
-    } else if (content.includes('Only supported on Android')) {
+    } else if (rawContent.includes('Only supported on Android')) {
       platform = 'Android only';
     }
 
-    let description = content
+    let description = rawContent
       .replace(/^\s+/, '')
       .replace(/:::warning[\S\s]*?(?=\n\n|\n[A-Z]|$)/g, '')
       .replace(/:::note[\S\s]*?(?=\n\n|\n[A-Z]|$)/g, '')
@@ -65,24 +82,39 @@ function parseOptionsFromMarkdown(markdown) {
       .replace(/Example:\s*\n\n```[\S\s]*?```/g, '')
       .replace(/Example:\s*\n\n[^\n]*\n/g, '')
       .replace(/\[([^\]]+)]\([^)]+\)/g, '$1')
+      .replace(/\n\s*(Android|iOS):\s*\n\s*(?=\n|$)/g, '')
+      .replace(/##### `([^`]+)`/g, '\n\n**$1**')
+      .replace(/##### ([^\n]+)/g, '\n\n**$1**')
+      .replace(/#{1,6}\s*/g, '')
       .trim();
+
+    description = description.replace(
+      /Supported values:\s*\n\n((?:- `[^`]+`(?:\s*\n(?:<[^>]*>|\s)*)*\n)*)/g,
+      (match, listContent) => {
+        const values = [];
+        const valueMatches = listContent.matchAll(/- `([^`]+)`/g);
+        for (const valueMatch of valueMatches) {
+          values.push(valueMatch[1]);
+        }
+
+        if (values.length > 1 && values.every(val => /^[A-Za-z]\w*(?:[A-Z]\w*)*$/.test(val))) {
+          return `Supported values: <CODE>${values.join('</CODE>, <CODE>')}</CODE>`;
+        }
+        return match;
+      }
+    );
 
     description = description
       .replace(/\n{3,}/g, '\n\n')
       .replace(/\n\s*$/g, '')
       .trim();
 
-    let category = 'other';
-    if (optionName.toLowerCase().includes('header') || optionName.toLowerCase().includes('title')) {
-      category = 'header';
-    }
+    const category =
+      optionName.toLowerCase().includes('header') || optionName.toLowerCase().includes('title')
+        ? 'header'
+        : 'other';
 
-    options.push({
-      name: optionName,
-      description,
-      platform,
-      category,
-    });
+    options.push({ name: optionName, description, platform, category });
   }
 
   return options;
@@ -105,7 +137,6 @@ function saveOptionsToFile(options) {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
-
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(outputData, null, 2));
 }
 

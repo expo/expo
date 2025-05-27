@@ -1,11 +1,11 @@
 {
   "source": "React Navigation Documentation (Markdown)",
   "sourceUrl": "https://raw.githubusercontent.com/react-navigation/react-navigation.github.io/main/versioned_docs/version-7.x/native-stack-navigator.md",
-  "fetchedAt": "2025-05-27T17:50:47.572Z",
-  "totalOptions": 71,
+  "fetchedAt": "2025-05-27T18:45:49.302Z",
+  "totalOptions": 52,
   "categories": {
-    "header": 26,
-    "other": 45
+    "header": 25,
+    "other": 27
   },
   "options": [
     {
@@ -88,7 +88,7 @@
     },
     {
       "name": "headerShadowVisible",
-      "description": "Whether to hide the elevation shadow (Android) or the bottom border (iOS) on the header.\n\nAndroid:\n\niOS:",
+      "description": "Whether to hide the elevation shadow (Android) or the bottom border (iOS) on the header.",
       "platform": "Both",
       "category": "header"
     },
@@ -100,7 +100,7 @@
     },
     {
       "name": "headerBlurEffect",
-      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values:\n\n- `extraLight`\n\n- `light`\n  \n\n- `dark`\n  \n\n- `regular`\n  \n\n- `prominent`\n  \n\n- `systemUltraThinMaterial`\n  \n\n- `systemThinMaterial`\n  \n\n- `systemMaterial`\n  \n\n- `systemThickMaterial`\n  \n\n- `systemChromeMaterial`\n  \n\n- `systemUltraThinMaterialLight`\n  \n\n- `systemThinMaterialLight`\n  \n\n- `systemMaterialLight`\n  \n\n- `systemThickMaterialLight`\n  \n\n- `systemChromeMaterialLight`\n  \n\n- `systemUltraThinMaterialDark`\n  \n- `systemThinMaterialDark`\n  \n\n- `systemMaterialDark`\n  \n- `systemThickMaterialDark`\n  \n\n- `systemChromeMaterialDark`",
+      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values: <CODE>extraLight</CODE>, <CODE>light</CODE>, <CODE>dark</CODE>, <CODE>regular</CODE>, <CODE>prominent</CODE>, <CODE>systemUltraThinMaterial</CODE>, <CODE>systemThinMaterial</CODE>, <CODE>systemMaterial</CODE>, <CODE>systemThickMaterial</CODE>, <CODE>systemChromeMaterial</CODE>, <CODE>systemUltraThinMaterialLight</CODE>, <CODE>systemThinMaterialLight</CODE>, <CODE>systemMaterialLight</CODE>, <CODE>systemThickMaterialLight</CODE>, <CODE>systemChromeMaterialLight</CODE>, <CODE>systemUltraThinMaterialDark</CODE>, <CODE>systemThinMaterialDark</CODE>, <CODE>systemMaterialDark</CODE>, <CODE>systemThickMaterialDark</CODE>- `systemChromeMaterialDark`",
       "platform": "iOS only",
       "category": "header"
     },
@@ -148,123 +148,9 @@
     },
     {
       "name": "headerSearchBarOptions",
-      "description": "Options to render a native search bar on iOS. Search bars are rarely static so normally it is controlled by passing an object to `headerSearchBarOptions` navigation option in the component's body.\n\nYou also need to specify `contentInsetAdjustmentBehavior=\"automatic\"` in your `ScrollView`, `FlatList` etc. If you don't have a `ScrollView`, specify `headerTransparent: false`.\n\nSupported properties are:",
-      "platform": "Both",
+      "description": "Options to render a native search bar on iOS. Search bars are rarely static so normally it is controlled by passing an object to `headerSearchBarOptions` navigation option in the component's body.\n\nYou also need to specify `contentInsetAdjustmentBehavior=\"automatic\"` in your `ScrollView`, `FlatList` etc. If you don't have a `ScrollView`, specify `headerTransparent: false`.\n\nSupported properties are:\n\n**ref**\n\nRef to manipulate the search input imperatively. It contains the following methods:\n\n- `focus` - focuses the search bar\n- `blur` - removes focus from the search bar\n- `setText` - sets the search bar's content to given value\n- `clearText` - removes any text present in the search bar input field\n- `cancelSearch` - cancel the search and close the search bar\n\n**autoCapitalize**\n\nControls whether the text is automatically auto-capitalized as it is entered by the user.\nPossible values:\n\n- `none`\n- `words`\n- `sentences`\n- `characters`\n\nDefaults to `sentences`.\n\n**autoFocus**\n\nWhether to automatically focus search bar when it's shown. Defaults to `false`.\n\n**barTintColor**\n\nThe search field background color. By default bar tint color is translucent.\n\n**tintColor**\n\nThe color for the cursor caret and cancel button text.\n\n**cancelButtonText**\n\nThe text to be used instead of default `Cancel` button text.\n\n**disableBackButtonOverride**\n\nWhether the back button should close search bar's text input or not. Defaults to `false`.\n\n**hideNavigationBar**\n\nBoolean indicating whether to hide the navigation bar during searching. Defaults to `true`.\n\n**hideWhenScrolling**\n\nBoolean indicating whether to hide the search bar when scrolling. Defaults to `true`.\n\n**inputType**\n\nThe type of the input. Defaults to `\"text\"`.\n\nSupported values:\n\n- `\"text\"`\n- `\"phone\"`\n- `\"number\"`\n- `\"email\"`\n\n**obscureBackground**\n\nBoolean indicating whether to obscure the underlying content with semi-transparent overlay. Defaults to `true`.\n\n**placeholder**\n\nText displayed when search field is empty.\n\n**textColor**\n\nThe color of the text in the search field.\n\n**hintTextColor**\n\nThe color of the hint text in the search field.\n\n**headerIconColor**\n\nThe color of the search and close icons shown in the header\n\n**shouldShowHintSearchIcon**\n\nWhether to show the search hint icon when search bar is focused. Defaults to `true`.\n\n**onBlur**\n\nA callback that gets called when search bar has lost focus.\n\n**onCancelButtonPress**\n\nA callback that gets called when the cancel button is pressed.\n\n**onChangeText**\n\nA callback that gets called when the text changes. It receives the current text value of the search bar.",
+      "platform": "iOS only",
       "category": "header"
-    },
-    {
-      "name": "ref",
-      "description": "Ref to manipulate the search input imperatively. It contains the following methods:\n\n- `focus` - focuses the search bar\n- `blur` - removes focus from the search bar\n- `setText` - sets the search bar's content to given value\n- `clearText` - removes any text present in the search bar input field\n- `cancelSearch` - cancel the search and close the search bar",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "autoCapitalize",
-      "description": "Controls whether the text is automatically auto-capitalized as it is entered by the user.\nPossible values:\n\n- `none`\n- `words`\n- `sentences`\n- `characters`\n\nDefaults to `sentences`.",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "autoFocus",
-      "description": "Whether to automatically focus search bar when it's shown. Defaults to `false`.",
-      "platform": "Android only",
-      "category": "other"
-    },
-    {
-      "name": "barTintColor",
-      "description": "The search field background color. By default bar tint color is translucent.",
-      "platform": "iOS only",
-      "category": "other"
-    },
-    {
-      "name": "tintColor",
-      "description": "The color for the cursor caret and cancel button text.",
-      "platform": "iOS only",
-      "category": "other"
-    },
-    {
-      "name": "cancelButtonText",
-      "description": "The text to be used instead of default `Cancel` button text.",
-      "platform": "iOS only",
-      "category": "other"
-    },
-    {
-      "name": "disableBackButtonOverride",
-      "description": "Whether the back button should close search bar's text input or not. Defaults to `false`.",
-      "platform": "Android only",
-      "category": "other"
-    },
-    {
-      "name": "hideNavigationBar",
-      "description": "Boolean indicating whether to hide the navigation bar during searching. Defaults to `true`.",
-      "platform": "iOS only",
-      "category": "other"
-    },
-    {
-      "name": "hideWhenScrolling",
-      "description": "Boolean indicating whether to hide the search bar when scrolling. Defaults to `true`.",
-      "platform": "iOS only",
-      "category": "other"
-    },
-    {
-      "name": "inputType",
-      "description": "The type of the input. Defaults to `\"text\"`.\n\nSupported values:\n\n- `\"text\"`\n- `\"phone\"`\n- `\"number\"`\n- `\"email\"`",
-      "platform": "Android only",
-      "category": "other"
-    },
-    {
-      "name": "obscureBackground",
-      "description": "Boolean indicating whether to obscure the underlying content with semi-transparent overlay. Defaults to `true`.",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "placeholder",
-      "description": "Text displayed when search field is empty.",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "textColor",
-      "description": "The color of the text in the search field.",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "hintTextColor",
-      "description": "The color of the hint text in the search field.",
-      "platform": "Android only",
-      "category": "other"
-    },
-    {
-      "name": "headerIconColor",
-      "description": "The color of the search and close icons shown in the header",
-      "platform": "Android only",
-      "category": "header"
-    },
-    {
-      "name": "shouldShowHintSearchIcon",
-      "description": "Whether to show the search hint icon when search bar is focused. Defaults to `true`.",
-      "platform": "Android only",
-      "category": "other"
-    },
-    {
-      "name": "onBlur",
-      "description": "A callback that gets called when search bar has lost focus.",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "onCancelButtonPress",
-      "description": "A callback that gets called when the cancel button is pressed.",
-      "platform": "Both",
-      "category": "other"
-    },
-    {
-      "name": "onChangeText",
-      "description": "A callback that gets called when the text changes. It receives the current text value of the search bar.",
-      "platform": "Both",
-      "category": "other"
     },
     {
       "name": "header",
@@ -292,13 +178,13 @@
     },
     {
       "name": "statusBarBackgroundColor",
-      "description": ":::warning\n\nThis option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\n:::\n\nSets the background color of the status bar (similar to the `StatusBar` component).",
+      "description": "This option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\nSets the background color of the status bar (similar to the `StatusBar` component).",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "statusBarTranslucent",
-      "description": ":::warning\n\nThis option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\n:::\n\nSets the translucency of the status bar (similar to the `StatusBar` component). Defaults to `false`.",
+      "description": "This option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\nSets the translucency of the status bar (similar to the `StatusBar` component). Defaults to `false`.",
       "platform": "Android only",
       "category": "other"
     },
@@ -352,43 +238,43 @@
     },
     {
       "name": "sheetAllowedDetents",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\nDescribes heights where a sheet can rest.\n\nSupported values:\n\n- `fitToContents` - intents to set the sheet height to the height of its contents.\n- Array of fractions, e.g. `[0.25, 0.5, 0.75]`:\n  - Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.\n  - The array **must** be sorted in ascending order. This invariant is verified only in developement mode, where violation results in error.\n  - iOS accepts any number of detents, while **Android is limited to three** - any surplus values, beside first three are ignored.\n\nDefaults to `[1.0]`.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nDescribes heights where a sheet can rest.\n\nSupported values:\n\n- `fitToContents` - intents to set the sheet height to the height of its contents.\n- Array of fractions, e.g. `[0.25, 0.5, 0.75]`:\n  - Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.\n  - The array **must** be sorted in ascending order. This invariant is verified only in developement mode, where violation results in error.\n  - iOS accepts any number of detents, while **Android is limited to three** - any surplus values, beside first three are ignored.\n\nDefaults to `[1.0]`.",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "sheetElevation",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\nInteger value describing elevation of the sheet, impacting shadow on the top edge of the sheet.\n\nNot dynamic - changing it after the component is rendered won't have an effect.\n\nDefaults to `24`.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nInteger value describing elevation of the sheet, impacting shadow on the top edge of the sheet.\n\nNot dynamic - changing it after the component is rendered won't have an effect.\n\nDefaults to `24`.",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "sheetExpandsWhenScrolledToEdge",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\nWhether the sheet should expand to larger detent when scrolling.\n\nDefaults to `true`.\n\n:::warning\n\nPlease note that for this interaction to work, the ScrollView must be \"first-subview-chain\" descendant of the Screen component. This restriction is due to platform requirements.\n\n:::",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nWhether the sheet should expand to larger detent when scrolling.\n\nDefaults to `true`.\n\nPlease note that for this interaction to work, the ScrollView must be \"first-subview-chain\" descendant of the Screen component. This restriction is due to platform requirements.",
       "platform": "iOS only",
       "category": "other"
     },
     {
       "name": "sheetCornerRadius",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\nThe corner radius that the sheet will try to render with.\n\nIf set to non-negative value it will try to render sheet with provided radius, else it will apply system default.\n\nIf left unset, system default is used.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nThe corner radius that the sheet will try to render with.\n\nIf set to non-negative value it will try to render sheet with provided radius, else it will apply system default.\n\nIf left unset, system default is used.",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "sheetInitialDetentIndex",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\n**Index** of the detent the sheet should expand to after being opened.\n\nIf the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment more errors will be thrown, in production the value will be reset to default value.\n\nAdditionaly there is `last` value available, when set the sheet will expand initially to last (largest) detent.\n\nDefaults to `0` - which represents first detent in the detents array.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\n**Index** of the detent the sheet should expand to after being opened.\n\nIf the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment more errors will be thrown, in production the value will be reset to default value.\n\nAdditionaly there is `last` value available, when set the sheet will expand initially to last (largest) detent.\n\nDefaults to `0` - which represents first detent in the detents array.",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "sheetGrabberVisible",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\nBoolean indicating whether the sheet shows a grabber at the top.\n\nDefaults to `false`.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nBoolean indicating whether the sheet shows a grabber at the top.\n\nDefaults to `false`.",
       "platform": "iOS only",
       "category": "other"
     },
     {
       "name": "sheetLargestUndimmedDetentIndex",
-      "description": ":::note\n\nWorks only when `presentation` is set to `formSheet`.\n\n:::\n\nThe largest sheet detent for which a view underneath won't be dimmed.\n\nThis prop can be set to an number, which indicates index of detent in `sheetAllowedDetents` array for which there won't be a dimming view beneath the sheet.\n\nAdditionaly there are following options available:\n\n- `none` - there will be dimming view for all detents levels,\n- `last` - there won't be a dimming view for any detent level.\n\nDefaults to `none`, indicating that the dimming view should be always present.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nThe largest sheet detent for which a view underneath won't be dimmed.\n\nThis prop can be set to an number, which indicates index of detent in `sheetAllowedDetents` array for which there won't be a dimming view beneath the sheet.\n\nAdditionaly there are following options available:\n\n- `none` - there will be dimming view for all detents levels,\n- `last` - there won't be a dimming view for any detent level.\n\nDefaults to `none`, indicating that the dimming view should be always present.",
       "platform": "Android only",
       "category": "other"
     },
@@ -418,7 +304,7 @@
     },
     {
       "name": "navigationBarColor",
-      "description": ":::warning\n\nThis option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\n:::\n\nSets the navigation bar color. Defaults to initial status bar color.",
+      "description": "This option is deprecated and will be removed in a future release (for apps targeting Android SDK 35 or above edge-to-edge mode is enabled by default\nand it is expected that the edge-to-edge will be enforced in future SDKs, see here for more information).\n\nSets the navigation bar color. Defaults to initial status bar color.",
       "platform": "Android only",
       "category": "other"
     },
