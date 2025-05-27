@@ -9,7 +9,7 @@ export default function Layout() {
       <Link testID="e2e-goto-modal" href="/(stack)/modal">
         Go to modal
       </Link>
-      <Stack>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="modal2" options={{ presentation: 'modal' }} />
       </Stack>
