@@ -21,7 +21,9 @@ export class Paths extends PathUtilities {
     const containers: Record<string, string> = ExpoFileSystem.appleSharedContainers ?? {};
     const result: Record<string, Directory> = {};
     for (const appGroupId in containers) {
-      result[appGroupId] = new Directory(containers[appGroupId]);
+      if (containers[appGroupId]) {
+        result[appGroupId] = new Directory(containers[appGroupId]);
+      }
     }
     return result;
   }
