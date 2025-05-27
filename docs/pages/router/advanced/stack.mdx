@@ -7,6 +7,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
+import { ReactNavigationOptions } from '~/ui/components/ReactNavigationOptions';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -164,6 +165,12 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Available header options
+
+The `Stack` navigator supports comprehensive header configuration options. Below are all the header-related options available:
+
+<ReactNavigationOptions category="header" />
+
 ### Set screen options dynamically
 
 To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
@@ -242,6 +249,12 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+### Other screen options
+
+For a complete list of all available other screen options including animations, gestures, and other configurations:
+
+<ReactNavigationOptions excludeCategories={['header']} />
 
 ## Custom push behavior
 

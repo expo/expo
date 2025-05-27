@@ -23,6 +23,7 @@
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
     "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "versions-schema-sync": "node ./scripts/fetch-versions-schema.js",
+    "react-navigation-docs-sync": "node ./scripts/fetch-react-navigation-options.js",
     "postinstall": "yarn copy-latest && yarn generate-static-resources"
   },
   "packageManager": "yarn@4.9.1",
