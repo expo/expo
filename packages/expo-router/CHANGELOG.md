@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
+- Add Tabs.Protected ([#37085](https://github.com/expo/expo/pull/37085) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
