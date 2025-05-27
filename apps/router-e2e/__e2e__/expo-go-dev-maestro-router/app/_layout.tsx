@@ -8,6 +8,7 @@ import {
   useSegments,
 } from 'expo-router';
 import { Pressable, Text } from 'react-native';
+
 export default function Layout() {
   const { '#': hash } = useGlobalSearchParams();
   return (
@@ -22,7 +23,7 @@ export default function Layout() {
       <Pressable testID="e2e-back" onPress={() => router.back()}>
         <Text>Go back</Text>
       </Pressable>
-      <Stack screenOptions={{ animation: 'none' }} />
+      <Stack screenOptions={{ animation: 'none', headerShown: false }} />
     </>
   );
 }

@@ -95,37 +95,12 @@ using namespace facebook::react;
                                                 (id<UIContextMenuInteractionCommitAnimating>)
                                                     animator {
   NSLog(@"Preview tapped!");
-  UIResponder *responder = self;
-  while (responder) {
-    responder = [responder nextResponder];
-    if ([responder isKindOfClass:[RNSScreenStackView class]]) {
-      RNSScreenStackView *stack = (RNSScreenStackView *)responder;
-      NSArray<UIView *> *subviews = stack.reactSubviews;
-      NSLog(@"Number of subviews: %lu", (unsigned long)subviews.count);
-      NSMutableArray<RNSScreenView *> *screenSubviews = [NSMutableArray array];
-      for (UIView *subview in subviews) {
-        if ([subview isKindOfClass:[RNSScreenView class]]) {
-          [screenSubviews addObject:(RNSScreenView *)subview];
-        }
-      }
-      RNSScreenView *preloadedScreenView = nil;
-      for (RNSScreenView *screenView in screenSubviews) {
-        NSLog(@"ScreenView activityState: %ld", (long)screenView.activityState);
-        if (screenView.activityState == 0) {
-          preloadedScreenView = screenView;
-        }
-      }
-      [preloadedScreenView setActivityState:2];
-      [stack markChildUpdated];
-      RNSScreen *controller = preloadedScreenView.controller;
-      //      [controller.navigationController pushViewController:controller
-      //      animated:YES];
-      break;
-    }
-  }
-
-  // 👉 Handle your custom logic here
-  // You can send an event to JS or trigger any native behavior
+  [self pushPreloadedView];
+  [animator addCompletion:^(void) {
+      // This block will be executed when the animation finishes
+      // or is stopped.
+      // You can leave it empty if you don't need to do anything.
+  }];
 }
 
 #pragma mark - Context Menu Helpers
@@ -153,6 +128,34 @@ using namespace facebook::react;
 
 + (ComponentDescriptorProvider)componentDescriptorProvider {
   return concreteComponentDescriptorProvider<PeekAndPopComponentDescriptor>();
+}
+
+- (void)pushPreloadedView {
+  UIResponder *responder = self;
+  while (responder) {
+    responder = [responder nextResponder];
+    if ([responder isKindOfClass:[RNSScreenStackView class]]) {
+      RNSScreenStackView *stack = (RNSScreenStackView *)responder;
+      NSArray<UIView *> *subviews = stack.reactSubviews;
+      NSLog(@"Number of subviews: %lu", (unsigned long)subviews.count);
+      NSMutableArray<RNSScreenView *> *screenSubviews = [NSMutableArray array];
+      for (UIView *subview in subviews) {
+        if ([subview isKindOfClass:[RNSScreenView class]]) {
+          [screenSubviews addObject:(RNSScreenView *)subview];
+        }
+      }
+      RNSScreenView *preloadedScreenView = nil;
+      for (RNSScreenView *screenView in screenSubviews) {
+        NSLog(@"ScreenView activityState: %ld", (long)screenView.activityState);
+        if (screenView.activityState == 0) {
+          preloadedScreenView = screenView;
+        }
+      }
+      [preloadedScreenView setActivityState:2];
+      [stack markChildUpdated];
+      return;
+    }
+  }
 }
 
 @end
