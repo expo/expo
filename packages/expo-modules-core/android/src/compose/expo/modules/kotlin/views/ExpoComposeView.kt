@@ -25,12 +25,10 @@ abstract class ExpoComposeView<T : ComposeProps>(
   override val shouldUseAndroidLayout = withHostingView
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-    if (shouldUseAndroidLayout) {
-      // In case of issues there's an alternative solution in previous commits at https://github.com/expo/expo/pull/33759
-      if (!isAttachedToWindow) {
-        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
-        return
-      }
+    // In case of issues there's an alternative solution in previous commits at https://github.com/expo/expo/pull/33759
+    if (shouldUseAndroidLayout && !isAttachedToWindow) {
+      setMeasuredDimension(widthMeasureSpec, heightMeasureSpec)
+      return
     }
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
   }
