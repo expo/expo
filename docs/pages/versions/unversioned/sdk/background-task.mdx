@@ -3,7 +3,7 @@ title: BackgroundTask
 description: A library that provides an API for running background tasks.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-background-task'
 packageName: 'expo-background-task'
-platforms: ['android', 'ios']
+platforms: ['android', 'ios*']
 isNew: true
 ---
 
@@ -156,7 +156,7 @@ export default function BackgroundTaskScreen() {
         title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
         onPress={toggle}
       />
-      <Button title="Check Background Task Status" onPress={checkStatusAsync} />
+      <Button title="Check Background Task Status" onPress={updateAsync} />
     </View>
   );
 }
