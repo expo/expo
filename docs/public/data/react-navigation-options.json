@@ -1,7 +1,7 @@
 {
   "source": "React Navigation Documentation (Markdown)",
   "sourceUrl": "https://raw.githubusercontent.com/react-navigation/react-navigation.github.io/main/versioned_docs/version-7.x/native-stack-navigator.md",
-  "fetchedAt": "2025-05-27T18:45:49.302Z",
+  "fetchedAt": "2025-05-27T18:58:23.643Z",
   "totalOptions": 52,
   "categories": {
     "header": 25,
@@ -100,7 +100,7 @@
     },
     {
       "name": "headerBlurEffect",
-      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values: <CODE>extraLight</CODE>, <CODE>light</CODE>, <CODE>dark</CODE>, <CODE>regular</CODE>, <CODE>prominent</CODE>, <CODE>systemUltraThinMaterial</CODE>, <CODE>systemThinMaterial</CODE>, <CODE>systemMaterial</CODE>, <CODE>systemThickMaterial</CODE>, <CODE>systemChromeMaterial</CODE>, <CODE>systemUltraThinMaterialLight</CODE>, <CODE>systemThinMaterialLight</CODE>, <CODE>systemMaterialLight</CODE>, <CODE>systemThickMaterialLight</CODE>, <CODE>systemChromeMaterialLight</CODE>, <CODE>systemUltraThinMaterialDark</CODE>, <CODE>systemThinMaterialDark</CODE>, <CODE>systemMaterialDark</CODE>, <CODE>systemThickMaterialDark</CODE>- `systemChromeMaterialDark`",
+      "description": "Blur effect for the translucent header. The `headerTransparent` option needs to be set to `true` for this to work.\n\nSupported values: `extraLight`, `light`, `dark`, `regular`, `prominent`, `systemUltraThinMaterial`, `systemThinMaterial`, `systemMaterial`, `systemThickMaterial`, `systemChromeMaterial`, `systemUltraThinMaterialLight`, `systemThinMaterialLight`, `systemMaterialLight`, `systemThickMaterialLight`, `systemChromeMaterialLight`, `systemUltraThinMaterialDark`, `systemThinMaterialDark`, `systemMaterialDark`, `systemThickMaterialDark`, `systemChromeMaterialDark`",
       "platform": "iOS only",
       "category": "header"
     },
@@ -148,7 +148,7 @@
     },
     {
       "name": "headerSearchBarOptions",
-      "description": "Options to render a native search bar on iOS. Search bars are rarely static so normally it is controlled by passing an object to `headerSearchBarOptions` navigation option in the component's body.\n\nYou also need to specify `contentInsetAdjustmentBehavior=\"automatic\"` in your `ScrollView`, `FlatList` etc. If you don't have a `ScrollView`, specify `headerTransparent: false`.\n\nSupported properties are:\n\n**ref**\n\nRef to manipulate the search input imperatively. It contains the following methods:\n\n- `focus` - focuses the search bar\n- `blur` - removes focus from the search bar\n- `setText` - sets the search bar's content to given value\n- `clearText` - removes any text present in the search bar input field\n- `cancelSearch` - cancel the search and close the search bar\n\n**autoCapitalize**\n\nControls whether the text is automatically auto-capitalized as it is entered by the user.\nPossible values:\n\n- `none`\n- `words`\n- `sentences`\n- `characters`\n\nDefaults to `sentences`.\n\n**autoFocus**\n\nWhether to automatically focus search bar when it's shown. Defaults to `false`.\n\n**barTintColor**\n\nThe search field background color. By default bar tint color is translucent.\n\n**tintColor**\n\nThe color for the cursor caret and cancel button text.\n\n**cancelButtonText**\n\nThe text to be used instead of default `Cancel` button text.\n\n**disableBackButtonOverride**\n\nWhether the back button should close search bar's text input or not. Defaults to `false`.\n\n**hideNavigationBar**\n\nBoolean indicating whether to hide the navigation bar during searching. Defaults to `true`.\n\n**hideWhenScrolling**\n\nBoolean indicating whether to hide the search bar when scrolling. Defaults to `true`.\n\n**inputType**\n\nThe type of the input. Defaults to `\"text\"`.\n\nSupported values:\n\n- `\"text\"`\n- `\"phone\"`\n- `\"number\"`\n- `\"email\"`\n\n**obscureBackground**\n\nBoolean indicating whether to obscure the underlying content with semi-transparent overlay. Defaults to `true`.\n\n**placeholder**\n\nText displayed when search field is empty.\n\n**textColor**\n\nThe color of the text in the search field.\n\n**hintTextColor**\n\nThe color of the hint text in the search field.\n\n**headerIconColor**\n\nThe color of the search and close icons shown in the header\n\n**shouldShowHintSearchIcon**\n\nWhether to show the search hint icon when search bar is focused. Defaults to `true`.\n\n**onBlur**\n\nA callback that gets called when search bar has lost focus.\n\n**onCancelButtonPress**\n\nA callback that gets called when the cancel button is pressed.\n\n**onChangeText**\n\nA callback that gets called when the text changes. It receives the current text value of the search bar.",
+      "description": "Options to render a native search bar on iOS. Search bars are rarely static so normally it is controlled by passing an object to `headerSearchBarOptions` navigation option in the component's body.\n\nYou also need to specify `contentInsetAdjustmentBehavior=\"automatic\"` in your `ScrollView`, `FlatList` etc. If you don't have a `ScrollView`, specify `headerTransparent: false`.\n\nSupported properties are:\n\n**ref**\n\nRef to manipulate the search input imperatively. It contains the following methods:\n\n- `focus` - focuses the search bar\n- `blur` - removes focus from the search bar\n- `setText` - sets the search bar's content to given value\n- `clearText` - removes any text present in the search bar input field\n- `cancelSearch` - cancel the search and close the search bar\n\n**autoCapitalize**\n\nControls whether the text is automatically auto-capitalized as it is entered by the user.\nPossible values:\n\n- `none`\n- `words`\n- `sentences`\n- `characters`\n\nDefaults to `sentences`.\n\n**autoFocus**\n\nWhether to automatically focus search bar when it's shown. Defaults to `false`.\n\n**barTintColor**\n\nThe search field background color. By default bar tint color is translucent.\n\n**tintColor**\n\nThe color for the cursor caret and cancel button text.\n\n**cancelButtonText**\n\nThe text to be used instead of default `Cancel` button text.\n\n**disableBackButtonOverride**\n\nWhether the back button should close search bar's text input or not. Defaults to `false`.\n\n**hideNavigationBar**\n\nBoolean indicating whether to hide the navigation bar during searching. Defaults to `true`.\n\n**hideWhenScrolling**\n\nBoolean indicating whether to hide the search bar when scrolling. Defaults to `true`.\n\n**inputType**\n\nThe type of the input. Defaults to `\"text\"`.\n\nSupported values: `\"text\"`, `\"phone\"`, `\"number\"`, `\"email\"`\n\n**obscureBackground**\n\nBoolean indicating whether to obscure the underlying content with semi-transparent overlay. Defaults to `true`.\n\n**placeholder**\n\nText displayed when search field is empty.\n\n**textColor**\n\nThe color of the text in the search field.\n\n**hintTextColor**\n\nThe color of the hint text in the search field.\n\n**headerIconColor**\n\nThe color of the search and close icons shown in the header\n\n**shouldShowHintSearchIcon**\n\nWhether to show the search hint icon when search bar is focused. Defaults to `true`.\n\n**onBlur**\n\nA callback that gets called when search bar has lost focus.\n\n**onCancelButtonPress**\n\nA callback that gets called when the cancel button is pressed.\n\n**onChangeText**\n\nA callback that gets called when the text changes. It receives the current text value of the search bar.",
       "platform": "iOS only",
       "category": "header"
     },
@@ -160,7 +160,7 @@
     },
     {
       "name": "statusBarAnimation",
-      "description": "Sets the status bar animation (similar to the `StatusBar` component). Defaults to `fade` on iOS and `none` on Android.\n\nSupported values:\n\n- `\"fade\"`\n- `\"none\"`\n- `\"slide\"`\n\nOn Android, setting either `fade` or `slide` will set the transition of status bar color. On iOS, this option applies to appereance animation of the status bar.\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
+      "description": "Sets the status bar animation (similar to the `StatusBar` component). Defaults to `fade` on iOS and `none` on Android.\n\nSupported values: `\"fade\"`, `\"none\"`, `\"slide\"`\n\nOn Android, setting either `fade` or `slide` will set the transition of status bar color. On iOS, this option applies to appereance animation of the status bar.\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
       "platform": "Android only",
       "category": "other"
     },
@@ -172,7 +172,7 @@
     },
     {
       "name": "statusBarStyle",
-      "description": "Sets the status bar color (similar to the `StatusBar` component). Defaults to `auto`.\n\nSupported values:\n\n- `\"auto\"`\n- `\"inverted\"` (iOS only)\n- `\"dark\"`\n- `\"light\"`\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
+      "description": "Sets the status bar color (similar to the `StatusBar` component). Defaults to `auto`.\n\nSupported values: `\"auto\"`, `\"inverted\"`, `\"dark\"`, `\"light\"`\n\nRequires setting `View controller-based status bar appearance -> YES` (or removing the config) in your `Info.plist` file.",
       "platform": "Android only",
       "category": "other"
     },
@@ -220,25 +220,25 @@
     },
     {
       "name": "animationTypeForReplace",
-      "description": "The type of animation to use when this screen replaces another screen. Defaults to `push`.\n\nSupported values:\n\n- `push`: the new screen will perform push animation.\n\n  \n\n- `pop`: the new screen will perform pop animation.",
+      "description": "The type of animation to use when this screen replaces another screen. Defaults to `push`.\n\nSupported values: `push`, `pop`",
       "platform": "Both",
       "category": "other"
     },
     {
       "name": "animation",
-      "description": "How the screen should animate when pushed or popped.\n\nSupported values:\n\n- `default`: use the platform default animation\n  \n\n- `fade`: fade screen in or out\n  \n\n- `fade_from_bottom`: fade the new screen from bottom\n  \n\n- `flip`: flip the screen, requires `presentation: \"modal\"` (iOS only)\n  \n\n- `simple_push`: default animation, but without shadow and native header transition (iOS only, uses default animation on Android)\n  \n\n- `slide_from_bottom`: slide in the new screen from bottom\n  \n\n- `slide_from_right`: slide in the new screen from right (Android only, uses default animation on iOS)\n  \n\n- `slide_from_left`: slide in the new screen from left (Android only, uses default animation on iOS)\n  \n\n- `none`: don't animate the screen",
+      "description": "How the screen should animate when pushed or popped.\n\nSupported values: `default`, `fade`, `fade_from_bottom`, `flip`, `simple_push`, `slide_from_bottom`, `slide_from_right`, `slide_from_left`, `none`",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "presentation",
-      "description": "How should the screen be presented.\n\nSupported values:\n\n- `card`: the new screen will be pushed onto a stack, which means the default animation will be slide from the side on iOS, the animation on Android will vary depending on the OS version and theme.\n  \n\n- `modal`: the new screen will be presented modally. this also allows for a nested stack to be rendered inside the screen.\n  \n\n- `transparentModal`: the new screen will be presented modally, but in addition, the previous screen will stay so that the content below can still be seen if the screen has translucent background.\n  \n\n- `containedModal`: will use \"UIModalPresentationCurrentContext\" modal style on iOS and will fallback to \"modal\" on Android.\n  \n\n- `containedTransparentModal`: will use \"UIModalPresentationOverCurrentContext\" modal style on iOS and will fallback to \"transparentModal\" on Android.\n  \n\n- `fullScreenModal`: will use \"UIModalPresentationFullScreen\" modal style on iOS and will fallback to \"modal\" on Android. A screen using this presentation style can't be dismissed by gesture.\n  \n\n- `formSheet`: will use \"BottomSheetBehavior\" on Android and \"UIModalPresentationFormSheet\" modal style on iOS.",
+      "description": "How should the screen be presented.\n\nSupported values: `card`, `modal`, `transparentModal`, `containedModal`, `containedTransparentModal`, `fullScreenModal`, `formSheet`",
       "platform": "Android only",
       "category": "other"
     },
     {
       "name": "sheetAllowedDetents",
-      "description": "Works only when `presentation` is set to `formSheet`.\n\nDescribes heights where a sheet can rest.\n\nSupported values:\n\n- `fitToContents` - intents to set the sheet height to the height of its contents.\n- Array of fractions, e.g. `[0.25, 0.5, 0.75]`:\n  - Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.\n  - The array **must** be sorted in ascending order. This invariant is verified only in developement mode, where violation results in error.\n  - iOS accepts any number of detents, while **Android is limited to three** - any surplus values, beside first three are ignored.\n\nDefaults to `[1.0]`.",
+      "description": "Works only when `presentation` is set to `formSheet`.\n\nDescribes heights where a sheet can rest.\n\nSupported values: `fitToContents`\n\nDefaults to `[1.0]`.",
       "platform": "Android only",
       "category": "other"
     },
@@ -280,7 +280,7 @@
     },
     {
       "name": "orientation",
-      "description": "The display orientation to use for the screen.\n\nSupported values:\n\n- `default` - resolves to \"all\" without \"portrait_down\" on iOS. On Android, this lets the system decide the best orientation.\n- `all`: all orientations are permitted.\n- `portrait`: portrait orientations are permitted.\n- `portrait_up`: right-side portrait orientation is permitted.\n- `portrait_down`: upside-down portrait orientation is permitted.\n- `landscape`: landscape orientations are permitted.\n- `landscape_left`: landscape-left orientation is permitted.\n- `landscape_right`: landscape-right orientation is permitted.",
+      "description": "The display orientation to use for the screen.\n\nSupported values: `default`, `all`, `portrait`, `portrait_up`, `portrait_down`, `landscape`, `landscape_left`, `landscape_right`",
       "platform": "Android only",
       "category": "other"
     },
@@ -292,7 +292,7 @@
     },
     {
       "name": "gestureDirection",
-      "description": "Sets the direction in which you should swipe to dismiss the screen.\n\nSupported values:\n\n- `vertical` – dismiss screen vertically\n- `horizontal` – dismiss screen horizontally (default)\n\nWhen using `vertical` option, options `fullScreenGestureEnabled: true`, `customAnimationOnGesture: true` and `animation: 'slide_from_bottom'` are set by default.",
+      "description": "Sets the direction in which you should swipe to dismiss the screen.\n\nSupported values: `vertical`, `horizontal`\n\nWhen using `vertical` option, options `fullScreenGestureEnabled: true`, `customAnimationOnGesture: true` and `animation: 'slide_from_bottom'` are set by default.",
       "platform": "iOS only",
       "category": "other"
     },

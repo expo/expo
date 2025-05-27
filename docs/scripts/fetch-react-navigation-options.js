@@ -89,7 +89,7 @@ function parseOptionsFromMarkdown(markdown) {
       .trim();
 
     description = description.replace(
-      /Supported values:\s*\n\n((?:- `[^`]+`(?:\s*\n(?:<[^>]*>|\s)*)*\n)*)/g,
+      /Supported values:\s*\n\n([\S\s]*?)(?=\n\n[A-Z]|\n\n\*\*|$)/g,
       (match, listContent) => {
         const values = [];
         const valueMatches = listContent.matchAll(/- `([^`]+)`/g);
@@ -97,8 +97,8 @@ function parseOptionsFromMarkdown(markdown) {
           values.push(valueMatch[1]);
         }
 
-        if (values.length > 1 && values.every(val => /^[A-Za-z]\w*(?:[A-Z]\w*)*$/.test(val))) {
-          return `Supported values: <CODE>${values.join('</CODE>, <CODE>')}</CODE>`;
+        if (values.length > 0) {
+          return `Supported values: ${values.map(val => `\`${val}\``).join(', ')}`;
         }
         return match;
       }
