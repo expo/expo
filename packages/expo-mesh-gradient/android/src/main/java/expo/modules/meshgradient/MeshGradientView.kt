@@ -45,37 +45,37 @@ data class MeshGradientViewProps(
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
-class MeshGradientView(context: Context, appContext: AppContext) : ExpoComposeView<MeshGradientViewProps>(context, appContext) {
+class MeshGradientView(context: Context, appContext: AppContext) : ExpoComposeView<MeshGradientViewProps>(context, appContext, withHostingView = true) {
   override val props = MeshGradientViewProps()
-  private val paint = Paint()
 
-  init {
-    setContent {
-      val pointData = pointsFromProps()
+  @Composable
+  override fun Content() {
+    val pointData = pointsFromProps()
 
-      Canvas(modifier = Modifier.fillMaxSize()) {
-        drawIntoCanvas { canvas: Canvas ->
-          scale(
-            scaleX = size.width,
-            scaleY = size.height,
-            pivot = Offset.Zero
-          ) {
-            canvas.drawVertices(
-              vertices = Vertices(
-                vertexMode = VertexMode.Triangles,
-                positions = pointData.value.offsets,
-                textureCoordinates = pointData.value.offsets,
-                colors = pointData.value.colors,
-                indices = pointData.value.indices
-              ),
-              blendMode = BlendMode.Dst,
-              paint = paint
-            )
-          }
+    Canvas(modifier = Modifier.fillMaxSize()) {
+      drawIntoCanvas { canvas: Canvas ->
+        scale(
+          scaleX = size.width,
+          scaleY = size.height,
+          pivot = Offset.Zero
+        ) {
+          canvas.drawVertices(
+            vertices = Vertices(
+              vertexMode = VertexMode.Triangles,
+              positions = pointData.value.offsets,
+              textureCoordinates = pointData.value.offsets,
+              colors = pointData.value.colors,
+              indices = pointData.value.indices
+            ),
+            blendMode = BlendMode.Dst,
+            paint = paint
+          )
         }
       }
     }
   }
+
+  private val paint = Paint()
 
   @Composable
   private fun pointsFromProps(): State<PointData> =
