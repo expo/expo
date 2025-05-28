@@ -46,6 +46,7 @@ exports.goBack = goBack;
 exports.canGoBack = canGoBack;
 exports.canDismiss = canDismiss;
 exports.setParams = setParams;
+exports.getStateForHref = getStateForHref;
 exports.linkTo = linkTo;
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -168,6 +169,11 @@ function setParams(params = {}) {
     }
     assertIsReady();
     return (router_store_1.store.navigationRef?.current?.setParams)(params);
+}
+function getStateForHref(href, options = {}) {
+    href = (0, href_1.resolveHref)(href);
+    href = (0, href_1.resolveHrefStringWithSegments)(href, router_store_1.store.getRouteInfo(), options);
+    return router_store_1.store.linking?.getStateFromPath(href, router_store_1.store.linking.config);
 }
 function linkTo(originalHref, options = {}) {
     originalHref = typeof originalHref == 'string' ? originalHref : (0, href_1.resolveHref)(originalHref);

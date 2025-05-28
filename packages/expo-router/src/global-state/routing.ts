@@ -161,6 +161,13 @@ export function setParams(
   return (store.navigationRef?.current?.setParams as any)(params);
 }
 
+export function getStateForHref(href: Href, options: LinkToOptions = {}) {
+  href = resolveHref(href);
+
+  href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+  return store.linking?.getStateFromPath!(href, store.linking.config);
+}
+
 export type LinkToOptions = {
   event?: string;
 

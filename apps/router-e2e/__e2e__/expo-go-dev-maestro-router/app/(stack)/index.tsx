@@ -4,7 +4,12 @@ import { Text, View } from 'react-native';
 export default function Index() {
   return (
     <View
-      style={{ backgroundColor: '#333', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      style={{
+        backgroundColor: '#333',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <Text testID="e2e-screen" style={{ color: 'red' }}>
         Stack index
       </Text>

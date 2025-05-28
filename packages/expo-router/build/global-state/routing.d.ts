@@ -1,4 +1,4 @@
-import { NavigationAction } from '@react-navigation/native';
+import { NavigationAction, PartialRoute } from '@react-navigation/native';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 export declare const routingQueue: {
@@ -27,6 +27,31 @@ export declare function goBack(): void;
 export declare function canGoBack(): boolean;
 export declare function canDismiss(): boolean;
 export declare function setParams(params?: Record<string, undefined | string | number | (string | number)[]>): any;
+export declare function getStateForHref(href: Href, options?: LinkToOptions): (Partial<Omit<Readonly<{
+    key: string;
+    index: number;
+    routeNames: string[];
+    history?: unknown[];
+    routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+    type: string;
+    stale: false;
+}>, "stale" | "routes">> & Readonly<{
+    stale?: true;
+    routes: PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+}> & {
+    state?: Partial<Omit<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[];
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>, "stale" | "routes">> & Readonly<{
+        stale?: true;
+        routes: PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
+    }> & /*elided*/ any;
+}) | undefined;
 export type LinkToOptions = {
     event?: string;
     /**
