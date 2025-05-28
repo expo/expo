@@ -106,6 +106,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./BottomSheetScreen'));
     },
   },
+  {
+    name: 'Jetpack Compose primitives',
+    route: 'ui/jetpack-compose-primitives',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./JetpackComposePrimitivesScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
