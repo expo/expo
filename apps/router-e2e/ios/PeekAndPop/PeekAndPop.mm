@@ -22,45 +22,43 @@ using namespace facebook::react;
 @end
 
 @implementation PeekAndPop {
-  NSMutableArray<UIView *> *children;
+  PeekAndPopTrigger *trigger;
+  PeekAndPopPreview *preview;
 }
 
 - (void)mountChildComponentView:
             (UIView<RCTComponentViewProtocol> *)childComponentView
                           index:(NSInteger)index {
-  [children insertObject:childComponentView atIndex:index];
+  if ([childComponentView isKindOfClass:[PeekAndPopTrigger class]]) {
+    [super mountChildComponentView:childComponentView index:index];
+    trigger = (PeekAndPopTrigger *)childComponentView;
+  } else if ([childComponentView isKindOfClass:[PeekAndPopPreview class]]) {
+    preview = (PeekAndPopPreview *)childComponentView;
+  } else {
+    NSLog(@"Unknown child component view %@", childComponentView);
+  }
 }
 
 - (void)unmountChildComponentView:
             (UIView<RCTComponentViewProtocol> *)childComponentView
                             index:(NSInteger)index {
-  [children removeObjectAtIndex:index];
+  if ([childComponentView isKindOfClass:[PeekAndPopTrigger class]]) {
+    [super unmountChildComponentView:childComponentView index:index];
+    trigger = nil;
+  } else if ([childComponentView isKindOfClass:[PeekAndPopPreview class]]) {
+    preview = nil;
+  } else {
+    NSLog(@"Unknown child component view");
+  }
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if (self = [super initWithFrame:frame]) {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-    [button setTitle:@"Click Me" forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [button setBackgroundColor:[UIColor systemBlueColor]];
-    button.frame = CGRectMake(0, 0, 100, 40);
-    button.layer.cornerRadius = 8;
-    [button addTarget:self
-                  action:@selector(linkButtonTapped)
-        forControlEvents:UIControlEventTouchUpInside];
-
     UIContextMenuInteraction *interaction =
         [[UIContextMenuInteraction alloc] initWithDelegate:self];
-    [button addInteraction:interaction];
-
-    [self addSubview:button];
-    children = [NSMutableArray array];
+    [self addInteraction:interaction];
   }
   return self;
-}
-
-- (void)linkButtonTapped {
-  NSLog(@"Link button tapped");
 }
 
 - (void)updateProps:(Props::Shared const &)props
@@ -97,10 +95,15 @@ using namespace facebook::react;
   NSLog(@"Preview tapped!");
   [self pushPreloadedView];
   [animator addCompletion:^(void) {
-      // This block will be executed when the animation finishes
-      // or is stopped.
-      // You can leave it empty if you don't need to do anything.
+    self.eventEmitter.onPreviewTapped(
+        PeekAndPopEventEmitter::OnPreviewTapped{});
   }];
+}
+
+#pragma mark - Events
+
+- (const PeekAndPopEventEmitter &)eventEmitter {
+  return static_cast<const PeekAndPopEventEmitter &>(*_eventEmitter);
 }
 
 #pragma mark - Context Menu Helpers
@@ -108,9 +111,10 @@ using namespace facebook::react;
 - (UIViewController *)createPreviewViewController {
   UIViewController *previewVC = [UIViewController new];
 
-  for (UIView *child in children) {
-    [previewVC.view addSubview:child];
+  if (preview != nil) {
+    [previewVC.view addSubview:preview];
   }
+
   return previewVC;
 }
 
@@ -144,12 +148,12 @@ using namespace facebook::react;
 // Helper function to extract RNSScreenView objects from a list of subviews.
 - (NSArray<RNSScreenView *> *)extractScreenViewsFromSubviews:
     (NSArray<UIView *> *)subviews {
-      NSMutableArray<RNSScreenView *> *screenSubviews = [NSMutableArray array];
-      for (UIView *subview in subviews) {
-        if ([subview isKindOfClass:[RNSScreenView class]]) {
-          [screenSubviews addObject:(RNSScreenView *)subview];
-        }
-      }
+  NSMutableArray<RNSScreenView *> *screenSubviews = [NSMutableArray array];
+  for (UIView *subview in subviews) {
+    if ([subview isKindOfClass:[RNSScreenView class]]) {
+      [screenSubviews addObject:(RNSScreenView *)subview];
+    }
+  }
   return [screenSubviews copy]; // Return an immutable copy.
 }
 
@@ -157,8 +161,8 @@ using namespace facebook::react;
 - (RNSScreenView *)findPreloadedScreenView:
     (NSArray<RNSScreenView *> *)screenViews {
   for (RNSScreenView *screenView in screenViews) {
-        NSLog(@"ScreenView activityState: %ld", (long)screenView.activityState);
-        if (screenView.activityState == 0) {
+    NSLog(@"ScreenView activityState: %ld", (long)screenView.activityState);
+    if (screenView.activityState == 0) {
       return screenView;
     }
   }

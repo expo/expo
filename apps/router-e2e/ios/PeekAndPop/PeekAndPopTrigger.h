@@ -10,13 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PeekAndPop : RCTViewComponentView
-@end
-
 @interface PeekAndPopTrigger : RCTViewComponentView
 @end
 
-@interface PeekAndPopPreview : RCTViewComponentView
-@end
-
 NS_ASSUME_NONNULL_END
+

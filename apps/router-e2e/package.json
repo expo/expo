@@ -31,7 +31,9 @@
     },
     "ios": {
       "componentProvider": {
-        "PeekAndPop": "PeekAndPop"
+        "PeekAndPop": "PeekAndPop",
+        "PeekAndPopTrigger": "PeekAndPopTrigger",
+        "PeekAndPopPreview": "PeekAndPopPreview"
       }
     }
   },
