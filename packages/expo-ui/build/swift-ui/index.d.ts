@@ -10,6 +10,7 @@ export * from './List';
 export * from './Picker';
 export * from './Progress';
 export * from './Section';
+export * from './ShareLink';
 export * from './Slider';
 export * from './Switch';
 export * from './TextInput';
