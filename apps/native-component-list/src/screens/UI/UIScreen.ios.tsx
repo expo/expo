@@ -43,6 +43,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ShareLink component',
+    route: 'ui/share-link',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShareLinkScreen'));
+    },
+  },
+  {
     name: 'Slider component',
     route: 'ui/slider',
     options: {},
