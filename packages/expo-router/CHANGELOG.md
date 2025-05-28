@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))
+
 ### 💡 Others
 
 ## 5.1.0 — 2025-06-11

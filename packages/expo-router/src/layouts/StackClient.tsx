@@ -16,6 +16,7 @@ import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
+import { nanoid } from 'nanoid/non-secure';
 import { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
@@ -74,7 +75,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           : undefined;
 
       // Handle if 'getID' or 'singular' is set.
-      function getIdFunction(fn?: GetId): GetId | undefined {
+      function getIdFunction(): GetId | undefined {
         // Actions can be fired by the user, so we do need to validate their structure.
         if (
           !('payload' in action) ||
@@ -85,73 +86,183 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           return;
         }
 
-        const name = action.payload.name;
+        const actionName = action.payload.name;
 
         return (
           // The dynamic singular added to an action, `router.push('screen', { singular: () => 'id' })`
-          getActionSingularIdFn(actionSingularOptions, name) ||
+          getActionSingularIdFn(actionSingularOptions, actionName) ||
           // The static getId added as a prop to `<Screen singular />` or `<Screen getId={} />`
-          options.routeGetIdList[name] ||
-          // The custom singular added by Expo Router to support its concept of `navigate`
-          fn
+          options.routeGetIdList[actionName]
         );
       }
 
+      const { routeParamList } = options;
+
       switch (action.type) {
-        case 'PUSH': {
-          /**
-           * PUSH should always push
-           *
-           * If 'getID' or 'singular' is set and a match is found, instead of pushing a new screen,
-           * the existing screen will be moved to the HEAD of the stack. If there are multiple matches, the rest will be removed.
-           */
-          const nextState = original.getStateForAction(state, action, {
-            ...options,
-            routeGetIdList: {
-              ...options.routeGetIdList,
-              [action.payload.name]: getIdFunction(),
-            },
-          });
-
-          /**
-           * React Navigation doesn't support dynamic getId function on the action. Because of this,
-           * can you enter a state where the screen is pushed multiple times but the normal getStateForAction
-           * doesn't remove the duplicates. We need to filter the state to only have singular screens.
-           */
-          return actionSingularOptions
-            ? filterSingular(nextState, actionSingularOptions)
-            : nextState;
-        }
+        case 'PUSH':
         case 'NAVIGATE': {
-          /**
-           * NAVIGATE should push unless the current name & route params of the current and target screen match.
-           * Search params and hashes should be ignored.
-           *
-           * If the name, route params & search params match, no action is taken.
-           * If both the name and route params match, the screen is replaced.
-           * If the name / route params do not match, the screen is pushed.
-           *
-           * If 'getID' or 'singular' is set and a match is found, instead of pushing a new screen,
-           * the existing screen will be moved to the HEAD of the stack. If there are multiple matches, the rest will be removed.
-           */
-          const nextState = original.getStateForAction(state, action, {
-            ...options,
-            routeGetIdList: {
-              ...options.routeGetIdList,
-              [action.payload.name]: getIdFunction((options) => {
-                return getSingularId(action.payload.name, options);
-              }),
-            },
-          });
+          if (!state.routeNames.includes(action.payload.name)) {
+            return null;
+          }
 
-          /**
-           * React Navigation doesn't support dynamic getId function on the action. Because of this,
-           * can you enter a state where the screen is pushed multiple times but the normal getStateForAction
-           * doesn't remove the duplicates. We need to filter the state to only have singular screens.
-           */
-          return actionSingularOptions
-            ? filterSingular(nextState, actionSingularOptions)
-            : nextState;
+          // START FORK
+          const getId = getIdFunction();
+          // const getId = options.routeGetIdList[action.payload.name];
+          // END FORK
+          const id = getId?.({ params: action.payload.params });
+
+          let route: Route<string> | undefined;
+
+          if (id !== undefined) {
+            route = state.routes.findLast(
+              (route) =>
+                route.name === action.payload.name && id === getId?.({ params: route.params })
+            );
+          } else if (action.type === 'NAVIGATE') {
+            const currentRoute = state.routes[state.index];
+
+            // If the route matches the current one, then navigate to it
+            if (action.payload.name === currentRoute.name) {
+              route = currentRoute;
+            } else if (action.payload.pop) {
+              route = state.routes.findLast((route) => route.name === action.payload.name);
+            }
+          }
+
+          if (!route) {
+            route = state.preloadedRoutes.find(
+              (route) =>
+                route.name === action.payload.name && id === getId?.({ params: route.params })
+            );
+          }
+
+          let params;
+
+          if (action.type === 'NAVIGATE' && action.payload.merge && route) {
+            params =
+              action.payload.params !== undefined ||
+              routeParamList[action.payload.name] !== undefined
+                ? {
+                    ...routeParamList[action.payload.name],
+                    ...route.params,
+                    ...action.payload.params,
+                  }
+                : route.params;
+          } else {
+            params =
+              routeParamList[action.payload.name] !== undefined
+                ? {
+                    ...routeParamList[action.payload.name],
+                    ...action.payload.params,
+                  }
+                : action.payload.params;
+          }
+
+          let routes: Route<string>[];
+
+          if (route) {
+            if (action.type === 'NAVIGATE' && action.payload.pop) {
+              routes = [];
+
+              // Get all routes until the matching one
+              for (const r of state.routes) {
+                if (r.key === route.key) {
+                  routes.push({
+                    ...route,
+                    path: action.payload.path !== undefined ? action.payload.path : route.path,
+                    params,
+                  });
+                  break;
+                }
+
+                routes.push(r);
+              }
+            } else {
+              // START FORK
+              // If there is an id, then filter out the existing route with the same id.
+              // THIS ACTION IS DANGEROUS. This can cause React Native Screens to freeze
+              if (id !== undefined) {
+                routes = state.routes.filter((r) => r.key !== route.key);
+              } else if (action.type === 'NAVIGATE' && state.routes.length > 0) {
+                // The navigation action should only replace the last route if it has the same name and path params.
+                const lastRoute = state.routes[state.routes.length - 1];
+                if (
+                  getSingularId(lastRoute.name, { params: lastRoute.params }) ===
+                  getSingularId(route.name, { params })
+                ) {
+                  routes = state.routes.slice(0, -1);
+                } else {
+                  routes = [...state.routes];
+                }
+              } else {
+                routes = [...state.routes];
+              }
+
+              // If the routes length is the same as the state routes length, then we are navigating to a new route.
+              // Otherwise we are replacing an existing route.
+              const key =
+                routes.length === state.routes.length
+                  ? `${action.payload.name}-${nanoid()}`
+                  : route.key;
+
+              routes.push({
+                ...route,
+                key,
+                path:
+                  action.type === 'NAVIGATE' && action.payload.path !== undefined
+                    ? action.payload.path
+                    : route.path,
+                params,
+              });
+
+              // routes = state.routes.filter((r) => r.key !== route.key);
+              // routes.push({
+              //   ...route,
+              //   path:
+              //     action.type === 'NAVIGATE' && action.payload.path !== undefined
+              //       ? action.payload.path
+              //       : route.path,
+              //   params,
+              // });
+              // END FORK
+            }
+          } else {
+            routes = [
+              ...state.routes,
+              {
+                key: `${action.payload.name}-${nanoid()}`,
+                name: action.payload.name,
+                path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
+                params,
+              },
+            ];
+          }
+
+          // START FORK
+          // return filterSingular(
+          const result = {
+            ...state,
+            index: routes.length - 1,
+            preloadedRoutes: state.preloadedRoutes.filter(
+              (route) => routes[routes.length - 1].key !== route.key
+            ),
+            routes,
+          };
+
+          if (actionSingularOptions) {
+            return filterSingular(result, getId);
+          }
+
+          return result;
+          // return {
+          //   ...state,
+          //   index: routes.length - 1,
+          //   preloadedRoutes: state.preloadedRoutes.filter(
+          //     (route) => routes[routes.length - 1].key !== route.key
+          //   ),
+          //   routes,
+          // };
+          // END FORK
         }
         default: {
           return original.getStateForAction(state, action, options);
@@ -183,8 +294,8 @@ function filterSingular<
     | StackNavigationState<ParamListBase>
     | PartialState<StackNavigationState<ParamListBase>>
     | null,
->(state: T, singular: SingularOptions): T {
-  if (!state || !singular) {
+>(state: T, getId?: GetId): T {
+  if (!state) {
     return state;
   }
 
@@ -196,13 +307,7 @@ function filterSingular<
   const current = state.routes[currentIndex];
   const name = current.name;
 
-  const getId = getActionSingularIdFn(singular, name);
-
-  if (!getId) {
-    return state;
-  }
-
-  const id = getId({ params: current.params });
+  const id = getId?.({ params: current.params });
 
   if (!id) {
     return state;
@@ -217,7 +322,7 @@ function filterSingular<
     }
 
     // Remove all other routes with the same name and id.
-    return name !== route.name || id !== getId({ params: route.params });
+    return name !== route.name || id !== getId?.({ params: route.params });
   });
 
   return {
