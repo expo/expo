@@ -138,7 +138,7 @@ export default {
 };
 ```
 
-The `GOOGLE_SERVICES_JSON` is a secret file variable in that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to the build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository).
+The `GOOGLE_SERVICES_JSON` is a secret file variable that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to the build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository).
 
 ```js app.config.js
 export default {
