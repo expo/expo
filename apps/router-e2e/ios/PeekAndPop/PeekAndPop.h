@@ -17,6 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface PeekAndPopPreview : RCTViewComponentView
+- (void)updateShadowStateWithBounds:(CGRect)bounds;
+@end
+
+@interface PreviewViewController : UIViewController
+- (instancetype)initWithPeekAndPopPreview:(PeekAndPopPreview *)peekAndPopPreview;
 @end
 
 NS_ASSUME_NONNULL_END

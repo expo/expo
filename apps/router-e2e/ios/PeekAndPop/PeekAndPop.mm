@@ -109,13 +109,12 @@ using namespace facebook::react;
 #pragma mark - Context Menu Helpers
 
 - (UIViewController *)createPreviewViewController {
-  UIViewController *previewVC = [UIViewController new];
-
   if (preview != nil) {
+    UIViewController *previewVC = [[PreviewViewController alloc] initWithPeekAndPopPreview:preview];
     [previewVC.view addSubview:preview];
+    return previewVC;
   }
-
-  return previewVC;
+  return [UIViewController new];
 }
 
 - (UIMenu *)createContextMenu {

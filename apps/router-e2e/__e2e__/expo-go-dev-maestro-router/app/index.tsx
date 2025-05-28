@@ -1,6 +1,6 @@
 import { Link, useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { Text, useWindowDimensions, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import PreviewIndex from './(stack)/index';
 
@@ -10,7 +10,6 @@ import PeekAndPopTriggerNativeComponent from '@/specs/PeekAndPopTriggerNativeCom
 
 export default function Index() {
   const router = useRouter();
-  const { height, width } = useWindowDimensions();
   useEffect(() => {
     setTimeout(() => {
       router.prefetch('/(stack)');
@@ -33,9 +32,7 @@ export default function Index() {
             <Text>Trigger</Text>
           </PeekAndPopTriggerNativeComponent>
           <PeekAndPopPreviewNativeComponent>
-            <View style={{ width, height }}>
-              <PreviewIndex />
-            </View>
+            <PreviewIndex />
           </PeekAndPopPreviewNativeComponent>
         </PeekAndPopNativeComponent>
       </View>
