@@ -3,9 +3,9 @@ import SwiftUI
 
 struct Preview: Record {
     @Field
-    var title: String?
+    var title: String
     @Field
-    var image: String?
+    var image: String
 }
 
 final class ShareLinkViewProps: ExpoSwiftUI.ViewProps {
@@ -25,11 +25,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
             let subject = props.subject.map { Text($0) }
             let message = props.message.map { Text($0) }
             let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
-                guard let title = preview.title, let image = preview.image else {
-                    return nil
-                }
-
-                return SharePreview(title, image: Image(image))
+                SharePreview(preview.title, image: Image(preview.image))
             }
 
             if hasChildren {
