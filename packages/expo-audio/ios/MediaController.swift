@@ -34,7 +34,9 @@ class MediaController {
   }
 
   func updateNowPlayingInfo(for player: AudioPlayer) {
-    guard player.id == activePlayer?.id else { return }
+    guard player.id == activePlayer?.id else {
+      return
+    }
     var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
 
     nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
@@ -44,13 +46,13 @@ class MediaController {
 
     if let userMetadata = player.metadata {
       if let title = userMetadata.title {
-          nowPlayingInfo[MPMediaItemPropertyTitle] = title
+        nowPlayingInfo[MPMediaItemPropertyTitle] = title
       }
       if let artist = userMetadata.artist {
-          nowPlayingInfo[MPMediaItemPropertyArtist] = artist
+        nowPlayingInfo[MPMediaItemPropertyArtist] = artist
       }
       if let album = userMetadata.albumTitle {
-          nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = album
+        nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = album
       }
       if let artworkUrl = userMetadata.artworkUrl {
         if currentArtworkUrl != artworkUrl {
@@ -72,7 +74,7 @@ class MediaController {
     } else {
       // Try to get the metadata from the provided asset
       if let currentItem = player.ref.currentItem,
-         let asset = currentItem.asset as? AVURLAsset {
+      let asset = currentItem.asset as? AVURLAsset {
         let metadata = asset.commonMetadata
 
         for item in metadata {
@@ -91,7 +93,7 @@ class MediaController {
             }
           case .commonKeyArtwork:
             if let imageData = item.dataValue,
-               let image = UIImage(data: imageData) {
+              let image = UIImage(data: imageData) {
               let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
               nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
             }
@@ -198,7 +200,8 @@ class MediaController {
       DispatchQueue.main.async {
         completion(artwork)
       }
-    }.resume()
+    }
+    .resume()
   }
 
   private func enableRemoteCommands() {

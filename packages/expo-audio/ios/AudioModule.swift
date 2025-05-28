@@ -487,7 +487,7 @@ public class AudioModule: Module {
     try AudioUtils.validateAudioMode(mode: mode)
     let session = AVAudioSession.sharedInstance()
     var category: AVAudioSession.Category = session.category
-    
+
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
     self.allowsRecording = mode.allowsRecording
@@ -536,8 +536,11 @@ public class AudioModule: Module {
       sessionOptions = categoryOptions
     }
 
-<<<<<<< HEAD
-    try session.setCategory(category, options: sessionOptions)
+    if sessionOptions.isEmpty {
+      try session.setCategory(category, mode: .default)
+    } else {
+      try session.setCategory(category, options: sessionOptions)
+    }
   }
 
   private func activateSession() throws {
@@ -559,17 +562,6 @@ public class AudioModule: Module {
         }
       }
     }
-||||||| parent of dbe8b959ef ([ios][audio] Support lock screen controls)
-    try session.setCategory(category, options: sessionOptions)
-    try session.setActive(true, options: [.notifyOthersOnDeactivation])
-=======
-    if sessionOptions.isEmpty {
-      try session.setCategory(category, mode: .default)
-    } else {
-      try session.setCategory(category, options: sessionOptions)
-    }
-    try session.setActive(true, options: [.notifyOthersOnDeactivation])
->>>>>>> dbe8b959ef ([ios][audio] Support lock screen controls)
   }
 
   private func checkPermissions() throws {
