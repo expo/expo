@@ -115,6 +115,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Support setting seek tolerences when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Support lock screen controls.
 
 ### 🐛 Bug fixes
 
