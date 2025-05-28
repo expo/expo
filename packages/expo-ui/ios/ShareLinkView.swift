@@ -23,13 +23,13 @@ struct ShareLinkView: ExpoSwiftUI.View {
     Group {
       if #available(iOS 16.0, *), let item = props.item {
         let hasChildren = props.children?.isEmpty == false
-        
+
         let subject = props.subject.map { Text($0) }
         let message = props.message.map { Text($0) }
         let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
           SharePreview(preview.title, image: Image(preview.image))
         }
-        
+
         if hasChildren {
           shareLink(
             item: item,
@@ -53,7 +53,6 @@ struct ShareLinkView: ExpoSwiftUI.View {
     EmptyView()
 #endif
   }
-
 
   @available(iOS 16.0, *)
   @ViewBuilder
