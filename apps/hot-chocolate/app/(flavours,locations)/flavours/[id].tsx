@@ -1,4 +1,4 @@
-import { HStack, Host, Image, Text, VStack } from '@expo/ui/swift-ui-primitives';
+import { HStack, Host, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui-primitives';
 import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useColorScheme } from 'react-native';
@@ -37,7 +37,7 @@ export default function FlavourDetails() {
           {location ? (
             <Link href={`/locations/${location.id}?hideStorePicker=true`} asChild>
               <HStack>
-                <Text size={20} color="#007AFF" weight="semibold">
+                <Text size={20} color="#007AFF">
                   {location.name}
                 </Text>
               </HStack>
@@ -66,6 +66,7 @@ export default function FlavourDetails() {
           </Text>
 
           <Text size={16}>{flavour.description}</Text>
+          <Spacer />
         </VStack>
       </Host>
     </>

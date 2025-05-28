@@ -34,7 +34,12 @@ export default function LocationDetails() {
 
   return (
     <>
-      <Stack.Screen options={{ title: location.name }} />
+      <Stack.Screen
+        options={{
+          title: '',
+          headerLargeStyle: { backgroundColor: colorScheme === 'dark' ? 'black' : 'white' },
+        }}
+      />
       <Host style={{ flex: 1 }} colorScheme={colorScheme}>
         <VStack alignment="leading">
           {!hideStorePicker ? (
@@ -42,21 +47,24 @@ export default function LocationDetails() {
               padding={{ top: 16, leading: 16, bottom: 16, trailing: 16 }}
               alignment="leading"
               frame={{ maxWidth: windowWidth, alignment: 'leading' }}
-              spacing={8}
+              spacing={4}
               backgroundColor={colorScheme === 'dark' ? 'black' : 'white'}>
-              <HStack>
-                <Text>Store: </Text>
-                <Picker
-                  variant="menu"
-                  options={location.stores.map((store) => store.name)}
-                  selectedIndex={location.stores.findIndex(
-                    (store) => store.name === selectedStore?.name
-                  )}
-                  onOptionSelected={({ nativeEvent: { index } }) => {
-                    setSelectedStore(location.stores[index] as Store);
-                  }}
-                />
-              </HStack>
+              <Text size={28}>{location.name}</Text>
+              {location.stores.length > 1 ? (
+                <HStack>
+                  <Text>Store: </Text>
+                  <Picker
+                    variant="menu"
+                    options={location.stores.map((store) => store.name)}
+                    selectedIndex={location.stores.findIndex(
+                      (store) => store.name === selectedStore?.name
+                    )}
+                    onOptionSelected={({ nativeEvent: { index } }) => {
+                      setSelectedStore(location.stores[index] as Store);
+                    }}
+                  />
+                </HStack>
+              ) : null}
               <HStack
                 onPress={() =>
                   Linking.openURL(
