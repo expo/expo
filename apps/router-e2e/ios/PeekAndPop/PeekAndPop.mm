@@ -130,31 +130,63 @@ using namespace facebook::react;
   return concreteComponentDescriptorProvider<PeekAndPopComponentDescriptor>();
 }
 
-- (void)pushPreloadedView {
+- (RNSScreenStackView *)findScreenStackViewInResponderChain {
   UIResponder *responder = self;
   while (responder) {
     responder = [responder nextResponder];
     if ([responder isKindOfClass:[RNSScreenStackView class]]) {
-      RNSScreenStackView *stack = (RNSScreenStackView *)responder;
-      NSArray<UIView *> *subviews = stack.reactSubviews;
-      NSLog(@"Number of subviews: %lu", (unsigned long)subviews.count);
+      return (RNSScreenStackView *)responder;
+    }
+  }
+  return nil; // No RNSScreenStackView found in the responder chain.
+}
+
+// Helper function to extract RNSScreenView objects from a list of subviews.
+- (NSArray<RNSScreenView *> *)extractScreenViewsFromSubviews:
+    (NSArray<UIView *> *)subviews {
       NSMutableArray<RNSScreenView *> *screenSubviews = [NSMutableArray array];
       for (UIView *subview in subviews) {
         if ([subview isKindOfClass:[RNSScreenView class]]) {
           [screenSubviews addObject:(RNSScreenView *)subview];
         }
       }
-      RNSScreenView *preloadedScreenView = nil;
-      for (RNSScreenView *screenView in screenSubviews) {
+  return [screenSubviews copy]; // Return an immutable copy.
+}
+
+// Helper function to find the preloaded screen view (activityState == 0).
+- (RNSScreenView *)findPreloadedScreenView:
+    (NSArray<RNSScreenView *> *)screenViews {
+  for (RNSScreenView *screenView in screenViews) {
         NSLog(@"ScreenView activityState: %ld", (long)screenView.activityState);
         if (screenView.activityState == 0) {
-          preloadedScreenView = screenView;
-        }
-      }
+      return screenView;
+    }
+  }
+  return nil; // No preloaded screen view found.
+}
+
+// The main function, now cleaner and orchestrating the helper functions.
+- (void)pushPreloadedView {
+  RNSScreenStackView *stack = [self findScreenStackViewInResponderChain];
+
+  if (stack) {
+    NSArray<UIView *> *subviews = stack.reactSubviews;
+    NSLog(@"Number of subviews: %lu", (unsigned long)subviews.count);
+
+    NSArray<RNSScreenView *> *screenSubviews =
+        [self extractScreenViewsFromSubviews:subviews];
+
+    RNSScreenView *preloadedScreenView =
+        [self findPreloadedScreenView:screenSubviews];
+
+    if (preloadedScreenView) {
       [preloadedScreenView setActivityState:2];
       [stack markChildUpdated];
-      return;
+    } else {
+      NSLog(@"No preloaded screen view found with activityState == 0.");
     }
+  } else {
+    NSLog(@"RNSScreenStackView not found in the responder chain.");
   }
 }
 
