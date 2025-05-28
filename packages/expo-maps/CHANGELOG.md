@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))
+
 ## 0.10.0 — 2025-05-08
 
 ### 🎉 New features
