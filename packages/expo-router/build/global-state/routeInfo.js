@@ -23,7 +23,7 @@ function getRouteInfoFromState(state) {
     }
     state = route.state;
     const segments = [];
-    const params = Object.create(null);
+    let params = Object.create(null);
     while (state) {
         route = state.routes['index' in state && state.index ? state.index : 0];
         Object.assign(params, route.params);
@@ -34,6 +34,17 @@ function getRouteInfoFromState(state) {
         segments.push(...routeName.split('/'));
         state = route.state;
     }
+    params = Object.fromEntries(Object.entries(params).map(([key, value]) => {
+        if (typeof value === 'string') {
+            return [key, safeDecodeURIComponent(value)];
+        }
+        else if (Array.isArray(value)) {
+            return [key, value.map((v) => safeDecodeURIComponent(v))];
+        }
+        else {
+            return [key, value];
+        }
+    }));
     /**
      * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
      * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
@@ -137,5 +148,14 @@ function getRouteInfoFromState(state) {
         // TODO: Remove this, it is not used anywhere
         isIndex: false,
     };
+}
+function safeDecodeURIComponent(value) {
+    try {
+        return typeof value === 'string' ? decodeURIComponent(value) : value;
+    }
+    catch {
+        // If the value is not a valid URI component, return it as is
+        return value;
+    }
 }
 //# sourceMappingURL=routeInfo.js.map
