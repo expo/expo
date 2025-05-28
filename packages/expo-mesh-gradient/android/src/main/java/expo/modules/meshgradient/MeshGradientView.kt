@@ -47,6 +47,7 @@ data class MeshGradientViewProps(
 @SuppressLint("ViewConstructor")
 class MeshGradientView(context: Context, appContext: AppContext) : ExpoComposeView<MeshGradientViewProps>(context, appContext, withHostingView = true) {
   override val props = MeshGradientViewProps()
+  private val paint = Paint()
 
   @Composable
   override fun Content() {
@@ -74,8 +75,6 @@ class MeshGradientView(context: Context, appContext: AppContext) : ExpoComposeVi
       }
     }
   }
-
-  private val paint = Paint()
 
   @Composable
   private fun pointsFromProps(): State<PointData> =
