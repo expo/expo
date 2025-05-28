@@ -254,6 +254,35 @@ describe(useGlobalSearchParams, () => {
     expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
     expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
+
+  it(`handles encoded params`, () => {
+    const { result } = renderHook(() => useGlobalSearchParams(), ['index'], {
+      initialUrl: '/?test=%2Fhello%2Fworld%2F',
+    });
+
+    expect(result.current).toEqual({
+      test: '/hello/world/',
+    });
+
+    act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
+
+    expect(result.current).toEqual({
+      test: '/hello/world/again',
+    });
+
+    act(() =>
+      router.push({
+        pathname: '/',
+        params: {
+          test: '%2Ffoo%2Fbar%2F',
+        },
+      })
+    );
+
+    expect(result.current).toEqual({
+      test: '/foo/bar/',
+    });
+  });
 });
 
 describe(useLocalSearchParams, () => {
@@ -332,6 +361,35 @@ describe(useLocalSearchParams, () => {
     act(() => router.setParams({ test: undefined }));
 
     expect(result.current).toEqual({});
+  });
+
+  it(`handles encoded params`, () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=%2Fhello%2Fworld%2F',
+    });
+
+    expect(result.current).toEqual({
+      test: '/hello/world/',
+    });
+
+    act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
+
+    expect(result.current).toEqual({
+      test: '/hello/world/again',
+    });
+
+    act(() =>
+      router.push({
+        pathname: '/',
+        params: {
+          test: '%2Ffoo%2Fbar%2F',
+        },
+      })
+    );
+
+    expect(result.current).toEqual({
+      test: '/foo/bar/',
+    });
   });
 });
 
