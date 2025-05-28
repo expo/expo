@@ -1,0 +1,103 @@
+import ExpoModulesCore
+import SwiftUI
+
+struct Preview: Record {
+    @Field
+    var title: String?
+    @Field
+    var image: String?
+}
+
+final class ShareLinkViewProps: ExpoSwiftUI.ViewProps {
+    @Field var item: URL?
+    @Field var subject: String?
+    @Field var message: String?
+    @Field var preview: Preview?
+}
+
+struct ShareLinkView: ExpoSwiftUI.View {
+    @ObservedObject var props: ShareLinkViewProps
+
+    var body: some View {
+        if #available(iOS 16.0, tvOS 16.0, *), let item = props.item {
+            let hasChildren = props.children?.isEmpty == false
+
+            let subject = props.subject.map { Text($0) }
+            let message = props.message.map { Text($0) }
+            let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
+                guard let title = preview.title, let image = preview.image else {
+                    return nil
+                }
+
+                return SharePreview(title, image: Image(image))
+            }
+
+            if hasChildren {
+                ShareLink(
+                    item: item,
+                    subject: subject,
+                    message: message,
+                    preview: preview
+                ) {
+                    Children()
+                }
+            } else {
+                ShareLink(
+                    item: item,
+                    subject: subject,
+                    message: message,
+                    preview: preview
+                )
+            }
+        } else {
+            EmptyView()
+        }
+    }
+
+    @available(iOS 16.0, tvOS 16.0, *)
+    @ViewBuilder
+    private func ShareLink(
+        item: URL,
+        subject: Text?,
+        message: Text?,
+        preview: SharePreview<Image, Never>?,
+        @ViewBuilder label: () -> some View
+    ) -> some View {
+        if let preview = preview {
+            SwiftUI.ShareLink(
+                item: item,
+                subject: subject,
+                message: message,
+                preview: preview,
+                label: label
+            )
+        } else {
+            SwiftUI.ShareLink(
+                item: item,
+                subject: subject,
+                message: message,
+                label: label
+            )
+        }
+    }
+
+    @available(iOS 16.0, tvOS 16.0, *)
+    @ViewBuilder
+    private func ShareLink(
+        item: URL,
+        subject: Text?,
+        message: Text?,
+        preview: SharePreview<Image, Never>?
+    ) -> some View {
+        if let preview = preview {
+            SwiftUI.ShareLink(
+                item: item,
+                subject: subject,
+                message: message,
+                preview: preview
+            )
+        } else {
+            SwiftUI.ShareLink(item: item, subject: subject, message: message)
+        }
+    }
+}
