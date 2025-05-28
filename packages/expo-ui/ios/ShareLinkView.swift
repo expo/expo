@@ -19,38 +19,43 @@ struct ShareLinkView: ExpoSwiftUI.View {
   @ObservedObject var props: ShareLinkViewProps
 
   var body: some View {
-    if #available(iOS 16.0, tvOS 16.0, *), let item = props.item {
-      let hasChildren = props.children?.isEmpty == false
-
-      let subject = props.subject.map { Text($0) }
-      let message = props.message.map { Text($0) }
-      let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
-        SharePreview(preview.title, image: Image(preview.image))
-      }
-
-      if hasChildren {
-        shareLink(
-          item: item,
-          subject: subject,
-          message: message,
-          preview: preview
-        ) {
-          Children()
+#if !os(tvOS)
+    Group {
+      if #available(iOS 16.0, *), let item = props.item {
+        let hasChildren = props.children?.isEmpty == false
+        
+        let subject = props.subject.map { Text($0) }
+        let message = props.message.map { Text($0) }
+        let preview: SharePreview<Image, Never>? = props.preview.flatMap { preview in
+          SharePreview(preview.title, image: Image(preview.image))
         }
-      } else {
-        shareLink(
-          item: item,
-          subject: subject,
-          message: message,
-          preview: preview
-        )
+        
+        if hasChildren {
+          shareLink(
+            item: item,
+            subject: subject,
+            message: message,
+            preview: preview
+          ) {
+            Children()
+          }
+        } else {
+          shareLink(
+            item: item,
+            subject: subject,
+            message: message,
+            preview: preview
+          )
+        }
       }
-    } else {
-      EmptyView()
     }
+#else
+    EmptyView()
+#endif
   }
 
-  @available(iOS 16.0, tvOS 16.0, *)
+
+  @available(iOS 16.0, *)
   @ViewBuilder
   private func shareLink(
     item: URL,
@@ -77,7 +82,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
     }
   }
 
-  @available(iOS 16.0, tvOS 16.0, *)
+  @available(iOS 16.0, *)
   @ViewBuilder
   private func shareLink(
     item: URL,
