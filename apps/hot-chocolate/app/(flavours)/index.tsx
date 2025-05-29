@@ -52,12 +52,14 @@ export default function Index() {
         <List>
           {FlavourList.map((item, index) => (
             <Link href={`/flavours/${item.id}`} asChild key={index}>
-              <HStack spacing={8}>
-                <Text size={14} color="secondary">{`#${index + 1}:`}</Text>
-                <Text size={14}>{`${item.name}`}</Text>
-                <Spacer />
-                <Image systemName="chevron.right" size={14} color="secondary" />
-              </HStack>
+              <Button>
+                <HStack spacing={8}>
+                  <Text size={14} color="secondary">{`#${index + 1}:`}</Text>
+                  <Text size={14} color="primary">{`${item.name}`}</Text>
+                  <Spacer />
+                  <Image systemName="chevron.right" size={14} color="secondary" />
+                </HStack>
+              </Button>
             </Link>
           ))}
         </List>

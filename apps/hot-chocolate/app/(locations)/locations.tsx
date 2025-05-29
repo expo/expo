@@ -1,4 +1,13 @@
-import { HStack, Host, Image, List, Picker, Spacer, Text } from '@expo/ui/swift-ui-primitives';
+import {
+  Button,
+  HStack,
+  Host,
+  Image,
+  List,
+  Picker,
+  Spacer,
+  Text,
+} from '@expo/ui/swift-ui-primitives';
 import { Link, Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
@@ -68,18 +77,20 @@ export default function Locations() {
         <List scrollEnabled>
           {LocationList.map((item) => (
             <Link href={`/locations/${item.id}`} asChild key={item.id}>
-              <HStack spacing={8}>
-                <Text size={14}>{`${item.name}`}</Text>
-                <Spacer />
-                <Text size={14} color="secondary">
-                  {getDistance({
-                    // For demo purposes, use the first store's location
-                    latitude: item.stores[0].point[0],
-                    longitude: item.stores[0].point[1],
-                  })}
-                </Text>
-                <Image systemName="chevron.right" size={14} color="secondary" />
-              </HStack>
+              <Button>
+                <HStack spacing={8}>
+                  <Text size={14} color="primary">{`${item.name}`}</Text>
+                  <Spacer />
+                  <Text size={14} color="secondary">
+                    {getDistance({
+                      // For demo purposes, use the first store's location
+                      latitude: item.stores[0].point[0],
+                      longitude: item.stores[0].point[1],
+                    })}
+                  </Text>
+                  <Image systemName="chevron.right" size={14} color="secondary" />
+                </HStack>
+              </Button>
             </Link>
           ))}
         </List>
