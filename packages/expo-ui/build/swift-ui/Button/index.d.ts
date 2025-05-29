@@ -30,6 +30,7 @@ export type ButtonProps = {
     onPress?: () => void;
     /**
      * A string describing the system image to display in the button.
+     * This is only used if `children` is a string.
      * Uses Material Icons on Android and SF Symbols on iOS.
      */
     systemImage?: string;
@@ -43,9 +44,9 @@ export type ButtonProps = {
      */
     variant?: ButtonVariant;
     /**
-     * The text to display inside the button.
+     * The text or React node to display inside the button.
      */
-    children: string;
+    children: string | React.ReactNode;
     /**
      * Button color.
      */
@@ -60,13 +61,13 @@ export type ButtonProps = {
  */
 export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage'> & {
     buttonRole?: ButtonRole;
-    text: string;
+    text: string | undefined;
     systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 /**
  * @hidden
  */
-export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
+export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>, text: string | undefined): NativeButtonProps;
 /**
  * `<Button>` component without a host view.
  * You should use this with a `Host` component in ancestor.

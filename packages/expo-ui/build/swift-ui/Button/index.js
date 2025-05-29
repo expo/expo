@@ -5,13 +5,13 @@ const ButtonNativeView = requireNativeView('ExpoUI', 'Button');
 /**
  * @hidden
  */
-export function transformButtonProps(props) {
-    const { role, children, onPress, systemImage, ...restProps } = props;
+export function transformButtonProps(props, text) {
+    const { role, onPress, systemImage, ...restProps } = props;
     return {
         ...restProps,
-        text: children ?? '',
-        buttonRole: role,
+        text,
         systemImage,
+        buttonRole: role,
         onButtonPressed: onPress,
     };
 }
@@ -20,7 +20,12 @@ export function transformButtonProps(props) {
  * You should use this with a `Host` component in ancestor.
  */
 export function ButtonPrimitive(props) {
-    return <ButtonNativeView {...transformButtonProps(props)}/>;
+    const { children, ...restProps } = props;
+    const text = typeof children === 'string' ? children : undefined;
+    if (text !== undefined) {
+        return <ButtonNativeView {...transformButtonProps(restProps, text)}/>;
+    }
+    return <ButtonNativeView {...transformButtonProps(restProps, text)}>{children}</ButtonNativeView>;
 }
 /**
  * Displays a native button component.
