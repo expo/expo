@@ -1,0 +1,1892 @@
+{
+    "version": "2025.01",
+    "data": [
+        {
+            "id": 1,
+            "name": "Golden Cocoa",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-29T08:00:00Z",
+            "description": "This turmeric hot chocolate glows with the additional warm spices of cardamom and cinnamon. Balanced with dark chocolate, this tempting treat boasts the health benefits of turmeric’s anti-inflammatory properties. Perfect for the cold winter days.\n\nServed with a mini brioche doughnut, filled with chocolate pastry cream, dipped in a turmeric white chocolate ganache, topped with a spiced crumble topping.",
+            "location": 1,
+            "tags": []
+        },
+        {
+            "id": 2,
+            "name": "Carmel Grey Dream",
+            "startDate": "2025-01-30T08:00:00Z",
+            "endDate": "2025-02-11T08:00:00Z",
+            "description": "Cozy and dreamy, this hot chocolate contains a silky caramel made with earl grey tea and smooth dark chocolate.\n\nServed with a mini Brioche Bismarck, filled with earl grey pastry cream, dipped in caramel, and topped with a white chocolate and earl grey bark.",
+            "location": 1,
+            "tags": []
+        },
+        {
+            "id": 3,
+            "name": "CocoYuzu Fries FUNdue – Crazy Flavour-full Fun!",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-02T08:00:00Z",
+            "description": "A rich, velvety cocoa blend with hints of creamy coconut and fragrant yuzu, creating a unique flavour adventure in every sip.\n\nServed with golden, crispy apple pie fries nestled in a flaky lattice crust, layered with creamy \"poutine\" sauce with notes of yuzu, coconut, and a dash of masala. A playful twist on fondue that’s bold, fun, and irresistibly flavorful!",
+            "location": 2,
+            "tags": [
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "Miso Cozy Bear – A Hug in a Mug!",
+            "startDate": "2025-02-03T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Rich hot chocolate blended with creamy butterscotch, savoury miso, and a hint of lemongrass. A warm, comforting treat that’s sweet, savoury, and oh-so-cozy!\n\nServed with a light, flaky puff pastry dome with teddy bear’s ears shape adding a delightful crunch to your cozy experience. Be my Valentine!\n\nÀ La Mode Pie Café drinks are available with oat, almond, or soy milk upon request.",
+            "location": 2,
+            "tags": [
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "Miffy's Strawberry Garden",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Marukyu Koyamaen Uji matcha with fresh strawberry sauce in white hot chocolate.\n\nServed with a strawberry and melon liqueur chocolate truffle.\n\nGluten free, contains dairy but dairy-free/vegan options available upon request.\n\n Contains alcohol, alcohol-free option available.",
+            "location": 3,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-free",
+                "Alcoholic"
+            ]
+        },
+        {
+            "id": 6,
+            "name": "Penicillin for a Geisha",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Scotch, Japanese yuzu, cold pressed ginger, and dark chocolate, misted with a rare cask strength distillery exclusive Yoichi Peaty & Salty whisky.\n\nServed with a hojicha chocolate truffle.\n\nGluten free, dairy-free and vegan options available upon request. Contains alcohol.",
+            "location": 3,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-free",
+                "Alcoholic"
+            ]
+        },
+        {
+            "id": 7,
+            "name": "BC Foragers Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A cozy drink with a few unexpected twists of flavour, this white hot chocolate has the fruity sweetness of blueberry, a hint of citrus, and is topped with whipped cream with subtle notes of porcini mushrooms.\n\nServed with a vegan matcha cookie.\n\nDairy-free or vegan option available upon request.",
+            "location": 4,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 8,
+            "name": "The Enchanted Rose",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Inspired by a classic Turkish Delight, this rich dark chocolate combines rosewater and citrus, topped with rose petals and whipped cream. This aromatic drink with a sweet, floral twist is also a wonderful way to celebrate Valentine’s Day!\n\nServed with a vegan pistachio cookie.\n\nContains nuts. Dairy-free or vegan option available upon request.",
+            "location": 4,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 9,
+            "name": "Hazelnut Praline Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Dark chocolate and roasted hazelnuts, topped with silky vanilla cream, decadent chocolate shavings, and a crunchy praline crumble.\n\nAccompanied by a warm, freshly made beignet filled with luxurious chocolate hazelnut cream.",
+            "location": 5,
+            "tags": []
+        },
+        {
+            "id": 10,
+            "name": "Orange Creamsicle Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Rich orange-infused hot chocolate, finished with a dreamy creamsicle Chantilly, and a touch of freeze-dried orange peel for a zesty finish.\n\nPerfectly paired with a crisp chocolate orange wafer, featuring a signature Artigiano chocolate stamp.",
+            "location": 5,
+            "tags": []
+        },
+        {
+            "id": 11,
+            "name": "Hojicha Secret Romance",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A tribute to the beauty of Hojicha latte, Japanese green tea, with its rich and mellow roasted hazelnut notes. A gentle touch of chocolate and cocoa to tease and respect the hojicha fragrance in every sip. Topped with our Einspänner Cream Foam adding a luxurious, velvety layer of rich cream that crowns your beverage with elegance and indulgence. The foam is crafted to balance light sweetness with creamy richness, creating a unique texture that enhances both flavour and mouthfeel.\n\nServed with our roasted green tea pudding, made in-house by our pastry team, with a dash of whipped cream and dark chocolate shavings and a quenelle of Maestro James, from Gelato by James, ‘Dark & Dangerous’ chocolate gelato, or a vegan version.\n\nDine-in only. Avalon milk is used in the drink with, dairy-free oat milk available upon request",
+            "location": 6,
+            "tags": [
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 12,
+            "name": "Death by Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Your darkest desires and sweetest wishes come together in our Death by Chocolate balance of chocolate and more chocolate. In a sweet collision of serendipity, we are bringing together a unique blend of 85% Grand Noir dark chocolate with notes of roasted chestnut and tangy grilled coffee with 72% dark chocolate with red berries and citrus notes. The dance of flavours and the depth of chocolate won’t kill ya, but it sure will wiggle your toes!\n\nServed with a dark chocolate pastry enhancing the toasted coconut and dulce de leche notes in the chocolate with a quenelle of Maestro James, from Gelato by James, ‘Dark & Dangerous’ chocolate gelato, or a vegan version.\n\nDine-in only. Avalon milk is used in the drink with, dairy-free oat milk available upon request.",
+            "location": 6,
+            "tags": [
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 13,
+            "name": "You’re my U(bae)",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Come experience other-worldly flavours with our ube white hot chocolate, topped with purple whip and toasted coconut rim. This drink has a creamy texture with notes of nuts and buttery vanilla.\n\nServed with our Ube Cookie: a luscious cookie featuring soft, vibrant ube-infused dough, perfectly blended with creamy white chocolate and shredded coconut. Each cookie is lovingly rolled in golden toasted coconut for a delightful crunch, creating a tropical symphony of flavours in every bite.",
+            "location": 7,
+            "tags": []
+        },
+        {
+            "id": 14,
+            "name": "Dough My Gawd - O.G. Cookie Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Cookies are our specialty, so come enjoy a Bak’d Cookie in the form of a hot chocolate, rimmed with toasted marshmallow whip and topped with our signature O.G. Cookie but made special because we will make a special walnut-free version of our O.G. Cookie. Made with real dark chocolate imported from Germany, this drink is full bodied with notes of buttery sugar cookies.\n\nOn the side, indulge in the very first cookie we ever created. Our O.G. Cookie is crafted with two types of premium dark chocolate, each bite offers a deep, rich cocoa experience. To elevate the flavours even further, we’ve topped this cookie with a sprinkle of flaky sea salt, adding a touch of savoury balance to the bittersweet chocolate. This cookie is an irresistible treat for those who crave a truly decadent dessert.",
+            "location": 7,
+            "tags": []
+        },
+        {
+            "id": 15,
+            "name": "Charlie’s Peanut Butter Hug",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-26T08:00:00Z",
+            "description": "Meet Charlie’s Peanut Butter Hug, a hot chocolate that’ll take you back to those cozy afternoons watching Peanuts and the Gang. We’ve blended creamy milk chocolate with honey and rich peanut butter, along with a touch of cinnamon. On top, there’s a soft, salted peanut nougat that brings out the perfect balance of sweet and savoury.\n\nPaired with a zigzag sweater peanut butter sandwich cookie filled with a chocolate-peanut buttercream.\n\nContains nuts. Dairy-free option available upon request.",
+            "location": 8,
+            "tags": [
+                "Dairy-free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 16,
+            "name": "The Beagle’s Bon Fire",
+            "startDate": "2025-01-27T08:00:00Z",
+            "endDate": "2025-02-09T08:00:00Z",
+            "description": "The Beagle’s Bonfire is all about capturing that adventurous Snoopy vibe with a twist. This hot chocolate has a smoky, slightly charred flavour that’s warm and inviting—think campfire nights and toasted marshmallows. We’re using rich smoked dark chocolate from Valrhona to give that cozy, fireside feel. Topped with a maple bacon s’mores marshmallow that adds a sweet and savoury kick.\n\nPaired with a Rocky Bacon Caramel Truffle, a salted caramel truffle coated in bacon bits and crunchy mille-feuille.\n\nDairy-free option available upon request.",
+            "location": 8,
+            "tags": [
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 17,
+            "name": "The Gang’s All Here!",
+            "startDate": "2025-02-10T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "The Gang’s All Here is a fun twist on a classic hot chocolate that’ll hit all the right notes. We’re talking a creamy, milk-based cookies and cream hot chocolate topped with a fluffy cookies and cream marshmallow. It is nostalgic and cozy—just like hanging out with the Peanuts gang.\n\nPaired with a red velvet financier for a touch of elegance.\n\nGluten-free friendly, dairy-free option available upon request.",
+            "location": 8,
+            "tags": [
+                "Dairy-free",
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 18,
+            "name": "Campfire S’mores",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Campfire S’mores is made with Valrhona Dulcey, peanut praline, graham crumble, and vanilla bean whip.\n\nServed with a marshmallow cookie.",
+            "location": 9,
+            "tags": []
+        },
+        {
+            "id": 19,
+            "name": "Diablo Azteca",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Diablo Azetca is made with Valrhona 85%, Mexican spice, piloncillo, and a raspberry whip.\n\nServed with a chili raspberry truffle.\n\nGluten-free friendly.",
+            "location": 9,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 20,
+            "name": "Caprese",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Inspired by the classic torta caprese, this rich drink combines 45% premium Michel Cluizel chocolate with finely ground almonds for a decadent, nutty twist. Each sip is smooth, velvety, and indulgently layered with the luxurious flavours of dark chocolate and warm almond notes.\n\nServed with a piece of almond biscotti made in-house.\n\nContains nuts.",
+            "location": 10,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 21,
+            "name": "Milano Tehran",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A luxurious fusion of flavours, this hot chocolate pairs the rich, floral notes of Iranian saffron with the creamy smoothness of Callebaut’s premium Belgian white chocolate. Every sip of this drink offers a unique and elegant blend of sweet and aromatic.\n\nServed with a cannoli, made in-house and piped with Pistachio Gelato.",
+            "location": 10,
+            "tags": []
+        },
+        {
+            "id": 22,
+            "name": "Chocolato all’Olio d’Oliva",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A bold and luxurious hot chocolate featuring 40% premium Michel Cluizel chocolate paired with Italian extra virgin olive oil. The rich chocolate and smooth olive oil creates a silky, buttery and complex flavour, with it's sweetness balanced out by the salted cannoli we serve this drink with.\n\nServed with a cannoli, made in-house and piped with Fior di Sale Gelato (sweet milk with sea salt).",
+            "location": 10,
+            "tags": []
+        },
+        {
+            "id": 23,
+            "name": "Enchanted Coco-misu",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Indulge in the classic Italian dessert, reimagined as a luscious hot chocolate. This rich drink features layers of espresso-infused chocolate, creamy mascarpone and a hint of vanilla. Topped with a dusting of cocoa powder, and served alongside a crunchy croissant, the Enchanted Coco-misu offers the perfect balance of smooth warmth and a delightful crunch - a treat for the taste buds on a crisp winter night.\n\nServed with a mini butter croissant, pressed and toasted to perfection. The little goodie comes drizzled with rich chocolate.",
+            "location": 11,
+            "tags": []
+        },
+        {
+            "id": 24,
+            "name": "Blushing Berry Bliss",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Wrap yourself in the cozy embrace of this berry-tea-infused hot chocolate, perfect for both the young and young at heart. Made with our signature berry tea infusion, delicately spiced with cinnamon, cardamom and star anise, each sip offers a harmonious blend of fruity sweetness and gentle warmth. Topped with a swirl of orange-infused pink whipped cream, a dollop of rich berry compote, and some fresh orange zest - this vibrant treat is sure to bring joy and warmth on the frostiest of winter days.\n\nOn the side, delight in a playful treat - a mini pressed croissant dipped in luscious chocolate and adorned with a joyful sprinkle of birthday cake confetti. This whimsical side pairs beautifully with our berry tea hot chocolate, adding a perfect touch of sweetness and crunch to your experience.",
+            "location": 11,
+            "tags": []
+        },
+        {
+            "id": 25,
+            "name": "Pearl of the Forest",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A luscious hot chocolate that harmonizes rich milk chocolate with a delightful cranberry-infused amaretto. The drink is served with a dollop of freshly whipped cream, elevated with a generous sprinkle of crunchy pecan praline for a satisfying texture, complemented by a slice of glazed pear on the top. A beautiful creation that tastes like holiday magic in every sip.\n\nServed with a chocolate-covered mini pressed croissant, perfectly crisp and layered. It’s topped with a touch of fresh lemon zest, adding a bright, fragrant finish to this indulgent bite.\n\nContains nuts and alcohol, café service only.",
+            "location": 11,
+            "tags": [
+                "Alcohol",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 26,
+            "name": "Totally Bananas Over You!",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Banana and milk chocolate ganache hot chocolate.\n\nPaired with a peanut buttery peanut butter cookie.\n\nContains nuts.",
+            "location": 12,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 27,
+            "name": "This Party is Poppin'",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Strawberry white chocolate ganache hot chocolate topped with whipped cream and sprinkles.\n\nPaired with tricoloured sweet and salty popcorn.\n\nGluten-free friendly.",
+            "location": 12,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 28,
+            "name": "Boba Fried Chicken",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Cheers to an unforgettable flavour adventure with our hot honey flavoured hot chocolate! Crafted with 54.5% premium dark chocolate, it’s infused with just the right kick of heat from fresh jalapeño peppers. Topped with our house-made honey whipped cream and a drizzle of our signature hot honey, this drink is a perfect harmony of spicy and creamy.\n\nOur honey whip, made in-house with 100% pure Canadian honey, adds a rich and natural sweetness that perfectly complements the bold, spicy notes of our dark hot chocolate. The result? A decadent and comforting treat that balances heat and sweetness in every sip. To top it all off, we’ve added the most adorable chicken drumstick-shaped chip as a playful garnish!\n\nServed with two mini “battered” chicken drumstick ice creams coated in crunchy cereal flakes. Choose between our strawberry coulis drizzle that mimics the look of Korean spicy sauce, our snow cheese powder for a savory touch or our signature hot honey sauce for the perfect sweet and spicy combination!\n\nTo finish off, we’ve included a mini pint of apple-flavoured “beer” jello, to cool off the “heat” and perfect for raising a glass! Gun-bae!\n\nTo sweeten the deal, we’re including free boba to pair with your “fried chicken” ice cream!\n\nThe spice level of the hot chocolate is adjustable!",
+            "location": 13,
+            "tags": []
+        },
+        {
+            "id": 29,
+            "name": "Gone to Banana Heaven",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Banana and coffee, a match made in heaven! This decadent drink is made with real bananas and 70.5% premium dark hot chocolate! It is topped with a fluffy layer of whipped Dalgona coffee which adds a delightful coffee kick that perfectly complements the chocolate and banana.\n\nServed with a side of soft and fluffy banana-shaped sponge cake. Every dip of the cake into the coffee whip makes for a heavenly bite!\n\nAnd of course, we are offering free boba add-ons to your hot chocolate!",
+            "location": 13,
+            "tags": []
+        },
+        {
+            "id": 30,
+            "name": "Postcards from Dubai",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A decadent dark and milk hot chocolate inspired by our Dubai Sundae and Dubai Chocolate. It's made from Callebaut chocolate, topped with a halo of our delectable house-made marshmallow cream, drizzled with pistachio paste, and sprinkled with toasted pistachios and kataifi. \n\nPaired with a delectable orange blossom madeleine. Lightly glazed to highlight its shell shape, this pairing blends floral and citrus notes with rich chocolate, creating a beautifully balanced flavour experience.\n\nContains nuts.",
+            "location": 14,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 31,
+            "name": "Postcards from Vietnam",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A rich pandan-infused white hot chocolate crafted with Callebaut white chocolate, delivering a creamy, floral sweetness. Topped with a toasted halo of marshmallow cream, and a sprinkle of golden toasted coconut.\n\nServed with 3 Mini Mango Iced Gems - our playful take on the nostalgic Iced Gems, reimagined with a tropical twist. A crisp shortbread cookie topped with a delicate swirl of mango-flavoured meringue. Each bite offers a light crunch followed by a burst of fruity sweetness - an elevated treat inspired by the beloved classic.",
+            "location": 14,
+            "tags": []
+        },
+        {
+            "id": 32,
+            "name": "Sunkissed Temptation",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This coconut durian hot chocolate is crafted with real durian and rich dark Belgian Callebaut chocolate, creating a velvety, indulgent base with smooth coconut sweetness. The bold, exotic flavours come together for a truly unique experience.\n\nIf you don't like it on the first sip, feel free to choose any other drink.\n\nPaired with our Moissant (mochi croissant) of your choice. Our in-house baked croissants combine flaky, buttery layers with chewy mochi dough. Available in flavours like Matcha White, Mango Yuzu, Coco-Ube, Fresh Strawberry Custard, and Vietnamese Coffee, it’s the perfect side treat to pair with your hot chocolate for a truly indulgent experience.",
+            "location": 15,
+            "tags": [
+                ""
+            ]
+        },
+        {
+            "id": 33,
+            "name": "Whispers of the East",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This Broyé Dark Phở Spice hot chocolate is a captivating blend of premium Belgian Callebaut dark chocolate and aromatic pho spices. The velvety smooth cocoa is infused with warm notes of cinnamon, star anise, and other exotic spices, creating a deep, comforting drink with a unique, spicy twist. Each sip delivers a perfect balance of rich chocolate and fragrant warmth.\n\nIf you don't like it on the first sip, feel free to choose any other drink.\n\nServed with our Bánh Mì Supreme Croissant, a delicious fusion of flaky, buttery croissant layers filled with savoury flavours inspired by the classic Vietnamese bánh mì. Each bite delivers a perfect balance of crispy, tender, and flavorful, making it the ideal side treat to enjoy alongside your drink.",
+            "location": 15,
+            "tags": [
+                ""
+            ]
+        },
+        {
+            "id": 34,
+            "name": "Bunana Almond Dream",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A dark hot chocolate with an oat milk base, banana and almond flavouring, topped with coconut whipped cream, chocolate sauce, and a slice of banana with almond sliver “bunny ears.”\n\nServed with a mini bunana split with our house-made soft serve.\n\nDairy-free, vegan, and gluten-free friendly. Contains nuts.",
+            "location": 16,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 35,
+            "name": "Strawbunny Fields Forever",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A strawberry-flavoured dark hot chocolate with an oat milk base, topped with coconut whipped cream, a dollop of strawberry jam, and crushed dried strawberries around the rim.\n\nServed with a vegan chocolate-dipped strawberry.\n\nDairy-free, vegan, and gluten-free friendly.",
+            "location": 16,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 36,
+            "name": "Dream Weaver",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A classic white hot chocolate piled high with creamy whip and dreamy raspberry marshmallows on top of that! In the dead of winter, we dream of plump, ripe marshmallows that will be here before we know it.\n\nServed with a chocolate raspberry cake wedge. A Butter Baked Goods classic rich chocolate cake with scrumptious raspberry buttercream, that we can enjoy thanks to the wonderful berry growers in the Fraser Valley.",
+            "location": 17,
+            "tags": []
+        },
+        {
+            "id": 37,
+            "name": "Hazelnut Heaven",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Hot chocolate with hazelnut flavouring and crunchy hazelnuts on top of a delightful hazelnut whipped topping. A triple treat and ode to British Columbia’s hazelnut growers!\n\nServed with a Butter classic vanilla cake with our new hazelnut buttercream that’s even better than Nutella! Eat your heart out, Ferrero Rocher.\n\nContains nuts.",
+            "location": 17,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 38,
+            "name": "Orange Celebration",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Orange flavouring and orange zest create a perfect and intense flavour profile that will delight lovers of this classic chocolate and citrus combination that bursts with flavour and colour.\n\nServed with an orange marshmallow dipped in dark chocolate.\n\nGluten-free. Dairy-free option available upon request.",
+            "location": 17,
+            "tags": [
+                "Gluten-Free",
+                "Dairy-Free"
+            ]
+        },
+        {
+            "id": 39,
+            "name": "Gochujang Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Hot chocolate topped with Gochujang infused rosé cream and Gochujang caramel drizzle.\n\nServed with a Gochujang biscotti stick.",
+            "location": 18,
+            "tags": []
+        },
+        {
+            "id": 40,
+            "name": "Coco Dalgona",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Hot chocolate topped with chocolate dalgona cream.\n\nServed with crunch dalgona bits and chocolate soil.",
+            "location": 18,
+            "tags": []
+        },
+        {
+            "id": 41,
+            "name": "Pink Don't Shrink!",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A tribute to every childs favourite all pink star warrior (and the best smash bros character). A white chocolate-based fruity pink drink infused with watermelon, strawberry and a hint of cotton candy. Finished in a fresh vanilla chantilly whip, strawberry coulis and cotton candy.\n\nServed with a strawberry cheesecake macaron.",
+            "location": 19,
+            "tags": []
+        },
+        {
+            "id": 42,
+            "name": "Brown Cow Stunning",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A modern hot chocolate take on a retro soda shop classic, the chocolate root beer float.  Our rendition is steamed chocolate and root beer reduction, poured over root beer and topped with a scoop of vanilla marshmallow, with a root beer caramel drizzle.\n\nServed with chocolate dirt ‘worm’ clusters.",
+            "location": 19,
+            "tags": []
+        },
+        {
+            "id": 43,
+            "name": "Kiki",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "In honour of everyone's favourite delivery service. With dark chocolate, rosemary, cassis and figs, this witch's brew has all flavours earthly and divine, to sip anew with your coven true.\n\nServed with a spiced berry bread pudding made with bread fresh from the shop.\n\nDairy-free and vegan.",
+            "location": 19,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 44,
+            "name": "Cinnamon Croissant Crunch",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "The taste you can see! All things that scream childhood cereal milk, but made better. White chocolate base with notes of caramel, brown butter and spices, finished in vanilla chantilly whip and a condensed milk drizzle.\n\nServed with a side of Cinnamon Croissant Toast ‘Cereal’ for your ‘milk’.",
+            "location": 19,
+            "tags": []
+        },
+        {
+            "id": 45,
+            "name": "Pistacchio Cioccolato Attivo",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Choco protein power hot chocolate with pistachio paste and your choice of milk.\n\nServed with a Pistachio Ball.\n\nContains nuts.",
+            "location": 20,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 46,
+            "name": "Mandola Scura",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Dark chocolate with almond butter with almond milk.\n\nServed with an Almond Ball.\n\nContains nuts.",
+            "location": 20,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 47,
+            "name": "COCOA-MISU",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Indulge in the rich, velvety fusion of chocolate, coffee, and warm milk in every sip of Cocoa-Misu. A truly mouthwatering experience!\n\nServed with cantucci biscotti.\n\nContains nuts.",
+            "location": 21,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 48,
+            "name": "Baci di Dama",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A creamy Nutella blend with crunchy hazelnuts, reminiscent of Baci's irresistible flavour perfect for the romantics in our life.\n\nServed with a Nutella cookie.\n\nContains nuts.",
+            "location": 21,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 49,
+            "name": "From Italy with Amore",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A delicious love letter to Italy in every sip! This indulgent hazelnut dark hot chocolate is rich, creamy, and topped with a cloud of whipped cream, toasted and praline hazelnuts for that extra che bello touch.\n\nPaired with a frollino (fancy Italian cookie, if you're wondering), topped with an edible image of iconic Italian cities, it’s like sending your taste buds on a postcard-perfect journey. Buon viaggio e buon appetito!\n\nContains nuts.",
+            "location": 22,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 50,
+            "name": "Sogno Rosa",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "The drink that turns your sweetest fantasies into reality! This dreamy raspberry-flavoured white chocolate is as smooth as a cloud, with a dehydrated raspberry rim that packs a punch of fruity goodness. Topped with vanilla-flavoured pink whipped cream that’s almost too pretty to drink (almost).\n\nPaired with a delicate pink raspberry meringue for that perfect, crispy kiss of sweetness. It’s like a pink paradise in every sip—sweet, dreamy, and a little bit magical!",
+            "location": 22,
+            "tags": []
+        },
+        {
+            "id": 51,
+            "name": "Tinks Pistachio Pixie Dust",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-30T08:00:00Z",
+            "description": "White chocolate pistachio hot chocolate with honey chantilly cream, pistachio drizzle, and honeycomb crunch.\n\nServed with a cookie fairy want to add pixie dust to your drink.",
+            "location": 23,
+            "tags": []
+        },
+        {
+            "id": 52,
+            "name": "Red Velvet Vino",
+            "startDate": "2025-01-31T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Red wine reduction dark hot chocolate with whipped cream and a red wine drizzle in a chocolate-rimmed cup (all non-alcoholic).\n\nServed with a piece of red velvet cake with layers of red wine dark chocolate ganache.",
+            "location": 23,
+            "tags": []
+        },
+        {
+            "id": 53,
+            "name": "Blind Date",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Callebaut white chocolate base with purple taro powder and coconut milk, spiked with a shot of Mount Gay Eclipse Rum, and topped with whipped cream. A curious combination reminiscent of fun blind dates: sweet, colourful, and charged with spirits to facilitate each first-time encounter.\n\nPaired with a curry tomato mini tart.\n\nContains alcohol, non-alcoholic version available upon request.",
+            "location": 24,
+            "tags": [
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 54,
+            "name": "Third Date",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Milk and dark chocolate infused with smokey barbeque undertones and red chilis for a mildly spicy, slow-burning aftertaste, spiked with a shot of Tennessee Honey Jack Daniel’s Whiskey and topped with whipped cream. An intriguing mix that invites new experiences and inspires lasting memories.\n\nPaired with a crispy bacon mini quiche.\n\nContains alcohol, non-alcoholic version available upon request.",
+            "location": 24,
+            "tags": [
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 55,
+            "name": "Me Want Bable",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Experience this playful twist featuring creamy 36 % Sao Palme topped with banana-saffron whipped cream inspiring a unique balance of fruity sweetness and warm spice with each sip!\n\nPaired with a delicate yellow house-made macaron Minion with caramelized apple ganache.\n\nGluten-free friendly, contains nuts.",
+            "location": 25,
+            "tags": [
+                "Gluten-free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 56,
+            "name": "Campfire Hot Chocolate",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-12T08:00:00Z",
+            "description": "Indulge in the rich bold flavour of 70% dark chocolate decadence. To inspire the magic of a campfire the takeout cup is rimmed with soft house-made marshmallow, torched to golden perfection creating a toasted pillowy edge with every sip.\n\nPaired with a small savoury house-made Pain Suisse. This treat brings together sweet and savoury, reminiscent of fireside moments under the stars. Perfect for warming up on a chilly day!\n\nCampfire Hot Chocolate will be offered as takeout only.",
+            "location": 25,
+            "tags": []
+        },
+        {
+            "id": 57,
+            "name": "Blondes Have More Crumb",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "This white hot chocolate is inspired by Miss Betty Grable with an infusion of citrus and gingersnap.\n\nAccompanied by a Peaches ’n Cream Crumb Bar with cream cheese rugulah crumb, layered with cream cheese filling, house-made peach preserve and vanilla butter crumb streusel",
+            "location": 26,
+            "tags": []
+        },
+        {
+            "id": 58,
+            "name": "Samba Queen",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Inspired by Brazilian Bombshell, Carmen Miranda, this intensely dark hot chocolate is kissed with coconut cream and tropical fruits.\n\nPaired with a traditional Brigadeiro confection. This traditional and much-loved Brazilian sweet is a confection of sweetened condensed milk and dark chocolate…expect a Doughgirls spin.",
+            "location": 26,
+            "tags": []
+        },
+        {
+            "id": 59,
+            "name": "Cookie in a Cloud",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Decadent hot chocolate made with steamed milk, Callebaut milk and dark chocolate ganache with a touch of vanilla. Topped with whipped cream and a scoop of cookie dough mousse that will melt into the hot chocolate.\n\nServed with a Chocolate Chip Cookie Dough Old Fashion, vanilla old fashion doughnut topped with vanilla glaze, mini chocolate chips, chocolate drizzle and a scoop of edible cookie dough.",
+            "location": 27,
+            "tags": []
+        },
+        {
+            "id": 60,
+            "name": "Twice the Black Forest",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Rich hot chocolate made with steamed milk, Callebaut chocolate ganache infused with dark cherries and cherry syrup topped with cherry infused whipped cream, chocolate shavings and a cherry on top.\n\nServed with a yeast brioche doughnut filled with cherry compote and whipped cream, dipped in a dark chocolate ganache and topped with whip and a cherry on top.",
+            "location": 27,
+            "tags": []
+        },
+        {
+            "id": 61,
+            "name": "Twice the Black Forest, Vegan/Gluten Friendly",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Hot chocolate made with a choice of alternative milk (oat, almond or coconut) and dark chocolate vegan ganache and cherry syrup, vegan whip cream and dark chocolate shavings.\n\nServed with a gluten-free friendly/vegan chocolate cherry cake doughnut with a rich cherry glaze.",
+            "location": 27,
+            "tags": [
+                "Gluten-free",
+                "Vegan",
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 62,
+            "name": "How to Lick a Beekeeper",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Lapsang Souchong 75% dark hot chocolate and burnt honey hot chocolate.\n\nServed with a house-made honey mini stroopwafel.\n\nDairy-free. Vegan and gluten-free friendly options available upon request.",
+            "location": 28,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 63,
+            "name": "My Mother Disapproves of this Drink",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Dried mandarin peel and ginger 80% dark hot chocolate with pei pa koa syrup.\n\nServed with salted egg yolk shortbread.\n\nDairy-free. Vegan and gluten-free friendly options available upon request.",
+            "location": 28,
+            "tags": [
+                "Gluten-free",
+                "Vegan",
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 64,
+            "name": "Oolong As You Love Me",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Oolong tea 85% dark hot chocolate with maple syrup.\n\nServed with an oolong elderflower truffle.\n\nDairy-free, vegan, and gluten-free friendly.",
+            "location": 28,
+            "tags": [
+                "Gluten-free",
+                "Vegan",
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 65,
+            "name": "Cow's Breakfast",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Sencha green tea and malted white chocolate oat milk hot chocolate.\n\nServed with a house-made black sesame stroopwafel.\n\nGluten-free friendly option available upon request.",
+            "location": 28,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 66,
+            "name": "Zest of Life",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "White hot chocolate and yuzu come together to create this sweet and citrusy treat.\n\nServed with decadent yuzu curd dacquoise, topped with yuzu whip and candied lemon.\n\nGluten-free friendly.",
+            "location": 29,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 67,
+            "name": "Cheeky Cheerry",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A rich dark cherry hot chocolate, topped with cardamom whipped cream and cherry glaze. With a light dusting of our hibiscus-infused cardamom sugar on the top to finish.\n\nCheekily served with a cherry biscotti for dipping.",
+            "location": 29,
+            "tags": []
+        },
+        {
+            "id": 68,
+            "name": "Orange and Spice, and Everything Nice",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A winter-spiced orange and date-sweetened hot chocolate, topped with cinnamon coconut whip and fresh orange zest.\n\nServed with an oatmeal date square.\n\nDairy-free, vegan, gluten-free and organic.",
+            "location": 30,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 69,
+            "name": "Bananas in Pajamas",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A banana bread hot chocolate topped with coconut whipped cream, house-made caramel drizzle and chocolate shavings.\n\nServed with a shortbread thumbprint cookie with a caramel pecan center.\n\nDairy-free, vegan, gluten-free and organic. Contains nuts.",
+            "location": 30,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 70,
+            "name": "Custard Flan Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This vegan flan hot chocolate drink combines rich, dairy-free chocolate with smooth caramel and vanilla undertones. Made with creamy plant-based milk, it delivers a velvety texture reminiscent of flan. A sprinkle of caramel drizzle elevates the drink, creating a cozy, indulgent treat.\n\nServed with a mixed berry financier, a small, almond-flavoured cake with a crisp golden crust and a soft, slightly nutty crumb. Fresh berries are baked into the cake, adding a burst of tangy-sweetness that perfectly complements the warmth of the chocolate drink.\n\nContains nuts.",
+            "location": 31,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 71,
+            "name": "Faubourg Flight",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A flight of three unique hot chocolates: non-alcoholic mulled wine with spiced warmth; strawberry marshmallow popsicle, blending fruity sweetness with creamy cocoa; and a zesty lemon-madeleine hot chocolate, offering citrus brightness.\n\nEach sip complements a crisp, airy baked meringue on the side, balancing rich chocolate with light, sweet texture in an elegant, comforting treat.",
+            "location": 31,
+            "tags": []
+        },
+        {
+            "id": 72,
+            "name": "Squirrel Friend",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This roasty, nutty, cozy drink includes Valrhona Caraibe 66% dark chocolate, Mumgry peanut butter, Whisk hojicha, vanilla bean simple syrup, and your choice of milk. Rimmed with a peanut brittle crumble, topped with a toasted caramel and peanut butter marbled marshmallow, with a pinch of Vancouver Island Maple Smoked Salt.\n\nRu would approve.\n\nServed with a mini chocolate cupcake with hojicha buttercream, sprinkled with peanut brittle crunch.\n\nContains nuts.",
+            "location": 32,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 73,
+            "name": "The Green Fairy",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-30T08:00:00Z",
+            "description": "A fresh and bright, yet rich cocoa using Valrhona Caraibe 66% dark chocolate, decadent Nut Jar pistachio butter, lemon simple syrup, a pinch of Maldon salt and your choice of milk. Rimmed with candied lemon and homegrown anise hyssop sugar and topped with a light and fluffy pistachio marshmallow.\n\nEven cuter than Kylie Minogue.\n\nServed with a mini lemon cupcake with pistachio buttercream topped with candied lemon peel.\n\nContains nuts.",
+            "location": 32,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 74,
+            "name": "The Barbara",
+            "startDate": "2025-01-31T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "An ode to my Grandma Brown, who made the best rhubarb crisp ever!\n\nValrhona Caraibe 66% dark chocolate, locally grown organic rhubarb, tahini, ginger, vanilla bean syrup, a pinch of Maldon salt and your choice of milk. Served with a spiced hazelnut crumble rim and a velvety candied rhubarb and tahini marshmallow.\n\nServed with a mini chocolate and tahini cupcake with rhubarb buttercream topped with candied hazelnut.\n\nContains nuts.",
+            "location": 32,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 75,
+            "name": "Another Warm Summer DAy",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "An ode to our Hot Chocolate Festival 2021 drink, we took this vibrant hot chocolate and made it even more yummy! A 44% cacao creamy mango chocolate featuring Alunga by Cacao Barry, topped with mango crema and a sprinkle of passionfruit.\n\nServed with an almond dried mango shortbread cookie\n\nContains nuts.",
+            "location": 33,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 76,
+            "name": "Goddess in the Storm",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "An ode to our absolutely crazily loved Hot Chocolate Festival 2022 beverage: Goddess in the Cloud. We are bringing back this hot chocolate with some delightful tweaks and changes!\n\nFeaturing Paragon Tea Room’s stone-milled jasmine tea, this fragrant hot chocolate is a spiritually lifting choice for the season. Finished with a Iron Goddess oolong tea cloud, pop rocks and passionfruit oolong tea dust.\n\nServed with a hojicha chocolate mochi cookie.",
+            "location": 33,
+            "tags": []
+        },
+        {
+            "id": 77,
+            "name": "Rice & Shine",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Sweet fermented rice meets Cacao Barry Lactée Supérieure 38% milk chocolate couverture in a magical fusion, where fermentation works its alchemy. Topped with whipped cream infused with sweet rice wine, milk chocolate shavings, and a touch of peanut sesame sugar mix, to give you a whimsical and decadent treat for the senses!\n\nServed with a sweet fermented rice pancake stuffed with peanut sesame sugar mix.\n\nGluten-free friendly, dairy-free option available upon request.",
+            "location": 34,
+            "tags": [
+                "Gluten-Free",
+                "Dairy-Free"
+            ]
+        },
+        {
+            "id": 78,
+            "name": "Velvet Flaming Cloud",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A luxurious triple cheese sauce made with ricotta, mascarpone, and cream cheese is blended with Cacao Barry’s Tanzanie 75% dark chocolate couverture, delivering a unique depth and richness. Topped with handcrafted marshmallow whip and a smooth cheese crème brûlée sauce, then dusted with powdered sugar, this drink is finished with a dramatic torch flame for an unforgettable experience.\n\nServed with a mini ham and cheese scone topped with rosemary spices.\n\nDairy-free option available upon request.",
+            "location": 34,
+            "tags": [
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 79,
+            "name": "‘Dubai’ Pistachio Affogato",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-11T08:00:00Z",
+            "description": "Your choice of dark or milk hot chocolate with a scoop of Pistachio gelato, topped with fresh whipped cream and shredded kataifi.\n\nServed with a premium select pistachio and tart cranberry in a dark chocolate rocher.\n\nContains nuts.",
+            "location": 35,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 80,
+            "name": "Tiramisu Hot Chocolate",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-11T08:00:00Z",
+            "description": "Your choice of dark or milk hot chocolate with premium mascarpone combined with rich whipping cream, dusted with ladyfinger crumble.\n\nServed with a signature Bailey’s bonbon, made with several shots of Bailey’s liqueur in each batch, enrobed in Valrhona milk chocolate.\n\nContains alcohol.",
+            "location": 35,
+            "tags": [
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 81,
+            "name": "King and Queen of Fruits",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-11T08:00:00Z",
+            "description": "Durian and your choice of milk or dark hot chocolate.\n\nServed with a mangosteen caramel bonbon.",
+            "location": 35,
+            "tags": []
+        },
+        {
+            "id": 82,
+            "name": "Dolce Rubino",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Melted ruby chocolate with your choice of milk, topped with whipped cream, mini marshmallows and shredded ruby chocolate.\n\nServed with an Occhi di Bue.\n\nContains nuts.",
+            "location": 36,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 83,
+            "name": "Cioccolato Cannolo e Basta",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Melted milk chocolate with your choice of milk, served with ricotta cream and a dusting of cocoa powder.\n\nServed with a cannoli shell.\n\nContains nuts.",
+            "location": 36,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 84,
+            "name": "That’s My Jam",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Milk chocolate hot chocolate with grape cold foam.\n\nServed with a toast and jam cookie.",
+            "location": 37,
+            "tags": []
+        },
+        {
+            "id": 85,
+            "name": "Bacon Me Crazy",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Dark chocolate hot chocolate infused with hickory smoke flavour.\n\nServed with a mini egg tart.",
+            "location": 37,
+            "tags": []
+        },
+        {
+            "id": 86,
+            "name": "You’re Waffle-y Cute",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Espresso-infused white chocolate with a mini scoop of dark chocolate ice cream.\n\nServed with a caramel stroopwafel.",
+            "location": 37,
+            "tags": []
+        },
+        {
+            "id": 87,
+            "name": "Flippin' Out",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Maple dark chocolate hot chocolate with maple syrup whipped cream.\n\nServed with mini Dutch Poffertjes pancakes.",
+            "location": 37,
+            "tags": []
+        },
+        {
+            "id": 88,
+            "name": "Fancy Sourdough Browned Butter",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "We all know the classic combination of Nutella + butter on bread. But as we get older, our chocolate and bread combo has the opportunity to evolve. So with this drink, let’s turn it upside down, inside out, and fancy it up a little.\n\nSuddenly, the chocolate is liquid, and the bread is not just any bread, but sourdough, caramelized in brown butter. Then it all comes together as a hot, milky hot chocolate drink to enjoy, finished with the perfect bread-like crunch, and a buttery soft feel, and made with GOOD, healthy, and ethical chocolate. If this drink doesn’t wrap you in a warm blanket of nostalgia, what will?\n\nServed with a Cookie Crumble Ganache.\n\nGluten-free friendly. All Good Chocolatier drinks are organic, soy-free and refined sugar-free.",
+            "location": 38,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 89,
+            "name": "Black Sesame Cheesecake",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Say no more! You know by now that we make fantastic Canadian desserts in hot chocolate form. This year’s feature is a twist on a classic cheesecake, and black sesame because we loved the colour it creates in combination with our vegan white coconut chocolate! This beauty is warm, cute, sweet and tart and possesses the perfect blend of roasted notes.\n\nServed with an Amaretto Plum Mendiant 75%.\n\nDairy-free, vegan, gluten-free friendly.",
+            "location": 38,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 90,
+            "name": "Ruby Berry Party",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Ruby Berry Party is a 65% dark cacao base and has notes of so many red and purple berries. The best way to experience this drink is to close your eyes and let your taste buds take you through this red berry harvest. You’ll experience currant, rosehips, elderberry, cranberry, hibiscus and maybe more. Somehow, they are all intertwined, so don’t rush the drink or you’ll miss a berry! If you love a dark chocolate drink with fruity notes, this should be your festival go-to.\n\nServed with a Strawberry Ginger Ganache Bonbon.\n\nDairy-free, vegan, gluten-free friendly.",
+            "location": 38,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 91,
+            "name": "Zafaran Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Zafaran Hot Chocolate is a luxurious indulgence that fuses Persian elegance with decadent flavours. This unique beverage begins with a rich infusion of Persian-brewed saffron, imparting its signature golden hue and exotic aroma. The base, a blend of dark chocolate, delivers a deep and robust flavour that beautifully complements the floral saffron notes.\n\nThe experience is elevated with a generous topping of saffron-infused whipped cream, adding a velvety richness and a burst of aromatic warmth. Delicate sprinkles of finely chopped pistachios and subtle traces of saffron garnish the cream, creating a stunning visual and textural contrast. Every sip is a luxurious embrace, immersing you in the timeless traditions of Persian flavor.\n\nPaired with a delightful Cardamom Cookie, a treat that perfectly complements the luxurious saffron and white chocolate flavours. The cookie’s warm, aromatic cardamom notes enhance the drink’s creamy richness, creating a harmonious blend of tradition and indulgence.\n\nThe soft texture and subtle sweetness of the cookie add an extra layer of comfort, making every sip and bite a truly exquisite experience. Together, they offer a warm and sophisticated escape for those who appreciate the finer things in life.\n\nContains nuts.",
+            "location": 39,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 92,
+            "name": "Tropical Velvet Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Crafted with our signature 48-hour cold-brewed tropical fruity tea, this luxurious drink is blended with rich, premium dark chocolate, creating an indulgent fusion of tropical flavours and deep cocoa goodness. Topped with tropical whipped cream and a pineapple-inspired garnish, it’s the perfect harmony of exotic sweetness and bold chocolate warmth.\n\nFor those seeking an adventurous twist on a comforting classic, this is your tropical escape in a cup.\n\nEnhance your Tropical Velvet Hot Chocolate with a Coconut Lime Sadachi Cookie. The zesty lime and creamy coconut flavours of the cookie harmonize perfectly with the exotic and rich notes of the drink. Its delicate texture adds a touch of elegance, creating a delightful balance of indulgence with every sip and bite.",
+            "location": 39,
+            "tags": []
+        },
+        {
+            "id": 93,
+            "name": "Kim's Berry",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Indulge in Kim’s Berry, a vegan hot chocolate crafted with rich 70% dark chocolate, creamy oat milk, aromatic strawberry and fermented Korean gochujang, adding a subtle spice.\n\nPaired with a delectable vegan strawberry cookie.\n\nDairy-free and vegan.",
+            "location": 40,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 94,
+            "name": "Flora's Glow",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Experience Flora’s Glow, a luscious hot chocolate made with rich 70% dark chocolate, creamy oat milk, and a refreshing blend of tropical guava and vibrant orange zest.\n\nPaired with a vegan orange almond cookie.\n\nDairy-free and vegan. Contains nuts.",
+            "location": 40,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 95,
+            "name": "The Hiker's Treat (Trail Mix) Cocoa",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A blend of trail mix flavours such as almonds, M&M’s chocolate and cranberry infused in a dark hot chocolate topped up with whipped cream, crushed almonds/cashews and shaved chocolate.\n\nPaired with an oatmeal, chocolate, cranberry, cashew and almond cookie.\n\nContains nuts.",
+            "location": 41,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 96,
+            "name": "Coastal Berry Bliss",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "White hot chocolate infused with strawberries and graham crackers. Topped with whipped cream, graham crumbs and strawberry sauce.\n\nPaired with a strawberry shortcake truffle made with white chocolate, strawberries, graham crackers and cream cheese.",
+            "location": 41,
+            "tags": []
+        },
+        {
+            "id": 97,
+            "name": "Elphaba’s Enchanted Matcha Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A rich toasted almond dark hot chocolate topped with a creamy matcha cold foam, perfectly balancing nutty and earthy flavours for a cozy and refreshing treat.\n\nPaired with an oatmeal, chocolate, cranberry, cashew and almond cookie.\n\nContains nuts.",
+            "location": 42,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 98,
+            "name": "Glinda’s Sweet Pink Dream",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A luxurious rose red velvet hot chocolate, blending rich white chocolate with the delicate flavour of rose and a hint of red velvet cake. Topped with whipped cream, a sprinkle of red velvet crumbs and rose petals. This indulgent drink is as stunning as it’s comforting. Perfect for a cozy, elegant treat.\n\nPaired with a strawberry shortcake truffle made with white chocolate, strawberries, graham crackers and cream cheese.",
+            "location": 42,
+            "tags": []
+        },
+        {
+            "id": 99,
+            "name": "Pastillas de Leche",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Take a sip of childhood memories transformed - our Pastillas de Leche hot chocolate pays homage to the beloved Filipino milk candies traditionally hand-rolled in paper and sold in provincial markets. Rich 70% Philippine dark chocolate meets the distinct sweetness of water buffalo milk in a creamy, velvety embrace, crowned with whipped cream, a drizzle of condensed milk, and the tropical surprise of jackfruit sprinkle. This cup blends heritage and comfort, taking the pure, milky sweetness of classic pastillas into a warming drink that feels like a warm hug from your favourite tita.\n\nServed with a Philippine Alfajor stuffed with toasted rice and coconut ganache made by local pastry chef Martha Ebro from Heritage Bakery in Vancouver. Heritage Bakery is a family-owned micro-bakery founded in Vancouver, BC during the pandemic that specializes in desserts inspired by their Filipino heritage.",
+            "location": 43,
+            "tags": []
+        },
+        {
+            "id": 100,
+            "name": "Ocean Mystery",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Dive into an otherworldly cup inspired by the misty shores of the Pacific Northwest. Our Ocean Mysteries hot chocolate transforms white chocolate into an ethereal blue-green elixir, delicately infused with the mineral richness of kelp, earthy tastes of matcha and kissed by Vancouver Island sea salt. Each sip is crowned with whipped cream with a dash of sea buckthorn powder, creating a drink that's both a visual journey into ocean depths and a surprisingly harmonious flavour exploration of sweet meets savoury.\n\nIts perfect companion is a delicate nori sablé from Vancouver's cookie virtuoso Olivia Wu of Noissette by Olivia. Having crafted some of the city's most coveted cookies for over a decade, Olivia is now pursuing her chocolate expertise certification - making this collaboration a natural confluence of her mastery in sweets and our oceanic inspiration.",
+            "location": 43,
+            "tags": []
+        },
+        {
+            "id": 101,
+            "name": "The Unicorn’s Whinny",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Made with 16% dairy cotton candy ice cream steamed with Callebaut white chocolate and your choice of milk or oat milk, topped with real whipped cream and unicorn sprinkles, and a mini float of cotton candy ice cream.\n\n. On the side, a freshly baked mini sprinkle cookie.\n\nWant that extra kick? Add a shot of espresso to your hot chocolate float!",
+            "location": 44,
+            "tags": []
+        },
+        {
+            "id": 102,
+            "name": "The Orange Dreamsicle",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Made with 16% dairy orange creamsicle ice cream steamed with Callebaut white chocolate and your choice of milk or oat milk, topped with real whipped cream and a mini float of creamsicle ice cream.\n\nOn the side, a freshly baked mini sprinkle cookie.\n\nWant that extra kick? Add a shot of espresso to your hot chocolate float!",
+            "location": 44,
+            "tags": []
+        },
+        {
+            "id": 103,
+            "name": "The Last Kiss At The Airport",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-25T08:00:00Z",
+            "description": "Back by popular demand, the mystery flavour challenge.  This vegetarian drink made with 35% single-origin white chocolate has an unusual thick velvety texture, combined with mystery flavours.\n\nPaired with house-made organic double chocolate gelato taster.\n\nGluten-free, organic, dairy-free milk options for the drink.",
+            "location": 45,
+            "tags": []
+        },
+        {
+            "id": 104,
+            "name": "MelonCollie",
+            "startDate": "2025-01-26T08:00:00Z",
+            "endDate": "2025-02-01T08:00:00Z",
+            "description": "Vegan melon dark hot chocolate with a touch of ginger and mezcal (optional).\n\nPaired with house-made vegan, organic passionfruit gelato sampler.\n\nGluten-free, vegan, organic. Contains alcohol (optional).",
+            "location": 45,
+            "tags": [
+                "Gluten-free",
+                "Vegan",
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 105,
+            "name": "Part Time Angels",
+            "startDate": "2025-02-02T08:00:00Z",
+            "endDate": "2025-02-08T08:00:00Z",
+            "description": "Fig and walnut white hot chocolate with a touch of rum (optional).\n\nPaired with house-made fresh hazelnut gelato taster. \n\nGluten-free, organic. Contains nuts. Contains alcohol (optional).",
+            "location": 45,
+            "tags": [
+                "Gluten-free",
+                "Nuts",
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 106,
+            "name": "Sekspeare",
+            "startDate": "2025-02-08T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Vegan, salted caramel, almond, cashew, gianduja, oat milk dark hot chocolate with cinnamon and sweet paprika.\n\nPaired with house-made vegan guava and red rose petal gelato taster.\n\nGluten-free, vegan, organic. Contains nuts.",
+            "location": 45,
+            "tags": [
+                "Gluten-free",
+                "Nuts",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 107,
+            "name": "Jardin de Miso",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Miso and lavender honey hot chocolate.\n\nServed with a matcha roll cake.",
+            "location": 46,
+            "tags": []
+        },
+        {
+            "id": 108,
+            "name": "Sesame Serenade",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Sesame hot chocolate with milk chocolate foam.\n\nServed with a pressed croissant with passion fruit coating.\n\nContains nuts.",
+            "location": 46,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 109,
+            "name": "Golden Phoenix",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A silky smooth hot chocolate made with our house-made chocolate ganache. It is topped with a salted duck egg yolk custard cold foam. This fusion drink combines the rich and savoury flavour of salted egg yolk with the creamy sweetness of custard.\n\nServed with a salted egg yolk palmier - this fusion pastry is made with the traditional French puff pastry and the mixture of creamy salted egg yolk sugar. It has a distinctive and decadent taste that pairs beautifully with the flakiness of the puff pastry.",
+            "location": 47,
+            "tags": []
+        },
+        {
+            "id": 110,
+            "name": "Quetzalcoatl",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Our silky smooth house-made chocolate ganache hot chocolate paired with smoked paprika and hot pepper. It’s topped with our light and rich chocolate espuma.\n\nServed with a tajin palmier - the Mexican chilli-like fusion pastry is made with the traditional French puff pastry with tajin spices. It has a combination of sweet, sour, salty and heat with a subtle hint of chilli flavour.",
+            "location": 47,
+            "tags": []
+        },
+        {
+            "id": 111,
+            "name": "Mille Et Une Nuits (Thousand and One Nights)",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A 70% dark chocolate infused with Ladurée Mille et Une Nuits signature tea, which blends notes of rose, orange blossom mint and ginger. The decadent flavour of this hot chocolate is further enhanced by an infusion of fresh mint, orgeat syrup, rose water, ginger, orange blossom and honey. Topped with honey and ginger-infused chantilly.\n\nServed with Ladurée signature macaron in the limited edition Mille et Une Nuits flavour. This macaron flavour combines violet macaron shells with creamy spice filling enhanced by candied fruit, revealing the aromatic power of ginger, dates, orange and lemon.\n\nGluten-free friendly. Contains nuts.",
+            "location": 48,
+            "tags": [
+                "Gluten-Free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 112,
+            "name": "Forêt Blanche",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This hot chocolate is reminiscent of Laduree Forêt Blanche cake. The drink combines 70% dark chocolate with Amarena cherries, infused with vanilla pod and cinnamon.  Topped with a decorative “chocolate cherry” and chantilly.\n\nServed with Ladurée signature macaron or Eugénie, the new creation by Maison Ladurée, a delicate crunchy biscuit with a melting heart coated by chocolate. Vanilla or chocolate flavours are recommended.\n\nGluten-free friendly. Contains nuts.",
+            "location": 48,
+            "tags": [
+                "Gluten-Free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 113,
+            "name": "Pomme Tatin",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This hot chocolate carries notes of the classic French Tarte Tatin. The drink combines Zephyr white chocolate 34% infused with apples with added notes of cinnamon and caramel. Topped with chantilly and drizzles of caramel.\n\nServed with Eugénie in the limited edition, Tarte Tatin flavour.  Eugénie is the new creation by Maison Ladurée.  Tarte Tatin is a delicate combination of the crunchy caramel chocolate shell and notes of vanilla apple, with a shortbread biscuit and caramel heart.",
+            "location": 48,
+            "tags": []
+        },
+        {
+            "id": 114,
+            "name": "Milo Hot Chocolate with Taiyaki Mochi",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Malty taste of milo with rich hot chocolate.\n\nServed with a taiyaki-shaped mochi with injeolmi powder.",
+            "location": 49,
+            "tags": [
+                ""
+            ]
+        },
+        {
+            "id": 115,
+            "name": "Black Sesame Hot Chocolate with Taiyaki Mochi",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Nutty black sesame with rich hot chocolate.\n\nServed with a taiyaki-shaped mochi with injeolmi powder.",
+            "location": 49,
+            "tags": [
+                ""
+            ]
+        },
+        {
+            "id": 116,
+            "name": "Boomeringue",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Rich, creamy white chocolate infused with fresh kiwi.\n\nServed with a crispy meringue sandwiching a light mango cream.\n\nGluten-free friendly.",
+            "location": 50,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 117,
+            "name": "Cherry Picker",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "An ode to the Australian chocolate bar ‘Cherry Ripe’. The drink is a decadent dark chocolate sweetened with silky coconut cream and topped with maraschino cherry whip.\n\nServed with a cherry coconut treat.\n\nGluten-free friendly.  Dairy-free/vegan option available upon request.",
+            "location": 50,
+            "tags": [
+                "Gluten-free",
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 118,
+            "name": "Teller of Fortunes",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Mystical and all seeing, this spiced drink gives you that cozy feeling you get while awaiting some good news in a dark and freshly saged room. Topped with a smokey bubble that needs to be popped to set the intentions and enjoyment. Traces of smoke and whispers, secrets, and spice… a bit mysterious. What does it taste like!?\n\nServed with a handmade waffle cone fortune cookie.\n\nContains alcohol but option to have it without.  Gluten-free friendly, dairy-free, and vegan option available upon request.",
+            "location": 51,
+            "tags": [
+                "Alcohol",
+                "Gluten-free",
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 119,
+            "name": "Friend of Melt! Subo Bakes",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-01T08:00:00Z",
+            "description": "A combo of a dark-milk and tamarind hot chocolate with a white chocolate whip. This one has a bit of everything. Inspired by one of our favourite friends, SUBO BAKES, we've taken one of her best creations to the cup and collaborated with her to make the OG cookie so you can taste why we are such fans. It's a love letter to small makers, doing things together.\n\nServed with a tamarind caramel, chocolate chip cookie.",
+            "location": 51,
+            "tags": []
+        },
+        {
+            "id": 120,
+            "name": "It's CORN!",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A big lump of knots, it has the juice!\nNow hear us out… it's delicious.\n\nIf you're one of those folks willing to slurp back the grainy dredges of your cereal and go back for more, then perhaps a cozy, creamy, warm and smooth caramel corn hot chocolate is just for you! Similar to the concept of cereal milk you can totally get behind. Experience our caramelized white hot chocolate with corn and a salted caramel drizzle, with an optional Tajin rim.\n\nServed with chocolate-covered corn pops!\n\nGluten-free friendly option available upon request.",
+            "location": 51,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 121,
+            "name": "Biscoff Cookie Butter",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Keeping this one simple. This milk hot chocolate is made with Biscoff cookies ground into a fine and smooth butter. The combination is a rich deep toasty flavour, blended with a speculoos spice mixture. Very cozy, very comforting, and a sweet little treat.\n\nServed with an espresso ganache tart.",
+            "location": 51,
+            "tags": []
+        },
+        {
+            "id": 122,
+            "name": "La Banana Amaretti Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A 62% chocolate with banana and amaretti, dulce the leche, and topped with amaretti crumbles.\n\nServed with a vanilla amaretti cookie.",
+            "location": 52,
+            "tags": []
+        },
+        {
+            "id": 123,
+            "name": "Limoncello Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "White chocolate mixed with cream di limoncello made in-house, mini marshmallows, and topped with lemon zest.\n\nServed with lemon coconut loaf.",
+            "location": 52,
+            "tags": []
+        },
+        {
+            "id": 124,
+            "name": "Mari’s Reverie - Berry & Bleu",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A delicate fusion of creamy white hot chocolate, vibrant berry compote, and blue cheese whipped cream—where flavours meet in a harmonious, unexpected blend.\n\nOn the side, a two-bite croissant.\n\nMay contain traces of nuts.",
+            "location": 53,
+            "tags": []
+        },
+        {
+            "id": 125,
+            "name": "Choco-lotta-Nutty Horchata",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A smooth, spicy swirl of horchata and hot chocolate, with cacao nibs, almonds, and cinnamon—because sometimes, you just need to feel cozy!\n\nOn the side, a two-bite croissant.\n\nContains nuts.",
+            "location": 53,
+            "tags": []
+        },
+        {
+            "id": 126,
+            "name": "A Walk in the Woods",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Cedar and brown sugar dark hot chocolate.\n\nServed with a smoked salt marshmallow.\n\nGluten-free friendly. Dairy-free option available upon request.",
+            "location": 54,
+            "tags": [
+                "Gluten-Free",
+                "Dairy-Free"
+            ]
+        },
+        {
+            "id": 127,
+            "name": "Figs and Spice and Everything Nice",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Spiced fig dark hot chocolate made with oat milk.\n\nServed with an almond coffee florentine.\n\nContains nuts. Gluten-free friendly and vegan option available upon request.",
+            "location": 54,
+            "tags": [
+                "Gluten-free",
+                "Dairy-free",
+                "Vegan",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 128,
+            "name": "Deep and Delicious Toasted Buckwheat ‘Sweater’",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A 70% house-made ganache and house-toasted buckwheat with 3.8% grass-fed milk and ground, toasted buckwheat on top.\n\nServed with thinly sliced toasted buckwheat biscotti with buckwheat crumble, 1/2 dipped in our ganache. Delectably dippable, or enjoy separately.",
+            "location": 55,
+            "tags": []
+        },
+        {
+            "id": 129,
+            "name": "Zingy Citrus Pavlova Dream",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A 70% house-made ganache and ginger syrup concentrate hot chocolate with 3.8% grass-fed milk.\n\nServed with a preserved citrus/orange pavlova topper, to be dropped into your hot chocolate and melted for a zingy kick.",
+            "location": 55,
+            "tags": []
+        },
+        {
+            "id": 130,
+            "name": "Love Affair",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Ruby chocolate flavoured hot chocolate with rooibos and red berries.\n\nServed with a ruby-dipped flat croissant, filled with raspberry.",
+            "location": 56,
+            "tags": []
+        },
+        {
+            "id": 131,
+            "name": "Nuts About You",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Almond milk-based 35% hot chocolate with hints of sour cherry.\n\nServed with a puffed pastry palmier dipped in milk chocolate and enrobed with a mixture of caramelized nuts.\n\nContains nuts.",
+            "location": 56,
+            "tags": []
+        },
+        {
+            "id": 132,
+            "name": "Balsamo di Sera",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A rich, dark hot chocolate with a touch of aged balsamic vinegar, blending sweetness with a subtle tang.\n\nOn the side, the perfect pairing - our creamy mascarpone and fig gelato.",
+            "location": 57,
+            "tags": []
+        },
+        {
+            "id": 133,
+            "name": "Tu Vuò Fà L'Hot Cioccolato",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A rich blend of espresso and hot chocolate with a hint of lemon zest, offering a balance of bold and refreshing flavours.\n\nAccompanied with an ideal match - a slice of peanut butter pizza.",
+            "location": 57,
+            "tags": []
+        },
+        {
+            "id": 134,
+            "name": "Hug Me Hertzoggie",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Apricot-infused hot chocolate with coconut milk.\n\nServed with a rim of toasted coconut marshmallow, coconut whip cream and a chocolate-dipped dried apricot.\n\nDairy-free, gluten-free friendly.",
+            "location": 58,
+            "tags": [
+                "Gluten-free",
+                "Dairy-free"
+            ]
+        },
+        {
+            "id": 135,
+            "name": "Warm Buns",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Milk chocolate infused with toasted house sourdough.\n\nServed with a sweet sourdough bun skewer.",
+            "location": 58,
+            "tags": []
+        },
+        {
+            "id": 136,
+            "name": "Crunchy Mango",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Creamy mango white hot chocolate, topped with nut cream and honey crumbs.\n\nServed with a madeleine and a dark chocolate truffle.\n\nVegan, gluten-free friendly. Contains nuts.",
+            "location": 59,
+            "tags": [
+                "Gluten-free",
+                "Dairy-free",
+                "Vegan",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 137,
+            "name": "Choco Yu",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Yuzu dark hot chocolate topped with nut cream, chopped nuts, and yuzu agar candy.\n\nServed with a madeleine and a dark chocolate truffle.\n\nVegan, gluten-free friendly. Contains nuts.",
+            "location": 59,
+            "tags": [
+                "Gluten-free",
+                "Dairy-free",
+                "Vegan",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 138,
+            "name": "Ember Lager Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Our Amber Lager meets a unique winter twist for the festival. Each pour is caramelized with a glowing beer poker, bringing out warm, toasty notes like marshmallow. We add a house-made chocolate syrup with cinnamon and vanilla, balancing spiced sweetness with the lager’s malty depth. 5.4%\n\nPaired with a chocolate-dipped candied bacon strip.\n\nDine-in only, contains alcohol.",
+            "location": 60,
+            "tags": [
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 139,
+            "name": "Maple Nutty Bliss Hot Chocolate",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This decadent treat combines the deep, roasty flavours of maple-pecan beer, creamy cashew puree, and the classic warmth of hot cocoa. First, the maple-pecan beer reduces to a syrupy sweetness, enhancing the chocolate with nutty, caramelized notes. Then, smooth, pureed cashews are stirred in, adding a creamy, velvety texture that balances the rich chocolate base. The result is an irresistible, silky-smooth hot chocolate with a subtle nutty sweetness and an unexpected, but oh-so-delicious, depth of flavour.\n\nOn the side, enjoy the smoky sweetness of butternut squash, slow-smoked to perfection and pureed into a silky smooth blend that’s both earthy and subtly caramelized. This velvety squash puree is then swirled into a rich, traditional vanilla custard, creating a harmonious balance of flavours that’s both comforting and surprising. The mixture is lovingly spooned into a flaky, buttery croissant cup, offering a delicious contrast of textures with every bite. The result? A dessert that's warm, decadent, and deeply satisfying—a perfect blend of sweet, savoury, and smoky in every spoonful.\n\nDine-in only, contains nuts.",
+            "location": 60,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 140,
+            "name": "Dubai Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A refined combination of creamy pistachio rose milk and rich hot chocolate.\n\nAccompanied by a Mini Dubai Chocolate Croissant—offering a perfect balance of delicate flavours and decadence in every bite.\n\nContains nuts.",
+            "location": 61,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 141,
+            "name": "Marshmallow Banana Cup",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A sight to see! Smooth banana gelato, torched marshmallow, and banana milk hot chocolate.\n\nPerfectly paired with a rich chocolate cookie sitting on top.",
+            "location": 61,
+            "tags": []
+        },
+        {
+            "id": 142,
+            "name": "Bailey's S'mores Hot Chocolate Float",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "When you're craving something beyond caffeine! Creamy vanilla ice cream paired with Baileys S'mores liqueur, rich hot chocolate and crushed Lotus Biscoff cookie.\n\nServed alongside a buttery sugar cookie. A comforting mix of warmth and sweetness.\n\nContains alcohol.",
+            "location": 61,
+            "tags": [
+                "Alcohol"
+            ]
+        },
+        {
+            "id": 143,
+            "name": "English Toffee Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This delightful concoction features a rich milk hot chocolate base, enhanced by the sweet and savoury notes of sea salt caramel toffee syrup. Topped with a generous layer of caramel whipped cream, it creates a luscious treat that perfectly balances creamy sweetness with a hint of salty depth.\n\nPaired with a mini flat English toffee croissant.",
+            "location": 62,
+            "tags": []
+        },
+        {
+            "id": 144,
+            "name": "Hot Chocolate Royale",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "This delectable beverage combines hazelnut praline milk and rich hot chocolate, creating a decadent foundation of nutty sweetness and chocolatey goodness. It is elegantly finished with a drizzle of caramel and topped with light caramel whipped cream, resulting in a delightful harmony of flavours and textures.\n\nEspecially comforting when enjoyed with our chocolate hazelnut cookie.\n\nContains nuts.",
+            "location": 62,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 145,
+            "name": "Happy Little Vegemite",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Experience a uniquely Australian twist on hot chocolate with our Vegemite hot chocolate. Milk chocolate with a touch of Vegemite’s savoury saltiness, adding depth and complexity, while hints of caramel provide a sweet, buttery contrast. It’s the perfect balance of sweet and savoury for a cozy, unexpected treat.\n\nServed with a Vegemite brownie: the slightly salty, earthy undertones of Vegemite enhance the brownie’s moist, decadent crumb.",
+            "location": 63,
+            "tags": []
+        },
+        {
+            "id": 146,
+            "name": "The Kiwi to My Heart",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "White hot chocolate with hints of kiwi fruit.\n\nServed with a mini pavlova topped with whipped cream and fresh fruit, including kiwis of course!",
+            "location": 63,
+            "tags": []
+        },
+        {
+            "id": 147,
+            "name": "Yabba Dabba Delicious",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Creamy Belgian white chocolate infused with cherry and lime, topped with real whipped cream and Fruity Pebble cereal.\n\nServed with our soft, chewy Yabba Dabba Delicious cookie studded with Fruity Pebble cereal.",
+            "location": 64,
+            "tags": []
+        },
+        {
+            "id": 148,
+            "name": "Salted Honey Cornflake Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Honey-sweetened dark malted 65% Inaya hot chocolate topped with real whipped cream and salted honey drizzle.\n\nServed with caramelized toasted cornflake brittle drizzled with dark chocolate and Maldon sea salt flakes.",
+            "location": 64,
+            "tags": []
+        },
+        {
+            "id": 149,
+            "name": "Salted Caramel Pecan",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Indulge in the perfect balance of rich, velvety dark chocolate, sweet caramel, and a nutty pecan twist. This luxurious hot chocolate is topped with a cloud of whipped cream, sprinkled with crunchy pecan bits and Skor toffee pieces, and finished with a drizzle of golden caramel. Cozy, decadent, and downright irresistible — it’s the ultimate winter warmer.\n\nPaired with a chocolate pecan bar for the perfect duo.\n\nContains nuts.",
+            "location": 65,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 150,
+            "name": "Cocoa-nut Royale",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Indulge in a tropical twist on classic decadence. This velvety hot chocolate blends rich dark chocolate with creamy steamed coconut milk, delivering a luxurious sip every time. Crowned with luscious coconut whip, golden toasted coconut flakes, and delicate chocolate curls, it's a treat for all the senses.\n\nPaired perfectly with a chocolate almond coconut scone.\n\nDairy-free and vegan.",
+            "location": 65,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 151,
+            "name": "Pistachio Dream Cup",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "The perfect fusion of our house-made pistachio paste blended with rich, creamy dark chocolate ganache. Crowned with a velvety layer of whipped cream and topped with a sprinkle of roasted pistachio pieces\n\nServed with our freshly baked cranberry and pistachio biscotti, dipped in smooth, melted chocolate.\n\nContains nuts.",
+            "location": 66,
+            "tags": [
+                "Nuts"
+            ]
+        },
+        {
+            "id": 152,
+            "name": "The Hot Velvet Affair",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Indulge in the velvety richness of our house-made cream cheese, blended with the creaminess of white chocolate and a delicate dusting of cocoa powder. A splash of vibrant red food colouring adds a playful touch. Topped with a cloud of whipped cream and finished with red sprinkles.\n\nServed with a house-made Red Velvet Cookie, filled with creamy cream cheese and white chocolate, finished with icing sugar.",
+            "location": 66,
+            "tags": []
+        },
+        {
+            "id": 153,
+            "name": "The Carolina Reaper",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Dark hot chocolate, spiced with Carolina Reaper pepper and a Tajin rim.\n\nServed with a mango pâte de fruit.\n\nGluten-free friendly. Dairy-free option available upon request.",
+            "location": 67,
+            "tags": [
+                "Gluten-Free",
+                "Dairy-Free"
+            ]
+        },
+        {
+            "id": 154,
+            "name": "Oreo Smash",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Oreo-infused dark hot chocolate with a marshmallow rim and topped with chocolate flakes.\n\nServed with an Oreo chocolate bomb - a chocolate ball filled with chocolate cookie crumble, and whipped cream.",
+            "location": 67,
+            "tags": []
+        },
+        {
+            "id": 155,
+            "name": "Floating Island Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Floating Island Hot Chocolate is made with 45% milk chocolate and 63% dark chocolate, topped with a Swiss meringue covered in caramel.\n \nServed with Prunes Gallette.",
+            "location": 68,
+            "tags": []
+        },
+        {
+            "id": 156,
+            "name": "Samana Special",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-13T08:00:00Z",
+            "description": "Made with Samana 70% dark chocolate from the Dominican Republic.\n \nServed with milk ice cream Batonnet dipped in chocolate and a brandy snap.",
+            "location": 68,
+            "tags": []
+        },
+        {
+            "id": 157,
+            "name": "Double Baked, Double Trouble!",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A 42% milk hot chocolate infused with house-made almond praline.\n\nServed with a double-baked almond croissant crisp.\n\nContains nuts.",
+            "location": 69,
+            "tags": []
+        },
+        {
+            "id": 158,
+            "name": "Pop Goes the Weasel!",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-13T08:00:00Z",
+            "description": "A 64% dark hot chocolate infused with caramelized popcorn.\n\nServed with a burnt corn marshmallow.",
+            "location": 69,
+            "tags": []
+        },
+        {
+            "id": 159,
+            "name": "Hot Buttered Rum Meets Stroopwafel",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A decadent, very flavourful hot buttered rum hot chocolate made by cooking butter, rum extract and sugar together into an irresistible syrup — paired with our not-too-sweet chocolate sauce, it’s a must-try!\n\nServed with a traditional caramel stroopwafel that is so satisfyingly chewy and served on top of your cup, softened by the steam of the hot drink.\n\nDairy-free and vegan. Contains traces of alcohol from the extract.",
+            "location": 70,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 160,
+            "name": "Cinnamon Bun and Cream Cheese in a Cup",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A fragrant hot chocolate made with the actual cinnamon bun brown sugar pan sauce we use to make our cinnamon buns! Topped with whipped cream and, the piece de resistance, a delicious cream cheese drizzle.\n\nServed with a moist bite of cinnamon monkey-bread with cream cheese icing.\n\nDairy-free and vegan.",
+            "location": 70,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        },
+        {
+            "id": 161,
+            "name": "Candy Apple Charm",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Unzip your outer layers and join us for a Candy Apple Charm hot chocolate. This dark hot chocolate combines the rich warmth of velvety cocoa with the juice of ripe apples, sweet and tangy. We coax depth from the beverage with a whisper of caramel charming your senses into a tantalizing experience!\n\nServed with an Apple Caramel Pinwheel Cookie\n\nAvailable January 18 - 26 and February 11 - 14, 2025",
+            "location": 71,
+            "tags": []
+        },
+        {
+            "id": 162,
+            "name": "Ube Cinnamon Indulgence",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-09T08:00:00Z",
+            "description": "A unique fusion of flavours, this hot chocolate combines the creamy, slightly nutty sweetness of ube with the comforting warmth of cinnamon and the rich, velvety smoothness of white chocolate. The result is an indulgent exotic treat that’s as beautiful as it is delicious.\n\nServed with Ube-Vanilla Shortbread.\n\nAvailable January 18 - 26 and February 4 - 9, 2025",
+            "location": 71,
+            "tags": []
+        },
+        {
+            "id": 163,
+            "name": "Wintry Minty Mocha",
+            "startDate": "2025-01-28T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "May we cajole you in from the weather outside? Our indulgent mocha is a trifecta of dark chocolate, piquant espresso and the cooling, yet enlivening flavours of spearmint. Taste, is it invigorating, is it deeply relaxing? Explore your senses while sipping on this enticing elixir to extract a most satisfying winter experience.\n\nServed with a Chocolate Mint Flourless Cookie.\n\nGluten-free friendly.\n\nAvailable January 28 - February 2 and February 11 - 14, 2025",
+            "location": 71,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 164,
+            "name": "Black Forest Frost",
+            "startDate": "2025-01-28T08:00:00Z",
+            "endDate": "2025-02-09T08:00:00Z",
+            "description": "From the depth of winter’s dark yawning forest emerges a small glimmering light. We enchant you with a classic favourite Black Forest Frost hot chocolate which combines dark chocolate with the lush flavour of ripe cherry. Frosted with a topping of vanilla crème chantilly, this chorus of flavours will, perhaps, leave you with a sense of welcome for more wintertime.\n\nServed with a Chocolate Cherry Thumbprint Cookie.\n\nAvailable January 28 - February 2 and February 4 - 9, 2025",
+            "location": 71,
+            "tags": []
+        },
+        {
+            "id": 165,
+            "name": "The Golden Flake of Belém",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "A Pastel de Nata-inspired white hot chocolate, featuring smooth, creamy white chocolate crowned with a caramelized sugar crust. Served in an elegant glass with a delicate, flaky pastry garnish around the rim, this drink captures the essence of the beloved Portuguese custard tart. It also reflects the rich Portuguese heritage embedded in Union Market’s history, offering a warm, community-rooted experience with every sip.\n\nOn the side, Pastel De Nata.",
+            "location": 72,
+            "tags": []
+        },
+        {
+            "id": 166,
+            "name": "Last Call for Baby Guinness",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A Baby Guinness-inspired hot chocolate, featuring rich coffee-infused cocoa topped with a velvety layer of non-alcoholic Baileys-style cream. This indulgent drink pays homage to the classic Dublin-originated cocktail, reimagined as a cozy, alcohol-free treat.\n\nServed with honey butter toast on Guinness sourdough bread.",
+            "location": 72,
+            "tags": []
+        },
+        {
+            "id": 167,
+            "name": "Migao",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-02T08:00:00Z",
+            "description": "Get ready to meet hot chocolate’s quirky cousin: Colombian Hot Chocolate Migao! Unlike the typical drinkable version, this one’s so thick and indulgent you’ll need a spoon to enjoy it. That’s right—you don’t drink this hot chocolate; you eat it! Made with rich Colombian chocolate (70% Dark Chocolate Palenque, by Luker Chocolate) panela, cinnamon and cloves, but here’s where it gets magical: we put in gooey mozzarella cheese, adding a unique, stretchy creaminess that’s as delightful as it is unexpected.\n\nImagine dunking your spoon into a warm, velvety mix of rich chocolate, gooey mozzarella cheese (trust us, it’s deliciously stretchy), each bite is topped with crumbled ducales (Colombian cookies with a hint of sweet and salty), fluffy bread chunks, and marshmallows. It’s like a chocolate lava lamp of surprises in every bite. So grab your spoon and dive in—this is hot chocolate on a whole new level!\n\nGoodies are going inside the Migao rather than on the side.",
+            "location": 73,
+            "tags": []
+        },
+        {
+            "id": 168,
+            "name": "Mango Mayhem Hot Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-02T08:00:00Z",
+            "description": "Meet Mango Mayhem Hot Chocolate - a bold, tropical twist on your favourite cozy drink. Made with velvety oat milk and premium 72% dark Venezuelan chocolate from Cacao Barry, this rich hot chocolate is infused with the juicy sweetness of Alfonso mango and a subtle kick of pink pepper for a surprising warmth.\n\nThe rim is coated with a sprinkle of Mexican Tajín, adding just the right touch of spice and a hint of lime to awaken your taste buds. This exotic, flavour-packed drink is pure indulgence with a little bit of heat and a lot of personality!\n\nServed with a scoop of refreshing coconut sorbetto on the side, it’s the perfect way to cool down and balance each bold sip.\n\nDairy-free, vegan, gluten-free friendly.",
+            "location": 73,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 169,
+            "name": "Blooming Bliss",
+            "startDate": "2025-02-03T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A delicate and fragrant treat that transports your senses to a floral paradise. Made with creamy Avalon milk and luxurious 34% Zephyr white chocolate from Cacao Barry, this hot chocolate is infused with aromatic cardamom and a touch of exquisite Iranian rose water, creating a heavenly blend of flavours.\n\nTopped with delicate dried rose petals for an elegant touch, each sip is like a warm embrace of floral sweetness. This dreamy hot chocolate is pure indulgence—smooth, fragrant, and utterly enchanting.\n\nTo complete this luxurious experience, it’s served alongside a zesty lemon macaron, offering the perfect balance of floral and citrus.\n\nGluten-free friendly.",
+            "location": 73,
+            "tags": [
+                "Gluten-free"
+            ]
+        },
+        {
+            "id": 170,
+            "name": "ChocoBubbles Thai Dream",
+            "startDate": "2025-02-03T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "A dreamy fusion of rich dark chocolate and exotic Thai tea, topped off with chewy tapioca pearls for that signature bubble tea experience. Made with creamy oat milk and premium 65% Inaya dark chocolate from Cacao Barry, this indulgent hot chocolate is infused with fragrant Thai black tea, giving it a perfect balance of smooth chocolate and spiced tea notes.\n\nThe tapioca pearls add a fun and satisfying texture, making each sip an adventure. Whether you’re a bubble tea lover or a chocolate enthusiast, it is a playful, indulgent treat that’ll take your taste buds on a flavorful journey.\n\nServed with a scoop of refreshing coconut sorbetto on the side.\n\nDairy-free, vegan, gluten-free friendly.",
+            "location": 73,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 171,
+            "name": "Jazzy Chocolate Curaçao",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Premium Shokinag white chocolate melted together with blue curacao syrup, topped with real whipped cream, candied orange and blueberries.\n\nServed with a mini chocolate tart filled with peanut butter pastry cream and Callebaut dark chocolate ganache, topped with toasted peanuts.\n\nGluten-free friendly option available upon request. Contains nuts.",
+            "location": 74,
+            "tags": [
+                "Gluten-Free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 172,
+            "name": "Berry Rose Bliss",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Juliet's dark chocolate melted together with rose hip syrup and blackberries, with your choice of milk. Topped with giant marshmallows!\n\nServed with a mini chocolate tart filled with peanut butter pastry cream and dark chocolate ganache, topped with toasted peanuts.\n\nGluten-free friendly option available upon request. Contains nuts.",
+            "location": 74,
+            "tags": [
+                "Gluten-Free",
+                "Nuts"
+            ]
+        },
+        {
+            "id": 173,
+            "name": "HOP-Chocolate",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Indulge in a ribbit-ing blend of rich dark chocolate and peppermint, served with a tasty frog cookie—perfect for dunking! Served in your own take-home frog mug.\n\nOn the side, a handmade frog sugar cookie.\n\nAll Vancouver Aquarium recipes may contain peanuts or tree nuts.",
+            "location": 75,
+            "tags": []
+        },
+        {
+            "id": 174,
+            "name": "Mermaid's Mocha",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Dive into an enchanting sea of flavour, mermaid style! Topped with whipped cream, sparkly sugar, and house-made white chocolate orange syrup.\n\nServed with a dark chocolate mermaid tail cookie.\n\nAll Vancouver Aquarium recipes may contain peanuts or tree nuts.",
+            "location": 75,
+            "tags": []
+        },
+        {
+            "id": 175,
+            "name": "Tropiclikeitshot",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-01-31T08:00:00Z",
+            "description": "Mango and passionfruit meet our chocolate ganache. This amazing combination gives memories of the tropics!\n\nServed with our Melonpan – a fluffy brioche with a crunchy top.",
+            "location": 76,
+            "tags": []
+        },
+        {
+            "id": 176,
+            "name": "5pice Girls",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "East meets West in this combination of classic Chinese five spice and a rich chocolate ganache.\n\nServed with a crunchy puff pastry treat auspiciously shaped like a gold bar.",
+            "location": 76,
+            "tags": []
+        },
+        {
+            "id": 177,
+            "name": "The Chocoholic Hot Chocolate Float",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Rich and creamy signature hot chocolate served with a scoop of chocolate ice cream, topped with thick whipped cream and a choice of toppings. You’ve never had an ice cream float like this!\n\nYour pairing is our chocolate ice cream, found floating in that chocolatey goodness.",
+            "location": 77,
+            "tags": []
+        },
+        {
+            "id": 178,
+            "name": "Dip Your Cookies Hot Chocolate Float",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Rich and creamy signature hot chocolate with a scoop of cookies & cream ice cream, topped with thick whipped cream and a choice of cookie toppings. You’ve never had an ice cream float like this!\n\nYour pairing is our cookies & cream ice cream, dipping itself in that rich hot chocolate.",
+            "location": 77,
+            "tags": []
+        },
+        {
+            "id": 179,
+            "name": "Arashiyama - The Bamboo Forest",
+            "startDate": "2025-01-18T08:00:00Z",
+            "endDate": "2025-02-02T08:00:00Z",
+            "description": "Inspired by Arashiyama, a famous and beautiful bamboo forest in Kyoto, Japan, this vegan matcha oat milk white hot chocolate is infused with roasted Japanese sweet potato.\n\nPaired with a cute whisk-shaped hojicha sugar cookie sandwich with mochi filling and intense matcha white chocolate ganache, plus a side matcha whip dip.\n\nDairy-free, vegan, and gluten-free friendly.",
+            "location": 78,
+            "tags": [
+                "Dairy-free",
+                "Vegan",
+                "Gluten-Free"
+            ]
+        },
+        {
+            "id": 180,
+            "name": "Miss Taiyaki’s Genmaicha",
+            "startDate": "2025-02-01T08:00:00Z",
+            "endDate": "2025-02-14T08:00:00Z",
+            "description": "Genmaicha oat milk white hot chocolate, rim dipped in red bean white chocolate, and topped with red bean whipped cream.\n\nServed with a fish-shaped crispy puff pastry filled with house-made red bean paste.\n\nDairy-free and vegan.",
+            "location": 78,
+            "tags": [
+                "Dairy-free",
+                "Vegan"
+            ]
+        }
+    ]
+}
