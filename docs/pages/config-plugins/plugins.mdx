@@ -137,7 +137,7 @@ export default withPlugin;
 
 ### Add TypeScript support and convert to dynamic app config
 
-While it is convenient to write config plugins in TypeScript, because you can benefit from intellisense on the configuration objects, your app config is evaluated by Node.js, which does not recognize TypeScript by default. You need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
+While it is recommended that you write config plugins in TypeScript, as this will proide intellisense for the configuration objects, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. You need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
 
 Install `ts-node` library by running the following command:
 
@@ -317,7 +317,7 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
 };
 ```
 
-The `plugins` array uses `withPlugins` method under the hood to chain the plugins. In your dynamic app config, if it becomes difficult to read and manipulate, you can use the `withPlugins` method directly to chain plugins together and execute them in order.
+The `plugins` array uses `withPlugins` method under the hood to chain the plugins. If you are using so many config plugins with complex configuration that becomes difficult to read and edit your dynamic app config, you can use the `withPlugins` method directly to chain plugins together and execute them in order.
 
 ```ts app.config.ts
 import { withPlugins } from 'expo/config-plugins';
@@ -347,7 +347,7 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
 
 ## Using a config plugin
 
-Expo config plugins mostly come from Node.js modules. You can install them just like other libraries in your project.
+Expo config plugins come mostly from Node.js modules. You can install them just like other libraries in your project.
 
 For example, `expo-camera` has a plugin that adds camera permissions to the **AndroidManifest.xml** and **Info.plist**. To install it in your project, run the following command:
 
