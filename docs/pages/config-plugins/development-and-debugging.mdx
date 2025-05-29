@@ -64,13 +64,13 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 - **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package. If anything goes wrong with the plugin, developers should be able to manually add the project modifications that were automated by the plugin. This also allows you to support projects that are not using [CNG](/workflow/continuous-native-generation/).
   - Document the available properties for the plugin, specifying if any of the properties are required.
   - If possible, plugins should be idempotent, meaning the changes they make are the same whether they are run on a fresh native project template or run again on a project template where its changes already exist. This allows developers to run `npx expo prebuild` without the `--clean` flag to sync changes to the config, rather than recreating the native project entirely. This may be more difficult with dangerous mods.
-- **Naming conventions**: Use `withFeatureName` for the plugin function name if it applies to all platforms. If the plugin is platform specific, use a camel case naming with the platform right after "with". For example, `withAndroidSplash`, `withIosSplash`.
+- **Naming conventions**: Use `withFeatureName` for the plugin function name if it applies to all platforms. If the plugin is platform-specific, use a camel case naming with the platform right after "with". For example, `withAndroidSplash`, `withIosSplash`.
 - **Leverage built-in plugins**: If there's already a configuration available in [app config](/versions/latest/config/app/) and [prebuild config](https://github.com/expo/expo/blob/main/packages/%40expo/prebuild-config/src/plugins/withDefaultPlugins.ts), you don't need to write a config plugin for it.
 - **Split up plugins by platform**: When using functions within the config plugin, split them by platform. For example, `withAndroidSplash`, `withIosSplash`. This makes using the `--platform` flag in `npx expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode, as the logging will show which platform-specific functions are being executed.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
   use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
   - Notice the root [\*\*/\_\_mocks\_\_/\*\*/\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) directory and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
-- A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
+- A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-scripts` plugin][ems-plugin] tooling for more info.
 - Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
 ### Best practices for mods
@@ -110,7 +110,7 @@ interface StaticObject {
 
 Static properties are required because the app config must be serializable to JSON for use as the app manifest.
 
-If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
+If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increases the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
 
 ## Development environment
 
@@ -121,10 +121,9 @@ as this will perform automatic validation on the plugins and surface error infor
 
 ### Set up a playground environment
 
-You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
+You can develop plugins easily using JS, but if you want to set up Jest tests and use TypeScript, you will want a monorepo.
 
-A monorepo will enable you to work on a node module and import it in your app config like you would if it were published to npm.
-Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
+A monorepo will enable you to work on a node module and import it in your app config like you would if it were published to npm. Expo config plugins have full monorepo support built-in so all you need to do is set up a project.
 
 In your monorepo's `packages/` directory, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
 

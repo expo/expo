@@ -4,24 +4,19 @@ description: Learn how to create and use a config plugins in your Expo project.
 sidebar_title: Create a plugin
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
-import { BoxLink } from '~/ui/components/BoxLink';
+import { ConfigPluginHierarchy } from '~/ui/components/ConfigPluginHierarchy';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 This guide covers sections how to create a config plugin, how to pass parameters to a config plugin, and how to chain multiple config plugins together. It also covers how to use a config plugin from an Expo library.
 
-> **info** **Note:** The following sections use dynamic [app config](/workflow/configuration/) (**app.config.js/app.config.ts** instead of **app.json**), which is not required to use a simple config plugin. However, it is required to use dynamic app config when you want to create/use a function-based config plugin that accepts parameters.
+Using the diagram below, in this guide, you will learn the first two parts of the config plugin hierarchy:
 
-<BoxLink
-  title="What are config plugins?"
-  description="For information about config plugins terminology, and their characteristics, check out the introduction."
-  href="/config-plugins/introduction/"
-  Icon={BookOpen02Icon}
-/>
+<ConfigPluginHierarchy highlightedNodeIds={['1', '2']} />
+
+> **info** **Note:** The following sections use dynamic [app config](/workflow/configuration/) (**app.config.js/app.config.ts** instead of **app.json**), which is not required to use a simple config plugin. However, it is required to use dynamic app config when you want to create/use a function-based config plugin that accepts parameters.
 
 ## Creating a config plugin
 
@@ -137,7 +132,7 @@ export default withPlugin;
 
 ### Add TypeScript support and convert to dynamic app config
 
-While it is recommended that you write config plugins in TypeScript, as this will proide intellisense for the configuration objects, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. You need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
+While it is recommended that you write config plugins in TypeScript, as this will provide intellisense for the configuration objects, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. You need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
 
 Install `ts-node` library by running the following command:
 
