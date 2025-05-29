@@ -40,6 +40,7 @@
     "@radix-ui/react-tooltip": "^1.2.3",
     "@reach/tabs": "^0.18.0",
     "@sentry/react": "^8.47.0",
+    "@xyflow/react": "^12.6.4",
     "clipboard-copy": "^4.0.1",
     "cmdk": "^0.2.1",
     "date-fns": "^4.1.0",
