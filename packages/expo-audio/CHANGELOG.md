@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Support lock screen controls. ([#37126](https://github.com/expo/expo/pull/37126) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - [iOS] Support base64 strings as an audio source. ([#37031](https://github.com/expo/expo/pull/37031) by [@alanjhughes](https://github.com/alanjhughes))
