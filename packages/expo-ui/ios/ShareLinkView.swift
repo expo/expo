@@ -2,10 +2,8 @@ import ExpoModulesCore
 import SwiftUI
 
 struct Preview: Record {
-  @Field
-  var title: String
-  @Field
-  var image: String
+  @Field var title: String
+  @Field var image: String
 }
 
 final class ShareLinkViewProps: ExpoSwiftUI.ViewProps {
