@@ -106,6 +106,17 @@ function kernelManifestAndAssetRequestHeadersObjectToJson(obj: {
   return JSON.stringify(obj);
 }
 
+/**
+ * Supports Expo Go home dev-server running on port 8088.
+ */
+function updateManifestUrlForExpoGo(manifestUrl: string): string {
+  const url = new URL(manifestUrl);
+  if (url.port === '80') {
+    url.port = '8088';
+  }
+  return url.toString();
+}
+
 export default {
   async TEST_APP_URI() {
     if (process.env.TEST_SUITE_URI) {
@@ -199,7 +210,7 @@ export default {
       return '';
     }
 
-    const url = await UrlUtils.constructManifestUrlAsync(EXPO_GO_DIR);
+    const url = updateManifestUrlForExpoGo(await UrlUtils.constructManifestUrlAsync(EXPO_GO_DIR));
 
     try {
       const manifestAndAssetRequestHeaders = await getManifestAsync(url, platform);
