@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add export to plugin config type ([#34534](https://github.com/expo/expo/pull/34534) by [@ChromeQ](https://github.com/ChromeQ))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
