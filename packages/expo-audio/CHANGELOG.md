@@ -10,7 +10,7 @@
 
 - [iOS] Support base64 strings as an audio source. ([#37031](https://github.com/expo/expo/pull/37031) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Correctly add the http headers to the `AVURLAsset`. ([#37029](https://github.com/expo/expo/pull/37029) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix inconsistent audio sampling.
+- [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
