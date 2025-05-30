@@ -23,10 +23,14 @@ repositories {
 }
 
 dependencies {
+  def androidxMedia3Version = "1.4.0"
+
   implementation 'androidx.appcompat:appcompat:1.7.0'
-  implementation("androidx.media3:media3-exoplayer:1.4.0")
-  implementation("androidx.media3:media3-exoplayer-dash:1.4.0")
-  implementation("androidx.media3:media3-datasource-okhttp:1.4.0")
-  implementation("androidx.media3:media3-exoplayer-hls:1.4.0")
-  implementation("androidx.media3:media3-exoplayer-smoothstreaming:1.4.0")
+  implementation "androidx.media3:media3-session:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-datasource-okhttp:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-hls:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-smoothstreaming:${androidxMedia3Version}"
 }
