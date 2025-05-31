@@ -5,12 +5,14 @@ import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.video.player.VideoPlayer
+import expo.modules.video.utils.HashableWeakReference
 import java.lang.ref.WeakReference
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
 @OptIn(UnstableApi::class)
 object VideoManager {
   const val INTENT_PLAYER_KEY = "player_uuid"
+  private var appContext: WeakReference<AppContext?> = WeakReference(null)
 
   // Used for sharing videoViews between VideoView and FullscreenPlayerActivity
   private var videoViews = mutableMapOf<String, VideoView>()
@@ -19,11 +21,14 @@ object VideoManager {
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
+  private var playersRequestingKeepAwake = hashSetOf<HashableWeakReference<VideoPlayer>>()
+
   private lateinit var audioFocusManager: AudioFocusManager
   lateinit var cache: VideoCache
 
   fun onModuleCreated(appContext: AppContext) {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    this.appContext = WeakReference(appContext)
 
     if (!this::audioFocusManager.isInitialized) {
       audioFocusManager = AudioFocusManager(appContext)
@@ -85,6 +90,16 @@ object VideoManager {
     }
   }
 
+  fun requestKeepAwake(player: VideoPlayer) {
+    playersRequestingKeepAwake.add(HashableWeakReference(player))
+    applyKeepAwake()
+  }
+
+  fun releaseKeepAwake(player: VideoPlayer) {
+    playersRequestingKeepAwake.remove(HashableWeakReference(player))
+    applyKeepAwake()
+  }
+
   fun isVideoPlayerAttachedToView(videoPlayer: VideoPlayer): Boolean {
     return videoPlayersToVideoViews[videoPlayer]?.isNotEmpty() ?: false
   }
@@ -112,6 +127,16 @@ object VideoManager {
       } else {
         videoView.wasAutoPaused = false
       }
+    }
+  }
+
+  private fun applyKeepAwake() {
+    // Setting `WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON` would've been more efficient, but
+    // We can't be sure that it won't disable expo-keep-awake enabled when playersRequestingKeepAwake.size >= 1
+    // once playersRequestingKeepAwake.size goes down to 0
+    // It is safest to only set the flag to the video view.
+    for (videoView in videoViews.values) {
+      videoView.keepScreenOn = playersRequestingKeepAwake.isNotEmpty()
     }
   }
 
