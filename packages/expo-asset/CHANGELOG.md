@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Add missing `./build/resolveAssetSource` export in expo-assets ([#37083](https://github.com/expo/expo/pull/37083) by [ACHP](https://github.com/ACHP))
 
 ## 11.1.5 — 2025-05-03
 
