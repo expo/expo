@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:minSdkVersion="33" android:maxSdkVersion="33"/>
   <uses-permission android:name="android.permission.DETECT_SCREEN_CAPTURE" android:minSdkVersion="34" />
 </manifest>
