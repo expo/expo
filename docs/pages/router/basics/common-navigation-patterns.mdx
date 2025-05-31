@@ -175,7 +175,7 @@ The data source for checking authentication status could be React context, a sta
 In the **app/login.tsx** file, attempt to reroute the user to the `/(logged-in)` route after successful authentication:
 
 ```tsx app/login.tsx
-import { Button } from 'react-native';
+import { Button, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function Login() {
