@@ -3,9 +3,10 @@ package expo.modules.documentpicker
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import java.io.IOException
 
 class DocumentDetailsReader(private val context: Context) {
-  fun read(uri: Uri): DocumentInfo? {
+  fun read(uri: Uri): DocumentInfo {
     context
       .contentResolver
       .query(uri, null, null, null, null)
@@ -22,7 +23,6 @@ class DocumentDetailsReader(private val context: Context) {
         }
         val mimeType = context.contentResolver.getType(uri)
         return DocumentInfo(uri, name, mimeType, size)
-      }
-    return null
+      } ?: throw IOException("Failed to read document details for URI: $uri")
   }
 }
