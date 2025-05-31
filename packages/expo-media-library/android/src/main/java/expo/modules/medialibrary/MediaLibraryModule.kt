@@ -22,6 +22,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
+import androidx.annotation.RequiresApi
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.permissions.Permissions.askForPermissionsWithPermissionsManager
 import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermissionsManager
@@ -65,7 +66,7 @@ class MediaLibraryModule : Module() {
     if (isExpoGo) {
       listOf(GranularPermission.AUDIO)
     } else {
-      listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      getManifestDeclaredPermissions(context, listOf(GranularPermission.PHOTO, GranularPermission.VIDEO, GranularPermission.AUDIO))
     }
   }
 
@@ -386,16 +387,9 @@ class MediaLibraryModule : Module() {
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
         MediaLibraryUtils.hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
 
-    val shouldAddGranularPermissions =
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        granularPermissions.all {
-          MediaLibraryUtils.hasManifestPermission(
-            context,
-            it.toManifestPermission()
-          )
-        }
-
+    val shouldAddGranularPermissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     val shouldIncludeGranular = shouldAddGranularPermissions && !writeOnly
+
     return listOfNotNull(
       WRITE_EXTERNAL_STORAGE.takeIf { shouldAddWriteExternalStorage },
       READ_EXTERNAL_STORAGE.takeIf { !writeOnly && !shouldAddGranularPermissions },
@@ -409,15 +403,31 @@ class MediaLibraryModule : Module() {
     shouldIncludeGranular: Boolean,
     granularPermissions: List<GranularPermission>
   ): Array<String> {
-    return if (shouldIncludeGranular) {
-      listOfNotNull(
+    if (shouldIncludeGranular) {
+      assertGranularPermissionIntegrity(context, granularPermissions)
+      return listOfNotNull(
         READ_MEDIA_IMAGES.takeIf { granularPermissions.contains(GranularPermission.PHOTO) },
         READ_MEDIA_VIDEO.takeIf { granularPermissions.contains(GranularPermission.VIDEO) },
         READ_MEDIA_AUDIO.takeIf { granularPermissions.contains(GranularPermission.AUDIO) }
       ).toTypedArray()
-    } else {
-      arrayOf()
     }
+    return arrayOf()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private fun assertGranularPermissionIntegrity(context: Context, granularPermissions: List<GranularPermission>) {
+    for (permission in granularPermissions) {
+      if (!MediaLibraryUtils.hasManifestPermission(context, permission.toManifestPermission())) {
+        throw PermissionsException("You have requested the $permission permission, but it is not declared in AndroidManifest. Update expo-media-library config plugin to include the permission before requesting it.")
+      }
+    }
+  }
+
+  private fun getManifestDeclaredPermissions(context: Context, granularPermissions: List<GranularPermission>): List<GranularPermission> {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return granularPermissions.filter { MediaLibraryUtils.hasManifestPermission(context, it.toManifestPermission()) }
+    }
+    return granularPermissions
   }
 
   private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = true, block: () -> Unit) {

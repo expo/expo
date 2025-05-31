@@ -37,7 +37,9 @@ _This version does not introduce any user-facing changes._
 
 ## 17.1.1 — 2025-04-09
 
-_This version does not introduce any user-facing changes._
+### 💡 Others
+
+- [Android] Add `granularPermissions` option to config plugin. ([#36142](https://github.com/expo/expo/pull/36142) by [@bang9](https://github.com/bang9))
 
 ## 17.1.0 — 2025-04-04
 
