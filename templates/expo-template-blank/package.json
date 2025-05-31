@@ -13,8 +13,8 @@
   "dependencies": {
     "expo": "~53.0.9",
     "expo-status-bar": "~2.2.3",
-    "react": "19.0.0",
-    "react-native": "0.79.2"
+    "react": "19.1.0",
+    "react-native": "0.80.0-rc.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

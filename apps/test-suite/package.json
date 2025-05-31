@@ -49,8 +49,8 @@
     "immutable": "^4.0.0",
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
-    "react": "19.0.0",
-    "react-native": "0.79.2",
+    "react": "19.1.0",
+    "react-native": "0.80.0-rc.1",
     "react-native-gesture-handler": "~2.24.0",
     "sinon": "^7.1.1"
   },

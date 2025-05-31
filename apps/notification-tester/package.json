@@ -29,8 +29,8 @@
     "expo-task-manager": "13.1.5",
     "native-component-list": "*",
     "react-native-gesture-handler": "~2.24.0",
-    "react": "19.0.0",
-    "react-native": "0.79.2",
+    "react": "19.1.0",
+    "react-native": "0.80.0-rc.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "4.9.2"
   },
