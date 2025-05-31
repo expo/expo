@@ -3,10 +3,10 @@ export declare const pluginFileName = "app.plugin.js";
 /**
  * Resolve the config plugin from a node module or package.
  * If the module or package does not include a config plugin, this function throws a `PluginError`.
- * The resolution is done in following order:
+ * The resolution is done in the following order:
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
- *   2. If the reference a module? e.g. `expo-font`
+ *   2. Is the reference a module? e.g. `expo-font`
  *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
