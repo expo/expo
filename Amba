@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "SmartPayConnect",
+    "slug": "smartpayconnect",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "smartpayconnect",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.smartpay.connect"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.smartpay.connect"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "SmartPayConnect is an all-in-one mobile platform offering affordable communication, easy money transfers, and ad-based rewards. Earn while you talk, text, and connect.",
+    "extra": {
+      "eas": {
+        "projectId": "your-eas-project-id-here"
+      }
+    }
+  }
+}
