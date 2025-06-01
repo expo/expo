@@ -177,7 +177,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       return
     }
 
-    guard !(audioProcessor?.isTapInstalled ?? false) else {
+    guard audioProcessor?.isTapInstalled != true else {
       tapInstalled = true
       return
     }
@@ -193,9 +193,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     if success {
       audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
         guard let self = self,
-              let audioBuffer = buffer?.pointee,
-              let data = audioBuffer.mData,
-              self.samplingEnabled else {
+          let audioBuffer = buffer?.pointee,
+          let data = audioBuffer.mData,
+          self.samplingEnabled else {
           return
         }
 

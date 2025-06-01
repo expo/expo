@@ -153,7 +153,6 @@ void tapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut
     context->isValid = true;
     *tapStorageOut = context;
   } else {
-
     *tapStorageOut = NULL;
   }
 }
