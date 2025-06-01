@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Web] `useFonts` allows multiple font files to define different font styles and weights.
+- [Web] `useFonts` allows multiple font files to define different font styles and weights. ([#37170](https://github.com/expo/expo/pull/37170) by [@bryanmylee](https://github.com/bryanmylee))
 
 ### 🐛 Bug fixes
 
