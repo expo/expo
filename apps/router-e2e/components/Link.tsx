@@ -3,6 +3,7 @@
 import { LinkProps, useRouter, Link as ExpoLink, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
 
+import { usePeekAndPopContext } from './PeekAndPopContext';
 import { Preview } from './Preview';
 
 import PeekAndPopNativeComponent from '@/specs/PeekAndPopNativeComponent';
@@ -20,21 +21,25 @@ export function Link(props: CustomLinkProps) {
 function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
   const router = useRouter();
   const navigation = useNavigation();
+  const { setIsGlobalTapped } = usePeekAndPopContext();
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-    setTimeout(() => {
-      router.prefetch(rest.href);
-    }, 100);
+      setTimeout(() => {
+        router.prefetch(rest.href);
+      }, 100);
     });
     return unsubscribe;
   }, []);
   return (
     <PeekAndPopNativeComponent
+      onPreviewOpen={() => {
+        setIsGlobalTapped(true);
+      }}
+      onPreviewClose={() => {
+        setIsGlobalTapped(false);
+      }}
       onPreviewTapped={() => {
-        navigation.setOptions({
-          animation: 'none',
-        });
-          router.navigate(rest.href);
+        router.navigate(rest.href);
       }}>
       <PeekAndPopTriggerNativeComponent>
         <ExpoLink {...rest} />
