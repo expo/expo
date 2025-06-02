@@ -1,11 +1,34 @@
 import { isRunningInExpoGo } from 'expo';
+import { useDevToolsPluginClient } from 'expo/devtools';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
+import { useEffect } from 'react';
 import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 // Flag to warn about running on Apple simulator
 let warnAboutRunningOniOSSimulator = false;
 let warnedAboutExpoGo = false;
+export const useBackgroundTaskPluginClient = () => {
+    const client = useDevToolsPluginClient('expo-backgroundtask-devtools-plugin');
+    useEffect(() => {
+        console.log("Setting up 'getRegisteredBackgroundTasks' message listener");
+        return () => client
+            ?.addMessageListener('getRegisteredBackgroundTasks', (data) => {
+            console.log(`Received "getRegisteredBackgroundTasks" message from ${data.from}`);
+            return [];
+        })
+            .remove();
+    }, [client]);
+    useEffect(() => {
+        console.log("Setting up 'triggerBackgroundTasks' message listener");
+        return () => client
+            ?.addMessageListener('triggerBackgroundTasks', (data) => {
+            console.log(`Received "triggerBackgroundTasks" message from ${data.from}`);
+            return triggerTaskWorkerForTestingAsync();
+        })
+            .remove();
+    }, [client]);
+};
 function _validate(taskName) {
     if (isRunningInExpoGo()) {
         if (!warnedAboutExpoGo) {

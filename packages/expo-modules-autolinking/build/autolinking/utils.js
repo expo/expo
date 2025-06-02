@@ -17,6 +17,8 @@ function getLinkingImplementationForPlatform(platform) {
             return require('../platforms/android');
         case 'devtools':
             return require('../platforms/devtools');
+        case 'cli':
+            return require('../platforms/cli');
     }
 }
 /**

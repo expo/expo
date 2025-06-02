@@ -47,18 +47,18 @@ export default async function prompt(
   }
 
   pauseInteractions();
+  let results: prompts.Answers<string>;
   try {
-    const results = await prompts(questions, {
+    results = await prompts(questions, {
       onCancel() {
         throw new AbortCommandError();
       },
       ...options,
     });
-
-    return results;
   } finally {
     resumeInteractions();
   }
+  return results;
 }
 
 /**

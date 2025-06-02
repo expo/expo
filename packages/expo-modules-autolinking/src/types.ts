@@ -4,7 +4,15 @@ type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
 
-export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
+export type SupportedPlatform =
+  | 'apple'
+  | 'ios'
+  | 'android'
+  | 'web'
+  | 'macos'
+  | 'tvos'
+  | 'devtools'
+  | 'cli';
 
 /**
  * Options that can be passed through `expo.autolinking` config in the package.json file.
@@ -130,7 +138,20 @@ export interface ModuleDescriptorDevTools {
 export type ModuleDescriptor =
   | ModuleDescriptorAndroid
   | ModuleDescriptorIos
-  | ModuleDescriptorDevTools;
+  | ModuleDescriptorDevTools
+  | ModuleDescriptorCLIPlugin;
+
+export interface ModuleDescriptorCLIPlugin {
+  packageName: string;
+  packageRoot: string;
+  description: string;
+  commands: {
+    cmd: string;
+    caption: string;
+  }[];
+  mcpEnabled: boolean;
+  main: string;
+}
 
 export interface AndroidGradlePluginDescriptor {
   /**
@@ -314,6 +335,29 @@ export interface RawExpoModuleConfig {
      * The webpage root directory for Expo CLI DevTools to serve the web resources.
      */
     webpageRoot: string;
+  };
+
+  /**
+   * CLI Extensions-specific config.
+   */
+  cli?: {
+    /** Description of the CLI extension */
+    description: string;
+    /**
+     * A list of commands that the CLI extension provides.
+     */
+    commands: {
+      /* Command name as it should be used in the CLI. */
+      cmd: string;
+      /* A short description of the command used in the CLI help. */
+      caption: string;
+    }[];
+    /* Set to true to expose as MCP server */
+    mcpEnabled: boolean;
+    /**
+     * Main entry point of the CLI extension.
+     */
+    main: string;
   };
 }
 

@@ -63,7 +63,7 @@ export default class DevToolsPluginManager {
       platform: 'devtools',
       onlyProjectDeps: false,
     })) as ModuleDescriptorDevTools[];
-    debug('Found autolinked plugins', this.plugins);
+    debug('Found autolinked plugins', plugins);
     return plugins;
   }
 }

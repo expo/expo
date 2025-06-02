@@ -1,4 +1,5 @@
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
+export declare const useBackgroundTaskPluginClient: () => void;
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
  * while on native platforms it returns `BackgroundTaskStatus.Available`.

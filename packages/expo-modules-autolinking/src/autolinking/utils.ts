@@ -13,6 +13,8 @@ export function getLinkingImplementationForPlatform(platform: SupportedPlatform)
       return require('../platforms/android');
     case 'devtools':
       return require('../platforms/devtools');
+    case 'cli':
+      return require('../platforms/cli');
   }
 }
 

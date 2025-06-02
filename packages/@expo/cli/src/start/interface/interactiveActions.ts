@@ -5,6 +5,7 @@ import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
 import { openBrowserAsync } from '../../utils/open';
+import { ora } from '../../utils/ora';
 import { ExpoChoice, selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import {
@@ -141,7 +142,7 @@ export class DevServerManagerActions {
         { title: 'Reload app', value: 'reload' },
         // TODO: Maybe a "View Source" option to open code.
       ];
-      const pluginMenuItems = (
+      let pluginMenuItems = (
         await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
       ).map((plugin) => ({
         title: chalk`Open {bold ${plugin.packageName}}`,
@@ -157,6 +158,35 @@ export class DevServerManagerActions {
           await openBrowserAsync(url.toString());
         },
       }));
+      pluginMenuItems = pluginMenuItems.concat(
+        (await this.devServerManager.cliPluginsManager.queryPluginsAsync()).map((plugin) => ({
+          title: chalk`{bold ${plugin.packageName}}`,
+          value: `cliPlugin:${plugin.packageName}`,
+          action: async () => {
+            // Show selector with plugin commands.
+            const commands = plugin.commands.map((cmd) => ({
+              title: cmd.caption,
+              value: cmd.cmd,
+            }));
+            const value = await selectAsync(chalk`{dim Select command}`, commands);
+            const cmd = plugin.commands.find((c) => c.cmd === value);
+            if (!cmd) {
+              Log.warn(`No command found for ${plugin.packageName}`);
+              return;
+            }
+            const spinner = ora(`Executing ${cmd.caption}`).start();
+            try {
+              // Execute the command with the plugin executor.
+              const results = await plugin.executor(value);
+              Log.log(results);
+              spinner.succeed(`${cmd.caption} succeeded.`).stop();
+            } catch (error) {
+              spinner.fail(`Failed executing ${cmd.caption}`);
+              throw error;
+            }
+          },
+        }))
+      );
       const menuItems = [...defaultMenuItems, ...pluginMenuItems];
       const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
       const menuItem = menuItems.find((item) => item.value === value);

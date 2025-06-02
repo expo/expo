@@ -1,0 +1,13 @@
+{
+    "name": "expo-background-task-cli",
+    "version": "1.0.0",
+    "description": "CLI for managing background tasks in Expo apps",
+    "main": "src/index.js",
+    "type": "module",
+    "files": [
+        "build/index.js"
+    ],
+    "dependencies": {
+        "typescript": "^5.8.3"
+    }
+}
