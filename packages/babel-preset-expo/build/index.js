@@ -279,8 +279,12 @@ function babelPresetExpo(api, options = {}) {
             ],
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
-            (0, common_1.hasModule)('react-native-reanimated') &&
-                platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
+            (0, common_1.hasModule)('react-native-worklets') &&
+                platformOptions.worklets !== false &&
+                platformOptions.reanimated !== false
+                ? [require('react-native-worklets/plugin')]
+                : (0, common_1.hasModule)('react-native-reanimated') &&
+                    platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }
