@@ -92,37 +92,39 @@ export async function showLoginPromptAsync({
 }
 
 export async function tryGetUserAsync(): Promise<Actor | null> {
-  let user = await getUserAsync().catch(() => null);
+  const user = await getUserAsync().catch(() => null);
 
-  if (!user) {
-    const choices = [
-      {
-        title: 'Log in',
-        value: true,
-      },
-      {
-        title: 'Proceed anonymously',
-        value: false,
-      },
-    ];
-
-    const value = await selectAsync(
-      chalk`\n\nIt is recommended to log in with your Expo account before proceeding. \n{dim ${learnMore(
-        'https://expo.fyi/unverified-app-expo-go'
-      )}}\n`,
-      choices,
-      {
-        nonInteractiveHelp: `Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
-          'https://docs.expo.dev/accounts/programmatic-access/'
-        )})`,
-      }
-    );
-
-    if (value === true) {
-      await showLoginPromptAsync({ printNewLine: true });
-      user = await getUserAsync();
-    }
+  if (user) {
+    return user;
   }
 
-  return user ?? null;
+  const choices = [
+    {
+      title: 'Log in',
+      value: true,
+    },
+    {
+      title: 'Proceed anonymously',
+      value: false,
+    },
+  ];
+
+  const value = await selectAsync(
+    chalk`\n\nIt is recommended to log in with your Expo account before proceeding. \n{dim ${learnMore(
+      'https://expo.fyi/unverified-app-expo-go'
+    )}}\n`,
+    choices,
+    {
+      nonInteractiveHelp: `Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
+        'https://docs.expo.dev/accounts/programmatic-access/'
+      )})`,
+    }
+  );
+
+  if (value) {
+    await showLoginPromptAsync({ printNewLine: true });
+    return (await getUserAsync()) ?? null;
+  }
+
+  return null;
 }
