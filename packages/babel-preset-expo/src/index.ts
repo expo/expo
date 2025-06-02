@@ -45,6 +45,8 @@ type BabelPresetExpoPlatformOptions = {
 
   disableImportExportTransform?: boolean;
 
+  disableDeepImportWarnings?: boolean;
+
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -254,9 +256,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   };
 
   // `typeof window` is left in place for native + client environments.
-  const minifyTypeofWindow =
-    (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
-
+  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
+  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
+  const minifyTypeofWindow = platformOptions.minifyTypeofWindow ?? isServerEnv;
   if (minifyTypeofWindow !== false) {
     // This nets out slightly faster in development when considering the cost of bundling server dependencies.
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
@@ -361,13 +363,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
           //
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
-          // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
+          // Both __source and __self are automatically set when using the automatic jsxRuntime. Remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
           // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
           // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
           withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
+          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           lazyImportExportTransform:
             lazyImportsOption === true
               ? (importModuleSpecifier: string) => {

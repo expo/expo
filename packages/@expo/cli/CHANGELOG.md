@@ -8,7 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix virtual externalized module checking for `window` for web worker code ([#36852](https://github.com/expo/expo/pull/36852) by [@kitten](https://github.com/kitten))
+- Prevent module registry (from `metro-require` fork) to be reinstantiated outside of development ([#36828](https://github.com/expo/expo/pull/36828) by [@kitten](https://github.com/kitten))
+- Allow anonymous sessions even when `projectId` is set ([#36874](https://github.com/expo/expo/pull/36874) by [@kadikraman](https://github.com/kadikraman))
+
 ### 💡 Others
+
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Update tests to include new expo-router asset - arrow_down.png ([#36882](https://github.com/expo/expo/pull/36882) by [@Ubax](https://github.com/Ubax))
 
 ## 0.24.13 — 2025-05-08
 

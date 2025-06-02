@@ -148,7 +148,7 @@ if (ExpoTaskManager) {
             }
         }
         else {
-            console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Please make sure that "TaskManager.defineTask" is called during initialization phase.`);
+            console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Make sure that "TaskManager.defineTask" is called during initialization phase.`);
             // No tasks defined -> we need to notify about finish anyway.
             await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
             // We should also unregister such tasks automatically as the task might have been removed

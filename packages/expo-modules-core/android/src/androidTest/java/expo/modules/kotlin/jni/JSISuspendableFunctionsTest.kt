@@ -5,6 +5,7 @@ package expo.modules.kotlin.jni
 import com.google.common.truth.Truth
 import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
 import expo.modules.kotlin.records.Field
@@ -197,8 +198,8 @@ class JSISuspendableFunctionsTest {
     Truth.assertThat(exception.message).contains("java.lang.IllegalStateException")
   }
 
-  @Test(expected = PromiseException::class)
-  fun should_reject_if_js_value_cannot_be_passed() = withSingleModule({
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun should_throw_if_js_value_cannot_be_passed() = withSingleModule({
     AsyncFunction("f") Coroutine { _: Int -> }
   }) {
     callAsync("f", "Symbol()")

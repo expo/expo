@@ -261,7 +261,7 @@ function getDirectoryTree(contextModule, options) {
                 if (existing) {
                     // In production, use the first route found
                     if (process.env.NODE_ENV !== 'production') {
-                        throw new Error(`The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`);
+                        throw new Error(`The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`);
                     }
                 }
                 else {
@@ -281,7 +281,7 @@ function getDirectoryTree(contextModule, options) {
                 if (existing) {
                     // In production, use the first route found
                     if (process.env.NODE_ENV !== 'production') {
-                        throw new Error(`The API route file "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`);
+                        throw new Error(`The API route file "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`);
                     }
                 }
                 else {
@@ -304,7 +304,7 @@ function getDirectoryTree(contextModule, options) {
                 if (existing) {
                     // In production, use the first route found
                     if (process.env.NODE_ENV !== 'production') {
-                        throw new Error(`The route files "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Please remove or rename one of these files.`);
+                        throw new Error(`The route files "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`);
                     }
                 }
                 else {
@@ -403,7 +403,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
     // Nested routes cannot start with the '+' character, except for the '+not-found' route
     if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
-        throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Please rename to ${renamedRoute}"`);
+        throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Rename it to ${renamedRoute}"`);
     }
     let specificity = 0;
     const hasPlatformExtension = validPlatforms.has(platformExtension);
@@ -432,7 +432,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
             specificity = -1;
         }
         if (isApi && specificity !== 0) {
-            throw new Error(`Api routes cannot have platform extensions. Please remove '.${platformExtension}' from '${originalKey}'`);
+            throw new Error(`API routes cannot have platform extensions. Remove '.${platformExtension}' from '${originalKey}'`);
         }
         route = route.replace(new RegExp(`.${platformExtension}$`), '');
     }
@@ -488,11 +488,7 @@ function generateDynamic(path) {
                 notFound: true,
             };
         }
-        const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
-        const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
-        if (!dynamicName)
-            return null;
-        return { name: dynamicName, deep: !!deepDynamicName };
+        return (0, matchers_1.matchDynamicName)(part) ?? null;
     })
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;

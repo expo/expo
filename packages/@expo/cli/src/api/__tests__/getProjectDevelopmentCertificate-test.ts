@@ -3,10 +3,6 @@ import nock from 'nock';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { getProjectDevelopmentCertificateAsync } from '../getProjectDevelopmentCertificate';
 
-jest.mock('../user/actions', () => ({
-  ensureLoggedInAsync: jest.fn(),
-}));
-
 beforeAll(() => {
   process.env.EXPO_NO_CACHE = 'true';
 });

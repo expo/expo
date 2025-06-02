@@ -3,7 +3,10 @@ title: Monitoring services
 description: Learn how to monitor the usage of your Expo and React Native app after its release.
 ---
 
+import { LogrocketIcon } from '@expo/styleguide-icons/custom/LogrocketIcon';
+import { SentryIcon } from '@expo/styleguide-icons/custom/SentryIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -15,7 +18,7 @@ Once your app is released, you can track anonymized usage data to give you insig
 Expo provides the [`expo-insights`](/eas-insights/introduction/) library, which tracks information related to [EAS Update](/deploy/send-over-the-air-updates/). This data includes the app version, platform, OS version, and update adoption. After you install it and release production builds on the app stores, you'll be able to see additional data on your project dashboard:
 
 <ContentSpotlight
-  alt="Active user insights on the Expo dashboard."
+  alt="Active user insights on the EAS dashboard."
   src="/static/images/monitoring/monitor-your-app/expo-insights.png"
 />
 
@@ -25,12 +28,12 @@ Get started with the following guide:
   title="EAS Insights"
   description="Learn how to use EAS Insights to monitor your app."
   href="/eas-insights/introduction/"
-  Icon={BookOpen02Icon}
+  Icon={DataIcon}
 />
 
 ## LogRocket
 
-You can get more insights with [LogRocket](https://logrocket.com). LogRocket records user sessions and identifies bugs as your users use your app. You can filter sessions by update IDs and also connect to your LogRocket account on the Expo dashboard to get quick access to your app's session data.
+You can get more insights with [LogRocket](https://logrocket.com). LogRocket records user sessions and identifies bugs as your users use your app. You can filter sessions by update IDs and also connect to your LogRocket account on the EAS dashboard to get quick access to your app's session data.
 
 <ContentSpotlight
   alt="User sessions on the LogRocket dashboard."
@@ -43,7 +46,7 @@ Get started with the following guide:
   title="Using LogRocket"
   description="Learn how to use LogRocket to monitor your app."
   href="/guides/using-logrocket/"
-  Icon={BookOpen02Icon}
+  Icon={LogrocketIcon}
 />
 
 ## Sentry
@@ -63,7 +66,7 @@ Get started with the following guide:
   title="Using Sentry"
   description="Learn how to use Sentry to monitor your app."
   href="/guides/using-sentry/"
-  Icon={BookOpen02Icon}
+  Icon={SentryIcon}
 />
 
 ## Vexo

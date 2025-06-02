@@ -134,7 +134,7 @@ When you're already focused on a tab and navigating to a user, you will stay in 
   Icon={BookOpen02Icon}
 />
 
-## Authenticated users only protecting routes
+## Authenticated users only: protected routes
 
 If you have a set of routes that should only be accessible to authenticated users, you can embed those routes in a group whose layout redirects users to a login page if they are not authenticated.
 
@@ -175,7 +175,7 @@ The data source for checking authentication status could be React context, a sta
 In the **app/login.tsx** file, attempt to reroute the user to the `/(logged-in)` route after successful authentication:
 
 ```tsx app/login.tsx
-import { Button } from 'react-native';
+import { Button, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function Login() {

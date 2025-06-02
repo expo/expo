@@ -55,6 +55,8 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     private set
   var showsSubtitlesButton = false
     private set
+  var showsAudioTracksButton = false
+    private set
 
   private val currentActivity = appContext.throwingActivity
   private val decorView = currentActivity.window.decorView
@@ -70,10 +72,10 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
   var useExoShutter: Boolean? = null
     set(value) {
-      if (value == false) {
-        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
-      } else {
+      if (value == true) {
         playerView.setShutterBackgroundColor(Color.BLACK)
+      } else {
+        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
       }
       applySurfaceViewVisibility()
       field = value
@@ -154,7 +156,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
   }
 
   fun applySurfaceViewVisibility() {
-    if (useExoShutter == false && shouldHideSurfaceView) {
+    if (useExoShutter != true && shouldHideSurfaceView) {
       playerView.videoSurfaceView?.alpha = 0f
     } else {
       playerView.videoSurfaceView?.alpha = 1f
@@ -263,6 +265,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
     showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
+    showsAudioTracksButton = player.audioTracks.availableAudioTracks.size > 1
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
   }

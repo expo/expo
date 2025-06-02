@@ -26,7 +26,7 @@ class UnconvertedValue(
 
   fun getConvertedValue(): Any {
     if (convertedValue == null) {
-      convertedValue = typeConverter.convert(unconvertedValue, contextHolder.get())
+      convertedValue = typeConverter.convert(unconvertedValue, contextHolder.get(), forceConversion = true)
     }
 
     return convertedValue!!

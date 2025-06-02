@@ -115,12 +115,12 @@ export function resolve(...args: string[]) {
     const path = i >= 0 ? args[i] : '';
 
     // Skip empty entries
-    if (path.length === 0) {
+    if (!path || path.length === 0) {
       continue;
     }
 
     resolvedPath = `${path}/${resolvedPath}`;
-    resolvedAbsolute = path.charAt(0) === '/';
+    resolvedAbsolute = !!(path && path.charAt(0) === '/');
   }
 
   // At this point the path should be resolved to a full absolute path, but
@@ -161,7 +161,7 @@ export function join(...args: string[]) {
   const path: string[] = [];
   for (let i = 0; i < args.length; ++i) {
     const arg = args[i];
-    if (arg.length > 0) {
+    if (arg && arg.length > 0) {
       path.push(arg);
     }
   }

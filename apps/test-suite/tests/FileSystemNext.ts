@@ -489,6 +489,23 @@ export async function test({ describe, expect, it, ...t }) {
           }
           expect(error.message.includes('Destination already exists')).toBe(true);
         });
+
+        it('downloads file when headers are set', async () => {
+          const url = 'https://picsum.photos/id/237/200/300';
+          const file = new File(testDirectory, 'image.jpeg');
+          const output = await File.downloadFileAsync(url, file, { headers: { Token: '1234' } });
+          expect(file.exists).toBe(true);
+          expect(output.uri).toBe(file.uri);
+        });
+
+        it('Supports downloading a file using bytes', async () => {
+          const url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+          const md5 = '2942bfabb3d05332b66eb128e0842cff';
+          const response = await fetch(url);
+          const src = new File(testDirectory, 'file.pdf');
+          src.write(await response.bytes());
+          expect(src.md5).toEqual(md5);
+        });
       });
 
       describe('Computes file properties', () => {

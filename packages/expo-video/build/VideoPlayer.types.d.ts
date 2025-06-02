@@ -143,6 +143,21 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      */
     subtitleTrack: SubtitleTrack | null;
     /**
+     * Specifies the audio track currently played by the player. `null` when no audio is played.
+     *
+     * @default null
+     * @platform android
+     * @platform ios
+     */
+    audioTrack: AudioTrack | null;
+    /**
+     * An array of audio tracks available for the current video.
+     *
+     * @platform android
+     * @platform ios
+     */
+    readonly availableAudioTracks: AudioTrack[];
+    /**
      * An array of subtitle tracks available for the current video.
      *
      * @platform android
@@ -498,5 +513,20 @@ export type VideoSize = {
      * Height of the video track in pixels.
      */
     height: number;
+};
+export type AudioTrack = {
+    /**
+     * A string used by expo-video to identify the audio track.
+     * @platform android
+     */
+    id: string;
+    /**
+     * Language of the audio track. For example, 'en', 'pl', 'de'.
+     */
+    language: string;
+    /**
+     * Label of the audio track in the language of the device.
+     */
+    label: string;
 };
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

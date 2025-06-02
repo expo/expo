@@ -15,7 +15,7 @@ function verifySearchResults(searchResults, options) {
     for (const moduleName in searchResults) {
         const revision = searchResults[moduleName];
         if (revision.duplicates?.length) {
-            console.warn(`⚠️  Found multiple revisions of ${chalk_1.default.green(moduleName)}`);
+            console.warn(`⚠️  Found multiple versions of ${chalk_1.default.green(moduleName)}`);
             console.log(` - ${chalk_1.default.magenta(relativePath(revision))} (${chalk_1.default.cyan(revision.version)})`);
             for (const duplicate of revision.duplicates) {
                 console.log(` - ${chalk_1.default.gray(relativePath(duplicate))} (${chalk_1.default.gray(duplicate.version)})`);
@@ -24,7 +24,7 @@ function verifySearchResults(searchResults, options) {
         }
     }
     if (counter > 0) {
-        console.warn('⚠️  Please get rid of multiple revisions as it may introduce some side effects or compatibility issues');
+        console.warn('⚠️  Multiple versions of the same module may introduce some side effects or compatibility issues. Remove the duplicate versions.');
     }
     return counter;
 }

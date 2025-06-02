@@ -54,7 +54,7 @@ This means, many Node.js APIs that you might be used to or some dependencies you
 | `node:string_decoder`      | <YesIcon />   |                                                                                    |
 | `node:timers`              | <YesIcon />   |                                                                                    |
 | `node:timers/promises`     | <YesIcon />   |                                                                                    |
-| `node:tls`                 | <NoIcon />    | Provides JS stubs but is unimplemented                                             |
+| `node:tls`                 | <AlertIcon /> | `Server` is unimplemented, client sockets are partially supported                  |
 | `node:trace_events`        | <AlertIcon /> | Provided as non-functional JS stubs                                                |
 | `node:tty`                 | <YesIcon />   | Provided as JS shims redirecting output to the Console API                         |
 | `node:url`                 | <YesIcon />   |                                                                                    |
@@ -76,6 +76,7 @@ Any modules that aren't mentioned here are unavailable or unsupported, and your 
 
 | JavaScript runtime globals | Supported     | Implementation notes                                                                                                          |
 | -------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `origin`                   | <YesIcon />   | Will always be the same as the incoming request's `Origin` header                                                             |
 | `process`                  | <YesIcon />   |                                                                                                                               |
 | `process.env`              | <YesIcon />   | Populated with EAS Hosting environment variables                                                                              |
 | `process.stdout`           | <YesIcon />   | Will redirect output to the Console API (`console.log`) for logging                                                           |
@@ -85,7 +86,7 @@ Any modules that aren't mentioned here are unavailable or unsupported, and your 
 | `Buffer`                   | <YesIcon />   | Set to `Buffer` from `node:buffer`                                                                                            |
 | `EventEmitter`             | <YesIcon />   | Set to `EventEmitter` from `node:events`                                                                                      |
 | `global`                   | <YesIcon />   | Set to `globalThis`                                                                                                           |
-| `WeakRef`                  | <YesIcon />   | Shim that resets references after each request                                                                                |
-| `FinalizationRegistry`     | <NoIcon />    | Garbage collection is not observable within workers                                                                           |
+| `WeakRef`                  | <YesIcon />   |                                                                                                                               |
+| `FinalizationRegistry`     | <YesIcon />   |                                                                                                                               |
 | `require`                  | <AlertIcon /> | External requires are supported but limited to deployed JS files and built-in modules. Node module resolution is unsupported. |
 | `require.cache`            | <NoIcon />    |                                                                                                                               |

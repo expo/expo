@@ -6,12 +6,35 @@
 
 ### 🎉 New features
 
+- Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
+- Add Tabs.Protected ([#37085](https://github.com/expo/expo/pull/37085) by [@marklawlor](https://github.com/marklawlor))
+
+### 🐛 Bug fixes
+
+- Fix RSC middleware not requiring output modules from a stable base path resulting in missing modules ([#36819](https://github.com/expo/expo/pull/36819) by [@kitten](https://github.com/kitten))
+- Prioritize static routes over dynamic routes within same group ([#36765](https://github.com/expo/expo/pull/36765) by [@marklawlor](https://github.com/marklawlor))
+- Fix deep linking showing incorrect screen ([#36864](https://github.com/expo/expo/pull/36864) by [@marklawlor](https://github.com/marklawlor))
+- Fix useRootNavigationState() error when used in root layout ([#37023](https://github.com/expo/expo/pull/37023) by [@marklawlor](https://github.com/marklawlor))
+- Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))
+- Fix inconsistent global param decoding ([#36973](https://github.com/expo/expo/pull/36973) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Remove internal routes from sitemap and add unit tests for this screen ([#36856](https://github.com/expo/expo/pull/36856) by [@Ubax](https://github.com/Ubax))
+- Refactor sitemap file item to separate components for layout and standard route ([#36870](https://github.com/expo/expo/pull/36870) by [@Ubax](https://github.com/Ubax))
+- Collapse nested routes in Sitemap ([#36882](https://github.com/expo/expo/pull/36882) by [@Ubax](https://github.com/Ubax))
+- Update matching patterns for pathname groups and parameters ([#36961](https://github.com/expo/expo/pull/36961) by [@kitten](https://github.com/kitten))
+
+## 5.0.7 — 2025-05-13
+
 ### 🐛 Bug fixes
 
 - Flush state before imperative navigation ([#36699](https://github.com/expo/expo/pull/36699) by [@marklawlor](https://github.com/marklawlor))
 - Fix web url from updating during initial load with nested navigators ([#36690](https://github.com/expo/expo/pull/36690) by [@marklawlor](https://github.com/marklawlor))
-
-### 💡 Others
+- Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
+- Fix useLocalSearchParams returning "undefined" for deleted params ([#36811](https://github.com/expo/expo/pull/36811) by [@marklawlor](https://github.com/marklawlor))
+- Fix `DefaultNavigator` insets being too large when the app is running in edge-to-edge mode. ([#36855](https://github.com/expo/expo/pull/36855) by [@behenate](https://github.com/behenate))
 
 ## 5.0.6 — 2025-05-06
 

@@ -164,19 +164,29 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // Workaround to get the original task's URLSessionDelegate through the internal property and send upload process
     // Fixes https://github.com/expo/expo/issues/28269
     // swiftlint:enable line_length
-    guard let task = self.task else {
+    guard let dataTask = dataTask_ else {
       return
     }
-    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = task.delegate {
+
+    // Prevent recursive delegate calls
+    if task === dataTask {
+      return
+    }
+
+    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = dataTask.delegate {
       // For the case if the task has a dedicated delegate than the default delegate from its URLSession
-      delegate.urlSession?(session, task: task, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+      delegate.urlSession?(
+        session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+      )
       return
     }
     guard let session = task.value(forKey: "session") as? URLSession,
       let delegate = session.delegate as? URLSessionTaskDelegate else {
       return
     }
-    delegate.urlSession?(session, task: task, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+    delegate.urlSession?(
+      session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+    )
   }
 
   /**

@@ -71,13 +71,15 @@ function getRedirectModule(route) {
             let href = route
                 .split('/')
                 .map((part) => {
-                const match = (0, matchers_1.matchDynamicName)(part) || (0, matchers_1.matchDeepDynamicRouteName)(part);
-                if (!match) {
+                const dynamicName = (0, matchers_1.matchDynamicName)(part);
+                if (!dynamicName) {
                     return part;
                 }
-                const param = params[match];
-                delete params[match];
-                return param;
+                else {
+                    const param = params[dynamicName.name];
+                    delete params[dynamicName.name];
+                    return param;
+                }
             })
                 .filter(Boolean)
                 .join('/');
@@ -95,14 +97,16 @@ function convertRedirect(path, config) {
     const parts = path.split('/');
     const sourceParts = config.source.split('/');
     for (const [index, sourcePart] of sourceParts.entries()) {
-        let match = (0, matchers_1.matchDynamicName)(sourcePart);
-        if (match) {
-            params[match] = parts[index];
+        const dynamicName = (0, matchers_1.matchDynamicName)(sourcePart);
+        if (!dynamicName) {
             continue;
         }
-        match = (0, matchers_1.matchDeepDynamicRouteName)(sourcePart);
-        if (match) {
-            params[match] = parts.slice(index);
+        else if (!dynamicName.deep) {
+            params[dynamicName.name] = parts[index];
+            continue;
+        }
+        else {
+            params[dynamicName.name] = parts.slice(index);
             break;
         }
     }
@@ -112,13 +116,15 @@ function mergeVariablesWithPath(path, params) {
     return path
         .split('/')
         .map((part) => {
-        const match = (0, matchers_1.matchDynamicName)(part) || (0, matchers_1.matchDeepDynamicRouteName)(part);
-        if (!match) {
+        const dynamicName = (0, matchers_1.matchDynamicName)(part);
+        if (!dynamicName) {
             return part;
         }
-        const param = params[match];
-        delete params[match];
-        return param;
+        else {
+            const param = params[dynamicName.name];
+            delete params[dynamicName.name];
+            return param;
+        }
     })
         .filter(Boolean)
         .join('/');

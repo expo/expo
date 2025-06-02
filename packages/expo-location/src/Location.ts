@@ -92,8 +92,8 @@ export async function getLastKnownPositionAsync(
 
 // @needsAudit
 /**
- * Subscribe to location updates from the device. Please note that updates will only occur while the
- * application is in the foreground. To get location updates while in background you'll need to use
+ * Subscribe to location updates from the device. Updates will only occur while the application is in
+ * the foreground. To get location updates while in background you'll need to use
  * [`startLocationUpdatesAsync`](#locationstartlocationupdatesasynctaskname-options).
  * @param options
  * @param callback This function is called on each location update. It receives an object of type
@@ -355,7 +355,7 @@ function _validate(taskName: string) {
         'Background location is limited in Expo Go:\n' +
         'On Android, it is not available at all.\n' +
         'On iOS, it works when running in the Simulator.\n' +
-        'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+        'You can use this API, and all others, in a development build. Learn more: https://expo.fyi/dev-client.';
       console.warn(message);
       warnAboutExpoGoDisplayed = true;
     }

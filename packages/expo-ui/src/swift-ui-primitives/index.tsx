@@ -2,6 +2,9 @@ export * from './Form';
 export * from './Layout';
 export * from './Section';
 export * from './Text';
+export * from './Image';
+export * from './Spacer';
+export * from './DisclosureGroup';
 
 export { BottomSheetPrimitive as BottomSheet } from '../swift-ui/BottomSheet';
 export { ButtonPrimitive as Button } from '../swift-ui/Button';

@@ -89,13 +89,31 @@ export declare class Image extends React.PureComponent<ImageProps> {
      */
     stopAnimating(): Promise<void>;
     /**
+     * Prevents the resource from being reloaded by locking it.
+     * @platform android
+     * @platform ios
+     */
+    lockResourceAsync(): Promise<void>;
+    /**
+     * Releases the lock on the resource, allowing it to be reloaded.
+     * @platform android
+     * @platform ios
+     */
+    unlockResourceAsync(): Promise<void>;
+    /**
+     * Reloads the resource, ignoring lock.
+     * @platform android
+     * @platform ios
+     */
+    reloadAsync(): Promise<void>;
+    /**
      * Loads an image from the given source to memory and resolves to
      * an object that references the native image instance.
      * @platform android
      * @platform ios
      * @platform web
      */
-    static loadAsync(source: ImageSource | string, options?: ImageLoadOptions): Promise<ImageRef>;
+    static loadAsync(source: ImageSource | string | number, options?: ImageLoadOptions): Promise<ImageRef>;
     render(): React.JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

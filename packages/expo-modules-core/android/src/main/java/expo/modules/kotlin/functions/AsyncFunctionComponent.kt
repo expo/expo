@@ -9,6 +9,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.inheritFrom
 import expo.modules.kotlin.weak
 import kotlinx.coroutines.launch
 

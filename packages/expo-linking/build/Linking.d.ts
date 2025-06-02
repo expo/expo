@@ -60,6 +60,7 @@ export declare function openURL(url: string): Promise<true>;
 export declare function canOpenURL(url: string): Promise<boolean>;
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useLinkingURL` hook instead.
  * @return Returns the initial URL or `null`.
  */
 export declare function useURL(): string | null;

@@ -61,6 +61,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="${appLabel}"
         android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
         android:usesCleartextTraffic="true">
 
         <activity

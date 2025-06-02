@@ -5,7 +5,7 @@ description: Learn how to set up and run E2E tests on EAS Workflows with Maestro
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -38,7 +38,7 @@ Let's create two simple Maestro flows for the example app. Start by creating a d
 
 Inside, create a new file called **home.yml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
 
-```yml .maestro/home.yml
+```yaml .maestro/home.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
 ---
 - launchApp
@@ -47,7 +47,7 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 
 Next, create a new flow called **expand_test.yml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens." is visible on the screen.
 
-```yml .maestro/expand_test.yml
+```yaml .maestro/expand_test.yml
 appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
 ---
 - launchApp
@@ -107,7 +107,7 @@ The above build profile creates an **.apk** for Android and an **.app** for iOS.
 
 At the root of your project, create an **.eas/workflows** directory. Then, add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
 
-```yml .eas/workflows/e2e-test-android.yml
+```yaml .eas/workflows/e2e-test-android.yml
 name: e2e-test-android
 
 on:
@@ -132,7 +132,7 @@ This workflow builds an **.apk** for Android using the `e2e-test` build profile 
 
 Here's an example of the same test workflow for iOS:
 
-```yml .eas/workflows/e2e-test.yml
+```yaml .eas/workflows/e2e-test.yml
 name: e2e-test-ios
 
 on:
@@ -171,7 +171,7 @@ You can run the E2E test workflow in two ways:
 
 The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [EAS Workflow triggers](/eas/workflows/syntax/#on).
 
-After the workflow starts, you can track its progress and view the results in the Expo Dashboard. Here's a screenshot of a completed workflow run:
+After the workflow starts, you can track its progress and view the results in the EAS dashboard. Here's a screenshot of a completed workflow run:
 
 <ContentSpotlight src="/static/images/eas-build/tests/e2e-workflow.png" />
 
@@ -183,14 +183,14 @@ After the workflow starts, you can track its progress and view the results in th
   title="Syntax for EAS Workflows"
   description="Learn more about the syntax for EAS Workflows."
   href="/eas/workflows/syntax/"
-  Icon={Dataflow01Icon}
+  Icon={Dataflow03Icon}
 />
 
 <BoxLink
   title="Example CI/CD workflows"
   description="Learn more about example CI/CD workflows for EAS Workflows."
   href="/eas/workflows/examples/"
-  Icon={Dataflow01Icon}
+  Icon={Dataflow03Icon}
 />
 
 <BoxLink
