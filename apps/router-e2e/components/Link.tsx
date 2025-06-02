@@ -1,6 +1,6 @@
 'use client';
 
-import { LinkProps, useRouter, Link as ExpoLink } from 'expo-router';
+import { LinkProps, useRouter, Link as ExpoLink, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
 
 import { Preview } from './Preview';
@@ -19,10 +19,14 @@ export function Link(props: CustomLinkProps) {
 
 function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
   const router = useRouter();
+  const navigation = useNavigation();
   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
     setTimeout(() => {
       router.prefetch(rest.href);
     }, 100);
+    });
+    return unsubscribe;
   }, []);
   return (
     <PeekAndPopNativeComponent
