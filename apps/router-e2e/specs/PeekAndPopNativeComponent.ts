@@ -6,6 +6,8 @@ type OnPreviewTappedEvent = {};
 
 export interface NativeProps extends ViewProps {
   onPreviewTapped?: DirectEventHandler<OnPreviewTappedEvent>;
+  onPreviewOpen?: DirectEventHandler<OnPreviewTappedEvent>;
+  onPreviewClose?: DirectEventHandler<OnPreviewTappedEvent>;
 }
 
 export default codegenNativeComponent<NativeProps>('PeekAndPop') as HostComponent<NativeProps>;

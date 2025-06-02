@@ -86,6 +86,20 @@ using namespace facebook::react;
       }];
 }
 
+- (void) contextMenuInteraction:(UIContextMenuInteraction *) interaction
+willDisplayMenuForConfiguration:(UIContextMenuConfiguration *) configuration
+                       animator:(id<UIContextMenuInteractionAnimating>) animator {
+  self.eventEmitter.onPreviewOpen(
+      PeekAndPopEventEmitter::OnPreviewOpen{});
+}
+
+- (void) contextMenuInteraction:(UIContextMenuInteraction *) interaction
+        willEndForConfiguration:(UIContextMenuConfiguration *) configuration
+                       animator:(id<UIContextMenuInteractionAnimating>) animator {
+  self.eventEmitter.onPreviewClose(
+      PeekAndPopEventEmitter::OnPreviewClose{});
+}
+
 - (void)contextMenuInteraction:(UIContextMenuInteraction *)interaction
     willPerformPreviewActionForMenuWithConfiguration:
         (UIContextMenuConfiguration *)configuration
