@@ -169,6 +169,26 @@ describe(getCodeSigningInfoAsync, () => {
         );
         expect(result2).toEqual(result);
       });
+
+      it('falls back to cached when fetch returns null due to user not being logged in', async () => {
+        // First call to get a cached certificate
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+
+        // Mock user not being logged in
+        jest.mocked(getUserAsync).mockImplementationOnce(async () => undefined);
+
+        // Second call should return cached certificate
+        const result2 = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result2).toEqual(result);
+      });
     });
   });
 

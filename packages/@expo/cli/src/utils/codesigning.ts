@@ -205,7 +205,20 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
   //    (overwriting existing dev cert in case projectId changed or it has expired)
   if (!env.EXPO_OFFLINE) {
     try {
-      return await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
+      const newCodeSigningInfo =
+        await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
+      console.log('KADI newCodeSigningInfo', newCodeSigningInfo);
+      if (newCodeSigningInfo) {
+        return newCodeSigningInfo;
+        // fall back to cached certificate if we couldn't fetch a new one
+      } else if (validatedCodeSigningInfo) {
+        Log.warn(
+          'Could not fetch new Expo development certificate, falling back to cached certificate'
+        );
+        return validatedCodeSigningInfo;
+      } else {
+        return null;
+      }
     } catch (e: any) {
       if (validatedCodeSigningInfo) {
         Log.warn(
