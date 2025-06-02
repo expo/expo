@@ -31,14 +31,15 @@ function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
   return (
     <PeekAndPopNativeComponent
       onPreviewTapped={() => {
-        setTimeout(() => {
+        navigation.setOptions({
+          animation: 'none',
+        });
           router.navigate(rest.href);
-        }, 300);
       }}>
       <PeekAndPopTriggerNativeComponent>
         <ExpoLink {...rest} />
       </PeekAndPopTriggerNativeComponent>
-      <PeekAndPopPreviewNativeComponent>
+      <PeekAndPopPreviewNativeComponent style={{ position: 'absolute' }}>
         <Preview href={rest.href} />
       </PeekAndPopPreviewNativeComponent>
     </PeekAndPopNativeComponent>
