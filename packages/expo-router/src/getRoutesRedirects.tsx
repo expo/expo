@@ -4,7 +4,7 @@ import { createElement } from 'react';
 import { cleanPath } from './fork/getStateFromPath-forks';
 import { RedirectConfig } from './getRoutesCore';
 import type { StoreRedirects } from './global-state/router-store';
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+import { matchDynamicName } from './matchers';
 
 export function applyRedirects(
   url: string | null | undefined,
@@ -46,14 +46,14 @@ export function getRedirectModule(route: string) {
       let href = route
         .split('/')
         .map((part) => {
-          const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
-          if (!match) {
+          const dynamicName = matchDynamicName(part);
+          if (!dynamicName) {
             return part;
+          } else {
+            const param = params[dynamicName.name];
+            delete params[dynamicName.name];
+            return param;
           }
-
-          const param = params[match];
-          delete params[match];
-          return param;
         })
         .filter(Boolean)
         .join('/');
@@ -77,17 +77,14 @@ export function convertRedirect(path: string, config: RedirectConfig) {
   const sourceParts = config.source.split('/');
 
   for (const [index, sourcePart] of sourceParts.entries()) {
-    let match = matchDynamicName(sourcePart);
-
-    if (match) {
-      params[match] = parts[index];
+    const dynamicName = matchDynamicName(sourcePart);
+    if (!dynamicName) {
       continue;
-    }
-
-    match = matchDeepDynamicRouteName(sourcePart);
-
-    if (match) {
-      params[match] = parts.slice(index);
+    } else if (!dynamicName.deep) {
+      params[dynamicName.name] = parts[index];
+      continue;
+    } else {
+      params[dynamicName.name] = parts.slice(index);
       break;
     }
   }
@@ -99,14 +96,14 @@ export function mergeVariablesWithPath(path: string, params: Record<string, stri
   return path
     .split('/')
     .map((part) => {
-      const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
-      if (!match) {
+      const dynamicName = matchDynamicName(part);
+      if (!dynamicName) {
         return part;
+      } else {
+        const param = params[dynamicName.name];
+        delete params[dynamicName.name];
+        return param;
       }
-
-      const param = params[match];
-      delete params[match];
-      return param;
     })
     .filter(Boolean)
     .join('/');

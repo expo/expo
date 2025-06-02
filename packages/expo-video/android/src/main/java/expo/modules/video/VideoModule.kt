@@ -21,6 +21,7 @@ import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.SubtitleTrack
+import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
@@ -143,6 +144,21 @@ class VideoModule : Module() {
         .set { ref: VideoPlayer, subtitleTrack: SubtitleTrack? ->
           appContext.mainQueue.launch {
             ref.subtitles.currentSubtitleTrack = subtitleTrack
+          }
+        }
+
+      Property("availableAudioTracks")
+        .get { ref: VideoPlayer ->
+          ref.audioTracks.availableAudioTracks
+        }
+
+      Property("audioTrack")
+        .get { ref: VideoPlayer ->
+          ref.audioTracks.currentAudioTrack
+        }
+        .set { ref: VideoPlayer, audioTrack: AudioTrack? ->
+          appContext.mainQueue.launch {
+            ref.audioTracks.currentAudioTrack = audioTrack
           }
         }
 
@@ -347,7 +363,8 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     "onPictureInPictureStart",
     "onPictureInPictureStop",
     "onFullscreenEnter",
-    "onFullscreenExit"
+    "onFullscreenExit",
+    "onFirstFrameRender"
   )
   Prop("player") { view: T, player: VideoPlayer ->
     view.videoPlayer = player
@@ -368,6 +385,9 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     val linearPlayback = requiresLinearPlayback ?: false
     view.playerView.applyRequiresLinearPlayback(linearPlayback)
     view.videoPlayer?.requiresLinearPlayback = linearPlayback
+  }
+  Prop("useExoShutter") { view: T, useExoShutter: Boolean? ->
+    view.useExoShutter = useExoShutter
   }
   AsyncFunction("enterFullscreen") { view: T ->
     view.enterFullscreen()

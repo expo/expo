@@ -30,12 +30,12 @@ ExpoModulesHostObject::~ExpoModulesHostObject() {
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
 
-  if (!installer->hasModule(cName)) {
-    modulesCache.erase(cName);
-    return jsi::Value::undefined();
-  }
   if (UniqueJSIObject &cachedObject = modulesCache[cName]) {
     return jsi::Value(runtime, *cachedObject);
+  }
+
+  if (!installer->hasModule(cName)) {
+    return jsi::Value::undefined();
   }
 
   // Create a lazy object for the specific module. It defers initialization of the final module object.
@@ -50,7 +50,8 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
 
       auto module = installer->getModule(cName);
       return module->cthis()->getJSIObject(rt);
-    });
+    }
+  );
 
   // Save the module's lazy host object for later use.
   modulesCache[cName] = std::make_unique<jsi::Object>(

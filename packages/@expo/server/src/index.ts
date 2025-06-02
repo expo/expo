@@ -259,20 +259,6 @@ export function createRequestHandler(
   };
 }
 
-/** Match `[page]` -> `page` */
-// Ported from `expo-router/src/matchers.tsx`
-function matchDynamicName(name: string): string | undefined {
-  // Don't match `...` or `[` or `]` inside the brackets
-  // eslint-disable-next-line no-useless-escape
-  return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
-}
-
-/** Match `[...page]` -> `page` */
-// Ported from `expo-router/src/matchers.tsx`
-function matchDeepDynamicRouteName(name: string): string | undefined {
-  return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
-}
-
 function updateRequestWithConfig(
   request: Request,
   config: ExpoRouterServerManifestV1FunctionRoute
@@ -290,6 +276,9 @@ function updateRequestWithConfig(
   return params;
 }
 
+/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+const dynamicNameRe = /^\[([^[\]]+?)\]$/;
+
 function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) {
   const params = updateRequestWithConfig(request, route);
 
@@ -298,24 +287,19 @@ function getRedirectRewriteLocation(request: Request, route: RouteInfo<RegExp>) 
   let location = route.page
     .split('/')
     .map((segment) => {
-      let match = matchDynamicName(segment);
-
-      if (match) {
-        const value = params[match];
-        delete params[match];
-        // If we are redirecting from a catch-all route, we need to remove the extra segments
+      let paramName = segment.match(dynamicNameRe)?.[1];
+      if (!paramName) {
+        return segment;
+      } else if (paramName.startsWith('...')) {
+        paramName = paramName.slice(3);
+        const value = params[paramName];
+        delete params[paramName];
+        return value;
+      } else {
+        const value = params[paramName];
+        delete params[paramName];
         return value?.split('/')[0];
       }
-
-      match = matchDeepDynamicRouteName(segment);
-
-      if (match) {
-        const value = params[match];
-        delete params[match];
-        return value;
-      }
-
-      return segment;
     })
     .join('/');
 

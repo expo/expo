@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Added support for Audio Track feature. You can now set the audio track using `player.audioTrack` and list available audio tracks using `player.availableAudioTracks`. ([#36207](https://github.com/expo/expo/pull/36207) by [@HADeveloper](https://github.com/HADeveloper))
+
 ### 🐛 Bug fixes
+
+- [Android] Fix `onFirstFrameRender` not being emitted for sources with `pixelWidthHeightRatio` different than 1. ([#37009](https://github.com/expo/expo/pull/37009) by [@behenate](https://github.com/behenate))
+- [Android] Fix `useExoShutter` prop not being exposed to the JS side. ([#37012](https://github.com/expo/expo/pull/37012) by [@behenate](https://github.com/behenate))
+- [Android] Add missing `onFirstFrameRender` event to the `VideoView` definition. ([#37014](https://github.com/expo/expo/pull/37014) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

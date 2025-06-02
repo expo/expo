@@ -1,8 +1,8 @@
 import { Children, isValidElement } from 'react';
 import { Submenu } from './index';
-import { Button, transformButtonProps } from '../Button';
-import { Picker } from '../Picker';
-import { Switch } from '../Switch';
+import { Button, ButtonPrimitive, transformButtonProps, } from '../Button';
+import { Picker, PickerPrimitive } from '../Picker';
+import { Switch, SwitchPrimitive } from '../Switch';
 // Maps the react children to NativeMenuElement[] which is used to render out the native menu
 // TODO: Ideally we want to pass the children directly to the native side without having to do this
 export function transformChildrenToElementArray(children, eventHandlersMap) {
@@ -14,15 +14,15 @@ function processChildElement(child, eventHandlersMap) {
     if (!isValidElement(child))
         return null;
     const uuid = expo.uuidv4();
-    if (child.type === Button) {
+    if (child.type === Button || child.type === ButtonPrimitive) {
         // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
         return createButtonElement(uuid, child.props, eventHandlersMap);
     }
-    if (child.type === Switch) {
+    if (child.type === Switch || child.type === SwitchPrimitive) {
         // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
         return createSwitchElement(uuid, child.props, eventHandlersMap);
     }
-    if (child.type === Picker) {
+    if (child.type === Picker || child.type === PickerPrimitive) {
         // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
         return createPickerElement(uuid, child.props, eventHandlersMap);
     }

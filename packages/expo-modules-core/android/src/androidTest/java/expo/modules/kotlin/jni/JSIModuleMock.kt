@@ -152,6 +152,10 @@ class SingleTestContext(
     "$moduleRef.$functionName($args)"
   )
 
+  fun callVoid(functionName: String, args: String = "") = jsiInterop.evaluateVoidScript(
+    "$moduleRef.$functionName($args)"
+  )
+
   fun callClass(className: String, functionName: String? = null, args: String = ""): JavaScriptValue {
     if (functionName == null) {
       return jsiInterop.evaluateScript("new $moduleRef.$className()")
@@ -185,6 +189,27 @@ class SingleTestContext(
   fun callViewAsync(viewName: String, functionName: String, args: String = "", shouldBeResolved: Boolean = true): JavaScriptValue {
     return jsiInterop.waitForAsyncFunction(methodQueue, "$moduleRef.$viewName.$functionName($args)", shouldBeResolved)
   }
+}
+
+internal inline fun withSingleModule(
+  module: Module,
+  numberOfReloads: Int = 1,
+  block: SingleTestContext.() -> Unit
+) {
+  withJSIInterop(
+    module,
+    numberOfReloads = numberOfReloads,
+    block = { methodQueue ->
+      val appContext = runtimeContextHolder.get()?.appContext ?: throw IllegalStateException("AppContext is not available")
+      val moduleList = appContext.registry.registry.toList()
+      if (moduleList.size != 1) {
+        throw IllegalStateException("Module list should contain only one module")
+      }
+      val (moduleName) = moduleList.first()
+      val testContext = SingleTestContext(moduleName, this, methodQueue)
+      block.invoke(testContext)
+    }
+  )
 }
 
 internal inline fun withSingleModule(

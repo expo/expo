@@ -7,7 +7,9 @@ import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -20,10 +22,24 @@ Congratulations! You've completed the EAS tutorial and learned about the main fe
 But this is just the beginning. Here are some next steps to continue your journey with EAS:
 
 <BoxLink
+  title="EAS Workflows"
+  description="See EAS Workflows documentation to learn more about automating your development release workflows."
+  href="/eas/workflows/get-started/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
   title="EAS Build"
   Icon={BuildIcon}
   description="See EAS Build documentation to learn more about compiling and signing Android and iOS apps."
   href="/build/introduction/"
+/>
+
+<BoxLink
+  title="EAS Hosting (in preview)"
+  description="See EAS Hosting documentation to learn more about deploying Expo Router and React Native web apps, and API routes."
+  href="/eas/hosting/introduction"
+  Icon={Cloud01Icon}
 />
 
 <BoxLink
@@ -41,14 +57,14 @@ But this is just the beginning. Here are some next steps to continue your journe
 />
 
 <BoxLink
-  title="EAS Metadata"
+  title="EAS Metadata (in preview)"
   Icon={EasMetadataIcon}
   description="See EAS Metadata documentation to automate and maintain your app store presence from the command line."
   href="/eas/metadata/"
 />
 
 <BoxLink
-  title="EAS Insights"
+  title="EAS Insights (in preview)"
   Icon={DataIcon}
   description={
     <>

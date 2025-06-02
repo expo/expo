@@ -488,11 +488,7 @@ function generateDynamic(path) {
                 notFound: true,
             };
         }
-        const deepDynamicName = (0, matchers_1.matchDeepDynamicRouteName)(part);
-        const dynamicName = deepDynamicName ?? (0, matchers_1.matchDynamicName)(part);
-        if (!dynamicName)
-            return null;
-        return { name: dynamicName, deep: !!deepDynamicName };
+        return (0, matchers_1.matchDynamicName)(part) ?? null;
     })
         .filter((part) => !!part);
     return dynamic.length === 0 ? null : dynamic;

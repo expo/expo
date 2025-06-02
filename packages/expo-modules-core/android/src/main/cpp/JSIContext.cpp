@@ -44,6 +44,7 @@ void JSIContext::registerNatives() {
                                     JSIContext::installJSIForBridgeless),
 #endif
                    makeNativeMethod("evaluateScript", JSIContext::evaluateScript),
+                   makeNativeMethod("evaluateVoidScript", JSIContext::evaluateVoidScript),
                    makeNativeMethod("global", JSIContext::global),
                    makeNativeMethod("createObject", JSIContext::createObject),
                    makeNativeMethod("drainJSEventLoop", JSIContext::drainJSEventLoop),
@@ -216,6 +217,12 @@ jni::local_ref<JavaScriptValue::javaobject> JSIContext::evaluateScript(
   jni::JString script
 ) {
   return runtimeHolder->evaluateScript(script.toStdString());
+}
+
+void JSIContext::evaluateVoidScript(
+  jni::JString script
+) {
+  runtimeHolder->evaluateVoidScript(script.toStdString());
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JSIContext::global() noexcept {

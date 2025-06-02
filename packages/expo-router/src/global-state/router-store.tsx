@@ -12,6 +12,7 @@ import { ComponentType, Fragment, useEffect, useSyncExternalStore } from 'react'
 import { Platform } from 'react-native';
 
 import { RouteNode } from '../Route';
+import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
@@ -168,7 +169,12 @@ export function useStore(
     // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
     const initialURL = linking?.getInitialURL?.();
     if (typeof initialURL === 'string') {
-      initialState = linking.getStateFromPath(initialURL, linking.config);
+      let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
+
+      // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
+      if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
+
+      initialState = linking.getStateFromPath(initialPath, linking.config);
       const initialRouteInfo = getRouteInfoFromState(initialState);
       routeInfoCache.set(initialState as any, initialRouteInfo);
     }

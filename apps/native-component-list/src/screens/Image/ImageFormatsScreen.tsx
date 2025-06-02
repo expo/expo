@@ -90,7 +90,7 @@ const data: SectionListData<ImageSource>[] = [
     title: 'SVG',
     data: [
       {
-        uri: 'https://icon-icons.com/downloadimage.php?id=98748&root=1446/SVG/&file=22221cat_98748.svg',
+        uri: 'https://static.expo.dev/static/images/bimi-default.svg',
       },
     ],
   },
@@ -106,7 +106,7 @@ const data: SectionListData<ImageSource>[] = [
     title: 'ICO',
     data: [
       {
-        uri: 'https://icon-icons.com/downloadimage.php?id=132404&root=2148/ICO/512/&file=expo_icon_132404.ico',
+        uri: 'https://snack.expo.dev/favicon.ico',
       },
     ],
   },
@@ -114,7 +114,7 @@ const data: SectionListData<ImageSource>[] = [
     title: 'ICNS',
     data: [
       {
-        uri: 'https://icon-icons.com/downloadimage.php?id=214748&root=3398/ICNS/512/&file=react_logo_icon_214748.icns',
+        uri: 'https://github.com/tinalatif/flat.icns/raw/refs/heads/master/icns/google%20chromium.icns',
       },
     ],
   },

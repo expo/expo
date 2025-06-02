@@ -3,43 +3,54 @@
 package expo.modules.kotlin.modules
 
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.types.NullableTypeConverter
 import expo.modules.kotlin.types.TypeConverter
-import expo.modules.kotlin.types.TypeConverterCollection
+import expo.modules.kotlin.types.TypeConverterComponent
 import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.lazyTypeOf
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 
 class ModuleConvertersBuilder {
   @PublishedApi
-  internal var typeConverters: MutableMap<KClass<*>, TypeConverter<*>> = mutableMapOf()
+  internal var convertersComponent = mutableListOf<TypeConverterComponent<*>>()
 
-  inline fun <reified T : Any> TypeConverter(classifier: KClass<T>, body: () -> TypeConverter<T>) {
-    typeConverters[classifier] = body()
+  inline fun <reified T : Any> TypeConverter(classifier: KClass<T> = T::class): TypeConverterComponent<T> {
+    val converterComponent = TypeConverterComponent<T>(lazyTypeOf<T>())
+    convertersComponent.add(converterComponent)
+    return converterComponent
   }
 
-  inline fun <reified T : Any> TypeConverter(classifier: KClass<T>): TypeConverterCollection<T> {
-    val converter = TypeConverterCollection<T>(typeOf<T>())
-    typeConverters[classifier] = converter
-    return converter
-  }
-
-  inline fun <reified T : Any, reified P0> TypeConverter(classifier: KClass<T>, crossinline body: (p0: P0) -> T): TypeConverterCollection<T> {
-    val converter = TypeConverterCollection<T>(typeOf<T>()).from<P0>(body)
-    typeConverters[classifier] = converter
-    return converter
+  inline fun <reified T : Any, reified P0 : Any> TypeConverter(
+    classifier: KClass<T> = T::class,
+    crossinline body: (p0: P0) -> T
+  ): TypeConverterComponent<T> {
+    return TypeConverter<T>(classifier).apply {
+      from<P0> { value ->
+        body(value)
+      }
+    }
   }
 
   fun buildTypeConverterProvider(): TypeConverterProvider {
+    val converters = convertersComponent
+      .mapNotNull { it.build() }
+
     return object : TypeConverterProvider {
       override fun obtainTypeConverter(type: KType): TypeConverter<*> {
-        val classifier = type.classifier as? KClass<*>
-        val typeConverter = typeConverters[classifier]
-        if (typeConverter != null) {
-          return typeConverter
-        } else {
-          throw MissingTypeConverter(type)
+        val nonNullableTypeConverter = findNonNullableTypeConverter(type)
+          ?: throw MissingTypeConverter(type)
+
+        if (type.isMarkedNullable) {
+          return NullableTypeConverter(nonNullableTypeConverter)
         }
+        return nonNullableTypeConverter
+      }
+
+      private fun findNonNullableTypeConverter(type: KType): TypeConverter<*>? {
+        return converters.find { (converterType, _) ->
+          converterType.classifier == type.classifier && converterType.arguments == type.arguments
+        }?.second
       }
     }
   }

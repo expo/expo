@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
+
 ### 🐛 Bug fixes
+
+- Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37107](https://github.com/expo/expo/pull/37107) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 

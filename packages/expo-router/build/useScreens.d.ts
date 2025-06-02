@@ -36,7 +36,5 @@ export declare function getQualifiedRouteComponent(value: RouteNode): React.Comp
 };
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): ScreenProps['options'];
 export declare function routeToScreen(route: RouteNode, { options, getId, ...props }?: Partial<ScreenProps>): React.JSX.Element;
-export declare function getSingularId(name: string, options?: {
-    params?: Record<string, any> | undefined;
-}): string;
+export declare function getSingularId(name: string, options?: Record<string, any>): string;
 //# sourceMappingURL=useScreens.d.ts.map

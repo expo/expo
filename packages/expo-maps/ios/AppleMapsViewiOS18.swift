@@ -169,8 +169,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
           // Send an event of map click regardless
           props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
+            "coordinates": [
+              "latitude": coordinate.latitude,
+              "longitude": coordinate.longitude
+            ]
           ])
         }
       }
