@@ -110,7 +110,12 @@ export async function tryGetUserAsync(): Promise<Actor | null> {
       chalk`\n\nIt is recommended to log in with your Expo account before proceeding. \n{dim ${learnMore(
         'https://expo.fyi/unverified-app-expo-go'
       )}}\n`,
-      choices
+      choices,
+      {
+        nonInteractiveHelp: `Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
+          'https://docs.expo.dev/accounts/programmatic-access/'
+        )})`,
+      }
     );
 
     if (value === true) {
