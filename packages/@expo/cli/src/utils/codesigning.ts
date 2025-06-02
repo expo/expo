@@ -207,7 +207,7 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
     try {
       const newCodeSigningInfo =
         await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
-      console.log('KADI newCodeSigningInfo', newCodeSigningInfo);
+
       if (newCodeSigningInfo) {
         return newCodeSigningInfo;
         // fall back to cached certificate if we couldn't fetch a new one
