@@ -104,9 +104,7 @@ const getPlatformModuleDescription = async (
 };
 
 export type StickyModuleResolverInput = {
-  [platform in AutolinkingPlatform]: PlatformModuleDescription;
-} & {
-  [unknownPlatform: string]: never;
+  [platform in AutolinkingPlatform]?: PlatformModuleDescription;
 };
 
 export async function createStickyModuleResolverInput({
@@ -143,7 +141,7 @@ export function createStickyModuleResolver(
 
   const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
   const isAutolinkingPlatform = (platform: string | null): platform is AutolinkingPlatform =>
-    !!platform && !!input[platform];
+    !!platform && (input as any)[platform] != null;
 
   return function requestStickyModule(context, moduleName, platform) {
     if (!isAutolinkingPlatform(platform)) {
@@ -152,7 +150,7 @@ export function createStickyModuleResolver(
       return null;
     }
 
-    const moduleDescription = input[platform];
+    const moduleDescription = input[platform]!;
     const moduleMatch = moduleDescription.moduleTestRe.exec(moduleName);
     if (moduleMatch) {
       const resolvedModulePath =
