@@ -7,6 +7,7 @@ description: How to migrate your Expo Go project to use development builds.
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To migrate from Expo Go to a development build, you'll need to follow the steps below:
 
@@ -45,13 +46,22 @@ Once you've built your native app, you won't need to build it again unless you a
 
 To build a native app on your local machine, follow the setup your environment guides for [Android](/workflow/android-studio-emulator/) and [iOS](/workflow/ios-simulator/) platforms. This involves setting up and configuring native build tools like Android Studio for Android and Xcode for iOS.
 
-Once you have everything set up, run the following command to build for iOS:
+Once you have everything set up, run the following command:
+
+<Tabs>
+
+<Tab label="Build for Android">
+
+<Terminal cmd={['$ npx expo run:android']} />
+
+</Tab>
+
+<Tab label="Build for iOS">
 
 <Terminal cmd={['$ npx expo run:ios']} />
 
-Or to build the Android app:
-
-<Terminal cmd={['$ npx expo run:android']} />
+</Tab>
+</Tabs>
 
 By default this will build and install the app on a simulator/emulator. If you need to run the build on your phone, plug it into your computer (trust device and allow USB debugging if prompted) and run the above commands with the `--device` flag.
 
@@ -67,13 +77,24 @@ To build on EAS, install the EAS CLI and log in:
 
 <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
-To build the development client for Android, run:
+To build the development client, run:
+
+<Tabs>
+
+<Tab label="Build for Android">
 
 <Terminal cmd={['$ eas build --platform android --profile development']} />
 
-To build the development client for iOS (this requires an Apple Developer Account), run:
+</Tab>
+
+<Tab label="Build for iOS">
 
 <Terminal cmd={['$ eas build --platform ios --profile development']} />
+
+A paid [Apple Developer](https://developer.apple.com/) account for creating [signing credentials](/app-signing/managed-credentials#generating-app-signing-credentials) so the app could be installed on an iOS device.
+
+</Tab>
+</Tabs>
 
 See the [next guide](/develop/development-builds/create-a-build) for details on various ways to build your dev client and the limitations.
 
@@ -109,11 +130,20 @@ In these cases, you'll want to rebuild the native directory with:
 
 Then, rebuild your app with the updated native code, with:
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Tabs>
 
-or
+<Tab label="Build for Android">
 
 <Terminal cmd={['$ npx expo run:android']} />
+
+</Tab>
+
+<Tab label="Build for iOS">
+
+<Terminal cmd={['$ npx expo run:ios']} />
+
+</Tab>
+</Tabs>
 
 ### When you don't need to run prebuild
 
