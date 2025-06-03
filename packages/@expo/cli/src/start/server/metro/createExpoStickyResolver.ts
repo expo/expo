@@ -1,4 +1,5 @@
 import type { SearchOptions as AutolinkingSearchOptions } from 'expo-modules-autolinking/exports';
+import type { ResolutionContext } from 'metro-resolver';
 
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
@@ -143,7 +144,7 @@ export function createStickyModuleResolver(
   const isAutolinkingPlatform = (platform: string | null): platform is AutolinkingPlatform =>
     !!platform && (input as any)[platform] != null;
 
-  return function requestStickyModule(context, moduleName, platform) {
+  return function requestStickyModule(immutableContext, moduleName, platform) {
     if (!isAutolinkingPlatform(platform)) {
       return null;
     } else if (fileSpecifierRe.test(moduleName)) {
@@ -155,9 +156,14 @@ export function createStickyModuleResolver(
     if (moduleMatch) {
       const resolvedModulePath =
         moduleDescription.resolvedModulePaths[moduleMatch[1]] || moduleName;
-      const resolvedModuleRequest = resolvedModulePath + (moduleMatch[2] || '');
-      const res = getStrictResolver(context, platform)(resolvedModuleRequest);
-      debug(`Sticky resolution for ${platform}: ${moduleName} -> ${resolvedModuleRequest}`);
+      // We instead resolve as if it was a dependency from within the module (self-require/import)
+      const context: ResolutionContext = {
+        ...immutableContext,
+        nodeModulesPaths: [resolvedModulePath],
+        originModulePath: resolvedModulePath,
+      };
+      const res = getStrictResolver(context, platform)(moduleName);
+      debug(`Sticky resolution for ${platform}: ${moduleName} -> ${resolvedModulePath}`);
       return res;
     }
 
