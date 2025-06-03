@@ -10,13 +10,20 @@ type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 const dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(${dependencies.join('|')})($|/.*)`);
 
-const getAutolinkingModule = (): typeof import('expo-modules-autolinking/exports') => {
-  const expoPath = require.resolve('expo/package.json');
-  const autolinkingPath = require.resolve('expo-modules-autolinking/exports', {
-    paths: [expoPath],
-  });
-  return require(autolinkingPath);
-};
+/** Requires `expo-modules-autolinking/exports` via the `expo` package which depends on it */
+const getAutolinkingModule = (() => {
+  let autolinkingModule: typeof import('expo-modules-autolinking/exports') | undefined;
+  return (): typeof import('expo-modules-autolinking/exports') => {
+    if (!autolinkingModule) {
+      const expoPath = require.resolve('expo/package.json');
+      const autolinkingPath = require.resolve('expo-modules-autolinking/exports', {
+        paths: [expoPath],
+      });
+      return (autolinkingModule = require(autolinkingPath));
+    }
+    return autolinkingModule;
+  };
+})();
 
 interface PlatformModuleDescription {
   platform: AutolinkingPlatform;
