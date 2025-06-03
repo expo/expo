@@ -900,7 +900,10 @@ export async function withMetroMultiPlatformAsync(
   config = withWebPolyfills(config, { getMetroBundler });
 
   // TODO(@kitten): Add flag to enable this instead of it being always on
-  const stickyModuleResolverInput = await createStickyModuleResolverInput(projectRoot);
+  const stickyModuleResolverInput = await createStickyModuleResolverInput({
+    platforms: expoConfigPlatforms,
+    projectRoot,
+  });
 
   return withExtendedResolver(config, {
     stickyModuleResolverInput,

@@ -54,15 +54,26 @@ export type StickyModuleResolverInput = {
   [unknownPlatform: string]: never;
 };
 
-export async function createStickyModuleResolverInput(
-  projectRoot: string
-): Promise<StickyModuleResolverInput> {
+export async function createStickyModuleResolverInput({
+  platforms,
+  projectRoot,
+}: {
+  projectRoot: string;
+  platforms: string[];
+}): Promise<StickyModuleResolverInput> {
   return Object.fromEntries(
     await Promise.all(
-      AUTOLINKING_PLATFORMS.map(async (platform) => {
-        const platformModuleDescription = await getPlatformModuleDescription(projectRoot, platform);
-        return [platformModuleDescription.platform, platformModuleDescription] as const;
-      })
+      platforms
+        .filter((platform): platform is AutolinkingPlatform =>
+          AUTOLINKING_PLATFORMS.includes(platform as any)
+        )
+        .map(async (platform) => {
+          const platformModuleDescription = await getPlatformModuleDescription(
+            projectRoot,
+            platform
+          );
+          return [platformModuleDescription.platform, platformModuleDescription] as const;
+        })
     )
   ) as StickyModuleResolverInput;
 }
