@@ -16,6 +16,7 @@
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 - Added `useCNGForPlatforms` to indicate project workflow. ([#37204](https://github.com/expo/expo/pull/37204) by [@kudo](https://github.com/kudo))
+- Refactored Expo config loading logic into **ExpoConfig.ts**. ([#37208](https://github.com/expo/expo/pull/37208) by [@kudo](https://github.com/kudo))
 
 ## 0.12.4 — 2025-04-30
 
