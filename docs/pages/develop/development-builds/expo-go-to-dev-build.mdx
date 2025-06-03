@@ -4,6 +4,9 @@ sidebar_title: Expo Go to development build
 description: How to migrate your Expo Go project to use development builds.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -149,4 +152,9 @@ Then, rebuild your app with the updated native code, with:
 
 All Expo build tools (`npx expo run:android|ios` and `eas build`) will **prebuild** automatically if no existing native folders are found. This means that there is no need to run prebuild manually when you're running `npx expo run:android|ios` for the first time or `eas build`.
 
-For more details on the philosophy and benefits of Continuous Native Generation (CNG) and Prebuild, see this [comprehensive guide](/workflow/continuous-native-generation/).
+<BoxLink
+  title="Continuous Native Generation (CNG)"
+  description="Learn about the philosophy and benefits of Continuous Native Generation (CNG) and Prebuild"
+  href="/workflow/continuous-native-generation/"
+  Icon={BookOpen02Icon}
+/>
