@@ -1228,8 +1228,8 @@ describe(withExtendedResolver, () => {
         },
       });
 
-      jest.mocked(getResolveFunc()).mockImplementation((_context, moduleName, _platform) => {
-        return { type: 'sourceFile', filePath: moduleName };
+      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+        return { type: 'sourceFile', filePath: context.originModulePath };
       });
 
       // Supports bare module name
@@ -1244,6 +1244,12 @@ describe(withExtendedResolver, () => {
         type: 'sourceFile',
       });
 
+      expect(getResolveFunc()).toHaveBeenLastCalledWith(
+        expect.objectContaining({ originModulePath: '/sticky/expo-router' }),
+        'expo-router',
+        platform
+      );
+
       // Supports sub-path module name
       result = modified.resolver.resolveRequest!(
         getDefaultRequestContext(),
@@ -1252,9 +1258,15 @@ describe(withExtendedResolver, () => {
       );
       expect(getResolveFunc()).toHaveBeenCalledTimes(2);
       expect(result).toEqual({
-        filePath: '/sticky/expo-router/file',
+        filePath: '/sticky/expo-router',
         type: 'sourceFile',
       });
+
+      expect(getResolveFunc()).toHaveBeenLastCalledWith(
+        expect.objectContaining({ originModulePath: '/sticky/expo-router' }),
+        'expo-router/file',
+        platform
+      );
     });
   });
 });
