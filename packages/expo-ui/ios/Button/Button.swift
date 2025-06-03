@@ -13,10 +13,14 @@ struct Button: ExpoSwiftUI.View {
         props.onButtonPressed()
       },
       label: {
-        if let systemImage = props.systemImage {
-          Label(props.text, systemImage: systemImage)
+        if let text = props.text {
+          if let systemImage = props.systemImage {
+            Label(text, systemImage: systemImage)
+          } else {
+            Text(text)
+          }
         } else {
-          Text(props.text)
+          Children()
         }
       })
     .disabled(props.disabled)
