@@ -417,6 +417,14 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     currentVideoTrack = newVideoTrack
   }
 
+  func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool) {
+    let payload = IsExternalPlaybackActiveChangedEventPayload(
+      isExternalPlaybackActive: newIsExternalPlaybackActive,
+      oldIsExternalPlaybackActice: oldIsExternalPlaybackActive
+    )
+    safeEmit(event: "isExternalPlaybackActiveChange", payload: payload)
+  }
+
   func safeEmit(event: String, payload: Record? = nil) {
     if self.appContext != nil {
       self.emit(event: event, arguments: payload?.toDictionary(appContext: appContext))
