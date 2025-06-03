@@ -40,14 +40,19 @@ const getPlatformModuleDescription = async (
     await autolinking.mergeLinkingOptionsAsync({
       searchPaths: [],
       projectRoot,
-      platform,
+      platform: platform === 'ios' ? 'apple' : platform,
       onlyProjectDeps: true,
       silent: true,
     })
   );
+  const resolvedModulesKeys = Object.keys(resolvedModules);
+  debug(
+    `Sticky resolution for ${platform} registered ${resolvedModulesKeys.length} resolutions:`,
+    resolvedModulesKeys
+  );
   return {
     platform,
-    moduleTestRe: dependenciesToRegex(Object.keys(resolvedModules)),
+    moduleTestRe: dependenciesToRegex(resolvedModulesKeys),
     resolvedModulePaths: Object.fromEntries(
       Object.entries(resolvedModules).map(([key, entry]) => [key, entry.path])
     ),
