@@ -5,7 +5,7 @@
     "rootDir": "./src",
     "module": "commonjs",
     "moduleResolution": "node10",
-    "noEmit": true,
+    "noEmit": false,
     "resolveJsonModule": true,
     "types": [
       "jest",
