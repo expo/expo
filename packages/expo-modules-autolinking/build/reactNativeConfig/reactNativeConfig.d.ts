@@ -3,7 +3,7 @@ import type { RNConfigCommandOptions, RNConfigDependency, RNConfigReactNativeApp
 /**
  * Create config for react-native core autolinking.
  */
-export declare function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, }: RNConfigCommandOptions): Promise<RNConfigResult>;
+export declare function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, transitiveLinkingDependencies, }: RNConfigCommandOptions): Promise<RNConfigResult>;
 /**
  * Find all dependencies and their directories from the project.
  */

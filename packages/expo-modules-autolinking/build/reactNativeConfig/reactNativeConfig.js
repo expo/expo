@@ -21,7 +21,7 @@ const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
 /**
  * Create config for react-native core autolinking.
  */
-async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, }) {
+async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths, transitiveLinkingDependencies, }) {
     const projectConfig = await (0, config_1.loadConfigAsync)(projectRoot);
     const dependencyRoots = {
         ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
@@ -33,8 +33,9 @@ async function createReactNativeConfigAsync({ platform, projectRoot, searchPaths
     // 1. `react-native-is-edge-to-edge` tries to check if the `edge-to-edge` turbomodule is present to determine whether edge-to-edge is enabled.
     // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
     const shouldAutolinkEdgeToEdge = platform === 'android' &&
-        (await resolveGradleEdgeToEdgeEnabled(projectRoot)) &&
-        !('react-native-edge-to-edge' in dependencyRoots);
+        !('react-native-edge-to-edge' in dependencyRoots) &&
+        ((await resolveGradleEdgeToEdgeEnabled(projectRoot)) ||
+            transitiveLinkingDependencies.includes('react-native-edge-to-edge'));
     if (shouldAutolinkEdgeToEdge) {
         const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
         if (edgeToEdgeRoot) {
