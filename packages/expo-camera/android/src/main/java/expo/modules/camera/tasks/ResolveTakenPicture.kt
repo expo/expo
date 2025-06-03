@@ -255,7 +255,7 @@ class ResolveTakenPicture(
     if (angle == 0 && !mirror) {
       return source
     }
-    
+
     val matrix = Matrix()
     matrix.apply {
       postRotate(angle.toFloat())
@@ -263,7 +263,7 @@ class ResolveTakenPicture(
         postScale(-1f, 1f)
       }
     }
-    
+
     return try {
       val transformed = Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
       if (transformed != source && !source.isRecycled) {

@@ -86,7 +86,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.Float.max
 import java.lang.Float.min
-import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
@@ -659,7 +658,7 @@ class ExpoCameraView(
       PreviewView.ScaleType.FIT_CENTER -> {
         val previewAspectRatio = previewWidth / previewHeight
         val imageAspectRatio = imageWidth / imageHeight
-        
+
         if (previewAspectRatio > imageAspectRatio) {
           scaleY = previewHeight / imageHeight
           scaleX = scaleY
@@ -672,7 +671,7 @@ class ExpoCameraView(
       PreviewView.ScaleType.FILL_CENTER -> {
         val previewAspectRatio = previewWidth / previewHeight
         val imageAspectRatio = imageWidth / imageHeight
-        
+
         if (previewAspectRatio > imageAspectRatio) {
           // Preview is wider - scale to fill width, crop top/bottom
           scaleX = previewWidth / imageWidth
@@ -693,7 +692,7 @@ class ExpoCameraView(
       val originalX = cornerPoints[index]
       (originalX * scaleX).roundToInt()
     }
-    
+
     cornerPoints.mapY { index ->
       val originalY = cornerPoints[index]
       (originalY * scaleY).roundToInt()

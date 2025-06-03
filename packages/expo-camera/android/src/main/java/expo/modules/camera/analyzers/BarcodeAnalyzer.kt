@@ -12,7 +12,6 @@ import expo.modules.camera.CameraViewHelper
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.utils.BarCodeScannerResult
-import java.nio.ByteBuffer
 
 @OptIn(ExperimentalGetImage::class)
 class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
@@ -81,13 +80,13 @@ fun Array<ImageProxy.PlaneProxy>.toByteArray(): ByteArray {
   val totalSize = this.sumOf { it.buffer.remaining() }
   val result = ByteArray(totalSize)
   var offset = 0
-  
+
   for (plane in this) {
     val buffer = plane.buffer
     val size = buffer.remaining()
     buffer.get(result, offset, size)
     offset += size
   }
-  
+
   return result
 }
