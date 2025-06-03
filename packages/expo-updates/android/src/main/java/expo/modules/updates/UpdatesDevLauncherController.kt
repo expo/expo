@@ -364,6 +364,10 @@ class UpdatesDevLauncherController(
     throw NotAvailableInDevClientException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported in development builds.")
   }
 
+  override fun shutdown() {
+    // no-op
+  }
+
   companion object {
     private val TAG = UpdatesDevLauncherController::class.java.simpleName
   }

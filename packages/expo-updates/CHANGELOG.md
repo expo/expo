@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- [Android] Cleanup state machine resources when the module is destroyed.
 
 ## 0.28.13 — 2025-05-08
 

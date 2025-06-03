@@ -53,22 +53,25 @@ class CheckForUpdateProcedure(
   }
 
   private suspend fun downloadRemoteUpdate(extraHeaders: JSONObject) = suspendCancellableCoroutine { continuation ->
-    fileDownloader.downloadRemoteUpdate(
-      extraHeaders,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          if (continuation.isActive) {
-            continuation.resumeWithException(e)
-          }
-        }
 
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          if (continuation.isActive) {
-            continuation.resume(updateResponse)
-          }
+    val callback = object : FileDownloader.RemoteUpdateDownloadCallback {
+      override fun onFailure(e: Exception) {
+        if (continuation.isActive) {
+          continuation.resumeWithException(e)
         }
       }
-    )
+
+      override fun onSuccess(updateResponse: UpdateResponse) {
+        if (continuation.isActive) {
+          continuation.resume(updateResponse)
+        }
+      }
+    }
+    fileDownloader.downloadRemoteUpdate(extraHeaders, callback)
+
+    continuation.invokeOnCancellation {
+      updatesLogger.info("Download cancelled for remote update check")
+    }
   }
 
   private fun processUpdatesResponse(updateResponse: UpdateResponse, procedureContext: ProcedureContext, embeddedUpdate: UpdateEntity?) {
