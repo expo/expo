@@ -16,6 +16,7 @@ import {
 
 jest.mock('fs');
 jest.mock('fs/promises');
+jest.mock('../../ProjectWorkflow');
 
 describe(createFingerprintFromSourcesAsync, () => {
   afterEach(() => {
