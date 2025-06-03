@@ -76,30 +76,12 @@ Building on EAS servers is useful when:
 - you want to build an iOS app but don't own a Mac
 - you want to share the development builds with your team
 
-To build on EAS, install the EAS CLI and log in:
-
-<Terminal cmd={['$ npm install -g eas-cli && eas login']} />
-
-To build the development client, run:
-
-<Tabs>
-
-<Tab label="Build for Android">
-
-<Terminal cmd={['$ eas build --platform android --profile development']} />
-
-</Tab>
-
-<Tab label="Build for iOS">
-
-<Terminal cmd={['$ eas build --platform ios --profile development']} />
-
-A paid [Apple Developer](https://developer.apple.com/) account for creating [signing credentials](/app-signing/managed-credentials#generating-app-signing-credentials) so the app could be installed on an iOS device.
-
-</Tab>
-</Tabs>
-
-See the [next guide](/develop/development-builds/create-a-build) for details on various ways to build your dev client and the limitations.
+<BoxLink
+  title="Build on EAS"
+  description="How to create your Development Build on EAS"
+  href="develop/development-builds/create-a-build/"
+  Icon={BookOpen02Icon}
+/>
 
 </Step>
 
