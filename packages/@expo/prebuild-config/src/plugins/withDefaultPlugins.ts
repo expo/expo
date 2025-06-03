@@ -108,6 +108,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
 
     // strings.xml
     AndroidConfig.Name.withName,
+    AndroidConfig.Locales.withLocales,
 
     // Dangerous -- these plugins run in reverse order.
     AndroidConfig.GoogleServices.withGoogleServicesFile,

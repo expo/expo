@@ -4,16 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getLocales = getLocales;
-exports.getResolvedLocalesAsync = getResolvedLocalesAsync;
 exports.setLocalesAsync = setLocalesAsync;
 exports.withLocales = void 0;
-function _jsonFile() {
-  const data = _interopRequireDefault(require("@expo/json-file"));
-  _jsonFile = function () {
-    return data;
-  };
-  return data;
-}
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -42,9 +34,9 @@ function _iosPlugins() {
   };
   return data;
 }
-function _warnings() {
-  const data = require("../utils/warnings");
-  _warnings = function () {
+function _locales() {
+  const data = require("../utils/locales");
+  _locales = function () {
     return data;
   };
   return data;
@@ -72,7 +64,7 @@ async function setLocalesAsync(config, {
     return project;
   }
   // possibly validate CFBundleAllowMixedLocalizations is enabled
-  const localesMap = await getResolvedLocalesAsync(projectRoot, locales);
+  const localesMap = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'ios');
   const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
   const supportingDirectory = (0, _path().join)(projectRoot, 'ios', projectName, 'Supporting');
 
@@ -110,23 +102,5 @@ async function setLocalesAsync(config, {
     }
   }
   return project;
-}
-async function getResolvedLocalesAsync(projectRoot, input) {
-  const locales = {};
-  for (const [lang, localeJsonPath] of Object.entries(input)) {
-    if (typeof localeJsonPath === 'string') {
-      try {
-        locales[lang] = await _jsonFile().default.readAsync((0, _path().join)(projectRoot, localeJsonPath));
-      } catch {
-        // Add a warning when a json file cannot be parsed.
-        (0, _warnings().addWarningIOS)(`locales.${lang}`, `Failed to parse JSON of locale file for language: ${lang}`, 'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app');
-      }
-    } else {
-      // In the off chance that someone defined the locales json in the config, pass it directly to the object.
-      // We do this to make the types more elegant.
-      locales[lang] = localeJsonPath;
-    }
-  }
-  return locales;
 }
 //# sourceMappingURL=Locales.js.map

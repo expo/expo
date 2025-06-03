@@ -33,7 +33,12 @@ describe('e2e: iOS locales', () => {
           rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
         'lang/fr.json': JSON.stringify({
-          CFBundleDisplayName: 'french-name',
+          ios: {
+            CFBundleDisplayName: 'french-name',
+          },
+          android: {
+            app_name: 'french-name',
+          },
         }),
       },
       projectRoot
@@ -64,13 +69,13 @@ describe('e2e: iOS locales', () => {
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     const locales = Object.keys(after).filter((value) => value.endsWith('InfoPlist.strings'));
-
     expect(locales.length).toBe(2);
     expect(after[locales[0]]).toMatchSnapshot();
     // Test that the inlined locale is resolved.
     expect(after[locales[1]]).toMatch(/spanish-name/);
     // Test a warning is thrown for an invalid locale JSON file.
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+    expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
+      'ios',
       'locales.xx',
       'Failed to parse JSON of locale file for language: xx',
       'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app'

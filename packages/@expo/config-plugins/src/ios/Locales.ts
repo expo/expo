@@ -1,5 +1,4 @@
 import { ExpoConfig } from '@expo/config-types';
-import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import { join, relative } from 'path';
 import { XcodeProject } from 'xcode';
@@ -7,11 +6,7 @@ import { XcodeProject } from 'xcode';
 import { ConfigPlugin } from '../Plugin.types';
 import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
-import { addWarningIOS } from '../utils/warnings';
-
-type LocaleJson = Record<string, string>;
-type ResolvedLocalesJson = Record<string, LocaleJson>;
-type ExpoConfigLocales = NonNullable<ExpoConfig['locales']>;
+import { getResolvedLocalesAsync, LocaleJson } from '../utils/locales';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
@@ -38,7 +33,7 @@ export async function setLocalesAsync(
     return project;
   }
   // possibly validate CFBundleAllowMixedLocalizations is enabled
-  const localesMap = await getResolvedLocalesAsync(projectRoot, locales);
+  const localesMap = await getResolvedLocalesAsync(projectRoot, locales, 'ios');
 
   const projectName = getProjectName(projectRoot);
   const supportingDirectory = join(projectRoot, 'ios', projectName, 'Supporting');
@@ -77,31 +72,4 @@ export async function setLocalesAsync(
   }
 
   return project;
-}
-
-export async function getResolvedLocalesAsync(
-  projectRoot: string,
-  input: ExpoConfigLocales
-): Promise<ResolvedLocalesJson> {
-  const locales: ResolvedLocalesJson = {};
-  for (const [lang, localeJsonPath] of Object.entries(input)) {
-    if (typeof localeJsonPath === 'string') {
-      try {
-        locales[lang] = await JsonFile.readAsync(join(projectRoot, localeJsonPath));
-      } catch {
-        // Add a warning when a json file cannot be parsed.
-        addWarningIOS(
-          `locales.${lang}`,
-          `Failed to parse JSON of locale file for language: ${lang}`,
-          'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app'
-        );
-      }
-    } else {
-      // In the off chance that someone defined the locales json in the config, pass it directly to the object.
-      // We do this to make the types more elegant.
-      locales[lang] = localeJsonPath;
-    }
-  }
-
-  return locales;
 }
