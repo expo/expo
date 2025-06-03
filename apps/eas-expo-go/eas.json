@@ -21,8 +21,8 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk53-0.80.0-rc.2",
-          "customPaths": ["../expo-go/ios/Pods"]
+          "key": "sdk53-0.80.0-rc.3",
+          "customPaths": [ "../expo-go/ios/Pods" ]
         },
         "image": "macos-sonoma-14.6-xcode-16.0",
         "cocoapods": "1.16.2",
