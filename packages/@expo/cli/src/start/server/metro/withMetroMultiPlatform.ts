@@ -176,6 +176,9 @@ export function withExtendedResolver(
   if (isFastResolverEnabled) {
     Log.log(chalk.dim`Fast resolver is enabled.`);
   }
+  if (stickyModuleResolverInput) {
+    Log.log(chalk.dim`Sticky resolver is enabled.`);
+  }
 
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
@@ -820,6 +823,7 @@ export async function withMetroMultiPlatformAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled,
+    isStickyResolverEnabled,
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
@@ -831,6 +835,7 @@ export async function withMetroMultiPlatformAsync(
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
+    isStickyResolverEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
@@ -900,11 +905,13 @@ export async function withMetroMultiPlatformAsync(
 
   config = withWebPolyfills(config, { getMetroBundler });
 
-  // TODO(@kitten): Add flag to enable this instead of it being always on
-  const stickyModuleResolverInput = await createStickyModuleResolverInput({
-    platforms: expoConfigPlatforms,
-    projectRoot,
-  });
+  let stickyModuleResolverInput: StickyModuleResolverInput | undefined;
+  if (isStickyResolverEnabled) {
+    stickyModuleResolverInput = await createStickyModuleResolverInput({
+      platforms: expoConfigPlatforms,
+      projectRoot,
+    });
+  }
 
   return withExtendedResolver(config, {
     stickyModuleResolverInput,
