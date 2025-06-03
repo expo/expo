@@ -33,7 +33,7 @@
     "react": "19.1.0",
     "react-native": "0.80.0-rc.2",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "4.10.0",
+    "react-native-screens": "4.11.1",
     "react-native-webview": "13.13.5"
   },
   "devDependencies": {
