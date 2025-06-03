@@ -104,6 +104,7 @@ export const home = [
       'Development builds',
       [
         makePage('develop/development-builds/introduction.mdx'),
+        makePage('develop/development-builds/expo-go-to-dev-build.mdx'),
         makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),

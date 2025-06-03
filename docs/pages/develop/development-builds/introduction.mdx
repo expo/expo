@@ -74,29 +74,3 @@ Expo Go can only support one SDK version at a time. When a new SDK version is re
 If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
 
 </Collapsible>
-
-## How to convert from Expo Go to a development build
-
-To migrate from Expo Go to a development build, you'll need to:
-
-<Step label="1">
-
-### Install the `expo-dev-client`
-
-The Expo Dev Client library includes the launcher UI (shown in the screenshots below), dev menu, extensions to test updates, and more. The Expo Go app has the dev menu built in, and that's why you need to install it separately for a development build.
-
-<ContentSpotlight
-  alt="expo-dev-client launcher and menu UIs on Android and iOS."
-  src="/static/images/dev-client/preview.png"
-  caption={`When you run a development build it will look like this, only with your app name and icon included rather than "Microfoam". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
-/>
-
-</Step>
-
-<Step label="2">
-
-### Build your native app using native build tools
-
-The details on how to build the native app are platform-dependent and are covered in the [next guide](/develop/development-builds/create-a-build).
-
-</Step>
