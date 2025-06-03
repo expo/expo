@@ -181,6 +181,10 @@ class DisabledUpdatesController(
     }
   }
 
+  override fun shutdown() {
+    // no-op
+  }
+
   companion object {
     private val TAG = DisabledUpdatesController::class.java.simpleName
   }
