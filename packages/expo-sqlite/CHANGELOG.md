@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix nullability of binding params.
+
 ### 💡 Others
 
 - Prevent `maybeFinalizeAllStatements` throwing exceptions. ([#36843](https://github.com/expo/expo/pull/36843) by [@kudo](https://github.com/kudo))
