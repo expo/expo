@@ -1,0 +1,1 @@
+{"version":3,"file":"Preview.d.ts","sourceRoot":"","sources":["../../../src/link/preview/Preview.tsx"],"names":[],"mappings":"AAIA,OAAO,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAExC,OAAO,EAAE,IAAI,EAAE,mBAAmB,EAAE,MAAM,aAAa,CAAC;AAKxD,eAAO,MAAM,oBAAoB,0DAA4D,CAAC;AAE9F,wBAAgB,OAAO,CAAC,EAAE,IAAI,EAAE,EAAE;IAAE,IAAI,EAAE,IAAI,CAAA;CAAE,sCAe/C;AAED,wBAAgB,wBAAwB,CAAC,IAAI,EAAE,IAAI;;;EAclD"}

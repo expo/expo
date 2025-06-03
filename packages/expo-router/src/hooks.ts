@@ -8,6 +8,7 @@ import { INTERNAL_SLOT_NAME } from './constants';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { PreviewParamsContext } from './link/preview/Preview';
 
 export { useRouteInfo };
 
@@ -188,7 +189,9 @@ export function useGlobalSearchParams<
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useGlobalSearchParams() {
-  return useRouteInfo().params;
+  const previewParams = React.use(PreviewParamsContext);
+  const globalParams = useRouteInfo().params;
+  return previewParams ?? globalParams;
 }
 
 /**
@@ -232,34 +235,38 @@ export function useLocalSearchParams<
 >(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {
   const params = React.use(LocalRouteParamsContext) ?? {};
-  return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
-      // navigation.setParams as it shallow merges. Hence, we hide them here
-      if (value === undefined) {
-        return [key, undefined];
-      }
-
-      if (Array.isArray(value)) {
-        return [
-          key,
-          value.map((v) => {
-            try {
-              return decodeURIComponent(v);
-            } catch {
-              return v;
-            }
-          }),
-        ];
-      } else {
-        try {
-          return [key, decodeURIComponent(value as string)];
-        } catch {
-          return [key, value];
+  const previewParams = React.use(PreviewParamsContext);
+  return (
+    previewParams ??
+    (Object.fromEntries(
+      Object.entries(params).map(([key, value]) => {
+        // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
+        // navigation.setParams as it shallow merges. Hence, we hide them here
+        if (value === undefined) {
+          return [key, undefined];
         }
-      }
-    })
-  ) as any;
+
+        if (Array.isArray(value)) {
+          return [
+            key,
+            value.map((v) => {
+              try {
+                return decodeURIComponent(v);
+              } catch {
+                return v;
+              }
+            }),
+          ];
+        } else {
+          try {
+            return [key, decodeURIComponent(value as string)];
+          } catch {
+            return [key, value];
+          }
+        }
+      })
+    ) as any)
+  );
 }
 
 export function useSearchParams({ global = false } = {}): URLSearchParams {
