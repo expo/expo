@@ -20,13 +20,7 @@
     "../expo/src/ts-declarations"
   ],
   "exclude": [
-    "**/__mocks__/*",
-    "**/.expo/*",
-    "./build/*",
-    "**/typed-routes/__tests__/*",
-    "**/__rsc_tests__/*",
-    "./node",
-    "./entry.js",
-    "./_ctx.d.ts"
+    "**/__tests__/",
+    "**/__rsc_tests__/"
   ]
 }
