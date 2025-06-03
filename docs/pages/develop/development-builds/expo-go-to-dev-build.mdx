@@ -81,9 +81,9 @@ See the [next guide](/develop/development-builds/create-a-build) for details on 
 
 <Step label="2">
 
-## Start the JavaScript bundler
+## Start the Metro bundler
 
-After building locally, `npx expo run:<platform>` will start the bundler automatically. But if you closed the bundler or are working on a dev client you built earlier, (re)start the JavaScript bundler with:
+After building locally, `npx expo run:android:ios` will start the bundler automatically. But if you closed the bundler or are working on a dev client you built earlier, (re)start the Metro bundler with:
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -95,13 +95,15 @@ When your project has `expo-dev-client` installed, the bundler will print out **
 
 [**Prebuild** ](/workflow/continuous-native-generation/#prebuild) is a concept unique to Expo projects. It refers to the process of generating the **android** and **ios** directories based on your local configuration and properties.
 
-### When **not** to run prebuild
-
-All Expo build tools (`npx expo run:android|ios` and `eas build`) will **prebuild** automatically if no existing native folders are found. This means that there is no need to run prebuild manually when you're running `npx expo run:android|ios` for the first time or `eas build`.
-
 ### When should you run prebuild
 
-The only reason to prebuild locally is if you are building via `npx expo run:android|ios` and changing any native dependencies (for example, installing a new library or changing the native configuration). Then you'll want to rebuild the native directory with:
+You will need to run prebuild locally if you are building via `npx expo run:android|ios`, and change any native dependencies or configuration, such as:
+
+- Installing or updating a library containing native code
+- Changing `app.json` or `app.config.json`
+- Upgrading your Expo SDK version
+
+In these cases, you'll want to rebuild the native directory with:
 
 <Terminal cmd={['$ npx expo prebuild --clean']} />
 
@@ -112,5 +114,9 @@ Then, rebuild your app with the updated native code, with:
 or
 
 <Terminal cmd={['$ npx expo run:android']} />
+
+### When you don't need to run prebuild
+
+All Expo build tools (`npx expo run:android|ios` and `eas build`) will **prebuild** automatically if no existing native folders are found. This means that there is no need to run prebuild manually when you're running `npx expo run:android|ios` for the first time or `eas build`.
 
 For more details on the philosophy and benefits of Continuous Native Generation (CNG) and Prebuild, see this [comprehensive guide](/workflow/continuous-native-generation/).
