@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - [iOS] Improve audio tap memory safety and cleanup ([#37174](https://github.com/expo/expo/pull/37174) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add dispatch queue to component registry ([#37175](https://github.com/expo/expo/pull/37175) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.4.5 — 2025-05-08
 

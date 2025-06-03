@@ -56,7 +56,7 @@ public class AudioModule: Module {
 
     OnAppEntersBackground {
       if !shouldPlayInBackground {
-        AudioComponentRegistry.shared.players.values.forEach { player in
+        AudioComponentRegistry.shared.allPlayers.values.forEach { player in
           if player.isPlaying {
             player.wasPlaying = true
             player.ref.pause()
@@ -67,7 +67,7 @@ public class AudioModule: Module {
 
     OnAppEntersForeground {
       if !shouldPlayInBackground {
-        AudioComponentRegistry.shared.players.values.forEach { player in
+        AudioComponentRegistry.shared.allPlayers.values.forEach { player in
           if player.wasPlaying {
             player.ref.play()
           }
@@ -223,7 +223,7 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
-        recorder.prepare(options: options)
+        try recorder.prepare(options: options)
       }
 
       Function("record") { (recorder: AudioRecorder) -> [String: Any] in
@@ -279,7 +279,7 @@ public class AudioModule: Module {
 
   private func setIsAudioActive(_ isActive: Bool) throws {
     if !isActive {
-      for player in AudioComponentRegistry.shared.players.values {
+      for player in AudioComponentRegistry.shared.allPlayers.values {
         player.ref.pause()
       }
     }
@@ -301,14 +301,14 @@ public class AudioModule: Module {
 
     #if os(iOS)
     if !mode.allowsRecording {
-      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+      AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
         if recorder.isRecording {
           recorder.ref.stop()
           recorder.allowsRecording = false
         }
       }
     } else {
-      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+      AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
         recorder.allowsRecording = true
       }
     }
