@@ -3,7 +3,6 @@ import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
 const debug = require('debug')('expo:start:server:metro:sticky-resolver') as typeof console.log;
 
-// TODO(@kitten): Set to all supported platforms then filter by `config.resolver.platforms`
 const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
 type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
@@ -79,9 +78,13 @@ export async function createStickyModuleResolverInput({
 }
 
 export function createStickyModuleResolver(
-  input: StickyModuleResolverInput,
-  getStrictResolver: StrictResolverFactory
-): ExpoCustomMetroResolver {
+  input: StickyModuleResolverInput | undefined,
+  { getStrictResolver }: { getStrictResolver: StrictResolverFactory }
+): ExpoCustomMetroResolver | undefined {
+  if (!input) {
+    return undefined;
+  }
+
   const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
   const isAutolinkingPlatform = (platform: string | null): platform is AutolinkingPlatform =>
     !!platform && !!input[platform];

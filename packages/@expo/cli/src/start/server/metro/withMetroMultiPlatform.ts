@@ -618,8 +618,9 @@ export function withExtendedResolver(
       return null;
     },
 
-    stickyModuleResolverInput &&
-      createStickyModuleResolver(stickyModuleResolverInput, getStrictResolver),
+    createStickyModuleResolver(stickyModuleResolverInput, {
+      getStrictResolver,
+    }),
 
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
