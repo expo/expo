@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix nullability of binding params.
+- [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
