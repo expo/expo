@@ -96,8 +96,8 @@ export function usePreventScreenCapture(key: string = 'default'): void {
  * Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded.
  *
  * Permission requirements for this method depend on your device’s Android version:
- * - **Before Android 13**: Requires READ_EXTERNAL_STORAGE.
- * - **Android 13**: Switches to READ_MEDIA_IMAGES.
+ * - **Before Android 13**: Requires `READ_EXTERNAL_STORAGE`.
+ * - **Android 13**: Switches to `READ_MEDIA_IMAGES`.
  * - **Post-Android 13**: No additional permissions required.
  * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
  *
