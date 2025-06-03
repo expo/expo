@@ -1,3 +1,5 @@
+import type { SearchOptions as AutolinkingSearchOptions } from 'expo-modules-autolinking/exports';
+
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 
@@ -29,6 +31,49 @@ const getAutolinkingModule = createExpoDependencyLoader<
   typeof import('expo-modules-autolinking/exports')
 >('expo-modules-autolinking/exports');
 
+const getReactNativeConfigModule = createExpoDependencyLoader<
+  typeof import('expo-modules-autolinking/build/reactNativeConfig')
+>('expo-modules-autolinking/build/reactNativeConfig');
+
+const getAutolinkingOptions = async (
+  projectRoot: string,
+  platform: AutolinkingPlatform
+): Promise<AutolinkingSearchOptions> => {
+  const autolinking = getAutolinkingModule();
+  return await autolinking.mergeLinkingOptionsAsync({
+    searchPaths: [],
+    projectRoot,
+    platform: platform === 'ios' ? 'apple' : platform,
+    onlyProjectDeps: true,
+    silent: true,
+  });
+};
+
+const getAutolinkingResolutions = async (
+  opts: AutolinkingSearchOptions
+): Promise<Record<string, string>> => {
+  const autolinking = getAutolinkingModule();
+  const resolvedModules = await autolinking.findModulesAsync(opts);
+  return Object.fromEntries(
+    Object.entries(resolvedModules).map(([key, entry]) => [key, entry.path])
+  );
+};
+
+const getReactNativeConfigResolutions = async (
+  opts: AutolinkingSearchOptions
+): Promise<Record<string, string>> => {
+  const reactNativeConfigModule = getReactNativeConfigModule();
+  const configResult = await reactNativeConfigModule.createReactNativeConfigAsync({
+    ...opts,
+    // NOTE(@kitten): web will use ios here. This is desired since this function only accepts android|ios.
+    // However, we'd still like to sticky resolve dependencies for web
+    platform: opts.platform === 'android' ? 'android' : 'ios',
+  });
+  return Object.fromEntries(
+    Object.entries(configResult.dependencies).map(([key, entry]) => [key, entry.root])
+  );
+};
+
 interface PlatformModuleDescription {
   platform: AutolinkingPlatform;
   moduleTestRe: RegExp;
@@ -39,27 +84,22 @@ const getPlatformModuleDescription = async (
   projectRoot: string,
   platform: AutolinkingPlatform
 ): Promise<PlatformModuleDescription> => {
-  const autolinking = getAutolinkingModule();
-  const resolvedModules = await autolinking.findModulesAsync(
-    await autolinking.mergeLinkingOptionsAsync({
-      searchPaths: [],
-      projectRoot,
-      platform: platform === 'ios' ? 'apple' : platform,
-      onlyProjectDeps: true,
-      silent: true,
-    })
-  );
-  const resolvedModulesKeys = Object.keys(resolvedModules);
+  const searchOptions = await getAutolinkingOptions(projectRoot, platform);
+  const autolinkingResolutions$ = getAutolinkingResolutions(searchOptions);
+  const reactNativeConfigResolutions$ = getReactNativeConfigResolutions(searchOptions);
+  const resolvedModulePaths = {
+    ...(await reactNativeConfigResolutions$),
+    ...(await autolinkingResolutions$),
+  };
+  const resolvedModuleNames = Object.keys(resolvedModulePaths);
   debug(
-    `Sticky resolution for ${platform} registered ${resolvedModulesKeys.length} resolutions:`,
-    resolvedModulesKeys
+    `Sticky resolution for ${platform} registered ${resolvedModuleNames.length} resolutions:`,
+    resolvedModuleNames
   );
   return {
     platform,
-    moduleTestRe: dependenciesToRegex(resolvedModulesKeys),
-    resolvedModulePaths: Object.fromEntries(
-      Object.entries(resolvedModules).map(([key, entry]) => [key, entry.path])
-    ),
+    moduleTestRe: dependenciesToRegex(resolvedModuleNames),
+    resolvedModulePaths,
   };
 };
 
