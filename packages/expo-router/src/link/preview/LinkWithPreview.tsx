@@ -5,10 +5,8 @@ import { useState } from 'react';
 import { usePeekAndPopContext } from './PeekAndPopContext';
 import { Preview } from './Preview';
 import { useScreenPreload } from './hooks';
+import { PeekAndPopPreviewView, PeekAndPopTriggerView, PeekAndPopView } from './native';
 import { useRouter } from '../../hooks';
-import PeekAndPopNativeComponent from '../../specs/PeekAndPopNativeComponent';
-import PeekAndPopPreviewNativeComponent from '../../specs/PeekAndPopPreviewNativeComponent';
-import PeekAndPopTriggerNativeComponent from '../../specs/PeekAndPopTriggerNativeComponent';
 import { Link as ExpoLink, LinkProps } from '../Link';
 
 interface CustomLinkProps extends LinkProps {
@@ -18,7 +16,7 @@ interface CustomLinkProps extends LinkProps {
 const externalPageRegex = /^(\w+\:)?\/\/.*$/;
 const isExternal = (href: string) => externalPageRegex.test(href);
 
-export function Link(props: CustomLinkProps) {
+export function CustomLink(props: CustomLinkProps) {
   if (props.preview) {
     if (isExternal(String(props.href))) {
       console.warn('External links previews are not supported');
@@ -42,8 +40,8 @@ function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
 
   // TODO: add a way to add and customize preview actions
   return (
-    <PeekAndPopNativeComponent
-      nextScreenKey={nativeTag}
+    <PeekAndPopView
+      nextScreenKey={nativeTag ?? 0}
       onWillPreviewOpen={() => {
         preload();
         setIsGlobalTapped(true);
@@ -57,13 +55,13 @@ function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
       onPreviewTapped={() => {
         router.navigate(rest.href);
       }}>
-      <PeekAndPopTriggerNativeComponent>
+      <PeekAndPopTriggerView>
         <ExpoLink {...rest} />
-      </PeekAndPopTriggerNativeComponent>
-      <PeekAndPopPreviewNativeComponent style={{ position: 'absolute' }}>
+      </PeekAndPopTriggerView>
+      <PeekAndPopPreviewView style={{ position: 'absolute' }}>
         {/* TODO: Add a way to make preview smaller then full size */}
         {isGlobalTapped && <Preview key={numberOfTaps} href={rest.href} />}
-      </PeekAndPopPreviewNativeComponent>
-    </PeekAndPopNativeComponent>
+      </PeekAndPopPreviewView>
+    </PeekAndPopView>
   );
 }

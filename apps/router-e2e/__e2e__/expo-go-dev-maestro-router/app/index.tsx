@@ -1,11 +1,13 @@
-import { Link } from 'expo-router';
+import { CustomLink, Link } from 'expo-router';
 import { Text } from 'react-native';
 
 export default function Index() {
   return (
     <>
       <Text>Index</Text>
-      <Link href="/(stack)">/(stack)</Link>
+      <CustomLink href="/(stack)" preview>
+        /(stack)
+      </CustomLink>
       <Link href="/(tabs)">/(tabs)</Link>
     </>
   );

@@ -1,0 +1,28 @@
+diff --git a/node_modules/react-native-screens/src/native-stack/types.tsx b/node_modules/react-native-screens/src/native-stack/types.tsx
+index 1f04534..4d2efdb 100644
+--- a/node_modules/react-native-screens/src/native-stack/types.tsx
++++ b/node_modules/react-native-screens/src/native-stack/types.tsx
+@@ -74,6 +74,7 @@ export type NativeStackNavigationProp<
+ > = NavigationProp<
+   ParamList,
+   RouteName,
++  // @ts-expect-error
+   StackNavigationState<ParamList>,
+   NativeStackNavigationOptions,
+   NativeStackNavigationEventMap
+@@ -543,6 +544,7 @@ export type NativeStackNavigationOptions = {
+  * @deprecated NativeStack has been moved from react-native-screens/native-stack to @react-navigation/native since version v6. With react-native-screens v4 native stack v5 (react-native-screens/native-stack) is deprecated and marked for removal in the upcoming minor release, react-native-screens v4 will support only @react-navigation/native-stack v7.
+  */
+ export type NativeStackNavigatorProps =
++  // @ts-expect-error
+   DefaultNavigatorOptions<NativeStackNavigationOptions> &
+     StackRouterOptions &
+     NativeStackNavigationConfig;
+@@ -550,6 +552,7 @@ export type NativeStackNavigatorProps =
+ /**
+  * @deprecated NativeStack has been moved from react-native-screens/native-stack to @react-navigation/native since version v6. With react-native-screens v4 native stack v5 (react-native-screens/native-stack) is deprecated and marked for removal in the upcoming minor release, react-native-screens v4 will support only @react-navigation/native-stack v7.
+  */
++// @ts-expect-error
+ export type NativeStackDescriptor = Descriptor<
+   ParamListBase,
+   string,
