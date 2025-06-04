@@ -73,6 +73,7 @@
     "react-native-svg": "15.11.2",
     "react-native-view-shot": "4.0.3",
     "react-native-webview": "13.13.5",
+    "react-native-edge-to-edge": "~1.6.1",
     "test-suite": "*"
   },
   "devDependencies": {
