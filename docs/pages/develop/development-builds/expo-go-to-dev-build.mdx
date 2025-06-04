@@ -66,15 +66,15 @@ Once you have everything set up, run the following command:
 </Tab>
 </Tabs>
 
-By default, this will build and install the app on an Android Emulator/iOS Simulator. If you need to run the build on your phone, plug it into your computer (trust device and allow USB debugging if prompted, and on iOS enable [developer mode](https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local&platform=ios&device=physical#plug-in-your-device-via-usb-and-enable-developer-mode)) and run the above commands with the `--device` flag.
+By default, this will build and install the app on an Android Emulator/iOS Simulator. If you need to run the build on your phone, plug it into your computer (on Android, select trust device and allow USB debugging if prompted, and on iOS, enable [developer mode](/get-started/set-up-your-environment/?mode=development-build&buildEnv=local&platform=ios&device=physical#plug-in-your-device-via-usb-and-enable-developer-mode)) and run the above commands with the `--device` flag.
 
 ### Option 2: Build on EAS
 
 Building on EAS servers is useful when:
 
-- you can't or don't want to set up your local development environment
-- you want to build an iOS app but don't own a Mac
-- you want to share the development builds with your team
+- You can't or don't want to set up your local development environment
+- You want to build an iOS app but don't own a Mac
+- You want to share the development builds with your team
 
 <BoxLink
   title="Build on EAS"
@@ -89,7 +89,7 @@ Building on EAS servers is useful when:
 
 ## Start the bundler
 
-After building locally, `npx expo run:android:ios` will start the bundler automatically. But if you closed the bundler or are working on a dev client you built earlier, (re)start the Metro bundler with:
+After building locally, `npx expo run:android|ios` will start the bundler automatically. But if you closed the bundler or are working on a dev client you built earlier, (re)start the Metro bundler with:
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -106,10 +106,10 @@ When your project has `expo-dev-client` installed, the bundler will print out **
 You will need to run prebuild locally if you are building via `npx expo run:android|ios`, and change any native dependencies or configuration, such as:
 
 - Installing or updating a library containing native code
-- Changing `app.json` or `app.config.json`
+- Changing [app config](/workflow/configuration/)(`app.json`)
 - Upgrading your Expo SDK version
 
-In these cases, you'll want to rebuild the native directory with:
+In these cases, you'll want to rebuild the native directories with:
 
 <Terminal cmd={['$ npx expo prebuild --clean']} />
 
