@@ -13,14 +13,14 @@ class PrimitiveArrayTypeConverter(
 
 fun isPrimitiveArray(clazz: Class<*>): Boolean {
   return when (clazz) {
-    IntArray::class.java,
-    DoubleArray::class.java,
     BooleanArray::class.java,
-    LongArray::class.java,
     ByteArray::class.java,
     CharArray::class.java,
+    ShortArray::class.java,
+    IntArray::class.java,
+    LongArray::class.java,
     FloatArray::class.java,
-    ShortArray::class.java -> true
+    DoubleArray::class.java -> true
     else -> false
   }
 }
