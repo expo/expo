@@ -119,20 +119,5 @@
     "semver": "~7.6.3",
     "server-only": "^0.0.1",
     "shallowequal": "^1.1.0"
-  },
-  "codegenConfig": {
-    "name": "ExpoRouterSpecs",
-    "type": "components",
-    "jsSrcsDir": "src/specs",
-    "android": {
-      "javaPackageName": "expo.module.router"
-    },
-    "ios": {
-      "componentProvider": {
-        "PeekAndPop": "PeekAndPop",
-        "PeekAndPopTrigger": "PeekAndPopTrigger",
-        "PeekAndPopPreview": "PeekAndPopPreview"
-      }
-    }
   }
 }
