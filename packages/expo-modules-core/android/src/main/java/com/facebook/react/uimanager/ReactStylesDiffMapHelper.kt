@@ -4,7 +4,7 @@ import com.facebook.react.bridge.ReadableMap
 import java.lang.reflect.Field
 
 private val backingMapField: Field by lazy {
-  ReactStylesDiffMap::class.java.getDeclaredField("internal_backingMap").apply {
+  ReactStylesDiffMap::class.java.getDeclaredField("backingMap").apply {
     isAccessible = true
   }
 }
