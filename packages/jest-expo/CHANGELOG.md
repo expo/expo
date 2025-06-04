@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 53.0.6 — 2025-06-04
+
+### 🐛 Bug fixes
+
 - Fix `requireOptionalNativeModule` throwing error if mock is missing. ([#36839](https://github.com/expo/expo/pull/36839) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others

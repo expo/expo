@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.2.4'
+version = '14.2.5'
 
 android {
   namespace "expo.modules.contacts"
   defaultConfig {
     versionCode 29
-    versionName "14.2.4"
+    versionName "14.2.5"
   }
 }
 

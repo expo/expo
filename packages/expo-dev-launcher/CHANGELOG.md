@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Remove `testDebug` variant from npm package. ([#36845](https://github.com/expo/expo/pull/36845) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 5.1.12 — 2025-06-04
+
+### 🐛 Bug fixes
+
+- [Android] Remove `testDebug` variant from npm package. ([#36845](https://github.com/expo/expo/pull/36845) by [@lukmccall](https://github.com/lukmccall))
 
 ## 5.1.11 — 2025-05-01
 

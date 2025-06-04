@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- [android] Add shape component. ([#36964](https://github.com/expo/expo/pull/36964) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.1.1-alpha.8 — 2025-06-04
+
+### 🎉 New features
+
+- [android] Add shape component. ([#36964](https://github.com/expo/expo/pull/36964) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

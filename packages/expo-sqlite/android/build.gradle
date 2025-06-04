@@ -45,13 +45,13 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '15.2.10'
+version = '15.2.11'
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "15.2.10"
+    versionName "15.2.11"
     buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
 
     externalNativeBuild {
