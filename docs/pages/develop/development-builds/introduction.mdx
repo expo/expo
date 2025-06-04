@@ -7,6 +7,9 @@ searchPosition: 1
 hideTOC: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -73,3 +76,24 @@ Expo Go can only support one SDK version at a time. When a new SDK version is re
 If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
 
 </Collapsible>
+
+<BoxLink
+  title="Expo Go to development build"
+  description="Learn how to migrate an existing Expo Go project to using development builds"
+  href="/develop/development-builds/expo-go-to-dev-build/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Local app development"
+  description="How to build a development client on your local machine"
+  href="/guides/local-app-development"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Development builds on EAS"
+  description="How to build a development client on EAS"
+  href="/develop/development-builds/create-a-build/"
+  Icon={BookOpen02Icon}
+/>
