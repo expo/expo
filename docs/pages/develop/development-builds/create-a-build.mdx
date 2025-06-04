@@ -1,7 +1,7 @@
 ---
-title: Create a development build
+title: Create a development build on EAS
 description: Learn how to create development builds for a project.
-sidebar_title: Create a build
+sidebar_title: Create a build on EAS
 searchRank: 97
 searchPosition: 2
 ---
@@ -14,7 +14,6 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 When you create a new Expo app with `npx create-expo-app`, you start off with a project where you update the JavaScript code on your local machine and view the changes in the Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native config. In this guide, you will learn how to convert your project that runs on Expo Go into a development build, which will make the native side of your app fully customizable.
@@ -59,7 +58,7 @@ Any EAS CLI command can be built on your local machine with the `--local` flag. 
 
 <Collapsible summary="Build locally without EAS">
 
-To build locally without EAS requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. This is the only way to test your iOS build on an iPhone device without a paid Apple Developer Account (only possible on macOS). Read more about [local app compilation](/guides/local-app-development/#local-app-compilation).
+To build locally without EAS requires your local [development environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios) to be set up with native build tools. This is the only way to test your iOS build on an iPhone device without a paid Apple Developer Account (only possible on macOS). Read more about [local app compilation](/guides/local-app-development/#local-app-compilation) and see the [Expo Go to Development Build](/develop/development-builds/expo-go-to-dev-build/) guide.
 
 |             | Android    | iOS Simulator | iPhone device |
 | ----------- | ---------- | ------------- | ------------- |
@@ -91,10 +90,6 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 
 ### Build the native app (Android)
 
-<Tabs>
-
-<Tab label="Build on EAS">
-
 <Prerequisites numberOfRequirements={3}>
   <Requirement number={1} title="Expo account">
     Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
@@ -113,39 +108,11 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 
 Read more about [Android builds on EAS](/tutorial/eas/android-development-build).
 
-</Tab>
-
-<Tab label="On your local machine">
-
-<Prerequisites numberOfRequirements={2}>
-  <Requirement number={1} title="Development environment set up">
-    A macOS, Windows, or Linux machine with your local [development
-    environment](https://reactnative.dev/docs/set-up-your-environment?os=windows&platform=android)
-    set up.
-  </Requirement>
-  <Requirement number={2} title="An Android Emulator (optional)">
-    An [Android Emulator](/workflow/android-studio-emulator/) is optional if you want to test your
-    app on an emulator.
-  </Requirement>
-</Prerequisites>
-
-<Terminal cmd={['$ npx expo run:android']} />
-
-The same `apk` can be installed on Android devices as well as emulators.
-
-Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
-
-</Tab>
-</Tabs>
-
 </Step>
 
 <Step label="2">
+
 ### Build the native app (iOS Simulator)
-
-<Tabs>
-
-<Tab label="Build on EAS">
 
 <Prerequisites numberOfRequirements={3}>
   <Requirement number={1} title="Expo account">
@@ -181,35 +148,10 @@ iOS Simulator builds can only be installed on simulators and not on real devices
 
 Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-build-for-simulators/).
 
-</Tab>
-
-<Tab label="On your local machine">
-
-<Prerequisites numberOfRequirements={2}>
-  <Requirement number={1} title="macOS">
-    iOS Simulators are available only on macOS.
-  </Requirement>
-  <Requirement number={2} title="Development environment set up">
-    Set up your local [development
-    environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios).
-  </Requirement>
-</Prerequisites>
-
-<Terminal cmd={['$ npx expo run:ios']} />
-
-Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
-
-</Tab>
-</Tabs>
-
 </Step>
 
 <Step label="2">
 ### Build the native app (iOS device)
-
-<Tabs>
-
-<Tab label="Build on EAS">
 
 <Prerequisites numberOfRequirements={3}>
   <Requirement number={1} title="Expo account">
@@ -232,27 +174,6 @@ iOS device builds can only be installed on iPhone devices and not on iOS Simulat
 
 Read more about [iOS device builds on EAS](/tutorial/eas/ios-development-build-for-devices/).
 
-</Tab>
-
-<Tab label="On your local machine">
-
-<Prerequisites numberOfRequirements={2}>
-  <Requirement number={1} title="macOS">
-    macOS is required to compile the native app for iOS devices.
-  </Requirement>
-  <Requirement number={2} title="Development environment set up">
-    Set up your local [development
-    environment](https://reactnative.dev/docs/set-up-your-environment?os=macos&platform=ios).
-  </Requirement>
-</Prerequisites>
-
-<Terminal cmd={['$ npx expo run:ios --device']} />
-
-Read more about [local app development](/guides/local-app-development/#local-builds-with-expo-dev-client).
-
-</Tab>
-</Tabs>
-
 </Step>
 
 <Step label="3">
@@ -267,10 +188,6 @@ If you create your development build on EAS, the CLI will prompt you to install 
 #### When building locally using EAS CLI
 
 When building locally the output of the build will be an archive. You may drag and drop this on your Android Emulator/iOS Simulator to install it, or use [Expo Orbit](https://expo.dev/orbit) to install a build from your local machine.
-
-#### When building locally without EAS CLI
-
-Local builds will get installed automatically once the build finishes.
 
 </Step>
 
