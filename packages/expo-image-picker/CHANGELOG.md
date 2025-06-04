@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent external applications from accessing the CropImageActivity ([#37223](https://github.com/expo/expo/pull/37223) by [@aladine](https://github.com/aladine))
+
 ### 💡 Others
 
 ## 16.1.4 — 2025-04-30
