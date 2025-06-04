@@ -1,8 +1,10 @@
 package com.facebook.react.uimanager
 
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.core.interfaces.DoNotStrip
 import java.lang.reflect.Field
 
+@get:DoNotStrip
 private val backingMapField: Field by lazy {
   ReactStylesDiffMap::class.java.getDeclaredField("backingMap").apply {
     isAccessible = true
