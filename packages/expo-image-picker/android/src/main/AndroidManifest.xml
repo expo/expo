@@ -23,7 +23,8 @@
 
     <activity
       android:name="com.canhub.cropper.CropImageActivity"
-      android:theme="@style/Base.Theme.AppCompat" />
+      android:theme="@style/Base.Theme.AppCompat"
+      android:exported="false" />
     <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
     <provider
       android:name=".fileprovider.ImagePickerFileProvider"
