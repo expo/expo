@@ -37,7 +37,7 @@ afterAll(() => {
 });
 
 describe(getEnvFiles, () => {
-  it(`gets development files`, () => {
+  it(`gets development files (local = true)`, () => {
     expect(getEnvFiles({ mode: 'development' })).toEqual([
       '.env.development.local',
       '.env.local',
@@ -46,10 +46,24 @@ describe(getEnvFiles, () => {
     ]);
   });
 
-  it(`gets production files`, () => {
+  it(`gets development files (local = false)`, () => {
+    expect(getEnvFiles({ mode: 'development', local: false })).toEqual([
+      '.env.development',
+      '.env',
+    ]);
+  });
+
+  it(`gets production files (local = true)`, () => {
     expect(getEnvFiles({ mode: 'production' })).toEqual([
       '.env.production.local',
       '.env.local',
+      '.env.production',
+      '.env',
+    ]);
+  });
+
+  it(`gets production files (local = false)`, () => {
+    expect(getEnvFiles({ mode: 'production', local: false })).toEqual([
       '.env.production',
       '.env',
     ]);
