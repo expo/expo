@@ -9,12 +9,12 @@ import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-class ArrayTypeConverter(
+class PrimitiveArrayTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val arrayType: KType
+  private val primitiveArrayType: KType
 ) : DynamicAwareTypeConverters<Array<*>>() {
-  private val arrayElementConverter = converterProvider.obtainTypeConverter(
-    requireNotNull(arrayType.arguments.first().type) {
+  private val primitiveArrayElementConverter = converterProvider.obtainTypeConverter(
+    requireNotNull(primitiveArrayType.arguments.first().type) {
       "The array type should contain the type of the elements."
     }
   )
@@ -27,9 +27,9 @@ class ArrayTypeConverter(
         .getDynamic(i)
         .recycle {
           exceptionDecorator({ cause ->
-            CollectionElementCastException(arrayType, arrayType.arguments.first().type!!, type, cause)
+            CollectionElementCastException(primitiveArrayType, primitiveArrayType.arguments.first().type!!, type, cause)
           }) {
-            arrayElementConverter.convert(this, context, forceConversion)
+            primitiveArrayElementConverter.convert(this, context, forceConversion)
           }
         }
     }
@@ -37,19 +37,19 @@ class ArrayTypeConverter(
   }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Array<*> {
-    return if (arrayElementConverter.isTrivial() && !forceConversion) {
+    return if (primitiveArrayElementConverter.isTrivial() && !forceConversion) {
       value as Array<*>
     } else {
       (value as Array<*>).map {
         exceptionDecorator({ cause ->
           CollectionElementCastException(
-            arrayType,
-            arrayType.arguments.first().type!!,
+            primitiveArrayType,
+            primitiveArrayType.arguments.first().type!!,
             it!!::class,
             cause
           )
         }) {
-          arrayElementConverter.convert(it, context, forceConversion)
+          primitiveArrayElementConverter.convert(it, context, forceConversion)
         }
       }.toTypedArray()
     }
@@ -64,13 +64,27 @@ class ArrayTypeConverter(
   @Suppress("UNCHECKED_CAST")
   private fun createTypedArray(size: Int): Array<Any?> {
     return java.lang.reflect.Array.newInstance(
-      (arrayType.arguments.first().type!!.classifier as KClass<*>).java,
+      (primitiveArrayType.arguments.first().type!!.classifier as KClass<*>).java,
       size
     ) as Array<Any?>
   }
 
   override fun getCppRequiredTypes(): ExpectedType =
-    ExpectedType.forArray(arrayElementConverter.getCppRequiredTypes())
+    ExpectedType.forPrimitiveArray(primitiveArrayElementConverter.getCppRequiredTypes())
 
-  override fun isTrivial() = arrayElementConverter.isTrivial()
+  override fun isTrivial() = primitiveArrayElementConverter.isTrivial()
+}
+
+fun isPrimitiveArray(clazz: Class<*>): Boolean {
+  return when (clazz) {
+    IntArray::class.java,
+    DoubleArray::class.java,
+    BooleanArray::class.java,
+    LongArray::class.java,
+    ByteArray::class.java,
+    CharArray::class.java,
+    FloatArray::class.java,
+    ShortArray::class.java -> true
+    else -> false
+  }
 }

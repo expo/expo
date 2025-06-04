@@ -320,6 +320,38 @@ private:
 };
 
 /**
+ * Converter from js array object to Java array.
+ */
+class ArrayFrontendConverter : public FrontendConverter {
+public:
+  ArrayFrontendConverter(
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
+  );
+
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+private:
+  /**
+   * A string representation of desired Java type.
+   */
+  std::string javaType;
+  /**
+   * Bare parameter type.
+   */
+  CppType parameterType;
+  /**
+   * Converter used to convert array elements.
+   */
+  std::shared_ptr<FrontendConverter> parameterConverter;
+};
+
+/**
  * Converter from js array object to [java.utils.ArrayList].
  */
 class ListFrontendConverter : public FrontendConverter {

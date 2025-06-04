@@ -62,6 +62,10 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
     return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType->getFirstType());
   }
 
+  if (combinedType == CppType::ARRAY) {
+    return std::make_shared<ArrayFrontendConverter>(expectedType->getFirstType());
+  }
+
   if (combinedType == CppType::LIST) {
     return std::make_shared<ListFrontendConverter>(expectedType->getFirstType());
   }
@@ -97,6 +101,10 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverterFor
 
   if (combinedType == CppType::PRIMITIVE_ARRAY) {
     return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType);
+  }
+
+  if (combinedType == CppType::ARRAY) {
+    return std::make_shared<ArrayFrontendConverter>(expectedType);
   }
 
   if (combinedType == CppType::LIST) {

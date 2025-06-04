@@ -99,7 +99,11 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     val jClass = kClass.java
 
     if (jClass.isArray || Array::class.java.isAssignableFrom(jClass)) {
-      return ArrayTypeConverter(this, type)
+      return if (isPrimitiveArray(jClass)) {
+        PrimitiveArrayTypeConverter(this, type)
+      } else {
+        ArrayTypeConverter(this, type)
+      }
     }
 
     if (List::class.java.isAssignableFrom(jClass)) {
