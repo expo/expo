@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateRCTThirdPartyComponents.js b/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateRCTThirdPartyComponents.js
+index 53669fa..baadd3e 100644
+--- a/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateRCTThirdPartyComponents.js
++++ b/node_modules/react-native/scripts/codegen/generate-artifacts-executor/generateRCTThirdPartyComponents.js
+@@ -186,7 +186,7 @@ function findRCTComponentViewProtocolClass(filepath) {
+     const lines = fileContent.split('\n');
+     const signatureIndex = lines.findIndex(line => regex.test(line));
+     const returnRegex = /return (.*)\.class/;
+-    const classNameMatch = String(lines.slice(signatureIndex)).match(
++    const classNameMatch = String(lines.slice(signatureIndex).join('\n')).match(
+       returnRegex,
+     );
+     if (classNameMatch) {
