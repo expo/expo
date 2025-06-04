@@ -12,7 +12,7 @@ function _jsonFile() {
   return data;
 }
 function _path() {
-  const data = require("path");
+  const data = _interopRequireDefault(require("path"));
   _path = function () {
     return data;
   };
@@ -32,10 +32,10 @@ async function getResolvedLocalesAsync(projectRoot, input, forPlatform) {
     let locale = null;
     if (typeof localeJsonPath === 'string') {
       try {
-        locale = await _jsonFile().default.readAsync((0, _path().join)(projectRoot, localeJsonPath));
+        locale = await _jsonFile().default.readAsync(_path().default.join(projectRoot, localeJsonPath));
       } catch {
         // Add a warning when a json file cannot be parsed.
-        (0, _warnings().addWarningForPlatform)(forPlatform, `locales.${lang}`, `Failed to parse JSON of locale file for language: ${lang}`, 'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app');
+        (0, _warnings().addWarningForPlatform)(forPlatform, `locales.${lang}`, `Failed to parse JSON of locale file for language: ${lang}`, 'https://docs.expo.dev/guides/localization/#translating-app-metadata');
       }
     } else {
       // In the off chance that someone defined the locales json in the config, pass it directly to the object.

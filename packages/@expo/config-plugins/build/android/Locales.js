@@ -7,7 +7,7 @@ exports.getLocales = getLocales;
 exports.setLocalesAsync = setLocalesAsync;
 exports.withLocales = void 0;
 function _path() {
-  const data = require("path");
+  const data = _interopRequireDefault(require("path"));
   _path = function () {
     return data;
   };
@@ -34,6 +34,7 @@ function _locales() {
   };
   return data;
 }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const withLocales = config => {
   return (0, _().withDangerousMod)(config, ['android', async config => {
     config.modResults = await setLocalesAsync(config, {
@@ -55,9 +56,9 @@ async function setLocalesAsync(config, {
   }
   const localesMap = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
-    const path = (0, _path().join)(await _().AndroidConfig.Paths.getResourceFolderAsync(projectRoot), `values-b+${lang}`, 'strings.xml');
+    const stringsFilePath = _path().default.join(await _().AndroidConfig.Paths.getResourceFolderAsync(projectRoot), `values-b+${lang.replaceAll('-', '+')}`, 'strings.xml');
     (0, _XML().writeXMLAsync)({
-      path,
+      path: stringsFilePath,
       xml: {
         resources: Object.entries(localizationObj).map(([k, v]) => ({
           string: {

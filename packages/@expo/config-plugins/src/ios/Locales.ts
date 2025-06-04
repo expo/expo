@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
-import { join, relative } from 'path';
+import path from 'path';
 import { XcodeProject } from 'xcode';
 
 import { ConfigPlugin } from '../Plugin.types';
@@ -36,17 +36,17 @@ export async function setLocalesAsync(
   const localesMap = await getResolvedLocalesAsync(projectRoot, locales, 'ios');
 
   const projectName = getProjectName(projectRoot);
-  const supportingDirectory = join(projectRoot, 'ios', projectName, 'Supporting');
+  const supportingDirectory = path.join(projectRoot, 'ios', projectName, 'Supporting');
 
   // TODO: Should we delete all before running? Revisit after we land on a lock file.
   const stringName = 'InfoPlist.strings';
 
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
-    const dir = join(supportingDirectory, `${lang}.lproj`);
+    const dir = path.join(supportingDirectory, `${lang}.lproj`);
     // await fs.ensureDir(dir);
     await fs.promises.mkdir(dir, { recursive: true });
 
-    const strings = join(dir, stringName);
+    const strings = path.join(dir, stringName);
     const buffer = [];
     for (const [plistKey, localVersion] of Object.entries(localizationObj)) {
       buffer.push(`${plistKey} = "${localVersion}";`);
@@ -62,7 +62,7 @@ export async function setLocalesAsync(
     if (!group?.children.some(({ comment }) => comment === stringName)) {
       // Only write the file if it doesn't already exist.
       project = addResourceFileToGroup({
-        filepath: relative(supportingDirectory, strings),
+        filepath: path.relative(supportingDirectory, strings),
         groupName,
         project,
         isBuildFile: true,

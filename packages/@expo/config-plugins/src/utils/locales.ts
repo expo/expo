@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import JsonFile, { JSONObject } from '@expo/json-file';
-import { join } from 'path';
+import path from 'path';
 
 import { addWarningForPlatform } from './warnings';
 
@@ -21,14 +21,14 @@ export async function getResolvedLocalesAsync(
     let locale: JSONObject | null = null;
     if (typeof localeJsonPath === 'string') {
       try {
-        locale = await JsonFile.readAsync(join(projectRoot, localeJsonPath));
+        locale = await JsonFile.readAsync(path.join(projectRoot, localeJsonPath));
       } catch {
         // Add a warning when a json file cannot be parsed.
         addWarningForPlatform(
           forPlatform,
           `locales.${lang}`,
           `Failed to parse JSON of locale file for language: ${lang}`,
-          'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app'
+          'https://docs.expo.dev/guides/localization/#translating-app-metadata'
         );
       }
     } else {
