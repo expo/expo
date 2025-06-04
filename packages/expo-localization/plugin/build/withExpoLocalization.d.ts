@@ -3,6 +3,7 @@ type ConfigPluginProps = {
     supportsRTL?: boolean;
     forcesRTL?: boolean;
     allowDynamicLocaleChangesAndroid?: boolean;
+    supportedLocales?: string[];
 };
 declare function withExpoLocalization(config: ExpoConfig, data?: ConfigPluginProps): ExpoConfig;
 export default withExpoLocalization;
