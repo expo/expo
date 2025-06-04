@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationTargetException
 
 class DevLauncherBridgeDevSupportManager(
   applicationContext: Context,
-  reactInstanceDevHelper: ReactInstanceDevHelper?,
+  reactInstanceDevHelper: ReactInstanceDevHelper,
   packagerPathForJSBundleName: String?,
   enableOnCreate: Boolean,
   redBoxHandler: RedBoxHandler?,
