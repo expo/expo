@@ -213,6 +213,9 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
   const router = useRouter();
   const { setIsPreviewOpen } = useLinkPreviewContext();
   const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
+  const [previewSize, setPreviewSize] = useState<{ width: number; height: number } | undefined>(
+    undefined
+  );
 
   const { preload, updateNativeTag, nativeTag, navigationKey, isValid } = useScreenPreload(
     rest.href
@@ -238,6 +241,8 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
     return <ExpoRouterLink {...rest} />;
   }
 
+  console.log('previewSize', previewSize);
+
   // TODO: add a way to add and customize preview actions
   return (
     <PeekAndPopView
@@ -260,7 +265,9 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
       <PeekAndPopTriggerView>
         <ExpoRouterLink {...rest} ref={rest.ref} />
       </PeekAndPopTriggerView>
-      <PeekAndPopPreviewView style={{ position: 'absolute' }}>
+      <PeekAndPopPreviewView
+        onSetSize={({ nativeEvent: size }) => setPreviewSize(size)}
+        style={{ position: 'absolute', ...previewSize }}>
         {/* TODO: Add a way to make preview smaller then full size */}
         {isCurrentPreviewOpen && <Preview href={rest.href} />}
       </PeekAndPopPreviewView>
