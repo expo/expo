@@ -1,17 +1,29 @@
 export const TALKS = [
   {
+    title: 'Keynote: streamline React Native development',
+    event: 'App.js Conf 2025',
+    description: 'Charlie Cheever, Jon Samp',
+    videoId: 'lnxanzsP1rM',
+    home: true,
+  },
+  {
+    title: 'Deploy Everywhere with Expo Router',
+    event: 'App.js Conf 2025',
+    description: 'Evan Bacon',
+    videoId: 'GKQ_0VfYweg',
+    home: true,
+  },
+  {
     title: 'Keynote: flexibility & iteration speed',
     event: 'App.js Conf 2024',
     description: 'Charlie Cheever, James Ide',
     videoId: 'StTYy9Duk3E',
-    home: true,
   },
   {
     title: 'Getting the most out of Expo Development Builds',
     event: 'App.js Conf 2024',
     description: 'Kadi Kraman',
     videoId: '7J8LRpja9_o',
-    home: true,
   },
   {
     title: 'Fetch Once, Render Everywhere',
