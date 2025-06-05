@@ -21,8 +21,7 @@ export function QuickStart() {
       <GridContainer>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
-            'max-md-gutters:min-h-[200px]'
+            'min-h-[192px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply'
           )}>
           <div
             className={mergeClasses(
@@ -31,9 +30,9 @@ export function QuickStart() {
             )}
           />
           <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="!font-bold">
+            <h2 className="font-bold heading-xl">
               <QuickStartIcon /> Quick Start
-            </RawH2>
+            </h2>
             <div>
               <Terminal cmd={['$ npx create-expo-app@latest']} />
               <CALLOUT theme="secondary">
@@ -45,9 +44,8 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[250px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
-            'dark:bg-palette-blue3',
-            'max-md-gutters:min-h-[200px]'
+            'relative z-0 min-h-[192px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
+            'dark:bg-palette-blue3'
           )}>
           <div
             className={mergeClasses(
@@ -56,9 +54,9 @@ export function QuickStart() {
             )}
           />
           <DevicesImage />
-          <RawH2 className="relative z-10 max-w-[24ch] !font-bold !text-palette-blue12">
+          <h2 className="relative z-10 max-w-[24ch] font-bold text-palette-blue12 heading-xl">
             Create a universal Android, iOS, and web app
-          </RawH2>
+          </h2>
           <HomeButton
             className="hocus:bg-button-primary"
             href="/tutorial/introduction/"
@@ -68,9 +66,9 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] border-palette-purple6 bg-palette-purple4 !bg-cell-quickstart-pattern bg-blend-multiply',
-            'dark:border-palette-purple7 dark:bg-palette-purple4',
-            'max-md-gutters:min-h-[200px]'
+            'min-h-[192px] border-palette-purple6 bg-palette-purple4',
+            'selection:bg-palette-purple6',
+            'dark:border-palette-purple7 dark:bg-palette-purple4'
           )}>
           <div
             className={mergeClasses(
@@ -78,10 +76,11 @@ export function QuickStart() {
               'dark:from-palette-purple3 dark:to-transparent'
             )}
           />
+          <AppleAppStoreIcon className="absolute -bottom-16 -right-10 size-72 text-palette-purple10 opacity-10" />
           <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="flex items-center gap-2 !font-bold !text-palette-purple10">
+            <h2 className="flex items-center gap-2 !font-bold !text-palette-purple10 heading-lg">
               <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
-            </RawH2>
+            </h2>
             <div>
               <Terminal cmd={['$ npx testflight']} />
               <CALLOUT theme="secondary">
@@ -92,9 +91,9 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] border-palette-green6 bg-[#f0f9f0] !bg-cell-quickstart-pattern bg-blend-multiply',
-            'dark:border-palette-green7 dark:bg-[#1d392c] dark:!bg-cell-quickstart-pattern dark:bg-blend-multiply',
-            'max-md-gutters:min-h-[200px]'
+            'min-h-[192px] border-palette-green6 bg-[#f0f9f0]',
+            'selection:bg-palette-green5',
+            'dark:border-palette-green7 dark:bg-[#1d392c]'
           )}>
           <div
             className={mergeClasses(
@@ -102,23 +101,24 @@ export function QuickStart() {
               'dark:from-[#1d392c] dark:to-transparent'
             )}
           />
+          <Cloud01DuotoneIcon className="absolute -bottom-20 -right-8 size-80 text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
           <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] dark:!text-[#4eca8c]">
+            <h2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] heading-lg dark:!text-[#4eca8c]">
               <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
               your web app
-            </RawH2>
+            </h2>
             <div>
               <Terminal cmd={['$ npx eas-cli deploy']} />
               <CALLOUT theme="secondary">
                 For prerequisites and complete instructions, see{' '}
-                <A href="/deploy/web/#export-your-web-project/">Deploy web apps</A>.
+                <A href="/deploy/web/#export-your-web-project/">our guide</A>.
               </CALLOUT>
             </div>
           </div>
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[164px] border-palette-pink6 bg-palette-pink3 dark:bg-palette-pink3',
+            'relative z-0 min-h-[158px] border-palette-pink6 bg-palette-pink3 dark:bg-palette-pink3',
             'selection:bg-palette-pink5',
             'max-md-gutters:min-h-[200px]'
           )}>
@@ -147,7 +147,7 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[172px] border-palette-orange6 bg-palette-orange3',
+            'relative z-0 min-h-[158px] border-palette-orange6 bg-palette-orange3',
             'selection:bg-palette-orange5',
             'max-md-gutters:min-h-[200px]'
           )}>
