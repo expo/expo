@@ -31,7 +31,12 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
 {
   "expo": {
     "plugins": [
-      ["expo-audio", { "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone." }]
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ]
     ]
   }
 }
@@ -87,13 +92,18 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', backgroundColor: '#ecf0f1', padding: 10 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+    padding: 10,
+  },
 });
 ```
 
 </SnackInline>
 
-> **Info** Note: If you're migrating from [`expo-av`](av.mdx), you'll notice that `expo-audio` doesn't automatically reset the playback position when audio finishes. After [`play()`](#play), the player stays paused at the end of the sound. To play it again, call [`seekTo(seconds)`](#seektoseconds) to reset the position — as shown in the example above.
+> **Info** **Note:** If you're migrating from [`expo-av`](av.mdx), you'll notice that `expo-audio` doesn't automatically reset the playback position when audio finishes. After [`play()`](#play), the player stays paused at the end of the sound. To play it again, call [`seekTo(seconds)`](#seektoseconds) to reset the position — as shown in the example above.
 
 ### Recording sounds
 
