@@ -4,7 +4,8 @@ import {
   PartialState,
   StackNavigationState,
 } from '@react-navigation/native';
-import { use, useCallback, useMemo } from 'react';
+import isEqual from 'fast-deep-equal';
+import { use, useCallback, useMemo, useState } from 'react';
 import { RNSScreensRefContext } from 'react-native-screens';
 
 import { getParamsAndNodeFromHref } from './Preview';
@@ -12,24 +13,23 @@ import { useRouter } from '../../hooks';
 import { Href } from '../../types';
 import { useNavigation } from '../../useNavigation';
 
-type Params = Readonly<object | undefined>;
-
 function useScreensRef() {
   return use(RNSScreensRefContext);
 }
 
-const areParamsEqual = (a: Params, b: Params) => JSON.stringify(a) === JSON.stringify(b);
-
 export function useScreenPreload(href: Href) {
   const navigation = useNavigation();
+  // TODO: replace this with native screen key, once react-native-screens releases this change
   const screensRef = useScreensRef();
   const router = useRouter();
+  const [nativeTag, setNativeTag] = useState<number | undefined>();
+  const [navigationKey, setNavigationKey] = useState<string | undefined>();
 
   const { params, routeNode } = useMemo(() => getParamsAndNodeFromHref(href), [href]);
 
   const isValid = !!screensRef;
 
-  const getNativeTag = useCallback((): number | undefined => {
+  const updateNativeTag = useCallback((): void => {
     const state = getLeafState(navigation.getState());
 
     if (state?.type !== 'stack') {
@@ -41,15 +41,17 @@ export function useScreenPreload(href: Href) {
 
     const routeKey = castedState.preloadedRoutes?.find((r) => {
       // TODO: find out if this is correct solution. This is to cover cases of (.......)/index
-      if (r.params && 'screen' in r.params) {
-        return r.params.screen === routeNode?.route && areParamsEqual(r.params.params, params);
+      if (r.params && 'screen' in r.params && 'params' in r.params) {
+        return r.params.screen === routeNode?.route && isEqual(r.params.params, params);
       }
-      return r.name === routeNode?.route && areParamsEqual(r.params, params);
+      return r.name === routeNode?.route && isEqual(r.params, params);
     })?.key;
 
-    return routeKey
+    const nativeTag = routeKey
       ? (screensRef?.current[routeKey]?.current as { __nativeTag: number } | undefined)?.__nativeTag
       : undefined;
+    setNativeTag(nativeTag);
+    setNavigationKey(routeKey);
   }, [params, routeNode]);
   const preload = useCallback(() => {
     router.prefetch(href);
@@ -57,8 +59,10 @@ export function useScreenPreload(href: Href) {
 
   return {
     preload,
-    getNativeTag,
+    updateNativeTag,
     isValid,
+    nativeTag,
+    navigationKey,
   };
 }
 

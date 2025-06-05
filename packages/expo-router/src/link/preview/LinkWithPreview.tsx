@@ -33,9 +33,10 @@ function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
   const router = useRouter();
   const { setIsPreviewOpen } = useLinkPreviewContext();
   const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
-  const [nativeTag, setNativeTag] = useState<number | undefined>();
 
-  const { preload, getNativeTag, isValid } = useScreenPreload(rest.href);
+  const { preload, updateNativeTag, nativeTag, navigationKey, isValid } = useScreenPreload(
+    rest.href
+  );
 
   if (!isValid) {
     console.warn(
@@ -53,7 +54,7 @@ function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
         setIsPreviewOpen(true);
         setIsCurrenPreviewOpen(true);
         // We need to wait here for the screen to preload. This will happen in the next tick
-        setTimeout(() => setNativeTag(getNativeTag()));
+        setTimeout(updateNativeTag);
       }}
       onPreviewWillClose={() => {}}
       onPreviewDidClose={() => {
@@ -61,7 +62,7 @@ function LinkWithPreview({ preview, ...rest }: CustomLinkProps) {
         setIsCurrenPreviewOpen(false);
       }}
       onPreviewTapped={() => {
-        router.navigate(rest.href);
+        router.navigate(rest.href, { __internal__PeekAndPopKey: navigationKey });
       }}>
       <PeekAndPopTriggerView>
         <ExpoLink {...rest} />

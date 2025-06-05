@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useScreenPreload = useScreenPreload;
+const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
 const react_native_screens_1 = require("react-native-screens");
 const Preview_1 = require("./Preview");
@@ -9,14 +13,16 @@ const useNavigation_1 = require("../../useNavigation");
 function useScreensRef() {
     return (0, react_1.use)(react_native_screens_1.RNSScreensRefContext);
 }
-const areParamsEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 function useScreenPreload(href) {
     const navigation = (0, useNavigation_1.useNavigation)();
+    // TODO: replace this with native screen key, once react-native-screens releases this change
     const screensRef = useScreensRef();
     const router = (0, hooks_1.useRouter)();
+    const [nativeTag, setNativeTag] = (0, react_1.useState)();
+    const [navigationKey, setNavigationKey] = (0, react_1.useState)();
     const { params, routeNode } = (0, react_1.useMemo)(() => (0, Preview_1.getParamsAndNodeFromHref)(href), [href]);
     const isValid = !!screensRef;
-    const getNativeTag = (0, react_1.useCallback)(() => {
+    const updateNativeTag = (0, react_1.useCallback)(() => {
         const state = getLeafState(navigation.getState());
         if (state?.type !== 'stack') {
             console.warn('Peek and Pop only supports stack navigators');
@@ -25,22 +31,26 @@ function useScreenPreload(href) {
         const castedState = state;
         const routeKey = castedState.preloadedRoutes?.find((r) => {
             // TODO: find out if this is correct solution. This is to cover cases of (.......)/index
-            if (r.params && 'screen' in r.params) {
-                return r.params.screen === routeNode?.route && areParamsEqual(r.params.params, params);
+            if (r.params && 'screen' in r.params && 'params' in r.params) {
+                return r.params.screen === routeNode?.route && (0, fast_deep_equal_1.default)(r.params.params, params);
             }
-            return r.name === routeNode?.route && areParamsEqual(r.params, params);
+            return r.name === routeNode?.route && (0, fast_deep_equal_1.default)(r.params, params);
         })?.key;
-        return routeKey
+        const nativeTag = routeKey
             ? screensRef?.current[routeKey]?.current?.__nativeTag
             : undefined;
+        setNativeTag(nativeTag);
+        setNavigationKey(routeKey);
     }, [params, routeNode]);
     const preload = (0, react_1.useCallback)(() => {
         router.prefetch(href);
     }, [href]);
     return {
         preload,
-        getNativeTag,
+        updateNativeTag,
         isValid,
+        nativeTag,
+        navigationKey,
     };
 }
 function getLeafState(state) {

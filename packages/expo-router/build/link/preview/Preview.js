@@ -10,6 +10,8 @@ const useNavigation_1 = require("../../useNavigation");
 const useScreens_1 = require("../../useScreens");
 const href_1 = require("../href");
 exports.PreviewParamsContext = (0, react_1.createContext)(undefined);
+// TODO: Handle usePathname/useSegments properly
+// TODO: Maybe pass isPreview prop to a screen
 function Preview({ href }) {
     const navigation = (0, useNavigation_1.useNavigation)();
     const { routeNode, params } = getParamsAndNodeFromHref(href);

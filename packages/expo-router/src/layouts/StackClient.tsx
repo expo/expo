@@ -36,9 +36,14 @@ const RNStack = withLayoutContext<
   NativeStackNavigationEventMap
 >(NativeStackNavigator);
 
-function isStackAction(
-  action: NavigationAction
-): action is StackActionType | Extract<CommonNavigationAction, { type: 'NAVIGATE' }> {
+type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
+type ExpoNavigationAction = Omit<RNNavigationAction, 'payload'> & {
+  payload: RNNavigationAction['payload'] & {
+    peekAndPopKey?: string;
+  };
+};
+
+function isStackAction(action: NavigationAction): action is StackActionType | ExpoNavigationAction {
   return (
     action.type === 'PUSH' ||
     action.type === 'NAVIGATE' ||
@@ -47,6 +52,9 @@ function isStackAction(
     action.type === 'REPLACE'
   );
 }
+
+const isPeekAndPopAction = (action: NavigationAction): action is ExpoNavigationAction =>
+  !!action.payload && 'peekAndPopKey' in action.payload && !!action.payload.peekAndPopKey;
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -131,6 +139,14 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             }
           }
 
+          // START FORK
+          if (isPeekAndPopAction(action)) {
+            route = state.preloadedRoutes.find(
+              (route) => route.name === action.payload.name && id === route.key
+            );
+          }
+          // END FORK
+
           if (!route) {
             route = state.preloadedRoutes.find(
               (route) =>
@@ -203,7 +219,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // If the routes length is the same as the state routes length, then we are navigating to a new route.
               // Otherwise we are replacing an existing route.
               const key =
-                routes.length === state.routes.length
+                routes.length === state.routes.length && !isPeekAndPopAction(action)
                   ? `${action.payload.name}-${nanoid()}`
                   : route.key;
 

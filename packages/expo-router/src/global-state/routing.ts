@@ -188,6 +188,7 @@ export type LinkToOptions = {
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
   dangerouslySingular?: SingularOptions;
+  __internal__PeekAndPopKey?: string;
 };
 
 export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
@@ -248,7 +249,8 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
       rootState,
       options.event,
       options.withAnchor,
-      options.dangerouslySingular
+      options.dangerouslySingular,
+      options.__internal__PeekAndPopKey
     )
   );
 }
@@ -258,7 +260,8 @@ function getNavigateAction(
   navigationState: NavigationState,
   type = 'NAVIGATE',
   withAnchor?: boolean,
-  singular?: SingularOptions
+  singular?: SingularOptions,
+  peekAndPopKey?: string
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -364,6 +367,7 @@ function getNavigateAction(
       name: rootPayload.screen,
       params: rootPayload.params,
       singular,
+      peekAndPopKey,
     },
   };
 }

@@ -11,6 +11,9 @@ import { resolveHref, resolveHrefStringWithSegments } from '../href';
 
 export const PreviewParamsContext = createContext<UnknownOutputParams | undefined>(undefined);
 
+// TODO: Handle usePathname/useSegments properly
+// TODO: Maybe pass isPreview prop to a screen
+
 export function Preview({ href }: { href: Href }) {
   const navigation = useNavigation();
   const { routeNode, params } = getParamsAndNodeFromHref(href);

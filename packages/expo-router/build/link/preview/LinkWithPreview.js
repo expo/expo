@@ -29,8 +29,7 @@ function LinkWithPreview({ preview, ...rest }) {
     const router = (0, hooks_2.useRouter)();
     const { setIsPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
-    const [nativeTag, setNativeTag] = (0, react_1.useState)();
-    const { preload, getNativeTag, isValid } = (0, hooks_1.useScreenPreload)(rest.href);
+    const { preload, updateNativeTag, nativeTag, navigationKey, isValid } = (0, hooks_1.useScreenPreload)(rest.href);
     if (!isValid) {
         console.warn(`Preview link is not within react-native-screens stack. The preview will not work [${rest.href}]`);
         return <Link_1.Link {...rest}/>;
@@ -41,12 +40,12 @@ function LinkWithPreview({ preview, ...rest }) {
             setIsPreviewOpen(true);
             setIsCurrenPreviewOpen(true);
             // We need to wait here for the screen to preload. This will happen in the next tick
-            setTimeout(() => setNativeTag(getNativeTag()));
+            setTimeout(updateNativeTag);
         }} onPreviewWillClose={() => { }} onPreviewDidClose={() => {
             setIsPreviewOpen(false);
             setIsCurrenPreviewOpen(false);
         }} onPreviewTapped={() => {
-            router.navigate(rest.href);
+            router.navigate(rest.href, { __internal__PeekAndPopKey: navigationKey });
         }}>
       <native_1.PeekAndPopTriggerView>
         <Link_1.Link {...rest}/>

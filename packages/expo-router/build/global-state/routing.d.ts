@@ -69,6 +69,7 @@ export type LinkToOptions = {
      * If used with `push`, the history will be filtered even if no navigation occurs.
      */
     dangerouslySingular?: SingularOptions;
+    __internal__PeekAndPopKey?: string;
 };
 export declare function linkTo(originalHref: Href, options?: LinkToOptions): void;
 //# sourceMappingURL=routing.d.ts.map
