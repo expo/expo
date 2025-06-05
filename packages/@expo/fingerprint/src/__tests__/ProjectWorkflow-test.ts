@@ -54,26 +54,6 @@ describe(resolveProjectWorkflowAsync, () => {
     expect(await resolveProjectWorkflowAsync('/app', 'ios', ignorePaths)).toEqual('managed');
   });
 
-  it('should return managed workflow for a project with native project files and ignored by .easignore', async () => {
-    vol.fromJSON({
-      '/app/android/app/build.gradle': '',
-      '/app/ios/app.xcodeproj/project.pbxproj': '',
-      '/app/.easignore': '/android\n/ios',
-    });
-    expect(await resolveProjectWorkflowAsync('/app', 'android', [])).toEqual('managed');
-    expect(await resolveProjectWorkflowAsync('/app', 'ios', [])).toEqual('managed');
-  });
-
-  it('should return generic workflow for a project with native project files and empty .easignore file', async () => {
-    vol.fromJSON({
-      '/app/android/app/build.gradle': '',
-      '/app/ios/app.xcodeproj/project.pbxproj': '',
-      '/app/.easignore': '',
-    });
-    expect(await resolveProjectWorkflowAsync('/app', 'android', [])).toEqual('generic');
-    expect(await resolveProjectWorkflowAsync('/app', 'ios', [])).toEqual('generic');
-  });
-
   it('should return managed workflow for a project with native project files and ignored by gitignore', async () => {
     const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
     mockSpawnAsync.mockImplementation(async (command, args, options) => {

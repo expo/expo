@@ -10,8 +10,9 @@ import { type Platform, type ProjectWorkflow } from './Fingerprint.types';
 import { isIgnoredPathWithMatchObjects, pathExistsAsync } from './utils/Path';
 
 /**
- * Replicated project workflow detection logic from eas-cli:
- * https://github.com/expo/eas-cli/blob/25cc5551899d1ed03a09e04fd5f13a9ad485bd3a/packages/eas-cli/src/project/workflow.ts
+ * Replicated project workflow detection logic from expo-updates:
+ * - https://github.com/expo/expo/blob/9b829e0749b8ff04f55a02b03cd1fefa74c5cd8d/packages/expo-updates/utils/src/workflow.ts
+ * - https://github.com/expo/expo/blob/9b829e0749b8ff04f55a02b03cd1fefa74c5cd8d/packages/expo-updates/utils/src/vcs.ts
  */
 
 export async function resolveProjectWorkflowAsync(
@@ -64,7 +65,7 @@ export async function resolveProjectWorkflowPerPlatformAsync(
   return { android, ios };
 }
 
-//#region - a copy of ignore handler from eas-cli
+//#region - a copy of vcs client and ignore handler from expo-updates
 
 interface VCSClient {
   getRootPathAsync(): Promise<string>;
@@ -79,33 +80,12 @@ async function getVCSClientAsync(projectRoot: string): Promise<VCSClient> {
   }
 }
 
-async function isFileIgnoredByEasIgnoreAsync(
-  projectRoot: string,
-  filePath: string
-): Promise<boolean | undefined> {
-  const easIgnorePath = path.join(projectRoot, EASIGNORE_FILENAME);
-  if (await pathExistsAsync(easIgnorePath)) {
-    const ignore = new Ignore(projectRoot);
-    await ignore.initIgnoreWithEasIgnoreAsync(await fs.readFile(easIgnorePath, 'utf-8'));
-    return ignore.ignores(filePath);
-  }
-  return undefined;
-}
-
 class GitClient implements VCSClient {
   public async getRootPathAsync(): Promise<string> {
     return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
   }
 
   async isFileIgnoredAsync(filePath: string): Promise<boolean> {
-    const ignoredByEasIgnore = await isFileIgnoredByEasIgnoreAsync(
-      await this.getRootPathAsync(),
-      filePath
-    );
-    if (ignoredByEasIgnore !== undefined) {
-      return ignoredByEasIgnore;
-    }
-
     try {
       await spawnAsync('git', ['check-ignore', '-q', filePath], {
         cwd: path.normalize(await this.getRootPathAsync()),
@@ -125,14 +105,6 @@ class NoVCSClient implements VCSClient {
   }
 
   async isFileIgnoredAsync(filePath: string): Promise<boolean> {
-    const ignoredByEasIgnore = await isFileIgnoredByEasIgnoreAsync(
-      await this.getRootPathAsync(),
-      filePath
-    );
-    if (ignoredByEasIgnore !== undefined) {
-      return ignoredByEasIgnore;
-    }
-
     const ignore = new Ignore(this.projectRoot);
     await ignore.initIgnoreAsync();
     return ignore.ignores(filePath);
@@ -158,7 +130,6 @@ async function isGitInstalledAndConfiguredAsync(): Promise<boolean> {
   return true;
 }
 
-const EASIGNORE_FILENAME = '.easignore';
 const GITIGNORE_FILENAME = '.gitignore';
 const DEFAULT_IGNORE = `
 .git
@@ -181,13 +152,6 @@ class Ignore {
   private ignoreMapping: (readonly [string, SingleFileIgnore])[] = [];
 
   constructor(private rootDir: string) {}
-
-  public async initIgnoreWithEasIgnoreAsync(easIgnoreContent: string): Promise<void> {
-    this.ignoreMapping = [
-      ['', createIgnore().add(DEFAULT_IGNORE)],
-      ['', createIgnore().add(easIgnoreContent)],
-    ];
-  }
 
   public async initIgnoreAsync(): Promise<void> {
     const ignoreFilePaths = (
@@ -221,4 +185,4 @@ class Ignore {
   }
 }
 
-//#endregion - a copy of ignore handler from eas-cli
+//#endregion - a copy of vcs client and ignore handler from expo-updates
