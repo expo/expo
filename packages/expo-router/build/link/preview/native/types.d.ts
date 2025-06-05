@@ -13,7 +13,8 @@ export interface PeekAndPopViewProps extends ViewProps {
     nextScreenKey: number;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
-    onPreviewClose?: () => void;
+    onPreviewWillClose?: () => void;
+    onPreviewDidClose?: () => void;
     onPreviewTapped?: () => void;
     children: React.ReactNode;
 }

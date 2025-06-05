@@ -49,6 +49,7 @@ const imperative_api_1 = require("./imperative-api");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
+const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -70,13 +71,15 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (<ParentWrapper>
-        <react_native_safe_area_context_1.SafeAreaProvider 
+        <LinkPreviewContext_1.LinkPreviewContextProvider>
+          <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
-          {children}
-        </react_native_safe_area_context_1.SafeAreaProvider>
+            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+            {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+            {children}
+          </react_native_safe_area_context_1.SafeAreaProvider>
+        </LinkPreviewContext_1.LinkPreviewContextProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;

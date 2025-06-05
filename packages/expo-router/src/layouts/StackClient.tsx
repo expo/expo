@@ -17,11 +17,13 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
-import { ComponentProps } from 'react';
+import { ComponentProps, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
+import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
+import { StackAnimationTypes } from 'react-native-screens';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -334,7 +336,34 @@ function filterSingular<
 
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
-    return <RNStack {...props} UNSTABLE_router={stackRouterOverride} />;
+    const { isPreviewOpen } = useLinkPreviewContext();
+    const screenOptions = useMemo(() => {
+      const options = props.screenOptions;
+      const animationNone: StackAnimationTypes = 'none';
+      if (options) {
+        if (typeof options === 'function') {
+          const newOptions: typeof options = (...args) => {
+            const oldResult = options(...args);
+            return {
+              ...oldResult,
+              animation: isPreviewOpen ? animationNone : oldResult.animation,
+            };
+          };
+          return newOptions;
+        }
+        console.log('isPreviewOpen', isPreviewOpen, 'options', options);
+        return {
+          ...options,
+          animation: isPreviewOpen ? animationNone : options.animation,
+        };
+      }
+      return {
+        animation: isPreviewOpen ? animationNone : undefined,
+      };
+    }, [props.screenOptions, isPreviewOpen]);
+    return (
+      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+    );
   },
   {
     Screen: RNStack.Screen as (

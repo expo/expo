@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CustomLink = CustomLink;
 const react_1 = require("react");
-const PeekAndPopContext_1 = require("./PeekAndPopContext");
+const LinkPreviewContext_1 = require("./LinkPreviewContext");
 const Preview_1 = require("./Preview");
 const hooks_1 = require("./hooks");
 const native_1 = require("./native");
@@ -16,7 +16,7 @@ function CustomLink(props) {
         if (isExternal(String(props.href))) {
             console.warn('External links previews are not supported');
         }
-        if (props.replace) {
+        else if (props.replace) {
             console.warn('Using replace links with preview is not supported');
         }
         else {
@@ -27,19 +27,24 @@ function CustomLink(props) {
 }
 function LinkWithPreview({ preview, ...rest }) {
     const router = (0, hooks_2.useRouter)();
-    const { setIsGlobalTapped, isGlobalTapped } = (0, PeekAndPopContext_1.usePeekAndPopContext)();
-    const [numberOfTaps, setNumberOfTaps] = (0, react_1.useState)(0);
+    const { setIsPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
     const [nativeTag, setNativeTag] = (0, react_1.useState)();
-    const { preload, getNativeTag } = (0, hooks_1.useScreenPreload)(rest.href);
+    const { preload, getNativeTag, isValid } = (0, hooks_1.useScreenPreload)(rest.href);
+    if (!isValid) {
+        console.warn(`Preview link is not within react-native-screens stack. The preview will not work [${rest.href}]`);
+        return <Link_1.Link {...rest}/>;
+    }
     // TODO: add a way to add and customize preview actions
     return (<native_1.PeekAndPopView nextScreenKey={nativeTag ?? 0} onWillPreviewOpen={() => {
             preload();
-            setIsGlobalTapped(true);
-            setNumberOfTaps((prev) => prev + 1);
+            setIsPreviewOpen(true);
+            setIsCurrenPreviewOpen(true);
             // We need to wait here for the screen to preload. This will happen in the next tick
             setTimeout(() => setNativeTag(getNativeTag()));
-        }} onPreviewClose={() => {
-            setIsGlobalTapped(false);
+        }} onPreviewWillClose={() => { }} onPreviewDidClose={() => {
+            setIsPreviewOpen(false);
+            setIsCurrenPreviewOpen(false);
         }} onPreviewTapped={() => {
             router.navigate(rest.href);
         }}>
@@ -48,7 +53,7 @@ function LinkWithPreview({ preview, ...rest }) {
       </native_1.PeekAndPopTriggerView>
       <native_1.PeekAndPopPreviewView style={{ position: 'absolute' }}>
         {/* TODO: Add a way to make preview smaller then full size */}
-        {isGlobalTapped && <Preview_1.Preview key={numberOfTaps} href={rest.href}/>}
+        {isCurrentPreviewOpen && <Preview_1.Preview href={rest.href}/>}
       </native_1.PeekAndPopPreviewView>
     </native_1.PeekAndPopView>);
 }

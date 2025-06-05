@@ -22,6 +22,7 @@ import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import * as SplashScreen from './views/Splash';
+import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -63,13 +64,15 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   const wrapper = ({ children }: PropsWithChildren) => {
     return (
       <ParentWrapper>
-        <SafeAreaProvider
-          // SSR support
-          initialMetrics={INITIAL_METRICS}>
-          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {canOverrideStatusBarBehavior && <AutoStatusBar />}
-          {children}
-        </SafeAreaProvider>
+        <LinkPreviewContextProvider>
+          <SafeAreaProvider
+            // SSR support
+            initialMetrics={INITIAL_METRICS}>
+            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+            {canOverrideStatusBarBehavior && <AutoStatusBar />}
+            {children}
+          </SafeAreaProvider>
+        </LinkPreviewContextProvider>
       </ParentWrapper>
     );
   };

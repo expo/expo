@@ -1,20 +1,10 @@
-import {
-  Link,
-  Slot,
-  router,
-  useGlobalSearchParams,
-  usePathname,
-  useSegments,
-  PeekAndPopContextProvider,
-} from 'expo-router';
-import { useState } from 'react';
+import { Link, Slot, router, useGlobalSearchParams, usePathname, useSegments } from 'expo-router';
 import { Pressable, Text } from 'react-native';
 
 export default function Layout() {
   const { '#': hash } = useGlobalSearchParams();
-  const [isGlobalTapped, setIsGlobalTapped] = useState(false);
   return (
-    <PeekAndPopContextProvider value={{ isGlobalTapped, setIsGlobalTapped }}>
+    <>
       <Text testID="e2e-pathname">{usePathname()}</Text>
       <Text testID="e2e-segments">{`/${useSegments().join('/')}`}</Text>
       <Text testID="e2e-hash">{hash}</Text>
@@ -26,6 +16,6 @@ export default function Layout() {
         <Text>Go back</Text>
       </Pressable>
       <Slot />
-    </PeekAndPopContextProvider>
+    </>
   );
 }

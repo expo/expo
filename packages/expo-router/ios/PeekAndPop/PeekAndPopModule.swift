@@ -9,17 +9,19 @@ public class PeekAndPopModule: Module {
     // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
     // The module will be accessible from `requireNativeModule('ScreensWrapper')` in JavaScript.
     Name("PeekAndPop")
-      
+
     View(PeekAndPopView.self) {
       Prop("nextScreenKey") { (view: PeekAndPopView, key: Int) in
         view.setNextScreenTag(key)
       }
 
-      Events("onPreviewTapped", "onWillPreviewOpen", "onDidPreviewOpen", "onPreviewClose")
+      Events(
+        "onPreviewTapped", "onWillPreviewOpen", "onDidPreviewOpen", "onPreviewWillClose",
+        "onPreviewDidClose")
     }
-    View(PeekAndPopPreviewView.self){
-        Events("onSetSize")
+    View(PeekAndPopPreviewView.self) {
+      Events("onSetSize")
     }
-    View(PeekAndPopTriggerView.self){}
+    View(PeekAndPopTriggerView.self) {}
   }
 }

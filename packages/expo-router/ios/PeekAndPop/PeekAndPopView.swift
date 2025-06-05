@@ -14,7 +14,8 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     let onPreviewTapped = EventDispatcher()
     let onWillPreviewOpen = EventDispatcher()
     let onDidPreviewOpen = EventDispatcher()
-    let onPreviewClose = EventDispatcher()
+    let onPreviewWillClose = EventDispatcher()
+    let onPreviewDidClose = EventDispatcher()
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
@@ -88,7 +89,10 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
         willEndFor configuration: UIContextMenuConfiguration,
         animator: UIContextMenuInteractionAnimating?
     ) {
-        onPreviewClose()
+        onPreviewWillClose()
+        animator?.addCompletion {
+            self.onPreviewDidClose()
+        }
     }
 
     func contextMenuInteraction(
@@ -138,6 +142,6 @@ class PreviewViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        peekAndPopPreview.setInitialSize(bounds:self.view.bounds)
+        peekAndPopPreview.setInitialSize(bounds: self.view.bounds)
     }
 }
