@@ -68,7 +68,6 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
 >
 
 ```jsx
-import { useEffect, useState } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import { useAudioPlayer } from 'expo-audio';
 
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
 ```jsx
 import { useState, useEffect } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
-import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } from 'expo-audio';
+import { useAudioRecorder, AudioModule, RecordingPresets } from 'expo-audio';
 
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
