@@ -24,6 +24,7 @@
 - [iOS] Fix player not entering 'error' state when loading fails on iOS. ([#37177](https://github.com/expo/expo/pull/37177) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player reporting status `readyToPlay` while a source is being loaded asynchronously. ([#37180](https://github.com/expo/expo/pull/37180) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player going into `loading` status for a single frame when unpausing with a full buffer. ([#37181](https://github.com/expo/expo/pull/37181) by [@behenate](https://github.com/behenate))
+- [iOS] Fix player getting stuck in `loading` state for null sources. ([#37183](https://github.com/expo/expo/pull/37183) by [@behenate](https://github.com/behenate))
 
 ## 2.1.9 — 2025-05-08
 
