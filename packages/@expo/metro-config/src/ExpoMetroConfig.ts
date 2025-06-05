@@ -14,7 +14,6 @@ import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeF
 import { env } from './env';
 import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
-import { getOutOfTreePlatforms } from './getOutOfTreePlatforms';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
@@ -22,6 +21,11 @@ import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
+import {
+  createCustomPlatformResolver,
+  resolveCustomPlatforms,
+  type CustomPlatform,
+} from './utils/customPlatforms';
 import { toPosixPath } from './utils/filePath';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
@@ -56,6 +60,15 @@ export interface DefaultConfigOptions {
     premodules: Module[];
     debugId?: string;
   }) => Module[])[];
+
+  /**
+   * **Experimental:** Automatically resolve and configure the project for out-of-tree platforms.
+   *
+   * All out-of-tree platforms are not guaranteed to work with Expo, some features might not work.
+   *
+   * This is an experimental feature and may change in the future. The underlying implementation is subject to change.
+   */
+  unstable_outOfTreePlatforms?: true | CustomPlatform[];
 }
 
 let hasWarnedAboutExotic = false;
@@ -165,7 +178,12 @@ export function createStableModuleIdFactory(
 
 export function getDefaultConfig(
   projectRoot: string,
-  { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
+  {
+    mode,
+    isCSSEnabled = true,
+    unstable_beforeAssetSerializationPlugins,
+    unstable_outOfTreePlatforms,
+  }: DefaultConfigOptions = {}
 ): InputConfigT {
   const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
 
@@ -204,7 +222,11 @@ export function getDefaultConfig(
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   const nodeModulesPaths = getModulesPaths(projectRoot);
-  const outOfTreePlatforms = getOutOfTreePlatforms(projectRoot);
+  const customPlatforms =
+    unstable_outOfTreePlatforms !== undefined
+      ? resolveCustomPlatforms(pkg, unstable_outOfTreePlatforms)
+      : null;
+
   if (env.EXPO_DEBUG) {
     console.log();
     console.log(`Expo Metro config:`);
@@ -217,6 +239,14 @@ export function getDefaultConfig(
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Sass: ${sassVersion}`);
     console.log(`- Reanimated: ${reanimatedVersion}`);
+    if (customPlatforms) {
+      console.log(
+        `- Out-Of-Tree Platforms:`,
+        Object.entries(customPlatforms)
+          .map(([name, pkg]) => `${name} -> ${pkg}`)
+          .join(', ')
+      );
+    }
     console.log();
   }
 
@@ -256,18 +286,7 @@ export function getDefaultConfig(
         .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
-      resolveRequest: (context, moduleName, platform) => {
-        const outOfTreePlatform = outOfTreePlatforms.find(({ name }) => name === platform);
-        if (
-          !outOfTreePlatform ||
-          (moduleName !== 'react-native' && !moduleName.startsWith('react-native/'))
-        ) {
-          return context.resolveRequest(context, moduleName, platform);
-        }
-
-        const newModuleName = moduleName.replace('react-native', outOfTreePlatform.package);
-        return context.resolveRequest(context, newModuleName, platform);
-      },
+      resolveRequest: createCustomPlatformResolver(customPlatforms),
     },
     cacheStores: [cacheStore],
     watcher: {
@@ -297,15 +316,18 @@ export function getDefaultConfig(
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
 
-        // Add InitializeCore for OOT platforms
-        if (outOfTreePlatforms.length > 0) {
-          for (const outOfTreePlatform of outOfTreePlatforms) {
-            const reactNativePath = path.dirname(
-              resolveFrom(projectRoot, `${outOfTreePlatform.package}/package.json`)
-            );
-            preModules.push(
-              require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore'))
-            );
+        // Add the initialize core for OOT platforms
+        if (customPlatforms) {
+          for (const platformName in customPlatforms) {
+            const initializeFile = `${customPlatforms[platformName]}/Libraries/Core/InitializeCore`;
+            const initializePath = resolveFrom.silent(projectRoot, initializeFile);
+            if (initializePath) {
+              preModules.push(initializePath);
+            } else {
+              debug(
+                `${initializeFile} not found, out-of-tree platform "${platformName}" might not work`
+              );
+            }
           }
         }
 
