@@ -9,7 +9,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     private var interaction: UIContextMenuInteraction?
     private var nextScreenTag: Int?
 
-    private let math: PeekAndPopNavigation = PeekAndPopNavigation()
+    private let peekAndPopNavigation: PeekAndPopNavigation = PeekAndPopNavigation()
 
     let onPreviewTapped = EventDispatcher()
     let onWillPreviewOpen = EventDispatcher()
@@ -24,7 +24,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
 
     func setNextScreenTag(_ tag: Int) {
         self.nextScreenTag = tag
-        math.updatePreloadedView(Int32(tag), with: self)
+        peekAndPopNavigation.updatePreloadedView(Int32(tag), with: self)
     }
 
     /**
@@ -101,7 +101,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
         animator: UIContextMenuInteractionCommitAnimating
     ) {
         print("Preview tapped!")
-        math.pushPreloadedView(self)
+        peekAndPopNavigation.pushPreloadedView(self)
         animator.addCompletion {
             self.onPreviewTapped()
         }
