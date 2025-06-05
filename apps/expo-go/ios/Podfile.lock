@@ -70,7 +70,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBattery (9.1.4):
     - ExpoModulesCore
-  - ExpoBlur (14.1.4):
+  - ExpoBlur (14.1.5):
     - ExpoModulesCore
   - ExpoBrightness (13.1.4):
     - ExpoModulesCore
@@ -3458,7 +3458,7 @@ SPEC CHECKSUMS:
   ExpoBackgroundFetch: 76c48b3cd9a4ee46e5267614a30fac804de6f33e
   ExpoBackgroundTask: 9296d983f3d612359419e015ded65ebe9de30ba2
   ExpoBattery: 2bdb40a8943dae1cbab23ccaaab09d0cc78de0ae
-  ExpoBlur: 5d95f7ca771a0f3b9618466525dd68e46dc95f3a
+  ExpoBlur: 846780b2c90f59e964b9a50385d4deb67174ebfb
   ExpoBrightness: 05e750736f8886dcf235212b0caf85b0f605fc88
   ExpoCalendar: 660542dc1c5ef98f46bedcc8745aa707df5d501a
   ExpoCamera: b8275713d702bbcf1ff5d16046cb62783a7480ab

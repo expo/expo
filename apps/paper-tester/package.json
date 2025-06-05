@@ -11,7 +11,7 @@
   "dependencies": {
     "expo": "~53.0.10",
     "expo-apple-authentication": "~7.2.4",
-    "expo-blur": "~14.1.4",
+    "expo-blur": "~14.1.5",
     "expo-camera": "~16.1.7",
     "expo-dev-client": "~5.2.0",
     "expo-image": "^2.2.0",

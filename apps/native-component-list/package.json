@@ -65,7 +65,7 @@
     "expo-background-fetch": "~13.1.5",
     "expo-background-task": "~0.2.7",
     "expo-battery": "~9.1.4",
-    "expo-blur": "~14.1.4",
+    "expo-blur": "~14.1.5",
     "expo-brightness": "~13.1.4",
     "expo-calendar": "~14.1.4",
     "expo-camera": "~16.1.7",
