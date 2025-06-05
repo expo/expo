@@ -1,7 +1,7 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { PropsWithChildren, forwardRef, useMemo, MouseEvent, ForwardedRef, JSX } from 'react';
+import { PropsWithChildren, useMemo, MouseEvent, JSX, useState, useEffect } from 'react';
 import { Text, GestureResponderEvent, Platform } from 'react-native';
 
 import { resolveHref } from './href';
@@ -9,9 +9,13 @@ import useLinkToPathProps from './useLinkToPathProps';
 import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
+import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
 import { Prefetch } from '../Prefetch';
 import { Slot } from '../ui/Slot';
+import { Preview } from './preview/Preview';
+import { useScreenPreload } from './preview/hooks';
+import { PeekAndPopPreviewView, PeekAndPopTriggerView, PeekAndPopView } from './preview/native';
 
 export interface LinkComponent {
   (props: PropsWithChildren<LinkProps>): JSX.Element;
@@ -115,29 +119,32 @@ export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProp
  *}
  * ```
  */
-export const Link = forwardRef(ExpoRouterLink) as unknown as LinkComponent;
+
+export function Link(props: LinkProps) {
+  if (props.experimentalPreview) {
+    return <LinkWithPreview {...props} />;
+  }
+  return <ExpoRouterLink {...props} />;
+}
 
 Link.resolveHref = resolveHref;
 
-function ExpoRouterLink(
-  {
-    href,
-    replace,
-    push,
-    dismissTo,
-    // TODO: This does not prevent default on the anchor tag.
-    relativeToDirectory,
-    asChild,
-    rel,
-    target,
-    download,
-    withAnchor,
-    dangerouslySingular: singular,
-    prefetch,
-    ...rest
-  }: LinkProps,
-  ref: ForwardedRef<Text>
-) {
+function ExpoRouterLink({
+  href,
+  replace,
+  push,
+  dismissTo,
+  // TODO: This does not prevent default on the anchor tag.
+  relativeToDirectory,
+  asChild,
+  rel,
+  target,
+  download,
+  withAnchor,
+  dangerouslySingular: singular,
+  prefetch,
+  ...rest
+}: LinkProps) {
   // Mutate the style prop to add the className on web.
   const style = useInteropClassName(rest);
 
@@ -176,7 +183,6 @@ function ExpoRouterLink(
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   const element = (
     <Component
-      ref={ref}
       {...props}
       {...hrefAttrs}
       {...rest}
@@ -197,6 +203,68 @@ function ExpoRouterLink(
     </>
   ) : (
     element
+  );
+}
+
+const externalPageRegex = /^(\w+:)?\/\/.*$/;
+const isExternal = (href: string) => externalPageRegex.test(href);
+
+export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
+  const router = useRouter();
+  const { setIsPreviewOpen } = useLinkPreviewContext();
+  const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
+
+  const { preload, updateNativeTag, nativeTag, navigationKey, isValid } = useScreenPreload(
+    rest.href
+  );
+
+  useEffect(() => {
+    if (!isValid) {
+      console.warn(
+        `Preview link is not within react-native-screens stack. The preview will not work [${rest.href}]`
+      );
+    }
+    if (isExternal(String(rest.href))) {
+      console.warn('External links previews are not supported');
+    }
+    if (rest.replace) {
+      console.warn('Using replace links with preview is not supported');
+    }
+  }, [isValid, rest.href, rest.replace]);
+
+  console.log(rest);
+
+  if (!isValid || isExternal(String(rest.href)) || rest.replace) {
+    return <ExpoRouterLink {...rest} />;
+  }
+
+  // TODO: add a way to add and customize preview actions
+  return (
+    <PeekAndPopView
+      nextScreenKey={nativeTag ?? 0}
+      onWillPreviewOpen={() => {
+        preload();
+        setIsPreviewOpen(true);
+        setIsCurrenPreviewOpen(true);
+        // We need to wait here for the screen to preload. This will happen in the next tick
+        setTimeout(updateNativeTag);
+      }}
+      onPreviewWillClose={() => {}}
+      onPreviewDidClose={() => {
+        setIsPreviewOpen(false);
+        setIsCurrenPreviewOpen(false);
+      }}
+      onPreviewTapped={() => {
+        router.navigate(rest.href, { __internal__PeekAndPopKey: navigationKey });
+      }}>
+      <PeekAndPopTriggerView>
+        <ExpoRouterLink {...rest} ref={rest.ref} />
+      </PeekAndPopTriggerView>
+      <PeekAndPopPreviewView style={{ position: 'absolute' }}>
+        {/* TODO: Add a way to make preview smaller then full size */}
+        {isCurrentPreviewOpen && <Preview href={rest.href} />}
+      </PeekAndPopPreviewView>
+    </PeekAndPopView>
   );
 }
 

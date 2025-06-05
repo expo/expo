@@ -16,7 +16,6 @@ export {
 export { router, Router } from './imperative-api';
 
 export { Link, Redirect, RedirectProps, LinkProps, WebAnchorProps } from './link/Link';
-export { CustomLink } from './link/preview/LinkWithPreview';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };

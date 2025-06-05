@@ -1,5 +1,5 @@
-import { MouseEvent } from 'react';
-import { TextProps, GestureResponderEvent } from 'react-native';
+import { MouseEvent, Ref } from 'react';
+import { TextProps, GestureResponderEvent, type Text } from 'react-native';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 /**
@@ -206,11 +206,19 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
      * Prefetches the route when the component is rendered on a focused screen.
      */
     prefetch?: boolean;
+    /**
+     * Enables the experimental preview for the link.
+     * This will enable peek and pop interaction on iOS.
+     *
+     * @platform ios
+     */
+    experimentalPreview?: boolean;
+    ref?: Ref<Text>;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
     className?: string;
-}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
+}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;

@@ -1,4 +1,4 @@
-import { CustomLink, Link, router, useLocalSearchParams, usePathname } from 'expo-router';
+import { Link, router, useLocalSearchParams, usePathname } from 'expo-router';
 import { Text } from 'react-native';
 
 export default function Index() {
@@ -9,9 +9,9 @@ export default function Index() {
       <Text testID="e2e-screen">{JSON.stringify(useLocalSearchParams())}</Text>
       <Text testID="e2e-can-back">{router.canGoBack()}</Text>
       <Text testID="e2e-pathname">{pathname}</Text>
-      <CustomLink testID="e2e-navigate-banana" href="../banana" preview>
+      <Link testID="e2e-navigate-banana" href="../banana" experimentalPreview>
         Navigate banana
-      </CustomLink>
+      </Link>
       <Link testID="e2e-push-banana" href="../banana" push>
         Push banana
       </Link>

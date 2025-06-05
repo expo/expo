@@ -1,4 +1,4 @@
-import { CustomLink, Link, router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Text } from 'react-native';
 
 export default function Index() {
@@ -9,9 +9,9 @@ export default function Index() {
       <Link testID="e2e-navigate-apple" href="./(stack)/apple">
         Navigate apple
       </Link>
-      <CustomLink testID="e2e-push-apple" href="./(stack)/apple" push preview>
+      <Link testID="e2e-push-apple" href="./(stack)/apple" push experimentalPreview>
         Push apple
-      </CustomLink>
+      </Link>
       <Link testID="e2e-push-index" href="./(stack)" push>
         Push index
       </Link>

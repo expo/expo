@@ -88,6 +88,10 @@ export declare function Redirect({ href, relativeToDirectory, withAnchor }: Redi
  *}
  * ```
  */
-export declare const Link: LinkComponent;
+export declare function Link(props: LinkProps): JSX.Element;
+export declare namespace Link {
+    var resolveHref: (href: Href) => string;
+}
+export declare function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps): JSX.Element;
 export { LinkProps, WebAnchorProps };
 //# sourceMappingURL=Link.d.ts.map
