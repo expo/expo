@@ -41,7 +41,7 @@
   "expo-document-picker": "~13.1.5",
   "expo-file-system": "~18.1.10",
   "expo-font": "~13.3.1",
-  "expo-gl": "~15.1.5",
+  "expo-gl": "~15.1.6",
   "expo-google-app-auth": "~8.3.0",
   "expo-haptics": "~14.1.4",
   "expo-image": "~2.2.0",

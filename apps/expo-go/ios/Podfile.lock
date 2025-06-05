@@ -104,7 +104,7 @@ PODS:
     - ExpoModulesTestCore
   - ExpoFont (13.3.1):
     - ExpoModulesCore
-  - ExpoGL (15.1.5):
+  - ExpoGL (15.1.6):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.1.4):
@@ -3471,7 +3471,7 @@ SPEC CHECKSUMS:
   ExpoDomWebView: d97348ddd1e1981e30f052d58a4bcb7bfbb737f5
   ExpoFileSystem: 3a98ca2a6f13674ecfd97327d1b44a8ace444cbd
   ExpoFont: 312c73403bbd4f98e1d6a5330641a56292583cd2
-  ExpoGL: 8f7f43291e400621ef9aeb7af347816c2051ddc7
+  ExpoGL: 7feb84bfc9b11fd5eccfddfa40cd2cc333efa956
   ExpoHaptics: 68c215e070f660e0a29c45dcda4f60eeff08aefb
   ExpoHead: 5df88545652c2d3a3ea50bcd7f6be6ca935ac997
   ExpoImage: 9b823493943680c61e6354f1a542c64d756cd78e
