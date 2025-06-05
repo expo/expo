@@ -31,12 +31,7 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
 {
   "expo": {
     "plugins": [
-      [
-        "expo-audio",
-        {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
-        }
-      ]
+      ["expo-audio", { "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone." }]
     ]
   }
 }
@@ -80,21 +75,25 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button title="Play Sound" onPress={() => player.play()} />
+      <Button
+        title="Replay Sound"
+        onPress={() => {
+          player.seekTo(0);
+          player.play();
+        }}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 10,
-  },
+  container: { flex: 1, justifyContent: 'center', backgroundColor: '#ecf0f1', padding: 10 },
 });
 ```
 
 </SnackInline>
+
+> **Info** Note: If you're migrating from [`expo-av`](av.mdx), keep in mind that `expo-audio` does not automatically reset the playback position after the sound finishes playing. When [`play()`](#play) completes, the player remains in the paused state at the end of the audio. To replay the sound, you must manually reset the position using [`seekTo(seconds)`](#seektoseconds), as demonstrated in the example above.
 
 ### Recording sounds
 
@@ -141,12 +140,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 10,
-  },
+  container: { flex: 1, justifyContent: 'center', backgroundColor: '#ecf0f1', padding: 10 },
 });
 ```
 

@@ -96,6 +96,8 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+> **Info** Note: If you're migrating from [`expo-av`](av.mdx), keep in mind that `expo-audio` does not automatically reset the playback position after the sound finishes playing. When [`play()`](#play) completes, the player remains in the paused state at the end of the audio. To replay the sound, you must manually reset the position using [`seekTo(seconds)`](#seektoseconds), as demonstrated in the example above.
+
 ### Recording sounds
 
 <SnackInline label='Recording sounds' dependencies={['expo-audio', 'expo-asset']}>
