@@ -15,7 +15,7 @@
     "expo-camera": "~16.1.7",
     "expo-dev-client": "~5.2.0",
     "expo-image": "^2.2.0",
-    "expo-linear-gradient": "~14.1.4",
+    "expo-linear-gradient": "~14.1.5",
     "expo-splash-screen": "~0.30.9",
     "expo-status-bar": "~2.2.3",
     "expo-updates": "~0.28.14",
