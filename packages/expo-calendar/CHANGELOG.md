@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Don't encode event URLs. ([#37243](https://github.com/expo/expo/pull/37243) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 14.1.4 — 2025-04-30
