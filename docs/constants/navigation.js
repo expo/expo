@@ -756,6 +756,7 @@ function makePage(file) {
     isAlpha: data.isAlpha ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
+    hasVideoLink: data.hasVideoLink ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {
