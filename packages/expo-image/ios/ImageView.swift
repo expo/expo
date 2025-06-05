@@ -145,7 +145,10 @@ public final class ImageView: ExpoView {
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
     if imageTintColor != nil {
       context[.imagePreserveAspectRatio] = true
-      context[.imageThumbnailPixelSize] = sdImageView.bounds.size
+      context[.imageThumbnailPixelSize] = CGSize(
+        width: sdImageView.bounds.size.width * screenScale,
+        height: sdImageView.bounds.size.height * screenScale
+      )
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
