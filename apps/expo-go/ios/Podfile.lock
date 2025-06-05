@@ -95,7 +95,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDocumentPicker (13.1.5):
     - ExpoModulesCore
-  - ExpoDomWebView (0.1.4):
+  - ExpoDomWebView (0.1.5):
     - ExpoModulesCore
   - ExpoFileSystem (18.1.10):
     - ExpoModulesCore
@@ -3468,7 +3468,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: fc94a8865ce0e06c68c10c3993f9ac9a6424d0c2
   ExpoDevice: 7a961caede6638aa0d37d0d3aa884ab957a2e3d3
   ExpoDocumentPicker: d1bb0c63fc686a74455bd7c2cd54545fa6231b66
-  ExpoDomWebView: d97348ddd1e1981e30f052d58a4bcb7bfbb737f5
+  ExpoDomWebView: ee9900f66adbe81c609d3b354d5d6ec0cf925c45
   ExpoFileSystem: 3a98ca2a6f13674ecfd97327d1b44a8ace444cbd
   ExpoFont: 312c73403bbd4f98e1d6a5330641a56292583cd2
   ExpoGL: 7feb84bfc9b11fd5eccfddfa40cd2cc333efa956

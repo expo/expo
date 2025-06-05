@@ -23,7 +23,7 @@
     "lint": "expo lint __e2e__"
   },
   "dependencies": {
-    "@expo/dom-webview": "0.1.4",
+    "@expo/dom-webview": "0.1.5",
     "expo": "~53.0.10",
     "expo-haptics": "~14.1.4",
     "expo-linking": "~7.1.5",
