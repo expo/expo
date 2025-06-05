@@ -1,9 +1,9 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquareDuotoneIcon';
 import { AlertTriangleIcon } from '@expo/styleguide-icons/outline/AlertTriangleIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
-import { VideoRecorderIcon } from '@expo/styleguide-icons/outline/VideoRecorderIcon';
+import { PlaySquareIcon } from '@expo/styleguide-icons/outline/PlaySquareIcon';
 import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
-import { VideoRecorderSolidIcon } from '@expo/styleguide-icons/solid/VideoRecorderSolidIcon';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useRef, type PropsWithChildren } from 'react';
 
@@ -100,10 +100,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
         </div>
       )}
       {info.hasVideoLink && !isSelected && (
-        <VideoRecorderIcon className="icon-xs ml-1.5 text-palette-blue11" />
+        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" />
       )}
       {info.hasVideoLink && isSelected && (
-        <VideoRecorderSolidIcon className="icon-xs ml-1.5 text-palette-blue11" />
+        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" />
       )}
       {isExternal && (
         <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />
