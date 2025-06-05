@@ -4,7 +4,7 @@
  */
 'use strict';
 
-import merge from 'lodash/merge';
+const merge = require('lodash/merge');
 
 const findUp = require('find-up');
 const path = require('path');
