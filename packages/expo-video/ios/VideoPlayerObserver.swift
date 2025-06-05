@@ -408,7 +408,10 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
 
     if player.timeControlStatus != .waitingToPlayAtSpecifiedRate && player.status == .readyToPlay && currentItem?.isPlaybackBufferEmpty != true {
       status = .readyToPlay
-    } else if player.timeControlStatus == .waitingToPlayAtSpecifiedRate {
+    }
+    // Every time the player is unpaused timeControlStatus goes into .waitingToPlayAtSpecifiedRate while evaluating buffering rate.
+    // This takes less than a frame and we can ignore this change to avoid unnecessary status changes.
+    else if player.timeControlStatus == .waitingToPlayAtSpecifiedRate && player.reasonForWaitingToPlay != .evaluatingBufferingRate {
       status = .loading
     }
 
