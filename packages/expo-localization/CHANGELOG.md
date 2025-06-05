@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix the issue where the iOS RTL configuration modification is overridden by the system's default language RTL property.
+- [iOS] Fix the issue where the iOS RTL configuration modification is overridden by the system's default language RTL property. ([#37256](https://github.com/expo/expo/pull/37256) by [@rogerogers](https://github.com/rogerogers))
 
 ### 💡 Others
 
