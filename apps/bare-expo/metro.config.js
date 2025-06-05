@@ -4,7 +4,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname, { unstable_outOfTreePlatforms: true });
 const monorepoRoot = path.join(__dirname, '../..');
 
 config.resolver.assetExts.push(
