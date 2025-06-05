@@ -64,6 +64,11 @@ export interface DefaultConfigOptions {
   /**
    * **Experimental:** Automatically resolve and configure the project for out-of-tree platforms.
    *
+   * When setting this to `true`, it will try to resolve, configure, and enable `react-native-macos` and `react-native-windows`.
+   * You can also provide a list of platform names, and their node package, to enable more out-of-tree platforms.
+   * The platform packages have to be defined in your project's **package.json** file under `dependencies`.
+   * If the platform package is missing from your `dependencies`, the out-of-tree platform will not be enabled.
+   *
    * All out-of-tree platforms are not guaranteed to work with Expo, some features might not work.
    *
    * This is an experimental feature and may change in the future. The underlying implementation is subject to change.
