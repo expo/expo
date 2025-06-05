@@ -1,1 +1,0 @@
-{"version":3,"file":"PeekAndPopContext.d.ts","sourceRoot":"","sources":["../../../src/link/preview/PeekAndPopContext.tsx"],"names":[],"mappings":"AAUA,eAAO,MAAM,yBAAyB;oBANhB,OAAO;uBACJ,CAAC,QAAQ,EAAE,OAAO,KAAK,IAAI;cAKe,CAAC;AAEpE,eAAO,MAAM,oBAAoB;oBARX,OAAO;uBACJ,CAAC,QAAQ,EAAE,OAAO,KAAK,IAAI;CAanD,CAAC"}
