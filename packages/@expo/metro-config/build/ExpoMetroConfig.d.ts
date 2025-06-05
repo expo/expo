@@ -1,6 +1,7 @@
 import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
 import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
+import { type CustomPlatform } from './utils/customPlatforms';
 export interface LoadOptions {
     config?: string;
     maxWorkers?: number;
@@ -29,11 +30,19 @@ export interface DefaultConfigOptions {
         premodules: Module[];
         debugId?: string;
     }) => Module[])[];
+    /**
+     * **Experimental:** Automatically resolve and configure the project for out-of-tree platforms.
+     *
+     * All out-of-tree platforms are not guaranteed to work with Expo, some features might not work.
+     *
+     * This is an experimental feature and may change in the future. The underlying implementation is subject to change.
+     */
+    unstable_outOfTreePlatforms?: true | CustomPlatform[];
 }
 export declare function createStableModuleIdFactory(root: string): (path: string, context?: {
     platform: string;
     environment?: string;
 }) => number;
-export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins }?: DefaultConfigOptions): InputConfigT;
+export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabled, unstable_beforeAssetSerializationPlugins, unstable_outOfTreePlatforms, }?: DefaultConfigOptions): InputConfigT;
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 export declare const EXPO_DEBUG: boolean;

@@ -20,13 +20,13 @@ Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", { enumerable: true, g
 const env_1 = require("./env");
 const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
-const getOutOfTreePlatforms_1 = require("./getOutOfTreePlatforms");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
 const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
+const customPlatforms_1 = require("./utils/customPlatforms");
 const filePath_1 = require("./utils/filePath");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutExotic = false;
@@ -120,7 +120,7 @@ function createStableModuleIdFactory(root) {
         return memoizedGetModulePath(modulePath, scope);
     };
 }
-function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
+function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins, unstable_outOfTreePlatforms, } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
@@ -146,7 +146,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const pkg = (0, config_1.getPackageJson)(projectRoot);
     const watchFolders = (0, getWatchFolders_1.getWatchFolders)(projectRoot);
     const nodeModulesPaths = (0, getModulesPaths_1.getModulesPaths)(projectRoot);
-    const outOfTreePlatforms = (0, getOutOfTreePlatforms_1.getOutOfTreePlatforms)(projectRoot);
+    const customPlatforms = unstable_outOfTreePlatforms !== undefined
+        ? (0, customPlatforms_1.resolveCustomPlatforms)(pkg, unstable_outOfTreePlatforms)
+        : null;
     if (env_1.env.EXPO_DEBUG) {
         console.log();
         console.log(`Expo Metro config:`);
@@ -160,6 +162,11 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
         console.log(`- Sass: ${sassVersion}`);
         console.log(`- Reanimated: ${reanimatedVersion}`);
+        if (customPlatforms) {
+            console.log(`- Out-Of-Tree Platforms:`, Object.entries(customPlatforms)
+                .map(([name, pkg]) => `${name} -> ${pkg}`)
+                .join(', '));
+        }
         console.log();
     }
     const { 
@@ -192,15 +199,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,
-            resolveRequest: (context, moduleName, platform) => {
-                const outOfTreePlatform = outOfTreePlatforms.find(({ name }) => name === platform);
-                if (!outOfTreePlatform ||
-                    (moduleName !== 'react-native' && !moduleName.startsWith('react-native/'))) {
-                    return context.resolveRequest(context, moduleName, platform);
-                }
-                const newModuleName = moduleName.replace('react-native', outOfTreePlatform.package);
-                return context.resolveRequest(context, newModuleName, platform);
-            },
+            resolveRequest: (0, customPlatforms_1.createCustomPlatformResolver)(customPlatforms),
         },
         cacheStores: [cacheStore],
         watcher: {
@@ -227,11 +226,17 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
                 ];
-                // Add InitializeCore for OOT platforms
-                if (outOfTreePlatforms.length > 0) {
-                    for (const outOfTreePlatform of outOfTreePlatforms) {
-                        const reactNativePath = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, `${outOfTreePlatform.package}/package.json`));
-                        preModules.push(require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')));
+                // Add the initialize core for OOT platforms
+                if (customPlatforms) {
+                    for (const platformName in customPlatforms) {
+                        const initializeFile = `${customPlatforms[platformName]}/Libraries/Core/InitializeCore`;
+                        const initializePath = resolve_from_1.default.silent(projectRoot, initializeFile);
+                        if (initializePath) {
+                            preModules.push(initializePath);
+                        }
+                        else {
+                            debug(`${initializeFile} not found, out-of-tree platform "${platformName}" might not work`);
+                        }
                     }
                 }
                 const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter/index.ts');
