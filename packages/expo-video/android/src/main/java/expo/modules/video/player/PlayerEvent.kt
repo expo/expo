@@ -156,7 +156,8 @@ sealed class PlayerEvent {
       is AudioMixingModeChanged -> listeners.forEach { it.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode) }
       is VideoTrackChanged -> listeners.forEach { it.onVideoTrackChanged(player, videoTrack, oldVideoTrack) }
       is RenderedFirstFrame -> listeners.forEach { it.onRenderedFirstFrame(player) }
-      // JS-only events - VideoSourceLoaded, SubtitleTrackChanged - In the native events the TracksChanged can be used instead
+      is VideoSourceLoaded -> listeners.forEach { it.onVideoSourceLoaded(player, videoSource, duration, availableVideoTracks, availableSubtitleTracks, availableAudioTracks) }
+      // JS-only events - SubtitleTrackChanged - In the native events the TracksChanged can be used instead
       else -> Unit
     }
   }

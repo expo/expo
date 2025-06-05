@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import androidx.media3.common.Tracks
+import androidx.media3.common.VideoSize
 import androidx.media3.ui.PlayerView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -27,8 +28,13 @@ import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.player.VideoPlayerListener
-import expo.modules.video.utils.applyAutoEnterPiP
+import expo.modules.video.records.AudioTrack
+import expo.modules.video.records.SubtitleTrack
+import expo.modules.video.records.VideoSource
+import expo.modules.video.records.VideoTrack
+import expo.modules.video.utils.applyPiPParams
 import expo.modules.video.utils.applyRectHint
+import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
 import expo.modules.video.utils.dispatchMotionEvent
 import java.util.UUID
@@ -82,7 +88,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     }
 
   var autoEnterPiP: Boolean by IgnoreSameSet(false) { new, _ ->
-    applyAutoEnterPiP(currentActivity, new)
+    applyPiPParams(currentActivity, new, calculateCurrentPipAspectRatio())
   }
 
   var contentFit: ContentFit = ContentFit.CONTAIN
@@ -178,7 +184,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       currentActivity.overridePendingTransition(0, 0)
     }
     onFullscreenEnter(Unit)
-    applyAutoEnterPiP(currentActivity, false)
+    applyPiPParams(currentActivity, false, calculateCurrentPipAspectRatio())
   }
 
   fun attachPlayer() {
@@ -192,7 +198,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     attachPlayer()
     onFullscreenExit(Unit)
     isInFullscreen = false
-    applyAutoEnterPiP(currentActivity, autoEnterPiP)
+    applyPiPParams(currentActivity, autoEnterPiP, calculateCurrentPipAspectRatio())
   }
 
   fun enterPictureInPicture() {
@@ -203,38 +209,20 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     val player = playerView.player
       ?: throw PictureInPictureEnterException("No player attached to the VideoView")
     playerView.useController = false
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      var aspectRatio = if (contentFit == ContentFit.CONTAIN) {
-        Rational(player.videoSize.width, player.videoSize.height)
-      } else {
-        Rational(width, height)
-      }
-      // AspectRatio for the activity in picture-in-picture, must be between 2.39:1 and 1:2.39 (inclusive).
-      // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
-      val maximumRatio = Rational(239, 100)
-      val minimumRatio = Rational(100, 239)
-      if (aspectRatio.toFloat() > maximumRatio.toFloat()) {
-        aspectRatio = maximumRatio
-      } else if (aspectRatio.toFloat() < minimumRatio.toFloat()) {
-        aspectRatio = minimumRatio
-      }
-
-      currentActivity.setPictureInPictureParams(
-        PictureInPictureParams
-          .Builder()
-          .setAspectRatio(aspectRatio)
-          .build()
-      )
-    }
-
+    applyPiPParams(currentActivity, autoEnterPiP, calculateCurrentPipAspectRatio())
     willEnterPiP = true
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       currentActivity.enterPictureInPictureMode(PictureInPictureParams.Builder().build())
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       @Suppress("DEPRECATION")
       currentActivity.enterPictureInPictureMode()
     }
+  }
+
+  private fun calculateCurrentPipAspectRatio(): Rational? {
+    val player = videoPlayer?.player ?: return null
+    return calculatePiPAspectRatio(player.videoSize, this.width, this.height, contentFit)
   }
 
   /**
@@ -261,6 +249,22 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     }
     rootViewChildrenOriginalVisibility.clear()
     this.addView(playerView)
+  }
+
+  override fun onVideoSourceLoaded(
+    player: VideoPlayer,
+    videoSource: VideoSource?,
+    duration: Double?,
+    availableVideoTracks: List<VideoTrack>,
+    availableSubtitleTracks: List<SubtitleTrack>,
+    availableAudioTracks: List<AudioTrack>
+  ) {
+    availableVideoTracks.firstOrNull()?.let {
+      val videoSize = VideoSize(it.size.width, it.size.height)
+      val aspectRatio = calculatePiPAspectRatio(videoSize, this.width, this.height, contentFit)
+      applyPiPParams(currentActivity, autoEnterPiP, aspectRatio)
+    }
+    super.onVideoSourceLoaded(player, videoSource, duration, availableVideoTracks, availableSubtitleTracks, availableAudioTracks)
   }
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
@@ -302,7 +306,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
-    applyAutoEnterPiP(currentActivity, autoEnterPiP)
+    applyPiPParams(currentActivity, autoEnterPiP)
   }
 
   override fun onDetachedFromWindow() {
@@ -314,7 +318,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
         .remove(fragment)
         .commitAllowingStateLoss()
     }
-    applyAutoEnterPiP(currentActivity, false)
+    applyPiPParams(currentActivity, false)
   }
 
   // After adding the `PlayerView` to the hierarchy the touch events stop being emitted to the JS side.
