@@ -22,8 +22,8 @@ class AnyTypeConverter : DynamicAwareTypeConverters<Any>() {
       ReadableType.Boolean -> value.asBoolean()
       ReadableType.Number -> value.asDouble()
       ReadableType.String -> value.asString() ?: throw DynamicCastException(String::class)
-      ReadableType.Map -> (value.asMap()  ?: throw DynamicCastException(ReadableMap::class)).toHashMap()
-      ReadableType.Array -> (value.asArray()  ?: throw DynamicCastException(ReadableArray::class)).toArrayList()
+      ReadableType.Map -> (value.asMap() ?: throw DynamicCastException(ReadableMap::class)).toHashMap()
+      ReadableType.Array -> (value.asArray() ?: throw DynamicCastException(ReadableArray::class)).toArrayList()
       ReadableType.Null -> throw NullArgumentException()
     }
   }
