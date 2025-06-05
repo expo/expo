@@ -169,7 +169,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   private override init(_ ref: AVPlayer) {
     super.init(ref)
-    observer = VideoPlayerObserver(owner: self)
+    observer = VideoPlayerObserver(owner: self, videoSourceLoader: videoSourceLoader)
     observer?.registerDelegate(delegate: self)
     VideoManager.shared.register(videoPlayer: self)
 
