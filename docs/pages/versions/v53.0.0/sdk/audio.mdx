@@ -80,6 +80,13 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button title="Play Sound" onPress={() => player.play()} />
+      <Button
+        title="Replay Sound"
+        onPress={() => {
+          player.seekTo(0);
+          player.play();
+        }}
+      />
     </View>
   );
 }
