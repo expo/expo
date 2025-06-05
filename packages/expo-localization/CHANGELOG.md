@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the issue where the iOS RTL configuration modification is overridden by the system's default language RTL property.
+
 ### 💡 Others
 
 ## 16.1.5 — 2025-04-30

@@ -69,7 +69,9 @@ public class LocalizationModule: Module {
       UserDefaults.standard.set(true, forKey: "RCTI18nUtil_forceRTL")
     } else {
       UserDefaults.standard.set(supportsRTL, forKey: "RCTI18nUtil_allowRTL")
-      UserDefaults.standard.set(supportsRTL ? isRTLPreferredForCurrentLocale() : false, forKey: "RCTI18nUtil_forceRTL")
+      if UserDefaults.standard.object(forKey: "RCTI18nUtil_forceRTL") == nil {
+        UserDefaults.standard.set(supportsRTL ? isRTLPreferredForCurrentLocale() : false, forKey: "RCTI18nUtil_forceRTL")
+      }
     }
 
     UserDefaults.standard.synchronize()
