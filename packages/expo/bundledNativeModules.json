@@ -92,7 +92,7 @@
   "lottie-react-native": "7.2.2",
   "react": "19.1.0",
   "react-dom": "19.1.0",
-  "react-native": "0.80.0-rc.1",
+  "react-native": "0.80.0-rc.2",
   "react-native-web": "~0.20.0",
   "react-native-edge-to-edge": "1.6.0",
   "react-native-gesture-handler": "~2.24.0",

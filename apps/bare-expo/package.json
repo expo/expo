@@ -64,7 +64,7 @@
     "native-component-list": "*",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.0-rc.1",
+    "react-native": "0.80.0-rc.2",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-pager-view": "6.7.1",
     "react-native-reanimated": "3.17.4",
