@@ -122,6 +122,58 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 export function createStableModuleIdFactory(
   root: string
 ): (path: string, context?: { platform: string; environment?: string }) => number {
+  if (process.env.EXPO_BUNDLE_BUILT_IN) {
+    const MAPPING = {
+      'node_modules/react/index.js': 'native:react',
+      'node_modules/url/url.js': 'native:url',
+      'node_modules/whatwg-fetch/dist/fetch.umd.js': 'native:whatwg-fetch',
+    };
+    const getModulePath = (modulePath: string, scope: string) => {
+      // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+      if (modulePath == null) {
+        return 'MODULE_NOT_FOUND';
+      } else if (isVirtualModule(modulePath)) {
+        // Virtual modules should be stable.
+        return modulePath;
+      } else if (path.isAbsolute(modulePath)) {
+        const result = toPosixPath(path.relative(root, modulePath)) + scope;
+
+        if (MAPPING[result]) {
+          // If the module is in the mapping, return the mapped value.
+          return MAPPING[result] + scope;
+        }
+        return result;
+      } else {
+        return toPosixPath(modulePath) + scope;
+      }
+    };
+
+    const memoizedGetModulePath = memoize(getModulePath);
+
+    // This is an absolute file path.
+    // TODO: We may want a hashed version for production builds in the future.
+    return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+      const env = context?.environment ?? 'client';
+
+      if (env === 'client') {
+        // Only need scope for server bundles where multiple dimensions could run simultaneously.
+        // @ts-expect-error: we patch this to support being a string.
+        return memoizedGetModulePath(modulePath, '');
+      }
+
+      // Helps find missing parts to the patch.
+      if (!context?.platform) {
+        // context = { platform: 'web' };
+        throw new Error('createStableModuleIdFactory: `context.platform` is required');
+      }
+
+      // Only need scope for server bundles where multiple dimensions could run simultaneously.
+      const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
+      // @ts-expect-error: we patch this to support being a string.
+      return memoizedGetModulePath(modulePath, scope);
+    };
+  }
+
   const getModulePath = (modulePath: string, scope: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
@@ -332,6 +384,7 @@ export function getDefaultConfig(
     transformerPath: require.resolve('./transform-worker/transform-worker'),
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
+      globalPrefix: process.env.EXPO_BUNDLE_BUILT_IN ? '__native' : undefined,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       unstable_renameRequire: false,
       // @ts-expect-error: not on type.

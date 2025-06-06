@@ -60,6 +60,9 @@ function withWebPolyfills(
     : () => [];
 
   const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
+    if (process.env.EXPO_BUNDLE_BUILT_IN) {
+      return [];
+    }
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -320,7 +323,7 @@ export function withExtendedResolver(
   // If module should be shimmed, remap to an empty module.
   const externals: {
     match: (context: ResolutionContext, moduleName: string, platform: string | null) => boolean;
-    replace: 'empty' | 'node' | 'weak';
+    replace: 'empty' | 'node' | 'weak' | 'builtin';
   }[] = [
     {
       match: (context: ResolutionContext, moduleName: string) => {
@@ -352,6 +355,28 @@ export function withExtendedResolver(
         );
       },
       replace: 'node',
+    },
+    {
+      match: (context: ResolutionContext, moduleName: string) => {
+        if (
+          // Disable internal externals when exporting for production.
+          context.customResolverOptions.exporting ||
+          // These externals are only for Node.js environments.
+          isServerEnvironment(context.customResolverOptions?.environment)
+        ) {
+          return false;
+        }
+        if (process.env.EXPO_BUNDLE_BUILT_IN) {
+          return false;
+        }
+
+        // return /^(react|url|whatwg-fetch)$/.test(moduleName);
+        return (
+          /^native:(react|url|whatwg-fetch)$/.test(moduleName) ||
+          /^(react|url|whatwg-fetch)$/.test(moduleName)
+        );
+      },
+      replace: 'builtin',
     },
     // Externals to speed up async split chunks by extern-ing common packages that appear in the root client chunk.
     {
@@ -539,6 +564,18 @@ export function withExtendedResolver(
             const contents = `module.exports=$$require_external('${moduleName}')`;
             const virtualModuleId = `\0node:${moduleName}`;
             debug('Virtualizing Node.js (custom):', moduleName, '->', virtualModuleId);
+            getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+              virtualModuleId,
+              contents
+            );
+            return {
+              type: 'sourceFile',
+              filePath: virtualModuleId,
+            };
+          } else if (external.replace === 'builtin') {
+            const contents = `module.exports=__native__r('native:${moduleName.replace(/^native:/, '')}')`;
+            const virtualModuleId = `\0native:${moduleName}`;
+            debug('Virtualizing Native built-in (custom):', moduleName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
               contents
@@ -824,6 +861,11 @@ export async function withMetroMultiPlatformAsync(
     // Change the default metro-runtime to a custom one that supports bundle splitting.
     require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
       '@expo/cli/build/metro-require/require'
+    );
+  }
+  if (process.env.EXPO_BUNDLE_BUILT_IN) {
+    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+      '@expo/cli/build/metro-require/native-require'
     );
   }
 
