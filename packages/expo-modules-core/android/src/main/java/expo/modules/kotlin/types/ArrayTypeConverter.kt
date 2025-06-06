@@ -9,11 +9,11 @@ import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-class ArrayTypeConverter(
+open class ArrayTypeConverter(
   converterProvider: TypeConverterProvider,
   private val arrayType: KType
 ) : DynamicAwareTypeConverters<Array<*>>() {
-  private val arrayElementConverter = converterProvider.obtainTypeConverter(
+  protected val arrayElementConverter = converterProvider.obtainTypeConverter(
     requireNotNull(arrayType.arguments.first().type) {
       "The array type should contain the type of the elements."
     }
@@ -70,7 +70,7 @@ class ArrayTypeConverter(
   }
 
   override fun getCppRequiredTypes(): ExpectedType =
-    ExpectedType.forPrimitiveArray(arrayElementConverter.getCppRequiredTypes())
+    ExpectedType.forArray(arrayElementConverter.getCppRequiredTypes())
 
   override fun isTrivial() = arrayElementConverter.isTrivial()
 }
