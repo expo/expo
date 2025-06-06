@@ -198,10 +198,10 @@ class SQLiteModule : Module() {
         return@Constructor NativeStatement()
       }
 
-      AsyncFunction("runAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
+      AsyncFunction("runAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
         return@AsyncFunction run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }.runOnQueue(moduleCoroutineScope)
-      Function("runSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
+      Function("runSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
         return@Function run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }
 
@@ -364,7 +364,7 @@ class SQLiteModule : Module() {
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Any> {
+  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Any> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
 

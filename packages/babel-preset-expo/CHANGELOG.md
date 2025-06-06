@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
 - Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
 
 ### 🐛 Bug fixes

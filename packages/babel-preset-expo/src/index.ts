@@ -30,6 +30,10 @@ type BabelPresetExpoPlatformOptions = {
   decorators?: false | { legacy?: boolean; version?: number };
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
   reanimated?: boolean;
+  /** Enable or disable adding the Worklets plugin by default. Only applies when
+   * using `react-native-worklets` or Reanimated 4. @default `true`
+   */
+  worklets?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -446,8 +450,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
-      hasModule('react-native-reanimated') &&
-        platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
+      hasModule('react-native-worklets') &&
+      platformOptions.worklets !== false &&
+      platformOptions.reanimated !== false
+        ? [require('react-native-worklets/plugin')]
+        : hasModule('react-native-reanimated') &&
+          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
 }

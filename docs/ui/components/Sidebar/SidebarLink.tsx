@@ -1,6 +1,8 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquareDuotoneIcon';
 import { AlertTriangleIcon } from '@expo/styleguide-icons/outline/AlertTriangleIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { PlaySquareIcon } from '@expo/styleguide-icons/outline/PlaySquareIcon';
 import { AlertTriangleSolidIcon } from '@expo/styleguide-icons/solid/AlertTriangleSolidIcon';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useRef, type PropsWithChildren } from 'react';
@@ -96,6 +98,12 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
           )}>
           ALPHA
         </div>
+      )}
+      {info.hasVideoLink && !isSelected && (
+        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" />
+      )}
+      {info.hasVideoLink && isSelected && (
+        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" />
       )}
       {isExternal && (
         <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />

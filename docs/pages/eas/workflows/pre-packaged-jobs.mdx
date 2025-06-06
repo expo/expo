@@ -765,6 +765,101 @@ jobs:
 
 </Collapsible>
 
+## Maestro Cloud
+
+Run Maestro tests on Maestro Cloud.
+
+> **important** This requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+
+### Syntax
+
+```yaml
+jobs:
+  run_maestro_tests:
+    type: maestro-cloud
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required. ID of the build to test.
+      maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
+      flows: string # required. Path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.
+      maestro_api_key: string # optional, defaults to `$MAESTRO_CLOUD_API_KEY`
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_api_level: string # optional. Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
+      maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
+      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
+      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
+      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter          | Type   | Description                                                                                                                                                                                                              |
+| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| build_id           | string | Required. The ID of the build to test. Example: `${{ needs.build_android.outputs.build_id }}`.                                                                                                                           |
+| maestro_project_id | string | Required. The ID of the Maestro Cloud project to use. Corresponds to `--project-id` param to `maestro cloud`. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`. Go to [Maestro Cloud](https://app.maestro.dev/) to find yours. |
+| flows              | string | Required. The path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.                                                                                 |
+| maestro_api_key    | string | Optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.                                        |
+| include_tags       | string | Optional. The tags to include in the tests. Corresponds to `--include-tags` param to `maestro cloud`. Example: `"pull,push"`.                                                                                            |
+| exclude_tags       | string | Optional. The tags to exclude from the tests. Corresponds to `--exclude-tags` param to `maestro cloud`. Example: `"disabled"`.                                                                                           |
+| maestro_version    | string | Optional. The version of Maestro to use. Example: `1.30.0`.                                                                                                                                                              |
+| android_api_level  | string | Optional. The Android API level to use. Corresponds to `--android-api-level` param to `maestro cloud`. Example: `29`.                                                                                                    |
+| maestro_config     | string | Optional. The path to the Maestro `config.yaml` file to use. Corresponds to `--config` param to `maestro cloud`. Example: `.maestro/config.yaml`.                                                                        |
+| device_locale      | string | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                        |
+| device_model       | string | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro cloud --help` for a list of supported values.                       |
+| device_os          | string | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro cloud --help` for a list of supported values.                              |
+
+> **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
+
+### Examples
+
+Here are some practical examples of using the Maestro job:
+
+<Collapsible summary="Basic Maestro Cloud test">
+
+This workflow runs Maestro tests on an iOS Simulator build using the default settings.
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
+      flows: ./maestro/flows
+```
+
+</Collapsible>
+
+<Collapsible summary="Using Maestro prefixed environment variables">
+
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro-cloud
+    env:
+      MAESTRO_APP_ID: 'com.yourhost.yourapp'
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
+      flows: ./maestro/flows
+```
+
+</Collapsible>
+
 ## Slack
 
 Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).

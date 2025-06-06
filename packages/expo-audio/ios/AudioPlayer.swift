@@ -15,7 +15,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   let interval: Double
   var wasPlaying = false
   var isPaused: Bool {
-    ref.rate != 0.0
+    ref.rate == 0.0
   }
   var samplingEnabled = false
 
@@ -67,9 +67,14 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     samplingEnabled = enabled
     if enabled {
-      installTap()
+      if isLoaded {
+        installTap()
+      } else {
+        shouldInstallAudioTap = true
+      }
     } else {
       uninstallTap()
+      shouldInstallAudioTap = false
     }
   }
 
@@ -111,12 +116,21 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           self.updateStatus(with: [
             "isLoaded": true
           ])
-          // We can't add the audio tap until the asset has loaded, otherwise the asset track will be empty.
-          // This is particularly important after replacing the audio source
-          if shouldInstallAudioTap {
-            setSamplingEnabled(enabled: shouldInstallAudioTap)
+          if shouldInstallAudioTap || samplingEnabled {
+            installTap()
             shouldInstallAudioTap = false
           }
+        }
+      }
+      .store(in: &cancellables)
+
+    ref.publisher(for: \.currentItem)
+      .sink { [weak self] _ in
+        guard let self else {
+          return
+        }
+        if self.samplingEnabled && self.isLoaded {
+          self.installTap()
         }
       }
       .store(in: &cancellables)
@@ -129,10 +143,13 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     // Remove the audio tap if it is active
     if samplingEnabled {
-      setSamplingEnabled(enabled: false)
+      uninstallTap()
     }
     ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
-    shouldInstallAudioTap = wasSamplingEnabled
+
+    if wasSamplingEnabled {
+      shouldInstallAudioTap = true
+    }
 
     if wasPlaying {
       ref.play()
@@ -149,15 +166,29 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
 
     if let currentItem = ref.currentItem {
-      return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
+      return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
     }
     return true
   }
 
   private func installTap() {
-    if !tapInstalled {
-      audioProcessor = AudioTapProcessor(player: ref)
-      tapInstalled = audioProcessor?.installTap() ?? false
+    guard isLoaded else {
+      shouldInstallAudioTap = true
+      return
+    }
+
+    guard !tapInstalled else {
+      return
+    }
+
+    if audioProcessor != nil {
+      uninstallTap()
+    }
+
+    audioProcessor = AudioTapProcessor(player: ref)
+    tapInstalled = audioProcessor?.installTap() ?? false
+
+    if tapInstalled {
       audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
         guard let self,
         let audioBuffer = buffer?.pointee,
@@ -186,8 +217,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   private func uninstallTap() {
     tapInstalled = false
-    audioProcessor?.uninstallTap()
     audioProcessor?.sampleBufferCallback = nil
+    audioProcessor?.uninstallTap()
   }
 
   private func addPlaybackEndNotification() {
@@ -223,12 +254,23 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   public override func sharedObjectWillRelease() {
+    cancellables.removeAll()
+
+    if samplingEnabled {
+      samplingEnabled = false
+      uninstallTap()
+    }
+
     AudioComponentRegistry.shared.remove(self)
-    setSamplingEnabled(enabled: false)
+
     if let token = timeToken {
       ref.removeTimeObserver(token as Any)
     }
-    NotificationCenter.default.removeObserver(endObserver as Any)
+
+    if let endObserver {
+      NotificationCenter.default.removeObserver(endObserver)
+    }
+
     ref.pause()
   }
 }

@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -47,9 +48,8 @@ class AudioModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val httpClient = OkHttpClient()
 
-  private val players = mutableMapOf<String, AudioPlayer>()
-  private val recorders = mutableMapOf<String, AudioRecorder>()
-  private var appIsPaused = false
+  private val players = ConcurrentHashMap<String, AudioPlayer>()
+  private val recorders = ConcurrentHashMap<String, AudioRecorder>()
   private var staysActiveInBackground = false
   private var audioEnabled = true
   private var shouldRouteThroughEarpiece = false
@@ -58,35 +58,56 @@ class AudioModule : Module() {
 
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
-    when (focusChange) {
-      AudioManager.AUDIOFOCUS_LOSS,
-      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-        focusAcquired = false
-        players.values.forEach {
-          runOnMain {
-            it.player.pause()
+    appContext.mainQueue.launch {
+      when (focusChange) {
+        AudioManager.AUDIOFOCUS_LOSS -> {
+          focusAcquired = false
+          players.values.forEach { player ->
+            player.ref.pause()
           }
         }
-      }
 
-      AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-        focusAcquired = false
-        if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
-          players.values.forEach {
-            runOnMain {
-              it.player.volume /= 2f
+        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+          focusAcquired = false
+          players.values.forEach { player ->
+            if (player.ref.isPlaying) {
+              player.isPaused = true
+              player.ref.pause()
+            }
+          }
+        }
+
+        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
+          if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
+            players.values.forEach { player ->
+              player.ref.volume /= 2f
+            }
+          } else {
+            players.values.forEach { player ->
+              if (player.ref.isPlaying) {
+                player.isPaused = true
+                player.ref.pause()
+              }
+            }
+          }
+        }
+
+        AudioManager.AUDIOFOCUS_GAIN -> {
+          focusAcquired = true
+          players.values.forEach { player ->
+            player.setVolume(player.previousVolume)
+            if (player.isPaused) {
+              player.isPaused = false
+              player.ref.play()
             }
           }
         }
       }
-
-      AudioManager.AUDIOFOCUS_GAIN -> {
-        focusAcquired = true
-        players.values.forEach {
-          it.setVolume(it.previousVolume)
-        }
-      }
     }
+  }
+
+  private fun shouldReleaseFocus(): Boolean {
+    return players.values.none { it.ref.isPlaying }
   }
 
   private fun requestAudioFocus() {
@@ -116,11 +137,14 @@ class AudioModule : Module() {
         audioManager.requestAudioFocus(it)
       }
     } else {
+      @Suppress("DEPRECATION")
       audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
     }
 
-    if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-      Log.e(TAG, "Audio focus request failed")
+    if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+      focusAcquired = true
+    } else {
+      Log.e(TAG, "Audio focus request failed with: $result")
     }
   }
 
@@ -130,6 +154,7 @@ class AudioModule : Module() {
         audioManager.abandonAudioFocusRequest(it)
       }
     } else {
+      @Suppress("DEPRECATION")
       audioManager.abandonAudioFocus(audioFocusChangeListener)
     }
     focusAcquired = false
@@ -151,12 +176,12 @@ class AudioModule : Module() {
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
       audioEnabled = enabled
       if (!enabled) {
+        releaseAudioFocus()
         runOnMain {
           players.values.forEach {
-            if (it.player.isPlaying) {
-              it.player.pause()
+            if (it.ref.isPlaying) {
+              it.ref.pause()
             }
-            releaseAudioFocus()
           }
         }
       }
@@ -171,47 +196,41 @@ class AudioModule : Module() {
     }
 
     OnActivityEntersBackground {
-      if (!appIsPaused) {
-        appIsPaused = true
-        if (!staysActiveInBackground) {
-          releaseAudioFocus()
-          players.values.forEach { player ->
-            if (player.player.isPlaying) {
-              player.isPaused = true
-              player.ref.pause()
-            }
+      if (!staysActiveInBackground) {
+        releaseAudioFocus()
+        players.values.forEach { player ->
+          if (player.ref.isPlaying) {
+            player.isPaused = true
+            player.ref.pause()
           }
+        }
 
-          recorders.values.forEach { recorder ->
-            if (recorder.isRecording) {
-              recorder.pauseRecording()
-            }
+        recorders.values.forEach { recorder ->
+          if (recorder.isRecording) {
+            recorder.pauseRecording()
           }
         }
       }
     }
 
     OnActivityEntersForeground {
-      if (appIsPaused) {
-        appIsPaused = false
-        if (!staysActiveInBackground) {
-          requestAudioFocus()
-          players.values.forEach { player ->
-            if (player.isPaused) {
-              player.isPaused = false
-              player.ref.play()
-            }
+      if (!staysActiveInBackground) {
+        requestAudioFocus()
+        players.values.forEach { player ->
+          if (player.isPaused) {
+            player.isPaused = false
+            player.ref.play()
           }
+        }
 
-          recorders.values.forEach { recorder ->
-            if (recorder.isPaused) {
-              recorder.record()
-            }
+        recorders.values.forEach { recorder ->
+          if (recorder.isPaused) {
+            recorder.record()
           }
+        }
 
-          if (shouldRouteThroughEarpiece) {
-            updatePlaySoundThroughEarpiece(true)
-          }
+        if (shouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(true)
         }
       }
     }
@@ -220,7 +239,7 @@ class AudioModule : Module() {
       appContext.mainQueue.launch {
         releaseAudioFocus()
         players.values.forEach {
-          it.player.stop()
+          it.ref.stop()
         }
 
         recorders.values.forEach {
@@ -244,19 +263,19 @@ class AudioModule : Module() {
         }
       }
 
-      Property("id") { ref ->
-        ref.id
+      Property("id") { player ->
+        player.id
       }
 
-      Property("isBuffering") { ref ->
+      Property("isBuffering") { player ->
         runOnMain {
-          ref.player.playbackState == Player.STATE_BUFFERING
+          player.ref.playbackState == Player.STATE_BUFFERING
         }
       }
 
-      Property("currentStatus") { ref ->
+      Property("currentStatus") { player ->
         runOnMain {
-          ref.currentStatus()
+          player.currentStatus()
         }
       }
 
@@ -264,13 +283,13 @@ class AudioModule : Module() {
         true
       }
 
-      Property("loop") { ref ->
+      Property("loop") { player ->
         runOnMain {
-          ref.player.repeatMode == Player.REPEAT_MODE_ONE
+          player.ref.repeatMode == Player.REPEAT_MODE_ONE
         }
-      }.set { ref, isLooping: Boolean ->
+      }.set { player, isLooping: Boolean ->
         runOnMain {
-          ref.player.repeatMode = if (isLooping) {
+          player.ref.repeatMode = if (isLooping) {
             Player.REPEAT_MODE_ONE
           } else {
             Player.REPEAT_MODE_OFF
@@ -278,115 +297,124 @@ class AudioModule : Module() {
         }
       }
 
-      Property("isLoaded") { ref ->
+      Property("isLoaded") { player ->
         runOnMain {
-          ref.player.playbackState == Player.STATE_READY
+          player.ref.playbackState == Player.STATE_READY
         }
       }
 
-      Property("playing") { ref ->
+      Property("playing") { player ->
         runOnMain {
-          ref.player.isPlaying
+          player.ref.isPlaying
         }
       }
 
-      Property("muted") { ref ->
-        ref.isMuted
-      }.set { ref, muted: Boolean? ->
+      Property("muted") { player ->
+        player.isMuted
+      }.set { player, muted: Boolean? ->
         val newMuted = muted ?: false
-        ref.isMuted = newMuted
-        ref.setVolume(if (newMuted) 0f else ref.previousVolume)
+        player.isMuted = newMuted
+        player.setVolume(if (newMuted) 0f else player.previousVolume)
       }
 
-      Property("shouldCorrectPitch") { ref ->
-        ref.preservesPitch
-      }.set { ref, preservesPitch: Boolean ->
-        ref.preservesPitch = preservesPitch
+      Property("shouldCorrectPitch") { player ->
+        player.preservesPitch
+      }.set { player, preservesPitch: Boolean ->
+        player.preservesPitch = preservesPitch
       }
 
-      Property("currentTime") { ref ->
+      Property("currentTime") { player ->
         runOnMain {
-          ref.currentTime
+          player.currentTime
         }
       }
 
-      Property("duration") { ref ->
+      Property("duration") { player ->
         runOnMain {
-          ref.duration
+          player.duration
         }
       }
 
-      Property("playbackRate") { ref ->
+      Property("playbackRate") { player ->
         runOnMain {
-          ref.player.playbackParameters.speed
+          player.ref.playbackParameters.speed
         }
       }
 
-      Property("volume") { ref ->
+      Property("volume") { player ->
         runOnMain {
-          ref.player.volume
+          player.ref.volume
         }
       }.set { ref, volume: Float? ->
         ref.setVolume(volume)
       }
 
-      Function("play") { ref: AudioPlayer ->
+      Function("play") { player: AudioPlayer ->
         if (!audioEnabled) {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
         runOnMain {
-          if (!focusAcquired && players.values.any { it.player.isPlaying }) {
+          if (!focusAcquired) {
             requestAudioFocus()
           }
-          ref.player.play()
+          player.ref.play()
         }
       }
 
-      Function("pause") { ref: AudioPlayer ->
+      Function("pause") { player: AudioPlayer ->
         runOnMain {
-          ref.player.pause()
+          player.ref.pause()
+
+          if (shouldReleaseFocus()) {
+            releaseAudioFocus()
+          }
         }
       }
 
-      Function("replace") { ref: AudioPlayer, source: AudioSource ->
+      Function("replace") { player: AudioPlayer, source: AudioSource ->
         runOnMain {
-          if (ref.player.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+          if (player.ref.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
             val mediaSource = createMediaItem(source)
-            val wasPlaying = ref.player.isPlaying
+            val wasPlaying = player.ref.isPlaying
             mediaSource?.let {
-              ref.setMediaSource(it)
+              player.setMediaSource(it)
               if (wasPlaying) {
                 if (!focusAcquired) {
                   requestAudioFocus()
                 }
-                ref.player.play()
+                player.ref.play()
               }
             }
           }
         }
       }
 
-      Function("setAudioSamplingEnabled") { ref: AudioPlayer, enabled: Boolean ->
+      Function("setAudioSamplingEnabled") { player: AudioPlayer, enabled: Boolean ->
         runOnMain {
-          ref.setSamplingEnabled(enabled)
+          player.setSamplingEnabled(enabled)
         }
       }
 
-      AsyncFunction("seekTo") { ref: AudioPlayer, seekTime: Double ->
-        ref.player.seekTo((seekTime * 1000L).toLong())
+      AsyncFunction("seekTo") { player: AudioPlayer, seekTime: Double ->
+        player.ref.seekTo((seekTime * 1000L).toLong())
       }.runOnQueue(Queues.MAIN)
 
-      Function("setPlaybackRate") { ref: AudioPlayer, rate: Float ->
+      Function("setPlaybackRate") { player: AudioPlayer, rate: Float ->
         appContext.mainQueue.launch {
           val playbackRate = if (rate < 0) 0f else min(rate, 2.0f)
-          val pitch = if (ref.preservesPitch) 1f else playbackRate
-          ref.player.playbackParameters = PlaybackParameters(playbackRate, pitch)
+          val pitch = if (player.preservesPitch) 1f else playbackRate
+          player.ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
       }
 
-      Function("remove") { ref: AudioPlayer ->
-        players.remove(ref.id)
+      Function("remove") { player: AudioPlayer ->
+        val wasPlaying = player.ref.isPlaying
+        players.remove(player.id)
+
+        if (wasPlaying && shouldReleaseFocus()) {
+          releaseAudioFocus()
+        }
       }
     }
 
@@ -401,64 +429,64 @@ class AudioModule : Module() {
         recorder
       }
 
-      Property("id") { ref ->
-        ref.id
+      Property("id") { recorder ->
+        recorder.id
       }
 
-      Property("uri") { ref ->
-        ref.filePath?.let {
+      Property("uri") { recorder ->
+        recorder.filePath?.let {
           Uri.fromFile(File(it)).toString()
         } ?: ""
       }
 
-      Property("isRecording") { ref ->
-        ref.isRecording
+      Property("isRecording") { recorder ->
+        recorder.isRecording
       }
 
-      Property("currentTime") { ref ->
-        ref.startTime
+      Property("currentTime") { recorder ->
+        recorder.startTime
       }
 
-      AsyncFunction("prepareToRecordAsync") { ref: AudioRecorder, options: RecordingOptions? ->
+      AsyncFunction("prepareToRecordAsync") { recorder: AudioRecorder, options: RecordingOptions? ->
         checkRecordingPermission()
-        ref.prepareRecording(options)
+        recorder.prepareRecording(options)
       }
 
-      Function("record") { ref: AudioRecorder ->
+      Function("record") { recorder: AudioRecorder ->
         checkRecordingPermission()
-        if (ref.isPrepared) {
-          ref.record()
+        if (recorder.isPrepared) {
+          recorder.record()
         }
       }
 
-      Function("pause") { ref: AudioRecorder ->
+      Function("pause") { recorder: AudioRecorder ->
         checkRecordingPermission()
-        ref.pauseRecording()
+        recorder.pauseRecording()
       }
 
-      AsyncFunction("stop") { ref: AudioRecorder ->
+      AsyncFunction("stop") { recorder: AudioRecorder ->
         checkRecordingPermission()
-        ref.stopRecording()
+        recorder.stopRecording()
       }
 
-      Function("getStatus") { ref: AudioRecorder ->
+      Function("getStatus") { recorder: AudioRecorder ->
         try {
-          return@Function ref.getAudioRecorderStatus()
+          return@Function recorder.getAudioRecorderStatus()
         } catch (e: Exception) {
           throw e
         }
       }
 
-      AsyncFunction("getCurrentInput") { ref: AudioRecorder ->
-        ref.getCurrentInput(audioManager)
+      AsyncFunction("getCurrentInput") { recorder: AudioRecorder ->
+        recorder.getCurrentInput(audioManager)
       }
 
-      Function("getAvailableInputs") { ref: AudioRecorder ->
-        return@Function ref.getAvailableInputs(audioManager)
+      Function("getAvailableInputs") { recorder: AudioRecorder ->
+        return@Function recorder.getAvailableInputs(audioManager)
       }
 
-      Function("setInput") { ref: AudioRecorder, input: String ->
-        ref.setInput(input, audioManager)
+      Function("setInput") { recorder: AudioRecorder, input: String ->
+        recorder.setInput(input, audioManager)
       }
     }
   }
@@ -501,6 +529,7 @@ class AudioModule : Module() {
     }
   }
 
+  @Suppress("DEPRECATION")
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
     audioManager.mode = if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
