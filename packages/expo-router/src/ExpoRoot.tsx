@@ -169,6 +169,7 @@ function ContextNavigator({
   );
 }
 
+// TODO: Use Native Stack for base slot
 function Content() {
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,

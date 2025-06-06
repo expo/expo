@@ -149,6 +149,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
       </NavigationContainer_1.NavigationContainer>
     </storeContext_1.StoreContext.Provider>);
 }
+// TODO: Use Native Stack for base slot
 function Content() {
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
