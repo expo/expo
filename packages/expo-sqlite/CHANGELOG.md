@@ -10,6 +10,7 @@
 
 - [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
 - Fixed exceptions when SQLite session API returns empty buffer. ([#37246](https://github.com/expo/expo/pull/37246) by [@kudo](https://github.com/kudo))
+- Fixed minimum OS version support for libsql.xcframework. ([#37130](https://github.com/expo/expo/pull/37130) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
