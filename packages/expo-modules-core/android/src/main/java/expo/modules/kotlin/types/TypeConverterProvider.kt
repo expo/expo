@@ -313,7 +313,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
         BooleanArray(jsArray.size()) { index ->
           jsArray.getBoolean(index)
         }
-      },
+      }
     )
   }
 }
