@@ -30,9 +30,9 @@
   }
 }
 
-- (void)updatePreloadedView:(int)tag withUiResponder:(UIResponder *)responder {
-  if (tag > 0) {
-    preloadedScreenView = [self findPreloadedScreenViewWithScreenKey:tag withUiResponder:responder];
+- (void)updatePreloadedView:(NSString *)screenId withUiResponder:(UIResponder *)responder {
+  if (screenId != nil && [screenId length] > 0) {
+    preloadedScreenView = [self findPreloadedScreenViewWithScreenId:screenId withUiResponder:responder];
   } else {
     preloadedScreenView = nil;
   }
@@ -72,17 +72,17 @@
   return nil; // No preloaded screen view found.
 }
 
-- (RNSScreenView *)findPreloadedScreenViewWithScreenKey:(int)screenKey withUiResponder:(UIResponder *)responder {
+- (RNSScreenView *)findPreloadedScreenViewWithScreenId:(NSString*)screenId withUiResponder:(UIResponder *)responder {
   RNSScreenStackView *stack = [self findScreenStackViewInResponderChain:responder];
 
-  NSLog(@"Screen Key: %d", screenKey);
+  NSLog(@"Screen Id: %@", screenId);
   if (stack) {
     NSArray<UIView *> *subviews = stack.reactSubviews;
 
     NSArray<RNSScreenView *> *screenSubviews =
         [self extractScreenViewsFromSubviews:subviews];
     for (RNSScreenView *screenView in screenSubviews) {
-      if (screenView.activityState == 0 && screenView.tag == screenKey) {
+      if (screenView.activityState == 0 && [screenView.screenId isEqualToString:screenId]) {
         return screenView;
       }
     }

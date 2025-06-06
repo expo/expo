@@ -7,7 +7,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     private var trigger: PeekAndPopTriggerView?
     private var preview: PeekAndPopPreviewView?
     private var interaction: UIContextMenuInteraction?
-    private var nextScreenTag: Int?
+    private var nextScreenId: String?
 
     private let peekAndPopNavigation: PeekAndPopNavigation = PeekAndPopNavigation()
 
@@ -22,9 +22,9 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
         self.interaction = UIContextMenuInteraction(delegate: self)
     }
 
-    func setNextScreenTag(_ tag: Int) {
-        self.nextScreenTag = tag
-        peekAndPopNavigation.updatePreloadedView(Int32(tag), with: self)
+    func setNextScreenId(_ screenId: String) {
+        self.nextScreenId = screenId
+        peekAndPopNavigation.updatePreloadedView(screenId, with: self)
     }
 
     /**

@@ -217,27 +217,20 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
     undefined
   );
 
-  const { preload, updateNativeTag, nativeTag, navigationKey, isValid } = useScreenPreload(
-    rest.href
-  );
+  const { preload, updateNavigationKey, navigationKey } = useScreenPreload(rest.href);
 
   useEffect(() => {
-    if (!isValid) {
-      console.warn(
-        `Preview link is not within react-native-screens stack. The preview will not work [${rest.href}]`
-      );
-    }
     if (isExternal(String(rest.href))) {
       console.warn('External links previews are not supported');
     }
     if (rest.replace) {
       console.warn('Using replace links with preview is not supported');
     }
-  }, [isValid, rest.href, rest.replace]);
+  }, [rest.href, rest.replace]);
 
   console.log(rest);
 
-  if (!isValid || isExternal(String(rest.href)) || rest.replace) {
+  if (isExternal(String(rest.href)) || rest.replace) {
     return <ExpoRouterLink {...rest} />;
   }
 
@@ -246,13 +239,13 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
   // TODO: add a way to add and customize preview actions
   return (
     <PeekAndPopView
-      nextScreenKey={nativeTag ?? 0}
+      nextScreenId={navigationKey}
       onWillPreviewOpen={() => {
         preload();
         setIsPreviewOpen(true);
         setIsCurrenPreviewOpen(true);
         // We need to wait here for the screen to preload. This will happen in the next tick
-        setTimeout(updateNativeTag);
+        setTimeout(updateNavigationKey);
       }}
       onPreviewWillClose={() => {}}
       onPreviewDidClose={() => {

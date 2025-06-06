@@ -143,30 +143,27 @@ function LinkWithPreview({ experimentalPreview, ...rest }) {
     const { setIsPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
     const [previewSize, setPreviewSize] = (0, react_1.useState)(undefined);
-    const { preload, updateNativeTag, nativeTag, navigationKey, isValid } = (0, hooks_2.useScreenPreload)(rest.href);
+    const { preload, updateNavigationKey, navigationKey } = (0, hooks_2.useScreenPreload)(rest.href);
     (0, react_1.useEffect)(() => {
-        if (!isValid) {
-            console.warn(`Preview link is not within react-native-screens stack. The preview will not work [${rest.href}]`);
-        }
         if (isExternal(String(rest.href))) {
             console.warn('External links previews are not supported');
         }
         if (rest.replace) {
             console.warn('Using replace links with preview is not supported');
         }
-    }, [isValid, rest.href, rest.replace]);
+    }, [rest.href, rest.replace]);
     console.log(rest);
-    if (!isValid || isExternal(String(rest.href)) || rest.replace) {
+    if (isExternal(String(rest.href)) || rest.replace) {
         return <ExpoRouterLink {...rest}/>;
     }
     console.log('previewSize', previewSize);
     // TODO: add a way to add and customize preview actions
-    return (<native_1.PeekAndPopView nextScreenKey={nativeTag ?? 0} onWillPreviewOpen={() => {
+    return (<native_1.PeekAndPopView nextScreenId={navigationKey} onWillPreviewOpen={() => {
             preload();
             setIsPreviewOpen(true);
             setIsCurrenPreviewOpen(true);
             // We need to wait here for the screen to preload. This will happen in the next tick
-            setTimeout(updateNativeTag);
+            setTimeout(updateNavigationKey);
         }} onPreviewWillClose={() => { }} onPreviewDidClose={() => {
             setIsPreviewOpen(false);
             setIsCurrenPreviewOpen(false);

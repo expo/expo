@@ -11,8 +11,8 @@ public class PeekAndPopModule: Module {
     Name("PeekAndPop")
 
     View(PeekAndPopView.self) {
-      Prop("nextScreenKey") { (view: PeekAndPopView, key: Int) in
-        view.setNextScreenTag(key)
+      Prop("nextScreenId") { (view: PeekAndPopView, nextScreenId: String) in
+        view.setNextScreenId(nextScreenId)
       }
 
       Events(

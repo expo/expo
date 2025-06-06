@@ -6,23 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useScreenPreload = useScreenPreload;
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const react_1 = require("react");
-const react_native_screens_1 = require("react-native-screens");
 const Preview_1 = require("./Preview");
 const hooks_1 = require("../../hooks");
 const useNavigation_1 = require("../../useNavigation");
-function useScreensRef() {
-    return (0, react_1.use)(react_native_screens_1.RNSScreensRefContext);
-}
 function useScreenPreload(href) {
     const navigation = (0, useNavigation_1.useNavigation)();
-    // TODO: replace this with native screen key, once react-native-screens releases this change
-    const screensRef = useScreensRef();
     const router = (0, hooks_1.useRouter)();
-    const [nativeTag, setNativeTag] = (0, react_1.useState)();
     const [navigationKey, setNavigationKey] = (0, react_1.useState)();
     const { params, routeNode } = (0, react_1.useMemo)(() => (0, Preview_1.getParamsAndNodeFromHref)(href), [href]);
-    const isValid = !!screensRef;
-    const updateNativeTag = (0, react_1.useCallback)(() => {
+    // TODO: check if this can be done with listener to navigation state
+    const updateNavigationKey = (0, react_1.useCallback)(() => {
         const state = getLeafState(navigation.getState());
         if (state?.type !== 'stack') {
             console.warn('Peek and Pop only supports stack navigators');
@@ -36,10 +29,6 @@ function useScreenPreload(href) {
             }
             return r.name === routeNode?.route && (0, fast_deep_equal_1.default)(r.params, params);
         })?.key;
-        const nativeTag = routeKey
-            ? screensRef?.current[routeKey]?.current?.__nativeTag
-            : undefined;
-        setNativeTag(nativeTag);
         setNavigationKey(routeKey);
     }, [params, routeNode]);
     const preload = (0, react_1.useCallback)(() => {
@@ -47,9 +36,7 @@ function useScreenPreload(href) {
     }, [href]);
     return {
         preload,
-        updateNativeTag,
-        isValid,
-        nativeTag,
+        updateNavigationKey,
         navigationKey,
     };
 }

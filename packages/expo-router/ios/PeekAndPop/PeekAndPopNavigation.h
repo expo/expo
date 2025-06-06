@@ -12,7 +12,7 @@
 
 @interface PeekAndPopNavigation:NSObject
 
-- (void)updatePreloadedView:(int)tag withUiResponder:(UIResponder *)responder;
+- (void)updatePreloadedView:(NSString *)screenId withUiResponder:(UIResponder *)responder;
 - (void)pushPreloadedView:(UIResponder *)responder;
 
 @end

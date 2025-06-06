@@ -10,7 +10,7 @@ export interface PeekAndPopPreviewViewProps extends ViewProps {
 export interface PeekAndPopTriggerViewProps extends ViewProps {
 }
 export interface PeekAndPopViewProps extends ViewProps {
-    nextScreenKey: number;
+    nextScreenId: string | undefined;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
     onPreviewWillClose?: () => void;
