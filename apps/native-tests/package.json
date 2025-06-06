@@ -16,9 +16,9 @@
     "expo-notifications": "~0.31.2",
     "expo-splash-screen": "~0.30.8",
     "native-component-list": "*",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-native": "0.79.2"
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.80.0-rc.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
