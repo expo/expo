@@ -1,9 +1,12 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.NullArgumentException
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 
@@ -18,9 +21,9 @@ class AnyTypeConverter : DynamicAwareTypeConverters<Any>() {
     return when (value.type) {
       ReadableType.Boolean -> value.asBoolean()
       ReadableType.Number -> value.asDouble()
-      ReadableType.String -> value.asString()
-      ReadableType.Map -> value.asMap().toHashMap()
-      ReadableType.Array -> value.asArray().toArrayList()
+      ReadableType.String -> value.asString() ?: throw DynamicCastException(String::class)
+      ReadableType.Map -> (value.asMap()  ?: throw DynamicCastException(ReadableMap::class)).toHashMap()
+      ReadableType.Array -> (value.asArray()  ?: throw DynamicCastException(ReadableArray::class)).toArrayList()
       ReadableType.Null -> throw NullArgumentException()
     }
   }

@@ -6,11 +6,13 @@ import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
 import androidx.core.graphics.toColorInt
+import com.facebook.react.bridge.ReadableArray
 
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
@@ -175,9 +177,9 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
-      ReadableType.String -> colorFromString(value.asString())
+      ReadableType.String -> colorFromString(value.asString() ?: throw DynamicCastException(String::class))
       ReadableType.Array -> {
-        val colorsArray = value.asArray().toArrayList().map { it as Double }.toDoubleArray()
+        val colorsArray = (value.asArray() ?: throw DynamicCastException(ReadableArray::class)).toArrayList().map { it as Double }.toDoubleArray()
         colorFromDoubleArray(colorsArray)
       }
       else -> throw UnexpectedException("Unknown argument type: ${value.type}")
