@@ -27,7 +27,7 @@ function importHermesCommandFromProject(): string {
 
   for (const hermescPath of hermescPaths) {
     try {
-       if (fs.existsSync(hermescPath)) {
+      if (fs.existsSync(hermescPath)) {
         return hermescPath;
       }
     } catch {}
