@@ -370,11 +370,7 @@ export function withExtendedResolver(
           return false;
         }
 
-        // return /^(react|url|whatwg-fetch)$/.test(moduleName);
-        return (
-          /^native:(react|url|whatwg-fetch)$/.test(moduleName) ||
-          /^(react|url|whatwg-fetch)$/.test(moduleName)
-        );
+        return /^(native:)?(react|url|whatwg-fetch|react-devtools-core)$/.test(moduleName);
       },
       replace: 'builtin',
     },

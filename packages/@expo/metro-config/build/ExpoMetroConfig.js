@@ -87,6 +87,7 @@ function createStableModuleIdFactory(root) {
             'node_modules/react/index.js': 'native:react',
             'node_modules/url/url.js': 'native:url',
             'node_modules/whatwg-fetch/dist/fetch.umd.js': 'native:whatwg-fetch',
+            'node_modules/react-devtools-core/dist/backend.js': 'native:react-devtools-core',
         };
         const getModulePath = (modulePath, scope) => {
             // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
