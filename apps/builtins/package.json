@@ -1,0 +1,29 @@
+{
+  "name": "@expo/builtins",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "bundle": "expo export:builtin  -p ios --pkg index.ts --no-minify --dev"
+  },
+  "dependencies": {
+    "@expo/dom-webview": "0.1.4",
+    "expo": "~53.0.9",
+    "expo-haptics": "~14.1.4",
+    "expo-linking": "~7.1.5",
+    "expo-router": "^5.0.7",
+    "expo-speech": "~13.1.7",
+    "expo-sqlite": "~15.2.10",
+    "react": "19.0.0",
+    "react-native": "0.79.2",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "4.10.0",
+    "react-native-webview": "13.13.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "morgan": "^1.10.0",
+    "tailwindcss": "^3.3.5",
+    "tiny": "^0.0.10"
+  },
+  "private": true
+}
