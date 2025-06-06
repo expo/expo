@@ -24,8 +24,6 @@ function importHermesCommandFromProject() {
         `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
         // Prebuilt hermesc in official react-native 0.69+
         `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
-        // Legacy hermes-engine package
-        `hermes-engine/${platformExecutable}`,
     ];
     for (const hermescPath of hermescPaths) {
         try {
