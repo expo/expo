@@ -384,6 +384,8 @@ describe('built-in plugins', () => {
         'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp',
         'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp',
         'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp',
+        'android/app/src/main/res/values-b+en/strings.xml',
+        'android/app/src/main/res/values-b+es/strings.xml',
         'android/app/src/main/res/values/colors.xml',
         'android/app/src/main/res/values/strings.xml',
         'android/app/src/main/res/values/styles.xml',

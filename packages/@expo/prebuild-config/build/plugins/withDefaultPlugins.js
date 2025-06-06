@@ -186,7 +186,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // plugin or withScheme will override the output of withAndroidIntentFilters.
   _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions,
   // strings.xml
-  _configPlugins().AndroidConfig.Name.withName,
+  _configPlugins().AndroidConfig.Name.withName, _configPlugins().AndroidConfig.Locales.withLocales,
   // Dangerous -- these plugins run in reverse order.
   _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid, _ReactNative78CompatPlugin().withSdk52ReactNative78CompatAndroid,
   // Modify colors.xml and styles.xml
