@@ -351,6 +351,21 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'Golden Workflow: Automate the creation of development builds',
+    event: 'EAS Tutorials',
+    videoId: 'u8MAJ0F18s0',
+  },
+  {
+    title: 'Golden Workflow: Share preview updates with your team',
+    event: 'EAS Tutorials',
+    videoId: 'v_rzRcVSQYQ',
+  },
+  {
+    title: 'Golden Workflow: Deploy your app to production with an automated workflow',
+    event: 'EAS Tutorials',
+    videoId: 'o-peODF6E2o',
+  },
+  {
     title: 'How to publish your AI app to the app store | No code needed',
     event: 'Expo Tutorials',
     videoId: 'T1akm3DPNus',
