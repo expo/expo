@@ -376,16 +376,19 @@ export function withExtendedResolver(
 
         
         let match = /^(native:)?(react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(moduleName);
-
+        
         if (!match) {
           if (context.originModulePath.endsWith('InitializeCore.js') && moduleName.startsWith('../../src/private/setup/setUpDOM')) {
             match = true;
             return {
               name: 'react-native/src/private/setup/setUpDOM',
               match: true,
-
+              
             }
           } 
+
+          // TODO: Account for .js extensions.
+          match = /^(native:)?(react-native|react-native\/index|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(moduleName);
           // else if (
           //   context.originModulePath.includes('/react-native/') &&
           //   moduleName.includes('/ReactNative/RendererProxy')

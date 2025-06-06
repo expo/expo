@@ -144,6 +144,23 @@ export function createStableModuleIdFactory(
       "node_modules/anser/lib/index.js": 'native:anser',
       "node_modules/react-native/src/private/setup/setUpDOM.js": 'native:react-native/src/private/setup/setUpDOM',
       "node_modules/scheduler/index.native.js": 'native:scheduler',
+
+      ///
+      "node_modules/react-native/index.js": "native:react-native",
+      "node_modules/react-native/Libraries/Core/InitializeCore.js": "native:react-native/Libraries/Core/InitializeCore",
+      'node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlags.js': 'native:react-native/src/private/featureflags/ReactNativeFeatureFlags',
+      'node_modules/react-native/Libraries/NativeComponent/NativeComponentRegistry.js': 'native:react-native/Libraries/NativeComponent/NativeComponentRegistry',
+      "node_modules/react-native/Libraries/Utilities/PolyfillFunctions.js": "native:react-native/Libraries/Utilities/PolyfillFunctions",
+      "node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInterface.js": "native:react-native/Libraries/ReactPrivate/ReactNativePrivateInterface",
+      "node_modules/react-native/Libraries/Image/resolveAssetSource.js": "native:react-native/Libraries/Image/resolveAssetSource",
+      "node_modules/react-native/Libraries/StyleSheet/processColor.js": "native:react-native/Libraries/StyleSheet/processColor",
+      "node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js": "native:react-native/Libraries/NativeComponent/ViewConfigIgnore",
+      "node_modules/react-native/Libraries/StyleSheet/processColorArray.js": "native:react-native/Libraries/StyleSheet/processColorArray",
+      "node_modules/react-native/Libraries/NativeModules/specs/NativeSourceCode.js": "native:react-native/Libraries/NativeModules/specs/NativeSourceCode",
+      "node_modules/react-native/Libraries/Image/AssetSourceResolver.js": "native:react-native/Libraries/Image/AssetSourceResolver",
+      "node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js": "native:react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
+
+
       // 'node_modules/@react-native/virtualized-lists/index.js': 'native:@react-native/virtualized-lists',
       // base64-js
 
