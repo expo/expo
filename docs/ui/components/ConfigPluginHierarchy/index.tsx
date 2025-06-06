@@ -21,6 +21,16 @@ const nodeHandleStyles = `
     background-color: #94a3b8 !important;
     border: 1px solid #94a3b8 !important;
   }
+
+  .react-flow__attribution {
+    background-color: var(--palette-gray2) !important;
+    color: var(--palette-gray11) !important;
+    border: 1px solid var(--palette-gray6) !important;
+  }
+
+  .react-flow__attribution a {
+    color: var(--palette-gray11) !important;
+  }
 `;
 
 type NodeData = {
@@ -165,7 +175,7 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
         panOnDrag={false}
         zoomOnScroll={false}
         zoomOnDoubleClick={false}>
-        <Background color="#ffffff" variant={BackgroundVariant.Dots} gap={8} size={1} />
+        <Background variant={BackgroundVariant.Dots} gap={16} size={0.3} />
       </ReactFlow>
     </div>
   );
