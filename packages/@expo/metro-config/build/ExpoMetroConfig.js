@@ -98,6 +98,7 @@ function createStableModuleIdFactory(root) {
             'node_modules/invariant/browser.js': 'native:invariant',
             'node_modules/regenerator-runtime/runtime.js': 'native:regenerator-runtime/runtime',
             'node_modules/react-refresh/runtime.js': 'native:react-refresh/runtime',
+            // 'node_modules/@react-native/virtualized-lists/index.js': 'native:@react-native/virtualized-lists',
             // base64-js
         };
         const getModulePath = (modulePath, scope) => {

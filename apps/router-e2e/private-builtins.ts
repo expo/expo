@@ -11,3 +11,4 @@ import 'event-target-shim';
 import 'invariant';
 import 'regenerator-runtime/runtime';
 import 'react-refresh/runtime';
+// import '@react-native/virtualized-lists';
