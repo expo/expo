@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Fix ES6 import syntax inconsistency in setup.js by converting to CommonJS require. ([#37240](https://github.com/expo/expo/pull/37240) by [@huextrat](https://github.com/huextrat))
+
 - Rework mock generation for expo modules. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
 
 ## 53.0.5 — 2025-05-06
