@@ -8,8 +8,6 @@
 package com.facebook.react.devsupport
 
 import android.content.Context
-//import com.facebook.debug.holder.PrinterHolder.printer
-//import com.facebook.debug.tags.ReactDebugOverlayTags
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
