@@ -163,8 +163,7 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
         nodesConnectable={false}
         elementsSelectable={false}
         panOnDrag={false}
-        zoomOnScroll
-        zoomOnPinch
+        zoomOnScroll={false}
         zoomOnDoubleClick={false}>
         <Background color="#ffffff" variant={BackgroundVariant.Dots} gap={8} size={1} />
       </ReactFlow>
