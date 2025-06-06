@@ -34,6 +34,7 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
+import { memoize } from '../../../utils/fn';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -322,7 +323,8 @@ export function withExtendedResolver(
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
   const externals: {
-    match: (context: ResolutionContext, moduleName: string, platform: string | null) => boolean;
+    match: (context: ResolutionContext, moduleName: string, platform: string | null) => boolean | { name: string, match: boolean};
+    
     replace: 'empty' | 'node' | 'weak' | 'builtin';
   }[] = [
     {
@@ -370,7 +372,37 @@ export function withExtendedResolver(
           return false;
         }
 
-        return /^(native:)?(react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime)$/.test(moduleName);
+
+
+        
+        let match = /^(native:)?(react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM)$/.test(moduleName);
+
+        if (!match) {
+          if (context.originModulePath.endsWith('InitializeCore.js') && moduleName.startsWith('../../src/private/setup/setUpDOM')) {
+            match = true;
+            return {
+              name: 'react-native/src/private/setup/setUpDOM',
+              match: true,
+
+            }
+          } 
+          // else if (
+          //   context.originModulePath.includes('/react-native/') &&
+          //   moduleName.includes('/ReactNative/RendererProxy')
+          // ) {
+          //   match = true;
+          //   return {
+          //     name: 'react-native/Libraries/ReactNative/RendererProxy',
+          //     match: true,
+          //   };
+          // }
+        }
+
+        if (!match && !moduleName.startsWith('.') && moduleName.includes('/')) {
+          
+          memoLog(moduleName)
+        }
+        return match;
       },
       replace: 'builtin',
     },
@@ -405,6 +437,8 @@ export function withExtendedResolver(
       replace: 'weak',
     },
   ];
+
+  const memoLog = memoize(console.log)
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
@@ -525,7 +559,9 @@ export function withExtendedResolver(
       const strictResolve = getStrictResolver(context, platform);
 
       for (const external of externals) {
-        if (external.match(context, moduleName, platform)) {
+        const results = external.match(context, moduleName, platform);
+        if (results) {
+          const interopName = typeof results === 'object' ? results.name : moduleName;
           if (external.replace === 'empty') {
             debug(`Redirecting external "${moduleName}" to "${external.replace}"`);
             return {
@@ -569,9 +605,9 @@ export function withExtendedResolver(
               filePath: virtualModuleId,
             };
           } else if (external.replace === 'builtin') {
-            const contents = `module.exports=__native__r('native:${moduleName.replace(/^native:/, '')}')`;
-            const virtualModuleId = `\0native:${moduleName}`;
-            debug('Virtualizing Native built-in (custom):', moduleName, '->', virtualModuleId);
+            const contents = `module.exports=__native__r('native:${interopName.replace(/^native:/, '')}')`;
+            const virtualModuleId = `\0native:${interopName}`;
+            debug('Virtualizing Native built-in (custom):', interopName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
               contents

@@ -98,6 +98,11 @@ function createStableModuleIdFactory(root) {
             'node_modules/invariant/browser.js': 'native:invariant',
             'node_modules/regenerator-runtime/runtime.js': 'native:regenerator-runtime/runtime',
             'node_modules/react-refresh/runtime.js': 'native:react-refresh/runtime',
+            "node_modules/react-native/Libraries/ReactNative/RendererProxy.js": 'native:react-native/Libraries/ReactNative/RendererProxy',
+            "node_modules/react/jsx-dev-runtime.js": 'native:react/jsx-dev-runtime',
+            "node_modules/@react-native/normalize-colors/index.js": 'native:@react-native/normalize-colors',
+            "node_modules/anser/lib/index.js": 'native:anser',
+            "node_modules/react-native/src/private/setup/setUpDOM.js": 'native:react-native/src/private/setup/setUpDOM',
             // 'node_modules/@react-native/virtualized-lists/index.js': 'native:@react-native/virtualized-lists',
             // base64-js
         };
@@ -324,7 +329,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformerPath: require.resolve('./transform-worker/transform-worker'),
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
-            globalPrefix: process.env.EXPO_BUNDLE_BUILT_IN ? '__native' : undefined,
+            globalPrefix: process.env.EXPO_BUNDLE_BUILT_IN ? '__native' : '',
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
             // @ts-expect-error: not on type.

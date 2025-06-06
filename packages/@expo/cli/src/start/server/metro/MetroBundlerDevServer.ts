@@ -869,7 +869,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
 
     if (output.assets?.length) {
-      throw new Error('Bundling built-in modules with assets is not supported.');
+      Log.error('assets', output.assets.map((asset) => path.join(asset.fileSystemLocation, asset.name)).join('\n'));
+      // throw new Error('Bundling built-in modules with assets is not supported.');
     }
 
     return {
