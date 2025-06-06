@@ -30,6 +30,7 @@ const customPlatforms_1 = require("./utils/customPlatforms");
 const filePath_1 = require("./utils/filePath");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutExotic = false;
+let hasWarnedAboutCustomPlatforms = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
@@ -129,6 +130,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     if (isExotic && !hasWarnedAboutExotic) {
         hasWarnedAboutExotic = true;
         console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
+    }
+    if (unstable_outOfTreePlatforms && !hasWarnedAboutCustomPlatforms) {
+        hasWarnedAboutCustomPlatforms = true;
+        console.log(chalk_1.default.yellow(`\u203A Out-Of-Tree Platforms are not officially supported by Expo and may not work with EAS, CNG, or other Expo features.`));
     }
     const reactNativePath = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
     const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };

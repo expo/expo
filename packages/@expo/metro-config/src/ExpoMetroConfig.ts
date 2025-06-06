@@ -77,6 +77,7 @@ export interface DefaultConfigOptions {
 }
 
 let hasWarnedAboutExotic = false;
+let hasWarnedAboutCustomPlatforms = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -203,6 +204,15 @@ export function getDefaultConfig(
     console.log(
       chalk.gray(
         `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
+      )
+    );
+  }
+
+  if (unstable_outOfTreePlatforms && !hasWarnedAboutCustomPlatforms) {
+    hasWarnedAboutCustomPlatforms = true;
+    console.log(
+      chalk.yellow(
+        `\u203A Out-Of-Tree Platforms are not officially supported by Expo and may not work with EAS, CNG, or other Expo features.`
       )
     );
   }
