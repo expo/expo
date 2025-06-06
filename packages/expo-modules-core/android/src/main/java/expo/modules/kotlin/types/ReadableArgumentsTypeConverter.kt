@@ -11,7 +11,7 @@ import expo.modules.kotlin.jni.ExpectedType
 
 class ReadableArgumentsTypeConverter() : DynamicAwareTypeConverters<ReadableArguments>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): ReadableArguments {
-    return MapArguments((value.asMap() ?: throw DynamicCastException("map")).toHashMap())
+    return MapArguments((value.asMap() ?: throw DynamicCastException(ReadableMap::class)).toHashMap())
   }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): ReadableArguments {

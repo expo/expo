@@ -13,7 +13,7 @@ import expo.modules.kotlin.exception.DynamicCastException
 class UriTypeConverter : DynamicAwareTypeConverters<Uri>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Uri {
     val stringUri = value.asString()
-    return stringUri?.toUri() ?: throw DynamicCastException("uri")
+    return stringUri?.toUri() ?: throw DynamicCastException(Uri::class)
   }
 
   override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Uri {

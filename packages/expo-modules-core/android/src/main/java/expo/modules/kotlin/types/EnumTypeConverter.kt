@@ -39,7 +39,7 @@ class EnumTypeConverter(
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException("string"), enumConstants)
+      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException(String::class), enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
         value,

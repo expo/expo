@@ -28,7 +28,7 @@ class MapTypeConverter(
   )
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Map<*, *> {
-    val jsMap = value.asMap() ?: throw DynamicCastException("map")
+    val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
     return convertFromReadableMap(jsMap, context, forceConversion)
   }
 

@@ -249,9 +249,9 @@ internal class CollectionElementCastException private constructor(
 
 @DoNotStrip
 class DynamicCastException(
-  typeName: String
+  type: KClass<*>
 ) : CodedException(
-  message = "Could not cast dynamic value to '$typeName'."
+  message = "Could not cast dynamic value to '${type.qualifiedName}'."
 )
 
 @DoNotStrip

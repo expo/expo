@@ -21,7 +21,7 @@ class SetTypeConverter(
   )
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Set<*> {
-    val jsArray = value.asArray() ?: throw DynamicCastException("array")
+    val jsArray = value.asArray() ?: throw DynamicCastException(ReadableArray::class)
     return convertFromReadableArray(jsArray, context, forceConversion)
   }
 

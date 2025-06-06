@@ -1,6 +1,8 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.DynamicCastException
 
 class ExpoDynamic(private val dynamic: Dynamic) {
@@ -33,7 +35,7 @@ class ExpoDynamic(private val dynamic: Dynamic) {
     }
 
   fun asArray(): List<Any?> {
-    return (dynamic.asArray() ?: throw DynamicCastException("array")).toArrayList()
+    return (dynamic.asArray() ?: throw DynamicCastException(ReadableArray::class)).toArrayList()
   }
 
   fun asBoolean(): Boolean {
@@ -49,10 +51,10 @@ class ExpoDynamic(private val dynamic: Dynamic) {
   }
 
   fun asMap(): Map<String, Any?> {
-    return (dynamic.asMap() ?: throw DynamicCastException("map")).toHashMap()
+    return (dynamic.asMap() ?: throw DynamicCastException(ReadableMap::class)).toHashMap()
   }
 
   fun asString(): String {
-    return dynamic.asString() ?: throw DynamicCastException("string")
+    return dynamic.asString() ?: throw DynamicCastException(String::class)
   }
 }

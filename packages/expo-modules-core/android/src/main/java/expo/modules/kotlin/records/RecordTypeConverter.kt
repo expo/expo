@@ -1,6 +1,7 @@
 package expo.modules.kotlin.records
 
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.allocators.ObjectConstructor
@@ -50,7 +51,7 @@ class RecordTypeConverter<T : Record>(
 
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T =
     exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
-      val jsMap = value.asMap() ?: throw DynamicCastException("map")
+      val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
       return convertFromReadableMap(jsMap, context, forceConversion)
     }
 

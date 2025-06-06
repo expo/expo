@@ -37,7 +37,7 @@ class ListTypeConverter(
       )
     }
 
-    val jsArray = value.asArray() ?: throw DynamicCastException("array")
+    val jsArray = value.asArray() ?: throw DynamicCastException(ReadableArray::class)
     return convertFromReadableArray(jsArray, context, forceConversion)
   }
 
