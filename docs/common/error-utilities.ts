@@ -493,6 +493,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/create-pages/': '/router/basics/core-concepts/',
   '/router/layouts/': '/router/basics/layout/',
 
+  // After updating config plugin section
+  '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
+
   // After merging registerRootComponent info in `expo` API reference
   '/versions/v53.0.0/sdk/register-root-component/':
     '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
