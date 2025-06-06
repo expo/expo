@@ -92,7 +92,6 @@ open class NonFinalBridgeDevSupportManager(
     // dismiss redbox if exists
     hideRedboxDialog()
 
-    //printer.logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: load from Server")
     val bundleURL = devServerHelper.getDevServerBundleURL(Assertions.assertNotNull(jsAppBundleName))
     reloadJSFromServer(bundleURL) {
       UiThreadUtil.runOnUiThread { reactInstanceDevHelper.onJSBundleLoadedFromServer() }
