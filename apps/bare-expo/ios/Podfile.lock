@@ -4293,7 +4293,7 @@ SPEC CHECKSUMS:
   EXNotifications: f0f1c97d04f06c51ea073d7b2396431e5611c1ea
   Expo: 449fa5f24115c93d2573a8f012ace3187e3b02a5
   expo-dev-client: b32e7e9c0a420a5256e38b12e8eebbf14a7031ed
-  expo-dev-launcher: d2f62aae6c777d65233c8d3546dbdf5f85c0f667
+  expo-dev-launcher: 8abfd49b7906e29e26b934988ed163ee4efcfb8b
   expo-dev-menu: f2a08f1ecf61b6282f3784add26ebd29cbc85ae2
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
   ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6

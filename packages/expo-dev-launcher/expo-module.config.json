@@ -3,7 +3,7 @@
   "apple": {
     "podspecPath": "expo-dev-launcher.podspec",
     "swiftModuleName": "EXDevLauncher",
-    "modules": ["DevLauncherInternal", "DevLauncherAuth", "RNCSafeAreaProviderManager"],
+    "modules": ["DevLauncherInternal", "DevLauncherAuth"],
     "appDelegateSubscribers": ["ExpoDevLauncherAppDelegateSubscriber"],
     "reactDelegateHandlers": ["ExpoDevLauncherReactDelegateHandler"],
     "debugOnly": true
