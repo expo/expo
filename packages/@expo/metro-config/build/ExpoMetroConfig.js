@@ -96,6 +96,8 @@ function createStableModuleIdFactory(root) {
             'node_modules/pretty-format/build/index.js': 'native:pretty-format',
             'node_modules/event-target-shim/dist/event-target-shim.mjs': 'native:event-target-shim',
             'node_modules/invariant/browser.js': 'native:invariant',
+            'node_modules/regenerator-runtime/runtime.js': 'native:regenerator-runtime/runtime',
+            'node_modules/react-refresh/runtime.js': 'native:react-refresh/runtime',
             // base64-js
         };
         const getModulePath = (modulePath, scope) => {

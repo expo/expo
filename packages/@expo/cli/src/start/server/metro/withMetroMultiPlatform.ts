@@ -370,7 +370,7 @@ export function withExtendedResolver(
           return false;
         }
 
-        return /^(native:)?(react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant)$/.test(moduleName);
+        return /^(native:)?(react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime)$/.test(moduleName);
       },
       replace: 'builtin',
     },

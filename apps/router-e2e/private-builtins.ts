@@ -9,3 +9,5 @@ import 'whatwg-url-without-unicode';
 import 'pretty-format';
 import 'event-target-shim';
 import 'invariant';
+import 'regenerator-runtime/runtime';
+import 'react-refresh/runtime';
