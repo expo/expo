@@ -248,6 +248,7 @@ class DevLauncherController private constructor() :
 
         coroutineScope.launch {
           try {
+            pendingIntentRegistry.intent = intent
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
