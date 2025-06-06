@@ -88,6 +88,15 @@ function createStableModuleIdFactory(root) {
             'node_modules/url/url.js': 'native:url',
             'node_modules/whatwg-fetch/dist/fetch.umd.js': 'native:whatwg-fetch',
             'node_modules/react-devtools-core/dist/backend.js': 'native:react-devtools-core',
+            'node_modules/whatwg-url-without-unicode/index.js': 'native:whatwg-url-without-unicode',
+            'node_modules/buffer/index.js': 'native:buffer',
+            'node_modules/punycode/punycode.js': 'native:punycode',
+            'node_modules/base64-js/index.js': 'native:base64-js',
+            'node_modules/ieee754/index.js': 'native:ieee754',
+            'node_modules/pretty-format/build/index.js': 'native:pretty-format',
+            'node_modules/event-target-shim/dist/event-target-shim.mjs': 'native:event-target-shim',
+            'node_modules/invariant/browser.js': 'native:invariant',
+            // base64-js
         };
         const getModulePath = (modulePath, scope) => {
             // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
