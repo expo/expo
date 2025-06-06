@@ -57,6 +57,8 @@ open class ObjectDefinitionBuilder(
 
   private val eventObservers = mutableListOf<EventObservingDefinition>()
 
+  fun getConverterProvider(): TypeConverterProvider? = converters
+
   fun buildObject(): ObjectDefinitionData {
     EventObservingDefinition.Type.entries.forEach { type ->
       // If the user exports a function that is called `startObserving` or `stopObserving`, we don't add the observer
