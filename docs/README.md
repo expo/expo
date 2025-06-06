@@ -76,6 +76,7 @@ These metadata items include:
 - `isAlpha`: Whether to display the alpha badge for a page. Commonly used with API pages under Reference. Defaults to `false`.
 - `searchRank`: A number between 0 and 100 that represents the relevance of a page. This value is mapped to Algolia's `record.weight.pageRank` property. Higher values indicate higher priority. We set this value to `5` by default, otherwise specified in the frontmatter.
 - `searchPosition`: The position of a page in the search results. This value is mapped to Algolia's `record.weight.position` property. Algolia sets this value to `0` by default. Pages with lower values appear higher in the results. We set this value to `50` by default, otherwise specified in the frontmatter.
+- `hasVideoLink`: To display a video link icon in the sidebar for the page that has a video tutorial link. Defaults to `false`.
 
 ### Edit Code
 
