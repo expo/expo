@@ -143,6 +143,7 @@ export function createStableModuleIdFactory(
       "node_modules/@react-native/normalize-colors/index.js": 'native:@react-native/normalize-colors',
       "node_modules/anser/lib/index.js": 'native:anser',
       "node_modules/react-native/src/private/setup/setUpDOM.js": 'native:react-native/src/private/setup/setUpDOM',
+      "node_modules/scheduler/index.native.js": 'native:scheduler',
       // 'node_modules/@react-native/virtualized-lists/index.js': 'native:@react-native/virtualized-lists',
       // base64-js
 

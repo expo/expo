@@ -12,8 +12,9 @@ import 'event-target-shim';
 import 'invariant';
 import 'regenerator-runtime/runtime';
 import 'react-refresh/runtime';
-import 'react-native/Libraries/ReactNative/RendererProxy';
+// import 'react-native/Libraries/ReactNative/RendererProxy';
 import '@react-native/normalize-colors';
 import 'anser';
 import "react-native/src/private/setup/setUpDOM"
 // import '@react-native/virtualized-lists';
+import "scheduler"
