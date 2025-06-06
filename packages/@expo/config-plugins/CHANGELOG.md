@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add android config plugin for app name translation. ([#37202](https://github.com/expo/expo/pull/37202) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 - Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
