@@ -1,6 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
+import path from 'path';
 
+import { resolveExpoConfigPluginsPackagePath } from '../ExpoResolver';
 import { resolveProjectWorkflowAsync } from '../ProjectWorkflow';
 import { buildPathMatchObjects } from '../utils/Path';
 
@@ -75,5 +77,27 @@ describe(resolveProjectWorkflowAsync, () => {
     expect(await resolveProjectWorkflowAsync('/app', 'ios', [])).toEqual('managed');
 
     mockSpawnAsync.mockReset();
+  });
+});
+
+describe('config-plugins API', () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('should keep the Paths API calls stable', async () => {
+    vol.fromJSON({
+      '/app/android/app/build.gradle': '',
+      '/app/ios/app.xcodeproj/project.pbxproj': '',
+    });
+    const projectRoot = '/app';
+    const { AndroidConfig, IOSConfig } = require(resolveExpoConfigPluginsPackagePath(projectRoot));
+
+    expect(AndroidConfig.Paths.getAndroidManifestAsync).toBeDefined();
+    const manifestPath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
+    expect(manifestPath).toBe('/app/android/app/src/main/AndroidManifest.xml');
+    expect(IOSConfig.Paths.getPBXProjectPath).toBeDefined();
+    const pbxProjectPath = await IOSConfig.Paths.getPBXProjectPath(projectRoot);
+    expect(pbxProjectPath).toBe('/app/ios/app.xcodeproj/project.pbxproj');
   });
 });
