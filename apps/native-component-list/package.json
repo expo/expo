@@ -85,7 +85,7 @@
     "expo-image-loader": "^5.1.0",
     "expo-image-manipulator": "~13.1.7",
     "expo-image-picker": "~16.1.4",
-    "expo-intent-launcher": "~12.1.4",
+    "expo-intent-launcher": "~12.1.5",
     "expo-keep-awake": "~14.1.4",
     "expo-linear-gradient": "~14.1.5",
     "expo-linking": "~7.1.5",
