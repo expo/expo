@@ -160,7 +160,16 @@ export function createStableModuleIdFactory(
       "node_modules/react-native/Libraries/Image/AssetSourceResolver.js": "native:react-native/Libraries/Image/AssetSourceResolver",
       "node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js": "native:react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
 
+      //
+      "packages/expo-modules-core/src/index.ts": 'native:expo-modules-core',
+      "packages/expo-modules-core/src/LegacyEventEmitter.ts": 'native:expo-modules-core/src/LegacyEventEmitter',
 
+      "packages/expo/src/winter/index.ts": "native:expo/src/winter",
+      "packages/expo/src/Expo.ts": "native:expo",
+      "packages/expo-asset/build/index.js": "native:expo-asset",
+      "packages/expo-constants/build/Constants.js": "native:expo-constants",
+      "packages/expo-keep-awake/build/index.js": "native:expo-keep-awake",
+      "packages/expo-status-bar/src/StatusBar.tsx": "native:expo-status-bar",
       // 'node_modules/@react-native/virtualized-lists/index.js': 'native:@react-native/virtualized-lists',
       // base64-js
 

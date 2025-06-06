@@ -1,5 +1,6 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
+import 'react-native/Libraries/Core/InitializeCore';
 
 // @ts-ignore: PolyfillFunctions does not have types exported
 import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
