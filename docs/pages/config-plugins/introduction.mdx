@@ -31,7 +31,7 @@ The top-level config plugin which is referenced in your app config's `plugins` a
 
 ### Plugin function
 
-One or more functions inside a config plugin that are called _plugin functions_. They wrap the underlying logic of performing platform-specific modifications.
+One or more functions inside a config plugin that are called _plugin functions_. They wrap the underlying logic of performing platform-specific modifications. Technically, plugin functions look just like the function for the top-level plugin itself, and could be used as a plugin independently. Breaking plugins into smaller functions is often helpful for testing and debugging.
 
 ### Mod plugin function
 

@@ -132,7 +132,7 @@ export default withPlugin;
 
 ### Add TypeScript support and convert to dynamic app config
 
-While it is recommended that you write config plugins in TypeScript, as this will provide intellisense for the configuration objects, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. You need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
+We recommend writing config plugins in TypeScript, since this will provide intellisense for the configuration objects. However, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. Therefore, you will need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
 
 Install `ts-node` library by running the following command:
 
@@ -312,7 +312,7 @@ module.exports = ({ config }: { config: ExpoConfig }) => {
 };
 ```
 
-The `plugins` array uses `withPlugins` method under the hood to chain the plugins. If you are using so many config plugins with complex configuration that becomes difficult to read and edit your dynamic app config, you can use the `withPlugins` method directly to chain plugins together and execute them in order.
+The `plugins` array uses `withPlugins` method under the hood to chain the plugins. If your plugins array is getting long or has complex configuration, you can use the `withPlugins` method directly to make your configuration easier to read. `withPlugins` will chain the plugins together and execute them in order.
 
 ```ts app.config.ts
 import { withPlugins } from 'expo/config-plugins';
