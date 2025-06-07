@@ -4,6 +4,7 @@ import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
@@ -101,9 +102,6 @@ function TabNavigator() {
         },
       }}
       safeAreaInsets={Platform.select({
-        android: {
-          bottom: 5,
-        },
         default: undefined,
       })}
       initialRouteName="test-suite">
@@ -121,6 +119,7 @@ function TabNavigator() {
 const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 
 export default () => {
+  const { name: themeName } = useTheme();
   const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
   const [initialState, setInitialState] = React.useState();
 
@@ -169,6 +168,7 @@ export default () => {
         {Search && <Switch.Screen name="searchNavigator" component={Search} />}
         <Switch.Screen name="main" component={TabNavigator} />
       </Switch.Navigator>
+      <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
     </NavigationContainer>
   );
 };
