@@ -9,9 +9,9 @@ import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { resolveExpoEnvPath } from '../ExpoResolver';
-import { DEFAULT_IGNORE_PATHS } from '../Options';
-import { isIgnoredPath } from '../utils/Path';
+import { resolveExpoEnvPath } from './ExpoResolver';
+import { DEFAULT_IGNORE_PATHS } from './Options';
+import { isIgnoredPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args.length < 1) {
