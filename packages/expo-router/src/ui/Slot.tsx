@@ -1,5 +1,5 @@
 import { Slot as RUISlot } from '@radix-ui/react-slot';
-import { forwardRef, useMemo } from 'react';
+import { cloneElement, forwardRef, isValidElement, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
 /**
@@ -16,9 +16,21 @@ import { StyleSheet } from 'react-native';
  * @returns
  */
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
-  return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
-    style = useMemo(() => StyleSheet.flatten(style), [style]);
-    return <Component ref={ref} {...props} style={style} />;
+  return forwardRef(function RNSlotHOC({ style, children, ...props }, ref) {
+    const [flatStyle, childrenWithFlatStyle] = useMemo(() => {
+      if (isValidElement(children) && Array.isArray(children.props?.style)) {
+        children = cloneElement<any>(children, {
+          style: StyleSheet.flatten(children.props.style),
+        });
+      }
+      return [StyleSheet.flatten(style), children];
+    }, [style, children]);
+
+    return (
+      <Component ref={ref} {...props} style={flatStyle}>
+        {childrenWithFlatStyle}
+      </Component>
+    );
   });
 }
 
