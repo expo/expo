@@ -41,6 +41,18 @@ export async function getHashSourcesAsync(
       ? options.useRNCoreAutolinkingFromExpo
       : semver.gte(expoAutolinkingVersion, '1.12.0');
 
+  // The expo package has a transitive dependency on `react-native-edge-to-edge` when the `android.edgeToEdgeEnabled`
+  // We add coreAutolinkingTransitiveDeps in this case. The `--transitive-linking-dependencies` option is added since expo-modules-autolinking 2.1.11.
+  let coreAutolinkingTransitiveDeps: string[] = [];
+  if (
+    options.useCNGForPlatforms.android &&
+    expoConfig?.exp.android?.edgeToEdgeEnabled &&
+    useRNCoreAutolinkingFromExpo &&
+    semver.gte(expoAutolinkingVersion, '2.1.11')
+  ) {
+    coreAutolinkingTransitiveDeps = ['react-native-edge-to-edge'];
+  }
+
   const results = await Promise.all([
     // expo
     profile(options, getExpoAutolinkingAndroidSourcesAsync)(
@@ -69,6 +81,7 @@ export async function getHashSourcesAsync(
     profile(options, getCoreAutolinkingSourcesFromExpoAndroid)(
       projectRoot,
       options,
+      coreAutolinkingTransitiveDeps,
       useRNCoreAutolinkingFromExpo
     ),
     profile(options, getCoreAutolinkingSourcesFromExpoIos)(
