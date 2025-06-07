@@ -139,12 +139,10 @@ export function toPosixPath(filePath: string): string {
  * Check if the given `filePath` exists.
  */
 export async function pathExistsAsync(filePath: string): Promise<boolean> {
-  let result = false;
   try {
     const stat = await fs.stat(filePath);
-    result = stat.isFile() || stat.isDirectory();
+    return stat.isFile() || stat.isDirectory();
   } catch {
-    result = false;
+    return false;
   }
-  return result;
 }

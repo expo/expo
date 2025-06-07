@@ -123,14 +123,12 @@ function toPosixPath(filePath) {
  * Check if the given `filePath` exists.
  */
 async function pathExistsAsync(filePath) {
-    let result = false;
     try {
         const stat = await promises_1.default.stat(filePath);
-        result = stat.isFile() || stat.isDirectory();
+        return stat.isFile() || stat.isDirectory();
     }
     catch {
-        result = false;
+        return false;
     }
-    return result;
 }
 //# sourceMappingURL=Path.js.map
