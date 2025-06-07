@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import {
+  getAndroidManifestAsync,
   getMainActivityAsync,
   getProjectBuildGradleAsync,
   getResourceXMLPathAsync,
@@ -109,5 +110,20 @@ describe(getResourceXMLPathAsync, () => {
     await expect(getResourceXMLPathAsync('/managed', { name: 'somn' })).rejects.toThrow(
       /Android project folder is missing in project/
     );
+  });
+});
+
+describe(getAndroidManifestAsync, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it(`gets the android manifest path`, async () => {
+    vol.fromJSON({
+      '/app/android/app/build.gradle': '',
+    });
+    expect(getAndroidManifestAsync).toBeDefined();
+    const manifestPath = await getAndroidManifestAsync('/app');
+    expect(manifestPath).toBe('/app/android/app/src/main/AndroidManifest.xml');
   });
 });
