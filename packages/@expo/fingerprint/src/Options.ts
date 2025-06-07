@@ -5,9 +5,10 @@ import path from 'path';
 
 import { loadConfigAsync } from './Config';
 import { satisfyExpoVersion } from './ExpoResolver';
-import type { Config, NormalizedOptions, Options } from './Fingerprint.types';
+import type { Config, NormalizedOptions, Options, Platform } from './Fingerprint.types';
+import { resolveProjectWorkflowAsync } from './ProjectWorkflow';
 import { SourceSkips } from './sourcer/SourceSkips';
-import { buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';
+import { appendIgnorePath, buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
 
@@ -67,6 +68,7 @@ export async function normalizeOptionsAsync(
     config?.ignorePaths,
     options
   );
+  const useCNGForPlatforms = await resolveUseCNGAsync(projectRoot, options, ignorePathMatchObjects);
   return {
     // Defaults
     platforms: ['android', 'ios'],
@@ -85,6 +87,7 @@ export async function normalizeOptionsAsync(
       false,
     ignorePathMatchObjects,
     ignoreDirMatchObjects: buildDirMatchObjects(ignorePathMatchObjects),
+    useCNGForPlatforms,
   };
 }
 
@@ -113,4 +116,25 @@ async function collectIgnorePathsAsync(
   } catch {}
 
   return buildPathMatchObjects(ignorePaths);
+}
+
+async function resolveUseCNGAsync(
+  projectRoot: string,
+  options: Options | undefined,
+  ignorePathMatchObjects: Minimatch[]
+): Promise<Record<Platform, boolean>> {
+  const results: Record<Platform, boolean> = {
+    android: false,
+    ios: false,
+  };
+  const platforms = options?.platforms ?? ['android', 'ios'];
+  for (const platform of platforms) {
+    const projectWorkflow = await resolveProjectWorkflowAsync(
+      projectRoot,
+      platform,
+      ignorePathMatchObjects
+    );
+    results[platform] = projectWorkflow === 'managed';
+  }
+  return results;
 }

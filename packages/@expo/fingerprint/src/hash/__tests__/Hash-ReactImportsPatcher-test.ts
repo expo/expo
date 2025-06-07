@@ -8,6 +8,7 @@ import { ReactImportsPatchTransform } from '../ReactImportsPatcher';
 
 jest.mock('fs');
 jest.mock('fs/promises');
+jest.mock('../../ProjectWorkflow');
 jest.mock('../ReactImportsPatcher', () => ({
   ReactImportsPatchTransform: jest
     .fn()
