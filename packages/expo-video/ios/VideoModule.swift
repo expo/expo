@@ -282,6 +282,13 @@ public final class VideoModule: Module {
         player.audioTracks.selectAudioTrack(audioTrack: audioTrack)
       }
 
+      Property("keepScreenOnWhilePlaying") { player -> Bool in
+        return player.ref.preventsDisplaySleepDuringVideoPlayback
+      }
+      .set { player, keepScreenOnWhilePlaying in
+        player.ref.preventsDisplaySleepDuringVideoPlayback = keepScreenOnWhilePlaying
+      }
+
       Function("play") { player in
         player.ref.play()
       }
