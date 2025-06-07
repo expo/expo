@@ -40,7 +40,8 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
+          "isAccessMediaLocationEnabled": true,
+          "granularPermissions": ["audio", "photo"]
         }
       ]
     ]
@@ -79,6 +80,13 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
       description:
         'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.',
       default: 'false',
+    },
+    {
+      name: 'granularPermissions',
+      platform: 'android',
+      description:
+        'Sets which [`GranularPermission`](#granularpermission) values to include, determining which media permissions (`READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO`, `READ_MEDIA_AUDIO`) will be added to the Android manifest. Matches the behavior of the runtime API.',
+      default: '["photo", "video", "audio"]',
     },
   ]}
 />
