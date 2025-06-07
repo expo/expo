@@ -40,7 +40,9 @@ describe('exports with serializer plugins', () => {
     // "_expo/static/js/web/_layout-e67451b6ca1f415eec1baf46b17d16c6.js.map",
     expect(mapFiles).toEqual(
       ['_layout', 'entry', 'index', 'modal'].map((file) =>
-        expect.stringMatching(new RegExp(`_expo\\/static\\/js\\/web\\/${file}-.*\\.js\\.map`))
+        expect.stringMatching(
+          new RegExp(`_expo/static/js/web/${file}-${/(?<md5>[0-9a-fA-F]{32})/.source}\\.js\\.map`)
+        )
       )
     );
 
