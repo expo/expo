@@ -79,7 +79,7 @@ In some cases, you may want to customize the sources before fingerprinting. For 
 - You want to stabilize dynamic values in the app config.
 - You want to transform file hashes to stable values.
 
-To do this, you can use the `fileHookTransform` option in the **fingerprint.config.js** file to transform the sources before hashing. Learn more about the [`fileHookTransform` option](#filehooktransformfunctionsource-chunk-isendoffile-encoding)
+To do this, you can use the `fileHookTransform` option in the **fingerprint.config.js** file to transform the sources before hashing. Learn more about the [`fileHookTransform` option](#filehooktransformfunctionsource-chunk-isendoffile-encoding).
 
 ```js fingerprint.config.js
 const assert = require('node:assert');
@@ -166,7 +166,7 @@ export default ({ config }) => {
   config.plugins.push((config) => config);
   return config;
 };
-````
+```
 
 It's important to note that due to this design, if you make changes to the implementation of raw config plugins functions, such as altering the **Info.plist** value within `withMyPlugin`, the fingerprint will still generate the same hash value. To ensure unique fingerprints when modifying config plugins implementations, consider the following options:
 
