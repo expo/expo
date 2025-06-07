@@ -17,6 +17,7 @@ import {
   getExpoConfigSourcesAsync,
   getExpoCNGPatchSourcesAsync,
 } from './Expo';
+import { getExpoConfigAsync } from '../ExpoConfig';
 import { resolveExpoAutolinkingVersion } from '../ExpoResolver';
 import { getDefaultPackageSourcesAsync } from './Packages';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
@@ -29,6 +30,8 @@ export async function getHashSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
+  const { config: expoConfig, loadedModules } = await getExpoConfigAsync(projectRoot, options);
+
   const expoAutolinkingVersion = resolveExpoAutolinkingVersion(projectRoot) ?? '0.0.0';
   const useRNCoreAutolinkingFromExpo =
     // expo-modules-autolinking supports the `react-native-config` core autolinking from 1.11.2.
@@ -50,7 +53,7 @@ export async function getHashSourcesAsync(
       options,
       expoAutolinkingVersion
     ),
-    profile(options, getExpoConfigSourcesAsync)(projectRoot, options),
+    profile(options, getExpoConfigSourcesAsync)(projectRoot, expoConfig, loadedModules, options),
     profile(options, getEasBuildSourcesAsync)(projectRoot, options),
     profile(options, getExpoCNGPatchSourcesAsync)(projectRoot, options),
 

@@ -12,50 +12,22 @@ exports.sortExpoAutolinkingAndroidConfig = sortExpoAutolinkingAndroidConfig;
 exports.getConfigPluginProps = getConfigPluginProps;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
-const promises_1 = __importDefault(require("fs/promises"));
-const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
-const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
 const ExpoResolver_1 = require("../ExpoResolver");
-const ExpoConfigLoader_1 = require("./ExpoConfigLoader");
 const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
 const Path_1 = require("../utils/Path");
-const SpawnIPC_1 = require("../utils/SpawnIPC");
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
-async function getExpoConfigSourcesAsync(projectRoot, options) {
+async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, options) {
     if (options.sourceSkips & SourceSkips_1.SourceSkips.ExpoConfigAll) {
         return [];
     }
-    if (!resolve_from_1.default.silent(path_1.default.resolve(projectRoot), 'expo/config')) {
+    if (config == null) {
         return [];
     }
     const results = [];
-    let config;
-    let expoConfig;
-    let loadedModules = [];
-    const tmpDir = await promises_1.default.mkdtemp(path_1.default.join(os_1.default.tmpdir(), 'expo-fingerprint-'));
-    const ignoredFile = await createTempIgnoredFileAsync(tmpDir, options);
-    try {
-        const { message } = await (0, SpawnIPC_1.spawnWithIpcAsync)('node', [(0, ExpoConfigLoader_1.getExpoConfigLoaderPath)(), path_1.default.resolve(projectRoot), ignoredFile], { cwd: projectRoot });
-        const stdoutJson = JSON.parse(message);
-        config = stdoutJson.config;
-        expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
-        loadedModules = stdoutJson.loadedModules;
-    }
-    catch (e) {
-        if (e instanceof Error) {
-            console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
-        }
-        return [];
-    }
-    finally {
-        try {
-            await promises_1.default.rm(tmpDir, { recursive: true });
-        }
-        catch { }
-    }
+    let expoConfig = normalizeExpoConfig(config.exp, projectRoot, options);
     // external files in config
     const isAndroid = options.platforms.includes('android');
     const isIos = options.platforms.includes('ios');
@@ -117,7 +89,7 @@ async function getExpoConfigSourcesAsync(projectRoot, options) {
         reasons: ['expoConfig'],
     });
     // config plugins
-    const configPluginModules = loadedModules.map((modulePath) => ({
+    const configPluginModules = (loadedModules ?? []).map((modulePath) => ({
         type: 'file',
         filePath: (0, Path_1.toPosixPath)(modulePath),
         reasons: ['expoConfigPlugins'],
@@ -198,15 +170,6 @@ function postUpdateExpoConfig(config, projectRoot) {
     delete config.android?.googleServicesFile;
     delete config.ios?.googleServicesFile;
     return config;
-}
-/**
- * Create a temporary file with ignored paths from options that will be read by the ExpoConfigLoader.
- */
-async function createTempIgnoredFileAsync(tmpDir, options) {
-    const ignoredFile = path_1.default.join(tmpDir, '.fingerprintignore');
-    const ignorePaths = options.ignorePathMatchObjects.map((match) => match.pattern);
-    await promises_1.default.writeFile(ignoredFile, ignorePaths.join('\n'));
-    return ignoredFile;
 }
 async function getEasBuildSourcesAsync(projectRoot, options) {
     const files = ['eas.json', '.easignore'];
