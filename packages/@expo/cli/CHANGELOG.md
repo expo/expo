@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_USE_STICKY_RESOLVER` to enable experimental sticky resolution to native modules ([#37201](https://github.com/expo/expo/pull/37201) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - remove extraneous log ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
