@@ -37,9 +37,12 @@ function createButtonElement(uuid, props, handlers) {
     if (props.onPress) {
         handlers[uuid] = { onPress: props.onPress };
     }
+    if (typeof props.children !== 'string') {
+        throw new Error('ContextMenu Button only supports string children');
+    }
     return {
         contextMenuElementID: uuid,
-        button: transformButtonProps(props),
+        button: transformButtonProps(props, props.children),
     };
 }
 function createSwitchElement(uuid, props, handlers) {
@@ -65,10 +68,13 @@ function createPickerElement(uuid, props, handlers) {
     };
 }
 function createSubmenuElement(uuid, props, handlers) {
+    if (typeof props.button.props.children !== 'string') {
+        throw new Error('ContextMenu Submenu Button only supports string children');
+    }
     return {
         contextMenuElementID: uuid,
         submenu: {
-            button: transformButtonProps(props.button.props),
+            button: transformButtonProps(props.button.props, props.button.props.children),
             elements: transformChildrenToElementArray(props.children, handlers),
         },
     };
