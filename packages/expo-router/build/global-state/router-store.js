@@ -53,6 +53,7 @@ const routeInfo_1 = require("./routeInfo");
 const useScreens_1 = require("../useScreens");
 const url_1 = require("../utils/url");
 const SplashScreen = __importStar(require("../views/Splash"));
+const routing_1 = require("./routing");
 const storeRef = {
     current: {},
 };
@@ -80,6 +81,9 @@ exports.store = {
     },
     get rootComponent() {
         return storeRef.current.rootComponent;
+    },
+    getStateForHref(href, options) {
+        return (0, routing_1.getStateForHref)(href, options);
     },
     get linking() {
         return storeRef.current.linking;

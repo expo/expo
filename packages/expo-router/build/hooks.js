@@ -22,6 +22,7 @@ const constants_1 = require("./constants");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
+const Preview_1 = require("./link/preview/Preview");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -109,38 +110,42 @@ function usePathname() {
     return (0, router_store_1.useRouteInfo)().pathname;
 }
 function useGlobalSearchParams() {
-    return (0, router_store_1.useRouteInfo)().params;
+    const previewParams = react_1.default.use(Preview_1.PreviewParamsContext);
+    const globalParams = (0, router_store_1.useRouteInfo)().params;
+    return previewParams ?? globalParams;
 }
 function useLocalSearchParams() {
     const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
-        // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
-        // navigation.setParams as it shallow merges. Hence, we hide them here
-        if (value === undefined) {
-            return [key, undefined];
-        }
-        if (Array.isArray(value)) {
-            return [
-                key,
-                value.map((v) => {
-                    try {
-                        return decodeURIComponent(v);
-                    }
-                    catch {
-                        return v;
-                    }
-                }),
-            ];
-        }
-        else {
-            try {
-                return [key, decodeURIComponent(value)];
+    const previewParams = react_1.default.use(Preview_1.PreviewParamsContext);
+    return (previewParams ??
+        Object.fromEntries(Object.entries(params).map(([key, value]) => {
+            // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
+            // navigation.setParams as it shallow merges. Hence, we hide them here
+            if (value === undefined) {
+                return [key, undefined];
             }
-            catch {
-                return [key, value];
+            if (Array.isArray(value)) {
+                return [
+                    key,
+                    value.map((v) => {
+                        try {
+                            return decodeURIComponent(v);
+                        }
+                        catch {
+                            return v;
+                        }
+                    }),
+                ];
             }
-        }
-    }));
+            else {
+                try {
+                    return [key, decodeURIComponent(value)];
+                }
+                catch {
+                    return [key, value];
+                }
+            }
+        })));
 }
 function useSearchParams({ global = false } = {}) {
     const globalRef = react_1.default.useRef(global);

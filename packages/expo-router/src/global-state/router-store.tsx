@@ -19,10 +19,11 @@ import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
 import { RedirectConfig } from '../getRoutesCore';
 import { defaultRouteInfo, getRouteInfoFromState, UrlObject } from './routeInfo';
-import { RequireContext } from '../types';
+import { Href, RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
+import { getStateForHref, LinkToOptions } from './routing';
 
 export type StoreRedirects = readonly [RegExp, RedirectConfig, boolean];
 export type ReactNavigationState = NavigationState | PartialState<NavigationState>;
@@ -71,6 +72,9 @@ export const store = {
   },
   get rootComponent() {
     return storeRef.current.rootComponent;
+  },
+  getStateForHref(href: Href, options?: LinkToOptions) {
+    return getStateForHref(href, options);
   },
   get linking() {
     return storeRef.current.linking;

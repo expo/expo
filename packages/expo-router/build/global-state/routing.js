@@ -46,6 +46,7 @@ exports.goBack = goBack;
 exports.canGoBack = canGoBack;
 exports.canDismiss = canDismiss;
 exports.setParams = setParams;
+exports.getStateForHref = getStateForHref;
 exports.linkTo = linkTo;
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
@@ -169,6 +170,11 @@ function setParams(params = {}) {
     assertIsReady();
     return (router_store_1.store.navigationRef?.current?.setParams)(params);
 }
+function getStateForHref(href, options = {}) {
+    href = (0, href_1.resolveHref)(href);
+    href = (0, href_1.resolveHrefStringWithSegments)(href, router_store_1.store.getRouteInfo(), options);
+    return router_store_1.store.linking?.getStateFromPath(href, router_store_1.store.linking.config);
+}
 function linkTo(originalHref, options = {}) {
     originalHref = typeof originalHref == 'string' ? originalHref : (0, href_1.resolveHref)(originalHref);
     let href = originalHref;
@@ -206,9 +212,9 @@ function linkTo(originalHref, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular));
+    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, options.__internal__PeekAndPopKey));
 }
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular) {
+function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular, peekAndPopKey) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -299,6 +305,7 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
             name: rootPayload.screen,
             params: rootPayload.params,
             singular,
+            peekAndPopKey,
         },
     };
 }
