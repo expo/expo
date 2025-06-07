@@ -56,6 +56,12 @@ async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     const ignorePathMatchObjects = await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options);
     const useCNGForPlatforms = await resolveUseCNGAsync(projectRoot, options, ignorePathMatchObjects);
+    if (useCNGForPlatforms.android) {
+        (0, Path_1.appendIgnorePath)(ignorePathMatchObjects, 'android/**/*');
+    }
+    if (useCNGForPlatforms.ios) {
+        (0, Path_1.appendIgnorePath)(ignorePathMatchObjects, 'ios/**/*');
+    }
     return {
         // Defaults
         platforms: ['android', 'ios'],

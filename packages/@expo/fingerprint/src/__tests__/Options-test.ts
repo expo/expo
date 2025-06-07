@@ -3,6 +3,7 @@ import requireString from 'require-from-string';
 
 import { satisfyExpoVersion } from '../ExpoResolver';
 import { normalizeOptionsAsync } from '../Options';
+import { resolveProjectWorkflowAsync } from '../ProjectWorkflow';
 
 jest.mock('fs/promises');
 // Mock cpus to return a single core for consistent snapshot testing
@@ -153,5 +154,18 @@ module.exports = config;
       const options = await normalizeOptionsAsync('/app');
       expect(options.enableReactImportsPatcher).toBe(true);
     });
+  });
+
+  it('should ignore native files for CNG projects', async () => {
+    const mockResolveProjectWorkflowAsync = resolveProjectWorkflowAsync as jest.MockedFunction<
+      typeof resolveProjectWorkflowAsync
+    >;
+    mockResolveProjectWorkflowAsync.mockResolvedValue('managed');
+    const { ignorePathMatchObjects, ignoreDirMatchObjects } = await normalizeOptionsAsync('/app');
+    expect(ignorePathMatchObjects.map(({ pattern }) => pattern)).toContain('android/**/*');
+    expect(ignorePathMatchObjects.map(({ pattern }) => pattern)).toContain('ios/**/*');
+    expect(ignoreDirMatchObjects.map(({ pattern }) => pattern)).toContain('android');
+    expect(ignoreDirMatchObjects.map(({ pattern }) => pattern)).toContain('ios');
+    mockResolveProjectWorkflowAsync.mockReset();
   });
 });
