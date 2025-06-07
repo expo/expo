@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add experimental out-of-tree platform opt-in option to automatically configure Metro. ([#37249](https://github.com/expo/expo/pull/37249) by [@gabrieldonadel](https://github.com/gabrieldonadel), [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
 - Fix tree shaking overlapping exports ([#36717](https://github.com/expo/expo/pull/36717) by [@EvanBacon](https://github.com/EvanBacon))
