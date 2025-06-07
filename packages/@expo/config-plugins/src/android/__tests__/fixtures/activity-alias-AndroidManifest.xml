@@ -1,0 +1,28 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.expo.mycoolapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme">
+        <activity android:name=".MainActivityWithNoLauncherCategory" android:launchMode="singleTask" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize" android:windowSoftInputMode="adjustResize">
+          <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+          </intent-filter>
+        </activity>
+
+        <activity-alias android:name=".MainActivityAlias" android:enabled="true" android:exported="true" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:targetActivity=".MainActivityWithNoLauncherCategory">
+          <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+          </intent-filter>
+        </activity-alias>
+        
+        <activity-alias android:name=".MainActivityAliasIconFun" android:enabled="true" android:exported="true" android:icon="@mipmap/ic_launcher_fun" android:roundIcon="@mipmap/ic_launcher_round_fun" android:targetActivity=".MainActivityWithNoLauncherCategory">
+          <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+          </intent-filter>
+        </activity-alias>
+
+    </application>
+
+</manifest>
