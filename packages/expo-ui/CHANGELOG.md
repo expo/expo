@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `ShareLink` component. ([#37125](https://github.com/expo/expo/pull/37125)) by [@pchalupa](https://github.com/pchalupa)
 - [android] Add shape component. ([#36964](https://github.com/expo/expo/pull/36964) by [@aleqsio](https://github.com/aleqsio))
 - Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
 - Allowed custom children in SwiftUI Button. ([#37136](https://github.com/expo/expo/pull/37136) by [@kudo](https://github.com/kudo))
