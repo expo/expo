@@ -66,6 +66,12 @@ import "color-name";
 
 import "@radix-ui/react-compose-refs";
 
+// React Navigation
 import "@react-navigation/routers";
 import "nanoid/non-secure";
 import "use-latest-callback";
+import "query-string";
+import "react-is";
+import "use-sync-external-store"
+import "use-sync-external-store/with-selector"
+import "@react-navigation/core"

@@ -258,6 +258,10 @@ function createBuiltinModuleIdFactory(
 "node_modules/nanoid/non-secure/index.js": 'nanoid/non-secure',
 "node_modules/@react-navigation/routers/lib/module/index.js": '@react-navigation/routers',
 "node_modules/use-latest-callback/esm.mjs": 'use-latest-callback',
+"node_modules/query-string/index.js": 'query-string',
+"node_modules/react-is/index.js": 'react-is',
+"node_modules/use-sync-external-store/with-selector.js": 'use-sync-external-store/with-selector',
+"node_modules/@react-navigation/core/lib/module/index.js": '@react-navigation/core',
   };
 
   function isVirtualModule(path: string) {
@@ -635,7 +639,7 @@ export function withExtendedResolver(
         }
 
         let match =
-          /^(native:)?(use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
+          /^(native:)?(@react-navigation\/core|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
             moduleName
           );
 
