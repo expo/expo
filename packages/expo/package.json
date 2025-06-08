@@ -76,7 +76,7 @@
     "@expo/cli": "0.24.13",
     "@expo/config": "~11.0.10",
     "@expo/config-plugins": "~10.0.2",
-    "@expo/fingerprint": "0.12.4",
+    "@expo/fingerprint": "0.13.0",
     "@expo/metro-config": "0.20.14",
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~13.1.11",
