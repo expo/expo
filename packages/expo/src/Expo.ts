@@ -25,6 +25,6 @@ export type {
   EventEmitter as EventEmitterType,
   NativeModule as NativeModuleType,
   SharedObject as SharedObjectType,
-} from 'expo-modules-core/types';
+} from 'expo-modules-core';
 
 export { useEvent, useEventListener } from './hooks/useEvent';

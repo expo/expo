@@ -7,6 +7,13 @@
   "sideEffects": [
     "*.fx.ts"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

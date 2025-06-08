@@ -1,4 +1,4 @@
-import type { EventEmitter } from 'expo-modules-core/types';
+import type { EventEmitter } from 'expo-modules-core';
 import { useEffect, useRef, useState } from 'react';
 
 type AnyEventListener = (...args: any[]) => any;
