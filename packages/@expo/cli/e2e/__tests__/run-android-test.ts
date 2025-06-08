@@ -38,7 +38,7 @@ it('runs `npx expo run:android --help`', async () => {
         Run the native Android app locally
 
       Usage
-        $ npx expo run:android <dir>
+        $ npx expo run:android [Options] [--] [ProjectRoot] Default: PWD
 
       Options 
         --no-build-cache       Clear the native build cache
@@ -50,6 +50,8 @@ it('runs `npx expo run:android --help`', async () => {
         -d, --device [device]  Device name to run the app on
         -p, --port <port>      Port to start the dev server on. Default: 8081
         -h, --help             Output usage information
+
+      Note: If specified, ProjectRoot must not be preceded by \`--device/-d\`. Use the \`--\` separator in that case.
     "
   `);
 });

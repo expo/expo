@@ -50,6 +50,12 @@ describe(_resolveStringOrBooleanArgs, () => {
       projectRoot: 'root',
     });
   });
+  it(`resolves to boolean with custom project root`, () => {
+    expect(_resolveStringOrBooleanArgs({ '--basic': Boolean }, ['--basic', '--', 'root'])).toEqual({
+      args: { '--basic': true },
+      projectRoot: 'root',
+    });
+  });
   it(`asserts invalid arguments`, () => {
     expect(() =>
       _resolveStringOrBooleanArgs({ '--basic': Boolean }, ['foobar', 'root', '--basic'])
