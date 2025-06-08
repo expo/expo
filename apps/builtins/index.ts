@@ -75,3 +75,7 @@ import "react-is";
 import "use-sync-external-store"
 import "use-sync-external-store/with-selector"
 import "@react-navigation/core"
+
+// @react-navigation/native
+
+import "@react-navigation/native";
