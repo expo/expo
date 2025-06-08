@@ -35,6 +35,9 @@ import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsC
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
 import { memoize } from '../../../utils/fn';
+import { toPosixPath } from '../../../utils/filePath';
+import { findClosestPackageJson } from './createJResolver';
+import { getMetroServerRoot } from '@expo/config/paths';
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 
@@ -56,14 +59,22 @@ function withWebPolyfills(
     getMetroBundler: () => Bundler;
   }
 ): ConfigT {
+  // Remove all polyfills for built-in bundle
+  if (env.EXPO_BUNDLE_BUILT_IN) {
+    return {
+      ...config,
+      serializer: {
+        ...config.serializer,
+        getPolyfills: () => [],
+      },
+    };
+  }
+
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
   const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
-    if (process.env.EXPO_BUNDLE_BUILT_IN) {
-      return [];
-    }
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -120,6 +131,170 @@ function withWebPolyfills(
 
 function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
+}
+
+function createBuiltinModuleIdFactory(
+  root: string
+  // resolver: (moduleName: string, platform: string | null) => Resolution
+): (path: string, context?: { platform: string; environment?: string }) => number {
+  if (!env.EXPO_BUNDLE_BUILT_IN) {
+    throw new Error('custom module ID factory only used for builtins');
+  }
+  const MAPPING = {
+    'node_modules/react/index.js': 'react',
+    'node_modules/url/url.js': 'url',
+    'node_modules/whatwg-fetch/dist/fetch.umd.js': 'whatwg-fetch',
+    'node_modules/react-devtools-core/dist/backend.js': 'react-devtools-core',
+    'node_modules/whatwg-url-without-unicode/index.js': 'whatwg-url-without-unicode',
+    'node_modules/buffer/index.js': 'buffer',
+    'node_modules/punycode/punycode.js': 'punycode',
+    'node_modules/base64-js/index.js': 'base64-js',
+    'node_modules/ieee754/index.js': 'ieee754',
+    'node_modules/pretty-format/build/index.js': 'pretty-format',
+    'node_modules/event-target-shim/dist/event-target-shim.mjs': 'event-target-shim',
+    'node_modules/invariant/browser.js': 'invariant',
+    'node_modules/regenerator-runtime/runtime.js': 'regenerator-runtime/runtime',
+    'node_modules/react-refresh/runtime.js': 'react-refresh/runtime',
+    'node_modules/react-native/Libraries/ReactNative/RendererProxy.js':
+      'react-native/Libraries/ReactNative/RendererProxy',
+    'node_modules/react/jsx-dev-runtime.js': 'react/jsx-dev-runtime',
+    'node_modules/@react-native/normalize-colors/index.js': '@react-native/normalize-colors',
+    'node_modules/anser/lib/index.js': 'anser',
+    'node_modules/react-native/src/private/setup/setUpDOM.js':
+      'react-native/src/private/setup/setUpDOM',
+    'node_modules/scheduler/index.native.js': 'scheduler',
+
+    ///
+    'node_modules/react-native/index.js': 'react-native',
+    'node_modules/react-native/Libraries/Core/InitializeCore.js':
+      'react-native/Libraries/Core/InitializeCore',
+    'node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlags.js':
+      'react-native/src/private/featureflags/ReactNativeFeatureFlags',
+    'node_modules/react-native/Libraries/NativeComponent/NativeComponentRegistry.js':
+      'react-native/Libraries/NativeComponent/NativeComponentRegistry',
+    'node_modules/react-native/Libraries/Utilities/PolyfillFunctions.js':
+      'react-native/Libraries/Utilities/PolyfillFunctions',
+    'node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInterface.js':
+      'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface',
+    'node_modules/react-native/Libraries/Image/resolveAssetSource.js':
+      'react-native/Libraries/Image/resolveAssetSource',
+    'node_modules/react-native/Libraries/StyleSheet/processColor.js':
+      'react-native/Libraries/StyleSheet/processColor',
+    'node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js':
+      'react-native/Libraries/NativeComponent/ViewConfigIgnore',
+    'node_modules/react-native/Libraries/StyleSheet/processColorArray.js':
+      'react-native/Libraries/StyleSheet/processColorArray',
+    'node_modules/react-native/Libraries/NativeModules/specs/NativeSourceCode.js':
+      'react-native/Libraries/NativeModules/specs/NativeSourceCode',
+    'node_modules/react-native/Libraries/Image/AssetSourceResolver.js':
+      'react-native/Libraries/Image/AssetSourceResolver',
+    'node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js':
+      'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
+
+    //
+    'packages/expo-modules-core/src/index.ts': 'expo-modules-core',
+    'packages/expo-modules-core/src/LegacyEventEmitter.ts':
+      'expo-modules-core/src/LegacyEventEmitter',
+
+    'packages/expo/src/winter/index.ts': 'expo/src/winter',
+    'packages/expo/src/Expo.ts': 'expo',
+    'packages/expo-asset/build/index.js': 'expo-asset',
+    'packages/expo-constants/build/Constants.js': 'expo-constants',
+    'packages/expo-keep-awake/build/index.js': 'expo-keep-awake',
+    'packages/expo-status-bar/src/StatusBar.tsx': 'expo-status-bar',
+    // 'node_modules/@react-native/virtualized-lists/index.js': '@react-native/virtualized-lists',
+    // base64-js
+  };
+
+  function isVirtualModule(path: string) {
+    return path.startsWith('\0');
+  }
+
+  // TODO: Replace all of this with some sort of built-in version of Node module resolution where we add the package.json to the bundle and perform a lookup inside of the native-require.
+  // This will ensure we don't have to hard-code built-in entries and ensure fuzzy matching like `react/index.js` work.
+  const getModulePath = (modulePath: string, platform: string) => {
+    // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
+    if (modulePath == null) {
+      return 'MODULE_NOT_FOUND';
+    } else if (isVirtualModule(modulePath)) {
+      // Virtual modules should be stable.
+      return modulePath;
+    }
+
+    const result = () => {
+      const absPath = toPosixPath(
+        path.isAbsolute(modulePath) ? modulePath : path.join(root, modulePath)
+      );
+
+      const relPath = toPosixPath(
+        path.isAbsolute(modulePath) ? path.relative(root, modulePath) : modulePath
+      );
+
+      const pkgPath = findClosestPackageJson(absPath, {
+        isDirectory(p) {
+          return !!fs.statSync(p, { throwIfNoEntry: false })?.isDirectory();
+        },
+        pathExists(file) {
+          return !!fs.existsSync(file);
+        },
+      });
+
+      if (pkgPath) {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+
+        const pkgRoot = path.dirname(pkgPath);
+        const relPathFromPkgRoot = path.relative(pkgRoot, absPath);
+        // console.log('|', relPath, pkg.name, relPathFromPkgRoot);
+
+        // First, determine if the module conforms to the package.json default export, e.g. `node_modules/react/index.js` conforms to `react`.
+
+        if (pkg.exports) {
+          // TODO: ...
+          // Find best package export for the module
+        } else {
+          // resolver({
+
+          // }, pkg.name, platform)
+          const mainField = pkg['react-native'] ?? pkg.module ?? pkg.main ?? 'index';
+
+          // const fuzzyMain = path.join(pkgRoot, mainField);
+          const fuzzyMainResolved = resolveFrom.silent(mainField, pkgRoot);
+
+          if (fuzzyMainResolved === absPath) {
+            // console.log('MATCH', modulePath, fuzzyMainResolved);
+            return pkg.name;
+          } else {
+            // console.log('>>>>', fuzzyMainResolved);
+            // console.log('EXT',);
+          }
+
+          // Resolve package main field.
+        }
+      }
+
+      if (MAPPING[relPath]) {
+        // If the module is in the mapping, return the mapped value.
+        return MAPPING[relPath];
+      }
+      return relPath;
+    };
+
+    return 'native:' + result();
+  };
+
+  const memoizedGetModulePath = memoize(getModulePath);
+
+  // This is an absolute file path.
+  // TODO: We may want a hashed version for production builds in the future.
+  return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+    // Helps find missing parts to the patch.
+    if (!context?.platform) {
+      // context = { platform: 'web' };
+      throw new Error('createStableModuleIdFactory: `context.platform` is required');
+    }
+
+    return memoizedGetModulePath(modulePath, context.platform);
+  };
 }
 
 export function getNodejsExtensions(srcExts: readonly string[]): string[] {
@@ -320,11 +495,29 @@ export function withExtendedResolver(
     } as const;
   };
 
+  if (env.EXPO_BUNDLE_BUILT_IN) {
+    config.serializer.createModuleIdFactory = createBuiltinModuleIdFactory.bind(
+      null,
+      getMetroServerRoot(config.projectRoot)
+      // resolver.bind(null, {
+      //   dev: true,
+      //   allowHaste: false,
+      //   assetExts: config.resolver.assetExts,
+      //   mainFields: config.resolver.resolverMainFields,
+      //   sourceExts: config.resolver.sourceExts,
+      // })
+    );
+  }
+
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
   const externals: {
-    match: (context: ResolutionContext, moduleName: string, platform: string | null) => boolean | { name: string, match: boolean};
-    
+    match: (
+      context: ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) => boolean | { name: string; match: boolean };
+
     replace: 'empty' | 'node' | 'weak' | 'builtin';
   }[] = [
     {
@@ -368,30 +561,33 @@ export function withExtendedResolver(
         ) {
           return false;
         }
-        if (process.env.EXPO_BUNDLE_BUILT_IN) {
+        if (env.EXPO_BUNDLE_BUILT_IN) {
           return false;
         }
 
+        let match =
+          /^(native:)?(expo\/src\/winter|expo|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
+            moduleName
+          );
 
-
-        
-        
-
-        let match = /^(native:)?(expo\/src\/winter|expo|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(moduleName);
-        
         if (!match) {
-          if (context.originModulePath.endsWith('InitializeCore.js') && moduleName.startsWith('../../src/private/setup/setUpDOM')) {
+          if (
+            context.originModulePath.endsWith('InitializeCore.js') &&
+            moduleName.startsWith('../../src/private/setup/setUpDOM')
+          ) {
             match = true;
             return {
               name: 'react-native/src/private/setup/setUpDOM',
               match: true,
-              
-            }
-          } 
+            };
+          }
           // TODO: Match `(\/index(\.[tj]sx?)?)?` and strip the extras.
 
           // TODO: Account for .js extensions.
-          match = /^(native:)?(react-native|react-native\/index|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(moduleName);
+          match =
+            /^(native:)?(react-native|react-native\/index|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(
+              moduleName
+            );
           // else if (
           //   context.originModulePath.includes('/react-native/') &&
           //   moduleName.includes('/ReactNative/RendererProxy')
@@ -405,8 +601,7 @@ export function withExtendedResolver(
         }
 
         if (!match && !moduleName.startsWith('.') && moduleName.includes('/')) {
-          
-          memoLog(moduleName)
+          memoLog(moduleName);
         }
         return match;
       },
@@ -444,7 +639,7 @@ export function withExtendedResolver(
     },
   ];
 
-  const memoLog = memoize(console.log)
+  const memoLog = memoize(console.log);
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
@@ -901,10 +1096,11 @@ export async function withMetroMultiPlatformAsync(
       '@expo/cli/build/metro-require/require'
     );
   }
-  if (process.env.EXPO_BUNDLE_BUILT_IN) {
+  if (env.EXPO_BUNDLE_BUILT_IN) {
     require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
       '@expo/cli/build/metro-require/native-require'
     );
+    config.transformer!.globalPrefix = '__native';
   }
 
   if (!config.projectRoot) {

@@ -82,96 +82,6 @@ function memoize(fn) {
     });
 }
 function createStableModuleIdFactory(root) {
-    if (process.env.EXPO_BUNDLE_BUILT_IN) {
-        const MAPPING = {
-            'node_modules/react/index.js': 'native:react',
-            'node_modules/url/url.js': 'native:url',
-            'node_modules/whatwg-fetch/dist/fetch.umd.js': 'native:whatwg-fetch',
-            'node_modules/react-devtools-core/dist/backend.js': 'native:react-devtools-core',
-            'node_modules/whatwg-url-without-unicode/index.js': 'native:whatwg-url-without-unicode',
-            'node_modules/buffer/index.js': 'native:buffer',
-            'node_modules/punycode/punycode.js': 'native:punycode',
-            'node_modules/base64-js/index.js': 'native:base64-js',
-            'node_modules/ieee754/index.js': 'native:ieee754',
-            'node_modules/pretty-format/build/index.js': 'native:pretty-format',
-            'node_modules/event-target-shim/dist/event-target-shim.mjs': 'native:event-target-shim',
-            'node_modules/invariant/browser.js': 'native:invariant',
-            'node_modules/regenerator-runtime/runtime.js': 'native:regenerator-runtime/runtime',
-            'node_modules/react-refresh/runtime.js': 'native:react-refresh/runtime',
-            "node_modules/react-native/Libraries/ReactNative/RendererProxy.js": 'native:react-native/Libraries/ReactNative/RendererProxy',
-            "node_modules/react/jsx-dev-runtime.js": 'native:react/jsx-dev-runtime',
-            "node_modules/@react-native/normalize-colors/index.js": 'native:@react-native/normalize-colors',
-            "node_modules/anser/lib/index.js": 'native:anser',
-            "node_modules/react-native/src/private/setup/setUpDOM.js": 'native:react-native/src/private/setup/setUpDOM',
-            "node_modules/scheduler/index.native.js": 'native:scheduler',
-            ///
-            "node_modules/react-native/index.js": "native:react-native",
-            "node_modules/react-native/Libraries/Core/InitializeCore.js": "native:react-native/Libraries/Core/InitializeCore",
-            'node_modules/react-native/src/private/featureflags/ReactNativeFeatureFlags.js': 'native:react-native/src/private/featureflags/ReactNativeFeatureFlags',
-            'node_modules/react-native/Libraries/NativeComponent/NativeComponentRegistry.js': 'native:react-native/Libraries/NativeComponent/NativeComponentRegistry',
-            "node_modules/react-native/Libraries/Utilities/PolyfillFunctions.js": "native:react-native/Libraries/Utilities/PolyfillFunctions",
-            "node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInterface.js": "native:react-native/Libraries/ReactPrivate/ReactNativePrivateInterface",
-            "node_modules/react-native/Libraries/Image/resolveAssetSource.js": "native:react-native/Libraries/Image/resolveAssetSource",
-            "node_modules/react-native/Libraries/StyleSheet/processColor.js": "native:react-native/Libraries/StyleSheet/processColor",
-            "node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js": "native:react-native/Libraries/NativeComponent/ViewConfigIgnore",
-            "node_modules/react-native/Libraries/StyleSheet/processColorArray.js": "native:react-native/Libraries/StyleSheet/processColorArray",
-            "node_modules/react-native/Libraries/NativeModules/specs/NativeSourceCode.js": "native:react-native/Libraries/NativeModules/specs/NativeSourceCode",
-            "node_modules/react-native/Libraries/Image/AssetSourceResolver.js": "native:react-native/Libraries/Image/AssetSourceResolver",
-            "node_modules/react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js": "native:react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
-            //
-            "packages/expo-modules-core/src/index.ts": 'native:expo-modules-core',
-            "packages/expo-modules-core/src/LegacyEventEmitter.ts": 'native:expo-modules-core/src/LegacyEventEmitter',
-            "packages/expo/src/winter/index.ts": "native:expo/src/winter",
-            "packages/expo/src/Expo.ts": "native:expo",
-            "packages/expo-asset/build/index.js": "native:expo-asset",
-            "packages/expo-constants/build/Constants.js": "native:expo-constants",
-            "packages/expo-keep-awake/build/index.js": "native:expo-keep-awake",
-            "packages/expo-status-bar/src/StatusBar.tsx": "native:expo-status-bar",
-            // 'node_modules/@react-native/virtualized-lists/index.js': 'native:@react-native/virtualized-lists',
-            // base64-js
-        };
-        const getModulePath = (modulePath, scope) => {
-            // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
-            if (modulePath == null) {
-                return 'MODULE_NOT_FOUND';
-            }
-            else if ((0, sideEffects_1.isVirtualModule)(modulePath)) {
-                // Virtual modules should be stable.
-                return modulePath;
-            }
-            else if (path_1.default.isAbsolute(modulePath)) {
-                const result = (0, filePath_1.toPosixPath)(path_1.default.relative(root, modulePath)) + scope;
-                if (MAPPING[result]) {
-                    // If the module is in the mapping, return the mapped value.
-                    return MAPPING[result] + scope;
-                }
-                return result;
-            }
-            else {
-                return (0, filePath_1.toPosixPath)(modulePath) + scope;
-            }
-        };
-        const memoizedGetModulePath = memoize(getModulePath);
-        // This is an absolute file path.
-        // TODO: We may want a hashed version for production builds in the future.
-        return (modulePath, context) => {
-            const env = context?.environment ?? 'client';
-            if (env === 'client') {
-                // Only need scope for server bundles where multiple dimensions could run simultaneously.
-                // @ts-expect-error: we patch this to support being a string.
-                return memoizedGetModulePath(modulePath, '');
-            }
-            // Helps find missing parts to the patch.
-            if (!context?.platform) {
-                // context = { platform: 'web' };
-                throw new Error('createStableModuleIdFactory: `context.platform` is required');
-            }
-            // Only need scope for server bundles where multiple dimensions could run simultaneously.
-            const scope = env !== 'client' ? `?platform=${context?.platform}&env=${env}` : '';
-            // @ts-expect-error: we patch this to support being a string.
-            return memoizedGetModulePath(modulePath, scope);
-        };
-    }
     const getModulePath = (modulePath, scope) => {
         // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
         if (modulePath == null) {
@@ -353,7 +263,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformerPath: require.resolve('./transform-worker/transform-worker'),
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
-            globalPrefix: process.env.EXPO_BUNDLE_BUILT_IN ? '__native' : '',
+            // globalPrefix: process.env.EXPO_BUNDLE_BUILT_IN ? '__native' : '',
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
             // @ts-expect-error: not on type.

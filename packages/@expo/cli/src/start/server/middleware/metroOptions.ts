@@ -94,7 +94,9 @@ function withDefaults({
 
   const optimize =
     props.optimize ??
-    (environment !== 'node' && (mode === 'production' || process.env.EXPO_BUNDLE_BUILT_IN) && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
+    (environment !== 'node' &&
+      (mode === 'production' || env.EXPO_BUNDLE_BUILT_IN) &&
+      env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH);
 
   return {
     mode,

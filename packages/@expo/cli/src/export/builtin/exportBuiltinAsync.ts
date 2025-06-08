@@ -47,13 +47,18 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
   for (const platform of options.platforms) {
     const res = await devServer.exportBuiltinBundleAsync({
       platform,
-      bytecode: true,
+      bytecode: false,
+      minify: false,
+
+      // bytecode: true,
+      // minify: true,
       mainModuleName: path.join(projectRoot, options.pkg),
       // inlineSourceMap: true,
       serializerIncludeMaps: options.sourceMaps,
       mode: options.dev ? 'development' : 'production',
       reactCompiler: false,
       engine: 'hermes',
+
       //   minify: options.minify,
     });
 
