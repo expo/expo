@@ -20,6 +20,13 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
   setNodeEnv(options.dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
 
+  const outputPath = path.resolve(projectRoot, options.outputDir);
+
+  // Delete the output directory if it exists
+  await removeAsync(outputPath);
+  // Create the output directory
+  await ensureDirectoryAsync(outputPath);
+
   process.env.EXPO_USE_METRO_REQUIRE = '1';
   process.env.EXPO_BUNDLE_BUILT_IN = '1';
   process.env.EXPO_NO_CLIENT_ENV_VARS = '1';
@@ -47,11 +54,11 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
   for (const platform of options.platforms) {
     const res = await devServer.exportBuiltinBundleAsync({
       platform,
-      bytecode: false,
-      minify: false,
+      // bytecode: false,
+      // minify: false,
 
-      // bytecode: true,
-      // minify: true,
+      bytecode: true,
+      minify: true,
       mainModuleName: path.join(projectRoot, options.pkg),
       // inlineSourceMap: true,
       serializerIncludeMaps: options.sourceMaps,
@@ -71,8 +78,6 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
     // TODO: Wrap modules with `if (__DEV__) {}`
     console.log(res.artifacts);
   }
-
-  const outputPath = path.resolve(projectRoot, options.outputDir);
 
   await persistMetroFilesAsync(files, outputPath);
 
