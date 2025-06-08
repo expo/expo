@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.1.11 - 2025-06-08
+
+### 💡 Others
+
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 - Added `--transitive-linking-dependencies` option to support react-native-edge-to-edge autolinking in CNG projects. ([#37194](https://github.com/expo/expo/pull/37194) by [@kudo](https://github.com/kudo))
 
