@@ -13,10 +13,10 @@ export default function App() {
   // );
   // console.log("h", React._expo_builtin);
 
-  console.error('hey');
+    console.error('hey', globalThis.WritableStream);
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Runner!</Text>
+      <Text>Runner</Text>
 
       <StatusBar style="auto" />
     </SafeAreaView>

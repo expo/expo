@@ -81,34 +81,11 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
 
   await persistMetroFilesAsync(files, outputPath);
 
-  // // Ensure the output directory is created
-  // const outputPath = path.resolve(projectRoot, options.outputDir);
+  // Stop any file watchers to prevent the CLI from hanging.
+  FileNotifier.stopAll();
+  // Final notes
+  Log.log(chalk.greenBright`Exported: ${options.outputDir}`);
 
-  // if (outputPath === projectRoot) {
-  //   throw new CommandError('--output-dir cannot be the same as the project directory.');
-  // } else if (path.relative(projectRoot, outputPath).startsWith('..')) {
-  //   throw new CommandError(
-  //     '--output-dir must be a subdirectory of the project directory. Generating outside of the project directory is not supported.'
-  //   );
-  // }
-
-  // // Delete the output directory if it exists
-  // await removeAsync(outputPath);
-  // // Create the output directory
-  // await ensureDirectoryAsync(outputPath);
-
-  // // Export the app
-  // await exportAppAsync(projectRoot, options);
-
-  // // Stop any file watchers to prevent the CLI from hanging.
-  // FileNotifier.stopAll();
-  // // Wait until Atlas is ready, when enabled
-  // // NOTE(cedric): this is a workaround, remove when `process.exit` is removed
-  // await waitUntilAtlasExportIsReadyAsync(projectRoot);
-
-  // // Final notes
-  // Log.log(chalk.greenBright`Exported: ${options.outputDir}`);
-
-  // // Exit the process to stop any hanging processes from reading the app.config.js or server rendering.
+  // Exit the process to stop any hanging processes from reading the app.config.js or server rendering.
   ensureProcessExitsAfterDelay();
 }

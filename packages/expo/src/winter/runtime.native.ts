@@ -30,8 +30,22 @@ install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
+
 // https://streams.spec.whatwg.org/#rs
-// ReadableStream is injected by Metro as a global
+install('AbortSignal', () => require('web-streams-polyfill/ponyfill').AbortSignal);
+install('ByteLengthQueuingStrategy', () => require('web-streams-polyfill/ponyfill').ByteLengthQueuingStrategy);
+install('CountQueuingStrategy', () => require('web-streams-polyfill/ponyfill').CountQueuingStrategy);
+install('ReadableByteStreamController', () => require('web-streams-polyfill/ponyfill').ReadableByteStreamController);
+install('ReadableStream', () => require('web-streams-polyfill/ponyfill').ReadableStream);
+install('ReadableStreamBYOBReader', () => require('web-streams-polyfill/ponyfill').ReadableStreamBYOBReader);
+install('ReadableStreamBYOBRequest', () => require('web-streams-polyfill/ponyfill').ReadableStreamBYOBRequest);
+install('ReadableStreamDefaultController', () => require('web-streams-polyfill/ponyfill').ReadableStreamDefaultController);
+install('ReadableStreamDefaultReader', () => require('web-streams-polyfill/ponyfill').ReadableStreamDefaultReader);
+install('TransformStream', () => require('web-streams-polyfill/ponyfill').TransformStream);
+install('TransformStreamDefaultController', () => require('web-streams-polyfill/ponyfill').TransformStreamDefaultController);
+install('WritableStream', () => require('web-streams-polyfill/ponyfill').WritableStream);
+install('WritableStreamDefaultController', () => require('web-streams-polyfill/ponyfill').WritableStreamDefaultController);
+install('WritableStreamDefaultWriter', () => require('web-streams-polyfill/ponyfill').WritableStreamDefaultWriter);
 
 install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
 

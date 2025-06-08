@@ -116,7 +116,8 @@ function withWebPolyfills(
       virtualModuleId,
       virtualEnvVarId,
       // Removed on server platforms during the transform.
-      require.resolve('expo/virtual/streams.js'),
+      // TODO: Move to be a native built-in.
+      // require.resolve('expo/virtual/streams.js'),
     ];
   };
 
@@ -649,7 +650,7 @@ export function withExtendedResolver(
       platform: string | null
     ) {
       // This resolution is dev-only to prevent bundling the production React packages in development.
-      if (!context.dev) return null;
+      if (!context.dev || env.EXPO_BUNDLE_BUILT_IN) return null;
 
       if (
         // Match react-native renderers.
