@@ -59,16 +59,7 @@ function withWebPolyfills(
     getMetroBundler: () => Bundler;
   }
 ): ConfigT {
-  // Remove all polyfills for built-in bundle
-  if (env.EXPO_BUNDLE_BUILT_IN) {
-    return {
-      ...config,
-      serializer: {
-        ...config.serializer,
-        getPolyfills: () => [],
-      },
-    };
-  }
+  
 
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
@@ -108,13 +99,24 @@ function withWebPolyfills(
         require.resolve('@react-native/js-polyfills/error-guard'),
       ];
     }
-
     // Generally uses `rn-get-polyfills`
     const polyfills = originalGetPolyfills(ctx);
+
+    // Move all polyfills to the native built-in bundle.
+    if (env.EXPO_BUNDLE_BUILT_IN) {
+      return [
+        ...polyfills
+      ]
+    }
+
     return [
-      ...polyfills,
+      // ...polyfills,
       virtualModuleId,
       virtualEnvVarId,
+
+      // This built-in is still required for server bundles.
+      // TODO: Prevent this from being included in the native client bundle.
+      require.resolve('@react-native/js-polyfills/error-guard'),
       // Removed on server platforms during the transform.
       // TODO: Move to be a native built-in.
       // require.resolve('expo/virtual/streams.js'),
