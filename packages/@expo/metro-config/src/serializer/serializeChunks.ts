@@ -616,7 +616,7 @@ export class Chunk {
     // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
     // also create hermes bytecode. We may need to disable in one of the two places.
     return (
-      !this.options.dev &&
+      // !this.options.dev &&
       this.supportsBytecode() &&
       this.graph.transformOptions.customTransformOptions?.engine === 'hermes'
     );

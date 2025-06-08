@@ -1,0 +1,7 @@
+{
+  "name": "builtins-tester",
+  "slug": "builtins-tester",
+  "ios": {
+    "bundleIdentifier": "com.bacon.builtins-tester"
+  }
+}

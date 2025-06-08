@@ -17,9 +17,9 @@ import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from
 import { setNodeEnv } from '../../utils/nodeEnv';
 
 export async function exportBuiltinAsync(projectRoot: string, options: Options) {
-    setNodeEnv(options.dev ? 'development' : 'production');
-    require('@expo/env').load(projectRoot);
-  
+  setNodeEnv(options.dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
+
   process.env.EXPO_USE_METRO_REQUIRE = '1';
   process.env.EXPO_BUNDLE_BUILT_IN = '1';
   process.env.EXPO_NO_CLIENT_ENV_VARS = '1';
@@ -47,7 +47,7 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
   for (const platform of options.platforms) {
     const res = await devServer.exportBuiltinBundleAsync({
       platform,
-      bytecode: false,
+      bytecode: true,
       mainModuleName: path.join(projectRoot, options.pkg),
       // inlineSourceMap: true,
       serializerIncludeMaps: options.sourceMaps,
