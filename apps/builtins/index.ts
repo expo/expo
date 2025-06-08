@@ -85,9 +85,12 @@ import "@react-navigation/elements";
 
 // @react-navigation/native-stack
 import "@react-navigation/native-stack";
+// @react-navigation/bottom-tabs
+import "@react-navigation/bottom-tabs";
 
 // Expo Router
 import "@radix-ui/react-slot";
+import "react-native-is-edge-to-edge";
 
 // expo/metro-runtime
 import "stacktrace-parser";
