@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "main": "./index",
   "scripts": {
-    "start": "expo start",
+    "start": "EXPO_ATLAS=1 expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "yarn run prepare-builtins && expo run:ios",
+    "prepare-builtins": "cd ../builtins && yarn run bundle"
   },
   "dependencies": {
     "expo": "~53.0.9",
