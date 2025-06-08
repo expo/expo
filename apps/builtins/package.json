@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "main": "index.ts",
   "scripts": {
-    "bundle": "expo export:builtin  -p ios --pkg index.ts --dev"
+    "bundle": "expo export:builtin -p ios --pkg index.ts --dev && yarn run cp-hbc",
+    "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtins.hbc"
   },
   "dependencies": {
     "@expo/dom-webview": "0.1.4",
