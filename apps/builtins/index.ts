@@ -1,5 +1,6 @@
 import 'react';
 import 'react/jsx-dev-runtime';
+import 'react/jsx-runtime';
 import 'url';
 import 'whatwg-fetch';
 import 'react-devtools-core';
@@ -77,5 +78,13 @@ import "use-sync-external-store/with-selector"
 import "@react-navigation/core"
 
 // @react-navigation/native
-
 import "@react-navigation/native";
+
+// @react-navigation/elements
+import "@react-navigation/elements";
+
+// @react-navigation/native-stack
+import "@react-navigation/native-stack";
+
+// Expo Router
+import "@radix-ui/react-slot";
