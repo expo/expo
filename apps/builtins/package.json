@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.ts",
   "scripts": {
-    "bundle": "expo export:builtin  -p ios --pkg index.ts --no-minify --dev"
+    "bundle": "expo export:builtin  -p ios --pkg index.ts --dev"
   },
   "dependencies": {
     "@expo/dom-webview": "0.1.4",

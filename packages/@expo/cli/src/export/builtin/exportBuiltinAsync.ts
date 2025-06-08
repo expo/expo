@@ -14,8 +14,12 @@ import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevS
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 import { ExportAssetMap, getFilesFromSerialAssets, persistMetroFilesAsync } from '../saveAssets';
+import { setNodeEnv } from '../../utils/nodeEnv';
 
 export async function exportBuiltinAsync(projectRoot: string, options: Options) {
+    setNodeEnv(options.dev ? 'development' : 'production');
+    require('@expo/env').load(projectRoot);
+  
   process.env.EXPO_USE_METRO_REQUIRE = '1';
   process.env.EXPO_BUNDLE_BUILT_IN = '1';
   process.env.EXPO_NO_CLIENT_ENV_VARS = '1';
@@ -45,6 +49,7 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
       platform,
       bytecode: false,
       mainModuleName: path.join(projectRoot, options.pkg),
+      // inlineSourceMap: true,
       serializerIncludeMaps: options.sourceMaps,
       mode: options.dev ? 'development' : 'production',
       reactCompiler: false,
