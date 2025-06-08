@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.31.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.10):
+  - Expo (53.0.11):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -89,7 +89,7 @@ PODS:
     - ExpoModulesTestCore
   - ExpoContacts (14.2.5):
     - ExpoModulesCore
-  - ExpoCrypto (14.1.4):
+  - ExpoCrypto (14.1.5):
     - ExpoModulesCore
   - ExpoDevice (7.1.4):
     - ExpoModulesCore
@@ -254,7 +254,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.1.7):
     - ExpoModulesCore
-  - ExpoSQLite (15.2.11):
+  - ExpoSQLite (15.2.12):
     - ExpoModulesCore
   - ExpoStoreReview (8.1.5):
     - ExpoModulesCore
@@ -3440,9 +3440,9 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 83423c51dde4c5504cb4186e1f39728273ed334b
   EXApplication: b28de982d44768fc593de9d19ca5a7a0e49685b1
   EXAV: 13d43af15268a3f448a6b994e91574c939f065e6
@@ -3451,7 +3451,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 75cba7539b60676be1911d024252a11b846085ed
   EXNotifications: 2c4bcb5efff0874d8553db6ba0fbfec64c0e7481
-  Expo: 2551cc4d31e45ef4ffbf6b86c1d7481ed6634a62
+  Expo: 77b39f42396989cbe6fbef9f6fafc9b35186a95b
   ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6
   ExpoAsset: 3ea3275cca6a7793b3d36fbf1075c590f803fbcb
   ExpoAudio: 71e63e2fef39fae8966d94cf398881b49d28a642
@@ -3465,7 +3465,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 040f1a7a3dc3a6f573f2b077a7911bdbe3aeb923
   ExpoClipboard: c187b3101e5f38cce4c6321788e0047f1c29e152
   ExpoContacts: 8b3e0dfb1867c89187c9d7cb461329f35c5fea45
-  ExpoCrypto: fc94a8865ce0e06c68c10c3993f9ac9a6424d0c2
+  ExpoCrypto: fcb6a8a08d1929f346cb95eb05a8f7818627177a
   ExpoDevice: 7a961caede6638aa0d37d0d3aa884ab957a2e3d3
   ExpoDocumentPicker: d1bb0c63fc686a74455bd7c2cd54545fa6231b66
   ExpoDomWebView: ee9900f66adbe81c609d3b354d5d6ec0cf925c45
@@ -3498,7 +3498,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 04b346bdd7c8ea1fa87047ac7bba65c37bde4f51
   ExpoSMS: de195632beeb7ef00556750da10da667596d8967
   ExpoSpeech: fceabf6bf31aa9530ef0696e6793571edb702068
-  ExpoSQLite: 3e445ba39bbcee1ded7df0f0849edbee7153c1bd
+  ExpoSQLite: ab6edd420e3d99c399f731f6fae162365fb436e2
   ExpoStoreReview: bed43bea90a5876a6a480504f95fea1521dacaa7
   ExpoSymbols: bd4e20b0b6a9dbacc31dd7c861e0d6d01b56e1f2
   ExpoSystemUI: a861362b86cab02bd6b9d3e643bcf9865bf8c00d
@@ -3520,14 +3520,14 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 781e0e37aa0e1c92b44d00e739aba79ad31b2dba
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
-  fmt: 01b82d4ca6470831d1cc0852a1af644be019e8f6
-  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
+  fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 11cb9df4babe5fca99043426a2d232615cd512dc
+  hermes-engine: 008035e1fb79287d2a6b7f81a26432a7f0aca95f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

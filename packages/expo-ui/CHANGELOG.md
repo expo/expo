@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Allowed custom children in SwiftUI Button. ([#37136](https://github.com/expo/expo/pull/37136) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.1-alpha.9 — 2025-06-08
+
+### 🎉 New features
+
+- Allowed custom children in SwiftUI Button. ([#37136](https://github.com/expo/expo/pull/37136) by [@kudo](https://github.com/kudo))
 
 ## 0.1.1-alpha.8 — 2025-06-04
 

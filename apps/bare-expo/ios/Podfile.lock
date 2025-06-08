@@ -53,7 +53,7 @@ PODS:
   - EXNotifications/Tests (0.31.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.10):
+  - Expo (53.0.11):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -438,7 +438,7 @@ PODS:
     - ExpoModulesTestCore
   - ExpoContacts (14.2.5):
     - ExpoModulesCore
-  - ExpoCrypto (14.1.4):
+  - ExpoCrypto (14.1.5):
     - ExpoModulesCore
   - ExpoDevice (7.1.4):
     - ExpoModulesCore
@@ -608,7 +608,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSplashScreen (0.30.9):
     - ExpoModulesCore
-  - ExpoSQLite (15.2.11):
+  - ExpoSQLite (15.2.12):
     - ExpoModulesCore
   - ExpoStoreReview (8.1.5):
     - ExpoModulesCore
@@ -618,7 +618,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (5.2.4):
     - ExpoModulesCore
-  - ExpoUI (0.1.1-alpha.8):
+  - ExpoUI (0.1.1-alpha.9):
     - ExpoModulesCore
   - ExpoVideo (2.2.0):
     - ExpoModulesCore
@@ -3607,7 +3607,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 75cba7539b60676be1911d024252a11b846085ed
   EXNotifications: 2c4bcb5efff0874d8553db6ba0fbfec64c0e7481
-  Expo: 2551cc4d31e45ef4ffbf6b86c1d7481ed6634a62
+  Expo: 77b39f42396989cbe6fbef9f6fafc9b35186a95b
   expo-dev-client: a978cb889cc5a24d6432c29862d47c1e2956b5fe
   expo-dev-launcher: dce7c77711f9681d7ef9fc08f133b58998db82e1
   expo-dev-menu: 5222328c2c5ad96998a77f36a1b0a5046eb5e3c5
@@ -3625,7 +3625,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 040f1a7a3dc3a6f573f2b077a7911bdbe3aeb923
   ExpoClipboard: c187b3101e5f38cce4c6321788e0047f1c29e152
   ExpoContacts: 8b3e0dfb1867c89187c9d7cb461329f35c5fea45
-  ExpoCrypto: fc94a8865ce0e06c68c10c3993f9ac9a6424d0c2
+  ExpoCrypto: fcb6a8a08d1929f346cb95eb05a8f7818627177a
   ExpoDevice: 7a961caede6638aa0d37d0d3aa884ab957a2e3d3
   ExpoDocumentPicker: d1bb0c63fc686a74455bd7c2cd54545fa6231b66
   ExpoDomWebView: ee9900f66adbe81c609d3b354d5d6ec0cf925c45
@@ -3660,12 +3660,12 @@ SPEC CHECKSUMS:
   ExpoSMS: de195632beeb7ef00556750da10da667596d8967
   ExpoSpeech: fceabf6bf31aa9530ef0696e6793571edb702068
   ExpoSplashScreen: 37e2fd371d4b93215f86a81d8cad3e7b69287e42
-  ExpoSQLite: 3e445ba39bbcee1ded7df0f0849edbee7153c1bd
+  ExpoSQLite: ab6edd420e3d99c399f731f6fae162365fb436e2
   ExpoStoreReview: bed43bea90a5876a6a480504f95fea1521dacaa7
   ExpoSymbols: bd4e20b0b6a9dbacc31dd7c861e0d6d01b56e1f2
   ExpoSystemUI: a861362b86cab02bd6b9d3e643bcf9865bf8c00d
   ExpoTrackingTransparency: 843029c42d70de59bb0503f6fc747b9d2fe67f7b
-  ExpoUI: 7e10271b6aeac53400646fd4a85c82ae35b3a892
+  ExpoUI: 96c5c6fb20488c5066ae333dd586a117dc92bae4
   ExpoVideo: e7c85828e4f582e1930354087d2a34bb151ce778
   ExpoVideoThumbnails: 4280333bee3bd4d69b3b139bd50a8b7c967095ae
   ExpoWebBrowser: 1051486eb45a2f4d1ee075712604f43f3009f90e
