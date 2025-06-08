@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 
+// import { SymbolView} from 'expo-symbols'
 export default function Page() {
   return (
     <View style={styles.container}>
       <View style={styles.main}>
+        {/* <SymbolView name="star" size={64} color="#000" /> */}
         <Text style={styles.title}>Hello World</Text>
         <Text style={styles.subtitle}>This is the first page of your app.</Text>
       </View>
