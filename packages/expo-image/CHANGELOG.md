@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] `useAppleWebpCodec` has been moved from the source object to the component's prop to make it usable with the local assets.
+
 ## 2.2.0 - 2025-06-04
 
 ### 🎉 New features
