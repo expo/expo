@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Migrate to package exports
+- Migrate to package exports ([#37298](https://github.com/expo/expo/pull/37298) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.2.3 — 2025-04-30
 
