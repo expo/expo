@@ -88,3 +88,6 @@ import "@react-navigation/native-stack";
 
 // Expo Router
 import "@radix-ui/react-slot";
+
+// expo/metro-runtime
+import "stacktrace-parser";
