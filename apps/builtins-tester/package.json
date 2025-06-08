@@ -12,7 +12,29 @@
     "expo": "~53.0.9",
     "expo-splash-screen": "~0.30.8",
     "react": "19.0.0",
-    "react-native": "0.79.2"
+    "react-native": "0.79.2",
+
+     "@expo/vector-icons": "*",
+    "@react-navigation/bottom-tabs": "*",
+    "@react-navigation/elements": "*",
+    "@react-navigation/native": "*",
+    "expo-blur": "*",
+    "expo-constants": "*",
+    "expo-font": "*",
+    "expo-haptics": "*",
+    "expo-image": "*",
+    "expo-linking": "*",
+    "expo-router": "*",
+    "expo-status-bar": "*",
+    "expo-symbols": "*",
+    "expo-system-ui": "*",
+    "expo-web-browser": "*",
+    "react-native-gesture-handler": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-screens": "*",
+    "react-native-webview": "*"
+
   },
   "private": true
 }

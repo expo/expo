@@ -52,6 +52,7 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
   const files: ExportAssetMap = new Map();
 
   for (const platform of options.platforms) {
+    
     const res = await devServer.exportBuiltinBundleAsync({
       platform,
       // bytecode: false,
@@ -70,6 +71,29 @@ export async function exportBuiltinAsync(projectRoot: string, options: Options) 
     });
 
     getFilesFromSerialAssets(res.artifacts, {
+      includeSourceMaps: options.sourceMaps,
+      files,
+      isServerHosted: devServer.isReactServerComponentsEnabled,
+    });
+    
+    const resDebug = await devServer.exportBuiltinBundleAsync({
+      platform,
+      bytecode: false,
+      minify: false,
+
+      // bytecode: true,
+      // minify: true,
+      mainModuleName: path.join(projectRoot, options.pkg),
+      // inlineSourceMap: true,
+      serializerIncludeMaps: options.sourceMaps,
+      mode: options.dev ? 'development' : 'production',
+      reactCompiler: false,
+      engine: 'hermes',
+
+      //   minify: options.minify,
+    });
+
+    getFilesFromSerialAssets(resDebug.artifacts, {
       includeSourceMaps: options.sourceMaps,
       files,
       isServerHosted: devServer.isReactServerComponentsEnabled,

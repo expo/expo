@@ -33,7 +33,33 @@ import 'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore';
 import 'expo-modules-core';
 import 'expo-modules-core/src/LegacyEventEmitter';
 import 'expo';
+import 'expo/dom';
+import 'expo/dom/global';
 import 'expo-asset';
 import 'expo-constants';
 import 'expo-keep-awake';
 import 'expo-status-bar';
+
+// Router packages
+import "expo-blur"
+import "expo-font"
+import "expo-haptics"
+import "expo-image"
+import "expo-linking"
+import "expo-splash-screen"
+import "expo-symbols"
+import "expo-system-ui"
+import "expo-web-browser"
+
+import "react-native-gesture-handler"
+import "react-native-reanimated"
+import "react-native-safe-area-context"
+import "react-native-screens"
+import "react-native-webview"
+import "@react-native-masked-view/masked-view"
+
+// import "expo-router"
+
+import "color";
+import "color-string";
+import "color-name";
