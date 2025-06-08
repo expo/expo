@@ -489,6 +489,13 @@ function processRequireCall(path, state) {
             isESMImport = isImport(loc);
         }
     }
+    // TODO: Enable this optimization when bundling for native client only to skip over extra resolutions.
+    // if (name.startsWith('native:')) {
+    //   // Replace path `require(...)` with `__native__r(...)`
+    //   const nativeRequire = t.identifier('__native__r');
+    //   path.get('callee').replaceWith(nativeRequire);
+    //   return;
+    // }
     const dep = registerDependency(state, {
         name,
         asyncType: null,

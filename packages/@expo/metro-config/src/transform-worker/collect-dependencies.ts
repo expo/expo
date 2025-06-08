@@ -677,6 +677,7 @@ function warnDynamicRequire({ node }: NodePath<CallExpression>, message = '') {
 function processRequireCall(path: NodePath<CallExpression>, state: State): void {
   const name = getModuleNameFromCallArgs(path);
 
+
   const transformer = state.dependencyTransformer;
 
   if (name == null) {
@@ -699,6 +700,16 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
       isESMImport = isImport(loc);
     }
   }
+
+
+  // TODO: Enable this optimization when bundling for native client only to skip over extra resolutions.
+  // if (name.startsWith('native:')) {
+  //   // Replace path `require(...)` with `__native__r(...)`
+  //   const nativeRequire = t.identifier('__native__r');
+  //   path.get('callee').replaceWith(nativeRequire);
+
+  //   return;
+  // }
 
   const dep = registerDependency(
     state,
