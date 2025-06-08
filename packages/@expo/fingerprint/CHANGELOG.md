@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.13.0 - 2025-06-08
+
+### 🎉 New features
+
 - Ignored native directories for CNG projects. ([#37205](https://github.com/expo/expo/pull/37205) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes

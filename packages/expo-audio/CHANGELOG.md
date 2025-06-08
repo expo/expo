@@ -8,12 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Support base64 strings as an audio source. ([#37031](https://github.com/expo/expo/pull/37031) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Correctly add the http headers to the `AVURLAsset`. ([#37029](https://github.com/expo/expo/pull/37029) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
 - Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+## 0.4.6 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [iOS] Support base64 strings as an audio source. ([#37031](https://github.com/expo/expo/pull/37031) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Correctly add the http headers to the `AVURLAsset`. ([#37029](https://github.com/expo/expo/pull/37029) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.4.5 — 2025-05-08
 
