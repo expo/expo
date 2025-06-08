@@ -94,3 +94,5 @@ import "react-native-is-edge-to-edge";
 
 // expo/metro-runtime
 import "stacktrace-parser";
+// TODO: Full metro-runtime will likely not work with native embedding.
+// import "@expo/metro-runtime";

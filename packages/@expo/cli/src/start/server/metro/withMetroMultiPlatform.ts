@@ -255,7 +255,6 @@ function createBuiltinModuleIdFactory(
 "node_modules/color-convert/index.js": 'color-convert',
 
 "node_modules/@radix-ui/react-compose-refs/dist/index.js": "@radix-ui/react-compose-refs",
-
 "node_modules/nanoid/non-secure/index.js": 'nanoid/non-secure',
 "node_modules/@react-navigation/routers/lib/module/index.js": '@react-navigation/routers',
 "node_modules/use-latest-callback/esm.mjs": 'use-latest-callback',
@@ -267,7 +266,7 @@ function createBuiltinModuleIdFactory(
 "node_modules/@react-navigation/native/lib/module/index.js": '@react-navigation/native',
 "node_modules/@react-navigation/elements/lib/module/index.js": '@react-navigation/elements',
 "node_modules/@react-navigation/bottom-tabs/lib/module/index.js": '@react-navigation/bottom-tabs',
-"node_modules/@radix-ui/react-slot/dist/index.js": "@radix-ui/react-slot",
+"node_modules/@radix-ui/react-slot/dist/index.mjs": "@radix-ui/react-slot",
 "node_modules/@react-navigation/native-stack/lib/module/index.js": '@react-navigation/native-stack',
 "node_modules/stacktrace-parser/dist/stack-trace-parser.cjs.js": 'stacktrace-parser',
   };
