@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrate to package exports
+
 ## 2.2.3 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
