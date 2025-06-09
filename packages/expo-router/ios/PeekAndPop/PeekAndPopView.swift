@@ -8,6 +8,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     private var preview: PeekAndPopPreviewView?
     private var interaction: UIContextMenuInteraction?
     private var nextScreenId: String?
+    private var actions: [[String: String]] = []
 
     private let peekAndPopNavigation: PeekAndPopNavigation = PeekAndPopNavigation()
 
@@ -16,6 +17,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     let onDidPreviewOpen = EventDispatcher()
     let onPreviewWillClose = EventDispatcher()
     let onPreviewDidClose = EventDispatcher()
+    let onActionSelected = EventDispatcher()
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
@@ -25,6 +27,10 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     func setNextScreenId(_ screenId: String) {
         self.nextScreenId = screenId
         peekAndPopNavigation.updatePreloadedView(screenId, with: self)
+    }
+
+    func setActions(_ actions: [[String: String]]) {
+        self.actions = actions
     }
 
     /**
@@ -120,13 +126,21 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     }
 
     private func createContextMenu() -> UIMenu {
-        let action1 = UIAction(
-            title: "Action 1",
-            handler: { _ in
-                print("Action 1 selected")
-            })
+        let uiActions = actions.filter {
+            // Making sure that only actions with non-empty id and title are displayed
+            ($0["id"]?.isEmpty == false && $0["title"]?.isEmpty == false)
+        }
+        .map { action in
+            return UIAction(
+                title: action["title"] ?? ""
+            ) { _ in
+                self.onActionSelected([
+                    "id": action["id"] ?? ""
+                ])
+            }
+        }
 
-        return UIMenu(title: "", children: [action1])
+        return UIMenu(title: "", children: uiActions)
     }
 }
 

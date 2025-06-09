@@ -152,13 +152,10 @@ function LinkWithPreview({ experimentalPreview, ...rest }) {
             console.warn('Using replace links with preview is not supported');
         }
     }, [rest.href, rest.replace]);
-    console.log(rest);
     if (isExternal(String(rest.href)) || rest.replace) {
         return <ExpoRouterLink {...rest}/>;
     }
-    console.log('previewSize', previewSize);
-    // TODO: add a way to add and customize preview actions
-    return (<native_1.PeekAndPopView nextScreenId={navigationKey} onWillPreviewOpen={() => {
+    return (<native_1.PeekAndPopView nextScreenId={navigationKey} actions={[]} onActionSelected={({ nativeEvent: { id: _ } }) => { }} onWillPreviewOpen={() => {
             preload();
             setIsPreviewOpen(true);
             setIsCurrenPreviewOpen(true);

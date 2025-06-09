@@ -228,18 +228,15 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
     }
   }, [rest.href, rest.replace]);
 
-  console.log(rest);
-
   if (isExternal(String(rest.href)) || rest.replace) {
     return <ExpoRouterLink {...rest} />;
   }
 
-  console.log('previewSize', previewSize);
-
-  // TODO: add a way to add and customize preview actions
   return (
     <PeekAndPopView
       nextScreenId={navigationKey}
+      actions={[]}
+      onActionSelected={({ nativeEvent: { id: _ } }) => {}}
       onWillPreviewOpen={() => {
         preload();
         setIsPreviewOpen(true);

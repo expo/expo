@@ -6,6 +6,8 @@ export interface PeekAndPopPreviewViewProps extends ViewProps {
 export interface PeekAndPopTriggerViewProps extends ViewProps {}
 export interface PeekAndPopViewProps extends ViewProps {
   nextScreenId: string | undefined;
+  actions: { title: string; id: string }[];
+  onActionSelected?: (event: { nativeEvent: { id: string } }) => void;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;

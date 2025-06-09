@@ -15,9 +15,18 @@ public class PeekAndPopModule: Module {
         view.setNextScreenId(nextScreenId)
       }
 
+      Prop("actions") { (view: PeekAndPopView, actions: [[String: String]]) in
+        view.setActions(actions)
+      }
+
       Events(
-        "onPreviewTapped", "onWillPreviewOpen", "onDidPreviewOpen", "onPreviewWillClose",
-        "onPreviewDidClose")
+        "onPreviewTapped",
+        "onWillPreviewOpen",
+        "onDidPreviewOpen",
+        "onPreviewWillClose",
+        "onPreviewDidClose",
+        "onActionSelected"
+      )
     }
     View(PeekAndPopPreviewView.self) {
       Events("onSetSize")
