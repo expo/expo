@@ -1,20 +1,12 @@
-//
-//  PeekAndPopNavigation.h
-//  ScreensWrapper
-//
-//  Created by Jakub Tkacz on 04/06/2025.
-//
-
-#ifndef UbaxMath_h
-#define UbaxMath_h
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 @class PeekAndPopNavigation;
 
 @interface PeekAndPopNavigation:NSObject
 
 - (void)updatePreloadedView:(NSString *)screenId withUiResponder:(UIResponder *)responder;
+
 - (void)pushPreloadedView:(UIResponder *)responder;
 
 @end
 
-#endif /* UbaxMath_h */

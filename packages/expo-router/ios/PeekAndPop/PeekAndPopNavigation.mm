@@ -1,9 +1,4 @@
-//
-//  PeekAndPopNavigation.m
-//  ScreensWrapper
-//
-//  Created by Jakub Tkacz on 04/06/2025.
-//
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "PeekAndPopNavigation.h"
 #import <Foundation/Foundation.h>
@@ -22,6 +17,8 @@
   RNSScreenStackView *stack = [self findScreenStackViewInResponderChain:responder];
 
   if (preloadedScreenView != nil && stack != nil) {
+    // Instead of pushing the preloaded screen view, we set its activity state to 2
+    // React native screens will then handle the rest.
     [preloadedScreenView setActivityState:2];
     [stack markChildUpdated];
     NSLog(@"Preloaded screen view pushed.");
@@ -73,6 +70,7 @@
 }
 
 - (RNSScreenView *)findPreloadedScreenViewWithScreenId:(NSString*)screenId withUiResponder:(UIResponder *)responder {
+  // TODO: Check if it is enough to look in the first found stack
   RNSScreenStackView *stack = [self findScreenStackViewInResponderChain:responder];
 
   NSLog(@"Screen Id: %@", screenId);
