@@ -1,5 +1,5 @@
-import getDevServer from '../getDevServer';
 import { buildUrlForBundle } from '../buildUrlForBundle';
+import getDevServer from '../getDevServer';
 
 export const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;

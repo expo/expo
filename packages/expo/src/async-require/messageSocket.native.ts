@@ -1,8 +1,8 @@
 /* eslint-env browser */
-import getDevServer from './getDevServer';
-
 // @ts-expect-error: untyped module
 import WebSocket from 'react-native/Libraries/WebSocket/WebSocket';
+
+import getDevServer from './getDevServer';
 
 declare namespace globalThis {
   const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;
