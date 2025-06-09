@@ -13,6 +13,9 @@
     "expo-splash-screen": "~0.30.8",
     "react": "19.0.0",
     "react-native": "0.79.2",
+    "expo-status-bar": "*"
+  },
+  "ext": {
     "@expo/vector-icons": "*",
     "@react-navigation/bottom-tabs": "*",
     "@react-navigation/elements": "*",
@@ -24,7 +27,6 @@
     "expo-image": "*",
     "expo-linking": "*",
     "expo-router": "*",
-    "expo-status-bar": "*",
     "expo-symbols": "*",
     "expo-system-ui": "*",
     "expo-web-browser": "*",
@@ -34,6 +36,5 @@
     "react-native-screens": "*",
     "react-native-webview": "*"
   },
-  
   "private": true
 }

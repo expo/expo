@@ -1,23 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Image, Text, View } from 'react-native';
 
 import React from 'react';
 
 export default function App() {
   // console.log("GOTVALUE:", __native__r("native:react"));
-  // console.log(
-  //   "GOTVALUE:",
-  //   __r("TICKLEBACON"),
-  //   [...__r.getModules().keys()],
-  //   React._expo_builtin
-  // );
-  // console.log("h", React._expo_builtin);
-
-    console.error('hey', globalThis.WritableStream);
+  //   console.error('hey', globalThis.WritableStream);
   return (
     <SafeAreaView style={styles.container}>
       <Text>Runner</Text>
-
+      <Image
+        source={__native__r(
+          'native:node_modules/react-native/Libraries/LogBox/UI/LogBoxImages/close.png'
+        )}
+        style={{ width: 100, height: 100 }}
+      />
       <StatusBar style="auto" />
     </SafeAreaView>
   );

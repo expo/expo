@@ -42,57 +42,57 @@ import 'expo-keep-awake';
 import 'expo-status-bar';
 
 // Router packages
-import "expo-blur"
-import "expo-font"
-import "expo-haptics"
-import "expo-image"
-import "expo-linking"
-import "expo-splash-screen"
-import "expo-symbols"
-import "expo-system-ui"
-import "expo-web-browser"
+import 'expo-blur';
+import 'expo-font';
+import 'expo-haptics';
+import 'expo-image';
+import 'expo-linking';
+import 'expo-splash-screen';
+import 'expo-symbols';
+import 'expo-system-ui';
+import 'expo-web-browser';
 
-import "react-native-gesture-handler"
-import "react-native-reanimated"
-import "react-native-safe-area-context"
-import "react-native-screens"
-import "react-native-webview"
-import "@react-native-masked-view/masked-view"
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
+import 'react-native-safe-area-context';
+import 'react-native-screens';
+import 'react-native-webview';
+import '@react-native-masked-view/masked-view';
 
 // import "expo-router"
 
-import "color";
-import "color-string";
-import "color-name";
+import 'color';
+import 'color-string';
+import 'color-name';
 
-import "@radix-ui/react-compose-refs";
+import '@radix-ui/react-compose-refs';
 
 // React Navigation
-import "@react-navigation/routers";
-import "nanoid/non-secure";
-import "use-latest-callback";
-import "query-string";
-import "react-is";
-import "use-sync-external-store"
-import "use-sync-external-store/with-selector"
-import "@react-navigation/core"
+import '@react-navigation/routers';
+import 'nanoid/non-secure';
+import 'use-latest-callback';
+import 'query-string';
+import 'react-is';
+import 'use-sync-external-store';
+import 'use-sync-external-store/with-selector';
+import '@react-navigation/core';
 
 // @react-navigation/native
-import "@react-navigation/native";
+import '@react-navigation/native';
 
 // @react-navigation/elements
-import "@react-navigation/elements";
+import '@react-navigation/elements';
 
 // @react-navigation/native-stack
-import "@react-navigation/native-stack";
+import '@react-navigation/native-stack';
 // @react-navigation/bottom-tabs
-import "@react-navigation/bottom-tabs";
+import '@react-navigation/bottom-tabs';
 
 // Expo Router
-import "@radix-ui/react-slot";
-import "react-native-is-edge-to-edge";
+import '@radix-ui/react-slot';
+import 'react-native-is-edge-to-edge';
 
 // expo/metro-runtime
-import "stacktrace-parser";
+import 'stacktrace-parser';
 // TODO: Full metro-runtime will likely not work with native embedding.
 // import "@expo/metro-runtime";
