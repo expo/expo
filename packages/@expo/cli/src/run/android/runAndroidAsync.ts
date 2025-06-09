@@ -1,4 +1,3 @@
-import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -9,13 +8,13 @@ import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
 import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
-import { resolveRemoteBuildCache, uploadRemoteBuildCache } from '../remoteBuildCache';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
@@ -26,21 +25,21 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   setNodeEnv(isProduction ? 'production' : 'development');
   require('@expo/env').load(projectRoot);
 
-  const projectConfig = getConfig(projectRoot);
-  if (!options.binary && projectConfig.exp.experiments?.remoteBuildCache) {
-    const localPath = await resolveRemoteBuildCache(projectRoot, {
+  await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
+
+  const props = await resolveOptionsAsync(projectRoot, options);
+
+  if (!options.binary && props.buildCacheProvider) {
+    const localPath = await resolveBuildCache({
+      projectRoot,
       platform: 'android',
-      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      provider: props.buildCacheProvider,
       runOptions: options,
     });
     if (localPath) {
       options.binary = localPath;
     }
   }
-
-  await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
-
-  const props = await resolveOptionsAsync(projectRoot, options);
 
   debug('Package name: ' + props.packageName);
   Log.log('› Building app...');
@@ -121,11 +120,13 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await manager.stopAsync();
   }
 
-  if (shouldUpdateBuildCache && projectConfig.exp.experiments?.remoteBuildCache) {
-    await uploadRemoteBuildCache(projectRoot, {
+  if (options.binary && shouldUpdateBuildCache && props.buildCacheProvider) {
+    await uploadBuildCache({
+      projectRoot,
       platform: 'android',
-      provider: projectConfig.exp.experiments?.remoteBuildCache.provider,
+      provider: props.buildCacheProvider,
       buildPath: options.binary,
+      runOptions: options,
     });
   }
 }

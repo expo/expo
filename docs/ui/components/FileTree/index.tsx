@@ -69,7 +69,7 @@ function generateStructure(files: FileTreeProps['files'] = []): FileObject[] {
 function renderStructure(structure: FileObject[], level = 0): ReactNode {
   return structure.map(({ name, note, files }, index) => {
     const FileIcon = getIconForFile(name);
-    return files.length ? (
+    return files.length > 0 ? (
       <div key={name + '_' + index} className="mt-1 flex flex-col rounded-sm pl-2 pt-1">
         <div className="flex items-center">
           {' '.repeat(level)}

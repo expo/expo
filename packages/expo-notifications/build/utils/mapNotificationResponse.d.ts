@@ -16,13 +16,19 @@ export declare const mapNotificationResponse: (response: NotificationResponse) =
                 title: string | null;
                 subtitle: string | null;
                 body: string | null;
-                data: Record<string, any>;
+                data: {
+                    [key: string]: unknown;
+                };
+                categoryIdentifier: string | null;
                 sound: "default" | "defaultCritical" | "custom" | null;
             } & import("..").NotificationContentIos) | ({
                 title: string | null;
                 subtitle: string | null;
                 body: string | null;
-                data: Record<string, any>;
+                data: {
+                    [key: string]: unknown;
+                };
+                categoryIdentifier: string | null;
                 sound: "default" | "defaultCritical" | "custom" | null;
             } & import("..").NotificationContentAndroid);
             identifier: string;
@@ -48,13 +54,19 @@ export declare const mapNotification: (notification: Notification) => {
             title: string | null;
             subtitle: string | null;
             body: string | null;
-            data: Record<string, any>;
+            data: {
+                [key: string]: unknown;
+            };
+            categoryIdentifier: string | null;
             sound: "default" | "defaultCritical" | "custom" | null;
         } & import("..").NotificationContentIos) | ({
             title: string | null;
             subtitle: string | null;
             body: string | null;
-            data: Record<string, any>;
+            data: {
+                [key: string]: unknown;
+            };
+            categoryIdentifier: string | null;
             sound: "default" | "defaultCritical" | "custom" | null;
         } & import("..").NotificationContentAndroid);
         identifier: string;
@@ -76,13 +88,19 @@ export declare const mapNotificationRequest: (request: NotificationRequest) => {
         title: string | null;
         subtitle: string | null;
         body: string | null;
-        data: Record<string, any>;
+        data: {
+            [key: string]: unknown;
+        };
+        categoryIdentifier: string | null;
         sound: "default" | "defaultCritical" | "custom" | null;
     } & import("..").NotificationContentIos) | ({
         title: string | null;
         subtitle: string | null;
         body: string | null;
-        data: Record<string, any>;
+        data: {
+            [key: string]: unknown;
+        };
+        categoryIdentifier: string | null;
         sound: "default" | "defaultCritical" | "custom" | null;
     } & import("..").NotificationContentAndroid);
     identifier: string;
@@ -100,13 +118,19 @@ export declare const mapNotificationContent: (content: NotificationContent) => (
     title: string | null;
     subtitle: string | null;
     body: string | null;
-    data: Record<string, any>;
+    data: {
+        [key: string]: unknown;
+    };
+    categoryIdentifier: string | null;
     sound: "default" | "defaultCritical" | "custom" | null;
 } & import("..").NotificationContentIos) | ({
     title: string | null;
     subtitle: string | null;
     body: string | null;
-    data: Record<string, any>;
+    data: {
+        [key: string]: unknown;
+    };
+    categoryIdentifier: string | null;
     sound: "default" | "defaultCritical" | "custom" | null;
 } & import("..").NotificationContentAndroid);
 //# sourceMappingURL=mapNotificationResponse.d.ts.map

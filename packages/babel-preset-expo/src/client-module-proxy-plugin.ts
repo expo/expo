@@ -2,12 +2,14 @@
  * Copyright © 2024 650 Industries.
  */
 import { ConfigAPI, template, types } from '@babel/core';
+import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getIsReactServer } from './common';
+import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
 
 export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
   const isReactServer = api.caller(getIsReactServer);
+  const possibleProjectRoot = api.caller(getPossibleProjectRoot);
 
   return {
     name: 'expo-client-references',
@@ -41,7 +43,13 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           throw new Error('[Babel] Expected a filename to be set in the state');
         }
 
-        const outputKey = url.pathToFileURL(filePath).href;
+        const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+
+        // TODO: Replace with opaque paths in production.
+        const outputKey = './' + toPosixPath(getRelativePath(projectRoot, filePath));
+        // const outputKey = isProd
+        //   ? './' + getRelativePath(projectRoot, filePath)
+        //   : url.pathToFileURL(filePath).href;
 
         function iterateExports(callback: (exportName: string, path: any) => void, type: string) {
           const exportNames = new Set<string>();
@@ -191,7 +199,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the server action reference in the metadata.
-          state.file.metadata.reactServerReference = outputKey;
+          state.file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
         } else if (isUseClient) {
           if (!isReactServer) {
             // Do nothing for "use client" on the client.
@@ -255,7 +263,7 @@ export function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj {
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the client reference in the metadata.
-          state.file.metadata.reactClientReference = outputKey;
+          state.file.metadata.reactClientReference = url.pathToFileURL(filePath).href;
         }
       },
     },

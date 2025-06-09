@@ -310,8 +310,8 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
  * Overrides updates URL and reuqest headers in runtime from build time.
  * This method allows you to load specific updates from a URL that you provide.
  * Use this method at your own risk, as it may cause unexpected behavior.
+ * [Learn more about use cases and limitations](https://docs.expo.dev/eas-update/override/).
  * @experimental
- * @hidden
  */
 export function setUpdateURLAndRequestHeadersOverride(
   configOverride: { updateUrl: string; requestHeaders: Record<string, string> } | null

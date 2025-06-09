@@ -54,7 +54,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
       fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
     }
-    self.reactNativeFactory = appDelegate.reactNativeFactory as? RCTReactNativeFactory
+    self.reactNativeFactory = appDelegate.factory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
     if self.reactNativeFactory?.delegate?.newArchEnabled() ?? false {

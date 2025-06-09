@@ -2,9 +2,7 @@
 
 #import <Expo/EXAppDelegateWrapper.h>
 
-#import <Expo/EXReactRootViewFactory.h>
 #import <Expo/RCTAppDelegateUmbrella.h>
-#import <Expo/EXReactNativeFactoryDelegate.h>
 #import <Expo/Swift.h>
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -20,22 +18,6 @@
     _expoAppDelegate = [EXExpoAppDelegate new];
   }
   return self;
-}
-
-- (void)setModuleName:(NSString * _Nullable)moduleName {
-  _expoAppDelegate.moduleName = [moduleName copy];
-}
-
-- (NSString*) moduleName {
-  return _expoAppDelegate.moduleName;
-}
-
-- (void)setInitialProps:(NSDictionary * _Nullable)initialProps {
-  _expoAppDelegate.initialProps = initialProps;
-}
-
-- (NSDictionary*) initialProps {
-  return _expoAppDelegate.initialProps;
 }
 
 // This needs to be implemented, otherwise forwarding won't be called.
@@ -81,12 +63,12 @@
 
 - (UIViewController *)createRootViewController
 {
-  return [_expoAppDelegate createRootViewController];
+  return [_expoAppDelegate.factory.delegate createRootViewController];
 }
 
 - (void)customizeRootView:(UIView *)rootView
 {
-  [_expoAppDelegate customizeRootView:rootView];
+  [_expoAppDelegate.factory.delegate customizeRootView:rootView];
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
@@ -112,11 +94,11 @@
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return [_expoAppDelegate getModuleInstanceFromClass:moduleClass];
+  return [_expoAppDelegate.factory.delegate getModuleInstanceFromClass:moduleClass];
 }
 
 - (Class)getModuleClassFromName:(const char *)name {
-  return [_expoAppDelegate getModuleClassFromName:name];
+  return [_expoAppDelegate.factory.delegate getModuleClassFromName:name];
 }
 
 

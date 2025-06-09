@@ -1,10 +1,10 @@
-export * as Next from './Next';
 export * from './BottomSheet';
 export * from './Button';
 export * from './ColorPicker';
 export * from './ContextMenu';
 export * from './DatePicker';
 export * from './Gauge';
+export * from './Host';
 export * from './Label';
 export * from './List';
 export * from './Picker';

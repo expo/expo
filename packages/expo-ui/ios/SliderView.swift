@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-class SliderProps: ExpoSwiftUI.ViewProps {
+final class SliderProps: ExpoSwiftUI.ViewProps {
   @Field var value: Float?
   @Field var steps: Int = 0
   @Field var min: Float = 0.0
@@ -21,7 +21,7 @@ func getStep(_ min: Float, _ max: Float, _ steps: Int) -> Float {
   return (max - min) / Float(steps + 1)
 }
 
-struct SliderView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct SliderView: ExpoSwiftUI.View {
   @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
 
@@ -49,7 +49,7 @@ struct SliderView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       value = sliderValue
     })
     #else
-    Text("Slider not supported on this platform")
+    Text("Slider is not supported on tvOS")
     #endif
   }
 }

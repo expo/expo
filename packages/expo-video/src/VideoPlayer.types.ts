@@ -166,6 +166,23 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   subtitleTrack: SubtitleTrack | null;
 
   /**
+   * Specifies the audio track currently played by the player. `null` when no audio is played.
+   *
+   * @default null
+   * @platform android
+   * @platform ios
+   */
+  audioTrack: AudioTrack | null;
+
+  /**
+   * An array of audio tracks available for the current video.
+   *
+   * @platform android
+   * @platform ios
+   */
+  readonly availableAudioTracks: AudioTrack[];
+
+  /**
    * An array of subtitle tracks available for the current video.
    *
    * @platform android
@@ -185,6 +202,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * An array of video tracks available for the current video.
    *
+   * > On iOS, when using a HLS source, make sure that the uri contains `.m3u8` extension or that the [`contentType`](#contenttype) property of the [`VideoSource`](#videosource) has been set to `'hls'`. Otherwise, the video tracks will not be available.
+   *
    * @platform android
    * @platform ios
    */
@@ -192,9 +211,12 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Initializes a new video player instance with the given source.
+   *
+   * @param source The source of the video to be played.
+   * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
    * @hidden
    */
-  constructor(source: VideoSource);
+  constructor(source: VideoSource, useSynchronousReplace?: boolean);
 
   /**
    * Resumes the player.
@@ -208,8 +230,20 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Replaces the current source with a new one.
+   *
+   * > On iOS, this method loads the asset data synchronously on the UI thread and can block it for extended periods of time.
+   * > Use `replaceAsync` to load the asset asynchronously and avoid UI lags.
+   *
+   * > This method will be deprecated in the future.
    */
-  replace(source: VideoSource): void;
+  replace(source: VideoSource, disableWarning?: boolean): void;
+
+  /**
+   * Replaces the current source with a new one, while offloading loading of the asset to a different thread.
+   *
+   * > On Android and Web, this method is equivalent to `replace`.
+   */
+  replaceAsync(source: VideoSource): Promise<void>;
 
   /**
    * Seeks the playback by the given number of seconds. The time to which the player seeks may differ from the specified requested time for efficiency,
@@ -310,6 +344,16 @@ export type VideoSource =
        * @platform ios
        */
       useCaching?: boolean;
+
+      /**
+       * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
+       *
+       * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
+       * @default 'auto'
+       * @platform android
+       * @platform ios
+       */
+      contentType?: ContentType;
     };
 
 /**
@@ -453,6 +497,19 @@ export type BufferOptions = {
 };
 
 /**
+ * Specifies the content type of the source.
+ *
+ * - `auto`: The player will automatically determine the content type of the video.
+ * - `progressive`: The player will use progressive download content type. This is the default `ContentType` when the uri does not contain an extension.
+ * - `hls`: The player will use HLS content type.
+ * - `dash`: The player will use DASH content type (Android-only).
+ * - `smoothStreaming`: The player will use SmoothStreaming content type (Android-only).
+ *
+ * @default `auto`
+ */
+export type ContentType = 'auto' | 'progressive' | 'hls' | 'dash' | 'smoothStreaming';
+
+/**
  * Specifies the audio mode that the player should use. Audio mode is set on per-app basis, if there are multiple players playing and
  * have different a `AudioMode` specified, the highest priority mode will be used. Priority order: 'doNotMix' > 'auto' > 'duckOthers' > 'mixWithOthers'.
  *
@@ -535,4 +592,22 @@ export type VideoSize = {
    * Height of the video track in pixels.
    */
   height: number;
+};
+
+export type AudioTrack = {
+  /**
+   * A string used by expo-video to identify the audio track.
+   * @platform android
+   */
+  id: string;
+
+  /**
+   * Language of the audio track. For example, 'en', 'pl', 'de'.
+   */
+  language: string;
+
+  /**
+   * Label of the audio track in the language of the device.
+   */
+  label: string;
 };

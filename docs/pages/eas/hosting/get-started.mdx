@@ -2,6 +2,7 @@
 sidebar_title: Get started
 title: Deploy your first Expo Router and React app
 description: Learn how to deploy your Expo Router and React apps to EAS Hosting.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -39,8 +40,6 @@ Paid subscribers can create more deployments, have more bandwidth, storage, requ
 
 <Collapsible summary="An Expo Router web project">
 
-If using an existing project, ensure that in your project's app config, the web output ([`expo.web.output`](/versions/latest/config/app/#output)) is set to either `static` or `server` (single page apps are not supported on EAS Hosting).
-
 Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
 
 Run the following command to create a new project:
@@ -76,10 +75,11 @@ You can check whether you are logged in by running `eas whoami`.
 <Step label="3">
 ## Prepare your project
 
-In your app config file set [`expo.web.output`](/versions/latest/config/app/#output) to either `static` or `server`.
+For your app config file's [`expo.web.output`](/versions/latest/config/app/#output), decide whether to set it to either `single`, `static`, or `server`.
 
+- `single`: Exports your Expo app to a single-page app with only one `index.html` output
 - `static`: Exports your Expo app to a [statically generated web app](/router/reference/static-rendering/)
-- `server`: Supports [server functions](/guides/server-components/#react-server-functions) and [API routes](/router/reference/api-routes/) as well as the static pages for your website
+- `server`: Supports [server functions](/guides/server-components/#react-server-functions) and [API routes](/router/reference/api-routes/) as well as static pages for your app
 
 > Don't worry if you're not sure which output mode you need, you can always change this value later and re-deploy.
 

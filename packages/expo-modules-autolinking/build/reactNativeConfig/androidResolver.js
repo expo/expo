@@ -204,8 +204,9 @@ async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {
         (0, glob_1.glob)('**/AndroidManifest.xml', { cwd: androidDir, ignore: globExcludes }),
         (0, glob_1.glob)(gradlePattern, { cwd: androidDir, ignore: globExcludes }),
     ]);
-    const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ?? manifests[0];
-    const gradle = gradles[0];
+    const manifest = manifests.find((manifest) => manifest.includes('src/main/')) ??
+        manifests.sort((a, b) => a.localeCompare(b))[0];
+    const gradle = gradles.sort((a, b) => a.localeCompare(b))[0];
     return { gradle: gradle || null, manifest: manifest || null };
 }
 //# sourceMappingURL=androidResolver.js.map

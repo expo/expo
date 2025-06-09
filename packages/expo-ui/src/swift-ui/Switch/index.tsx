@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 
+import { Host } from '../Host';
+
 export type SwitchProps = {
   /**
    * Indicates whether the switch is checked.
@@ -20,10 +22,6 @@ export type SwitchProps = {
    * Callback function that is called when the checked state changes.
    */
   onValueChange?: (value: boolean) => void;
-  /**
-   * Optional style for the switch component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * Picker color. On iOS, it only applies to the `menu` variant.
    */
@@ -66,6 +64,21 @@ export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
   } as NativeSwitchProps;
 }
 
-export function Switch(props: SwitchProps) {
+/**
+ * `<Switch>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function SwitchPrimitive(props: SwitchProps) {
   return <SwitchNativeView {...transformSwitchProps(props)} />;
+}
+
+/**
+ * Displays a native switch component.
+ */
+export function Switch(props: SwitchProps & { style?: StyleProp<ViewStyle> }) {
+  return (
+    <Host style={props.style} matchContents>
+      <SwitchPrimitive {...props} />
+    </Host>
+  );
 }

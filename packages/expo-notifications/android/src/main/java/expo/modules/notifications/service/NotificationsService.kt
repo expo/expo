@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.app.RemoteInput
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.*
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
@@ -102,7 +103,7 @@ open class NotificationsService : BroadcastReceiver() {
      * @param behavior Allowed notification behavior
      * @param receiver A receiver to which send the result of presenting the notification
      */
-    fun present(context: Context, notification: Notification, behavior: NotificationBehavior? = null, receiver: ResultReceiver? = null) {
+    fun present(context: Context, notification: Notification, behavior: NotificationBehaviorRecord? = null, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("present").build()
       doWork(
         context,
@@ -678,8 +679,8 @@ open class NotificationsService : BroadcastReceiver() {
     )
 
   open fun onGetAllPresentedNotifications(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelableArrayList(
+    Bundle().apply {
+      putParcelableArrayList(
         NOTIFICATIONS_KEY,
         ArrayList(
           getPresentationDelegate(context).getAllPresentedNotifications()
@@ -717,8 +718,8 @@ open class NotificationsService : BroadcastReceiver() {
   //region Category handling
 
   open fun onGetCategories(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelableArrayList(
+    Bundle().apply {
+      putParcelableArrayList(
         NOTIFICATION_CATEGORIES_KEY,
         ArrayList(
           getCategoriesDelegate(context).getCategories()
@@ -727,8 +728,8 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
   open fun onSetCategory(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelable(
+    Bundle().apply {
+      putParcelable(
         NOTIFICATION_CATEGORY_KEY,
         getCategoriesDelegate(context).setCategory(
           intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
@@ -737,8 +738,8 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
   open fun onDeleteCategory(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putBoolean(
+    Bundle().apply {
+      putBoolean(
         SUCCEEDED_KEY,
         getCategoriesDelegate(context).deleteCategory(
           intent.extras?.getString(IDENTIFIER_KEY)!!
@@ -750,8 +751,8 @@ open class NotificationsService : BroadcastReceiver() {
   //region Scheduling notifications
 
   open fun onGetAllScheduledNotifications(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelableArrayList(
+    Bundle().apply {
+      putParcelableArrayList(
         NOTIFICATION_REQUESTS_KEY,
         ArrayList(
           getSchedulingDelegate(context).getAllScheduledNotifications()
@@ -760,8 +761,8 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
   open fun onGetScheduledNotification(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelable(
+    Bundle().apply {
+      putParcelable(
         NOTIFICATION_REQUEST_KEY,
         getSchedulingDelegate(context).getScheduledNotification(
           intent.extras?.getString(IDENTIFIER_KEY)!!

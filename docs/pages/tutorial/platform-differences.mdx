@@ -1,6 +1,7 @@
 ---
 title: Handle platform differences
 description: In this tutorial, learn how to handle platform differences between native and web when creating a universal app.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -48,12 +49,11 @@ Using `Platform` module from React Native, we can implement platform-specific be
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
-import { View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
+import { ImageSourcePropType, View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
-import { type ImageSource } from 'expo-image';
 import { captureRef } from 'react-native-view-shot';
 /* @tutinfo Import <CODE>domtoimage</CODE> library. */import domtoimage from 'dom-to-image';/* @end */
 
@@ -71,7 +71,7 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
   const [status, requestPermission] = MediaLibrary.usePermissions();
   const imageRef = useRef<View>(null);
 

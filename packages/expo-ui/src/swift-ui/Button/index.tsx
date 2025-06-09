@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
+import { Host } from '../Host';
 
 /**
  * The role of the button.
@@ -47,6 +48,7 @@ export type ButtonProps = {
   onPress?: () => void;
   /**
    * A string describing the system image to display in the button.
+   * This is only used if `children` is a string.
    * Uses Material Icons on Android and SF Symbols on iOS.
    */
   systemImage?: string;
@@ -60,13 +62,9 @@ export type ButtonProps = {
    */
   variant?: ButtonVariant;
   /**
-   * Additional styles to apply to the button.
+   * The text or React node to display inside the button.
    */
-  style?: StyleProp<ViewStyle>;
-  /**
-   * The text to display inside the button.
-   */
-  children: string;
+  children: string | React.ReactNode;
   /**
    * Button color.
    */
@@ -85,7 +83,7 @@ export type NativeButtonProps = Omit<
   'role' | 'onPress' | 'children' | 'systemImage'
 > & {
   buttonRole?: ButtonRole;
-  text: string;
+  text: string | undefined;
   systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 
@@ -98,20 +96,41 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 /**
  * @hidden
  */
-export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { role, children, onPress, systemImage, ...restProps } = props;
+export function transformButtonProps(
+  props: Omit<ButtonProps, 'children'>,
+  text: string | undefined
+): NativeButtonProps {
+  const { role, onPress, systemImage, ...restProps } = props;
   return {
     ...restProps,
-    text: children ?? '',
-    buttonRole: role,
+    text,
     systemImage,
+    buttonRole: role,
     onButtonPressed: onPress,
   };
 }
 
 /**
+ * `<Button>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function ButtonPrimitive(props: ButtonProps) {
+  const { children, ...restProps } = props;
+  const text = typeof children === 'string' ? children : undefined;
+  if (text !== undefined) {
+    return <ButtonNativeView {...transformButtonProps(restProps, text)} />;
+  }
+  return <ButtonNativeView {...transformButtonProps(restProps, text)}>{children}</ButtonNativeView>;
+}
+
+/**
  * Displays a native button component.
  */
-export function Button(props: ButtonProps) {
-  return <ButtonNativeView {...transformButtonProps(props)} style={props.style} />;
+export function Button(props: ButtonProps & { style?: StyleProp<ViewStyle> }) {
+  const useViewportSizeMeasurement = props.style == null;
+  return (
+    <Host style={props.style} matchContents useViewportSizeMeasurement={useViewportSizeMeasurement}>
+      <ButtonPrimitive {...props} />
+    </Host>
+  );
 }

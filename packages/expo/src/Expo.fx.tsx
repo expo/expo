@@ -1,6 +1,7 @@
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import './winter';
 import 'expo-asset';
+import 'expo/virtual/rsc';
 
 import Constants from 'expo-constants';
 import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';
@@ -20,15 +21,18 @@ if (isRunningInExpoGo()) {
 // but your builds will have the New Architecture disabled.
 if (__DEV__ && isRunningInExpoGo() && process.env.NODE_ENV === 'development') {
   (['android', 'ios'] as const).forEach((platform) => {
-    if (
-      Platform.OS === platform &&
-      Constants.expoConfig?.[platform]?.newArchEnabled !== true &&
-      Constants.expoConfig?.newArchEnabled !== true
-    ) {
+    const newArchPlatformConfig = Constants.expoConfig?.[platform]?.newArchEnabled;
+    const newArchRootConfig = Constants.expoConfig?.newArchEnabled;
+
+    const isNewArchExplicitlyDisabled =
+      newArchPlatformConfig === false ||
+      (newArchPlatformConfig === undefined && newArchRootConfig === false);
+
+    if (Platform.OS === platform && isNewArchExplicitlyDisabled) {
       // Wrap it in rAF to show the warning after the React Native DevTools message
       requestAnimationFrame(() => {
         console.warn(
-          `🚨 React Native's New Architecture is always enabled in Expo Go, but it is not explicitly enabled in your project's app config. This may lead to unexpected behavior when creating a production or development build. Set "newArchEnabled": true in your app.json.\nLearn more: https://docs.expo.dev/guides/new-architecture/`
+          `🚨 React Native's New Architecture is always enabled in Expo Go, but it is explicitly disabled in your project's app config. This may lead to unexpected behavior when creating a production or development build. Remove "newArchEnabled": false from your app.json.\nLearn more: https://docs.expo.dev/guides/new-architecture/`
         );
       });
     }

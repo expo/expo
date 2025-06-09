@@ -44,7 +44,7 @@ export function AppJSBanner() {
             App.js Conf 2025
           </p>
           <p className="text-sm text-[#494CFC] dark:text-[#a0b9ff]">
-            Join us on the biggest React Native & Expo-focused conference.
+            Join us at the biggest React Native & Expo-focused conference.
           </p>
         </div>
       </div>

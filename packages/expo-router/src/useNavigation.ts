@@ -3,11 +3,10 @@ import {
   useNavigation as useUpstreamNavigation,
   NavigationProp,
   NavigationState,
+  useStateForPath,
 } from '@react-navigation/native';
-import React from 'react';
 
-import { store } from './global-state/router-store';
-import { useSegments } from './hooks';
+import { INTERNAL_SLOT_NAME } from './constants';
 import { resolveHref } from './link/href';
 import { Href } from './types';
 
@@ -69,85 +68,83 @@ export function useNavigation<
   },
 >(parent?: string | Href): T {
   let navigation = useUpstreamNavigation<any>();
-  const initialNavigation = navigation;
-  const segments = useSegments();
+  let state = useStateForPath();
 
-  let targetNavigatorContextKey = React.useMemo(() => {
-    if (!parent) {
-      return;
-    }
+  if (parent === undefined) {
+    // If no parent is provided, return the current navigation object
+    return navigation;
+  }
 
-    if (typeof parent === 'object') {
-      parent = resolveHref(parent);
-    }
+  // Check for the top-level navigator - we cannot fetch anything higher!
+  const currentId = navigation.getId();
+  if (currentId === '' || currentId === `/expo-router/build/views/Navigator`) {
+    return navigation;
+  }
 
-    if (parent === '/') {
-      return '';
-    }
+  if (typeof parent === 'object') {
+    parent = resolveHref(parent);
+  }
 
-    let state = store.getStateFromPath(parent.startsWith('../') ? segments.join('/') : parent);
-
-    // Reconstruct the context key from the state
-    let contextKey = '';
+  if (parent === '/') {
+    // This is the root navigator
+    return navigation.getParent(`/expo-router/build/views/Navigator`) ?? navigation.getParent(``);
+  } else if (parent?.startsWith('../')) {
     const names: string[] = [];
 
     while (state) {
-      const routes = state.routes;
-      const route = routes[state.index ?? routes.length - 1];
-
-      if (route.state) {
-        contextKey = `${contextKey}/${route.name}`;
+      const route = state.routes[0];
+      state = route.state;
+      // Don't include the last router, as thats the current route
+      if (state) {
         names.push(route.name);
-
-        if (parent === contextKey) {
-          break;
-        }
-
-        state = route.state;
-      } else {
-        break;
       }
     }
 
-    if (parent.startsWith('../')) {
-      const parentSegments = parent.split('/').filter(Boolean);
-
-      for (const segment of parentSegments) {
-        if (segment === '..') {
-          names.pop();
-        } else {
-          throw new Error(
-            "Relative parent paths may only contain '..' and cannot contain other segments"
-          );
-        }
-      }
-
-      contextKey = names.length > 0 ? `/${names.join('/')}` : '';
+    // Removing the trailing slash to make splitting easier
+    const originalParent = parent;
+    if (parent.endsWith('/')) {
+      parent = parent.slice(0, -1);
     }
 
-    return contextKey;
-  }, [segments, parent]);
+    const segments = parent.split('/');
+    if (!segments.every((segment) => segment === '..')) {
+      throw new Error(
+        `Invalid parent path "${originalParent}". Only "../" segments are allowed when using relative paths.`
+      );
+    }
 
-  // Remove the root Slot to generate the correct context key
-  targetNavigatorContextKey = targetNavigatorContextKey?.replace('/__root', '');
+    const levels = segments.length;
+    const index = names.length - 1 - levels;
 
-  if (targetNavigatorContextKey !== undefined) {
-    navigation = navigation.getParent(targetNavigatorContextKey as any);
+    if (index < 0) {
+      throw new Error(
+        `Invalid parent path "${originalParent}". Cannot go up ${levels} levels from the current route.`
+      );
+    }
+
+    parent = names[index];
+
+    // Expo Router navigators use the context key as the name which has a leading `/`
+    // The exception to this is the INTERNAL_SLOT_NAME, and the root navigator which uses ''
+    if (parent && parent !== INTERNAL_SLOT_NAME) {
+      parent = `/${parent}`;
+    }
   }
 
-  if (!navigation) {
-    const ids: (string | undefined)[] = [];
+  navigation = navigation.getParent(parent);
 
-    navigation = initialNavigation;
+  if (process.env.NODE_ENV !== 'production') {
+    if (!navigation) {
+      const ids: (string | undefined)[] = [];
+      while (navigation) {
+        ids.push(navigation.getId() || '/');
+        navigation = navigation.getParent();
+      }
 
-    while (navigation) {
-      ids.push(navigation.getId() || '/');
-      navigation = navigation.getParent();
+      throw new Error(
+        `Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`
+      );
     }
-
-    throw new Error(
-      `Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`
-    );
   }
 
   return navigation;

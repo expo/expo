@@ -64,6 +64,7 @@ export type FingerprintDiffItem =
     };
 
 export type Platform = 'android' | 'ios';
+export type ProjectWorkflow = 'generic' | 'managed' | 'unknown';
 
 export interface Options {
   /**
@@ -94,7 +95,7 @@ export interface Options {
   /**
    * Ignore files and directories from hashing. The supported pattern is the same as `glob()`.
    *
-   * Please note that the pattern matching is slightly different from gitignore. Partial matching is unsupported. For example, `build` does not match `android/build`; instead, use `'**' + '/build'`.
+   * The pattern matching is slightly different from gitignore. Partial matching is unsupported. For example, `build` does not match `android/build`; instead, use `'**' + '/build'`.
    * @see [minimatch implementations](https://github.com/isaacs/minimatch#comparisons-to-other-fnmatchglob-implementations) for further reference.
    *
    * Fingerprint comes with implicit default ignorePaths defined in `Options.DEFAULT_IGNORE_PATHS`.
@@ -297,6 +298,11 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
    * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
    */
   ignoreDirMatchObjects: Minimatch[];
+
+  /**
+   * Indicate whether the project is using CNG for each platform.
+   */
+  useCNGForPlatforms: Record<Platform, boolean>;
 };
 
 //#endregion

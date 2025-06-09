@@ -530,12 +530,6 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           var insertedAssets = [[String: Any?]?]()
           var deletedAssets = [[String: Any?]?]()
           var updatedAssets = [[String: Any?]?]()
-          let body: [String: Any] = [
-            "hasIncrementalChanges": true,
-            "insertedAssets": insertedAssets,
-            "deletedAssets": deletedAssets,
-            "updatedAssets": updatedAssets
-          ]
 
           for asset in changeDetails.insertedObjects {
             insertedAssets.append(exportAsset(asset: asset))
@@ -548,6 +542,13 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           for asset in changeDetails.changedObjects {
             updatedAssets.append(exportAsset(asset: asset))
           }
+
+          let body: [String: Any] = [
+            "hasIncrementalChanges": true,
+            "insertedAssets": insertedAssets,
+            "deletedAssets": deletedAssets,
+            "updatedAssets": updatedAssets
+          ]
 
           sendEvent("mediaLibraryDidChange", body)
           return

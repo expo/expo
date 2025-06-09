@@ -1,5 +1,3 @@
-import { ReadableStream } from 'web-streams-polyfill';
-
 import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeResponse } from './NativeRequest';
 
@@ -90,6 +88,9 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
 
   public readonly type = 'default';
 
+  /**
+   * This method is not currently supported by react-native's Blob constructor.
+   */
   async blob(): Promise<Blob> {
     const buffer = await this.arrayBuffer();
     return new Blob([buffer]);

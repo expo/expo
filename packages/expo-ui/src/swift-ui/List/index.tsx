@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
+import { Host } from '../Host';
 
 const ListNativeView: React.ComponentType<NativeListProps> | null =
   requireNativeView<NativeListProps>('ExpoUI', 'ListView');
@@ -18,11 +19,6 @@ function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeList
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 
 export interface ListProps {
-  /**
-   * Custom style for the container wrapping the list.
-   */
-  style?: StyleProp<ViewStyle>;
-
   /**
    * One of the predefined ListStyle types in SwiftUI.
    * @default 'automatic'
@@ -102,21 +98,29 @@ export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'o
   };
 
 /**
- * A list component that renders its children using a native SwiftUI list.
- * @param {ListProps} props - The properties for the list component.
- * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
- * @platform ios
+ * `<List>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
  */
-export function List(props: ListProps) {
+export function ListPrimitive(props: ListProps) {
   const { children, ...nativeProps } = props;
 
   if (!ListNativeView) {
     return null;
   }
 
+  return <ListNativeView {...transformListProps(nativeProps)}>{children}</ListNativeView>;
+}
+
+/**
+ * A list component that renders its children using a native SwiftUI list.
+ * @param {ListProps} props - The properties for the list component.
+ * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
+ * @platform ios
+ */
+export function List(props: ListProps & { style?: StyleProp<ViewStyle> }) {
   return (
-    <ListNativeView {...transformListProps(nativeProps)} style={[props.style, { flex: 1 }]}>
-      {children}
-    </ListNativeView>
+    <Host style={[props.style, { flex: 1 }]} matchContents>
+      <ListPrimitive {...props} />
+    </Host>
   );
 }

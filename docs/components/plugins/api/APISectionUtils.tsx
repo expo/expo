@@ -41,9 +41,7 @@ import {
   replaceableTypes,
   sdkVersionHardcodedTypeLinks,
 } from './APIStaticData';
-import { APIParamRow } from './components/APIParamRow';
-import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
-import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
+import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -400,26 +398,7 @@ export const resolveTypeName = (
   }
 };
 
-export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
-
-export const renderParams = (parameters: MethodParamData[], sdkVersion: string) => {
-  const hasDescription = Boolean(parameters.some(param => param.comment));
-  return (
-    <Table containerClassName={mergeClasses(VERTICAL_SPACING, 'mt-0.5')}>
-      <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
-      <tbody>
-        {parameters?.map(param => (
-          <APIParamRow
-            key={param.name}
-            param={param}
-            sdkVersion={sdkVersion}
-            showDescription={hasDescription}
-          />
-        ))}
-      </tbody>
-    </Table>
-  );
-};
+export const parseParamName = (name: string) => (name.startsWith('__') ? name.slice(2) : name);
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters
@@ -474,7 +453,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
           tag,
           content: [
             {
-              text: tag.substring(1),
+              text: tag.slice(1),
               tag,
             } as CommentContentData,
           ],
@@ -492,7 +471,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
       }
       return tag;
     })
-    .filter(tag => tag.tag.substring(1) === tagName);
+    .filter(tag => tag.tag.slice(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
@@ -530,8 +509,6 @@ export const getMethodName = (
   return methodName;
 };
 
-export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
     .map(entry => {
@@ -547,7 +524,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
 const getMonospaceHeader = (
   element: ComponentType<any>,
   baseNestingLevel: number,
-  className: string | undefined = undefined
+  className?: string
 ) => {
   return createPermalinkedComponent(element, {
     baseNestingLevel,
@@ -559,7 +536,7 @@ const getMonospaceHeader = (
 export function getCodeHeadingWithBaseNestingLevel(
   baseNestingLevel: number,
   Element: ComponentType<any>,
-  className: string | undefined = undefined
+  className?: string
 ) {
   return getMonospaceHeader(Element, baseNestingLevel, className);
 }
@@ -598,12 +575,17 @@ export function defineLiteralType(types: TypeDefinitionData[]) {
           return td.head;
         } else if ('value' in td) {
           return td.value && typeof td.value;
+        } else if ('name' in td) {
+          return td.name;
         }
       })
     )
   );
-  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
+  if (uniqueTypes.length === 1) {
     return <CODE>{uniqueTypes[0]}</CODE>;
+  }
+  if (uniqueTypes.filter(Boolean).every(type => typeof type === 'string')) {
+    return <CODE>union</CODE>;
   }
   return null;
 }

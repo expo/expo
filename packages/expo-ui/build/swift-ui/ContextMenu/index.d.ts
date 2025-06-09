@@ -37,10 +37,6 @@ export type ContextMenuProps = {
      * The children will be wrapped in a pressable element, which triggers opening of the context menu.
      */
     children: ReactNode;
-    /**
-     * Optional styles to apply to the `ContextMenu`.
-     */
-    style?: StyleProp<ViewStyle>;
 };
 /**
  * Props of the `Submenu` component.
@@ -103,7 +99,17 @@ export declare function Preview(props: {
     children: React.ReactNode;
 }): import("react").JSX.Element;
 /**
- * `ContextMenu` allows you to create a context menu, which can be used to provide additional options to the user.
+ * `<ContextMenu>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+declare function ContextMenuPrimitive(props: ContextMenuProps): import("react").JSX.Element;
+declare namespace ContextMenuPrimitive {
+    var Trigger: typeof import(".").Trigger;
+    var Preview: typeof import(".").Preview;
+    var Items: typeof import(".").Items;
+}
+/**
+ * `ContextMenuPrimitive` allows you to create a context menu, which can be used to provide additional options to the user.
  *
  * There are some platform-specific differences in the behavior of the context menu:
  * - On Android, the expansion of the context menu is controlled by the `expanded` prop. iOS, does not allow for manual control of the expansion state.
@@ -111,11 +117,13 @@ export declare function Preview(props: {
  * - Android does not support nesting in the context menu. All the submenus will be flat-mapped into a single level with multiple sections. The `title` prop of the `Button`, which opens the submenu on iOS will be used as a section title.
  * - Android does not support showing a `Picker` element in the context menu.
  */
-declare function ContextMenu(props: ContextMenuProps): import("react").JSX.Element;
+declare function ContextMenu(props: ContextMenuProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 declare namespace ContextMenu {
     var Trigger: typeof import(".").Trigger;
     var Preview: typeof import(".").Preview;
     var Items: typeof import(".").Items;
 }
-export { ContextMenu };
+export { ContextMenuPrimitive, ContextMenu };
 //# sourceMappingURL=index.d.ts.map

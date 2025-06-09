@@ -97,7 +97,7 @@ async function setGoogleServicesFile(config, projectRoot, targetPath = DEFAULT_T
     await (0, _fs().copyFilePathToPathAsync)(completeSourcePath, destinationPath);
   } catch (e) {
     console.log(e);
-    throw new Error(`Cannot copy google-services.json from ${completeSourcePath} to ${destinationPath}. Please make sure the source and destination paths exist.`);
+    throw new Error(`Cannot copy google-services.json from ${completeSourcePath} to ${destinationPath}. Ensure the source and destination paths exist.`);
   }
   return true;
 }

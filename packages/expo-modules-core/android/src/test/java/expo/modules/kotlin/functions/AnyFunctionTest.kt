@@ -15,18 +15,18 @@ import org.junit.Test
 import kotlin.reflect.typeOf
 
 class AnyFunctionTest {
-  class MockedAnyFunction(
+  class MockedAnyFunctionComponent(
     desiredArgsTypes: Array<AnyType>
-  ) : AsyncFunction("my-method", desiredArgsTypes) {
+  ) : AsyncFunctionComponent("my-method", desiredArgsTypes) {
     override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
-      convertArgs(args)
+      convertArgs(args, appContext, forceConversion = true)
       throw NullPointerException()
     }
   }
 
   @Test
   fun `call should throw if pass more arguments then expected`() {
-    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
+    val method = MockedAnyFunctionComponent(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected") {
@@ -42,7 +42,7 @@ class AnyFunctionTest {
 
   @Test
   fun `call should throw if pass less arguments then expected`() {
-    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>(), { typeOf<Int>() }.toAnyType<Int>()))
+    val method = MockedAnyFunctionComponent(arrayOf({ typeOf<Int>() }.toAnyType<Int>(), { typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected") {
@@ -58,7 +58,7 @@ class AnyFunctionTest {
 
   @Test
   fun `call should throw if cannot convert args`() {
-    val method = MockedAnyFunction(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
+    val method = MockedAnyFunctionComponent(arrayOf({ typeOf<Int>() }.toAnyType<Int>()))
     val promise = PromiseMock()
 
     assertThrows<ArgumentCastException>(
@@ -79,7 +79,7 @@ class AnyFunctionTest {
 
   @Test
   fun `sync exception shouldn't be converter into promise rejection`() {
-    val method = MockedAnyFunction(emptyArray())
+    val method = MockedAnyFunctionComponent(emptyArray())
     val promise = PromiseMock()
 
     assertThrows<NullPointerException> {

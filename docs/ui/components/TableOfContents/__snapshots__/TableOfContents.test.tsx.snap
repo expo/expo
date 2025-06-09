@@ -60,42 +60,58 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         </span>
       </button>
     </p>
-    <a
-      class="mb-1.5 flex items-center justify-between truncate !text-pretty focus-visible:relative focus-visible:z-10"
-      data-state="closed"
-      href="#base-level-heading"
+    <div
+      role="tree"
     >
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
-        data-text="true"
+      <div
+        class="flex items-center"
       >
-        Base level heading
-      </p>
-    </a>
-    <a
-      class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
-      data-state="closed"
-      href="#level-3-subheading"
-    >
-      <p
-        class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
-        data-text="true"
+        <a
+          class="mb-1.5 flex items-center justify-between truncate !text-pretty focus-visible:relative focus-visible:z-10"
+          data-state="closed"
+          href="#base-level-heading"
+        >
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
+            data-text="true"
+          >
+            Base level heading
+          </p>
+        </a>
+      </div>
+      <div
+        class="flex items-center"
       >
-        Level 3 subheading
-      </p>
-    </a>
-    <a
-      class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
-      data-state="closed"
-      href="#code-heading-depth-1"
-    >
-      <code
-        class="leading-[1.6154] text-default w-full !text-secondary hocus:!text-link truncate !text-2xs"
-        data-text="true"
+        <a
+          class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
+          data-state="closed"
+          href="#level-3-subheading"
+        >
+          <p
+            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
+            data-text="true"
+          >
+            Level 3 subheading
+          </p>
+        </a>
+      </div>
+      <div
+        class="flex items-center"
       >
-        Code heading depth 1
-      </code>
-    </a>
+        <a
+          class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
+          data-state="closed"
+          href="#code-heading-depth-1"
+        >
+          <code
+            class="leading-[1.6154] text-default w-full !text-secondary hocus:!text-link truncate !text-2xs"
+            data-text="true"
+          >
+            Code heading depth 1
+          </code>
+        </a>
+      </div>
+    </div>
   </nav>
 </div>
 `;

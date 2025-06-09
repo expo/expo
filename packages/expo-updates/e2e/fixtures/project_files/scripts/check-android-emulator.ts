@@ -1,7 +1,7 @@
 #!/usr/bin/env yarn --silent ts-node --transpile-only
 
-import spawnAsync from '@expo/spawn-async';
-import { setTimeout as delay } from 'timers/promises';
+const spawnAsync = require('@expo/spawn-async');
+const delay = require('timers/promises').setTimeout;
 
 const isEmulatorRunning = async () => {
   try {

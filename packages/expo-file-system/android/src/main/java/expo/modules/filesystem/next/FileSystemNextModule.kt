@@ -32,9 +32,15 @@ class FileSystemNextModule : Module() {
       "bundleDirectory" to "asset:///"
     )
 
-    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptionsNext? ->
       to.validatePermission(Permission.WRITE)
-      val request = Request.Builder().url(url.toURL()).build()
+      val requestBuilder = Request.Builder().url(url.toURL())
+
+      options?.headers?.forEach { (key, value) ->
+        requestBuilder.addHeader(key, value)
+      }
+
+      val request = requestBuilder.build()
       val client = OkHttpClient()
       val response = request.await(client)
 

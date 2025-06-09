@@ -12,12 +12,10 @@ import {
 import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
 
-jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
+jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
   getExpoConfigLoaderPath: jest.fn(() =>
-    jest
-      .requireActual('path')
-      .resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+    jest.requireActual('path').resolve(__dirname, '..', '..', 'build', 'ExpoConfigLoader.js')
   ),
 }));
 
@@ -51,11 +49,11 @@ describe('default template ignore paths', () => {
         continue;
       }
       const { filePath } = source;
-      const nodeModulesIndex = filePath.indexOf('node_modules/');
+      const nodeModulesIndex = filePath.indexOf('node_modules' + path.sep);
       if (nodeModulesIndex < 0) {
         continue;
       }
-      const moduleName = filePath.split('/')[1];
+      const moduleName = filePath.split(path.sep)[1];
 
       // Heuristic to check if it's a native module
       // We ignore expo modules first and then check react-native- prefix.

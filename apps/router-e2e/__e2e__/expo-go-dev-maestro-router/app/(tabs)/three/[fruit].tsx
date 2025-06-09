@@ -1,7 +1,7 @@
-import { Pressable, Text } from 'react-native';
+import { Text } from 'react-native';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 
-export default function () {
+export default function Fruit() {
   return (
     <>
       <Text testID="e2e-screen">{JSON.stringify(useLocalSearchParams())}</Text>

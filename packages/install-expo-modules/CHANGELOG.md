@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.12.6 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.5 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.3 — 2025-04-28
+
+### 💡 Others
+
+- Updated `AppDelegate.swift` change for SDK 53. ([#36445](https://github.com/expo/expo/pull/36445) by [@kudo](https://github.com/kudo))
+
+## 0.12.2 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.1 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 0.12.0 — 2025-04-21
 
 ### 🎉 New features

@@ -2,13 +2,14 @@ import { iconSize, spacing, XIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { Text, Row, useExpoTheme } from 'expo-dev-client-components';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export function ModalHeader() {
   const theme = useExpoTheme();
   const navigation = useNavigation();
-
+  const insets = useSafeAreaInsets();
   return (
     <Row
       justify="between"
@@ -16,7 +17,8 @@ export function ModalHeader() {
       bg="default"
       style={{
         paddingHorizontal: 20,
-        paddingVertical: 12,
+        paddingTop: Platform.select({ ios: 12, android: 12 + insets.top }),
+        paddingBottom: 12,
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: theme.border.default,
       }}>

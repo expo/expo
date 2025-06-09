@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "5.0.2",
+  "version": "5.0.4",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
@@ -13,7 +13,6 @@
     "build",
     "src",
     "rsc",
-    "symbolicate",
     "async-require.js",
     "async-require.d.ts",
     "error-overlay.js",

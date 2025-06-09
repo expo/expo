@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Pressable, Text } from 'react-native';
 
-export default function () {
+export default function Modal2() {
   return (
     <>
       <Text testID="e2e-screen">Modal2</Text>

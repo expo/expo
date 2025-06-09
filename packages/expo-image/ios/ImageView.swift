@@ -56,6 +56,8 @@ public final class ImageView: ExpoView {
 
   var allowDownscaling: Bool = true
 
+  var lockResource: Bool = false
+
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
@@ -118,7 +120,10 @@ public final class ImageView: ExpoView {
 
   // MARK: - Implementation
 
-  func reload() {
+  func reload(force: Bool = false) {
+    if lockResource && !force {
+      return
+    }
     if isViewEmpty {
       displayPlaceholderIfNecessary()
     }
@@ -140,7 +145,10 @@ public final class ImageView: ExpoView {
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
     if imageTintColor != nil {
       context[.imagePreserveAspectRatio] = true
-      context[.imageThumbnailPixelSize] = sdImageView.bounds.size
+      context[.imageThumbnailPixelSize] = CGSize(
+        width: sdImageView.bounds.size.width * screenScale,
+        height: sdImageView.bounds.size.height * screenScale
+      )
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
@@ -244,7 +252,7 @@ public final class ImageView: ExpoView {
       return nil
     }()
 
-    if let path, let local = UIImage(named: path) {
+    if let path, !path.isEmpty, let local = UIImage(named: path) {
       renderSourceImage(local)
       return true
     }
@@ -332,7 +340,10 @@ public final class ImageView: ExpoView {
 
   // MARK: - Processing
 
-  private func createTransformPipeline() -> SDImagePipelineTransformer {
+  private func createTransformPipeline() -> SDImagePipelineTransformer? {
+    if blurRadius <= 0 {
+      return nil
+    }
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius)
     ]

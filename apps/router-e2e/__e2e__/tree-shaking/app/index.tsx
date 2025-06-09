@@ -6,7 +6,7 @@ const AsyncChunk = React.lazy(() => import('../components/async-chunk'));
 try {
   let AbsolutelyMissingLibrary = require('@bacons/absolute-missing-library');
   console.log(AbsolutelyMissingLibrary);
-} catch (e) {}
+} catch {}
 
 // let OptionalExisting;
 

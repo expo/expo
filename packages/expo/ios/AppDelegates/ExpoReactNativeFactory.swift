@@ -3,15 +3,13 @@
 import React_RCTAppDelegate
 
 public class ExpoReactNativeFactory: RCTReactNativeFactory {
-  private var reactDelegate: ExpoReactDelegate?
-
-  @objc public init(delegate: ExpoReactNativeFactoryDelegate, reactDelegate: ExpoReactDelegate) {
-    self.reactDelegate = reactDelegate
-    super.init(delegate: delegate)
-  }
+  private let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
 
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
-    guard let weakDelegate = self.delegate else {
+    // Alan: This is temporary. We need to cast to ExpoReactNativeFactoryDelegate here because currently, if you extend RCTReactNativeFactory
+    // from Swift, customizeRootView will not work on the new arch because the cast to RCTRootView will never
+    // succeed which breaks expo-splash-screen and react-native-bootsplash.
+    guard let weakDelegate = self.delegate as? ExpoReactNativeFactoryDelegate else {
       fatalError("ExpoReactNativeFactory: delegate is nil.")
     }
 
@@ -25,60 +23,51 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory {
     )
 
     configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
-      guard let createRootView = weakDelegate.createRootView else {
-        fatalError("ExpoReactNativeFactory: createRootView is nil.")
-      }
-      return createRootView(bridge, moduleName, initProps)
+      return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
     }
 
     // TODO: Remove this check when react-native-macos releases v0.79
-    if configuration.responds(to: Selector("setJsRuntimeConfiguratorDelegate:")) {
+    if configuration.responds(to: Selector(("setJsRuntimeConfiguratorDelegate:"))) {
       configuration.setValue(delegate, forKey: "jsRuntimeConfiguratorDelegate")
     }
 
     configuration.createBridgeWithDelegate = { delegate, launchOptions in
-      guard let createBridge = weakDelegate.createBridge else {
-        fatalError("ExpoReactNativeFactory: createBridge is nil.")
-      }
-      return createBridge(delegate, launchOptions)
+      weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)
     }
 
     configuration.customizeRootView = { rootView in
-      guard let view = rootView as? RCTRootView else {
-        return
-      }
-      weakDelegate.customize(view)
+      weakDelegate.customize(rootView)
     }
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
     configuration.sourceURLForBridge = nil
 
     configuration.loadSourceForBridgeWithProgress = { bridge, onProgress, onComplete in
-      weakDelegate.loadSource?(for: bridge, onProgress: onProgress, onComplete: onComplete)
+      weakDelegate.loadSource(for: bridge, onProgress: onProgress, onComplete: onComplete)
     }
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraModules(for:))) {
       configuration.extraModulesForBridge = { bridge in
-        return weakDelegate.extraModules?(for: bridge) ?? []
+        weakDelegate.extraModules(for: bridge)
       }
     }
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraLazyModuleClasses(for:))) {
       configuration.extraLazyModuleClassesForBridge = { bridge in
-        return weakDelegate.extraLazyModuleClasses?(for: bridge) ?? [:]
+        weakDelegate.extraLazyModuleClasses(for: bridge)
       }
     }
 
     if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.bridge(_:didNotFindModule:))) {
       configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        weakDelegate.bridge?(bridge, didNotFindModule: moduleName) ?? false
+        weakDelegate.bridge(bridge, didNotFindModule: moduleName)
       }
     }
 
     return ExpoReactRootViewFactory(
       reactDelegate: reactDelegate,
       configuration: configuration,
-      turboModuleManagerDelegate: weakDelegate
+      turboModuleManagerDelegate: self
     )
   }
 }

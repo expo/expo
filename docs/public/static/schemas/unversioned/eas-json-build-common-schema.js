@@ -98,7 +98,7 @@ export default [
     name: 'corepack',
     type: 'boolean',
     description: [
-      'If set to `true`, [corepack](https://nodejs.org/api/corepack.html) will be enabled at the begining of build process. Defaults to `false`.',
+      'If set to `true`, [corepack](https://nodejs.org/api/corepack.html) will be enabled at the beginning of build process. Defaults to `false`.',
     ],
   },
   {

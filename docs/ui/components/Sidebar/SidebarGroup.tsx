@@ -9,7 +9,7 @@ import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Ico
 import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
-import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
@@ -63,7 +63,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-sm text-secondary">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="ml-2 text-xs text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
@@ -121,7 +121,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
-              <p className="ml-2 text-sm text-secondary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+              <p className="ml-2 text-xs text-tertiary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
             </div>
           </div>
         )}
@@ -212,7 +212,7 @@ function getIconElement(iconName?: string) {
     case 'EAS Insights':
       return DataIcon;
     case 'EAS Workflows':
-      return Dataflow01Icon;
+      return Dataflow03Icon;
     case 'EAS Hosting':
       return Cloud01Icon;
     case 'Expo Modules API':

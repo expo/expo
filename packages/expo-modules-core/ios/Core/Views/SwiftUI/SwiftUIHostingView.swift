@@ -15,6 +15,13 @@ extension ExpoSwiftUI {
   /**
    Checks if the child view is wrapped by a `UIViewHost` and matches the specified SwiftUI view type.
    */
+  public static func isHostingView(_ view: any AnyChild) -> Bool {
+    return view is UIViewHost
+  }
+
+  /**
+   Checks if the child view is wrapped by a `UIViewHost` and matches the specified SwiftUI view type.
+   */
   public static func isHostingViewOfType<Props: ViewProps, ViewType: View<Props>>(view: any AnyChild, viewType: ViewType.Type) -> Bool {
     if let host = view as? UIViewHost {
       return host.view is HostingView<Props, ViewType>
@@ -196,7 +203,15 @@ extension ExpoSwiftUI {
       super.didMoveToWindow()
 
       if window != nil, let parentController = reactViewController() {
+        #if !os(macOS)
+        if parentController as? UINavigationController == nil {
+          // Swift automatically adds the hostingController in the correct place when the parentController
+          // is UINavigationController, since it's children are supposed to be only screens
+          parentController.addChild(hostingController)
+        }
+        #else
         parentController.addChild(hostingController)
+        #endif
         addSubview(hostingController.view)
         #if os(iOS) || os(tvOS)
         hostingController.didMove(toParent: parentController)

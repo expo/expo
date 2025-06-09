@@ -1,7 +1,7 @@
 import { Link, router } from 'expo-router';
 import { Text } from 'react-native';
 
-export default function () {
+export default function Index() {
   return (
     <>
       <Text testID="e2e-screen">Stack index</Text>

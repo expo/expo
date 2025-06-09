@@ -46,8 +46,10 @@ Toggle on the React Compiler experiment in your app config file:
 
 ```json app.json
 {
-  "experiments": {
-    "reactCompiler": true
+  "expo": {
+    "experiments": {
+      "reactCompiler": true
+    }
   }
 }
 ```
@@ -73,13 +75,20 @@ Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in
 Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
 
 ```js .eslintrc.js
-module.exports = {
-  extends: 'expo',
-  plugins: ['eslint-plugin-react-compiler'],
-  rules: {
-    'react-compiler/react-compiler': 'error',
+// https://docs.expo.dev/guides/using-eslint/
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+
+module.exports = defineConfig([
+  expoConfig,
+  {
+    ignores: ['dist/*'],
+    plugins: ['react-compiler'],
+    rules: {
+      'react-compiler/react-compiler': 'error',
+    },
   },
-};
+]);
 ```
 
 </Step>

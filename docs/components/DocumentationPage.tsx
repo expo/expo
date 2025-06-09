@@ -2,9 +2,9 @@ import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef, type PropsWithChildren, useRef } from 'react';
+
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
-
 import * as RoutesUtils from '~/common/routes';
 import { appendSectionToRoute, isRouteActive } from '~/common/routes';
 import { versionToText } from '~/common/utilities';

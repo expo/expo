@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 0.4.5 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- Use `processColor` to accept all valid color strings. ([#36914](https://github.com/expo/expo/pull/36914) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 0.4.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

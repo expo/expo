@@ -11,5 +11,4 @@ import './effects';
 // vvv EVERYTHING ELSE vvv
 import './async-require';
 
-import '@expo/metro-runtime/rsc/virtual';
 import '@expo/metro-runtime/rsc/runtime';

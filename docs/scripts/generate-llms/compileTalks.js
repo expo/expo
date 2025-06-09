@@ -1,10 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '../..');
+const projectRoot = path.resolve(import.meta.dirname, '../..');
 
 const inputFile = path.join(projectRoot, 'public/static/talks.ts');
 const outputFile = path.join(projectRoot, 'scripts/generate-llms/talks.js');

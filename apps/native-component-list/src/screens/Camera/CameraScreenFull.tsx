@@ -101,6 +101,7 @@ function Gestures({ children }: { children: React.ReactNode }) {
     </GestureDetector>
   );
 }
+
 export default function CameraScreen() {
   const camera = useRef<CameraView>(null);
   const [state, setState] = useState<State>({
@@ -293,7 +294,7 @@ export default function CameraScreen() {
   };
 
   const renderGallery = () => {
-    return <GalleryScreen onPress={toggleView} />;
+    return <GalleryScreen onPress={toggleView} photos={photos} />;
   };
 
   const renderNoPermissions = () => (

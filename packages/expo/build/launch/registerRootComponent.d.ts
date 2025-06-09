@@ -23,6 +23,7 @@ type InitialProps = {
  * - Asserts if the `expo-updates` package is misconfigured.
  * - Asserts if `react-native` is not aliased to `react-native-web` when running in the browser.
  * @param component The React component class that renders the rest of your app.
+ * @see For information on how to setup `registerRootComponent` in an existing (bare) React Native app, see [Common questions](#rootregistercomponent-setup-for-existing-react-native-projects) below.
  */
 export default function registerRootComponent<P extends InitialProps>(component: ComponentType<P>): void;
 export {};

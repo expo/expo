@@ -7,6 +7,7 @@ description: Learn how to configure your project for EAS Submit with eas.json.
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
 
 **eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Even though **eas.json** is not mandatory for using EAS Submit, it makes your life easier if you need to switch between different configurations.
 
@@ -14,7 +15,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 
 Running `eas submit` without specifying a profile name will use the `production` profile if it is already defined in **eas.json** to configure the submission. If no values exist in the `production` profile, EAS CLI will prompt you to provide the values interactively.
 
-The `production` profile shown below is required to run Android and iOS submissions in a CI/CD process, like with [EAS Workflows](/eas/workflows/):
+The `production` profile shown below is required to run Android and iOS submissions in a CI/CD process, like with [EAS Workflows](/eas/workflows/get-started/):
 
 ```json eas.json
 {
@@ -74,7 +75,15 @@ The JSON object under `submit` can contain multiple submit profiles. Each profil
 
 When you select a build for submission, it chooses the profile that is used for the selected build. If the profile does not exist, it selects the default `production` profile.
 
-You can also use EAS CLI to pick up another `submit` profile by specifying it with a parameter. For example, `eas submit --platform ios --profile submit-profile-name`.
+You can also use EAS CLI to pick up another `submit` profile by specifying it with a parameter, for example:
+
+<Terminal
+  cmd={[
+    '# Replace the <profile-name> with a submit profile from the eas.json',
+    '$ eas submit --platform ios --profile <profile-name>',
+  ]}
+  cmdCopy="eas submit --platform ios --profile"
+/>
 
 ## Share configuration between `submit` profiles
 

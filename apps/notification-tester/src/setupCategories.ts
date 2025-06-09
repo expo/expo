@@ -1,7 +1,9 @@
 import { setNotificationCategoryAsync } from 'expo-notifications';
 
+import { CATEGORY_ID } from './misc/constants';
+
 export const setupCategories = () => {
-  return setNotificationCategoryAsync('submit_reply_placeholder', [
+  return setNotificationCategoryAsync(CATEGORY_ID, [
     {
       identifier: 'reply',
       buttonTitle: 'Reply',

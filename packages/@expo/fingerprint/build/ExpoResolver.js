@@ -8,6 +8,7 @@ exports.resolveExpoEnvPath = resolveExpoEnvPath;
 exports.resolveExpoAutolinkingPackageRoot = resolveExpoAutolinkingPackageRoot;
 exports.resolveExpoAutolinkingCliPath = resolveExpoAutolinkingCliPath;
 exports.resolveExpoAutolinkingVersion = resolveExpoAutolinkingVersion;
+exports.resolveExpoConfigPluginsPackagePath = resolveExpoConfigPluginsPackagePath;
 exports.satisfyExpoVersion = satisfyExpoVersion;
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -75,6 +76,12 @@ function resolveExpoAutolinkingVersion(projectRoot) {
         return autolinkingPackageJson.version;
     }
     return null;
+}
+/**
+ * Resolve the package root of `expo/config-plugins` package in the project.
+ */
+function resolveExpoConfigPluginsPackagePath(projectRoot) {
+    return resolve_from_1.default.silent(projectRoot, 'expo/config-plugins') ?? null;
 }
 /**
  * Resolve the `expo` package version and check if it satisfies the provided semver range.

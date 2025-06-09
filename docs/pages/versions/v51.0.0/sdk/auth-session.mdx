@@ -97,7 +97,6 @@ AuthSession has built-in support for some popular providers to make usage as eas
 import * as Google from 'expo-auth-session/providers/google';
 ```
 
-- See the guide for more info on usage: [Google Authentication](/guides/authentication.mdx#google).
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
 - Enforces minimum scopes to the following APIs for optimal usage with services like Firebase and Auth0.
 
@@ -138,7 +137,6 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 ```
 
 - Uses implicit auth (`ResponseType.Token`) by default.
-- See the guide for more info on usage: [Facebook Authentication](/guides/authentication.mdx#facebook).
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.
 - Disables PKCE for implicit auth response.

@@ -23,7 +23,7 @@ export function InternalActionProvider({ children, actions }) {
     [actions]
   );
 
-  return <ActionProvider.Provider value={clientWrappedActions}>{children}</ActionProvider.Provider>;
+  return <ActionProvider value={clientWrappedActions}>{children}</ActionProvider>;
 }
 
 export function useActions() {

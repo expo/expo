@@ -80,7 +80,7 @@ To type check your project's files run `tsc` command within the root of your pro
 
 ### Add base configuration with tsconfig.json
 
-A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. You can automatically generate a **tsconfig.json** file by running the command:
+A project's **tsconfig.json** should extend `expo/tsconfig.base` by default. You can automatically generate a **tsconfig.json** file by running the command:
 
 <Terminal cmd={['$ npx expo customize tsconfig.json']} />
 
@@ -88,6 +88,7 @@ The default configuration in **tsconfig.json** is user-friendly and encourages a
 
 ```json tsconfig.json
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true
   }
@@ -106,6 +107,7 @@ For example, to import `Button` component from **src/components/Button.tsx** usi
 
 ```json tsconfig.json
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -115,7 +117,7 @@ For example, to import `Button` component from **src/components/Button.tsx** usi
 }
 ```
 
-<Collapsible summary="Disable path aliases for SDK 50 and above">
+<Collapsible summary="Disable path aliases">
 
 `tsconfigPaths` is enabled by default which allows you to set path aliases. You can disable it by setting `tsconfigPaths` to `false` in the project's [app config](/workflow/configuration/):
 
@@ -151,6 +153,7 @@ To enable absolute imports from a project's root directory, define [`compilerOpt
 
 ```json tsconfig.json
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": "./"
   }

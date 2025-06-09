@@ -1,4 +1,5 @@
 import './winter';
+import 'expo/virtual/rsc';
 
 // When users dangerously import a file inside of react-native, it breaks the web alias.
 // This is one of the most common, and cryptic web errors that users encounter.

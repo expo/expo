@@ -15,8 +15,15 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 `expo-local-authentication` allows you to use the Biometric Prompt (Android) or FaceID and TouchID (iOS) to authenticate the user with a fingerprint or face scan.
+
+## Known limitation
+
+### iOS&ensp;<PlatformTags platforms={['ios']} />
+
+The FaceID authentication for iOS is not supported in Expo Go. You will need to create a [development build](/develop/development-builds/introduction/) to test FaceID.
 
 ## Installation
 

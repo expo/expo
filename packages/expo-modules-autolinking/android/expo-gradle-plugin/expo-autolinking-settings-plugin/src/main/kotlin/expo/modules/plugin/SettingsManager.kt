@@ -100,10 +100,10 @@ class SettingsManager(
 
     settings.gradle.beforeProject { project ->
       // Adds precompiled artifacts
-      val projectConfig = config.getConfigForProject(project)
-      projectConfig?.aarProjects?.forEach(
-        project::applyAarProject
-      )
+      config.allAarProjects.filter { it.name == project.name }
+        .forEach(
+          project::applyAarProject
+        )
     }
 
     // Defines the required features for the core module
@@ -112,11 +112,18 @@ class SettingsManager(
     }
 
     settings.gradle.beforeRootProject { rootProject: Project ->
-      config.allPlugins.forEach(rootProject::linkBuildDependence)
-      config.extraDependencies.forEach { mavenConfig ->
+      val extraDependency = config.extraDependencies
+      extraDependency.forEach { mavenConfig ->
         rootProject.logger.quiet("Adding extra maven repository: ${mavenConfig.url}")
-        rootProject.linkMavenRepository(mavenConfig)
+
       }
+      rootProject.allprojects { project ->
+        extraDependency.forEach { mavenConfig ->
+          project.linkMavenRepository(mavenConfig)
+        }
+      }
+
+      config.allPlugins.forEach(rootProject::linkBuildDependence)
 
       // Adds maven repositories for all projects that are using the publication.
       // It most likely means that we will add "https://maven.pkg.github.com/expo/expo" to the repositories.

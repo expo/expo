@@ -6,7 +6,7 @@ const AuthContext = React.createContext(null);
 
 // This hook can be used to access the user info.
 export function useSession() {
-  const value = React.useContext(AuthContext);
+  const value = React.use(AuthContext);
   if (!value && process.env.NODE_ENV !== 'production') {
     throw new Error('`useSession` must be wrapped in a <SessionProvider />');
   }
@@ -18,7 +18,7 @@ export function SessionProvider(props) {
   const [[isLoading, session], setSession] = useStorageState('session');
 
   return (
-    <AuthContext.Provider
+    <AuthContext
       value={{
         signIn: () => {
           setSession('xxx');
@@ -31,6 +31,6 @@ export function SessionProvider(props) {
         isLoading,
       }}>
       {props.children}
-    </AuthContext.Provider>
+    </AuthContext>
   );
 }

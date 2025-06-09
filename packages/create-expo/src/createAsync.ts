@@ -102,9 +102,13 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
       chalk`Creating an Expo project using the {cyan ${resolvedTemplate ?? 'default'}} template.\n`
     );
     if (!resolvedTemplate) {
-      console.log(chalk`{gray To choose from all available templates pass in the --template arg:}`);
+      console.log(
+        chalk`{gray To choose from all available templates ({underline https://github.com/expo/expo/tree/main/templates}) pass in the --template arg:}`
+      );
       console.log(chalk`  {gray $} ${formatSelfCommand()} {cyan --template}\n`);
-      console.log(chalk`{gray To choose from all available examples pass in the --example arg:}`);
+      console.log(
+        chalk`{gray To choose from all available examples ({underline https://github.com/expo/examples}) pass in the --example arg:}`
+      );
       console.log(chalk`  {gray $} ${formatSelfCommand()} {cyan --example}\n`);
     }
   }

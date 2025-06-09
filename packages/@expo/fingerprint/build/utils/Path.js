@@ -5,10 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isIgnoredPath = isIgnoredPath;
 exports.buildPathMatchObjects = buildPathMatchObjects;
+exports.appendIgnorePath = appendIgnorePath;
 exports.buildDirMatchObjects = buildDirMatchObjects;
 exports.isIgnoredPathWithMatchObjects = isIgnoredPathWithMatchObjects;
 exports.normalizeFilePath = normalizeFilePath;
 exports.toPosixPath = toPosixPath;
+exports.pathExistsAsync = pathExistsAsync;
+const promises_1 = __importDefault(require("fs/promises"));
 const minimatch_1 = require("minimatch");
 const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
@@ -24,6 +27,12 @@ function isIgnoredPath(filePath, ignorePaths, minimatchOptions = { dot: true }) 
  */
 function buildPathMatchObjects(paths, minimatchOptions = { dot: true }) {
     return paths.map((filePath) => new minimatch_1.Minimatch(filePath, minimatchOptions));
+}
+/**
+ * Append a new ignore path to the given `matchObjects`.
+ */
+function appendIgnorePath(matchObjects, path, minimatchOptions = { dot: true }) {
+    matchObjects.push(new minimatch_1.Minimatch(path, minimatchOptions));
 }
 /**
  * Build an ignore match objects for directories based on the given `ignorePathMatchObjects`.
@@ -109,5 +118,17 @@ const REGEXP_REPLACE_SLASHES = /\\/g;
  */
 function toPosixPath(filePath) {
     return node_process_1.default.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
+}
+/**
+ * Check if the given `filePath` exists.
+ */
+async function pathExistsAsync(filePath) {
+    try {
+        const stat = await promises_1.default.stat(filePath);
+        return stat.isFile() || stat.isDirectory();
+    }
+    catch {
+        return false;
+    }
 }
 //# sourceMappingURL=Path.js.map

@@ -192,7 +192,7 @@ export function pluginFactory() {
 
           if (typeof name !== 'string') {
             throw new Error(
-              `PostCSS plugin must be a string, but "${name}" was found. Please check your configuration.`
+              `PostCSS plugin must be a string, but "${name}" was found. Verify the configuration is correct.`
             );
           }
 

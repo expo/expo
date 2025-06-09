@@ -32,9 +32,9 @@ internal enum ButtonVariant: String, Enumerable {
   case plain
 }
 
-class ButtonProps: ExpoSwiftUI.ViewProps, Observable {
+final class ButtonProps: ExpoSwiftUI.ViewProps, Observable {
   required init() {}
-  @Field var text: String = ""
+  @Field var text: String?
   @Field var systemImage: String?
   @Field var color: Color?
   @Field var buttonRole: ButtonRole? = .default

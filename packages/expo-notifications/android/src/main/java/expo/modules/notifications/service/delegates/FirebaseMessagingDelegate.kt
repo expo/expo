@@ -1,6 +1,7 @@
 package expo.modules.notifications.service.delegates
 
 import android.content.Context
+import android.os.Bundle
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import expo.modules.notifications.notifications.RemoteMessageSerializer
@@ -73,6 +74,18 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
       }
       sBackgroundTaskConsumerReferences[taskConsumer] = WeakReference(taskConsumer)
     }
+
+    fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
+
+    fun runTaskManagerTasks(applicationContext: Context, bundle: Bundle) {
+      // getTaskServiceImpl() has a side effect:
+      // the TaskService constructor calls restoreTasks which then constructs a BackgroundRemoteNotificationTaskConsumer,
+      // and the getBackgroundTasks() call below doesn't return an empty collection.
+      TaskServiceProviderHelper.getTaskServiceImpl(applicationContext)
+      getBackgroundTasks().forEach {
+        it.executeTask(bundle)
+      }
+    }
   }
 
   /**
@@ -87,25 +100,13 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     sLastToken = token
   }
 
-  private fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
-
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     // the entry point for notifications. For its behavior, see table at https://firebase.google.com/docs/cloud-messaging/android/receive
     DebugLogging.logRemoteMessage("FirebaseMessagingDelegate.onMessageReceived: message", remoteMessage)
     val notification = createNotification(remoteMessage)
     DebugLogging.logNotification("FirebaseMessagingDelegate.onMessageReceived: notification", notification)
     NotificationsService.receive(context, notification)
-    runTaskManagerTasks(remoteMessage)
-  }
-
-  private fun runTaskManagerTasks(remoteMessage: RemoteMessage) {
-    // getTaskServiceImpl() has a side effect:
-    // the TaskService constructor calls restoreTasks which then constructs a BackgroundRemoteNotificationTaskConsumer,
-    // and the getBackgroundTasks() call below doesn't return an empty collection.
-    TaskServiceProviderHelper.getTaskServiceImpl(context.applicationContext)
-    getBackgroundTasks().forEach {
-      it.executeTask(RemoteMessageSerializer.toBundle(remoteMessage))
-    }
+    runTaskManagerTasks(context.applicationContext, RemoteMessageSerializer.toBundle(remoteMessage))
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {

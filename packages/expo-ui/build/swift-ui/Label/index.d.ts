@@ -12,11 +12,12 @@ export type LabelProps = {
      * The color of the label icon.
      */
     color?: string;
-    /**
-     * Additional styles to apply to the label.
-     */
-    style?: StyleProp<ViewStyle>;
 };
+/**
+ * `<Label>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function LabelPrimitive(props: LabelProps): import("react").JSX.Element;
 /**
  * Renders a native label view, which could be used in a list or section.
  *
@@ -24,5 +25,7 @@ export type LabelProps = {
  * @returns {JSX.Element} The rendered native Label component.
  * @platform ios
  */
-export declare function Label(props: LabelProps): import("react").JSX.Element;
+export declare function Label(props: LabelProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

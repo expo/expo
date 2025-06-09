@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
@@ -13,10 +11,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.views.AutoSizingComposable
-import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.AutoSizingComposable
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
 import java.io.Serializable
 
 open class ValueChangeEvent(
@@ -114,22 +114,22 @@ fun ThemedHybridSwitch(
   }
 }
 
-class SwitchView(context: Context, appContext: AppContext) : ExpoComposeView<SwitchProps>(context, appContext) {
+class SwitchView(context: Context, appContext: AppContext) :
+  ExpoComposeView<SwitchProps>(context, appContext, withHostingView = true) {
   override val props = SwitchProps()
   private val onValueChange by EventDispatcher<ValueChangeEvent>()
 
-  init {
-    setContent {
-      val (checked) = props.value
-      val (variant) = props.variant
-      val (colors) = props.elementColors
-      val onCheckedChange = { checked: Boolean ->
-        onValueChange(ValueChangeEvent(checked))
-      }
+  @Composable
+  override fun Content() {
+    val (checked) = props.value
+    val (variant) = props.variant
+    val (colors) = props.elementColors
+    val onCheckedChange = { checked: Boolean ->
+      onValueChange(ValueChangeEvent(checked))
+    }
 
-      AutoSizingComposable(shadowNodeProxy) {
-        ThemedHybridSwitch(variant, checked, onCheckedChange, colors)
-      }
+    AutoSizingComposable(shadowNodeProxy) {
+      ThemedHybridSwitch(variant, checked, onCheckedChange, colors)
     }
   }
 }

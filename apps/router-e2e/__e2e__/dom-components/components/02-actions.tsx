@@ -40,7 +40,7 @@ export default function Page({
           setNativeSetting(await getNativeSettings());
           console.log('return value:', await getNativeSettings());
         }}>
-        Read native value: "{nativeSetting}"
+        {`Read native value: "${nativeSetting}"`}
       </p>
       <p
         className="text-lg text-blue-900 font-medium"

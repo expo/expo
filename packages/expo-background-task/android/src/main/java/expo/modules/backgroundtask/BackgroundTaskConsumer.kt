@@ -37,13 +37,13 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     this.task = task
 
     val intervalMinutes = getIntervalMinutes()
-    BackgroundTaskScheduler.registerTask(intervalMinutes)
+    BackgroundTaskScheduler.registerTask(context, intervalMinutes)
   }
 
   override fun didUnregister() {
     Log.d(TAG, "didUnregister: ${task?.name}")
     this.task = null
-    BackgroundTaskScheduler.unregisterTask()
+    BackgroundTaskScheduler.unregisterTask(context)
   }
 
   private fun getIntervalMinutes(): Long {

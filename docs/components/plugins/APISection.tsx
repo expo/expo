@@ -58,10 +58,10 @@ const isProp = ({ name }: GeneratedData) =>
   name !== 'WebAnchorProps' &&
   name !== 'ScreenProps';
 
-const componentTypeNames = ['React.FC', 'ForwardRefExoticComponent', 'ComponentType'];
+const componentTypeNames = new Set(['React.FC', 'ForwardRefExoticComponent', 'ComponentType']);
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
-  if (type?.name && componentTypeNames.includes(type?.name)) {
+  if (type?.name && componentTypeNames.has(type?.name)) {
     return true;
   } else if (extendedTypes?.length) {
     return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
@@ -79,7 +79,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 
 const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
-  !(type?.name && componentTypeNames.includes(type?.name));
+  !(type?.name && componentTypeNames.has(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
   (signatures?.[0].comment?.blockTags &&
@@ -197,14 +197,14 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components
-      .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
-      .flat();
+    const componentsPropNames = new Set(
+      components.map(({ name, children }) => getPossibleComponentPropsNames(name, children)).flat()
+    );
 
     const componentsProps = filterDataByKind(
       props,
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
-      entry => componentsPropNames.includes(entry.name)
+      entry => componentsPropNames.has(entry.name)
     );
 
     const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
@@ -228,13 +228,13 @@ const renderAPI = (
       )
       .flat();
 
-    const methodsNames = methods.map(method => method.name);
+    const methodsNames = new Set(methods.map(method => method.name));
     const staticMethods = componentsChildren.filter(
       // note(simek): hide duplicate exports from class components
       method =>
         method?.kind === TypeDocKind.Method &&
         method?.flags?.isStatic === true &&
-        !methodsNames.includes(method.name) &&
+        !methodsNames.has(method.name) &&
         !isHook(method)
     );
     const componentMethods = componentsChildren
@@ -286,7 +286,7 @@ const renderAPI = (
         <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
         <APISectionClasses data={classes} sdkVersion={sdkVersion} />
-        {props && !componentsProps.length ? (
+        {props && componentsProps.length === 0 ? (
           <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}
         <APISectionMethods data={methods} apiName={apiName} sdkVersion={sdkVersion} />

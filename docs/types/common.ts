@@ -45,8 +45,10 @@ export type NavigationRoute = {
   sidebarTitle?: string;
   weight?: number;
   isNew?: boolean;
+  isAlpha?: boolean;
   isDeprecated?: boolean;
   inExpoGo?: boolean;
+  hasVideoLink?: boolean;
   children?: NavigationRouteWithSection[];
 };
 

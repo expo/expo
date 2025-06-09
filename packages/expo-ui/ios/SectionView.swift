@@ -3,25 +3,17 @@
 import SwiftUI
 import ExpoModulesCore
 
-class SectionProps: ExpoSwiftUI.ViewProps {
+final class SectionProps: ExpoSwiftUI.ViewProps {
   @Field var title: String?
 }
 
-let IPAD_OFFSET: CGFloat = 30
-let IPHONE_OFFSET: CGFloat = 40
-
-struct SectionView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct SectionView: ExpoSwiftUI.View {
   @ObservedObject var props: SectionProps
 
   var body: some View {
     let form = Form {
       Section(header: Text(props.title ?? "").textCase(nil)) {
-        UnwrappedChildren { child, isHostingView in
-          child
-            .if(!isHostingView) {
-              $0.offset(x: UIDevice.current.userInterfaceIdiom == .pad ? IPAD_OFFSET : IPHONE_OFFSET)
-            }
-        }
+        Children()
       }
     }
 
@@ -29,6 +21,16 @@ struct SectionView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       form.scrollDisabled(true)
     } else {
       form
+    }
+  }
+}
+
+internal struct SectionPrimitiveView: ExpoSwiftUI.View {
+  @ObservedObject var props: SectionProps
+
+  var body: some View {
+    Section(header: Text(props.title ?? "").textCase(nil)) {
+      Children()
     }
   }
 }

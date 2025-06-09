@@ -7,7 +7,7 @@ public class AppleMapsModule: Module {
     Name("ExpoAppleMaps")
 
     Property("isMapsAvailable") {
-      if #available(iOS 18.0, *) {
+      if #available(iOS 17.0, *) {
         return true
       }
       return false
@@ -16,6 +16,10 @@ public class AppleMapsModule: Module {
     View(AppleMapsViewWrapper.self) {
       AsyncFunction("setCameraPosition") { (view: AppleMapsViewWrapper, config: CameraPosition?) in
         view.setCameraPosition(config: config)
+      }
+
+      AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate) in
+        try await view.openLookAround(coordinate: coordinates)
       }
     }
   }

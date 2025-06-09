@@ -23,6 +23,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
   ) {
     var request = URLRequest(url: url)
     request.httpMethod = requestInit.method
+    request.timeoutInterval = 0
     if requestInit.credentials == .include {
       request.httpShouldHandleCookies = true
       if let cookies = HTTPCookieStorage.shared.cookies(for: url) {

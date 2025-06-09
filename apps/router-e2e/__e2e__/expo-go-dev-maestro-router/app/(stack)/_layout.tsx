@@ -1,6 +1,6 @@
 import { Link, Stack } from 'expo-router';
 
-export default function () {
+export default function Layout() {
   return (
     <>
       <Link testID="e2e-goto-stack-index" href="/(stack)" replace>

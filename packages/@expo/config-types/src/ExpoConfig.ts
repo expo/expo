@@ -219,7 +219,7 @@ export interface ExpoConfig {
     useNativeDebug?: boolean;
   };
   /**
-   * Provide overrides by locale for System Dialog prompts like Permissions Boxes
+   * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
    */
   locales?: {
     [k: string]:
@@ -238,7 +238,7 @@ export interface ExpoConfig {
   plugins?: (string | [] | [string] | [string, any])[];
   splash?: Splash;
   /**
-   * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
+   * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
@@ -289,13 +289,31 @@ export interface ExpoConfig {
      */
     reactServerFunctions?: boolean;
     /**
-     * Experimentally enable downloading cached builds from remote.
+     * Experimentally enable downloading cached builds from a provider.
+     */
+    buildCacheProvider?:
+      | 'eas'
+      | {
+          plugin: string;
+          options?: {
+            [k: string]: any;
+          };
+        };
+    /**
+     * @deprecated This field will be removed in a future release, use the `buildCacheProvider` field instead.
      */
     remoteBuildCache?: {
       /**
        * Service provider for remote builds.
        */
-      provider?: 'eas';
+      provider?:
+        | 'eas'
+        | {
+            plugin: string;
+            options?: {
+              [k: string]: any;
+            };
+          };
     };
   };
   /**
@@ -357,6 +375,10 @@ export interface IOS {
    * The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present. Requires `expo-system-ui` be installed in your project to work on iOS.
    */
   backgroundColor?: string;
+  /**
+   * URL scheme(s) to link into your iOS app. Schemes added to this field will be merged with the schemes in the `scheme` key at the top level of the config.
+   */
+  scheme?: string | string[];
   /**
    * Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.
    *
@@ -533,7 +555,7 @@ export interface IOS {
     [k: string]: any;
   };
   /**
-   * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
+   * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for iOS apps. Not supported in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
@@ -596,6 +618,10 @@ export interface Android {
    * Configuration to force the app to always use the light or dark user-interface appearance, such as "dark mode", or make it automatically adapt to the system preferences. If not provided, defaults to `light`. Requires `expo-system-ui` be installed in your project to work on Android.
    */
   userInterfaceStyle?: 'light' | 'dark' | 'automatic';
+  /**
+   * URL scheme(s) to link into your Android app. Schemes added to this field will be merged with the schemes in the `scheme` key at the top level of the config.
+   */
+  scheme?: string | string[];
   /**
    * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo Go app.
    */
@@ -785,7 +811,7 @@ export interface Android {
    */
   softwareKeyboardLayoutMode?: 'resize' | 'pan';
   /**
-   * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
+   * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
@@ -832,6 +858,15 @@ export interface AndroidIntentFiltersData {
    * Prefix for paths that should be matched by the filter, e.g. `/records/` will match `/records/123`
    */
   pathPrefix?: string;
+  /**
+   * Suffix for paths that should be matched by the filter, e.g. `.pdf` will match `/docs/file.pdf`
+   */
+  pathSuffix?: string;
+  /**
+   * Advanced pattern for paths, available in API 31+ (Android 12 and later),
+   * supports regular expressions. Example: `/records/[0-9]+`
+   */
+  pathAdvancedPattern?: string;
   /**
    * MIME type for URLs that should be matched by the filter
    */

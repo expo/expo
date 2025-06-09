@@ -17,6 +17,13 @@ export const CameraScreens = [
     },
   },
   {
+    name: 'Select Lens',
+    route: 'camera/expo-camera-lens',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenLenses'));
+    },
+  },
+  {
     name: 'Camera (barcode from URL)',
     route: 'camera/expo-camera-barcode-from-url',
     getComponent() {

@@ -79,7 +79,7 @@ function trimCodedTitle(str: string) {
   if (!str.includes('...')) {
     const dotIdx = str.indexOf('.');
     if (dotIdx > 0) {
-      str = str.substring(dotIdx + 1);
+      str = str.slice(Math.max(0, dotIdx + 1));
     }
   }
 
@@ -87,7 +87,7 @@ function trimCodedTitle(str: string) {
 
   const parIdx = str.indexOf('(');
   if (parIdx > 0) {
-    str = str.substring(0, parIdx + 1) + ')';
+    str = str.slice(0, Math.max(0, parIdx + 1)) + ')';
   }
 
   return str;

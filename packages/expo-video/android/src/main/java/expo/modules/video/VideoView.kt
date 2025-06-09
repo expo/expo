@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.util.Rational
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -32,11 +33,13 @@ import expo.modules.video.utils.calculateRectHint
 import expo.modules.video.utils.dispatchMotionEvent
 import java.util.UUID
 
-// https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
+class SurfaceVideoView(context: Context, appContext: AppContext) : VideoView(context, appContext)
+class TextureVideoView(context: Context, appContext: AppContext) : VideoView(context, appContext, true)
+
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class VideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext), VideoPlayerListener {
+open class VideoView(context: Context, appContext: AppContext, useTextureView: Boolean = false) : ExpoView(context, appContext), VideoPlayerListener {
   val videoViewId: String = UUID.randomUUID().toString()
-  val playerView: PlayerView = PlayerView(context.applicationContext)
+  val playerView: PlayerView = LayoutInflater.from(context.applicationContext).inflate(getPlayerViewLayoutId(useTextureView), null) as PlayerView
   val onPictureInPictureStart by EventDispatcher<Unit>()
   val onPictureInPictureStop by EventDispatcher<Unit>()
   val onFullscreenEnter by EventDispatcher<Unit>()
@@ -51,6 +54,8 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   var isInFullscreen: Boolean = false
     private set
   var showsSubtitlesButton = false
+    private set
+  var showsAudioTracksButton = false
     private set
 
   private val currentActivity = appContext.throwingActivity
@@ -67,10 +72,10 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   var useExoShutter: Boolean? = null
     set(value) {
-      if (value == false) {
-        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
-      } else {
+      if (value == true) {
         playerView.setShutterBackgroundColor(Color.BLACK)
+      } else {
+        playerView.setShutterBackgroundColor(Color.TRANSPARENT)
       }
       applySurfaceViewVisibility()
       field = value
@@ -151,7 +156,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
   }
 
   fun applySurfaceViewVisibility() {
-    if (useExoShutter == false && shouldHideSurfaceView) {
+    if (useExoShutter != true && shouldHideSurfaceView) {
       playerView.videoSurfaceView?.alpha = 0f
     } else {
       playerView.videoSurfaceView?.alpha = 1f
@@ -260,6 +265,7 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
 
   override fun onTracksChanged(player: VideoPlayer, tracks: Tracks) {
     showsSubtitlesButton = player.subtitles.availableSubtitleTracks.isNotEmpty()
+    showsAudioTracksButton = player.audioTracks.availableAudioTracks.size > 1
     playerView.setShowSubtitleButton(showsSubtitlesButton)
     super.onTracksChanged(player, tracks)
   }
@@ -337,6 +343,14 @@ class VideoView(context: Context, appContext: AppContext) : ExpoView(context, ap
     }
     // Return false to receive all other events before the target `onTouchEvent`
     return false
+  }
+
+  private fun getPlayerViewLayoutId(useTextureView: Boolean): Int {
+    return if (useTextureView) {
+      R.layout.texture_player_view
+    } else {
+      R.layout.surface_player_view
+    }
   }
 
   companion object {

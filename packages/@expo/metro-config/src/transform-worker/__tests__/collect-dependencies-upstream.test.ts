@@ -15,6 +15,10 @@ import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 import dedent from 'dedent';
+import {
+  importLocationsPlugin,
+  locToKey,
+} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
 import type {
@@ -1676,6 +1680,46 @@ describe('optional dependencies', () => {
           // asyncRequire helper
           name: 'asyncRequire',
         }),
+      ]);
+    });
+
+    // Collect dependencies' `getNearestLocFromPath` iterated up to the `Program`,
+    // which conflated added `require('@babel/runtime/..')` with 1 line ESM code
+    // resulting in ESM code of babel being resolved, while it should have used CJS code.
+    // See: https://discord.com/channels/514829729862516747/514832110595604510/1368148663179804733
+    it('distinguishes ESM imports in single-line files from generated CJS babel runtime helpers', () => {
+      const code = `export { default } from './x'`;
+
+      // Transform code and collect original ESM import locations
+      const { ast, metadata } = transformFromAstSync(astFromCode(code), code, {
+        ast: true,
+        plugins: [
+          importLocationsPlugin, // Required to collect original ESM import locations
+          '@babel/plugin-transform-runtime', // Required to have `@babel/runtime/helpers/..` applied
+          '@babel/plugin-transform-modules-commonjs', // Required to apply `@babel/runtime/helpers/interopRequireDefault`
+        ],
+      });
+      // @ts-expect-error - `metadata.metro` is not typed in the babel result
+      const importLocations = metadata.metro.unstable_importDeclarationLocs;
+
+      // Collect the dependencies, using the `isESMImport` location-based lookup
+      const { dependencies } = collectDependencies(ast, {
+        ...opts,
+        unstable_isESMImportAtSource: (loc) => importLocations.has(locToKey(loc)),
+      });
+      expect(dependencies).toEqual([
+        {
+          name: '@babel/runtime/helpers/interopRequireDefault',
+          data: objectContaining({
+            isESMImport: false,
+          }),
+        },
+        {
+          name: './x',
+          data: objectContaining({
+            isESMImport: true,
+          }),
+        },
       ]);
     });
   });

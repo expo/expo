@@ -14,21 +14,22 @@ const process_1 = __importDefault(require("process"));
 const debug = require('debug')('expo:metro:hermes');
 function importHermesCommandFromProject() {
     const platformExecutable = getHermesCommandPlatform();
-    const hermescLocations = [
+    const reactNativeRoot = path_1.default.dirname(require.resolve('react-native/package.json'));
+    const hermescPaths = [
         // Override hermesc dir by environment variables
         process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
             ? `${process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
             : '',
         // Building hermes from source
-        'react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
+        `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
         // Prebuilt hermesc in official react-native 0.69+
-        `react-native/sdks/hermesc/${platformExecutable}`,
-        // Legacy hermes-engine package
-        `hermes-engine/${platformExecutable}`,
+        `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
     ];
-    for (const location of hermescLocations) {
+    for (const hermescPath of hermescPaths) {
         try {
-            return require.resolve(location);
+            if (fs_1.default.existsSync(hermescPath)) {
+                return hermescPath;
+            }
         }
         catch { }
     }

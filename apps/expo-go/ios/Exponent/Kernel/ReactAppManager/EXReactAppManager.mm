@@ -5,7 +5,6 @@
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
-#import "EXKernelUtil.h"
 #import "EXLog.h"
 #import "ExpoKit.h"
 #import "EXReactAppManager.h"

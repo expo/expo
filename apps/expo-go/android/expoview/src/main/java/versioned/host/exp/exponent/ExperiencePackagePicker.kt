@@ -3,6 +3,7 @@ package versioned.host.exp.exponent
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
+import expo.modules.audio.AudioModule
 import expo.modules.av.AVModule
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
@@ -27,6 +28,7 @@ import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderModule
+import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLObjectManagerModule
 import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
@@ -119,6 +121,7 @@ object ExperiencePackagePicker : ModulesProvider {
 
   @OptIn(UnstableReactNativeAPI::class)
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    AudioModule::class.java,
     AVModule::class.java,
     ApplicationModule::class.java,
     // Sensors
@@ -155,6 +158,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
     ExpoFetchModule::class.java,
+    FontUtilsModule::class.java,
     ExpoLinkingModule::class.java,
     FileSystemModule::class.java,
     FontLoaderModule::class.java,

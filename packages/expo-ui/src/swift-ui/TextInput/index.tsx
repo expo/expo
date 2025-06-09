@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
+import { Host } from '../Host';
 
 /**
  * @hidden Not used anywhere yet.
@@ -9,10 +10,6 @@ import { ViewEvent } from '../../types';
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 
 export type TextInputProps = {
-  /**
-   * Additional styles to apply to the TextInput.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
    */
@@ -95,8 +92,20 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
 }
 
 /**
- * Renders a `TextInput` component.
+ * Renders a `TextInput` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
-export function TextInput(props: TextInputProps) {
-  return <TextInputNativeView {...transformTextInputProps(props)} style={props.style} />;
+export function TextInput(props: TextInputProps & { style?: StyleProp<ViewStyle> }) {
+  return (
+    <Host style={props.style} matchContents>
+      <TextInputPrimitive {...props} />
+    </Host>
+  );
+}
+
+/**
+ * `<TextInput>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export function TextInputPrimitive(props: TextInputProps) {
+  return <TextInputNativeView {...transformTextInputProps(props)} />;
 }

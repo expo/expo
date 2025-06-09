@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lints custom rules: fixtures/rule-no-var.js 1`] = `
+{
+  "errorCount": 1,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 1,
+  "fixableWarningCount": 0,
+  "messages": [
+    {
+      "column": 1,
+      "endColumn": 30,
+      "endLine": 3,
+      "fix": {
+        "range": [
+          58,
+          61,
+        ],
+        "text": "let",
+      },
+      "line": 3,
+      "message": "Unexpected var, use let or const instead.",
+      "messageId": "unexpectedVar",
+      "nodeType": "VariableDeclaration",
+      "ruleId": "no-var",
+      "severity": 2,
+    },
+  ],
+  "source": "const constAllowed = "Hello!";
+let letAllowed = "Hello!";
+var varNotAllowed = "Hello!";
+
+console.log(constAllowed, letAllowed, varNotAllowed);
+",
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 0,
+}
+`;
+
+exports[`lints custom rules: fixtures/rule-no-var.ts 1`] = `
+{
+  "errorCount": 1,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 1,
+  "fixableWarningCount": 0,
+  "messages": [
+    {
+      "column": 1,
+      "endColumn": 30,
+      "endLine": 3,
+      "fix": {
+        "range": [
+          58,
+          61,
+        ],
+        "text": "let",
+      },
+      "line": 3,
+      "message": "Unexpected var, use let or const instead.",
+      "messageId": "unexpectedVar",
+      "nodeType": "VariableDeclaration",
+      "ruleId": "no-var",
+      "severity": 2,
+    },
+  ],
+  "source": "const constAllowed = "Hello!";
+let letAllowed = "Hello!";
+var varNotAllowed = "Hello!";
+
+console.log(constAllowed, letAllowed, varNotAllowed);
+",
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 0,
+}
+`;
+
+exports[`lints custom rules: fixtures/rule-require.js 1`] = `
+{
+  "errorCount": 0,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 0,
+}
+`;
+
+exports[`lints custom rules: fixtures/rule-require.ts 1`] = `
+{
+  "errorCount": 0,
+  "fatalErrorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": [
+    {
+      "column": 19,
+      "endColumn": 50,
+      "endLine": 2,
+      "line": 2,
+      "message": "A \`require()\` style import is forbidden.",
+      "messageId": "noRequireImports",
+      "nodeType": "CallExpression",
+      "ruleId": "@typescript-eslint/no-require-imports",
+      "severity": 1,
+    },
+  ],
+  "source": "// not allowed in TS files
+const something = require('./baseline/all-00.js');
+console.log(something);
+",
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 1,
+}
+`;

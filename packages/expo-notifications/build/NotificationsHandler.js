@@ -1,5 +1,6 @@
 import { LegacyEventEmitter, CodedError, UnavailabilityError, } from 'expo-modules-core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
+import { mapNotification } from './utils/mapNotificationResponse';
 /**
  * @hidden
  */
@@ -34,7 +35,8 @@ let handleTimeoutSubscription = null;
  *
  * Notifications.setNotificationHandler({
  *   handleNotification: async () => ({
- *     shouldShowAlert: true,
+ *     shouldShowBanner: true,
+ *     shouldShowList: true,
  *     shouldPlaySound: false,
  *     shouldSetBadge: false,
  *   }),
@@ -58,7 +60,11 @@ export function setNotificationHandler(handler) {
                 return;
             }
             try {
-                const behavior = await handler.handleNotification(notification);
+                const mappedNotification = mapNotification(notification);
+                const behavior = await handler.handleNotification(mappedNotification);
+                if (behavior.shouldShowAlert) {
+                    console.warn('[expo-notifications]: `shouldShowAlert` is deprecated. Specify `shouldShowBanner` and / or `shouldShowList` instead.');
+                }
                 await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
                 handler.handleSuccess?.(id);
             }
@@ -67,7 +73,7 @@ export function setNotificationHandler(handler) {
                 handler.handleError?.(id, error);
             }
         });
-        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, notification)));
+        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, mapNotification(notification))));
     }
 }
 //# sourceMappingURL=NotificationsHandler.js.map

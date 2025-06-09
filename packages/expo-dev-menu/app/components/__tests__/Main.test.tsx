@@ -21,6 +21,15 @@ const mockCopyToClipboardAsync = copyToClipboardAsync as jest.Mock;
 const mockNavigateToLauncherAsync = navigateToLauncherAsync as jest.Mock;
 const mockReloadAsync = reloadAsync as jest.Mock;
 
+jest.mock('../../../vendored/react-native-safe-area-context/src', () => ({
+  SafeAreaProvider: ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+  },
+  SafeAreaView: ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+  },
+}));
+
 const mockFns: jest.Mock[] = [
   mockToggleElementInspectorAsync,
   mockToggleFastRefreshAsync,

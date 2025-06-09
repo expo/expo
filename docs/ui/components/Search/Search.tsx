@@ -32,14 +32,17 @@ export const Search = () => {
         config={{ docsVersion: version, docsTransformUrl: transformDocsUrl }}
         customSections={[
           {
-            heading: 'Expo dashboard',
+            heading: 'EAS dashboard',
             items: expoDashboardItems,
             getItemsAsync: getExpoItemsAsync,
             sectionIndex: 1,
           },
         ]}
       />
-      <CommandMenuTrigger setOpen={setOpen} className="mb-2.5" />
+      <CommandMenuTrigger
+        setOpen={setOpen}
+        className="mb-2.5 hocus:bg-element hocus:dark:bg-subtle"
+      />
     </>
   );
 };

@@ -51,7 +51,7 @@ abstract class Module : AppContextProvider {
     moduleEventEmitter?.emit(convertEnumToString(enum), body)
   }
 
-  open fun customConverterProvider(): TypeConverterProvider? = null
+  open fun converters(): TypeConverterProvider? = null
 
   abstract fun definition(): ModuleDefinitionData
 }
@@ -59,4 +59,9 @@ abstract class Module : AppContextProvider {
 @Suppress("FunctionName")
 inline fun Module.ModuleDefinition(crossinline block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
   return trace("${this.javaClass}.ModuleDefinition") { ModuleDefinitionBuilder(this).also(block).buildModule() }
+}
+
+@Suppress("FunctionName")
+inline fun Module.ModuleConverters(crossinline block: ModuleConvertersBuilder.() -> Unit): TypeConverterProvider {
+  return trace("${this.javaClass}.TypeConverters") { ModuleConvertersBuilder().also(block).buildTypeConverterProvider() }
 }

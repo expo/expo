@@ -275,6 +275,19 @@ class ExpoImageModule : Module() {
         view.setIsAnimating(false)
       }
 
+      AsyncFunction("lockResourceAsync") { view: ExpoImageViewWrapper ->
+        view.lockResource = true
+      }
+
+      AsyncFunction("unlockResourceAsync") { view: ExpoImageViewWrapper ->
+        view.lockResource = false
+      }
+
+      AsyncFunction("reloadAsync") { view: ExpoImageViewWrapper ->
+        view.shouldRerender = true
+        view.rerenderIfNeeded(force = true)
+      }
+
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
         view.rerenderIfNeeded()
       }

@@ -61,7 +61,7 @@ Object.defineProperty(SecurityLevel, 'BIOMETRIC', {
         ? '. `SecurityLevel.BIOMETRIC` is currently an alias for `SecurityLevel.BIOMETRIC_WEAK` on Android, which might lead to unexpected behaviour.'
         : '';
     console.warn(
-      '`SecurityLevel.BIOMETRIC` has been deprecated. Please use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
+      '`SecurityLevel.BIOMETRIC` has been deprecated. Use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
         additionalMessage
     );
     return Platform.OS === 'android'

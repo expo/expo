@@ -90,7 +90,7 @@ You can configure the React Native Directory check in your **package.json** file
   </Tab>
 
   <Tab label="SDK 52">
-    We recommend upgrading to SDK 53 in order to ensure that your app can take advantage of all of the latest New Architecture related fixes and improvements with libraries and React Native itself. If you want to try it on SDK 52 first, follow the instructions below.
+    We recommend upgrading to SDK 53 to ensure that your app can take advantage of all of the latest New Architecture related fixes and improvements with libraries and React Native itself. If you want to try it on SDK 52 first, follow the instructions below.
 
     <Step label="1">
 
@@ -202,8 +202,8 @@ Refer to [React Native Directory](https://reactnative.directory/) a more complet
 
 The following are known issues with libraries that are popular among Expo apps.
 
-- **react-native-maps**: Initial support for the New Architecture is available in version 1.21.0, which is still stabilizing. We encourage your to test it in your app, report issues that you find, and [follow along with the discussion on GitHub](https://github.com/react-native-maps/react-native-maps/discussions/5355). We are also investigating another approach that may provider a smoother migration path, by leaning on the [interop layer](https://github.com/reactwg/react-native-new-architecture/discussions/175) rather than rewriting the module. It’s worth mentioning that if your app can force a minimum version of iOS 18, or does not need to support maps on iOS, then you can consider using [`expo-maps`](/versions/latest/sdk/maps/) instead.
-- **@stripe/react-native** does not yet support the New Architecture. [Follow along with progress](https://github.com/stripe/stripe-react-native/issues/1275).
+- **react-native-maps**: Version 1.20.x, which is the default for SDK 53, supports the New Architecture with the interop layer and works well for most features. A New Architecture-first version is available in version 1.21.0, which is still stabilizing. We encourage your to test it in your app, report issues that you find, and [follow along with the discussion on GitHub](https://github.com/react-native-maps/react-native-maps/discussions/5355). We are also investigating another approach that may provider a smoother migration path, by leaning on the [interop layer](https://github.com/reactwg/react-native-new-architecture/discussions/175) rather than rewriting the module. It's worth mentioning that if your app can force a minimum version of iOS 17, or does not need to support maps on iOS, then you can consider using [`expo-maps`](/versions/latest/sdk/maps/) instead.
+- **@stripe/react-native**: The New Architecture is supported starting with version 0.45.0, which is the default for SDK 53.
 - **@react-native-community/masked-view**: Use `@react-native-masked-view/masked-view` instead.
 - **@react-native-community/clipboard**: Use `@react-native-clipboard/clipboard` instead.
 - **rn-fetch-blob**: Use `react-native-blob-util` instead.

@@ -1,9 +1,5 @@
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
 export type BottomSheetProps = {
-    /**
-     * Optional styles to apply to the `BottomSheet` component.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * The children of the `BottomSheet` component.
      */
@@ -23,6 +19,11 @@ type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {
     }>) => void;
 };
 export declare function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps;
+/**
+ * `<BottomSheet>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function BottomSheetPrimitive(props: BottomSheetProps): import("react").JSX.Element;
 export declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

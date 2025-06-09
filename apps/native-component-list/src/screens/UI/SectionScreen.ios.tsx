@@ -1,4 +1,4 @@
-import { Button, ColorPicker, Picker, Section, Slider, Switch } from '@expo/ui/swift-ui';
+import { ButtonPrimitive, ColorPicker, Picker, Section, Slider, Switch } from '@expo/ui/swift-ui';
 import * as React from 'react';
 import { Text } from 'react-native';
 export default function SectionScreen() {
@@ -11,7 +11,7 @@ export default function SectionScreen() {
   return (
     <Section title="My form Section" style={{ flex: 1 }}>
       <Text style={{ fontSize: 17 }}>Some text!</Text>
-      <Button onPress={() => alert('Clicked!')}>I'm a button</Button>
+      <ButtonPrimitive onPress={() => alert('Clicked!')}>I'm a button</ButtonPrimitive>
       <Switch value={switchValue} label="This is a switch" onValueChange={setSwitchValue} />
       <ColorPicker
         label="Select a color"

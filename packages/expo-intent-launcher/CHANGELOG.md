@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 12.1.5 - 2025-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 12.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 12.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 12.1.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

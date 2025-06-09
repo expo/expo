@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
+import java.util.UUID
 
 data class SetCameraPositionConfig(
   @Field
@@ -46,6 +47,9 @@ data class Coordinates(
 
 data class MarkerRecord(
   @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
   val coordinates: Coordinates = Coordinates(),
 
   @Field
@@ -64,12 +68,66 @@ data class MarkerRecord(
   val showCallout: Boolean = true
 ) : Record
 
+data class PolylineRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val coordinates: List<Coordinates> = emptyList(),
+
+  @Field
+  val geodesic: Boolean = false,
+
+  @Field
+  val color: Int = 0xFF0000FF.toInt(),
+
+  @Field
+  val width: Float = 10f
+) : Record
+
+data class PolygonRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val coordinates: List<Coordinates> = emptyList(),
+
+  @Field
+  val lineColor: Int = 0xFF0000FF.toInt(),
+
+  @Field
+  val lineWidth: Float = 10f,
+
+  @Field
+  val color: Int = 0xFF0000FF.toInt()
+) : Record
+
 data class CameraPositionRecord(
   @Field
   val coordinates: Coordinates = Coordinates(),
 
   @Field
   val zoom: Float = 10f
+) : Record
+
+data class CircleRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val center: Coordinates = Coordinates(),
+
+  @Field
+  val radius: Double = 200.0,
+
+  @Field
+  val color: Int = 0x7F0000FF,
+
+  @Field
+  val lineColor: Int? = null,
+
+  @Field
+  val lineWidth: Float? = null
 ) : Record
 
 data class UserLocationRecord(
@@ -200,6 +258,11 @@ data class CameraMoveEvent(
 
   @Field
   val bearing: Float
+) : Record
+
+data class MapClickEvent(
+  @Field
+  val coordinates: Coordinates
 ) : Record
 
 data class CameraPositionStreetViewRecord(

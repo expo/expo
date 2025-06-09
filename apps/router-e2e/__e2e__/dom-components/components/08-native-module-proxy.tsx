@@ -55,7 +55,7 @@ export default function Page(_: { dom?: import('expo/dom').DOMProps }) {
         onClick={() => {
           Speech.speak('Hello, world!');
         }}>
-        Speak "Hello, world!"
+        {`Speak "Hello, world!"`}
       </button>
       <button
         style={{

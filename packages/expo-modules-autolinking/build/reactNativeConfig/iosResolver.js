@@ -17,7 +17,9 @@ async function resolveDependencyConfigImplIosAsync(packageRoot, reactNativeConfi
         return null;
     }
     const mainPackagePodspec = path_1.default.basename(packageRoot) + '.podspec';
-    const podspecFile = podspecs.includes(mainPackagePodspec) ? mainPackagePodspec : podspecs[0];
+    const podspecFile = podspecs.includes(mainPackagePodspec)
+        ? mainPackagePodspec
+        : podspecs.sort((a, b) => a.localeCompare(b))[0];
     const podspecPath = path_1.default.join(packageRoot, podspecFile);
     const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(packageRoot, 'package.json'), 'utf8'));
     return {

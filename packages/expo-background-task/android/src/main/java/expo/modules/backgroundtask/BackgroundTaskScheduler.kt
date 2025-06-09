@@ -19,6 +19,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.util.concurrent.TimeUnit
@@ -39,25 +40,40 @@ object BackgroundTaskScheduler {
   // Interval
   private var intervalMinutes: Long = DEFAULT_INTERVAL_MINUTES
 
+  // Tracks whether in foreground
+  var inForeground: Boolean = false
+
   /**
    * Call when a task is registered
    */
-  fun registerTask(intervalMinutes: Long) {
+  fun registerTask(context: Context, intervalMinutes: Long) {
     numberOfRegisteredTasksOfThisType += 1
     this.intervalMinutes = intervalMinutes
+
+    if (numberOfRegisteredTasksOfThisType == 1) {
+      runBlocking {
+        scheduleWorker(context, context.packageName)
+      }
+    }
   }
 
   /**
    * Call when a task is unregistered
    */
-  fun unregisterTask() {
+  fun unregisterTask(context: Context) {
     numberOfRegisteredTasksOfThisType -= 1
+
+    if (numberOfRegisteredTasksOfThisType == 0) {
+      runBlocking {
+        stopWorker(context)
+      }
+    }
   }
 
   /**
    * Schedules the worker task to run. The worker should run periodically.
    */
-  suspend fun scheduleWorker(context: Context, appScopeKey: String, cancelExisting: Boolean = true): Boolean {
+  private suspend fun scheduleWorker(context: Context, appScopeKey: String, cancelExisting: Boolean = true, overriddenIntervalMinutes: Long = intervalMinutes): Boolean {
     if (numberOfRegisteredTasksOfThisType == 0) {
       Log.d(TAG, "Will not enqueue worker. No registered tasks to run.")
       return false
@@ -68,14 +84,13 @@ object BackgroundTaskScheduler {
       stopWorker(context)
     }
 
-    Log.d(TAG, "Enqueuing worker with identifier $WORKER_IDENTIFIER")
+    Log.d(TAG, "Enqueuing worker with identifier $WORKER_IDENTIFIER and '$overriddenIntervalMinutes' minutes delay.")
 
     // Build the work request
     val data = Data.Builder()
       .putString("appScopeKey", appScopeKey)
       .build()
     val constraints = Constraints.Builder()
-      .setRequiresBatteryNotLow(true)
       .setRequiredNetworkType(NetworkType.CONNECTED)
       .build()
 
@@ -95,7 +110,7 @@ object BackgroundTaskScheduler {
         .setConstraints(constraints)
 
       // Add minimum interval here as well so that the work doesn't start immediately
-      builder.setInitialDelay(Duration.ofMinutes(intervalMinutes))
+      builder.setInitialDelay(Duration.ofMinutes(overriddenIntervalMinutes))
 
       // Create work request
       val workRequest = builder.build()
@@ -144,7 +159,7 @@ object BackgroundTaskScheduler {
   /**
    * Cancels the worker task
    */
-  suspend fun stopWorker(context: Context): Boolean {
+  private suspend fun stopWorker(context: Context): Boolean {
     if (!isWorkerRunning(context)) {
       return false
     }
@@ -173,7 +188,7 @@ object BackgroundTaskScheduler {
   /**
    * Runs tasks with the given appScopeKey
    */
-  suspend fun runTasks(context: Context, appScopeKey: String): Boolean {
+  suspend fun runTasks(context: Context, appScopeKey: String) {
     // Get task service
     val taskService = TaskServiceProviderHelper.getTaskServiceImpl(context)
       ?: throw MissingTaskServiceException()
@@ -185,22 +200,42 @@ object BackgroundTaskScheduler {
     Log.d(TAG, "runTasks: number of consumers ${consumers.size}")
 
     if (consumers.isEmpty()) {
-      return false
+      return
+    }
+
+    // Make sure we're in the background before running a task
+    if (inForeground) {
+      // Schedule task in an hour (or at least minimumInterval) - the app is foregrounded and
+      // we don't want to run anything to avoid performance issues.
+      Log.d(TAG, "runTasks: App is in the foreground")
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        scheduleWorker(context, appScopeKey, false, 60L.coerceAtMost(intervalMinutes))
+        Log.d(TAG, "runTasks: Scheduled new worker in $intervalMinutes minutes")
+      }
+      return
     }
 
     val tasks = consumers.filterIsInstance<BackgroundTaskConsumer>()
       .map { bgTaskConsumer ->
         Log.d(TAG, "runTasks: executing tasks for consumer of type ${bgTaskConsumer.taskType()}")
         val taskCompletion = CompletableDeferred<Unit>()
-        bgTaskConsumer.executeTask {
-          Log.d(TAG, "Task successfully finished")
-          taskCompletion.complete(Unit)
+        try {
+          bgTaskConsumer.executeTask {
+            Log.d(TAG, "Task successfully finished")
+            taskCompletion.complete(Unit)
+          }
+        } catch (e: Exception) {
+          Log.e(TAG, "Task failed: ${e.message}")
         }
         taskCompletion
       }
     // Await all tasks to complete
     tasks.awaitAll()
-    return true
+
+    // Schedule next task
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      scheduleWorker(context, appScopeKey, false)
+    }
   }
 
   /**

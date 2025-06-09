@@ -10,6 +10,49 @@
 
 ### 💡 Others
 
+## 0.31.3 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [ios] ensure `getLastNotificationResponseAsync` does not return null when no response listener added ([#36930](https://github.com/expo/expo/pull/36930) by [@jmysliv](https://github.com/jmysliv))
+
+### 💡 Others
+
+- improve test environment condition to avoid warning ([#33982](https://github.com/expo/expo/pull/33982) by [@PiotrBorowski](https://github.com/PiotrBorowski))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.31.2 — 2025-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.1 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.0 — 2025-04-25
+
+### 🛠 Breaking changes
+
+- support more `UNNotificationPresentationOptions`, deprecate `shouldShowAlert` ([#36361](https://github.com/expo/expo/pull/36361) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- deprecate `removePushTokenSubscription` and `removeNotificationSubscription` ([#36371](https://github.com/expo/expo/pull/36371) by [@vonovak](https://github.com/vonovak))
+
+## 0.30.7 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.6 — 2025-04-22
+
+### 🛠 Breaking changes
+
+- [Android] support action buttons when not in foreground. This is breaking because notification background tasks on Android run not only in response to an incoming notification but also in response to an action button press. ([#35295](https://github.com/expo/expo/pull/35295) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- correctly include `NotificationContent.data` in `NotificationHandler` ([#36195](https://github.com/expo/expo/pull/36195) by [@vonovak](https://github.com/vonovak))
+
 ## 0.30.5 — 2025-04-21
 
 _This version does not introduce any user-facing changes._

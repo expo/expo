@@ -3,10 +3,6 @@ import { ViewEvent } from '../../types';
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 export interface ListProps {
     /**
-     * Custom style for the container wrapping the list.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * One of the predefined ListStyle types in SwiftUI.
      * @default 'automatic'
      */
@@ -77,11 +73,18 @@ export type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'o
     children: React.ReactNode;
 };
 /**
+ * `<List>` component without a host view.
+ * You should use this with a `Host` component in ancestor.
+ */
+export declare function ListPrimitive(props: ListProps): import("react").JSX.Element | null;
+/**
  * A list component that renders its children using a native SwiftUI list.
  * @param {ListProps} props - The properties for the list component.
  * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  * @platform ios
  */
-export declare function List(props: ListProps): import("react").JSX.Element | null;
+export declare function List(props: ListProps & {
+    style?: StyleProp<ViewStyle>;
+}): import("react").JSX.Element;
 export {};
 //# sourceMappingURL=index.d.ts.map

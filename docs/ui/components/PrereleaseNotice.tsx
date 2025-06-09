@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
-import { InlineHelp } from 'ui/components/InlineHelp';
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { A, CODE } from '~/ui/components/Text';
 
 export default function PrereleaseNotice({ children }: PropsWithChildren) {

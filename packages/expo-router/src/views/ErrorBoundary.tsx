@@ -1,7 +1,7 @@
 'use client';
-import type { LogBoxLog } from '@expo/metro-runtime/symbolicate';
+
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
-import { ComponentType, useContext, useEffect, useState } from 'react';
+import { use } from 'react';
 import { StyleSheet, Text, View, Platform, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,80 +9,6 @@ import { Pressable } from './Pressable';
 import { ErrorBoundaryProps } from './Try';
 import { Link } from '../link/Link';
 import { ReactServerError } from '../rsc/router/errors';
-
-let useMetroSymbolication: (error: Error) => LogBoxLog | null;
-
-if (process.env.NODE_ENV === 'development') {
-  const { LogBoxLog, parseErrorStack } =
-    require('@expo/metro-runtime/symbolicate') as typeof import('@expo/metro-runtime/symbolicate');
-  useMetroSymbolication = function (error: Error) {
-    const [logBoxLog, setLogBoxLog] = useState<LogBoxLog | null>(null);
-
-    useEffect(() => {
-      let isMounted = true;
-      const stack = parseErrorStack(error.stack);
-
-      const log = new LogBoxLog({
-        level: 'error',
-        message: {
-          content: error.message,
-          substitutions: [],
-        },
-        isComponentError: false,
-        stack,
-        category: error.message,
-        componentStack: [],
-      });
-
-      log.symbolicate('stack', () => {
-        if (isMounted) {
-          setLogBoxLog(log);
-        }
-      });
-
-      return () => {
-        isMounted = false;
-      };
-    }, [error]);
-
-    return logBoxLog;
-  };
-} else {
-  useMetroSymbolication = function () {
-    return null;
-  };
-}
-
-let StackTrace: ComponentType<{ logData: LogBoxLog | null }>;
-
-if (process.env.NODE_ENV === 'development') {
-  const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
-  const {
-    LogBoxInspectorStackFrames,
-  } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
-
-  StackTrace = function ({ logData }: { logData: LogBoxLog | null }) {
-    if (!logData?.symbolicated?.stack?.stack) {
-      return null;
-    }
-    return (
-      <ScrollView style={{ flex: 1 }}>
-        <LogContext.Provider
-          value={{
-            isDisabled: false,
-            logs: [logData],
-            selectedLogIndex: 0,
-          }}>
-          <LogBoxInspectorStackFrames onRetry={function () {}} type="stack" />
-        </LogContext.Provider>
-      </ScrollView>
-    );
-  };
-} else {
-  StackTrace = function () {
-    return <View style={{ flex: 1 }} />;
-  };
-}
 
 function StandardErrorView({ error }: { error: Error }) {
   return (
@@ -103,8 +29,7 @@ function StandardErrorView({ error }: { error: Error }) {
 }
 
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-  const logBoxLog = useMetroSymbolication(error);
-  const inTabBar = useContext(BottomTabBarHeightContext);
+  const inTabBar = use(BottomTabBarHeightContext);
   const Wrapper = inTabBar ? View : SafeAreaView;
 
   const isServerError = error instanceof ReactServerError;
@@ -112,16 +37,11 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
     <View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
         {isServerError ? (
-          <>
-            <ReactServerErrorView error={error} />
-            <View style={{ flex: 1 }} />
-          </>
+          <ReactServerErrorView error={error} />
         ) : (
-          <>
-            <StandardErrorView error={error} />
-            <StackTrace logData={logBoxLog} />
-          </>
+          <StandardErrorView error={error} />
         )}
+        <View style={{ flex: 1 }} />
 
         {process.env.NODE_ENV === 'development' && (
           <Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>

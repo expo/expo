@@ -103,11 +103,11 @@ Due to limitations on native, hosting with fake HTTPS is not currently supported
 
 The [`expo-constants`](/versions/latest/sdk/constants/) library can be used to access the **app.json** in-app. Behind the scenes, this is accomplished by setting `process.env.APP_MANIFEST` with the stringified contents of the **app.json** file.
 
-In Expo Router, this is done using Babel with the `expo-router/babel` in SDK 49 and lower and `babel-preset-expo` in SDK 50 and higher. If you modify the **app.json**, restart the Babel cache with `npx expo start --clear` to see the updates.
+In Expo Router, this is done using Babel with the `babel-preset-expo`. If you modify the **app.json**, restart the Babel cache with `npx expo start --clear` to see the updates.
 
 ## Base path and subpath hosting
 
-> Experimental functionality. It will be available from SDK 50.
+> **important** Experimental functionality.
 
 In `@expo/webpack-config`, you could bundle your website to be hosted from a subpath by using the `PUBLIC_URL` environment variable or the `homepage` field in the project's **package.json**:
 
@@ -161,7 +161,7 @@ Like `@expo/webpack-config`, Expo Router supports generating the **favicon.ico**
 
 ## Service workers
 
-> **warning:** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker that aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
+> **warning** Be careful adding service workers as they are known to cause unexpected behavior on web. If you accidentally ship a service worker that aggressively caches your website, users cannot request updates easily. For the best offline mobile experience, create a native app with Expo. Unlike websites with service workers, native apps can be updated through the app store to clear the cached experience. This would be similar to resetting the user's native browser (which they may have to do if the service worker is aggressive enough). See [why service workers are suboptimal](https://github.com/facebook/create-react-app/issues/2398) for more information.
 
 Expo Webpack didn't have built-in service worker support. However, you could add it yourself by using the `workbox-webpack-plugin` and adding it to the **webpack.config.js**.
 

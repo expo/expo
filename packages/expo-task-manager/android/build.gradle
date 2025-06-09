@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '13.1.3'
+version = '13.1.5'
 
 android {
   namespace "expo.modules.taskmanager"
   defaultConfig {
     versionCode 23
-    versionName "13.1.3"
+    versionName "13.1.5"
   }
 }
 

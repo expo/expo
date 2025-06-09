@@ -2,17 +2,25 @@
 
 import Expo
 import FirebaseCore
+import ReactAppDependencyProvider
+
 
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    self.moduleName = "main"
-    self.initialProps = [:]
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoGoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
 
-    // Tell `ExpoAppDelegate` to skip calling the React Native instance setup from `RCTAppDelegate`.
-    self.automaticallyLoadReactNativeWindow = false
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+    bindReactNativeFactory(factory)
 
     FirebaseApp.configure()
 
@@ -22,14 +30,6 @@ class AppDelegate: ExpoAppDelegate {
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  override func bundleURL() -> URL? {
-#if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
-#else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
   }
 
   override func applicationWillEnterForeground(_ application: UIApplication) {
@@ -51,5 +51,19 @@ class AppDelegate: ExpoAppDelegate {
     window.rootViewController = rootViewController
 
     window.makeKeyAndVisible()
+  }
+}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
   }
 }

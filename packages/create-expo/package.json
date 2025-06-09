@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "3.3.3",
+  "version": "3.4.2",
   "bin": "./build/index.js",
   "main": "build",
   "description": "Create universal Expo apps",
@@ -37,9 +37,9 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~11.0.3",
-    "@expo/json-file": "^9.1.2",
-    "@expo/package-manager": "^1.8.2",
+    "@expo/config": "~11.0.10",
+    "@expo/json-file": "^9.1.4",
+    "@expo/package-manager": "^1.8.4",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
@@ -51,8 +51,8 @@
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^4.1.2",
-    "getenv": "^1.0.0",
+    "expo-module-scripts": "^4.1.7",
+    "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "nock": "^14.0.0-beta.7",
     "ora": "3.4.0",

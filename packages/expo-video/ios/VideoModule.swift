@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import AVKit
 
 public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
@@ -121,11 +122,10 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      Constructor { (source: VideoSource?) -> VideoPlayer in
+      Constructor { (source: VideoSource?, useSynchronousReplace: Bool?) -> VideoPlayer in
+        let useSynchronousReplace = useSynchronousReplace ?? false
         let player = AVPlayer()
-        let videoPlayer = VideoPlayer(player)
-
-        try videoPlayer.replaceCurrentItem(with: source)
+        let videoPlayer = try VideoPlayer(player, initialSource: source, useSynchronousReplace: useSynchronousReplace)
         player.pause()
         return videoPlayer
       }
@@ -163,14 +163,11 @@ public final class VideoModule: Module {
       }
 
       Property("currentTime") { player -> Double in
-        let currentTime = player.ref.currentTime().seconds
-        return currentTime.isNaN ? 0 : currentTime
+        return player.currentTime
       }
       .set { (player, time: Double) in
         // Only clamp the lower limit, AVPlayer automatically clamps the upper limit.
-        let clampedTime = max(0, time)
-        let timeToSeek = CMTimeMakeWithSeconds(clampedTime, preferredTimescale: .max)
-        player.ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
+        player.currentTime = time
       }
 
       Property("currentLiveTimestamp") { player -> Double? in
@@ -274,6 +271,17 @@ public final class VideoModule: Module {
         player.subtitles.selectSubtitleTrack(subtitleTrack: subtitleTrack)
       }
 
+      Property("availableAudioTracks") { player -> [AudioTrack] in
+        return player.audioTracks.availableAudioTracks
+      }
+
+      Property("audioTrack") { player -> AudioTrack? in
+        return player.audioTracks.currentAudioTrack
+      }
+      .set { player, audioTrack in
+        player.audioTracks.selectAudioTrack(audioTrack: audioTrack)
+      }
+
       Function("play") { player in
         player.ref.play()
       }
@@ -283,19 +291,13 @@ public final class VideoModule: Module {
       }
 
       Function("replace") { (player, source: Either<String, VideoSource>?) in
-        guard let source else {
-          try player.replaceCurrentItem(with: nil)
-          return
-        }
-        var videoSource: VideoSource?
-
-        if source.is(String.self), let url: String = source.get() {
-          videoSource = VideoSource(uri: URL(string: url))
-        } else if source.is(VideoSource.self) {
-          videoSource = source.get()
-        }
-
+        let videoSource = parseSource(source: source)
         try player.replaceCurrentItem(with: videoSource)
+      }
+
+      AsyncFunction("replaceAsync") { (player, source: Either<String, VideoSource>?) in
+        let videoSource = parseSource(source: source)
+        try await player.replaceCurrentItem(with: videoSource)
       }
 
       Function("seekBy") { (player, seconds: Double) in
@@ -338,5 +340,18 @@ public final class VideoModule: Module {
     OnAppEntersForeground {
       VideoManager.shared.onAppForegrounded()
     }
+  }
+
+  private func parseSource(source: Either<String, VideoSource>?) -> VideoSource? {
+    guard let source else {
+      return nil
+    }
+    if source.is(String.self), let url: String = source.get() {
+      return VideoSource(uri: URL(string: url))
+    }
+    if source.is(VideoSource.self) {
+      return source.get()
+    }
+    return nil
   }
 }

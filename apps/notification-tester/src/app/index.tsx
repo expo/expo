@@ -9,7 +9,7 @@ export default function IndexPage() {
   return (
     <ScrollView contentContainerStyle={{ rowGap: 10, padding: 10 }}>
       <Button title="Run on-device tests" onPress={() => router.push('/run')} />
-      <Button title="Go to notification utils" onPress={() => router.push('/utilities')} />
+      <Button title="Go to notification playground" onPress={() => router.push('/utilities')} />
       <Button title="Go to test scenarios" onPress={() => router.push('/scenarios')} />
       <Notifier />
     </ScrollView>

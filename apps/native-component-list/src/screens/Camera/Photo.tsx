@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import * as VideoThumbnails from 'expo-video-thumbnails';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
 const pictureSize = 150;
@@ -17,38 +17,30 @@ type Props = {
   onSelectionToggle: (uri: string, selected: boolean) => void;
 };
 
-export default class Photo extends React.Component<Props, State> {
-  readonly state: State = {
+export default function Photo({ uri, onSelectionToggle }: Props) {
+  const [state, setState] = React.useState<State>({
     selected: false,
     uri: undefined,
     isVideo: false,
-  };
-  _mounted = false;
+  });
 
-  componentDidMount() {
-    this._mounted = true;
-
-    if (this.props.uri.endsWith('jpg') || this.props.uri.endsWith('png')) {
-      this.setState(() => ({ uri: this.props.uri }));
+  useEffect(() => {
+    if (uri.endsWith('jpg') || uri.endsWith('png')) {
+      setState((state) => ({ ...state, uri }));
     } else {
-      this.getVideoThumbnail(this.props.uri).then((uri) =>
-        this.setState(() => ({ uri, isVideo: true }))
-      );
+      getVideoThumbnail(uri).then((uri) => setState((state) => ({ ...state, uri, isVideo: true })));
     }
-  }
+  }, []);
 
-  componentWillUnmount() {
-    this._mounted = false;
-  }
-
-  toggleSelection = () => {
-    this.setState(
-      (state) => ({ selected: !state.selected }),
-      () => this.props.uri && this.props.onSelectionToggle(this.props.uri, this.state.selected)
-    );
+  const toggleSelection = () => {
+    setState((prevState) => {
+      const newSelected = !prevState.selected;
+      uri && onSelectionToggle(uri, newSelected);
+      return { ...prevState, selected: newSelected };
+    });
   };
 
-  getVideoThumbnail = async (videoUri: string) => {
+  const getVideoThumbnail = async (videoUri: string) => {
     try {
       const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, { time: 250 });
       return uri;
@@ -58,21 +50,15 @@ export default class Photo extends React.Component<Props, State> {
     }
   };
 
-  render() {
-    const { uri } = this.state;
-    return (
-      <TouchableOpacity
-        style={styles.pictureWrapper}
-        onPress={this.toggleSelection}
-        activeOpacity={1}>
-        {uri && <Image style={styles.picture} source={{ uri }} />}
-        {this.state.isVideo && (
-          <Ionicons name="videocam" size={24} color="#ffffffbb" style={styles.videoIcon} />
-        )}
-        {this.state.selected && <Ionicons name="checkmark-circle" size={30} color="#4630EB" />}
-      </TouchableOpacity>
-    );
-  }
+  return (
+    <TouchableOpacity style={styles.pictureWrapper} onPress={toggleSelection} activeOpacity={1}>
+      {uri && <Image style={styles.picture} source={{ uri: state.uri }} />}
+      {state.isVideo && (
+        <Ionicons name="videocam" size={24} color="#ffffffbb" style={styles.videoIcon} />
+      )}
+      {state.selected && <Ionicons name="checkmark-circle" size={30} color="#4630EB" />}
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({

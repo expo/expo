@@ -4,21 +4,33 @@ sidebar_title: Introduction
 description: Why use development builds and how to get started.
 searchRank: 98
 searchPosition: 1
+hideTOC: true
+hasVideoLink: true
 ---
 
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Step } from '~/ui/components/Step';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-When you created your first React Native project with `npx create-expo-app` and ran it with `npx expo start`, you most likely started off using the [Expo Go](https://expo.dev/go) app for development. Expo Go is a native app that we (as in Expo) built and submitted to the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) and [Apple App Store](https://apps.apple.com/us/app/expo-go/id982107779) so you could get coding quickly. It is a sandbox app with a number of native libraries included within (see the [dependencies list](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23)). This means that developers may update their app's JavaScript code on their local machine and see the changes on Expo Go.
+**Development build** is the term that we use for a "Debug" build of an app that includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. This library augments the built-in React Native development tooling with additional capabilities, such as support for inspecting network requests and a "launcher" UI that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with EAS Update).
 
-A React Native app consists of two parts: the **native app (Expo Go)** and the **JavaScript bundle (`npx expo start`)**.
+<Collapsible summary="Difference between Expo Go and development builds">
+
+When you create your first React Native project with `npx create-expo-app` and ran it with `npx expo start`, you most likely start off using the [Expo Go](https://expo.dev/go) app for development. Expo Go is a native app that the Expo team built and submitted to the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) and [Apple App Store](https://apps.apple.com/us/app/expo-go/id982107779) so you can get coding quickly. It is a sandbox app with a number of native libraries included within (see the [dependencies list](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23)). This means that developers may update their app's JavaScript code on their local machine and see the changes on Expo Go.
+
+A React Native app consists of two parts: the **native app (Expo Go)** and the **JavaScript bundle (`npx expo start`)**. It is immutable and when you're using the Expo Go app for development, you can only rely on the native code and tools that exist in Expo Go. The only way to get around it is to build your native app yourself instead of using Expo's pre-packaged sandbox. This is exactly what a **Development Build is, your own version of Expo Go**, where you are free to use any native libraries and change any native config.
+
+</Collapsible>
+
+<Collapsible summary="Native app and JavaScript bundle">
 
 The **native app (Expo Go)** is immutable once installed. Native build tools are required to create this bundle, and it needs to be signed to be installable on real devices. To add a new library with native code or change metadata that is shipped with the app (for example app name, icon, splash screen) the app needs to be rebuilt and re-installed on the device.
 
 The **JavaScript bundle (`npx expo start`)** is where your app's UI code and business logic are. In production apps, there is one **main.js** bundle that is shipped with the app itself. In development, this JS bundle is live reloaded from your local machine. The main role of React Native is to provide a way for the JavaScript code to access the native APIs (Image, Camera, Notifications, and more). However, only APIs and libraries that were bundled in the **native app** can be used.
 
-Since the native app bundle is immutable, this means that when you're using the Expo Go app for development, you can only rely on the native code and tools that exist in Expo Go. The only way to get around it is to build your native app yourself instead of using Expo's pre-packaged sandbox. This is exactly what a **Development Build is, your own version of Expo Go**, where you are free to use any native libraries and change any native config.
+</Collapsible>
 
 <VideoBoxLink
   videoId="FdjczjkwQKE"
@@ -30,54 +42,59 @@ Since the native app bundle is immutable, this means that when you're using the 
 
 Expo Go is the perfect tool for learning, prototyping, and experimenting, but most production apps will convert to using development builds sooner rather than later. It helps to know exactly what is _impossible_ in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
 
-### Use libraries with native code that aren't in Expo Go
+<Collapsible summary="Use libraries with native code that aren't in Expo Go">
 
 Consider [`react-native-webview`](/versions/latest/sdk/webview/) as an example, a library that contains native code, but [is included in Expo Go](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23). When you run `npx expo install react-native-webview` command in your project, it will install the library in your **node_modules** directory, which includes both the JS code and the native code. But the JS bundle you are building _only_ uses the JS code. Then, your JS bundle gets uploaded to Expo Go, and it interacts with the native code that was already bundled with the app.
 
 Instead, when you try to use a library that is not included, for example, [`react-native-firebase`](/guides/using-firebase/#using-react-native-firebase), then you can use the JS code and hot reload the new bundle into Expo Go but it will immediately error because the JS code tries to call the native code from the React Native Firebase package that does not exist in Expo Go. There is no way to get the native code into the Expo Go app unless it was already included in the bundle that was uploaded to the app stores.
 
-### Test changes in app icon, name, splash screen
+</Collapsible>
+
+<Collapsible summary="Test changes in app icon, name, splash screen">
 
 If you're developing your app in Expo Go only, you can build a store version that will use your provided values and images; it just won't be possible to test it in Expo Go.
 
 These native assets are shipped with the native bundle and are immutable once the app is installed. The Expo Go app does show a splash screen, which is your app icon on a solid color background. This is a dev-only emulation to view how the splash screen will probably look. However, it is limited, for example, you cannot test `SplashScreen.setOptions` to animate the splash screen.
 
-### Remote push notifications
+</Collapsible>
+
+<Collapsible summary="Remote push notifications">
 
 While [in-app notifications](/versions/latest/sdk/notifications/) are available in Expo Go, remote push notifications (that is, sending a push notification from a server to the app) are not. This is because a push notification service should be tied to your own push notification certificates, and while it is possible to make it work in Expo Go, it often causes confusion for production builds. It is recommended to test remote push notifications in development builds so you can ensure parity in behavior between development and production.
 
-### App/Universal links
+</Collapsible>
+
+<Collapsible summary="Implementing App/Universal links">
 
 Both [Android App Links](/linking/android-app-links/) and [iOS Universal Links](/linking/ios-universal-links/) require a two-way association between the native app and the website. In particular, it requires the native app to include the linked website's URL. This is impossible with Expo Go due to the aforementioned native code immutability.
 
-### Open projects using older SDKs (iOS device only)
+</Collapsible>
+
+<Collapsible summary="Open projects using older SDKs (iOS device only)">
 
 Expo Go can only support one SDK version at a time. When a new SDK version is released, Expo Go is updated to support the newer version, and this will be the only version of Expo Go available to install from the stores.
 
 If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
 
-## How to convert from Expo Go to a development build
+</Collapsible>
 
-To migrate from Expo Go to a development build, you'll need to:
-
-<Step label="1">
-
-### Install the `expo-dev-client`
-
-The Expo Dev Client library includes the launcher UI (shown in the screenshots below), dev menu, extensions to test updates, and more. The Expo Go app has the dev menu built in, and that's why you need to install it separately for a development build.
-
-<ContentSpotlight
-  alt="expo-dev-client launcher and menu UIs on Android and iOS."
-  src="/static/images/dev-client/preview.png"
-  caption={`When you run a development build it will look like this, only with your app name and icon included rather than "Microfoam". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
+<BoxLink
+  title="Expo Go to development build"
+  description="Learn how to migrate an existing Expo Go project to using development builds"
+  href="/develop/development-builds/expo-go-to-dev-build/"
+  Icon={BookOpen02Icon}
 />
 
-</Step>
+<BoxLink
+  title="Local app development"
+  description="How to build a development client on your local machine"
+  href="/guides/local-app-development"
+  Icon={BookOpen02Icon}
+/>
 
-<Step label="2">
-
-### Build your native app using native build tools
-
-The details on how to build the native app are platform-dependent and are covered in the [next guide](/develop/development-builds/create-a-build).
-
-</Step>
+<BoxLink
+  title="Development builds on EAS"
+  description="How to build a development client on EAS"
+  href="/develop/development-builds/create-a-build/"
+  Icon={BookOpen02Icon}
+/>

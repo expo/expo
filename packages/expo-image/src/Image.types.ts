@@ -1,5 +1,5 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
+import { ImageStyle as RNImageStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 

@@ -16,14 +16,12 @@ import {
   type PluginObj,
   type PluginPass,
 } from '@babel/core';
-// @ts-expect-error: missing types
-import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { Scope as BabelScope } from '@babel/traverse';
 import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
-import url, { pathToFileURL } from 'node:url';
+import url from 'node:url';
 
-import { getPossibleProjectRoot } from './common';
+import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
 
 const debug = require('debug')('expo:babel:server-actions');
 
@@ -263,7 +261,7 @@ export function reactServerActionsPlugin(
 
       getActionModuleId = once(() => {
         // Create relative file path hash.
-        return pathToFileURL(getRelativePath(projectRoot, file.opts.filename!)).href;
+        return './' + toPosixPath(getRelativePath(projectRoot, file.opts.filename!));
       });
 
       const defineBoundArgsWrapperHelper = once(() => {
@@ -799,38 +797,7 @@ function assertExpoMetadata(metadata: any): asserts metadata is {
   }
 }
 
-const getOrCreateInMap = <K, V>(
-  map: Map<K, V>,
-  key: K,
-  create: () => V
-): [value: V, didCreate: boolean] => {
-  if (!map.has(key)) {
-    const result = create();
-    map.set(key, result);
-    return [result, true];
-  }
-  return [map.get(key)!, false];
-};
-
 function hasUseServerDirective(path: FnPath) {
   const { body } = path.node;
   return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
 }
-
-const createAddNamedImportOnce = (t: typeof import('@babel/types')) => {
-  const addedImportsCache = new Map<string, Map<string, t.Identifier>>();
-  return function addNamedImportOnce(path: NodePath<t.Node>, name: string, source: string) {
-    const [sourceCache] = getOrCreateInMap(
-      addedImportsCache,
-      source,
-      () => new Map<string, t.Identifier>()
-    );
-    const [identifier, didCreate] = getOrCreateInMap(sourceCache, name, () =>
-      addNamedImport(path, name, source)
-    );
-    // for cached imports, we need to clone the resulting identifier, because otherwise
-    // '@babel/plugin-transform-modules-commonjs' won't replace the references to the import for some reason.
-    // this is a helper for that.
-    return didCreate ? identifier : t.cloneNode(identifier);
-  };
-};

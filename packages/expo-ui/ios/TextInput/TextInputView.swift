@@ -1,7 +1,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-class TextInputProps: ExpoSwiftUI.ViewProps {
+final class TextInputProps: ExpoSwiftUI.ViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
@@ -50,9 +50,8 @@ func allowMultiLine() -> Bool {
   #endif
 }
 
-struct TextInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct TextInputView: ExpoSwiftUI.View {
   @ObservedObject var props: TextInputProps
-  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State private var value: String = ""
 
   init(props: TextInputProps) {
@@ -60,24 +59,23 @@ struct TextInputView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   }
 
   var body: some View {
-    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .vertical) {
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        TextField(
-          props.placeholder,
-          text: $value,
-          axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
-        )
-          .lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
-          .onAppear { value = props.defaultValue }
-          .onChange(of: value) { newValue in
-            props.onValueChanged(["value": newValue])
-          }
-          .keyboardType(getKeyboardType(props.keyboardType))
-          .autocorrectionDisabled(!props.autocorrection)
-      } else {
-        // Fallback on earlier versions
-        Text("Unsupported iOS version. Please update your iOS version to use this feature.")
-      }
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      TextField(
+        props.placeholder,
+        text: $value,
+        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
+      )
+        .lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
+        .fixedSize(horizontal: false, vertical: true)
+        .onAppear { value = props.defaultValue }
+        .onChange(of: value) { newValue in
+          props.onValueChanged(["value": newValue])
+        }
+        .keyboardType(getKeyboardType(props.keyboardType))
+        .autocorrectionDisabled(!props.autocorrection)
+    } else {
+      // Fallback on earlier versions
+      Text("Unsupported iOS version. Please update your iOS version to use this feature.")
     }
   }
 }

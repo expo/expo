@@ -43,7 +43,7 @@ export default function VideoDRMScreen() {
         selectedValue={currentSourceIndex}
         onValueChange={(value: number) => {
           setCurrentSourceIndex(value);
-          player.replace(videoSources[value]);
+          player.replaceAsync(videoSources[value]);
         }}>
         {videoSources.map((source, index) => (
           <Picker.Item key={index} label={labels[index]} value={index} />

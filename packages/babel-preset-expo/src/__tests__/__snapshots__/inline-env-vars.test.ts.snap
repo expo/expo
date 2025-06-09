@@ -1,18 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`does not inline environment variables 1`] = `
-"
-var foo = process.env.JEST_WORKER_ID;
-process.env.ABC;
-console.log(process.env.NODE_ENV);
-console.log(process.env.EXPO_PUBLIC_NODE_ENV);
-process.env.EXPO_PUBLIC_FOO;
-
-env.EXPO_PUBLIC_URL;
-
-process.env['other'];"
-`;
-
 exports[`inlines environment variables 1`] = `
 "
 var foo = process.env.JEST_WORKER_ID;
@@ -24,4 +11,35 @@ console.log("development");
 env.EXPO_PUBLIC_URL;
 
 process.env['other'];"
+`;
+
+exports[`inlines environment variables in development 1`] = `
+"var _env2 = require("expo/virtual/env");
+var foo = process.env.JEST_WORKER_ID;
+process.env.ABC;
+console.log(process.env.NODE_ENV);
+console.log(_env2.env.EXPO_PUBLIC_NODE_ENV);
+_env2.env.EXPO_PUBLIC_FOO;
+
+env.EXPO_PUBLIC_URL;
+
+process.env['other'];"
+`;
+
+exports[`inlines environment variables in development 2`] = `
+{
+  "code": "var _env2 = require("expo/virtual/env");
+var foo = _env2.env.EXPO_PUBLIC_URL;
+
+function App() {
+  console.log(_env2.env.EXPO_PUBLIC_NODE_ENV);
+}",
+  "hasCjsExports": undefined,
+  "metadata": {
+    "publicEnvVars": [
+      "EXPO_PUBLIC_URL",
+      "EXPO_PUBLIC_NODE_ENV",
+    ],
+  },
+}
 `;

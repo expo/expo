@@ -38,6 +38,11 @@ public class RemoteMessageSerializer {
 
   private static Bundle toBundle(Map<String, String> data) {
     Bundle serializedData = new Bundle();
+    // we put the dataString in the bundle to achieve a cross-platform behavior
+    // users can call JSON.parse() on the dataString to get the data in JS.
+    // Converting to Bundle which would seem to be the equivalent of JSON.parse
+    // lacks some dynamic properties of JSON.parse so we don't do it.
+    serializedData.putString("dataString", data.getOrDefault("body", null));
     for (Map.Entry<String, String> dataEntry : data.entrySet()) {
       serializedData.putString(dataEntry.getKey(), dataEntry.getValue());
     }

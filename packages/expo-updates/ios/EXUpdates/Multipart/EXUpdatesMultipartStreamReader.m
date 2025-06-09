@@ -35,7 +35,7 @@
   return headers;
 }
 
-- (void)emitChunk:(NSData *)data headers:(NSDictionary *)headers callback:(RCTMultipartCallback)callback done:(BOOL)done
+- (void)emitChunk:(NSData *)data headers:(NSDictionary *)headers callback:(EXMultipartCallback)callback done:(BOOL)done
 {
   NSData *marker = [CRLF CRLF dataUsingEncoding:NSUTF8StringEncoding];
   NSRange range = [data rangeOfData:marker options:0 range:NSMakeRange(0, data.length)];
@@ -54,7 +54,7 @@
   }
 }
 
-- (BOOL)readAllPartsWithCompletionCallback:(RCTMultipartCallback)callback
+- (BOOL)readAllPartsWithCompletionCallback:(EXMultipartCallback)callback
 {
   NSInteger chunkStart = 0;
   NSInteger bytesSeen = 0;

@@ -1,24 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.INTERNAL_SLOT_NAME = void 0;
 exports.getNavigationConfig = getNavigationConfig;
 exports.getLinkingConfig = getLinkingConfig;
 const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
+const constants_1 = require("./constants");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
+const getRoutesRedirects_1 = require("./getRoutesRedirects");
 const linking_1 = require("./link/linking");
-exports.INTERNAL_SLOT_NAME = '__root';
 function getNavigationConfig(routes, metaOnly = true) {
     return {
         screens: {
-            [exports.INTERNAL_SLOT_NAME]: {
+            [constants_1.INTERNAL_SLOT_NAME]: {
                 path: '',
                 ...(0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly),
             },
         },
     };
 }
-function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, redirects } = {}) {
+function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -29,7 +29,6 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
         ? context(nativeLinkingKey)
         : undefined;
     const config = getNavigationConfig(routes, metaOnly);
-    const boundGetStateFromPath = linking_1.getStateFromPath.bind(store);
     return {
         prefixes: [],
         config,
@@ -48,14 +47,14 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
                 else {
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
-                        initialUrl = store.applyRedirects(initialUrl);
+                        initialUrl = (0, getRoutesRedirects_1.applyRedirects)(initialUrl, redirects);
                         if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }
                     else if (initialUrl) {
                         initialUrl = initialUrl.then((url) => {
-                            url = store.applyRedirects(url);
+                            url = (0, getRoutesRedirects_1.applyRedirects)(url, redirects);
                             if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
                             }
@@ -67,8 +66,10 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl, 
             }
             return initialUrl;
         },
-        subscribe: (0, linking_1.addEventListener)(nativeLinking, store),
-        getStateFromPath: boundGetStateFromPath,
+        subscribe: (0, linking_1.subscribe)(nativeLinking, redirects),
+        getStateFromPath: (path, options) => {
+            return (0, linking_1.getStateFromPath)(path, options, getRouteInfo().segments);
+        },
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {
                 ...config,

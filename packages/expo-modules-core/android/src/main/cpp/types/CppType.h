@@ -22,11 +22,13 @@ enum CppType {
   UINT8_TYPED_ARRAY = 1 << 10,
   TYPED_ARRAY = 1 << 11,
   PRIMITIVE_ARRAY = 1 << 12,
-  LIST = 1 << 13,
-  MAP = 1 << 14,
-  VIEW_TAG = 1 << 15,
-  SHARED_OBJECT_ID = 1 << 16,
-  JS_FUNCTION = 1 << 17,
-  ANY = 1 << 18
+  ARRAY = 1 << 13,
+  LIST = 1 << 14,
+  MAP = 1 << 15,
+  VIEW_TAG = 1 << 16,
+  SHARED_OBJECT_ID = 1 << 17,
+  JS_FUNCTION = 1 << 18,
+  ANY = 1 << 19,
+  NULLABLE = 1 << 20,
 };
 } // namespace expo

@@ -68,6 +68,14 @@ export declare class Directory {
      */
     list(): (Directory | File)[];
 }
+export type DownloadOptions = {
+    /**
+     * The headers to send with the request.
+     */
+    headers?: {
+        [key: string]: string;
+    };
+};
 /**
  * Represents a file on the file system.
  */
@@ -147,7 +155,7 @@ export declare class File {
      * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
      * ```
      */
-    static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
+    static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
     /**
      * A size of the file in bytes. Null if the file does not exist, or it cannot be read.
      */

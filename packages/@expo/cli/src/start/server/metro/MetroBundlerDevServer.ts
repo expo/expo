@@ -821,7 +821,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
           Object.fromEntries(
             Array.from(ssrManifest.entries()).map(([key, value]) => [
-              path.join(serverRoot, key),
+              // Must match babel plugin.
+              './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
               [key, value],
             ])
           )
@@ -1529,42 +1530,54 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       let delta: DeltaResult;
       let revision: GraphRevision;
 
-      // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
-      // We should resolve the bug because it results in ~6x faster bundling to reuse the graph revision.
-      if (transformOptions.customTransformOptions?.environment === 'react-server') {
-        const props = await this.metro.getBundler().initializeGraph(
-          // NOTE: Using absolute path instead of relative input path is a breaking change.
-          // entryFile,
-          resolvedEntryFilePath,
+      try {
+        // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
+        // We should resolve the bug because it results in ~6x faster bundling to reuse the graph revision.
+        if (transformOptions.customTransformOptions?.environment === 'react-server') {
+          const props = await this.metro.getBundler().initializeGraph(
+            // NOTE: Using absolute path instead of relative input path is a breaking change.
+            // entryFile,
+            resolvedEntryFilePath,
 
-          transformOptions,
-          resolverOptions,
-          {
-            onProgress,
-            shallow: graphOptions.shallow,
-            lazy: graphOptions.lazy,
+            transformOptions,
+            resolverOptions,
+            {
+              onProgress,
+              shallow: graphOptions.shallow,
+              lazy: graphOptions.lazy,
+            }
+          );
+          delta = props.delta;
+          revision = props.revision;
+        } else {
+          const props = await (revPromise != null
+            ? this.metro.getBundler().updateGraph(await revPromise, false)
+            : this.metro.getBundler().initializeGraph(
+                // NOTE: Using absolute path instead of relative input path is a breaking change.
+                // entryFile,
+                resolvedEntryFilePath,
+
+                transformOptions,
+                resolverOptions,
+                {
+                  onProgress,
+                  shallow: graphOptions.shallow,
+                  lazy: graphOptions.lazy,
+                }
+              ));
+          delta = props.delta;
+          revision = props.revision;
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          // Space out build failures.
+          const cause = error.cause as undefined | { _expoImportStack?: string };
+          if (cause && '_expoImportStack' in cause) {
+            error.message += '\n\n' + cause._expoImportStack;
           }
-        );
-        delta = props.delta;
-        revision = props.revision;
-      } else {
-        const props = await (revPromise != null
-          ? this.metro.getBundler().updateGraph(await revPromise, false)
-          : this.metro.getBundler().initializeGraph(
-              // NOTE: Using absolute path instead of relative input path is a breaking change.
-              // entryFile,
-              resolvedEntryFilePath,
+        }
 
-              transformOptions,
-              resolverOptions,
-              {
-                onProgress,
-                shallow: graphOptions.shallow,
-                lazy: graphOptions.lazy,
-              }
-            ));
-        delta = props.delta;
-        revision = props.revision;
+        throw error;
       }
 
       bundlePerfLogger?.annotate({

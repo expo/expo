@@ -1,3 +1,5 @@
+'use client';
+
 import { createNavigatorFactory } from '@react-navigation/native';
 
 // `@react-navigation/native` does not expose the Screen or Group components directly, so we have to

@@ -9,6 +9,7 @@ import type {
   SubtitleTrack,
   AudioMixingMode,
   VideoTrack,
+  AudioTrack,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -80,6 +81,8 @@ export default class VideoPlayerWeb
   bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
   subtitleTrack: SubtitleTrack | null = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
   availableSubtitleTracks: SubtitleTrack[] = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+  audioTrack: AudioTrack | null = null; // Not supported on web. Dummy to match the interface.
+  availableAudioTracks: AudioTrack[] = []; // Not supported on web. Dummy to match the interface.
   videoTrack: VideoTrack | null = null; // Not supported on web. Dummy to match the interface.
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
 
@@ -303,6 +306,12 @@ export default class VideoPlayerWeb
     this.previousSrc = this.src;
     this.src = source;
     this.playing = true;
+  }
+
+  // The HTML5 player already offloads loading of the asset onto a different thread so we can keep the same
+  // implementation until `replace` is deprecated and removed.
+  async replaceAsync(source: VideoSource): Promise<void> {
+    return this.replace(source);
   }
 
   seekBy(seconds: number): void {

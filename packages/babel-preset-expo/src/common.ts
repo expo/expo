@@ -1,3 +1,7 @@
+import { type NodePath } from '@babel/core';
+// @ts-expect-error: missing types
+import { addNamed as addNamedImport } from '@babel/helper-module-imports';
+import * as t from '@babel/types';
 import { type ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 import path from 'node:path';
 
@@ -100,6 +104,11 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
+export function getMetroSourceType(caller?: any) {
+  assertExpoBabelCaller(caller);
+  return caller?.metroSourceType;
+}
+
 export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';
@@ -114,13 +123,12 @@ export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
 export function getInlineEnvVarsEnabled(caller?: any): boolean {
   assertExpoBabelCaller(caller);
   const isWebpack = getBundler(caller) === 'webpack';
-  const isDev = getIsDev(caller);
   const isServer = getIsServer(caller);
   const isNodeModule = getIsNodeModule(caller);
   const preserveEnvVars = caller?.preserveEnvVars;
-  // Development env vars are added in the serializer to avoid caching issues in development.
+  // Development env vars are added using references to enable HMR in development.
   // Servers have env vars left as-is to read from the environment.
-  return !isNodeModule && !isWebpack && !isDev && !isServer && !preserveEnvVars;
+  return !isNodeModule && !isWebpack && !isServer && !preserveEnvVars;
 }
 
 export function getAsyncRoutes(caller?: any): boolean {
@@ -135,4 +143,44 @@ export function getAsyncRoutes(caller?: any): boolean {
     return false;
   }
   return caller?.asyncRoutes ?? false;
+}
+
+const getOrCreateInMap = <K, V>(
+  map: Map<K, V>,
+  key: K,
+  create: () => V
+): [value: V, didCreate: boolean] => {
+  if (!map.has(key)) {
+    const result = create();
+    map.set(key, result);
+    return [result, true];
+  }
+  return [map.get(key)!, false];
+};
+
+export function createAddNamedImportOnce(t: typeof import('@babel/types')) {
+  const addedImportsCache = new Map<string, Map<string, t.Identifier>>();
+  return function addNamedImportOnce(path: NodePath<t.Node>, name: string, source: string) {
+    const [sourceCache] = getOrCreateInMap(
+      addedImportsCache,
+      source,
+      () => new Map<string, t.Identifier>()
+    );
+    const [identifier, didCreate] = getOrCreateInMap(sourceCache, name, () =>
+      addNamedImport(path, name, source)
+    );
+    // for cached imports, we need to clone the resulting identifier, because otherwise
+    // '@babel/plugin-transform-modules-commonjs' won't replace the references to the import for some reason.
+    // this is a helper for that.
+    return didCreate ? identifier : t.cloneNode(identifier);
+  };
+}
+
+const REGEXP_REPLACE_SLASHES = /\\/g;
+
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+export function toPosixPath(filePath: string): string {
+  return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }

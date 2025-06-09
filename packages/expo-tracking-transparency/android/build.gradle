@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '5.2.2'
+version = '5.2.4'
 
 android {
   namespace "expo.modules.trackingtransparency"
   defaultConfig {
     versionCode 1
-    versionName "5.2.2"
+    versionName "5.2.4"
   }
 }
 

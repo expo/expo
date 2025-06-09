@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 const fs = require('fs');
 
-const minKotlinVersion = '1.6.10';
-const maxKotlinVersion = '2.0.21';
+const minKotlinVersion = '2.0.0';
+const maxKotlinVersion = '2.1.20';
 
 const groupId = 'com.google.devtools.ksp';
 const artifactId = 'symbol-processing-gradle-plugin';

@@ -58,9 +58,6 @@ value class NotificationData(private val data: Map<String, String>) {
   val categoryId: String?
     get() = data["categoryId"]
 
-  val sticky: Boolean
-    get() = data["sticky"]?.toBoolean() ?: false
-
   val subText: String?
     get() = data["subtitle"]
 

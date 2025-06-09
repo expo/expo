@@ -153,58 +153,32 @@ export function updateModulesAppDelegateSwift(
     /^(class\s+AppDelegate\s*:\s*)UIResponder,\s*UIApplicationDelegate(\W+)/m,
     '$1ExpoAppDelegate$2'
   );
-  // Remove non-overridable properties
-  contents = contents.replace(/^\s*var window: UIWindow\?\n/m, '');
-  contents = contents.replace(/^\s*var reactNativeDelegate: ReactNativeDelegate\?\n/m, '');
-  contents = contents.replace(/^\s*var reactNativeFactory: RCTReactNativeFactory\?\n/m, '');
   // Add `override` keyword and return super call to didFinishLaunchingWithOptions
   contents = contents.replace(
     /\b(func application\([\s\S]+?didFinishLaunchingWithOptions launchOptions[\s\S]+?\{[\s\S]+?)(return true)([\s\S]+?\})/m,
     'override $1return super.application(application, didFinishLaunchingWithOptions: launchOptions)$3'
   );
-  // Remove implementation in didFinishLaunchingWithOptions,
-  // most of the code is not overridable from ExpoAppDelegate
-  contents = contents.replace(/^\s*let delegate = ReactNativeDelegate\(\)\n/m, '');
-  contents = contents.replace(
-    /^\s*let factory = RCTReactNativeFactory\(delegate: delegate\)\n/m,
-    ''
-  );
-  contents = contents.replace(/^\s*window = UIWindow\(frame: UIScreen\.main\.bounds\)\n/m, '');
-  contents = contents.replace(
-    /^\s*delegate.dependencyProvider = RCTAppDependencyProvider\(\)\n/m,
-    ''
-  );
-  contents = contents.replace(/^\s*reactNativeDelegate = delegate\n/m, '');
-  contents = contents.replace(/^\s*reactNativeFactory = factory\n/m, '');
-  contents = contents.replace(/^\s*window = UIWindow(frame: UIScreen.main.bounds)\n/m, '');
-  contents = contents.replace(
-    /^\s*factory\.startReactNative\([\s\S]+?withModuleName:\s*"(.+)",[\s\S]+?\)\n/m,
-    `\
-    self.moduleName = "$1"
-    self.initialProps = [:]`
-  );
-
-  // Remove derived `ReactNativeDelegate` class
-  contents = contents.replace(
-    /^class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate\s*?\{[\s\S]+?\n\}\n/m,
-    ''
-  );
-
-  // Add derived `bundleURL` in the `AppDelegate` class
-  if (!contents.match(/override func bundleURL\(\) -> URL\? \{/m)) {
+  // Add `bindReactNativeFactory`
+  if (!contents.match(/\bbindReactNativeFactory\(/)) {
     contents = contents.replace(
-      /^(class\s+AppDelegate:.+\{[\s\S]+)(\n\})/m,
+      /(\breactNativeFactory\s+?=\s+?factory$)/m,
       `$1
-
-  override func bundleURL() -> URL? {
-#if DEBUG
-    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-#else
-    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
-  }$2`
+    bindReactNativeFactory(factory)`
     );
   }
+
+  // Use Expo classes
+  contents = contents.replace(/\b(RCTReactNativeFactory)(\()/, 'ExpoReactNativeFactory$2');
+  contents = contents.replace(
+    /\bRCTDefaultReactNativeFactoryDelegate\b/,
+    'ExpoReactNativeFactoryDelegate'
+  );
+  contents = contents.replace(
+    /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+self\.bundleURL\(\))/m,
+    `$1\
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()`
+  );
 
   return contents;
 }

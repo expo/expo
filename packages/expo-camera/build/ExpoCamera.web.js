@@ -1,5 +1,5 @@
 import { CodedError } from 'expo-modules-core';
-import { forwardRef, useRef, useMemo, useImperativeHandle, } from 'react';
+import { useRef, useMemo, useImperativeHandle, } from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 import CameraManager from './ExpoCameraManager.web';
@@ -7,7 +7,7 @@ import { capture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
 import { useWebCameraStream } from './web/useWebCameraStream';
 import { useWebQRScanner } from './web/useWebQRScanner';
-const ExponentCamera = forwardRef(({ facing, poster, ...props }, ref) => {
+const ExponentCamera = ({ facing, poster, ref, ...props }) => {
     const video = useRef(null);
     const native = useWebCameraStream(video, facing, props, {
         onCameraReady() {
@@ -65,6 +65,23 @@ const ExponentCamera = forwardRef(({ facing, poster, ...props }, ref) => {
                 video.current.pause();
             }
         },
+        async stopRecording() {
+            console.warn('stopRecording is not supported on web.');
+        },
+        async record() {
+            console.warn('record is not supported on web.');
+            return { uri: '' };
+        },
+        async toggleRecording() {
+            console.warn('toggleRecording is not supported on web.');
+        },
+        async launchModernScanner() {
+            console.warn('launchModernScanner is not supported on web.');
+        },
+        async getAvailableLenses() {
+            console.warn('getAvailableLenses is not supported on web.');
+            return [];
+        },
     }), [native.mediaTrackSettings, props.onPictureSaved]);
     // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
     // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
@@ -81,12 +98,12 @@ const ExponentCamera = forwardRef(({ facing, poster, ...props }, ref) => {
         ];
     }, [native.type]);
     return (<View pointerEvents="box-none" style={[styles.videoWrapper, props.style]}>
-        <Video autoPlay playsInline muted={isMuted} poster={poster} pointerEvents={props.pointerEvents} ref={video} style={style}/>
-        {props.children}
-      </View>);
-});
+      <Video autoPlay playsInline muted={isMuted} poster={poster} pointerEvents={props.pointerEvents} ref={video} style={style}/>
+      {props.children}
+    </View>);
+};
 export default ExponentCamera;
-const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
+const Video = (props) => createElement('video', { ...props });
 const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,

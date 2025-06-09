@@ -24,10 +24,7 @@ You can use Expo Atlas with the local development server. This method allows Atl
 Once your app is running using the local development server on Android, iOS, and/or web, you can open Atlas through the [dev tools plugin menu](/debugging/devtools-plugins/#using-a-dev-tools-plugin) using <kbd>shift</kbd> + <kbd>m</kbd>.
 
 <Terminal
-  cmd={[
-    '# Start the local development server with Atlas',
-    '$ EXPO_UNSTABLE_ATLAS=true npx expo start',
-  ]}
+  cmd={['# Start the local development server with Atlas', '$ EXPO_ATLAS=true npx expo start']}
 />
 
 #### Changing development mode to production
@@ -37,7 +34,7 @@ By default, Expo starts the local development server in [development mode](/work
 <Terminal
   cmd={[
     '# Run the local development server in production mode',
-    '$ EXPO_UNSTABLE_ATLAS=true npx expo start --no-dev',
+    '$ EXPO_ATLAS=true npx expo start --no-dev',
   ]}
 />
 
@@ -48,7 +45,7 @@ You can also use Expo Atlas when generating a production bundle for your app or 
 <Terminal
   cmd={[
     '# Export your app for all platforms',
-    '$ EXPO_UNSTABLE_ATLAS=true npx expo export',
+    '$ EXPO_ATLAS=true npx expo export',
     '',
     '# Open the generated Atlas file',
     '$ npx expo-atlas .expo/atlas.jsonl',

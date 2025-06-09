@@ -32,7 +32,7 @@ For those familiar with advanced bundling techniques, the async routes feature i
 
 Enable the feature by setting the `asyncRoutes` option in the Expo Router config plugin of your [app config](/versions/latest/config/app/):
 
-    > SDK 50 and above supports production bundle splitting. Set `asyncRoutes` to `true` to enable it.
+    > Set `asyncRoutes` to `true` to enable production bundle splitting.
 
     ```json app.json
     {
@@ -82,8 +82,6 @@ Then, when you are about to start your project, you can use the `--clear` flag t
 />
 
 ## Static rendering
-
-> Bundle splitting with static rendering is only supported in SDK 50 and above.
 
 Static rendering is supported in production web apps by rendering all Suspense boundaries synchronously in Node.js, then linking all of async chunks together in the HTML based on all the selected routes for a given HTML file. This ensures you don't encounter a waterfall of loading states on server navigations. Subsequent navigations will recursively load any missing chunks.
 

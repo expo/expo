@@ -1,4 +1,4 @@
-import { Picker, Section as NativeSection } from '@expo/ui/swift-ui';
+import { Picker, PickerPrimitive, Section as NativeSection } from '@expo/ui/swift-ui';
 import * as React from 'react';
 import { ScrollView, Text } from 'react-native';
 
@@ -38,7 +38,7 @@ export default function PickerScreen() {
         </Section>
         <Section title="Inline picker">
           <NativeSection style={{ height: 300 }}>
-            <Picker
+            <PickerPrimitive
               options={options}
               selectedIndex={selectedIndex}
               onOptionSelected={({ nativeEvent: { index } }) => {

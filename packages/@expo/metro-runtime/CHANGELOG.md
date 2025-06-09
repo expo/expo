@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 5.0.4 — 2025-04-28
+
+### 💡 Others
+
+- Move virtual RSC client boundary entry point to `expo`. ([#36408](https://github.com/expo/expo/pull/36408) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove `/symbolicate` import. ([#36409](https://github.com/expo/expo/pull/36409) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.0.3 — 2025-04-28
+
+### 💡 Others
+
+- Remove `web-streams-polyfill` in favor of `expo` support. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 5.0.2 — 2025-04-14
 
 _This version does not introduce any user-facing changes._

@@ -40,17 +40,17 @@ The table below summarizes what happens when a push notification is delivered to
 | [Notification Message](/push-notifications/what-you-need-to-know/#notification-message) and [Notification Message with data payload](/push-notifications/what-you-need-to-know/#notification-message-with-data-payload) | delivery runs [`NotificationReceivedListener`](/versions/latest/sdk/notifications/#addnotificationreceivedlistenerlistener) and [JS task](/versions/latest/sdk/notifications/#registertaskasynctaskname) | OS shows notification                                                                  | OS shows notification                                                                  |
 | [Headless Background Notification](/push-notifications/what-you-need-to-know/#headless-background-notifications)                                                                                                        | delivery runs [`NotificationReceivedListener`](/versions/latest/sdk/notifications/#addnotificationreceivedlistenerlistener) and [JS task](/versions/latest/sdk/notifications/#registertaskasynctaskname) | delivery runs [JS task](/versions/latest/sdk/notifications/#registertaskasynctaskname) | delivery runs [JS task](/versions/latest/sdk/notifications/#registertaskasynctaskname) |
 
-For the cases when user interacts with the notification (for example by pressing an action button), the following handlers are made available to you.
+For the cases when the user interacts with the notification (for example, by pressing an action button), the following handlers are made available to you.
 
-| App state  | Listener(s) triggered                                                     |
-| ---------- | ------------------------------------------------------------------------- |
-| Foreground | `NotificationReceivedListener` and `NotificationResponseReceivedListener` |
-| Background | `NotificationResponseReceivedListener`                                    |
-| Terminated | `useLastNotificationResponse` or `getLastNotificationResponseAsync`       |
+| App state  | iOS Listener(s) triggered              | Android Listener(s) triggered                                                                                       |
+| ---------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Foreground | `NotificationResponseReceivedListener` | `NotificationResponseReceivedListener`                                                                              |
+| Background | `NotificationResponseReceivedListener` | `NotificationResponseReceivedListener` and [JS task](/versions/latest/sdk/notifications/#registertaskasynctaskname) |
+| Terminated | `NotificationResponseReceivedListener` | [JS task](/versions/latest/sdk/notifications/#registertaskasynctaskname)                                            |
 
-In the table above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
+In the table above, whenever `NotificationResponseReceivedListener` is triggered, also `useLastNotificationResponse` return value would change.
 
-> **info** When the app is not running or killed and is restarted by tapping on a notification, the `NotificationResponseReceivedListener` may or may not be triggered. To reliably capture the response, we recommend using `useLastNotificationResponse` or `getLastNotificationResponseAsync`. We plan to improve this behavior in a future release.
+> **info** When the app is not running or killed and is started by tapping on a notification, the `NotificationResponseReceivedListener` should be registered early (module top-level) to be triggered on iOS. For action buttons that bring the app to the foreground, we recommend to capture the response using `useLastNotificationResponse` or `getLastNotificationResponseAsync` after the app starts.
 
 ## Push Notification types
 
@@ -89,7 +89,7 @@ When you use the Expo Push Service, and specify only `data` and `_contentAvailab
 
 The rule of thumb is to prefer a regular Notification Message if you don't require running JavaScript in the background.
 
-\* The exception is when you specify `title` or `message` inside of [`data`](https://github.com/expo/expo-server-sdk-node/blob/88ed8fbfc1345f13911d8a8d30a5d8009aaa8892/src/ExpoClient.ts#L349). In that case, `expo-notifications` package automatically presents the headless notification on Android, but not on iOS. We plan to make this behavior more consistent across platforms in a future release.
+\* The exception is when you specify `title` or `message` inside of [`data`](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidConfig). In that case, `expo-notifications` package automatically presents the headless notification on Android, but not on iOS. We plan to make this behavior more consistent across platforms in a future release.
 
 ### Data-only notifications
 

@@ -6,7 +6,6 @@ import expo.modules.plugin.configuration.MavenRepo
 import expo.modules.plugin.configuration.Publication
 import org.gradle.api.Project
 import java.io.File
-import java.net.URI
 
 internal fun Project.applyPlugin(plugin: GradlePlugin) {
   plugins.apply(plugin.id)
@@ -37,7 +36,7 @@ internal fun Project.linkMavenRepository(mavenRepo: MavenRepo) {
   val (url, credentials, authentication) = mavenRepo
 
   repositories.maven { maven ->
-    maven.url = URI.create(url)
+    maven.setUrl(url)
     maven.applyCredentials(credentials)
     maven.applyAuthentication(authentication)
   }

@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-class SwitchProps: ExpoSwiftUI.ViewProps {
+final class SwitchProps: ExpoSwiftUI.ViewProps {
   @Field var value: Bool
   @Field var variant: String?
   @Field var label: String?
@@ -11,9 +11,8 @@ class SwitchProps: ExpoSwiftUI.ViewProps {
   var onValueChange = EventDispatcher()
 }
 
-struct SwitchView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+struct SwitchView: ExpoSwiftUI.View {
   @ObservedObject var props: SwitchProps
-  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   @State var checked: Bool = false
 
   init(props: SwitchProps) {
@@ -21,31 +20,29 @@ struct SwitchView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   }
 
   var body: some View {
-    ExpoSwiftUI.AutoSizingStack(shadowNodeProxy: shadowNodeProxy, axis: .both) {
-      Toggle(isOn: $checked, label: { props.label != nil ? Text(props.label ?? "") : nil })
-      .onChange(of: checked, perform: { newValue in
-        if props.value == newValue {
-          return
-        }
-        props.onValueChange([
-          "value": newValue
-        ])
-      })
-      .tint(props.color)
-      .onReceive(props.objectWillChange, perform: {
-        checked = props.value
-      })
-      .onAppear {
-        checked = props.value
+    Toggle(isOn: $checked, label: { props.label != nil ? Text(props.label ?? "") : nil })
+    .onChange(of: checked, perform: { newValue in
+      if props.value == newValue {
+        return
       }
-      #if !os(tvOS)
-      .if(props.variant == "button") {
-        $0.toggleStyle(.button)
-      }
-      #endif
-      .if(props.variant == "checkbox") {
-        $0.toggleStyle(IOSCheckboxToggleStyle())
-      }
+      props.onValueChange([
+        "value": newValue
+      ])
+    })
+    .tint(props.color)
+    .onReceive(props.objectWillChange, perform: {
+      checked = props.value
+    })
+    .onAppear {
+      checked = props.value
+    }
+    #if !os(tvOS)
+    .if(props.variant == "button") {
+      $0.toggleStyle(.button)
+    }
+    #endif
+    .if(props.variant == "checkbox") {
+      $0.toggleStyle(IOSCheckboxToggleStyle())
     }
   }
 }

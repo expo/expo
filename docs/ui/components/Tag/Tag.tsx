@@ -5,7 +5,7 @@ import { StatusTag } from './StatusTag';
 import { TagProps } from './types';
 
 export const Tag = ({ name, ...rest }: TagProps) => {
-  if (getPlatformName(name).length) {
+  if (getPlatformName(name).length > 0) {
     return <PlatformTag platform={name} {...rest} />;
   } else {
     return <StatusTag status={name} {...rest} />;

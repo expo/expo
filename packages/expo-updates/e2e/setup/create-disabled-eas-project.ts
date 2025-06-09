@@ -5,11 +5,11 @@ import path from 'path';
 
 import {
   initAsync,
+  repoRoot,
   setupUpdatesDisabledE2EAppAsync,
   transformAppJsonForUpdatesDisabledE2E,
 } from './project';
 
-const repoRoot = nullthrows(process.env.EXPO_REPO_ROOT, 'EXPO_REPO_ROOT is not defined');
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
@@ -25,7 +25,7 @@ const runtimeVersion = '1.0.0';
  */
 
 (async function () {
-  if (!process.env.EXPO_REPO_ROOT || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
+  if (!repoRoot || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
     throw new Error('Missing one or more environment variables; see instructions in e2e/README.md');
   }
   const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');

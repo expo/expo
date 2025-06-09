@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.WindowCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactInstanceEventListener
@@ -51,6 +52,8 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLaun
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    // Enables edge-to-edge
+    WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
 
     contentView = findViewById(android.R.id.content) ?: return

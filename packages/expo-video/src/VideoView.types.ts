@@ -10,6 +10,16 @@ import type { VideoPlayer } from './VideoPlayer.types';
  */
 export type VideoContentFit = 'contain' | 'cover' | 'fill';
 
+/**
+ * Describes the type of the surface used to render the video.
+ * - `surfaceView`: Uses the `SurfaceView` to render the video. This value should be used in the majority of cases. Provides significantly lower power consumption, better performance, and more features.
+ * - `textureView`: Uses the `TextureView` to render the video. Should be used in cases where the SurfaceView is not supported or causes issues (for example, overlapping video views).
+ *
+ * You can learn more about surface types in the official [ExoPlayer documentation](https://developer.android.com/media/media3/ui/playerview#surfacetype).
+ * @platform android
+ */
+export type SurfaceType = 'textureView' | 'surfaceView';
+
 export interface VideoViewProps extends ViewProps {
   /**
    * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup) hook to create one.
@@ -51,6 +61,14 @@ export interface VideoViewProps extends ViewProps {
   requiresLinearPlayback?: boolean;
 
   /**
+   * Determines the type of the surface used to render the video.
+   * > This prop should not be changed at runtime.
+   * @default 'surfaceView'
+   * @platform android
+   */
+  surfaceType?: SurfaceType;
+
+  /**
    * Determines the position offset of the video inside the container.
    * @default { dx: 0, dy: 0 }
    * @platform ios
@@ -82,6 +100,12 @@ export interface VideoViewProps extends ViewProps {
    * @platform web
    */
   allowsPictureInPicture?: boolean;
+
+  /**
+   * Determines whether a video should be played "inline", that is, within the element's playback area.
+   * @platform web
+   */
+  playsInline?: boolean;
 
   /**
    * Determines whether the player should start Picture in Picture (PiP) automatically when the app is in the background.
@@ -126,7 +150,16 @@ export interface VideoViewProps extends ViewProps {
    * Setting this property to `false` makes the Android behavior the same as iOS.
    *
    * @platform android
-   * @default true
+   * @default false
    */
   useExoShutter?: boolean;
+
+  /**
+   * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
+   * If undefined, does not use CORS at all.
+   *
+   * @platform web
+   * @default undefined
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
 }

@@ -6,6 +6,7 @@ description: Learn about rendering React DOM components in Expo native apps usin
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 > **info** Available in **SDK 52 and above**.
 
@@ -187,10 +188,10 @@ You can use the `useDOMImperativeHandle` hook inside a DOM component to accept r
 import { useRef } from 'react';
 import { Button, View } from 'react-native';
 
-import MyComponent, { type MyRef } from './my-component';
+import MyComponent, { type DOMRef } from './my-component';
 
 export default function App() {
-  const ref = useRef<MyRef>(null);
+  const ref = useRef<DOMRef>(null);
 
   return (
     <View style={{ flex: 1 }}>
@@ -205,6 +206,48 @@ export default function App() {
   );
 }
 ```
+
+<Tabs>
+
+<Tab label="SDK 53 and above">
+
+Expo SDK 53 and above use React 19. This means that the `ref` prop is passed to the component as a prop, and you can use it directly in the component.
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { Ref, useRef } from 'react';
+
+export interface DOMRef extends DOMImperativeFactory {
+  focus: () => void;
+}
+
+export default function MyComponent(props: {
+  ref: Ref<DOMRef>;
+  dom?: import('expo/dom').DOMProps;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useDOMImperativeHandle(
+    props.ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    []
+  );
+
+  return <input ref={inputRef} />;
+}
+```
+
+</Tab>
+
+<Tab label="SDK 52 and below">
+
+In Expo SDK 52 and below (React 18), use the legacy `forwardRef` function to access the `ref` handle.
 
 ```tsx my-component.tsx (web)
 'use dom';
@@ -232,6 +275,10 @@ export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
   return <input ref={inputRef} />;
 });
 ```
+
+</Tab>
+
+</Tabs>
 
 React is meant to have a unilateral data flow, so the concept of using callbacks to go back up the tree is not idiomatic. Expect the behavior to be flakey and possibly phased out in the future with newer versions of React. The preferred way to send data back up the tree is to use native actions, which update the state and then pass it back to the DOM component.
 

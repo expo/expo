@@ -53,6 +53,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     bufferOptions = {}; // Not supported on web. Dummy to match the interface.
     subtitleTrack = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
     availableSubtitleTracks = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+    audioTrack = null; // Not supported on web. Dummy to match the interface.
+    availableAudioTracks = []; // Not supported on web. Dummy to match the interface.
     videoTrack = null; // Not supported on web. Dummy to match the interface.
     availableVideoTracks = []; // Not supported on web. Dummy to match the interface.
     set muted(value) {
@@ -244,6 +246,11 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this.previousSrc = this.src;
         this.src = source;
         this.playing = true;
+    }
+    // The HTML5 player already offloads loading of the asset onto a different thread so we can keep the same
+    // implementation until `replace` is deprecated and removed.
+    async replaceAsync(source) {
+        return this.replace(source);
     }
     seekBy(seconds) {
         this._mountedVideos.forEach((video) => {

@@ -5,13 +5,13 @@ internal enum ActivationMethod: String, Enumerable {
   case longPress
 }
 
-internal class Submenu: Record, Identifiable {
+internal final class Submenu: Record, Identifiable {
   required init() { }
   @Field var elements: [ContextMenuElement]
   @Field var button: ButtonProps
 }
 
-internal class ContextMenuElement: Record, Identifiable {
+internal final class ContextMenuElement: Record, Identifiable {
   required init() { }
   @Field var button: ButtonProps?
   @Field var picker: PickerProps?
@@ -20,7 +20,7 @@ internal class ContextMenuElement: Record, Identifiable {
   @Field var contextMenuElementID: String?
 }
 
-internal class ContextMenuProps: ExpoSwiftUI.ViewProps {
+internal final class ContextMenuProps: ExpoSwiftUI.ViewProps {
   @Field var elements: [ContextMenuElement]
   var onContextMenuButtonPressed = EventDispatcher()
   var onContextMenuPickerOptionSelected = EventDispatcher()
@@ -28,8 +28,8 @@ internal class ContextMenuProps: ExpoSwiftUI.ViewProps {
   @Field var activationMethod: ActivationMethod? = .singlePress
 }
 
-internal class ContextMenuPreviewProps: ExpoSwiftUI.ViewProps {
+internal final class ContextMenuPreviewProps: ExpoSwiftUI.ViewProps {
 }
 
-internal class ContextMenuActivationElementProps: ExpoSwiftUI.ViewProps {
+internal final class ContextMenuActivationElementProps: ExpoSwiftUI.ViewProps {
 }

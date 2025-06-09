@@ -144,7 +144,7 @@ export class PlatformManager<
     if (!(await deviceManager.isAppInstalledAndIfSoReturnContainerPathForIOSAsync(applicationId))) {
       throw new CommandError(
         `No development build (${applicationId}) for this project is installed. ` +
-          `Please make and install a development build on the device first.\n${learnMore(
+          `Install a development build on the target device and try again.\n${learnMore(
             'https://docs.expo.dev/development/build/'
           )}`
       );

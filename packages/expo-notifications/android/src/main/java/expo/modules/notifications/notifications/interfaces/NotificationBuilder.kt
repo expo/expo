@@ -1,7 +1,7 @@
 package expo.modules.notifications.notifications.interfaces
 
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationBehavior
 
 /**
  * An object capable of building a [Notification] based
@@ -15,7 +15,7 @@ interface NotificationBuilder {
    * @param behavior [NotificationBehavior] to which the presentation effect should conform.
    * @return The same instance of [NotificationBuilder] updated with the remote message.
    */
-  fun setAllowedBehavior(behavior: NotificationBehavior?): NotificationBuilder
+  fun setAllowedBehavior(behavior: NotificationBehaviorRecord?): NotificationBuilder
 
   /**
    * Builds the Android notification based on passed in data.

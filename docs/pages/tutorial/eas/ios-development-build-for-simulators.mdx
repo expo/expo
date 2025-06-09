@@ -2,6 +2,7 @@
 title: Create and run a cloud build for iOS Simulator
 sidebar_title: iOS development build for simulators
 description: Learn how to configure a development build for iOS Simulators using EAS Build.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -69,8 +70,9 @@ Run the `eas build` command with `ios` as a platform and `ios-simulator` as the 
 This command prompts us with the following questions when we create the build for the first time:
 
 - **What would you like your iOS bundle identifier to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`ios.bundleIdentifier`](/versions/latest/config/app/#package) in **app.json**.
+- **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
 
-After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the Expo dashboard:
+After responding to the prompts, our EAS Build is queued, and the EAS CLI provides a link to view build details and track progress on the EAS dashboard:
 
 <ContentSpotlight
   alt="iOS Simulator build details page"
@@ -110,7 +112,7 @@ In the terminal, once the build finishes, EAS CLI prompts us by asking whether w
 
 <Collapsible summary="Alternate: Use Expo Orbit">
 
-You can use [Expo Orbit](https://expo.dev/orbit) to install the development build. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the iOS Simulator.
+You can use [Expo Orbit](https://expo.dev/orbit) to install the development build. From **Build artifact** on the EAS dashboard, click **Open with Expo Orbit** to install the development build on the iOS Simulator.
 
 </Collapsible>
 
