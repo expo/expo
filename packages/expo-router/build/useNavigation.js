@@ -1,10 +1,11 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useNavigation = useNavigation;
+exports.useNavigation = void 0;
 const native_1 = require("@react-navigation/native");
 const constants_1 = require("./constants");
 const href_1 = require("./link/href");
+const PreviewParamsContext_1 = require("./link/preview/PreviewParamsContext");
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a
@@ -57,7 +58,26 @@ const href_1 = require("./link/href");
  * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions)
  * for more information.
  */
-function useNavigation(parent) {
+exports.useNavigation = 
+// TODO: Consider alternative solutions - this is a bit hacky.
+process.env.NODE_ENV === 'production'
+    ? useNavigationImpl
+    : (parent) => {
+        const navigation = useNavigationImpl(parent);
+        if ((0, PreviewParamsContext_1.useIsPreview)()) {
+            if (navigation && typeof navigation === 'object') {
+                return new Proxy(navigation, {
+                    get(target, prop, receiver) {
+                        console.warn(`navigation.${String(prop)} should not be used in a previewed screen. To fix this issue, wrap navigation calls with 'if (!isPreview) { ... }'.`);
+                        const value = Reflect.get(target, prop, receiver);
+                        return value;
+                    },
+                });
+            }
+        }
+        return navigation;
+    };
+function useNavigationImpl(parent) {
     let navigation = (0, native_1.useNavigation)();
     let state = (0, native_1.useStateForPath)();
     if (parent === undefined) {

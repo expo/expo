@@ -52,7 +52,9 @@ import { Href } from './types';
  * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions)
  * for more information.
  */
-export declare function useNavigation<T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
+export declare const useNavigation: typeof useNavigationImpl;
+declare function useNavigationImpl<T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
     getState(): NavigationState | undefined;
 }>(parent?: string | Href): T;
+export {};
 //# sourceMappingURL=useNavigation.d.ts.map

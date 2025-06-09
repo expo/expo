@@ -8,6 +8,7 @@ import {
 
 import { INTERNAL_SLOT_NAME } from './constants';
 import { resolveHref } from './link/href';
+import { useIsPreview } from './link/preview/PreviewParamsContext';
 import { Href } from './types';
 
 /**
@@ -62,7 +63,36 @@ import { Href } from './types';
  * @see React Navigation documentation on [navigation dependent functions](https://reactnavigation.org/docs/navigation-object/#navigator-dependent-functions)
  * for more information.
  */
-export function useNavigation<
+export const useNavigation =
+  // TODO: Consider alternative solutions - this is a bit hacky.
+  process.env.NODE_ENV === 'production'
+    ? useNavigationImpl
+    : <
+        T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
+          getState(): NavigationState | undefined;
+        },
+      >(
+        parent?: string | Href
+      ): T => {
+        const navigation = useNavigationImpl<T>(parent);
+        if (useIsPreview()) {
+          if (navigation && typeof navigation === 'object') {
+            return new Proxy(navigation, {
+              get(target, prop, receiver) {
+                console.warn(
+                  `navigation.${String(prop)} should not be used in a previewed screen. To fix this issue, wrap navigation calls with 'if (!isPreview) { ... }'.`
+                );
+                const value = Reflect.get(target, prop, receiver);
+                return value;
+              },
+            }) as typeof navigation;
+          }
+        }
+
+        return navigation;
+      };
+
+function useNavigationImpl<
   T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
     getState(): NavigationState | undefined;
   },
