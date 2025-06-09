@@ -163,7 +163,13 @@ export function baseJSBundleWithDependencies(
     // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
     // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
     sourceUrl:
-      options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
+      process.env.EXPO_BUNDLE_BUILT_IN === '1'
+        ? '[builtin code]'
+        : options.platform === 'web'
+          ? undefined
+          : !options.dev
+            ? undefined
+            : options.sourceUrl,
   }) as Module[];
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
