@@ -7,9 +7,9 @@
 
 import './location/install';
 
+import '@expo/metro-runtime/rsc/runtime';
+
 if (__DEV__) {
   // @ts-expect-error: TODO: Remove this when we remove the log box.
   globalThis.__expo_dev_resetErrors = require('./error-overlay/LogBox').default.clearAllLogs;
 }
-
-import '@expo/metro-runtime/rsc/runtime';
