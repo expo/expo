@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed breaking change for local AAR autolinking. ([#37882](https://github.com/expo/expo/pull/37882) by [@kudo](https://github.com/kudo))
+- [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
