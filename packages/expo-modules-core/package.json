@@ -12,6 +12,10 @@
     ".": {
       "types": "./build/index.d.ts",
       "default": "./src/index.ts"
+    },
+    "./src/Refs": {
+      "types": "./build/Refs.d.ts",
+      "default": "./src/Refs.ts"
     }
   },
   "scripts": {
