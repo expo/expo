@@ -10,6 +10,7 @@ import { useRouter } from '../hooks';
 import { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
+import { useIsPreview } from './preview/PreviewParamsContext';
 import { useInteropClassName, useHrefAttrs, LinkProps, WebAnchorProps } from './useLinkHooks';
 import { Prefetch } from '../Prefetch';
 import { Slot } from '../ui/Slot';
@@ -83,11 +84,14 @@ export type RedirectProps = {
  */
 export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProps) {
   const router = useRouter();
+  const isPreview = useIsPreview();
   useFocusEffect(() => {
+    if (!isPreview) {
     try {
       router.replace(href, { relativeToDirectory, withAnchor });
     } catch (error) {
       console.error(error);
+      }
     }
   });
   return null;
@@ -121,7 +125,8 @@ export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProp
  */
 
 export function Link(props: LinkProps) {
-  if (props.experimentalPreview) {
+  const isPreview = useIsPreview();
+  if (props.experimentalPreview && !isPreview) {
     return <LinkWithPreview {...props} />;
   }
   return <ExpoRouterLink {...props} />;
