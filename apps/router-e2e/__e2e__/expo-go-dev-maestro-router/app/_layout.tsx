@@ -1,6 +1,5 @@
-import { Link, Slot, router, useGlobalSearchParams, usePathname, useSegments } from 'expo-router';
 import { Pressable, Text } from 'react-native';
-
+import { Link, Slot, router, useGlobalSearchParams, usePathname, useSegments } from 'expo-router';
 export default function Layout() {
   const { '#': hash } = useGlobalSearchParams();
   return (

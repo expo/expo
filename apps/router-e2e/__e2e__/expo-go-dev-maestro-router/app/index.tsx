@@ -5,9 +5,7 @@ export default function Index() {
   return (
     <>
       <Text>Index</Text>
-      <Link href="/(stack)" experimentalPreview>
-        /(stack)
-      </Link>
+      <Link href="/(stack)">/(stack)</Link>
       <Link href="/(tabs)">/(tabs)</Link>
     </>
   );

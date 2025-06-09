@@ -9,7 +9,7 @@ export default function Index() {
       <Link testID="e2e-navigate-apple" href="./(stack)/apple">
         Navigate apple
       </Link>
-      <Link testID="e2e-push-apple" href="./(stack)/apple" push experimentalPreview>
+      <Link testID="e2e-push-apple" href="./(stack)/apple" push>
         Push apple
       </Link>
       <Link testID="e2e-push-index" href="./(stack)" push>
