@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 2.1.11 — 2025-06-08
