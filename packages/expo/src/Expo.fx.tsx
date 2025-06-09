@@ -13,7 +13,7 @@ import { createErrorHandler } from './errors/ExpoErrorManager';
 
 // Only during development.
 if (
-  process.env.NODE_ENV !== 'production' &&
+  __DEV__ &&
   // Disable for SSR
   typeof globalThis.expo !== 'undefined'
 ) {
