@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add resource name validation for Android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
