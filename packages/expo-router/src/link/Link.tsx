@@ -241,6 +241,7 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
     <PeekAndPopView
       nextScreenId={navigationKey}
       actions={[]}
+      preferredContentSize={rest.experimentalPreferredPreviewSize}
       onActionSelected={({ nativeEvent: { id: _ } }) => {}}
       onWillPreviewOpen={() => {
         preload();
@@ -263,7 +264,6 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
       <PeekAndPopPreviewView
         onSetSize={({ nativeEvent: size }) => setPreviewSize(size)}
         style={{ position: 'absolute', ...previewSize }}>
-        {/* TODO: Add a way to make preview smaller then full size */}
         {(isCurrentPreviewOpen || rest.experimentalDisableLazyPreview) && (
           <Preview href={rest.href} />
         )}

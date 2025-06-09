@@ -9,6 +9,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
     private var interaction: UIContextMenuInteraction?
     private var nextScreenId: String?
     private var actions: [[String: String]] = []
+    private var preferredContentSize: CGSize = CGSize(width: 0, height: 0)
 
     private let peekAndPopNavigation: PeekAndPopNavigation = PeekAndPopNavigation()
 
@@ -24,6 +25,8 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
         self.interaction = UIContextMenuInteraction(delegate: self)
     }
 
+    // MARK: - Props
+
     func setNextScreenId(_ screenId: String) {
         self.nextScreenId = screenId
         peekAndPopNavigation.updatePreloadedView(screenId, with: self)
@@ -33,9 +36,18 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
         self.actions = actions
     }
 
-    /**
-        Fabric calls this function when mounting (attaching) a child component view.
-        */
+    func setPreferredContentSize(_ size: [String: Int]) {
+        let width = size["width"] ?? Int(UIScreen.main.bounds.width)
+        let height = size["height"] ?? Int(UIScreen.main.bounds.height)
+        if width < 0 || height < 0 {
+            print("Preferred content size cannot be negative (\(width), \(height))")
+            return
+        }
+        self.preferredContentSize = CGSize(width: max(width, 0), height: max(height, 0))
+    }
+
+    // MARK: - Children
+
     public override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
         if let triggerView = childComponentView as? PeekAndPopTriggerView {
             trigger = triggerView
@@ -48,9 +60,6 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
         }
     }
 
-    /**
-        Fabric calls this function when unmounting (detaching) a child component view.
-        */
     public override func unmountChildComponentView(_ child: UIView, index: Int) {
         if child is PeekAndPopTriggerView {
             trigger = nil
@@ -122,6 +131,7 @@ class PeekAndPopView: ExpoView, UIContextMenuInteractionDelegate {
 
         let vc = PreviewViewController(peekAndPopPreview: preview)
         vc.view.addSubview(preview)
+        vc.preferredContentSize = self.preferredContentSize
         return vc
     }
 

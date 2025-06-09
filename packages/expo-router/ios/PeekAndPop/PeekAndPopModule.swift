@@ -19,6 +19,10 @@ public class PeekAndPopModule: Module {
         view.setActions(actions)
       }
 
+      Prop("preferredContentSize") { (view: PeekAndPopView, size: [String: Int]) in
+        view.setPreferredContentSize(size)
+      }
+
       Events(
         "onPreviewTapped",
         "onWillPreviewOpen",

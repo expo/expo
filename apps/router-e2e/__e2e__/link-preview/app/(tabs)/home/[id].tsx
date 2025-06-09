@@ -25,10 +25,10 @@ const HomeOne = () => {
         title: localParams.id ?? 'Home - Id',
       });
     }
-  }, [isPreview]);
+  }, [isPreview, navigation]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ddf', maxHeight: isPreview ? 300 : undefined }}>
+    <View style={{ flex: 1, backgroundColor: '#ddf' }}>
       <Text>Home - Id</Text>
       <Text>Current Path: {pathname}</Text>
       <Text>Local Params: {JSON.stringify(localParams)}</Text>

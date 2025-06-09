@@ -15,6 +15,10 @@ export interface PeekAndPopViewProps extends ViewProps {
         title: string;
         id: string;
     }[];
+    preferredContentSize?: {
+        width?: number;
+        height?: number;
+    } | undefined;
     onActionSelected?: (event: {
         nativeEvent: {
             id: string;

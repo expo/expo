@@ -20,6 +20,12 @@ export function Links() {
       <Link href="/(tabs)/home/two" experimentalPreview experimentalDisableLazyPreview>
         disableLazyPreview: /(tabs)/home/two
       </Link>
+      <Link
+        href="/(tabs)/home/two"
+        experimentalPreview
+        experimentalPreferredPreviewSize={{ height: 425, width: 300 }}>
+        preferredPreviewSize: /(tabs)/home/two
+      </Link>
       <Link href="/(tabs)/home/two" experimentalPreview push>
         Push: /(tabs)/home/two
       </Link>

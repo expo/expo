@@ -160,7 +160,7 @@ function LinkWithPreview({ experimentalPreview, ...rest }) {
     if (isExternal(String(rest.href)) || rest.replace) {
         return <ExpoRouterLink {...rest}/>;
     }
-    return (<native_1.PeekAndPopView nextScreenId={navigationKey} actions={[]} onActionSelected={({ nativeEvent: { id: _ } }) => { }} onWillPreviewOpen={() => {
+    return (<native_1.PeekAndPopView nextScreenId={navigationKey} actions={[]} preferredContentSize={rest.experimentalPreferredPreviewSize} onActionSelected={({ nativeEvent: { id: _ } }) => { }} onWillPreviewOpen={() => {
             preload();
             setIsPreviewOpen(true);
             setIsCurrenPreviewOpen(true);
@@ -176,7 +176,6 @@ function LinkWithPreview({ experimentalPreview, ...rest }) {
         <ExpoRouterLink {...rest} ref={rest.ref}/>
       </native_1.PeekAndPopTriggerView>
       <native_1.PeekAndPopPreviewView onSetSize={({ nativeEvent: size }) => setPreviewSize(size)} style={{ position: 'absolute', ...previewSize }}>
-        {/* TODO: Add a way to make preview smaller then full size */}
         {(isCurrentPreviewOpen || rest.experimentalDisableLazyPreview) && (<Preview_1.Preview href={rest.href}/>)}
       </native_1.PeekAndPopPreviewView>
     </native_1.PeekAndPopView>);
