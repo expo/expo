@@ -151,7 +151,7 @@ export function resolveScheme(options) {
             nativeAppId,
         ]
             .filter(Boolean)
-            .join(', ')}.\nPlease supply the preferred URI scheme to the Linking API.`);
+            .join(', ')}.\nProvide the preferred URI scheme to the Linking API.`);
     }
     return scheme;
 }

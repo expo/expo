@@ -40,7 +40,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     useEffect(() => {
       if (router?.asPath) {
         const splitUrl = router.asPath.split('#');
-        const hash = splitUrl.length ? splitUrl[1] : undefined;
+        const hash = splitUrl.length > 0 ? splitUrl[1] : undefined;
         if (hash && hash === heading.current.slug) {
           detailsRef?.current?.setAttribute('open', '');
         }

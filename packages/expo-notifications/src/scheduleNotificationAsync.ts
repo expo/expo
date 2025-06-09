@@ -19,7 +19,7 @@ import {
 
 /**
  * Schedules a notification to be triggered in the future.
- * > **Note:** Please note that this does not mean that the notification will be presented when it is triggered.
+ * > **Note:** This does not mean that the notification will be presented when it is triggered.
  * For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler)
  * that will return an appropriate notification behavior. For more information see the example below.
  * @param request An object describing the notification to be triggered.

@@ -153,7 +153,7 @@ describe(ensureDependenciesAsync, () => {
           name: 'my-app',
         },
       })
-    ).rejects.toThrowError(/Please install/);
+    ).rejects.toThrowError(/Install/);
 
     expect(confirmAsync).toBeCalledTimes(1);
     expect(installAsync).toBeCalledTimes(0);
@@ -178,7 +178,7 @@ describe(ensureDependenciesAsync, () => {
           name: 'my-app',
         },
       })
-    ).rejects.toThrowError(/Please install/);
+    ).rejects.toThrowError(/Install/);
 
     expect(confirmAsync).toBeCalledTimes(0);
     expect(installAsync).toBeCalledTimes(0);

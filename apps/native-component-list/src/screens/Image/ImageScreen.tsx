@@ -140,6 +140,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageMediaLibraryScreen'));
     },
   },
+  {
+    name: 'Imperative API',
+    route: 'image/imperative-api',
+    getComponent() {
+      return optionalRequire(() => require('./ImageImperativeApiScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {

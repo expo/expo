@@ -247,7 +247,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./a.tsx" and "./a.js" conflict on the route "/a". Please remove or rename one of these files."`
+      `"The route files "./a.tsx" and "./a.js" conflict on the route "/a". Remove or rename one of these files."`
     );
   });
 
@@ -284,7 +284,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./test/folder/b.js" and "./test/folder/b.tsx" conflict on the route "/test/folder/b". Please remove or rename one of these files."`
+      `"The route files "./test/folder/b.js" and "./test/folder/b.tsx" conflict on the route "/test/folder/b". Remove or rename one of these files."`
     );
   });
 
@@ -297,7 +297,7 @@ describe('duplicate routes', () => {
         })
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"The route files "./(a,b)/b.tsx" and "./(a)/b.tsx" conflict on the route "/(a)/b". Please remove or rename one of these files."`
+      `"The route files "./(a,b)/b.tsx" and "./(a)/b.tsx" conflict on the route "/(a)/b". Remove or rename one of these files."`
     );
   });
 
@@ -334,7 +334,7 @@ describe('+html', () => {
         { internal_stripLoadRoute: true, skipGenerated: true }
       );
     }).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Please rename to folder/html.js""`
+      `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Rename it to folder/html.js""`
     );
   });
 });
@@ -784,7 +784,7 @@ it('ignores API routes with platform extensions', () => {
       }
     );
   }).toThrowErrorMatchingInlineSnapshot(
-    `"Api routes cannot have platform extensions. Please remove '.web' from './folder/two+api.web.tsx'"`
+    `"API routes cannot have platform extensions. Remove '.web' from './folder/two+api.web.tsx'"`
   );
 });
 

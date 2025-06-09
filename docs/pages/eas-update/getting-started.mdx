@@ -75,7 +75,7 @@ index a850d03..8fb69fd 100644
 +export default registerRootComponent(App);
 ```
 
-After making that change, update your [`MainActivity`](/versions/latest/sdk/register-root-component/#manual-android-setup) and [`AppDelegate`](/versions/latest/sdk/register-root-component/#manual-ios-setup) to use the module name `"main"` instead of your app name.
+After making that change, update your [`MainActivity`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) and [`AppDelegate`](/versions/latest//sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) to use the module name `"main"` instead of your app name.
 
 </Collapsible>
 
@@ -145,6 +145,8 @@ Inside **ios/project-name/Supporting/Expo.plist**, you'll see the following addi
 ```
 
 The `EXUpdatesURL` value should contain your project's ID.
+
+> **info** If you use Xcode to create project builds, make sure that the `Expo.plist` file [is added to your Xcode project](https://developer.apple.com/documentation/xcode/managing-files-and-folders-in-your-xcode-project#Add-existing-files-and-folders-to-a-project).
 
 </Collapsible>
 
@@ -226,6 +228,8 @@ In **Expo.plist**, you'll need to add the following, replacing `your-channel-nam
   <string>your-channel-name</string>
 </dict>
 ```
+
+> **info** If you use Xcode to create project builds, make sure that the `Expo.plist` file [is added to your Xcode project](https://developer.apple.com/documentation/xcode/managing-files-and-folders-in-your-xcode-project#Add-existing-files-and-folders-to-a-project).
 
 </Collapsible>
 

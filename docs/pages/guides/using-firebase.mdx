@@ -121,10 +121,11 @@ Then, update the file with the following configuration:
 ```js metro.config.js
 const { getDefaultConfig } = require('@expo/metro-config');
 
-const defaultConfig = getDefaultConfig(__dirname);
-defaultConfig.resolver.sourceExts.push('cjs');
+const config = getDefaultConfig(__dirname);
+config.resolver.sourceExts.push('cjs');
+config.resolver.unstable_enablePackageExports = false;
 
-module.exports = defaultConfig;
+module.exports = config;
 ```
 
 </Step>
@@ -204,7 +205,7 @@ React Native Firebase requires [custom native code and cannot be used with Expo 
 #### Install expo-dev-client
 
 Since React Native Firebase requires custom native code, you need to install the `expo-dev-client` library in your project.
-It also allows configuring any native code required by React Native Firebase using [Config plugins](/config-plugins/introduction/) without writing native code yourself.
+It allows configuring any native code required by React Native Firebase using [Config plugins](/config-plugins/introduction/) without writing native code yourself.
 
 To install [`expo-dev-client`](/development/getting-started/#installing--expo-dev-client--in-your-project), run the following command in your project:
 

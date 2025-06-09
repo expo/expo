@@ -68,6 +68,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
             }
             if (isCustomNavigator) {
                 customChildren.push(child);
+                return null;
             }
             console.warn(`Layout children must be of type Screen, all other children are ignored. To use custom children, create a custom <Layout />. Update Layout Route at: "app${contextKey}/_layout"`);
             return null;

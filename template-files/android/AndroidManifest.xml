@@ -40,6 +40,7 @@
     <!-- END OPTIONAL PERMISSIONS -->
 
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -60,6 +61,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="${appLabel}"
         android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
         android:usesCleartextTraffic="true">
 
         <activity

@@ -57,6 +57,7 @@ export function useFilterScreenChildren(
 
       if (isCustomNavigator) {
         customChildren.push(child);
+        return null;
       }
 
       console.warn(

@@ -564,7 +564,7 @@ Create the file with the following content:
 
 #### `NATIVE` mode adjustments
 
-If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#-optional-customize-resizemode), you shoulw add:
+If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#-optional-customize-resizemode), you should add:
 
 ```diff
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">

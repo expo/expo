@@ -13,7 +13,7 @@ function createMockContextModule(map: Record<string, Record<string, any>> = {}) 
   return contextModule as unknown as RequireContext;
 }
 
-function dropFunctions({ loadRoute, ...node }: RouteNode) {
+function dropFunctions({ loadRoute, ...node }: RouteNode): unknown {
   return {
     ...node,
     children: node.children.map(dropFunctions),
@@ -714,7 +714,7 @@ describe(loadStaticParamsAsync, () => {
   });
 
   it(`generateStaticParams throws when deep dynamic segments return invalid type`, async () => {
-    const loadWithParam = (params) =>
+    const loadWithParam = (params: unknown) =>
       loadStaticParamsAsync(
         getExactRoutes(
           createMockContextModule({

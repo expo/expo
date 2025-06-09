@@ -192,8 +192,8 @@ open class DevMenuManager: NSObject {
       return
     }
 
-    let args = data == nil ? [eventName] : [eventName, data!]
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: args)
+    let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? RCTEventDispatcher
+    eventDispatcher?.sendDeviceEvent(withName: eventName, body: data)
   }
 
   // MARK: delegate stubs
@@ -302,7 +302,7 @@ open class DevMenuManager: NSObject {
     }
 
     let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
-    guard let devSettings = devDelegate.devSettings else {
+    guard devDelegate.devSettings != nil else {
       return nil
     }
 

@@ -8,7 +8,29 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix Fast Refresh toggled off by default on Android. ([#37132](https://github.com/expo/expo/pull/37132) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+
 ### 💡 Others
+
+## 6.1.11 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [iOS] Fix custom menu actions not triggering their callbacks after a reload. ([#37084](https://github.com/expo/expo/pull/37084) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.1.10 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 6.1.8 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- Fixed Property "require" doesn't exist error. ([#36484](https://github.com/expo/expo/pull/36484) by [@kudo](https://github.com/kudo))
 
 ## 6.1.7 — 2025-04-28
 

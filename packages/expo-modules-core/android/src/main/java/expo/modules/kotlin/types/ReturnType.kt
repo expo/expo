@@ -1,18 +1,20 @@
 package expo.modules.kotlin.types
 
 import android.os.Bundle
+import expo.modules.kotlin.types.ReturnTypeProvider.types
 import expo.modules.kotlin.types.folly.FollyDynamicExtensionConverter
+import kotlin.collections.set
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
 object ReturnTypeProvider {
   val types = mutableMapOf<KClass<*>, ReturnType>()
+}
 
-  inline fun <reified T> get(): ReturnType {
-    return types[T::class] ?: ReturnType(T::class).also {
-      types[T::class] = it
-    }
+inline fun <reified T> ReturnTypeProvider.get(): ReturnType {
+  return types[T::class] ?: ReturnType(T::class).also {
+    types[T::class] = it
   }
 }
 

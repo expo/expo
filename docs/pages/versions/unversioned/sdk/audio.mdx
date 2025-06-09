@@ -68,7 +68,6 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
 >
 
 ```jsx
-import { useEffect, useState } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
 import { useAudioPlayer } from 'expo-audio';
 
@@ -80,6 +79,13 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button title="Play Sound" onPress={() => player.play()} />
+      <Button
+        title="Replay Sound"
+        onPress={() => {
+          player.seekTo(0);
+          player.play();
+        }}
+      />
     </View>
   );
 }
@@ -96,26 +102,31 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+> **Info** **Note:** If you're migrating from [`expo-av`](av.mdx), you'll notice that `expo-audio` doesn't automatically reset the playback position when audio finishes. After [`play()`](#play), the player stays paused at the end of the sound. To play it again, call [`seekTo(seconds)`](#seektoseconds) to reset the position — as shown in the example above.
+
 ### Recording sounds
 
-<SnackInline label='Recording sounds' dependencies={['expo-av', 'expo-asset']}>
+<SnackInline label='Recording sounds' dependencies={['expo-audio', 'expo-asset']}>
 
 ```jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
-import { useAudioRecorder, RecordingOptions, AudioModule, RecordingPresets } from 'expo-audio';
+import { useAudioRecorder, AudioModule, RecordingPresets } from 'expo-audio';
 
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const [isRecording, setIsRecording] = useState(false);
 
   const record = async () => {
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record();
+    setIsRecording(true);
   };
 
   const stopRecording = async () => {
     // The recording will be available on `audioRecorder.uri`.
     await audioRecorder.stop();
+    setIsRecording(false);
   };
 
   useEffect(() => {
@@ -130,8 +141,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button
-        title={audioRecorder.isRecording ? 'Stop Recording' : 'Start Recording'}
-        onPress={audioRecorder.isRecording ? stopRecording : record}
+        title={isRecording ? 'Stop Recording' : 'Start Recording'}
+        onPress={isRecording ? stopRecording : record}
       />
     </View>
   );

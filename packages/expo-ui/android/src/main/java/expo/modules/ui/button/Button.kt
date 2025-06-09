@@ -127,41 +127,43 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
   }
 }
 
-class Button(context: Context, appContext: AppContext) : ExpoComposeView<ButtonProps>(context, appContext) {
+class Button(context: Context, appContext: AppContext) :
+  ExpoComposeView<ButtonProps>(context, appContext, withHostingView = true) {
   override val props = ButtonProps()
   private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 
   init {
     clipToPadding = false // needed for elevated buttons to work
     clipChildren = false
+  }
 
-    setContent {
-      val (variant) = props.variant
-      val (text) = props.text
-      val (colors) = props.elementColors
-      val (systemImage) = props.systemImage
-      val (disabled) = props.disabled
-      DynamicTheme {
-        StyledButton(
-          variant ?: ButtonVariant.DEFAULT,
-          colors,
-          disabled,
-          { onButtonPressed.invoke(ButtonPressedEvent()) }
-        ) {
-          if (systemImage != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              getImageVector(systemImage)?.let {
-                Icon(
-                  it,
-                  contentDescription = systemImage,
-                  modifier = Modifier.padding(end = 8.dp)
-                )
-              }
-              Text(text)
+  @Composable
+  override fun Content() {
+    val (variant) = props.variant
+    val (text) = props.text
+    val (colors) = props.elementColors
+    val (systemImage) = props.systemImage
+    val (disabled) = props.disabled
+    DynamicTheme {
+      StyledButton(
+        variant ?: ButtonVariant.DEFAULT,
+        colors,
+        disabled,
+        { onButtonPressed.invoke(ButtonPressedEvent()) }
+      ) {
+        if (systemImage != null) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            getImageVector(systemImage)?.let {
+              Icon(
+                it,
+                contentDescription = systemImage,
+                modifier = Modifier.padding(end = 8.dp)
+              )
             }
-          } else {
             Text(text)
           }
+        } else {
+          Text(text)
         }
       }
     }

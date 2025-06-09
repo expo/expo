@@ -56,10 +56,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   state = route.state;
 
   const segments: string[] = [];
-  const params: UrlObject['params'] = Object.create(null);
+  let params: UrlObject['params'] = Object.create(null);
 
   while (state) {
-    route = state.routes[0];
+    route = state.routes['index' in state && state.index ? state.index : 0];
 
     Object.assign(params, route.params);
 
@@ -72,6 +72,18 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     state = route.state;
   }
 
+  params = Object.fromEntries(
+    Object.entries(params).map(([key, value]) => {
+      if (typeof value === 'string') {
+        return [key, safeDecodeURIComponent(value)];
+      } else if (Array.isArray(value)) {
+        return [key, value.map((v) => safeDecodeURIComponent(v))];
+      } else {
+        return [key, value];
+      }
+    })
+  );
+
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
    * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
@@ -79,7 +91,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   let routeParams: StrictFocusedRouteParams | undefined = route.params;
   while (routeParams && 'screen' in routeParams) {
     if (typeof routeParams.screen === 'string') {
-      segments.push(...routeParams.screen.split('/'));
+      const screen = routeParams.screen.startsWith('/')
+        ? routeParams.screen.slice(1)
+        : routeParams.screen;
+      segments.push(...screen.split('/'));
     }
 
     if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
@@ -90,7 +105,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   }
 
   if (route.params && 'screen' in route.params && route.params.screen === 'string') {
-    segments.push(route.params.screen);
+    const screen = route.params.screen.startsWith('/')
+      ? route.params.screen.slice(1)
+      : route.params.screen;
+    segments.push(...screen.split('/'));
   }
 
   if (segments[segments.length - 1] === 'index') {
@@ -181,4 +199,13 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     // TODO: Remove this, it is not used anywhere
     isIndex: false,
   };
+}
+
+function safeDecodeURIComponent(value: any) {
+  try {
+    return typeof value === 'string' ? decodeURIComponent(value) : value;
+  } catch {
+    // If the value is not a valid URI component, return it as is
+    return value;
+  }
 }

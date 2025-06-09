@@ -18,8 +18,8 @@ export async function isAvailableAsync() {
  * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called or the app is restarted. If you are
  * already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
  *
- * > Please note that on iOS, this will only prevent screen recordings, and is only available on
- * iOS 11 and newer. On older iOS versions, this method does nothing.
+ * > On iOS, this will only prevent screen recordings, and is only available on iOS 11 and newer. On older
+ * iOS versions, this method does nothing.
  *
  * @param key Optional. If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync`
  * and `allowScreenCaptureAsync` methods (and `usePreventScreenCapture` hook) from conflicting with each other.
@@ -76,8 +76,12 @@ export function usePreventScreenCapture(key = 'default') {
 // @needsAudit
 /**
  * Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded.
- * On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this
- * with [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
+ *
+ * Permission requirements for this method depend on your device’s Android version:
+ * - **Before Android 13**: Requires READ_EXTERNAL_STORAGE.
+ * - **Android 13**: Switches to READ_MEDIA_IMAGES.
+ * - **Post-Android 13**: No additional permissions required.
+ * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
  *
  * @param listener The function that will be executed when the user takes a screenshot.
  * This function accepts no arguments.

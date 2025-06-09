@@ -40,7 +40,7 @@ export const APISectionPlatformTags = ({
         ? defaultPlatforms?.map(platform => platform.replace('*', ''))
         : [];
 
-  if (!experimentalData.length && !platformNames?.length) {
+  if (experimentalData.length === 0 && !platformNames?.length) {
     return null;
   }
 

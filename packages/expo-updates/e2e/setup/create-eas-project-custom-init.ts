@@ -3,12 +3,7 @@
 import nullthrows from 'nullthrows';
 import path from 'path';
 
-import {
-  initAsync,
-  repoRoot,
-  setupE2EAppAsync,
-  transformAppJsonForE2EWithCustomInit,
-} from './project';
+import { initAsync, repoRoot, setupE2EAppAsync } from './project';
 
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
@@ -39,7 +34,6 @@ const runtimeVersion = '1.0.0';
     runtimeVersion,
     localCliBin,
     useCustomInit: true,
-    transformAppJson: transformAppJsonForE2EWithCustomInit,
   });
 
   await setupE2EAppAsync(projectRoot, { localCliBin, repoRoot });

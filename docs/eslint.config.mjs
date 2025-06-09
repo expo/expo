@@ -7,7 +7,7 @@ import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
 import tailwind from 'eslint-plugin-tailwindcss';
 import testingLibrary from 'eslint-plugin-testing-library';
-import unicorn from 'eslint-plugin-unicorn';
+import unicorn from 'eslint-plugin-unicorn'; // eslint-disable-line
 
 const TAILWIND_DEFAULTS = {
   callees: ['mergeClasses'],
@@ -38,16 +38,21 @@ const CORE_RULES = {
   eqeqeq: ['error', 'always', { null: 'ignore' }],
   'import/no-cycle': ['error', { maxDepth: '∞' }],
   'lodash/import-scope': [2, 'method'],
+  'unicorn/better-regex': 'warn',
+  'unicorn/consistent-date-clone': 'warn',
+  'unicorn/explicit-length-check': 'warn',
   'unicorn/new-for-builtins': 'warn',
   'unicorn/no-useless-spread': 'warn',
+  'unicorn/no-unnecessary-array-splice-count': 'warn',
   'unicorn/prefer-array-some': 'warn',
   'unicorn/prefer-at': 'warn',
+  'unicorn/prefer-date-now': 'warn',
+  'unicorn/prefer-set-has': 'warn',
   'unicorn/prefer-includes': 'warn',
   'unicorn/prefer-regexp-test': 'warn',
-  'unicorn/throw-new-error': 'warn',
   'unicorn/prefer-node-protocol': 'warn',
-  'unicorn/prefer-date-now': 'warn',
-  'unicorn/better-regex': 'warn',
+  'unicorn/prefer-string-slice': 'warn',
+  'unicorn/throw-new-error': 'warn',
   'unicorn/prevent-abbreviations': [
     'warn',
     {

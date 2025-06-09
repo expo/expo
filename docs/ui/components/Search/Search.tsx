@@ -32,7 +32,7 @@ export const Search = () => {
         config={{ docsVersion: version, docsTransformUrl: transformDocsUrl }}
         customSections={[
           {
-            heading: 'Expo dashboard',
+            heading: 'EAS dashboard',
             items: expoDashboardItems,
             getItemsAsync: getExpoItemsAsync,
             sectionIndex: 1,

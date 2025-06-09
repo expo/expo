@@ -17,7 +17,7 @@ function _assertNodeFetchSupport({ Request, Response, process } = globalThis) {
             const version = process.version;
             const majorVersion = parseInt(version.replace(/v/g, '').split('.')[0], 10);
             if (majorVersion < 18) {
-                throw new Error(`Node.js version ${majorVersion} is not supported. Please upgrade to Node.js 20 or newer.`);
+                throw new Error(`Node.js version ${majorVersion} is not supported. Upgrade to Node.js 20 or newer.`);
             }
         }
         // Default error event for missing APIs.

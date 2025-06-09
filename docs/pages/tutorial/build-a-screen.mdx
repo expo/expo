@@ -1,6 +1,7 @@
 ---
 title: Build a screen
 description: In this tutorial, learn how to use components such as React Native's Pressable and Expo Image to build a screen.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -136,11 +137,11 @@ Let's divide the code into multiple files as we add more components to this scre
 
 {/* prettier-ignore */}
 ```tsx components/ImageViewer.tsx|collapseHeight=280
-import { StyleSheet } from 'react-native';
-import { Image, type ImageSource } from 'expo-image';
+import { ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 
 type Props = {
-  imgSource: ImageSource;
+  imgSource: ImageSourcePropType;
 };
 
 export default function ImageViewer({ imgSource }: Props) {
@@ -323,13 +324,14 @@ import { StyleSheet, View, Pressable, Text } from 'react-native';
 
 type Props = {
   label: string;
-  theme?: 'primary';
+  /* @tutinfo Add theme prop. */theme?: 'primary';/* @end */
 };
 
 export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */theme/* @end */ }: Props) {
   /* @tutinfo Conditionally render the primary themed button. */
   if (theme === 'primary') {
   /* @end */
+  /* @tutinfo */
     return (
       <View
         style={[
@@ -344,6 +346,7 @@ export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> t
         </Pressable>
       </View>
     );
+  /* @end */
   /* @tutinfo */
   }
   /* @end */

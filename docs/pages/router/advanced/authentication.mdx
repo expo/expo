@@ -2,7 +2,10 @@
 title: Authentication in Expo Router
 sidebar_title: Authentication
 description: How to implement authentication and protect routes with Expo Router.
+hasVideoLink: true
 ---
+
+> This guide requires SDK 53. For the previous version of this guide see [Authentication (redirects)](/router/advanced/authentication-rewrites/)
 
 import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
 import { LockUnlocked01Icon } from '@expo/styleguide-icons/outline/LockUnlocked01Icon';
@@ -12,35 +15,28 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-<VideoBoxLink
-  videoId="yNaOaR2kIa0"
-  title="Building an Auth Flow with Expo Router"
-  description="Learn how to implement an auth flow in your Expo Router project."
-  className="mb-6"
-/>
-
 With Expo Router, all routes are always defined and accessible. You can use runtime logic to redirect users away from specific screens depending on whether they are authenticated. There are two different techniques for authenticating users within routes. This guide provides an example that demonstrates the functionality of standard native apps.
 
-## Using React Context and Route Groups
+## Using Protected Routes
 
-It's common to restrict specific routes to users who are not authenticated. This is achievable in an organized way by using React Context and Route Groups. Consider the following project structure that has a `/sign-in` route that is always accessible and a `(app)` group that requires authentication:
+[Protected routes](/router/advanced/protected/) allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, or if a screen becomes protected while it is active, they will be redirected to the anchor route (usually the index screen) or the first available screen in the stack. Consider the following project structure that has a `/sign-in` route that is always accessible and a `(app)` group that requires authentication:
 
 <FileTree
   files={[
-    'app/_layout.tsx',
+    ['app/_layout.tsx', <span>Controls what is protected</span>],
     [
       'app/sign-in.tsx',
       <span>
         Always accessible <LockUnlocked01Icon className="mb-1 inline" />
       </span>,
     ],
-    ['app/(app)/_layout.tsx', <span>Protects child routes</span>],
     [
-      'app/(app)/index.tsx',
+      'app/(app)/_layout.tsx',
       <span>
         Requires authorization <Lock01Icon className="mb-1 inline" />
       </span>,
     ],
+    ['app/(app)/index.tsx', <span>Should be protected by the (app)/_layout</span>],
   ]}
 />
 
@@ -179,19 +175,20 @@ export function useStorageState(key: string): UseStateHook<string> {
 
 <Step label="2">
 
-Use the `SessionProvider` in the root layout to provide the authentication context to the entire app. It's imperative that the `<Slot />` is mounted before any navigation events are triggered. Otherwise, a runtime error will be thrown.
+Create a **SplashScreenController** to manage the splash screen. Because loading the authentication is asynchronous we can keep the splash screen visible until the authentication has loaded.
 
-```tsx app/_layout.tsx
-import { Slot } from 'expo-router';
-import { SessionProvider } from '../ctx';
+```tsx splash.tsx
+import { SplashScreen } from 'expo-router';
+import { useSession } from './ctx';
 
-export default function Root() {
-  // Set up the auth context and render our layout inside of it.
-  return (
-    <SessionProvider>
-      <Slot />
-    </SessionProvider>
-  );
+export function SplashScreenController() {
+  const { isLoading } = useSession();
+
+  if (!isLoading) {
+    SplashScreen.hideAsync();
+  }
+
+  return null;
 }
 ```
 
@@ -199,31 +196,25 @@ export default function Root() {
 
 <Step label="3">
 
-Create a nested [layout route](/router/basics/layout/) that checks whether users are authenticated before rendering the child route components. This layout route redirects users to the sign-in screen if they are not authenticated.
+Use the **SessionProvider** in the root layout to provide the authentication context to the entire app. Ensure the **SplashScreenController** is inside the **SessionProvider**
 
-```tsx app/(app)/_layout.tsx|collapseHeight=400
-import { Text } from 'react-native';
-import { Redirect, Stack } from 'expo-router';
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { SessionProvider } from '../ctx';
+import { SplashScreenController } from '../splash';
 
-import { useSession } from '../../ctx';
+export default function Root() {
+  // Set up the auth context and render our layout inside of it.
+  return (
+    <SessionProvider>
+      <SplashScreenController />
+      <RootNavigator />
+    </SessionProvider>
+  );
+}
 
-export default function AppLayout() {
-  const { session, isLoading } = useSession();
-
-  // You can keep the splash screen open, or render a loading screen like we do here.
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
-
-  // Only require authentication within the (app) group's layout as users
-  // need to be able to access the (auth) group and sign in again.
-  if (!session) {
-    // On web, static rendering will stop here as the user is not authenticated
-    // in the headless Node process that the pages are rendered in.
-    return <Redirect href="/sign-in" />;
-  }
-
-  // This layout can be deferred because it's not the root layout.
+// Separate this into a new component so it can access the SessionProvider context later
+function RootNavigator() {
   return <Stack />;
 }
 ```
@@ -262,6 +253,32 @@ export default function SignIn() {
 
 <Step label="5">
 
+Now we can modify the `<RootNavigator />` to protect routes based on our SessionProvider.
+
+```tsx app/_layout.tsx|collapseHeight=400
+/* Keep the code the same above, just edit the RootNavigator */
+
+function RootNavigator() {
+  const { session } = useSession();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={session}>
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="sign-in" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+```
+
+</Step>
+
+<Step label="6">
+
 Implement an authenticated screen that lets users sign out.
 
 ```tsx app/(app)/index.tsx|collapseHeight=480
@@ -287,11 +304,7 @@ export default function Index() {
 
 </Step>
 
-You now have an app that can present a loading state while it checks the initial authentication state and redirects to the sign-in screen if the user is not authenticated. If a user visits a deep link to any routes with the authentication check, they'll be redirected to the sign-in screen.
-
-## Alternative loading states
-
-With Expo Router, something must be rendered to the screen while loading the initial auth state. In the example above, the app layout renders a loading message. Alternatively, you can make the `index` route a loading state and move the initial route to something such as `/home`, which is similar to how X works.
+You now have an app that will present the splash screen until the initial authentication state has loaded and will redirects to the sign-in screen if the user is not authenticated. If a user visits a deep link to any routes with the authentication check, they'll be redirected to the sign-in screen.
 
 ## Modals and per-route authentication
 
@@ -334,70 +347,16 @@ export default function AppLayout() {
 }
 ```
 
-## Navigating without navigation
+## More information
 
-You may encounter the following error when the app attempts to perform navigation without a navigator mounted in the [root layout](/router/basics/layout/#root-layout).
+For more information, read the [Protected routes documentation](/router/advanced/protected/) to learn more patterns
 
-```text
-Error: Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.
-```
-
-To fix this, add a group and move conditional logic down a level.
-
-### Before
-
-<FileTree files={['app/_layout.tsx', 'app/about.tsx']} />
-
-```tsx app/_layout.tsx
-export default function RootLayout() {
-  React.useEffect(() => {
-    // This navigation event will trigger the error above.
-    router.push('/about');
-  }, []);
-
-  // This conditional statement creates a problem since the root layout's
-  // content (the Slot) must be mounted before any navigation events occur.
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
-
-  return <Slot />;
-}
-```
-
-### After
-
-<FileTree
-  files={[
-    ['app/_layout.tsx', ''],
-    ['app/(app)/_layout.tsx', 'Move conditional logic down a level'],
-    'app/(app)/about.tsx',
-  ]}
+<VideoBoxLink
+  videoId="XCTaMu0qnFY"
+  title="How to use Protected Routes in Expo Router V5 for smooth auth"
+  description="Learn how to use Protected Routes in Expo Router V5 to create an authentication flow"
+  className="mb-6"
 />
-
-```tsx app/_layout.tsx
-export default function RootLayout() {
-  return <Slot />;
-}
-```
-
-```tsx app/(app)/_layout.tsx
-export default function RootLayout() {
-  React.useEffect(() => {
-    router.push('/about');
-  }, []);
-
-  // It is OK to defer rendering this nested layout's content. We couldn't
-  // defer rendering the root layout's content since a navigation event (the
-  // redirect) would have been triggered before the root layout's content had
-  // been mounted.
-  if (isLoading) {
-    return <Text>Loading...</Text>;
-  }
-
-  return <Slot />;
-}
-```
 
 ## Middleware
 

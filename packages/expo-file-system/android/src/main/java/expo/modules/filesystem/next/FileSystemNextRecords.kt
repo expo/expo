@@ -9,3 +9,8 @@ data class CreateOptions(
   @Field
   val overwrite: Boolean = false
 ) : Record
+
+data class DownloadOptionsNext(
+  @Field
+  val headers: Map<String, String> = emptyMap()
+) : Record

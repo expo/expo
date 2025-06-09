@@ -6,6 +6,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -40,34 +41,34 @@ data class SliderProps(
   val elementColors: MutableState<SliderColors> = mutableStateOf(SliderColors())
 ) : ComposeProps
 
-class SliderView(context: Context, appContext: AppContext) : ExpoComposeView<SliderProps>(context, appContext) {
+class SliderView(context: Context, appContext: AppContext) :
+  ExpoComposeView<SliderProps>(context, appContext, withHostingView = true) {
   override val props = SliderProps()
   private val onValueChanged by EventDispatcher()
 
-  init {
-    setContent {
-      val (value) = props.value
-      val (min) = props.min
-      val (max) = props.max
-      val (steps) = props.steps
-      val (colors) = props.elementColors
-      DynamicTheme {
-        Slider(
-          value = value.coerceAtLeast(min).coerceAtMost(max),
-          valueRange = min..max,
-          steps = steps,
-          onValueChange = {
-            onValueChanged(mapOf("value" to it))
-          },
-          colors = SliderDefaults.colors(
-            thumbColor = colors.thumbColor.compose,
-            activeTrackColor = colors.activeTrackColor.compose,
-            inactiveTrackColor = colors.inactiveTrackColor.compose,
-            activeTickColor = colors.activeTickColor.compose,
-            inactiveTickColor = colors.inactiveTickColor.compose
-          )
+  @Composable
+  override fun Content() {
+    val (value) = props.value
+    val (min) = props.min
+    val (max) = props.max
+    val (steps) = props.steps
+    val (colors) = props.elementColors
+    DynamicTheme {
+      Slider(
+        value = value.coerceAtLeast(min).coerceAtMost(max),
+        valueRange = min..max,
+        steps = steps,
+        onValueChange = {
+          onValueChanged(mapOf("value" to it))
+        },
+        colors = SliderDefaults.colors(
+          thumbColor = colors.thumbColor.compose,
+          activeTrackColor = colors.activeTrackColor.compose,
+          inactiveTrackColor = colors.inactiveTrackColor.compose,
+          activeTickColor = colors.activeTickColor.compose,
+          inactiveTickColor = colors.inactiveTickColor.compose
         )
-      }
+      )
     }
   }
 }

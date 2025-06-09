@@ -26,18 +26,6 @@ type Result = ReturnType<typeof render> & {
   getRouterState(): ReactNavigationState | undefined;
 };
 
-declare global {
-  namespace jest {
-    interface Matchers<R> {
-      toHavePathname(pathname: string): R;
-      toHavePathnameWithParams(pathname: string): R;
-      toHaveSegments(segments: string[]): R;
-      toHaveSearchParams(params: Record<string, string | string[]>): R;
-      getRouterState(): ReactNavigationState | undefined;
-    }
-  }
-}
-
 export { MockContextConfig, getMockConfig, getMockContext };
 
 export function renderRouter(

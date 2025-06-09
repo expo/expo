@@ -225,7 +225,7 @@ export class MetroTerminalReporter extends TerminalReporter {
         chalk.red(
           [
             'Metro is operating with reduced performance.',
-            'Please fix the problem above and restart Metro.',
+            'Fix the problem above and restart Metro.',
           ].join('\n')
         )
       );

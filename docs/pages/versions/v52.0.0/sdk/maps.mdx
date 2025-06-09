@@ -6,6 +6,7 @@ packageName: 'expo-maps'
 platforms: ['ios', 'android']
 iconUrl: '/static/images/packages/expo-maps.png'
 isAlpha: true
+hasVideoLink: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -16,12 +17,16 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
 ## Installation
 
 <APIInstallSection />
+
+<br />
+<VideoBoxLink videoId="jDCuaIQ9vd0" title="Watch: Expo Maps Deep Dive" />
 
 ## Configuration
 
@@ -106,7 +111,7 @@ To display the user's location on the map, you need to declare and request locat
       [
         "expo-maps",
         {
-          "requestLocationPermission": "true",
+          "requestLocationPermission": true,
           "locationPermission": "Allow $(PRODUCT_NAME) to use your location"
         }
       ]

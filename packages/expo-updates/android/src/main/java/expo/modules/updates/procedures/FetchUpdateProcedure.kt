@@ -53,7 +53,7 @@ class FetchUpdateProcedure(
 
   private suspend fun startRemoteLoader(database: UpdatesDatabase): Loader.LoaderResult =
     suspendCancellableCoroutine { continuation ->
-      RemoteLoader(
+      val remoteLoader = RemoteLoader(
         context,
         updatesConfiguration,
         logger,
@@ -62,51 +62,55 @@ class FetchUpdateProcedure(
         updatesDirectory,
         launchedUpdate
       )
-        .start(
-          object : Loader.LoaderCallback {
-            override fun onFailure(e: Exception) {
-              if (continuation.isActive) {
-                continuation.resumeWithException(e)
-              }
+      remoteLoader.start(
+        object : Loader.LoaderCallback {
+          override fun onFailure(e: Exception) {
+            if (continuation.isActive) {
+              continuation.resumeWithException(e)
             }
+          }
 
-            override fun onAssetLoaded(
-              asset: AssetEntity,
-              successfulAssetCount: Int,
-              failedAssetCount: Int,
-              totalAssetCount: Int
-            ) = Unit
+          override fun onAssetLoaded(
+            asset: AssetEntity,
+            successfulAssetCount: Int,
+            failedAssetCount: Int,
+            totalAssetCount: Int
+          ) = Unit
 
-            override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-              val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-              if (updateDirective != null) {
-                return Loader.OnUpdateResponseLoadedResult(
-                  shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                    is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                    is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                  }
-                )
-              }
-
-              val update = updateResponse.manifestUpdateResponsePart?.update
-                ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            if (updateDirective != null) {
               return Loader.OnUpdateResponseLoadedResult(
-                shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
-                  update.updateEntity,
-                  launchedUpdate,
-                  updateResponse.responseHeaderData?.manifestFilters
-                )
+                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                }
               )
             }
 
-            override fun onSuccess(loaderResult: Loader.LoaderResult) {
-              if (continuation.isActive) {
-                continuation.resume(loaderResult)
-              }
+            val update = updateResponse.manifestUpdateResponsePart?.update
+              ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+
+            return Loader.OnUpdateResponseLoadedResult(
+              shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(
+                update.updateEntity,
+                launchedUpdate,
+                updateResponse.responseHeaderData?.manifestFilters
+              )
+            )
+          }
+
+          override fun onSuccess(loaderResult: Loader.LoaderResult) {
+            if (continuation.isActive) {
+              continuation.resume(loaderResult)
             }
           }
-        )
+        }
+      )
+
+      continuation.invokeOnCancellation {
+        logger.info("Remote loader cancelled during fetch update procedure")
+      }
     }
 
   private fun processSuccessLoaderResult(loaderResult: Loader.LoaderResult, procedureContext: ProcedureContext) {

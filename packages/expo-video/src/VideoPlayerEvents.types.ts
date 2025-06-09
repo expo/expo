@@ -4,6 +4,7 @@ import {
   VideoPlayerStatus,
   VideoSource,
   VideoTrack,
+  AudioTrack,
 } from './VideoPlayer.types';
 
 /**
@@ -59,6 +60,16 @@ export type VideoPlayerEvents = {
    * Handler for an event emitted when the current subtitle track changes.
    */
   subtitleTrackChange(payload: SubtitleTrackChangeEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the available audio tracks change.
+   */
+  availableAudioTracksChange(payload: AvailableAudioTracksChangeEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the current audio track changes.
+   */
+  audioTrackChange(payload: AudioTrackChangeEventPayload): void;
 
   /**
    * Handler for an event emitted when the current video track changes.
@@ -270,4 +281,33 @@ export type SourceLoadEventPayload = {
    * Subtitle tracks available for the loaded video source.
    */
   availableSubtitleTracks: SubtitleTrack[];
+
+  /**
+   * Audio tracks available for the loaded video source.
+   */
+  availableAudioTracks: AudioTrack[];
+};
+
+type AudioTrackChangeEventPayload = {
+  /**
+   * New audio track of the player.
+   */
+  audioTrack: AudioTrack | null;
+
+  /**
+   * Previous audio track of the player.
+   */
+  oldAudioTrack?: AudioTrack | null;
+};
+
+type AvailableAudioTracksChangeEventPayload = {
+  /**
+   * Array of available audio tracks.
+   */
+  availableAudioTracks: AudioTrack[];
+
+  /**
+   * Previous array of available audio tracks.
+   */
+  oldAvailableAudioTracks?: AudioTrack[];
 };

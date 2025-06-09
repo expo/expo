@@ -161,6 +161,33 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * Prevents the resource from being reloaded by locking it.
+   * @platform android
+   * @platform ios
+   */
+  async lockResourceAsync(): Promise<void> {
+    await this.nativeViewRef.current?.lockResourceAsync();
+  }
+
+  /**
+   * Releases the lock on the resource, allowing it to be reloaded.
+   * @platform android
+   * @platform ios
+   */
+  async unlockResourceAsync(): Promise<void> {
+    await this.nativeViewRef.current?.unlockResourceAsync();
+  }
+
+  /**
+   * Reloads the resource, ignoring lock.
+   * @platform android
+   * @platform ios
+   */
+  async reloadAsync(): Promise<void> {
+    await this.nativeViewRef.current?.reloadAsync();
+  }
+
+  /**
    * Loads an image from the given source to memory and resolves to
    * an object that references the native image instance.
    * @platform android
@@ -168,7 +195,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform web
    */
   static async loadAsync(
-    source: ImageSource | string,
+    source: ImageSource | string | number,
     options?: ImageLoadOptions
   ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;

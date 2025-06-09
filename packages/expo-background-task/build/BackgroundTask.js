@@ -10,7 +10,7 @@ function _validate(taskName) {
     if (isRunningInExpoGo()) {
         if (!warnedAboutExpoGo) {
             const message = '`Background Task` functionality is not available in Expo Go:\n' +
-                'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+                'You can use this API and any others in a development build. Learn more: https://expo.fyi/dev-client.';
             console.warn(message);
             warnedAboutExpoGo = true;
         }
@@ -106,20 +106,21 @@ export async function unregisterTaskAsync(taskName) {
 /**
  * When in debug mode this function will trigger running the background tasks.
  * This function will only work for apps built in debug mode.
- * @todo(chrfalch): When we have a usable devtools plugin we can enable this function.
+ * This method is only available in development mode. It will not work in production builds.
  * @returns A promise which fulfils when the task is triggered.
  */
-// export async function triggerTaskWorkerForTestingAsync(): Promise<boolean> {
-//   if (__DEV__) {
-//     if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
-//       throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
-//     }
-//     console.log('Calling triggerTaskWorkerForTestingAsync');
-//     return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
-//   } else {
-//     return Promise.resolve(false);
-//   }
-// }
+export async function triggerTaskWorkerForTestingAsync() {
+    if (__DEV__) {
+        if (!ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync) {
+            throw new UnavailabilityError('BackgroundTask', 'triggerTaskWorkerForTestingAsync');
+        }
+        console.log('Calling triggerTaskWorkerForTestingAsync');
+        return await ExpoBackgroundTaskModule.triggerTaskWorkerForTestingAsync();
+    }
+    else {
+        return Promise.resolve(false);
+    }
+}
 // Export types
 export { BackgroundTaskStatus, BackgroundTaskResult, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.js.map

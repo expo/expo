@@ -17,6 +17,7 @@ import { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
+import { ImperativeApiEmitter } from './imperative-api';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
@@ -156,6 +157,7 @@ function ContextNavigator({
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
+            <ImperativeApiEmitter />
             <Content />
           </WrapperComponent>
         </ServerContext.Provider>
@@ -167,6 +169,7 @@ function ContextNavigator({
 function Content() {
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+    id: INTERNAL_SLOT_NAME,
   });
 
   return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;

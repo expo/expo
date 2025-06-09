@@ -274,7 +274,7 @@ export type Contact = {
      */
     namePrefix?: string;
     /**
-     * Jr., Sr., an so on.
+     * Jr., Sr., and so on.
      */
     nameSuffix?: string;
     /**
@@ -597,7 +597,7 @@ export declare function getContactByIdAsync(id: string, fields?: FieldType[]): P
 export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 /**
  * Mutate the information of an existing contact. Due to an iOS bug, `nonGregorianBirthday` field cannot be modified.
- * @param contact A contact object including the wanted changes.
+ * @param contact A contact object including the wanted changes. Contact `id` is required.
  * @return A promise that fulfills with ID of the updated system contact if mutation was successful.
  * @example
  * ```js
@@ -609,7 +609,9 @@ export declare function addContactAsync(contact: Contact, containerId?: string):
  * await Contacts.updateContactAsync(contact);
  * ```
  */
-export declare function updateContactAsync(contact: Contact): Promise<string>;
+export declare function updateContactAsync(contact: {
+    id: string;
+} & Partial<Omit<Contact, 'id'>>): Promise<string>;
 /**
  * Delete a contact from the system.
  * @param contactId ID of the contact you want to delete.

@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.ExpectedType
@@ -12,9 +13,8 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
-  private val enumClass: KClass<Enum<*>>,
-  isOptional: Boolean
-) : DynamicAwareTypeConverters<Enum<*>>(isOptional) {
+  private val enumClass: KClass<Enum<*>>
+) : DynamicAwareTypeConverters<Enum<*>>() {
   private val enumConstants = requireNotNull(enumClass.java.enumConstants) {
     "Passed type is not an enum type"
   }.also {
@@ -37,9 +37,9 @@ class EnumTypeConverter(
 
   override fun isTrivial() = false
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Enum<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(value.asString(), enumConstants)
+      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException(String::class), enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
         value,
@@ -51,7 +51,7 @@ class EnumTypeConverter(
     throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Enum<*> {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value as String, enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {

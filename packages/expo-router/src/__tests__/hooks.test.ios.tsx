@@ -1,5 +1,6 @@
 import { renderHook as tlRenderHook } from '@testing-library/react-native';
 import React from 'react';
+import { Text } from 'react-native';
 import { expectType } from 'tsd';
 
 import { ExpoRoot, Slot, router } from '../exports';
@@ -9,10 +10,12 @@ import {
   useSearchParams,
   usePathname,
   useSegments,
+  useRootNavigationState,
 } from '../hooks';
 import Stack from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import { act, renderRouter } from '../testing-library';
-import { inMemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 /*
  * Creates an Expo Router context around the hook, where every router renders the hook
@@ -25,7 +28,7 @@ function renderHook<T>(
 ) {
   return tlRenderHook(renderCallback, {
     wrapper: function Wrapper({ children }) {
-      const context = {};
+      const context: MemoryContext = {};
       for (const key of routes) {
         context[key] = () => <>{children}</>;
       }
@@ -219,9 +222,9 @@ describe(useGlobalSearchParams, () => {
     ]);
   });
 
-  it('preserves the params object', () => {
-    const results1: object[] = [];
-    const results2: object[] = [];
+  it('preserves the params ', () => {
+    const results1: [] = [];
+    const results2: [] = [];
 
     renderRouter(
       {
@@ -251,6 +254,35 @@ describe(useGlobalSearchParams, () => {
     expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
     expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
+
+  it(`handles encoded params`, () => {
+    const { result } = renderHook(() => useGlobalSearchParams(), ['index'], {
+      initialUrl: '/?test=%2Fhello%2Fworld%2F',
+    });
+
+    expect(result.current).toEqual({
+      test: '/hello/world/',
+    });
+
+    act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
+
+    expect(result.current).toEqual({
+      test: '/hello/world/again',
+    });
+
+    act(() =>
+      router.push({
+        pathname: '/',
+        params: {
+          test: '%2Ffoo%2Fbar%2F',
+        },
+      })
+    );
+
+    expect(result.current).toEqual({
+      test: '/foo/bar/',
+    });
+  });
 });
 
 describe(useLocalSearchParams, () => {
@@ -274,8 +306,8 @@ describe(useLocalSearchParams, () => {
   });
 
   it('passes values down navigators', () => {
-    const results1: object[] = [];
-    const results2: object[] = [];
+    const results1: [] = [];
+    const results2: [] = [];
 
     renderRouter(
       {
@@ -315,6 +347,49 @@ describe(useLocalSearchParams, () => {
     const params = renderHookOnce(() => useLocalSearchParams<{ a: string }>());
     expectType<{ a?: string }>(params);
     expectType<string | undefined>(params.a);
+  });
+
+  it('does not return undefined search params', () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=1&test=2',
+    });
+
+    expect(result.current).toEqual({
+      test: ['1', '2'],
+    });
+
+    act(() => router.setParams({ test: undefined }));
+
+    expect(result.current).toEqual({});
+  });
+
+  it(`handles encoded params`, () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=%2Fhello%2Fworld%2F',
+    });
+
+    expect(result.current).toEqual({
+      test: '/hello/world/',
+    });
+
+    act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
+
+    expect(result.current).toEqual({
+      test: '/hello/world/again',
+    });
+
+    act(() =>
+      router.push({
+        pathname: '/',
+        params: {
+          test: '%2Ffoo%2Fbar%2F',
+        },
+      })
+    );
+
+    expect(result.current).toEqual({
+      test: '/foo/bar/',
+    });
   });
 });
 
@@ -381,8 +456,8 @@ describe(useSearchParams, () => {
   });
 
   it('is local by default', () => {
-    const results1: object[] = [];
-    const results2: object[] = [];
+    const results1: [] = [];
+    const results2: [] = [];
 
     renderRouter(
       {
@@ -452,5 +527,170 @@ describe(useSearchParams, () => {
 
     console.error = error;
     console.warn = warn;
+  });
+});
+
+describe(useRootNavigationState, () => {
+  it('returns the root navigation state', () => {
+    const { result } = renderHook(() => useRootNavigationState(), ['index'], {
+      initialUrl: '/?test=1&test=2',
+    });
+
+    expect(result.current).toEqual({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            routes: [
+              {
+                name: 'index',
+                params: {
+                  test: ['1', '2'],
+                },
+                path: '/?test=1&test=2',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('can be used within a nested route', () => {
+    const fn = jest.fn();
+
+    renderRouter({
+      _layout: () => <Stack />,
+      '(app)/_layout': () => <Tabs />,
+      '(app)/index': function Index() {
+        fn(useRootNavigationState());
+        return <Text>Index</Text>;
+      },
+    });
+
+    expect(fn).toHaveBeenCalledWith({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            routes: [
+              {
+                name: '(app)',
+                state: {
+                  routes: [
+                    {
+                      name: 'index',
+                      path: '/',
+                    },
+                  ],
+                  stale: true,
+                },
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('can be used within a layout', () => {
+    const fn = jest.fn();
+
+    renderRouter({
+      _layout: function Layout() {
+        fn(useRootNavigationState());
+        return <Stack />;
+      },
+      index: () => <Text>Index</Text>,
+    });
+
+    expect(fn).toHaveBeenCalledWith({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            routes: [
+              {
+                name: 'index',
+                path: '/',
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('can be used within a nested layout', () => {
+    const fn = jest.fn();
+
+    renderRouter({
+      _layout: () => <Stack />,
+      '(app)/_layout': function Layout() {
+        fn(useRootNavigationState());
+        return <Tabs />;
+      },
+      '(app)/index': () => <Text>Index</Text>,
+    });
+
+    expect(fn).toHaveBeenCalledWith({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            routes: [
+              {
+                name: '(app)',
+                state: {
+                  routes: [
+                    {
+                      name: 'index',
+                      path: '/',
+                    },
+                  ],
+                  stale: true,
+                },
+              },
+            ],
+            stale: true,
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
   });
 });

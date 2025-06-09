@@ -252,12 +252,12 @@ it.skip('can navigate across the drawer navigator', () => {
   renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index" />,
-    '(group)/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group)/_layout': () => <Drawer />,
     '(group)/one': () => <Text testID="one" />,
     '(group)/two': () => <Text testID="two" />,
     '(group_two)/three': () => <Text testID="three" />,
-    '(group_two)/_layout': () => <Drawer useLegacyImplementation={false} />,
-    '(group_two)/nested/folder/_layout': () => <Drawer useLegacyImplementation={false} />,
+    '(group_two)/_layout': () => <Drawer />,
+    '(group_two)/nested/folder/_layout': () => <Drawer />,
     '(group_two)/nested/folder/four': () => <Text testID="four" />,
   });
 
@@ -309,4 +309,23 @@ it('can redirect during the initial render', () => {
 
   expect(screen).toHavePathname('/test');
   expect(screen.getByTestId('test')).toBeOnTheScreen();
+});
+
+it('will pick a static route over the dynamic route in the same group', () => {
+  const A = jest.fn(() => <Text>Index</Text>);
+  const B = jest.fn(() => <Text>Dynamic</Text>);
+
+  renderRouter({
+    _layout: () => <Stack />,
+    'messages/[id]': A,
+
+    // Starting route is inside a group
+    '(group)/index': () => null,
+    '(group)/[type]/[id]': B,
+  });
+
+  act(() => router.push('/messages/1'));
+
+  expect(A).toHaveBeenCalled();
+  expect(B).not.toHaveBeenCalled();
 });

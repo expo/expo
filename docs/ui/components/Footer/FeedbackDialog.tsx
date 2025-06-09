@@ -31,7 +31,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
       },
       body: JSON.stringify({
         feedback,
-        email: email.length ? email : undefined,
+        email: email.length > 0 ? email : undefined,
         url: pathname,
       }),
     })

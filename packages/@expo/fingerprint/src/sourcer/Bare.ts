@@ -107,23 +107,24 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
 export async function getCoreAutolinkingSourcesFromExpoAndroid(
   projectRoot: string,
   options: NormalizedOptions,
+  coreAutolinkingTransitiveDeps: string[],
   useRNCoreAutolinkingFromExpo?: boolean
 ): Promise<HashSource[]> {
   if (useRNCoreAutolinkingFromExpo === false || !options.platforms.includes('android')) {
     return [];
   }
+  const args = [
+    resolveExpoAutolinkingCliPath(projectRoot),
+    'react-native-config',
+    '--json',
+    '--platform',
+    'android',
+  ];
+  if (coreAutolinkingTransitiveDeps.length > 0) {
+    args.push('--transitive-linking-dependencies', ...coreAutolinkingTransitiveDeps);
+  }
   try {
-    const { stdout } = await spawnAsync(
-      'node',
-      [
-        resolveExpoAutolinkingCliPath(projectRoot),
-        'react-native-config',
-        '--json',
-        '--platform',
-        'android',
-      ],
-      { cwd: projectRoot }
-    );
+    const { stdout } = await spawnAsync('node', args, { cwd: projectRoot });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,

@@ -19,7 +19,7 @@ class AnyFunctionTest {
     desiredArgsTypes: Array<AnyType>
   ) : AsyncFunctionComponent("my-method", desiredArgsTypes) {
     override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
-      convertArgs(args)
+      convertArgs(args, appContext, forceConversion = true)
       throw NullPointerException()
     }
   }

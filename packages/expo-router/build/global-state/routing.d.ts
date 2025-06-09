@@ -1,5 +1,19 @@
+import { NavigationAction } from '@react-navigation/native';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
+export declare const routingQueue: {
+    queue: NavigationAction[];
+    subscribers: Set<() => void>;
+    subscribe(callback: () => void): () => void;
+    snapshot(): Readonly<{
+        type: string;
+        payload?: object;
+        source?: string;
+        target?: string;
+    }>[];
+    add(action: NavigationAction): void;
+    run(): void;
+};
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 export declare function navigate(url: Href, options?: NavigationOptions): void;
 export declare function reload(): void;

@@ -1,6 +1,7 @@
 ---
 title: Expo push notifications setup
 description: Learn how to set up push notifications, get credentials for development and production, and send a testing push notification.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -69,9 +70,10 @@ import Constants from 'expo-constants';
 /* @info This handler determines how your app handles notifications that come in while the app is foregrounded. */
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 /* @end */
@@ -152,8 +154,6 @@ export default function App() {
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
     undefined
   );
-  const notificationListener = useRef<Notifications.EventSubscription>();
-  const responseListener = useRef<Notifications.EventSubscription>();
 
   useEffect(() => {
     /* @info Gets the push token and displays it in the UI, or in case of an error, displays the error message. */
@@ -162,19 +162,17 @@ export default function App() {
       .catch((error: any) => setExpoPushToken(`${error}`));
     /* @end */
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
       console.log(response);
     });
 
     return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current);
+      notificationListener.remove();
+      responseListener.remove();
     };
   }, []);
 

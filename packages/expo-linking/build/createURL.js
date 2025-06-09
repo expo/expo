@@ -109,7 +109,9 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
         queryString = `?${queryString}`;
     }
     hostUri = ensureLeadingSlash(hostUri, !isTripleSlashed);
-    return encodeURI(`${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`);
+    // URLSearchParams.stringify already encodes query parameters, so we only need to encode the remaining part of the URL.
+    const encodedURI = encodeURI(`${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}`);
+    return `${encodedURI}${queryString}`;
 }
 // @needsAudit
 /**

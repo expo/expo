@@ -20,6 +20,15 @@ export const name = 'Linking';
 
 export function test(t) {
   t.describe('Linking', () => {
+    t.describe('createURL', () => {
+      t.it('returns correctly encoded URL ', () => {
+        const url = Linking.createURL('/redirect', {
+          isTripleSlashed: true,
+          queryParams: { path: '/a/b/c' },
+        });
+        t.expect(url.endsWith('redirect?path=%2Fa%2Fb%2Fc')).toBe(true);
+      });
+    });
     t.describe('canOpenUrl', () => {
       t.it('can open exp:// URLs', async () => {
         t.expect(await Linking.canOpenURL(validExpUrl)).toBe(true);

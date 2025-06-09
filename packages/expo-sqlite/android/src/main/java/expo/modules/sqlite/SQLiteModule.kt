@@ -198,10 +198,10 @@ class SQLiteModule : Module() {
         return@Constructor NativeStatement()
       }
 
-      AsyncFunction("runAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
+      AsyncFunction("runAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
         return@AsyncFunction run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }.runOnQueue(moduleCoroutineScope)
-      Function("runSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
+      Function("runSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
         return@Function run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }
 
@@ -364,47 +364,52 @@ class SQLiteModule : Module() {
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Any> {
+  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Any> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    statement.ref.sqlite3_reset()
-    statement.ref.sqlite3_clear_bindings()
-    for ((key, param) in bindParams) {
-      val index = getBindParamIndex(statement, key, shouldPassAsArray)
-      if (index > 0) {
-        // expo-modules-core AnyTypeConverter casts JavaScript Number to Kotlin Double,
-        // here to cast as Long if the value is an integer.
-        val normalizedParam =
-          if (param is Double && param.toDouble() % 1.0 == 0.0) {
-            param.toLong()
-          } else {
-            param
-          }
-        statement.ref.bindStatementParam(index, normalizedParam)
-      }
-    }
-    for ((key, param) in bindBlobParams) {
-      val index = getBindParamIndex(statement, key, shouldPassAsArray)
-      if (index > 0) {
-        statement.ref.bindStatementParam(index, param)
-      }
-    }
 
-    val ret = statement.ref.sqlite3_step()
-    if (ret != NativeDatabaseBinding.SQLITE_ROW && ret != NativeDatabaseBinding.SQLITE_DONE) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-    }
-    val firstRowValues: SQLiteColumnValues =
-      if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        statement.ref.getColumnValues()
-      } else {
-        arrayListOf()
+    // The statement with parameter bindings is stateful,
+    // we have to guard with a critical section for thread safety.
+    synchronized(statement) {
+      statement.ref.sqlite3_reset()
+      statement.ref.sqlite3_clear_bindings()
+      for ((key, param) in bindParams) {
+        val index = getBindParamIndex(statement, key, shouldPassAsArray)
+        if (index > 0) {
+          // expo-modules-core AnyTypeConverter casts JavaScript Number to Kotlin Double,
+          // here to cast as Long if the value is an integer.
+          val normalizedParam =
+            if (param is Double && param.toDouble() % 1.0 == 0.0) {
+              param.toLong()
+            } else {
+              param
+            }
+          statement.ref.bindStatementParam(index, normalizedParam)
+        }
       }
-    return mapOf(
-      "lastInsertRowId" to database.ref.sqlite3_last_insert_rowid().toInt(),
-      "changes" to database.ref.sqlite3_changes(),
-      "firstRowValues" to firstRowValues
-    )
+      for ((key, param) in bindBlobParams) {
+        val index = getBindParamIndex(statement, key, shouldPassAsArray)
+        if (index > 0) {
+          statement.ref.bindStatementParam(index, param)
+        }
+      }
+
+      val ret = statement.ref.sqlite3_step()
+      if (ret != NativeDatabaseBinding.SQLITE_ROW && ret != NativeDatabaseBinding.SQLITE_DONE) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      val firstRowValues: SQLiteColumnValues =
+        if (ret == NativeDatabaseBinding.SQLITE_ROW) {
+          statement.ref.getColumnValues()
+        } else {
+          arrayListOf()
+        }
+      return mapOf(
+        "lastInsertRowId" to database.ref.sqlite3_last_insert_rowid().toInt(),
+        "changes" to database.ref.sqlite3_changes(),
+        "firstRowValues" to firstRowValues
+      )
+    }
   }
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
@@ -574,9 +579,7 @@ class SQLiteModule : Module() {
     if (!database.openOptions.finalizeUnusedStatementsBeforeClosing) {
       return
     }
-    if (database.ref.sqlite3_finalize_all_statement() != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-    }
+    database.ref.sqlite3_finalize_all_statement()
   }
 
   // endregion

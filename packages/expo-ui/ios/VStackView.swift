@@ -3,32 +3,45 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class VStackViewProps: ExpoSwiftUI.ViewProps {
+internal enum HorizontalAlignmentOptions: String, Enumerable {
+  case leading
+  case center
+  case trailing
+
+  func toHorizontalAlignment() -> HorizontalAlignment {
+    switch self {
+    case .leading:
+      return .leading
+    case .center:
+      return .center
+    case .trailing:
+      return .trailing
+    }
+  }
+}
+
+internal final class VStackViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
+  @Field var fixedSize: Bool?
+  @Field var frame: FrameOptions?
+  @Field var padding: PaddingOptions?
   @Field var spacing: Double?
-  @Field var padding: Double?
-  @Field var frame: [String: Double]?
+  @Field var useTapGesture: Bool?
+  @Field var alignment: HorizontalAlignmentOptions?
+  @Field var backgroundColor: Color?
+  var onTap = EventDispatcher()
 }
 
 internal struct VStackView: ExpoSwiftUI.View {
   @ObservedObject var props: VStackViewProps
 
   var body: some View {
-    VStack(spacing: CGFloat(props.spacing ?? 0)) {
+    VStack(
+      alignment: props.alignment?.toHorizontalAlignment() ?? .center,
+      spacing: CGFloat(props.spacing ?? 0)) {
       Children()
     }
-    .padding(props.padding ?? 0)
-    .frame(
-      minWidth: props.frame?["minWidth"].map { CGFloat($0) },
-      idealWidth: props.frame?["width"].map { CGFloat($0) },
-      maxWidth: props.frame?["maxWidth"].map { CGFloat($0) },
-      minHeight: props.frame?["minHeight"].map { CGFloat($0) },
-      idealHeight: props.frame?["height"].map { CGFloat($0) },
-      maxHeight: props.frame?["maxHeight"].map { CGFloat($0) },
-      alignment: .center
-    )
-    .fixedSize(
-      horizontal: props.frame?["width"] != nil,
-      vertical: props.frame?["height"] != nil
-    )
+    .modifier(CommonViewModifiers(props: props))
+    .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
+    .background(props.backgroundColor)
   }
 }

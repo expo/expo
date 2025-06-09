@@ -55,7 +55,7 @@ jobs:
         run: pod update RCT-Folly SocketRocket --no-repo-update
         working-directory: apps/bare-expo/ios
       - name: 🍏 Build iOS Project
-        run: ./scripts/start-ios-e2e-test.ts --build
+        run: ./scripts/start-ios-e2e-test.js --build
         working-directory: apps/bare-expo
         env:
           EXPO_DEBUG: 1
@@ -107,7 +107,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Run iOS tests
-        run: ./scripts/start-ios-e2e-test.ts --test
+        run: ./scripts/start-ios-e2e-test.js --test
         working-directory: apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
@@ -167,7 +167,7 @@ jobs:
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare
       - name: 🤖 Build Android project
-        run: ./scripts/start-android-e2e-test.ts --build
+        run: ./scripts/start-android-e2e-test.js --build
         working-directory: apps/bare-expo
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4
@@ -218,7 +218,7 @@ jobs:
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: ./scripts/start-android-e2e-test.ts --test
+          script: ./scripts/start-android-e2e-test.js --test
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()

@@ -1,6 +1,7 @@
 ---
 title: Submit to app stores
 description: Learn how to submit your app to Google Play Store and Apple App Store from the command line with EAS Submit.
+hasVideoLink: true
 ---
 
 import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
@@ -40,12 +41,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   </Requirement>
   <Requirement number={3} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
-    
+
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+
   </Requirement>
   <Requirement number={4} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-    
+
     <Terminal cmd={['$ eas build --platform ios --profile production']} />
 
     Alternatively, you can build the app on your own computer with `eas build --platform ios --profile production --local` or with Xcode.
@@ -75,8 +77,9 @@ The command will lead you step by step through the process of submitting the app
   </Requirement>
   <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
-    
+
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+
   </Requirement>
   <Requirement number={5} title="Include a package name in app.json">
     Include your app's package name in **app.json**:
@@ -92,7 +95,7 @@ The command will lead you step by step through the process of submitting the app
   </Requirement>
   <Requirement number={6} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-    
+
     <Terminal cmd={['$ eas build --platform android --profile production']} />
 
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
@@ -113,6 +116,50 @@ Run the following command to submit a build to the Google Play Store:
 <Terminal cmd={['$ eas submit --platform android']} />
 
 The command will lead you step by step through the process of submitting the app.
+
+## Build and submit automatically
+
+You can automatically create builds and submit them to the app stores with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/build-and-submit.yml** at the root of your project, then add the following workflow configuration:
+
+```yaml .eas/workflows/build-and-submit.yml
+name: Build and submit
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android app
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS app
+    type: build
+    params:
+      platform: ios
+      profile: production
+  submit_android:
+    name: Submit Android
+    type: submit
+    needs: [build_android]
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+  submit_ios:
+    name: Submit iOS
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+```
+
+The workflow above will create Android and iOS builds on every commit to your project's `main` branch, then submit them to the Google Play and Apple App Store respectively. You can also run this workflow manually with the following EAS CLI command:
+
+<Terminal cmd={['$ eas workflow:run build-and-submit.yml']} />
+
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
 
 ## Manual submission to app stores
 

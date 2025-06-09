@@ -150,7 +150,16 @@ export interface VideoViewProps extends ViewProps {
    * Setting this property to `false` makes the Android behavior the same as iOS.
    *
    * @platform android
-   * @default true
+   * @default false
    */
   useExoShutter?: boolean;
+
+  /**
+   * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
+   * If undefined, does not use CORS at all.
+   *
+   * @platform web
+   * @default undefined
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
 }

@@ -62,7 +62,7 @@ function warnAboutConfigAndThrow(type, message, edits) {
     throw new Error();
 }
 function notifyAboutManualConfigEdits(edits) {
-    Log.log(chalk_1.default.cyan(`Please add the following to your Expo config`));
+    Log.log(chalk_1.default.cyan(`Add the following to your Expo config`));
     Log.log();
     Log.log(JSON.stringify(edits, null, 2));
     Log.log();

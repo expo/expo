@@ -398,7 +398,7 @@ export const resolveTypeName = (
   }
 };
 
-export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
+export const parseParamName = (name: string) => (name.startsWith('__') ? name.slice(2) : name);
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters
@@ -453,7 +453,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
           tag,
           content: [
             {
-              text: tag.substring(1),
+              text: tag.slice(1),
               tag,
             } as CommentContentData,
           ],
@@ -471,7 +471,7 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
       }
       return tag;
     })
-    .filter(tag => tag.tag.substring(1) === tagName);
+    .filter(tag => tag.tag.slice(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [

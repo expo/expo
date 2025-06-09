@@ -8,6 +8,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 
@@ -22,14 +23,13 @@ import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.Direction
 import java.util.EnumSet
 
-
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
   val placeholder: MutableState<String> = mutableStateOf(""),
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
-  val autocorrection: MutableState<Boolean> = mutableStateOf(true),
+  val autocorrection: MutableState<Boolean> = mutableStateOf(true)
 ) : ComposeProps
 
 fun String.keyboardType(): KeyboardType {
@@ -47,29 +47,29 @@ fun String.keyboardType(): KeyboardType {
   }
 }
 
-class TextInputView(context: Context, appContext: AppContext) : ExpoComposeView<TextInputProps>(context, appContext) {
+class TextInputView(context: Context, appContext: AppContext) :
+  ExpoComposeView<TextInputProps>(context, appContext, withHostingView = true) {
   override val props = TextInputProps()
   private val onValueChanged by EventDispatcher()
 
-  init {
-    setContent {
-      var value by remember { props.defaultValue }
-      AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
-        TextField(
-          value = value,
-          onValueChange = {
-            value = it
-            onValueChanged(mapOf("value" to it))
-          },
-          placeholder = { Text(props.placeholder.value) },
-          maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
-          singleLine = !props.multiline.value,
-          keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = props.keyboardType.value.keyboardType(),
-            autoCorrectEnabled = props.autocorrection.value,
-          ),
+  @Composable
+  override fun Content() {
+    var value by remember { props.defaultValue }
+    AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
+      TextField(
+        value = value,
+        onValueChange = {
+          value = it
+          onValueChanged(mapOf("value" to it))
+        },
+        placeholder = { Text(props.placeholder.value) },
+        maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
+        singleLine = !props.multiline.value,
+        keyboardOptions = KeyboardOptions.Default.copy(
+          keyboardType = props.keyboardType.value.keyboardType(),
+          autoCorrectEnabled = props.autocorrection.value
         )
-      }
+      )
     }
   }
 }

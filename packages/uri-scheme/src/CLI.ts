@@ -75,7 +75,7 @@ buildCommand('open', ['com.app://oauth', 'http://expo.dev'])
   .action(async (uri: string, args: any) => {
     try {
       if (!args.ios && !args.android) {
-        throw new CommandError('Please provide a target platform with --ios or --android');
+        throw new CommandError('Provide a target platform with --ios or --android');
       }
       await URIScheme.openAsync({
         projectRoot: process.cwd(),
@@ -186,7 +186,10 @@ async function commandDidThrowAsync(reason: any) {
   } else {
     console.log('Aborting run');
 
-    console.log(chalk.black.bgRed`An unexpected error was encountered. Please report it as a bug:`);
+    console.log(
+      chalk.black
+        .bgRed`An unexpected error was encountered. Report it: https://github.com/expo/expo/issues`
+    );
     console.log(reason);
   }
   console.log();

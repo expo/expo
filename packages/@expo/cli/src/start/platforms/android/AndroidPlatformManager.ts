@@ -107,7 +107,7 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
     if (!(await deviceManager.isAppInstalledAndIfSoReturnContainerPathForIOSAsync(customAppId))) {
       throw new CommandError(
         `No development build (${customAppId}) for this project is installed. ` +
-          `Please make and install a development build on the device first.\n${learnMore(
+          `Install a development build on the target device and try again.\n${learnMore(
             'https://docs.expo.dev/development/build/'
           )}`
       );

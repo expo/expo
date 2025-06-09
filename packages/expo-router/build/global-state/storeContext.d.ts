@@ -1,10 +1,9 @@
 export declare const StoreContext: import("react").Context<{
     shouldShowTutorial(): boolean;
     readonly state: import("./router-store").ReactNavigationState | undefined;
-    readonly focusedState: import("@react-navigation/core/lib/typescript/src/NavigationFocusedRouteStateContext").FocusedRouteState | undefined;
     readonly navigationRef: import("@react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
-    getRouteInfo(state?: import("./router-store").FocusedRouteState | import("./router-store").ReactNavigationState | undefined): import("./routeInfo").UrlObject;
+    getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./router-store").StoreRedirects[];
     readonly rootComponent: import("react").ComponentType<any>;
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;
@@ -15,10 +14,9 @@ export declare const StoreContext: import("react").Context<{
 export declare const useExpoRouterStore: () => {
     shouldShowTutorial(): boolean;
     readonly state: import("./router-store").ReactNavigationState | undefined;
-    readonly focusedState: import("@react-navigation/core/lib/typescript/src/NavigationFocusedRouteStateContext").FocusedRouteState | undefined;
     readonly navigationRef: import("@react-navigation/core").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
-    getRouteInfo(state?: import("./router-store").FocusedRouteState | import("./router-store").ReactNavigationState | undefined): import("./routeInfo").UrlObject;
+    getRouteInfo(): import("./routeInfo").UrlObject;
     readonly redirects: import("./router-store").StoreRedirects[];
     readonly rootComponent: import("react").ComponentType<any>;
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;

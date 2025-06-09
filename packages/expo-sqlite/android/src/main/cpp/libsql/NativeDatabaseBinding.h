@@ -59,6 +59,8 @@ private:
       jni::alias_ref<NativeDatabaseBinding::jhybridobject> jThis)
       : javaPart_(jni::make_global(jThis)) {}
 
+  std::string convertSqlLiteErrorToSTLString();
+
 private:
   static jni::local_ref<jhybriddata>
   initHybrid(jni::alias_ref<jhybridobject> jThis);

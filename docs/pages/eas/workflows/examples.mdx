@@ -1,6 +1,7 @@
 ---
 title: Example CI/CD workflows
 description: Common CI/CD workflows that are useful for your project.
+hasVideoLink: true
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -8,10 +9,17 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 The following workflows are examples of how you can use EAS Workflows to automate your development and release processes. They can help you and your team develop, review each other's PRs, and release changes to your users.
 
 ## Development builds workflow
+
+<VideoBoxLink
+  className="mb-4"
+  videoId="u8MAJ0F18s0"
+  title="Expo Golden Workflow: Automate the creation of development builds"
+/>
 
 [Development builds](/develop/development-builds/introduction/) are specialized builds of your project that include Expo's developer tools. These types of builds include all native dependencies inside your project, enabling you to run a production-like build of your project on a simulator, emulator, or a physical device.
 
@@ -104,9 +112,15 @@ Run the above workflow with:
 
 ## Preview updates workflow
 
+<VideoBoxLink
+  className="mb-4"
+  videoId="v_rzRcVSQYQ"
+  title="Expo Golden Workflow: Share preview updates with your team"
+/>
+
 Once you've made changes to your project, you can share a preview of your changes with your team by publishing a [preview update](/review/share-previews-with-your-team/).
 
-You can access preview updates in the development build UI and through scannable QR codes on the Expo dashboard. When publishing a preview on every commit, your team can review changes without pulling the latest changes and running them locally.
+You can access preview updates in the development build UI and through scannable QR codes on the EAS dashboard. When publishing a preview on every commit, your team can review changes without pulling the latest changes and running them locally.
 
 <Prerequisites summary="Prerequisites" numberOfRequirements={2}>
   <Requirement number={1} title="Set up EAS Update">
@@ -138,6 +152,12 @@ jobs:
 ```
 
 ## Deploy to production workflow
+
+<VideoBoxLink
+  className="mb-4"
+  videoId="o-peODF6E2o"
+  title="Expo Golden Workflow: Deploy your app to production with an automated workflow"
+/>
 
 When you're ready to deliver changes to your users, you can build and submit to the app stores or you can send an over-the-air update. The following workflow detects if you need new builds, and if so, it sends them to the app stores. If new builds are not required, it will send an over-the-air update.
 

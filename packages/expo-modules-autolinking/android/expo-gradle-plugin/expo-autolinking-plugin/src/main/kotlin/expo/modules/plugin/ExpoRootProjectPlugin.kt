@@ -14,7 +14,7 @@ import kotlin.jvm.optionals.getOrNull
 class ExpoRootProjectPlugin : Plugin<Project> {
   override fun apply(rootProject: Project) {
     val versionCatalogs = rootProject.extensions.getByType(VersionCatalogsExtension::class.java)
-    val libs = versionCatalogs.find("libs")
+    val libs = versionCatalogs.find("expoLibs")
 
     with(rootProject) {
       defineDefaultProperties(libs)

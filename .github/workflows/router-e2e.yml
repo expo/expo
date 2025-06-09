@@ -72,7 +72,7 @@ jobs:
       - name: Install latest Expo Go
         working-directory: bin
         run: |
-          ./expotools client-install -p ios -s 52.0.0
+          ./expotools client-install -p ios -s 53.0.0
 
       - name: Setup maestro env
         run: |

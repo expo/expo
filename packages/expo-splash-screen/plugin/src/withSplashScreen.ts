@@ -21,37 +21,43 @@ type PluginConfig = {
 };
 
 const withSplashScreen: ConfigPlugin<PluginConfig | null> = (config, props) => {
-  if (!props) {
-    config = withAndroidSplashScreen(config, null);
-    config = withIosSplashScreen(config, null);
-    return config;
-  }
+  let android: AndroidSplashConfig | null = null;
+  let ios: IOSSplashConfig | null = null;
 
   const resizeMode = props?.resizeMode || 'contain';
 
-  const { ios: iosProps, android: androidProps, ...otherProps } = props;
+  const { ios: iosProps, android: androidProps, ...otherProps } = props ?? ({} as PluginConfig);
 
-  const android: AndroidSplashConfig = {
-    ...otherProps,
-    ...androidProps,
-    resizeMode: androidProps?.resizeMode || resizeMode,
-    dark: {
-      ...otherProps?.dark,
-      ...androidProps?.dark,
-    },
-  };
-  const ios: IOSSplashConfig = {
-    ...otherProps,
-    ...iosProps,
-    resizeMode: iosProps?.resizeMode || (resizeMode === 'native' ? 'contain' : resizeMode),
-    dark: {
-      ...otherProps?.dark,
-      ...iosProps?.dark,
-    },
-  };
+  const usesLegacySplashConfigIOS =
+    !props || (androidProps && !iosProps && Object.keys(otherProps).length === 0);
+  const usesLegacySplashConfigAndroid =
+    !props || (iosProps && !androidProps && Object.keys(otherProps).length === 0);
 
-  // Need to pass null here if we don't receive any props. This means that the plugin has not been used.
-  // This only happens on Android. On iOS, if you don't use the plugin, this function won't be called.
+  android = usesLegacySplashConfigAndroid
+    ? null
+    : {
+        ...otherProps,
+        ...androidProps,
+        resizeMode: androidProps?.resizeMode || resizeMode,
+        dark: {
+          ...otherProps?.dark,
+          ...androidProps?.dark,
+        },
+      };
+
+  ios = usesLegacySplashConfigIOS
+    ? null
+    : {
+        ...otherProps,
+        ...iosProps,
+        resizeMode: iosProps?.resizeMode || (resizeMode === 'native' ? 'contain' : resizeMode),
+        dark: {
+          ...otherProps?.dark,
+          ...iosProps?.dark,
+        },
+      };
+
+  // Passing null here will result in the legacy splash config being used.
   config = withAndroidSplashScreen(config, android);
   config = withIosSplashScreen(config, ios);
   return config;

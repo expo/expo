@@ -24,6 +24,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate)
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode)
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?)
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?)
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
 }
@@ -41,6 +42,7 @@ extension VideoPlayerObserverDelegate {
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {}
   func onAudioMixingModeChanged(player: AVPlayer, oldAudioMixingMode: AudioMixingMode, newAudioMixingMode: AudioMixingMode) {}
   func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {}
+  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {}
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {}
 }
@@ -67,13 +69,15 @@ final class WeakPlayerObserverDelegate: Hashable {
   }
 }
 
-class VideoPlayerObserver {
+class VideoPlayerObserver: VideoSourceLoaderListener {
   private weak var owner: VideoPlayer?
+  private weak var videoSourceLoader: VideoSourceLoader?
   var player: AVPlayer? {
     owner?.ref
   }
   var delegates = Set<WeakPlayerObserverDelegate>()
   private var currentItem: VideoPlayerItem?
+  private var isLoadingAsynchronously = false
   private var loadedCurrentItem = false
   private var periodicTimeObserver: Any?
   private var currentVideoTrack: VideoTrack? {
@@ -96,11 +100,21 @@ class VideoPlayerObserver {
     }
   }
   private var error: Exception?
-  private var status: PlayerStatus = .idle {
-    didSet {
-      if let player, oldValue != status {
+  private var _status: PlayerStatus = .idle
+  private var status: PlayerStatus {
+    get {
+      return _status
+    }
+    set {
+      if newValue != .loading && isLoadingAsynchronously {
+        return
+      }
+
+      if let player, newValue != status {
+        let oldStatus = self._status
+        _status = newValue
         delegates.forEach { delegate in
-          delegate.value?.onStatusChanged(player: player, oldStatus: oldValue, newStatus: status, error: error)
+          delegate.value?.onStatusChanged(player: player, oldStatus: oldStatus, newStatus: status, error: error)
         }
       }
     }
@@ -123,10 +137,13 @@ class VideoPlayerObserver {
   private var playerItemStatusObserver: NSKeyValueObservation?
   private var playbackLikelyToKeepUpObserver: NSKeyValueObservation?
   private var currentSubtitlesObserver: NSObjectProtocol?
+  private var currentAudioTracksObserver: NSObjectProtocol?
 
-  init(owner: VideoPlayer) {
+  init(owner: VideoPlayer, videoSourceLoader: VideoSourceLoader) {
     self.owner = owner
+    self.videoSourceLoader = videoSourceLoader
     initializePlayerObservers()
+    self.videoSourceLoader?.registerListener(listener: self)
   }
 
   deinit {
@@ -143,6 +160,7 @@ class VideoPlayerObserver {
   }
 
   func cleanup() {
+    self.videoSourceLoader?.unregisterListener(listener: self)
     delegates.removeAll()
     invalidatePlayerObservers()
     invalidateCurrentPlayerItemObservers()
@@ -241,6 +259,17 @@ class VideoPlayerObserver {
         delegate.value?.onSubtitleSelectionChanged(player: player, playerItem: playerItem, subtitleTrack: subtitleTrack)
       }
     }
+
+    currentAudioTracksObserver = NotificationCenter.default.addObserver(
+      forName: AVPlayerItem.mediaSelectionDidChangeNotification,
+      object: playerItem,
+      queue: nil
+    ) { [weak self] _ in
+      self?.delegates.forEach { delegate in
+        let audioTrack = VideoPlayerAudioTracks.findCurrentAudioTrack(for: playerItem)
+        delegate.value?.onAudioTrackSelectionChanged(player: player, playerItem: playerItem, audioTrack: audioTrack)
+      }
+    }
   }
 
   private func invalidateCurrentPlayerItemObservers() {
@@ -250,6 +279,7 @@ class VideoPlayerObserver {
     tracksObserver?.invalidate()
     NotificationCenter.default.removeObserver(playerItemObserver as Any)
     NotificationCenter.default.removeObserver(currentSubtitlesObserver as Any)
+    NotificationCenter.default.removeObserver(currentAudioTracksObserver as Any)
   }
 
   func startOrUpdateTimeUpdates(forInterval interval: Double) {
@@ -332,24 +362,18 @@ class VideoPlayerObserver {
     if player?.status != .failed {
       error = nil
     }
-
-    switch playerItem.status {
-    case .unknown:
+    if owner?.videoSourceLoader.isLoading == true {
       status = .loading
-    case .failed:
-      // The AVPlayerItem.error can't be modified, so we have a custom field for caching errors
-      let playerItemError = (playerItem as? VideoPlayerItem)?.urlAsset.cachingError ?? error
+      return
+    }
+
+    let newStatus = playerItem.status.toVideoPlayerStatus(isPlaybackBufferEmpty: playerItem.isPlaybackBufferEmpty)
+
+    // The AVPlayerItem.error can't be modified, so we have a custom field for caching errors
+    if newStatus == .error {
+      let playerItemError = (playerItem as? VideoPlayerItem)?.urlAsset.cachingError ?? playerItem.error ?? error
       error = PlayerItemLoadException(playerItemError?.localizedDescription)
       status = .error
-    case .readyToPlay:
-      if playerItem.isPlaybackBufferEmpty {
-        status = .loading
-      } else {
-        status = .readyToPlay
-      }
-    @unknown default:
-      log.error("Unhandled `AVPlayerItem.Status` value: \(playerItem.status), returning `.loading` as fallback. Add the missing case as soon as possible.")
-      status = .loading
     }
 
     if let player, !loadedCurrentItem && (status == .readyToPlay || status == .error) {
@@ -385,7 +409,16 @@ class VideoPlayerObserver {
     if player.timeControlStatus != .waitingToPlayAtSpecifiedRate && player.status == .readyToPlay && currentItem?.isPlaybackBufferEmpty != true {
       status = .readyToPlay
     } else if player.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      status = .loading
+      switch player.reasonForWaitingToPlay {
+      case .noItemToPlay:
+        status = .idle
+      case .evaluatingBufferingRate:
+        // Every time the player is unpaused timeControlStatus goes into .waitingToPlayAtSpecifiedRate while evaluating buffering rate.
+        // This takes less than a frame and we can ignore this change to avoid unnecessary status changes.
+        break
+      default:
+        status = .loading
+      }
     }
 
     if isPlaying != (player.timeControlStatus == .playing) {
@@ -430,6 +463,21 @@ class VideoPlayerObserver {
       }
     }
   }
+
+  // MARK: - VideoSourceLoaderListener
+  func onLoadingStarted(loader: VideoSourceLoader, videoSource: VideoSource?) {
+    isLoadingAsynchronously = true
+    status = .loading
+  }
+
+  func onLoadingCancelled(loader: VideoSourceLoader, videoSource: VideoSource?) {
+    isLoadingAsynchronously = false
+    status = .idle
+  }
+
+  func onLoadingFinished(loader: VideoSourceLoader, videoSource: VideoSource?, result: VideoPlayerItem?) {
+    isLoadingAsynchronously = false
+  }
 }
 
 private extension AVPlayerItemAccessLogEvent {
@@ -452,5 +500,24 @@ private extension AVPlayerItemAccessLogEvent {
     let id = logUri.replacingOccurrences(of: baseUriString, with: "")
 
     return videoTracks.first { $0.id == id }
+  }
+}
+
+fileprivate extension AVPlayerItem.Status {
+  func toVideoPlayerStatus(isPlaybackBufferEmpty: Bool) -> PlayerStatus {
+    switch self {
+    case .unknown:
+      return .loading
+    case .failed:
+      return .error
+    case .readyToPlay:
+      if isPlaybackBufferEmpty {
+        return .loading
+      }
+      return .readyToPlay
+    @unknown default:
+      log.error("Unhandled `AVPlayerItem.Status` value: \(self), returning `.loading` as fallback. Add the missing case as soon as possible.")
+      return .loading
+    }
   }
 }

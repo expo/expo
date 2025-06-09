@@ -6,9 +6,39 @@
 
 ### 🎉 New features
 
+- Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.9 - 2025-06-08
+
+### 🎉 New features
+
+- Allowed custom children in SwiftUI Button. ([#37136](https://github.com/expo/expo/pull/37136) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.8 - 2025-06-04
+
+### 🎉 New features
+
+- [android] Add shape component. ([#36964](https://github.com/expo/expo/pull/36964) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937), [#36938](https://github.com/expo/expo/pull/36938) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.7 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.1-alpha.6 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- [iOS] Fix initial opened state of Bottom Sheet. ([#36176](https://github.com/expo/expo/pull/36176) by [@entiendoNull](https://github.com/entiendoNull))
 
 ## 0.1.1-alpha.5 — 2025-04-25
 

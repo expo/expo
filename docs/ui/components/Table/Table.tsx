@@ -35,7 +35,7 @@ export const Table = ({
         '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
         className
       )}>
-      {headers.length ? (
+      {headers.length > 0 ? (
         <>
           <TableHeaders headers={headers} headersAlign={headersAlign} />
           <tbody>{children}</tbody>

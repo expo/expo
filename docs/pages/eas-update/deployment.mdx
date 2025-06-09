@@ -125,9 +125,15 @@ When creating a new production build, we recommend incrementing your [app versio
 
 ### Gradually rolling out updates
 
-Rollouts that leverage multiple branches can't be used with this workflow. We're working on a solution for this, but in the meantime, you will need to use a process similar to the [branch promotion flow](/eas-update/deployment-patterns/#branch-promotion-flow) to incrementally roll out updates.
+You can use [per-update rollouts](/eas-update/rollouts/#per-update-rollouts) to deploy updates gradually to an increasing percentage of users. For example: `eas update --rollout-percentage 10` will roll out the update to 10% of users, and you can use `eas update:edit` to edit the rollout percentage later. Learn more in [Rollouts](/eas-update/rollouts/).
 
-Learn more in [Rollouts](/eas-update/rollouts/).
+<Collapsible summary="What other types of rollouts are available?">
+
+Another type of rollout is called "branch-based rollouts". These require a deployment strategy focused around update branches, which we are not using in this guide and are not required for most use cases.
+
+The distinction between per-update rollouts and branch-based rollouts is that per-update rollouts operate on a single update (update with ID `123` will be rolled out to 10% of users on the `production` channel/branch), whereas branch-based rollouts will roll out switching over to a different branch (which is a stream of updates) (branch `hotfix-123` will be rolled out to 10% of users on the `production` channel, and `hotfix-123` can point to update ID `123` or `124`).
+
+</Collapsible>
 
 ### Rolling back to a previous update version
 

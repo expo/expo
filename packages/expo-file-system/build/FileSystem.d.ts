@@ -143,7 +143,7 @@ export declare function downloadAsync(uri: string, fileUri: string, options?: Do
  *
  * **Server**
  *
- * Please refer to the "[Server: Handling multipart requests](#server-handling-multipart-requests)" example - there is code for a simple Node.js server.
+ * Refer to the "[Server: Handling multipart requests](#server-handling-multipart-requests)" example - there is code for a simple Node.js server.
  * @return Returns a Promise that resolves to `FileSystemUploadResult` object.
  */
 export declare function uploadAsync(url: string, fileUri: string, options?: FileSystemUploadOptions): Promise<FileSystemUploadResult>;
@@ -185,7 +185,7 @@ export declare class UploadTask extends FileSystemCancellableNetworkTask<UploadP
     constructor(url: string, fileUri: string, options?: FileSystemUploadOptions, callback?: FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined);
     protected getEventName(): string;
     protected getCallback(): FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined;
-    uploadAsync(): Promise<FileSystemUploadResult | undefined>;
+    uploadAsync(): Promise<FileSystemUploadResult | undefined | null>;
 }
 export declare class DownloadResumable extends FileSystemCancellableNetworkTask<DownloadProgressData> {
     private url;
