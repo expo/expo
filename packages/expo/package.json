@@ -105,7 +105,9 @@
   "peerDependencies": {
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
+    "metro-runtime": "*",
     "react": "*",
+    "react-refresh": "*",
     "react-native": "*",
     "react-native-webview": "*"
   },
