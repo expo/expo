@@ -12,6 +12,8 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   silent?: boolean;
   /** Should be installed as dev dependencies */
   dev?: boolean;
+  /** Should output in JSON format (use with --check) */
+  json?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
@@ -32,7 +34,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun'],
+    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun', '--json'],
     { variadic, extras, flags },
     'npx expo install'
   );
@@ -48,6 +50,7 @@ export async function resolveArgsAsync(
       npm: !!flags['--npm'],
       pnpm: !!flags['--pnpm'],
       bun: !!flags['--bun'],
+      json: !!flags['--json'],
     }),
     extras,
   };

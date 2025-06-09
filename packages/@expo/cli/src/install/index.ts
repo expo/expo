@@ -9,6 +9,7 @@ export const expoInstall: Command = async (argv) => {
     {
       // Other options are parsed manually.
       '--help': Boolean,
+      '--json': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -25,6 +26,7 @@ export const expoInstall: Command = async (argv) => {
       `npx expo install`,
       [
         `--check     Check which installed packages need to be updated`,
+        `--json      Output in JSON format (use with --check)`,
         '--dev       Save the dependencies as devDependencies',
         `--fix       Automatically update any invalid package versions`,
         chalk`--npm       Use npm to install dependencies. {dim Default when package-lock.json exists}`,
