@@ -77,7 +77,7 @@ class ArrayTypeConverter(
   override fun isTrivial() = arrayElementConverter.isTrivial()
 }
 
-fun isPrimitiveArray(type: KType, clazz: Class<*>): Boolean {
+internal fun isPrimitiveArray(type: KType, clazz: Class<*>): Boolean {
   return when (clazz) {
     BooleanArray::class.java,
     ByteArray::class.java,
