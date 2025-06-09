@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Simplify expo-modules-core usage.
+- Simplify expo-modules-core usage. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 53.0.11 - 2025-06-08
 
