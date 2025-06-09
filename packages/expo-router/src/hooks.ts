@@ -7,8 +7,8 @@ import { LocalRouteParamsContext } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
+import { PreviewParamsContext } from './link/preview/PreviewParamsContext';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
-import { PreviewParamsContext } from './link/preview/Preview';
 
 export { useRouteInfo };
 

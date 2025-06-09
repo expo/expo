@@ -22,7 +22,7 @@ const constants_1 = require("./constants");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
-const Preview_1 = require("./link/preview/Preview");
+const PreviewParamsContext_1 = require("./link/preview/PreviewParamsContext");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -110,13 +110,13 @@ function usePathname() {
     return (0, router_store_1.useRouteInfo)().pathname;
 }
 function useGlobalSearchParams() {
-    const previewParams = react_1.default.use(Preview_1.PreviewParamsContext);
+    const previewParams = react_1.default.use(PreviewParamsContext_1.PreviewParamsContext);
     const globalParams = (0, router_store_1.useRouteInfo)().params;
     return previewParams ?? globalParams;
 }
 function useLocalSearchParams() {
     const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
-    const previewParams = react_1.default.use(Preview_1.PreviewParamsContext);
+    const previewParams = react_1.default.use(PreviewParamsContext_1.PreviewParamsContext);
     return (previewParams ??
         Object.fromEntries(Object.entries(params).map(([key, value]) => {
             // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via

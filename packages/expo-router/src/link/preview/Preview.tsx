@@ -1,18 +1,14 @@
 'use client';
 
-import { createContext } from 'react';
-
 import { RouteNode } from '../../Route';
 import { store } from '../../global-state/router-store';
 import { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { resolveHref, resolveHrefStringWithSegments } from '../href';
-
-export const PreviewParamsContext = createContext<UnknownOutputParams | undefined>(undefined);
+import { PreviewParamsContext } from './PreviewParamsContext';
 
 // TODO: Handle usePathname/useSegments properly
-// TODO: Maybe pass isPreview prop to a screen
 
 export function Preview({ href }: { href: Href }) {
   const navigation = useNavigation();
