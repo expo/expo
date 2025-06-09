@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] scanFromUrlAsync now handles other barcodes formats than QRCode. ([#35185](https://github.com/expo/expo/pull/35185) by [@eliottg](https://github.com/EliottG-Bam))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
