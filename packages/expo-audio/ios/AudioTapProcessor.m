@@ -42,7 +42,7 @@ typedef struct AVAudioTapProcessorContext {
       callbacks.init = tapInit;
       callbacks.finalize = tapFinalize;
       callbacks.prepare = tapPrepare;
-      callbacks.unprepare = tapUnprepare;
+      callbacks.unprepare = nil;
       callbacks.process = tapProcess;
       
       MTAudioProcessingTapRef audioProcessingTap;
@@ -94,11 +94,6 @@ void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioS
   if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved) {
     context->isNonInterleaved = true;
   }
-}
-
-void tapUnprepare(MTAudioProcessingTapRef tap) {
-  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  context->self = NULL;
 }
 
 void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut) {
