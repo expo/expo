@@ -1,4 +1,8 @@
 /* eslint-env browser */
+import getDevServer from './getDevServer';
+
+// @ts-expect-error: untyped module
+import WebSocket from 'react-native/Libraries/WebSocket/WebSocket';
 
 declare namespace globalThis {
   const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;
@@ -6,7 +10,6 @@ declare namespace globalThis {
 
 if (__DEV__) {
   const socket: WebSocket = (() => {
-    const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
     const devServer = getDevServer();
     if (!devServer.bundleLoadedFromServer) {
       throw new Error('Cannot create devtools websocket connections in embedded environments.');
@@ -14,11 +17,10 @@ if (__DEV__) {
 
     const devServerUrl = new URL(devServer.url);
     const serverScheme = devServerUrl.protocol === 'https:' ? 'wss' : 'ws';
-    const WebSocket = require('react-native/Libraries/WebSocket/WebSocket').default;
     return new WebSocket(`${serverScheme}://${devServerUrl.host}/message`);
   })();
 
-  socket.onmessage = (message) => {
+  socket.onmessage = (message: { data: any }) => {
     const data = JSON.parse(String(message.data));
     switch (data.method) {
       case 'sendDevCommand':

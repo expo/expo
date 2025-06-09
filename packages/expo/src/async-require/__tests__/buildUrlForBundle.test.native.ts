@@ -1,10 +1,10 @@
-import getDevServer from '../../getDevServer';
+import getDevServer from '../getDevServer';
 import { buildUrlForBundle } from '../buildUrlForBundle';
 
 export const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../../getDevServer', () => ({
+jest.mock('../getDevServer', () => ({
   __esModule: true,
   default: jest.fn(),
 }));
@@ -13,11 +13,13 @@ const originalEnv = process.env;
 
 beforeEach(() => {
   process.env = { ...originalEnv };
+  // @ts-ignore
   delete window.location;
 });
 
 afterAll(() => {
   process.env = originalEnv;
+  // @ts-ignore
   delete window.location;
 });
 
@@ -25,6 +27,7 @@ it(`returns an expected URL in production`, () => {
   process.env.NODE_ENV = 'production';
 
   // Mock the location object
+  // @ts-expect-error
   window.location = {
     origin: 'http://localhost:19000',
   };

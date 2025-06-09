@@ -11,8 +11,7 @@
 // @ts-expect-error: no types for MetroHMRClient
 import MetroHMRClient from 'metro-runtime/src/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
-// @ts-expect-error: no types
-import { DeviceEventEmitter } from 'react-native-web';
+import { DeviceEventEmitter } from 'react-native';
 
 // Ensure events are sent so custom Fast Refresh views are shown.
 function showLoading(message: string, _type: 'load' | 'refresh') {

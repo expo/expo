@@ -2,15 +2,7 @@ import { fetchThenEvalAsync } from '../fetchThenEval';
 import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';
 
-jest.mock('../../getDevServer', () => ({
-  __esModule: true,
-  default: jest.fn(() => ({
-    bundleLoadedFromServer: true,
-    fullBundleUrl:
-      'http://localhost:19000?platform=android&modulesOnly=true&runModule=false&runtimeBytecodeVersion=null',
-    url: 'http://localhost:19000/',
-  })),
-}));
+jest.mock('../getDevServer');
 
 jest.mock('../fetchThenEval', () => ({
   fetchThenEvalAsync: jest.fn(async (): Promise<void> => {}),

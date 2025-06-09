@@ -17,6 +17,7 @@ export function buildUrlForBundle(bundlePath: string): string {
   }
 
   if (
+    typeof window !== 'undefined' &&
     // @ts-expect-error
     typeof window.ReactNativeWebView !== 'undefined'
   ) {
