@@ -22,6 +22,7 @@ import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
