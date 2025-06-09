@@ -208,17 +208,26 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
     prefetch?: boolean;
     /**
      * Enables the experimental preview for the link.
-     * This will enable peek and pop interaction on iOS.
+     * This allows peek and pop interactions on iOS.
      *
      * @platform ios
      */
     experimentalPreview?: boolean;
+    /**
+     * Renders the preview at the same time as the link.
+     * If the previewed screen performs heavy operations, it may cause performance issues.
+     *
+     * This has no effect if `experimentalPreview` is not enabled.
+     *
+     * @platform ios
+     */
+    experimentalDisableLazyPreview?: boolean;
     ref?: Ref<Text>;
 }
 export declare function useInteropClassName(props: {
     style?: TextProps['style'];
     className?: string;
-}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").TextStyle | import("react-native").Falsy | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
+}): false | "" | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle> | import("react-native").RecursiveArray<import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>> | readonly (import("react-native").Falsy | import("react-native").TextStyle | import("react-native").RegisteredStyle<import("react-native").TextStyle>)[] | {
     $$css: boolean;
     __routerLinkClassName: string;
 })[] | null | undefined;

@@ -87,10 +87,10 @@ export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProp
   const isPreview = useIsPreview();
   useFocusEffect(() => {
     if (!isPreview) {
-    try {
-      router.replace(href, { relativeToDirectory, withAnchor });
-    } catch (error) {
-      console.error(error);
+      try {
+        router.replace(href, { relativeToDirectory, withAnchor });
+      } catch (error) {
+        console.error(error);
       }
     }
   });
@@ -264,7 +264,9 @@ export function LinkWithPreview({ experimentalPreview, ...rest }: LinkProps) {
         onSetSize={({ nativeEvent: size }) => setPreviewSize(size)}
         style={{ position: 'absolute', ...previewSize }}>
         {/* TODO: Add a way to make preview smaller then full size */}
-        {isCurrentPreviewOpen && <Preview href={rest.href} />}
+        {(isCurrentPreviewOpen || rest.experimentalDisableLazyPreview) && (
+          <Preview href={rest.href} />
+        )}
       </PeekAndPopPreviewView>
     </PeekAndPopView>
   );

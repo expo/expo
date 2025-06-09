@@ -16,6 +16,7 @@ const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const hooks_1 = require("../hooks");
 const useFocusEffect_1 = require("../useFocusEffect");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
+const PreviewParamsContext_1 = require("./preview/PreviewParamsContext");
 const useLinkHooks_1 = require("./useLinkHooks");
 const Prefetch_1 = require("../Prefetch");
 const Slot_1 = require("../ui/Slot");
@@ -47,12 +48,15 @@ const native_1 = require("./preview/native");
  */
 function Redirect({ href, relativeToDirectory, withAnchor }) {
     const router = (0, hooks_1.useRouter)();
+    const isPreview = (0, PreviewParamsContext_1.useIsPreview)();
     (0, useFocusEffect_1.useFocusEffect)(() => {
-        try {
-            router.replace(href, { relativeToDirectory, withAnchor });
-        }
-        catch (error) {
-            console.error(error);
+        if (!isPreview) {
+            try {
+                router.replace(href, { relativeToDirectory, withAnchor });
+            }
+            catch (error) {
+                console.error(error);
+            }
         }
     });
     return null;
@@ -84,7 +88,8 @@ function Redirect({ href, relativeToDirectory, withAnchor }) {
  * ```
  */
 function Link(props) {
-    if (props.experimentalPreview) {
+    const isPreview = (0, PreviewParamsContext_1.useIsPreview)();
+    if (props.experimentalPreview && !isPreview) {
         return <LinkWithPreview {...props}/>;
     }
     return <ExpoRouterLink {...props}/>;
@@ -172,7 +177,7 @@ function LinkWithPreview({ experimentalPreview, ...rest }) {
       </native_1.PeekAndPopTriggerView>
       <native_1.PeekAndPopPreviewView onSetSize={({ nativeEvent: size }) => setPreviewSize(size)} style={{ position: 'absolute', ...previewSize }}>
         {/* TODO: Add a way to make preview smaller then full size */}
-        {isCurrentPreviewOpen && <Preview_1.Preview href={rest.href}/>}
+        {(isCurrentPreviewOpen || rest.experimentalDisableLazyPreview) && (<Preview_1.Preview href={rest.href}/>)}
       </native_1.PeekAndPopPreviewView>
     </native_1.PeekAndPopView>);
 }
