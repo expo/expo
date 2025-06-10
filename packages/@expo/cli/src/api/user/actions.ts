@@ -7,7 +7,7 @@ import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import promptAsync, { Question } from '../../utils/prompts';
+import promptAsync, { confirmAsync, Question, selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
 
 /** Show login prompt while prompting for missing credentials. */
@@ -91,16 +91,40 @@ export async function showLoginPromptAsync({
   }
 }
 
-/** Ensure the user is logged in, if not, prompt to login. */
-export async function ensureLoggedInAsync(): Promise<Actor> {
-  let user = await getUserAsync().catch(() => null);
+export async function tryGetUserAsync(): Promise<Actor | null> {
+  const user = await getUserAsync().catch(() => null);
 
-  if (!user) {
-    Log.warn(chalk.yellow`An Expo user account is required to proceed.`);
-    await showLoginPromptAsync({ printNewLine: true });
-    user = await getUserAsync();
+  if (user) {
+    return user;
   }
 
-  assert(user, 'User should be logged in');
-  return user;
+  const choices = [
+    {
+      title: 'Log in',
+      value: true,
+    },
+    {
+      title: 'Proceed anonymously',
+      value: false,
+    },
+  ];
+
+  const value = await selectAsync(
+    chalk`\n\nIt is recommended to log in with your Expo account before proceeding. \n{dim ${learnMore(
+      'https://expo.fyi/unverified-app-expo-go'
+    )}}\n`,
+    choices,
+    {
+      nonInteractiveHelp: `Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
+        'https://docs.expo.dev/accounts/programmatic-access/'
+      )})`,
+    }
+  );
+
+  if (value) {
+    await showLoginPromptAsync({ printNewLine: true });
+    return (await getUserAsync()) ?? null;
+  }
+
+  return null;
 }

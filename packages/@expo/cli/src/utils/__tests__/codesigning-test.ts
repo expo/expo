@@ -4,7 +4,9 @@ import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
+import { selectAsync } from '../prompts';
 
+jest.mock('../../utils/prompts');
 jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
@@ -72,6 +74,21 @@ describe(getCodeSigningInfoAsync, () => {
     await expect(
       getCodeSigningInfoAsync({} as any, 'keyid="hello", alg=1', undefined)
     ).rejects.toThrowError('Invalid value for alg in expo-expect-signature header');
+  });
+
+  it('returns null when user is not logged in', async () => {
+    jest.mocked(getUserAsync).mockImplementationOnce(async () => undefined);
+    jest.mocked(selectAsync).mockResolvedValueOnce(false);
+
+    await expect(
+      getCodeSigningInfoAsync(
+        { extra: { eas: { projectId: 'testprojectid' } } } as any,
+        'keyid="expo-root", alg="rsa-v1_5-sha256"',
+        undefined
+      )
+    ).resolves.toBeNull();
+
+    expect(selectAsync).toHaveBeenCalledTimes(1);
   });
 
   describe('expo-root keyid requested', () => {
@@ -145,6 +162,26 @@ describe(getCodeSigningInfoAsync, () => {
           undefined
         );
         process.env.EXPO_OFFLINE = '1';
+        const result2 = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+        expect(result2).toEqual(result);
+      });
+
+      it('falls back to cached when fetch returns null due to user not being logged in', async () => {
+        // First call to get a cached certificate
+        const result = await getCodeSigningInfoAsync(
+          { extra: { eas: { projectId: 'testprojectid' } } } as any,
+          'keyid="expo-root", alg="rsa-v1_5-sha256"',
+          undefined
+        );
+
+        // Mock user not being logged in
+        jest.mocked(getUserAsync).mockImplementationOnce(async () => undefined);
+
+        // Second call should return cached certificate
         const result2 = await getCodeSigningInfoAsync(
           { extra: { eas: { projectId: 'testprojectid' } } } as any,
           'keyid="expo-root", alg="rsa-v1_5-sha256"',

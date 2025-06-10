@@ -384,6 +384,43 @@ bool PrimitiveArrayFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Va
   return value.isObject() && value.getObject(rt).isArray(rt);
 }
 
+ArrayFrontendConverter::ArrayFrontendConverter(
+  jni::local_ref<SingleType::javaobject> expectedType
+) {
+  auto parameterExpectedType = expectedType->getFirstParameterType();
+  parameterType = parameterExpectedType->getCombinedTypes();
+  parameterConverter = FrontendConverterProvider::instance()->obtainConverter(
+    parameterExpectedType
+  );
+  javaType = parameterExpectedType->getJClassString();
+}
+
+jobject ArrayFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  auto jsArray = value.asObject(rt).asArray(rt);
+  size_t size = jsArray.size(rt);
+  auto result = env->NewObjectArray(
+    size,
+    JCacheHolder::get().getOrLoadJClass(env, javaType),
+    nullptr
+  );
+  for (size_t i = 0; i < size; i++) {
+    auto convertedElement = parameterConverter->convert(
+      rt, env, jsArray.getValueAtIndex(rt, i)
+    );
+    env->SetObjectArrayElement(result, i, convertedElement);
+    env->DeleteLocalRef(convertedElement);
+  }
+  return result;
+}
+
+bool ArrayFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isObject() && value.getObject(rt).isArray(rt);
+}
+
 ListFrontendConverter::ListFrontendConverter(
   jni::local_ref<SingleType::javaobject> expectedType
 ) : parameterConverter(

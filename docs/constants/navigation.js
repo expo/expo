@@ -104,6 +104,7 @@ export const home = [
       'Development builds',
       [
         makePage('develop/development-builds/introduction.mdx'),
+        makePage('develop/development-builds/expo-go-to-dev-build.mdx'),
         makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
@@ -116,7 +117,8 @@ export const home = [
       'Config plugins',
       [
         makePage('config-plugins/introduction.mdx'),
-        makePage('config-plugins/plugins-and-mods.mdx'),
+        makePage('config-plugins/plugins.mdx'),
+        makePage('config-plugins/mods.mdx'),
         makePage('config-plugins/development-and-debugging.mdx'),
       ],
       { expanded: false }
@@ -755,6 +757,7 @@ function makePage(file) {
     isAlpha: data.isAlpha ?? undefined,
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
+    hasVideoLink: data.hasVideoLink ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {

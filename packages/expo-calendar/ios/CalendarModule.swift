@@ -219,8 +219,8 @@ public class CalendarModule: Module {
         }
       }
 
-      if let url = maybeSetUrl(details.url) {
-        reminder.url = url
+      if let url = details.url {
+        reminder.url = URL(string: url)
       }
 
       if let startDate {
@@ -387,8 +387,8 @@ public class CalendarModule: Module {
       }
     }
 
-    if let url = maybeSetUrl(event.url) {
-      calendarEvent.url = url
+    if let url = event.url {
+      calendarEvent.url = URL(string: url)
     }
 
     if let startDate = event.startDate {
@@ -472,15 +472,6 @@ public class CalendarModule: Module {
 
     eventStore.reset()
     permittedEntities.insert(entity == .event ? .event : .reminder)
-  }
-
-  private func maybeSetUrl(_ url: String?) -> URL? {
-    var allowedQueryParamAndKey = CharacterSet.urlHostAllowed
-    allowedQueryParamAndKey.insert(charactersIn: ":/")
-    if let urlString = url?.addingPercentEncoding(withAllowedCharacters: allowedQueryParamAndKey), let url = URL(string: urlString) {
-      return url
-    }
-    return nil
   }
 
   private func getReminder(from details: Reminder) throws -> EKReminder {

@@ -48,6 +48,7 @@ export type ButtonProps = {
   onPress?: () => void;
   /**
    * A string describing the system image to display in the button.
+   * This is only used if `children` is a string.
    * Uses Material Icons on Android and SF Symbols on iOS.
    */
   systemImage?: string;
@@ -61,9 +62,9 @@ export type ButtonProps = {
    */
   variant?: ButtonVariant;
   /**
-   * The text to display inside the button.
+   * The text or React node to display inside the button.
    */
-  children: string;
+  children: string | React.ReactNode;
   /**
    * Button color.
    */
@@ -82,7 +83,7 @@ export type NativeButtonProps = Omit<
   'role' | 'onPress' | 'children' | 'systemImage'
 > & {
   buttonRole?: ButtonRole;
-  text: string;
+  text: string | undefined;
   systemImage?: string;
 } & ViewEvent<'onButtonPressed', void>;
 
@@ -95,13 +96,16 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 /**
  * @hidden
  */
-export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { role, children, onPress, systemImage, ...restProps } = props;
+export function transformButtonProps(
+  props: Omit<ButtonProps, 'children'>,
+  text: string | undefined
+): NativeButtonProps {
+  const { role, onPress, systemImage, ...restProps } = props;
   return {
     ...restProps,
-    text: children ?? '',
-    buttonRole: role,
+    text,
     systemImage,
+    buttonRole: role,
     onButtonPressed: onPress,
   };
 }
@@ -111,7 +115,12 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
  * You should use this with a `Host` component in ancestor.
  */
 export function ButtonPrimitive(props: ButtonProps) {
-  return <ButtonNativeView {...transformButtonProps(props)} />;
+  const { children, ...restProps } = props;
+  const text = typeof children === 'string' ? children : undefined;
+  if (text !== undefined) {
+    return <ButtonNativeView {...transformButtonProps(restProps, text)} />;
+  }
+  return <ButtonNativeView {...transformButtonProps(restProps, text)}>{children}</ButtonNativeView>;
 }
 
 /**

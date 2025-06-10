@@ -156,6 +156,14 @@ class ExpectedType(
       SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(parameterType))
     )
 
+    fun forArray(parameterType: CppType) = ExpectedType(
+      SingleType(CppType.ARRAY, arrayOf(ExpectedType(parameterType)))
+    )
+
+    fun forArray(parameterType: ExpectedType) = ExpectedType(
+      SingleType(CppType.ARRAY, arrayOf(parameterType))
+    )
+
     fun forEnum() = ExpectedType(
       CppType.STRING,
       CppType.INT

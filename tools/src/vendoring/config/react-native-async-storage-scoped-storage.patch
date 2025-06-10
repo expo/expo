@@ -2,7 +2,7 @@
 +++ android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncLocalStorageUtil.java	2024-11-11 14:42:51
 @@ -159,7 +159,9 @@
      }
- 
+
      File nextStorageFile = ctx.getDatabasePath("AsyncStorage");
 -    File currentStorageFile = ctx.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME);
 +    // NOTE(kudo): Expo Go doesn't turn on next storage, having dummy db name to pass build
@@ -25,38 +25,38 @@
              Log.v(LOG_TAG, "Failed to migrate scoped database " + expoDatabase.getName());
 @@ -62,7 +63,9 @@
      }
- 
+
      private static boolean isAsyncStorageDatabaseCreated(Context context) {
 -        return context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME).exists();
 +        // NOTE(kudo): Don't run migration on Expo Go for backward compatibility
 +        // return context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME).exists();
 +        return true;
      }
- 
+
      // Find all database files that the user may have created while using Expo.
 --- android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java	1985-10-26 16:15:00
-+++ android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java	2024-11-11 14:42:51
-@@ -33,7 +33,7 @@
++++ android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java	2025-06-10 12:15:41
+@@ -31,7 +31,7 @@
  import java.util.concurrent.Executors;
- 
+
  @ReactModule(name = AsyncStorageModule.NAME)
--public final class AsyncStorageModule
-+public class AsyncStorageModule
-     extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable {
- 
+-public final class AsyncStorageModule extends NativeAsyncStorageModuleSpec {
++public class AsyncStorageModule extends NativeAsyncStorageModuleSpec {
+
    // changed name to not conflict with AsyncStorage from RN repo
-@@ -43,7 +43,7 @@
+   public static final String NAME = "RNCAsyncStorage";
+@@ -40,7 +40,7 @@
    // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
    private static final int MAX_SQL_KEYS = 999;
- 
+
 -  private ReactDatabaseSupplier mReactDatabaseSupplier;
 +  public ReactDatabaseSupplier mReactDatabaseSupplier;
    private boolean mShuttingDown = false;
- 
+
    private final SerialExecutor executor;
-@@ -66,6 +66,7 @@
+@@ -64,6 +64,7 @@
      this.executor = new SerialExecutor(executor);
-     reactContext.addLifecycleEventListener(this);
+
      // Creating the database MUST happen after the migration.
 +    // NOTE(kudo): ExponentAsyncStorageModule will setup the `mReactDatabaseSupplier`
      mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);

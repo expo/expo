@@ -55,6 +55,7 @@ export type FingerprintDiffItem = {
     afterSource: FingerprintSource;
 };
 export type Platform = 'android' | 'ios';
+export type ProjectWorkflow = 'generic' | 'managed' | 'unknown';
 export interface Options {
     /**
      * Limit native files to those for specified platforms.
@@ -236,5 +237,9 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
      * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
      */
     ignoreDirMatchObjects: Minimatch[];
+    /**
+     * Indicate whether the project is using CNG for each platform.
+     */
+    useCNGForPlatforms: Record<Platform, boolean>;
 };
 export {};
