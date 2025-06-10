@@ -43,7 +43,7 @@
     "@babel/runtime": "^7.20.0",
     "@expo/dom-webview": "0.1.4",
     "@expo/styleguide-base": "^1.0.1",
-    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "8.3.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "4.5.6",
