@@ -39,7 +39,10 @@ class VideoPlayerItem: AVPlayerItem {
     self.urlAsset = asset
     // We can ignore any exceptions thrown during the load. The asset will be assigned to the `VideoPlayer` anyways
     // and cause it to go into .error state trigerring the `onStatusChange` event.
-    _ = try? await asset.load(.duration, .preferredTransform, .isPlayable)
+    do {
+      _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
+    } catch {
+    }
 
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
