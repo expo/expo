@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Move `glob` from `devDependencies` to `dependencies` as its used outside test code.
+
 ### 💡 Others
 
 ## 0.13.0 - 2025-06-08
