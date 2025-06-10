@@ -25,6 +25,8 @@ export type Options = {
 
   /** Re-bundle JS and assets, then embed in existing app, and install again. */
   rebundle?: boolean;
+  /** Build the app only, and not launch the app. */
+  buildOnly?: boolean;
 };
 
 export type ProjectInfo = {
