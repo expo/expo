@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
+import { addTemplateTarball } from './addTemplateTarball';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
@@ -51,6 +52,12 @@ const cleanWorkingTree = new Task<TaskArgs>(
           force: true,
           paths: ['packages/**/local-maven-repo/**'],
         });
+        // Remove tarballs.
+        await Git.cleanAsync({
+          recursive: false,
+          force: true,
+          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
+        });
       },
       'Cleaned up the working tree'
     );
@@ -76,6 +83,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateAndroidProjects,
       publishAndroidArtifacts,
       updateIosProjects,
+      addTemplateTarball,
       cutOffChangelogs,
       commitStagedChanges,
       pushCommittedChanges,
