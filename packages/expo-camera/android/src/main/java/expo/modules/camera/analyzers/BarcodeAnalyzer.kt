@@ -50,8 +50,8 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
                 this[index * 2] = point.x
                 this[index * 2 + 1] = point.y
               }
-            }.toList()
-          } ?: emptyList()
+            }.toMutableList()
+          } ?: mutableListOf()
 
           val extra = BarCodeScannerResultSerializer.parseExtraDate(barcode)
           onComplete(
@@ -60,7 +60,7 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
               barcode.displayValue,
               raw,
               extra,
-              cornerPoints.toMutableList(),
+              cornerPoints,
               imageProxy.width,
               imageProxy.height
             )
