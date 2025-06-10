@@ -41,3 +41,9 @@ internal final class PreferredInputFoundException: GenericException<String> {
     "Preferred input '\(param)' not found!"
   }
 }
+
+internal final class AudioRecordingException: GenericException<String> {
+  override var reason: String {
+    "Audio recording error: \(param)"
+  }
+}
