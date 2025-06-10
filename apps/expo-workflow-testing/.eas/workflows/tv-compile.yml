@@ -56,4 +56,4 @@ jobs:
         id: build
         working_directory: ../../../updates-e2e
         run: |
-          npx expo run:ios --no-install --unstable-build-only
+          yarn tvos:build
