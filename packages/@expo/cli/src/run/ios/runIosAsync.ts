@@ -133,11 +133,6 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
   debug('Binary path:', binaryPath);
 
-  if (options?.buildOnly) {
-    Log.log('Build completed successfully');
-    return;
-  }
-
   // Ensure the port hasn't become busy during the build.
   if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
     props.shouldStartBundler = false;
