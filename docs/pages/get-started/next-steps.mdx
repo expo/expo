@@ -1,29 +1,130 @@
----
-title: Next steps
-description: Develop, review, and submit your project.
-hideTOC: true
----
+import React, { useState, useEffect } from "react";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+} from "firebase/firestore";
 
-import { Terminal } from '~/ui/components/Snippet';
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
 
-Here are next steps to continue building your app:
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-### Reset your project
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [items, setItems] = useState([]);
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
 
-You can remove the boilerplate code and start fresh with a new project. Run the following command to reset your project:
+  useEffect(() => {
+    onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) loadItems();
+    });
+  }, []);
 
-<Terminal cmd={['$ npm run reset-project']} />
+  const register = async () => {
+    await createUserWithEmailAndPassword(auth, email, password);
+  };
 
-This command will move the existing files in **app** to **app-example**, then create a new **app** directory with a new **index.tsx** file.
+  const login = async () => {
+    await signInWithEmailAndPassword(auth, email, password);
+  };
 
-### Develop, review, and deploy
+  const logout = async () => {
+    await signOut(auth);
+  };
 
-Learn how to develop by reading the docs in the Develop section. You'll learn how to create [UI elements](/develop/user-interface/splash-screen-and-app-icon/), add [unit tests](/develop/unit-testing/), include [native modules](/config-plugins/introduction/), and more.
+  const addItem = async () => {
+    if (!title || !price) return;
+    await addDoc(collection(db, "items"), {
+      title,
+      price,
+      user: user.email,
+    });
+    setTitle("");
+    setPrice("");
+    loadItems();
+  };
 
-Once you've developed your app, you can share it with your teammates for [review](/review/overview).
+  const loadItems = async () => {
+    const querySnapshot = await getDocs(collection(db, "items"));
+    const data = querySnapshot.docs.map((doc) => doc.data());
+    setItems(data);
+  };
 
-Finally, you can [build](/deploy/build-project/) and [submit](/deploy/submit-to-app-stores/) your project to the app stores.
+  return (
+    <div className="p-4 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Buy & Sell Marketplace</h1>
 
-### Step-by-step guide
+      {!user ? (
+        <div className="space-y-2">
+          <input
+            type="email"
+            placeholder="Email"
+            className="border p-2 w-full"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="border p-2 w-full"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button onClick={register} className="bg-green-500 text-white p-2 w-full">
+            Register
+          </button>
+          <button onClick={login} className="bg-blue-500 text-white p-2 w-full">
+            Login
+          </button>
+        </div>
+      ) : (
+        <div>
+          <p className="mb-2">Welcome, {user.email}</p>
+          <button onClick={logout} className="bg-red-500 text-white p-2 mb-4">
+            Logout
+          </button>
 
-For a guided, step-by-step walkthrough of building an app with Expo from start to finish, check out the [tutorial](/tutorial/introduction/).
+          <div className="space-y-2 mb-4">
+            <input
+              type="text"
+              placeholder="Item Title"
+              className="border p-2 w-full"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Price"
+              className="border p-2 w-full"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            <button onClick={addItem} className="bg-indigo-500 text-white p-2 w-full">
+              Add Item
+            </button>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Items for Sale we are selling used goods the name is chap deals
