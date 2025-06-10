@@ -185,7 +185,9 @@ describe(checkPackagesAsync, () => {
       packageManagerArguments: [],
     });
 
-    expect(mockConsoleLog).toHaveBeenCalledWith(JSON.stringify({ dependencies: [] }));
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      JSON.stringify({ dependencies: [], upToDate: true })
+    );
   });
 
   it(`outputs JSON when --json flag is used with outdated dependencies`, async () => {
@@ -217,7 +219,7 @@ describe(checkPackagesAsync, () => {
     ).rejects.toThrow(/MOCK_EXIT/);
 
     expect(mockConsoleLog).toHaveBeenCalledWith(
-      JSON.stringify({ dependencies: outdatedDeps }, null, 2)
+      JSON.stringify({ dependencies: outdatedDeps, upToDate: false }, null, 2)
     );
   });
 
@@ -248,7 +250,9 @@ describe(checkPackagesAsync, () => {
     });
 
     expect(Log.log).not.toHaveBeenCalled();
-    expect(mockConsoleLog).toHaveBeenCalledWith(JSON.stringify({ dependencies: [] }));
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      JSON.stringify({ dependencies: [], upToDate: true })
+    );
   });
 
   it(`parses and validates JSON output structure with outdated dependencies`, async () => {

@@ -91,7 +91,7 @@ export async function checkPackagesAsync(
 
   if (!dependencies.length) {
     if (json) {
-      console.log(JSON.stringify({ dependencies: [] }));
+      console.log(JSON.stringify({ dependencies: [], upToDate: true }));
     } else {
       Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
     }
@@ -99,7 +99,7 @@ export async function checkPackagesAsync(
   }
 
   if (json) {
-    console.log(JSON.stringify({ dependencies }, null, 2));
+    console.log(JSON.stringify({ dependencies, upToDate: false }, null, 2));
     // Exit with non-zero exit code to indicate outdated dependencies
     process.exit(1);
   }
