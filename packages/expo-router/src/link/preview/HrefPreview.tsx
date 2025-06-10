@@ -49,7 +49,7 @@ export function HrefPreview({ href }: { href: Href }) {
   );
 }
 
-export function getParamsAndNodeFromHref(href: Href) {
+function getParamsAndNodeFromHref(href: Href) {
   const hrefState = store.getStateForHref(href as any);
   if (hrefState?.routes[0] && hrefState.routes[0].name !== INTERNAL_SLOT_NAME) {
     const error = `Expo Router Error: Expected navigation state to begin with a ${INTERNAL_SLOT_NAME} route`;

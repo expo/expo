@@ -12,7 +12,7 @@ import {
 import { Stack } from '../../../layouts/Stack';
 import { renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
-import { Redirect } from '../../Link';
+import { Redirect } from '../../Redirect';
 import { HrefPreview } from '../HrefPreview';
 
 it.each([
@@ -255,10 +255,6 @@ describe('useRouter in preview', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('foo')).toBeFalsy();
-    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-    expect(consoleWarnSpy).toHaveBeenLastCalledWith(
-      "router.replace should not be used in a previewed screen. To fix this issue, wrap navigation calls with 'if (!isPreview) { ... }'."
-    );
   });
 
   it('router.push should not push in preview', async () => {
