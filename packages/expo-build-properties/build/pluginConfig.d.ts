@@ -169,25 +169,49 @@ export interface AndroidMavenRepository {
     authentication?: 'basic' | 'digest' | 'header';
 }
 /**
+ * The Android Maven repository credentials for basic authentication.
  * @platform android
  */
 export interface AndroidMavenRepositoryPasswordCredentials {
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     username: string;
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     password: string;
 }
 /**
+ * The Android Maven repository credentials that are passed as HTTP headers.
  * @platform android
  */
 export interface AndroidMavenRepositoryHttpHeaderCredentials {
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     name: string;
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     value: string;
 }
 /**
+ * The Android Maven repository credentials for AWS S3.
  * @platform android
  */
 export interface AndroidMavenRepositoryAWSCredentials {
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     accessKey: string;
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     secretKey: string;
+    /**
+     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     */
     sessionToken?: string;
 }
 /**
