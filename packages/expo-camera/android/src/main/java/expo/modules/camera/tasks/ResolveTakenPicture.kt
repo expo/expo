@@ -250,6 +250,12 @@ class ResolveTakenPicture(
 
   private fun decodeAndRotateBitmap(imageData: ByteArray, angle: Int, options: BitmapFactory.Options): Bitmap {
     val source = BitmapFactory.decodeByteArray(imageData, 0, imageData.size, options)
+
+    // Skip transformation if no rotation or mirroring needed
+    if (angle == 0 && !mirror) {
+      return source
+    }
+
     val matrix = Matrix()
     matrix.apply {
       postRotate(angle.toFloat())
@@ -257,7 +263,16 @@ class ResolveTakenPicture(
         postScale(-1f, 1f)
       }
     }
-    return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+
+    return try {
+      val transformed = Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+      if (transformed != source && !source.isRecycled) {
+        source.recycle()
+      }
+      transformed
+    } catch (e: OutOfMemoryError) {
+      source
+    }
   }
 
   // Get rotation degrees from Exif orientation enum

@@ -131,7 +131,7 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
         ],
         smsAutomaticallySent: false,
       })
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       'No other second-factor devices set up. Ensure you have set up and certified a backup device.'
     );
   });
@@ -252,6 +252,6 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
         ],
         smsAutomaticallySent: false,
       })
-    ).rejects.toThrowError('Interactive prompt was cancelled.');
+    ).rejects.toThrow('Interactive prompt was cancelled.');
   });
 });

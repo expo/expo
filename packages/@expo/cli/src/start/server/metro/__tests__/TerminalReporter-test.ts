@@ -38,7 +38,7 @@ it(`invokes utility filter function`, () => {
   };
   reporter._log(event);
   expect(reporter.shouldFilterClientLog).toHaveBeenCalledWith(event);
-  expect(reporter.terminal.log).toBeCalled();
+  expect(reporter.terminal.log).toHaveBeenCalled();
 });
 it(`skips logging if the filter function returns true`, () => {
   const reporter = createReporter();
@@ -51,5 +51,5 @@ it(`skips logging if the filter function returns true`, () => {
   };
   reporter._log(event);
   expect(reporter.shouldFilterClientLog).toHaveBeenCalledWith(event);
-  expect(reporter.terminal.log).not.toBeCalled();
+  expect(reporter.terminal.log).not.toHaveBeenCalled();
 });

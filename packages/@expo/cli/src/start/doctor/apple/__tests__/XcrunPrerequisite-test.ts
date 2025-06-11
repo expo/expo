@@ -43,8 +43,8 @@ it(`asserts that xcrun is not installed and installs it successfully`, async () 
     });
 
   await XcrunPrerequisite.instance.assertImplementation();
-  // await expect(XcrunPrerequisite.instance.assertImplementation()).rejects.toThrowError();
-  expect(spawnAsync).toBeCalledWith('sudo', ['xcode-select', '--install']);
+  // await expect(XcrunPrerequisite.instance.assertImplementation()).rejects.toThrow();
+  expect(spawnAsync).toHaveBeenCalledWith('sudo', ['xcode-select', '--install']);
 });
 
 it(`asserts that xcrun is not installed and the user cancels`, async () => {
@@ -67,6 +67,6 @@ it(`asserts that xcrun is not installed and the user cancels`, async () => {
       throw new Error("shouldn't happen");
     });
 
-  await expect(XcrunPrerequisite.instance.assertImplementation()).rejects.toThrowError();
-  expect(spawnAsync).not.toBeCalled();
+  await expect(XcrunPrerequisite.instance.assertImplementation()).rejects.toThrow();
+  expect(spawnAsync).not.toHaveBeenCalled();
 });

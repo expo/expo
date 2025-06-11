@@ -40,7 +40,7 @@ it('validates incorrect asset dimensions hosted remotely', async () => {
     },
   });
 
-  await expect(validator.validateIcon('https://httpbin.org/image/png')).rejects.toThrowError(
+  await expect(validator.validateIcon('https://httpbin.org/image/png')).rejects.toThrow(
     `'icon' should have dimensions 101x100, but the file at 'https://httpbin.org/image/png' has dimensions 100x100`
   );
 });

@@ -55,7 +55,7 @@ describe(resolveOptionsAsync, () => {
 
     await runAndroidAsync('/', {});
 
-    expect(assembleAsync).toBeCalledWith('/android', {
+    expect(assembleAsync).toHaveBeenCalledWith('/android', {
       appName: 'app',
       buildCache: false,
       port: 8081,
@@ -63,7 +63,7 @@ describe(resolveOptionsAsync, () => {
       architectures: '',
     });
 
-    expect(installAsync).toBeCalledWith('/android', {
+    expect(installAsync).toHaveBeenCalledWith('/android', {
       appName: 'app',
       port: 8081,
       variant: 'debug',

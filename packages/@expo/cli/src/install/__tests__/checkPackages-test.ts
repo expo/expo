@@ -53,11 +53,11 @@ describe(checkPackagesAsync, () => {
         packageManager: {},
         packageManagerArguments: [],
       })
-    ).rejects.toThrowError(/EXIT/);
+    ).rejects.toThrow(/EXIT/);
 
-    expect(logIncorrectDependencies).toBeCalledTimes(1);
+    expect(logIncorrectDependencies).toHaveBeenCalledTimes(1);
 
-    expect(Log.exit).toBeCalledWith(
+    expect(Log.exit).toHaveBeenCalledWith(
       // Because of ansi
       expect.stringContaining('Found outdated dependencies'),
       1
@@ -97,7 +97,7 @@ describe(checkPackagesAsync, () => {
       packageManagerArguments: [],
     });
 
-    expect(Log.log).toBeCalledWith(
+    expect(Log.log).toHaveBeenCalledWith(
       expect.stringContaining('Skipped fixing dependencies: expo-av and expo-blur')
     );
   });
@@ -113,11 +113,11 @@ describe(checkPackagesAsync, () => {
         packageManager: {},
         packageManagerArguments: [],
       })
-    ).rejects.toThrowError(/EXIT/);
+    ).rejects.toThrow(/EXIT/);
 
-    expect(logIncorrectDependencies).toBeCalledTimes(0);
+    expect(logIncorrectDependencies).toHaveBeenCalledTimes(0);
 
-    expect(Log.exit).toBeCalledWith(
+    expect(Log.exit).toHaveBeenCalledWith(
       // Because of ansi
       expect.stringContaining('Dependencies are up to date'),
       0
@@ -150,12 +150,12 @@ describe(checkPackagesAsync, () => {
       packageManagerArguments: [],
     });
 
-    expect(fixPackagesAsync).toBeCalledWith('/', {
+    expect(fixPackagesAsync).toHaveBeenCalledWith('/', {
       packageManager: {},
       packageManagerArguments: [],
       packages: issues,
       sdkVersion: '45.0.0',
     });
-    expect(logIncorrectDependencies).toBeCalledTimes(1);
+    expect(logIncorrectDependencies).toHaveBeenCalledTimes(1);
   });
 });

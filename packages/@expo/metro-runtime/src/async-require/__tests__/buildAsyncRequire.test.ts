@@ -29,5 +29,5 @@ it(`loads the module with \`loadBundleAsync\` if the module has not been loaded 
   expect(myModule).toEqual(expect.any(Promise));
 
   // Did attempt to fetch the bundle
-  expect(loadBundleAsync).toBeCalledWith('/bacon.bundle?platform=ios');
+  expect(loadBundleAsync).toHaveBeenCalledWith('/bacon.bundle?platform=ios');
 });
