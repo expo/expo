@@ -41,7 +41,7 @@
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
     "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^13.1.0",
+    "@testing-library/react-native": "^13.2.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~13.1.11",
     "date-fns": "^2.28.0",
