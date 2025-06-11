@@ -97,7 +97,7 @@
     "@graphql-codegen/typescript-operations": "^2.2.0",
     "@graphql-codegen/typescript-react-apollo": "^3.2.1",
     "@types/dedent": "^0.7.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.0.10",
     "@types/semver": "^7.5.8",
     "expo-module-scripts": "^4.1.7"
