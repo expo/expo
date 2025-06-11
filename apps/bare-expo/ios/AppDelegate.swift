@@ -1,4 +1,5 @@
 import Expo
+import Network
 import React
 import ReactAppDependencyProvider
 
