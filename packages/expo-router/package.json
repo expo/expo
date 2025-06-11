@@ -89,14 +89,10 @@
     },
     "@react-navigation/drawer": {
       "optional": true
-    },
-    "@testing-library/jest-native": {
-      "optional": true
     }
   },
   "devDependencies": {
     "@react-navigation/drawer": "^7.3.9",
-    "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.2.0",
     "@types/semver": "^7.7.0",

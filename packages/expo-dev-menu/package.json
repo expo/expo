@@ -51,7 +51,6 @@
   "devDependencies": {
     "@apollo/client": "^3.4.10",
     "@babel/preset-typescript": "^7.7.4",
-    "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^13.2.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~13.1.11",
