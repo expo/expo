@@ -74,7 +74,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           return (
             <SidebarLink info={child} className="flex flex-1" key={`${route.name}-${child.name}`}>
               {child.sidebarTitle ?? child.name}
-              {completed && <CheckIcon className="icon-sm ml-auto mt-0.5 self-start" />}
+              {completed && <CheckIcon className="icon-sm ml-auto" />}
             </SidebarLink>
           );
         })}
@@ -132,7 +132,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
           return (
             <SidebarLink info={child} className="flex flex-1" key={`${route.name}-${child.name}`}>
               {child.sidebarTitle ?? child.name}
-              {completed && <CheckIcon className="icon-sm ml-auto mt-0.5 self-start" />}
+              {completed && <CheckIcon className="icon-sm ml-auto" />}
             </SidebarLink>
           );
         })}
