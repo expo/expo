@@ -297,8 +297,8 @@ try {
   }
 }
 
-// Installs web implementations of global things that are normally installed through JSI.
-require('expo-modules-core/src/web/index.web');
+// Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
+require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
 
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,

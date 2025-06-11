@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "types": "build/index.d.ts",
   "sideEffects": [
-    "*.fx.ts"
+    "*.fx.ts",
+    "./src/polyfill/*.ts"
   ],
   "exports": {
     "./package.json": "./package.json",
@@ -16,6 +17,14 @@
     "./src/Refs": {
       "types": "./build/Refs.d.ts",
       "default": "./src/Refs.ts"
+    },
+    "./src/polyfill/dangerous-internal": {
+      "types": "./build/polyfill/dangerous-internal.d.ts",
+      "default": "./src/polyfill/dangerous-internal.ts"
+    },
+    "./src/uuid/uuid.web": {
+      "types": "./build/uuid/uuid.web.d.ts",
+      "default": "./src/uuid/uuid.web.ts"
     }
   },
   "scripts": {
