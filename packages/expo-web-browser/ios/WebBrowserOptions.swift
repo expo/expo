@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
-
+#if os(iOS)
 import SafariServices
+#endif
 import ExpoModulesCore
 
 struct WebBrowserOptions: Record {
@@ -34,6 +35,7 @@ enum DismissButtonStyle: String, Enumerable {
   case close
   case cancel
 
+#if os(iOS)
   func toSafariDismissButtonStyle() -> SFSafariViewController.DismissButtonStyle {
     switch self {
     case .done:
@@ -44,6 +46,7 @@ enum DismissButtonStyle: String, Enumerable {
       return .cancel
     }
   }
+#endif
 }
 
 internal enum PresentationStyle: String, Enumerable {
@@ -57,6 +60,7 @@ internal enum PresentationStyle: String, Enumerable {
   case none
   case automatic
 
+#if os(iOS)
   func toPresentationStyle() -> UIModalPresentationStyle {
     switch self {
     case .fullScreen:
@@ -79,4 +83,5 @@ internal enum PresentationStyle: String, Enumerable {
       return .automatic
     }
   }
+#endif
 }
