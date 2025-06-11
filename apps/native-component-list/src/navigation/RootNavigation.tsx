@@ -1,5 +1,5 @@
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Text } from 'react-native';
@@ -10,7 +10,7 @@ import MainTabNavigator from './MainTabNavigator';
 import RedirectScreen from '../screens/RedirectScreen';
 import SearchScreen from '../screens/SearchScreen';
 
-const Switch = createStackNavigator();
+const Switch = createNativeStackNavigator();
 
 export const linking: LinkingOptions<object> = {
   prefixes: [Linking.createURL('/')],
@@ -42,7 +42,7 @@ export default function RootNavigation() {
           <Switch.Screen
             name="searchNavigator"
             component={SearchScreen}
-            options={{ cardStyle: { backgroundColor: 'transparent' } }}
+            options={{ contentStyle: { backgroundColor: 'black' } }}
           />
         </Switch.Navigator>
       </NavigationContainer>

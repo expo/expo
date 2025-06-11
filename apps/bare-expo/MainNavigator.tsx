@@ -1,11 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
 import React from 'react';
 import { Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import TestSuite from 'test-suite/AppNavigator';
 
 type NavigationRouteConfigMap = React.ComponentType;
@@ -57,7 +58,7 @@ if (NativeComponentList) {
 }
 
 const Tab = createBottomTabNavigator();
-const Switch = createStackNavigator();
+const Switch = createNativeStackNavigator();
 
 const linking: LinkingOptions<object> = {
   prefixes: [
@@ -155,20 +156,22 @@ export default () => {
     return null;
   }
   return (
-    <NavigationContainer
-      linking={linking}
-      initialState={initialState}
-      onStateChange={(state) => {
-        AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
-      }}>
-      <Switch.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName="main"
-        id={undefined}>
-        {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-        {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-        <Switch.Screen name="main" component={TabNavigator} />
-      </Switch.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer
+        linking={linking}
+        initialState={initialState}
+        onStateChange={(state) => {
+          AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
+        }}>
+        <Switch.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="main"
+          id={undefined}>
+          {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+          {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+          <Switch.Screen name="main" component={TabNavigator} />
+        </Switch.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
