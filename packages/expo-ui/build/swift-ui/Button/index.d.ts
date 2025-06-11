@@ -22,7 +22,7 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * - `card` - A button style for cards.
  * - `link` - A button style for links.
  */
-export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link';
+export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'glass' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link';
 export type ButtonProps = {
     /**
      * A callback that is called when the button is pressed.
