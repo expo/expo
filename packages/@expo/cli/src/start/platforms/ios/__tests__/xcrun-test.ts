@@ -11,9 +11,7 @@ it(`throws on invalid license`, async () => {
     };
   });
 
-  await expect(xcrunAsync(['simctl', 'help'])).rejects.toThrow(
-    /Xcode license is not accepted/
-  );
+  await expect(xcrunAsync(['simctl', 'help'])).rejects.toThrow(/Xcode license is not accepted/);
   expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help'], undefined);
 });
 

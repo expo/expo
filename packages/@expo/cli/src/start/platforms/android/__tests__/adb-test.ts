@@ -150,9 +150,9 @@ describe(getAdbNameForDeviceIdAsync, () => {
       .mocked(getServer().runAsync)
       .mockResolvedValueOnce('error: could not connect to TCP port 55534: Connection refused');
 
-    await expect(
-      getAdbNameForDeviceIdAsync(asDevice({ pid: 'emulator-5554' }))
-    ).rejects.toThrow(CommandError);
+    await expect(getAdbNameForDeviceIdAsync(asDevice({ pid: 'emulator-5554' }))).rejects.toThrow(
+      CommandError
+    );
   });
 });
 

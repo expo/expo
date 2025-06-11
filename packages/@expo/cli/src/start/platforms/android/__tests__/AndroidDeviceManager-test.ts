@@ -75,7 +75,10 @@ describe('openUrlAsync', () => {
   it('opens Expo Go before launching into Expo Go', async () => {
     const device = createDevice();
     await device.openUrlAsync('exp://foobar');
-    expect(openAppIdAsync).toHaveBeenCalledWith({ pid: '123' }, { applicationId: 'host.exp.exponent' });
+    expect(openAppIdAsync).toHaveBeenCalledWith(
+      { pid: '123' },
+      { applicationId: 'host.exp.exponent' }
+    );
     expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'exp://foobar' });
   });
   it('opens a URL on a device', async () => {

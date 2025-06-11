@@ -319,8 +319,6 @@ describe('ensureAsync', () => {
     installer.promptForUninstallExpoGoIfInstalledClientVersionMismatchedAndReturnShouldInstallAsync =
       jest.fn(async () => false);
 
-    await expect(installer.ensureAsync(deviceManager)).rejects.toThrow(
-      'Expo Go is not installed'
-    );
+    await expect(installer.ensureAsync(deviceManager)).rejects.toThrow('Expo Go is not installed');
   });
 });
