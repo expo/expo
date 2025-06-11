@@ -220,7 +220,7 @@ function attemptLookup(moduleName) {
 try {
   jest.doMock('expo-modules-core', () => {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
-    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid.web');
+    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid');
 
     const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 

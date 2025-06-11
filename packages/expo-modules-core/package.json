@@ -22,9 +22,13 @@
       "types": "./build/polyfill/dangerous-internal.d.ts",
       "default": "./src/polyfill/dangerous-internal.ts"
     },
-    "./src/uuid/uuid.web": {
-      "types": "./build/uuid/uuid.web.d.ts",
-      "default": "./src/uuid/uuid.web.ts"
+    "./src/uuid/uuid": {
+      "types": "./build/uuid/uuid.d.ts",
+      "default": "./src/uuid/uuid.ts"
+    },
+    "./src/uuid/uuid.native": {
+      "types": "./build/uuid/uuid.native.d.ts",
+      "default": "./src/uuid/uuid.native.ts"
     }
   },
   "scripts": {
