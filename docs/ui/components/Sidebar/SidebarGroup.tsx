@@ -83,17 +83,13 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
               className="flex flex-1"
               key={`${route.name}-${child.name}`}>
               <span className="inline">
-                <span>{child.sidebarTitle ?? child.name}</span>
-                {child.hasVideoLink && (
-                  <span className="inline whitespace-nowrap">
-                    {' '}
-                    {!isSelected ? (
-                      <PlaySquareIcon className="icon-xs inline align-text-bottom text-icon-secondary" />
-                    ) : (
-                      <PlaySquareDuotoneIcon className="icon-xs inline align-text-bottom text-palette-blue11" />
-                    )}
-                  </span>
-                )}
+                {child.sidebarTitle ?? child.name}
+                {child.hasVideoLink &&
+                  (!isSelected ? (
+                    <PlaySquareIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                  ) : (
+                    <PlaySquareDuotoneIcon className="icon-xs ml-1 inline text-palette-blue11" />
+                  ))}
               </span>
               {completed && <CheckIcon className="icon-sm ml-auto" />}
             </SidebarLink>
@@ -157,17 +153,13 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
               className="flex flex-1"
               key={`${route.name}-${child.name}`}>
               <span className="inline">
-                <span>{child.sidebarTitle ?? child.name}</span>
-                {child.hasVideoLink && (
-                  <span className="inline whitespace-nowrap">
-                    {' '}
-                    {!isSelected ? (
-                      <PlaySquareIcon className="icon-xs inline align-text-bottom text-icon-secondary" />
-                    ) : (
-                      <PlaySquareDuotoneIcon className="icon-xs inline align-text-bottom text-palette-blue11" />
-                    )}
-                  </span>
-                )}
+                {child.sidebarTitle ?? child.name}
+                {child.hasVideoLink &&
+                  (!isSelected ? (
+                    <PlaySquareIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                  ) : (
+                    <PlaySquareDuotoneIcon className="icon-xs ml-1 inline text-palette-blue11" />
+                  ))}
               </span>
               {completed && <CheckIcon className="icon-sm ml-auto" />}
             </SidebarLink>
