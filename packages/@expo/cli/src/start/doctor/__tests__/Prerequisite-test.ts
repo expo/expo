@@ -36,10 +36,10 @@ describe(Prerequisite, () => {
     });
     prerequisite.assertImplementation = assertAsync;
     prerequisite.resetAssertion();
-    await expect(prerequisite.assertAsync()).rejects.toThrowError(PrerequisiteCommandError);
+    await expect(prerequisite.assertAsync()).rejects.toThrow(PrerequisiteCommandError);
     expect(assertAsync).toHaveBeenCalledTimes(1);
     // Continues to throw the same error without trying again.
-    await expect(prerequisite.assertAsync()).rejects.toThrowError(PrerequisiteCommandError);
+    await expect(prerequisite.assertAsync()).rejects.toThrow(PrerequisiteCommandError);
     expect(assertAsync).toHaveBeenCalledTimes(1);
   });
 });

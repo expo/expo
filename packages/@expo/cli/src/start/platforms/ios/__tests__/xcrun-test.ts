@@ -11,10 +11,10 @@ it(`throws on invalid license`, async () => {
     };
   });
 
-  await expect(xcrunAsync(['simctl', 'help'])).rejects.toThrowError(
+  await expect(xcrunAsync(['simctl', 'help'])).rejects.toThrow(
     /Xcode license is not accepted/
   );
-  expect(spawnAsync).toBeCalledWith('xcrun', ['simctl', 'help'], undefined);
+  expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help'], undefined);
 });
 
 it(`throws on invalid setup`, async () => {
@@ -26,5 +26,5 @@ it(`throws on invalid setup`, async () => {
     };
   });
 
-  await expect(xcrunAsync(['simctl', 'help'])).rejects.toThrowError(/sudo xcode-select -s/);
+  await expect(xcrunAsync(['simctl', 'help'])).rejects.toThrow(/sudo xcode-select -s/);
 });

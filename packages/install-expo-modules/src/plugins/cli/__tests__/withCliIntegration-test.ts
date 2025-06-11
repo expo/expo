@@ -51,7 +51,7 @@ describe(updateMetroConfig, () => {
     );
     const spy = jest.spyOn(console, 'warn');
     expect(updateMetroConfig(rawContents)).toEqual(rawContents);
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 });
 

@@ -26,7 +26,7 @@ describe(findUpProjectRootOrAssert, () => {
     );
     expect(() =>
       findUpProjectRootOrAssert('/foo/bar/another/index')
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).toThrowMatchingInlineSnapshot(
       `"Project root directory not found (working directory: /foo/bar/another/index)"`
     );
   });

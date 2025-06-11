@@ -73,7 +73,7 @@ describe(getVersionedNativeModulesAsync, () => {
   it('throws an error if api is down and expo is not installed', async () => {
     nock(getExpoApiBaseUrl()).get('/v2/sdks/66.0.0/native-modules').reply(504, 'api is down');
 
-    await expect(getVersionedNativeModulesAsync(projectRoot, '66.0.0')).rejects.toThrowError();
+    await expect(getVersionedNativeModulesAsync(projectRoot, '66.0.0')).rejects.toThrow();
   });
 
   it('skips api versions when requested', async () => {

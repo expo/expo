@@ -23,7 +23,7 @@ const doTransformForOutput = async (
     ],
   });
   const output = await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toBeCalledTimes(1);
+  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
   return {
     input: jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8'),
     output,
@@ -36,7 +36,7 @@ const doTransformForInput = async (
   options: Partial<JsTransformOptions>
 ): Promise<string> => {
   await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toBeCalledTimes(1);
+  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
   return jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8');
 };
 const doTransform = async (filename: string, src: string, options: Partial<JsTransformOptions>) => {

@@ -32,8 +32,8 @@ describe(withSerializerPlugins, () => {
     // @ts-expect-error
     await config.serializer.customSerializer('a', 'b', 'c', options);
 
-    expect(customProcessor).toBeCalledWith('a', 'b', 'c', options);
-    expect(customSerializer).toBeCalledWith('a', 'b', 'c', options);
+    expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', options);
+    expect(customSerializer).toHaveBeenCalledWith('a', 'b', 'c', options);
   });
 
   it('does not lose the original config object reference', async () => {

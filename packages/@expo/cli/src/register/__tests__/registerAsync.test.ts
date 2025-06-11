@@ -19,10 +19,10 @@ afterAll(() => {
 
 it(`asserts that registration is not supported in offline-mode`, async () => {
   process.env.EXPO_OFFLINE = '1';
-  await expect(registerAsync()).rejects.toThrowErrorMatchingInlineSnapshot(
+  await expect(registerAsync()).rejects.toThrowMatchingInlineSnapshot(
     `"Cannot register an account in offline-mode"`
   );
-  expect(openBrowserAsync).not.toBeCalled();
+  expect(openBrowserAsync).not.toHaveBeenCalled();
 });
 
 it(`asserts that registration is not supported in non-interactive environments`, async () => {
@@ -35,7 +35,7 @@ it(`asserts that registration is not supported in non-interactive environments`,
     })
   );
 
-  expect(openBrowserAsync).not.toBeCalled();
+  expect(openBrowserAsync).not.toHaveBeenCalled();
 });
 
 it(`launches a registration window`, async () => {
@@ -43,5 +43,5 @@ it(`launches a registration window`, async () => {
 
   await registerAsync();
 
-  expect(openBrowserAsync).toBeCalledWith('https://expo.dev/signup');
+  expect(openBrowserAsync).toHaveBeenCalledWith('https://expo.dev/signup');
 });

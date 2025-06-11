@@ -45,13 +45,13 @@ describe(withMetroResolvers, () => {
     );
 
     // Throws a FailedToResolveNameError
-    expect(customResolver1).toBeCalledTimes(1);
+    expect(customResolver1).toHaveBeenCalledTimes(1);
     // Throws a FailedToResolvePathError
-    expect(customResolver2).toBeCalledTimes(1);
+    expect(customResolver2).toHaveBeenCalledTimes(1);
     // Returns null
-    expect(customResolver3).toBeCalledTimes(1);
+    expect(customResolver3).toHaveBeenCalledTimes(1);
     // Falls back to the original resolver
-    expect(originalResolveRequest).toBeCalledTimes(1);
+    expect(originalResolveRequest).toHaveBeenCalledTimes(1);
   });
 
   it(`skips extra resolvers when the custom resolver fails to extend correctly`, () => {
@@ -74,8 +74,8 @@ describe(withMetroResolvers, () => {
     // @ts-expect-error: invalid types on resolveRequest
     modified.resolver.resolveRequest!({}, 'react-native', 'ios');
 
-    expect(customResolver1).toBeCalledTimes(0);
-    expect(originalResolveRequest).toBeCalled();
+    expect(customResolver1).toHaveBeenCalledTimes(0);
+    expect(originalResolveRequest).toHaveBeenCalled();
   });
 
   it(`chains resolvers`, () => {
@@ -101,9 +101,9 @@ describe(withMetroResolvers, () => {
     modified.resolver.resolveRequest!({}, 'react-native', 'ios');
 
     // Resolves
-    expect(customResolver1).toBeCalledTimes(1);
+    expect(customResolver1).toHaveBeenCalledTimes(1);
     // Never called
-    expect(originalResolveRequest).toBeCalledTimes(1);
+    expect(originalResolveRequest).toHaveBeenCalledTimes(1);
   });
   it(`disables native extensions for all web resolvers regardless of if web is enabled`, () => {
     const customResolver1 = jest.fn(() => {
@@ -128,8 +128,8 @@ describe(withMetroResolvers, () => {
     modified.resolver.resolveRequest!({}, 'react-native', 'web');
 
     // Resolves
-    expect(customResolver1).toBeCalledTimes(1);
-    expect(customResolver1).toBeCalledWith(
+    expect(customResolver1).toHaveBeenCalledTimes(1);
+    expect(customResolver1).toHaveBeenCalledWith(
       expect.objectContaining({ resolveRequest: expect.anything() }),
       'react-native',
       'web'

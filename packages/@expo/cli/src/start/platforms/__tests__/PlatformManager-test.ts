@@ -320,7 +320,7 @@ describe('openAsync', () => {
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url, { appId: 'dev.bacon.app' });
 
-    expect(manager._resolveAlternativeLaunchUrl).toBeCalledTimes(1);
+    expect(manager._resolveAlternativeLaunchUrl).toHaveBeenCalledTimes(1);
 
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);

@@ -21,10 +21,10 @@ it(`has an entry with each native module's constants and methods`, () => {
 
 it(`checks the number of arguments passed to bridged methods`, async () => {
   await expect(NativeModulesProxy.ExpoTest.testAsync('a')).resolves.not.toThrow();
-  await expect(NativeModulesProxy.ExpoTest.testAsync()).rejects.toThrowErrorMatchingSnapshot();
+  await expect(NativeModulesProxy.ExpoTest.testAsync()).rejects.toThrowMatchingSnapshot();
   await expect(
     NativeModulesProxy.ExpoTest.testAsync('a', 'b')
-  ).rejects.toThrowErrorMatchingSnapshot();
+  ).rejects.toThrowMatchingSnapshot();
 });
 
 it(`defines event listener methods on native modules`, () => {

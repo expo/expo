@@ -177,7 +177,7 @@ describe('getRoutes', () => {
           './folder/(b).tsx': () => null,
         })
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"Invalid route ./folder/(b).tsx. Routes cannot end with '(group)' syntax"`
     );
   });
@@ -246,7 +246,7 @@ describe('duplicate routes', () => {
           'a.tsx': () => null,
         })
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"The route files "./a.tsx" and "./a.js" conflict on the route "/a". Remove or rename one of these files."`
     );
   });
@@ -283,7 +283,7 @@ describe('duplicate routes', () => {
           './test/folder/b.js': () => null,
         })
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"The route files "./test/folder/b.js" and "./test/folder/b.tsx" conflict on the route "/test/folder/b". Remove or rename one of these files."`
     );
   });
@@ -296,7 +296,7 @@ describe('duplicate routes', () => {
           './(a,b)/b.tsx': () => null,
         })
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"The route files "./(a,b)/b.tsx" and "./(a)/b.tsx" conflict on the route "/(a)/b". Remove or rename one of these files."`
     );
   });
@@ -333,7 +333,7 @@ describe('+html', () => {
         }),
         { internal_stripLoadRoute: true, skipGenerated: true }
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"Invalid route ./folder/+html.js. Route nodes cannot start with the '+' character. "Rename it to folder/html.js""`
     );
   });
@@ -613,7 +613,7 @@ describe('anchor', () => {
           b: () => null,
         })
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"Layout ./_layout.js has invalid anchor 'c'. Valid options are: 'a', 'b'"`
     );
   });
@@ -636,7 +636,7 @@ describe('anchor', () => {
           '(a,b)/c': () => null,
         })
       );
-    }).toThrowErrorMatchingInlineSnapshot(
+    }).toThrowMatchingInlineSnapshot(
       `"Layout ./(a,b)/_layout.js has invalid anchor 'd' for group '(b)'. Valid options are: 'c'"`
     );
   });
@@ -783,7 +783,7 @@ it('ignores API routes with platform extensions', () => {
         preserveApiRoutes: true,
       }
     );
-  }).toThrowErrorMatchingInlineSnapshot(
+  }).toThrowMatchingInlineSnapshot(
     `"API routes cannot have platform extensions. Remove '.web' from './folder/two+api.web.tsx'"`
   );
 });

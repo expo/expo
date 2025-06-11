@@ -44,8 +44,8 @@ it('loads a bundle', async () => {
   );
   const url =
     'http://localhost:19000/Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion=';
-  expect(HMRClient.registerBundle).toBeCalledWith(url);
-  expect(fetchThenEvalAsync).toBeCalledWith(url);
+  expect(HMRClient.registerBundle).toHaveBeenCalledWith(url);
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
 });
 
 it('asserts in production when attempting to load a bundle and the user-defined origin is missing.', async () => {
@@ -56,10 +56,10 @@ it('asserts in production when attempting to load a bundle and the user-defined 
       'Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion='
     )
   ).rejects.toThrow();
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
-  expect(HMRClient.registerBundle).not.toBeCalled();
-  expect(fetchThenEvalAsync).not.toBeCalled();
+  expect(LoadingView.showMessage).not.toHaveBeenCalled();
+  expect(LoadingView.hide).not.toHaveBeenCalled();
+  expect(HMRClient.registerBundle).not.toHaveBeenCalled();
+  expect(fetchThenEvalAsync).not.toHaveBeenCalled();
 });
 
 it('loads a bundle in production with user-defined location.origin', async () => {
@@ -70,9 +70,9 @@ it('loads a bundle in production with user-defined location.origin', async () =>
   };
 
   await loadBundleAsync('/_expo/js/index.bundle');
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
+  expect(LoadingView.showMessage).not.toHaveBeenCalled();
+  expect(LoadingView.hide).not.toHaveBeenCalled();
   const url = 'https://example.com/_expo/js/index.bundle';
-  expect(HMRClient.registerBundle).not.toBeCalled();
-  expect(fetchThenEvalAsync).toBeCalledWith(url);
+  expect(HMRClient.registerBundle).not.toHaveBeenCalled();
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
 });

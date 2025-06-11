@@ -128,7 +128,7 @@ describe(assertMissingRuntimePlatform, () => {
   it('asserts missing', () => {
     expect(() => {
       assertMissingRuntimePlatform();
-    }).toThrowError('Must specify "expo-platform" header or "platform" query parameter');
+    }).toThrow('Must specify "expo-platform" header or "platform" query parameter');
   });
   it('does not assert on valid', () => {
     assertMissingRuntimePlatform('ios');
@@ -146,6 +146,6 @@ describe(assertRuntimePlatform, () => {
     }).not.toThrow();
     expect(() => {
       assertRuntimePlatform('not-supported');
-    }).toThrowError('platform must be "android", "ios", or "web". Received: "not-supported"');
+    }).toThrow('platform must be "android", "ios", or "web". Received: "not-supported"');
   });
 });

@@ -32,7 +32,7 @@ describe(assertStaticParams, () => {
           shape: 'square',
         }
       )
-    ).toThrowErrorMatchingInlineSnapshot(`
+    ).toThrowMatchingInlineSnapshot(`
       "[./[post].tsx]: generateStaticParams() must return an array of params that match the dynamic route. Expected non-nullish values for key: "post".
       Received:
       {
@@ -56,7 +56,7 @@ describe(assertStaticParams, () => {
           post: null,
         }
       )
-    ).toThrowErrorMatchingInlineSnapshot(`
+    ).toThrowMatchingInlineSnapshot(`
       "[./[post]/[other].tsx]: generateStaticParams() must return an array of params that match the dynamic routes. Expected non-nullish values for keys: "post", "other".
       Received:
       {
@@ -284,10 +284,10 @@ describe(loadStaticParamsAsync, () => {
       route: '',
     });
 
-    expect(generateStaticParamsParent).toBeCalledTimes(1);
+    expect(generateStaticParamsParent).toHaveBeenCalledTimes(1);
     expect(generateStaticParamsParent).toHaveBeenNthCalledWith(1, { params: {} });
 
-    expect(generateStaticParams).toBeCalledTimes(2);
+    expect(generateStaticParams).toHaveBeenCalledTimes(2);
     expect(generateStaticParams).toHaveBeenNthCalledWith(1, { params: { color: 'red' } });
     expect(generateStaticParams).toHaveBeenNthCalledWith(2, { params: { color: 'blue' } });
   });
@@ -303,7 +303,7 @@ describe(loadStaticParamsAsync, () => {
         },
       })
     )!;
-    await expect(loadStaticParamsAsync(routes)).rejects.toThrowErrorMatchingInlineSnapshot(`
+    await expect(loadStaticParamsAsync(routes)).rejects.toThrowMatchingInlineSnapshot(`
       "[./post/[post].tsx]: generateStaticParams() must return an array of params that match the dynamic route. Expected non-nullish values for key: "post".
       Received:
       {
@@ -736,25 +736,25 @@ describe(loadStaticParamsAsync, () => {
     await loadWithParam([{ post: ['123', '/'] }]);
     await loadWithParam([{ post: [123, '/', '432'] }]);
 
-    await expect(loadWithParam([{ post: ['/'] }])).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(loadWithParam([{ post: ['/'] }])).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[...post].tsx" expected param "post" not to be empty while parsing "/"."`
     );
-    await expect(loadWithParam([{ post: '' }])).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(loadWithParam([{ post: '' }])).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[...post].tsx" expected param "post" not to be empty while parsing ""."`
     );
     await expect(
       loadWithParam([{ post: ['', '/', ''] }])
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    ).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[...post].tsx" expected param "post" not to be empty while parsing "/"."`
     );
-    await expect(loadWithParam([{ post: null }])).rejects.toThrowErrorMatchingInlineSnapshot(`
+    await expect(loadWithParam([{ post: null }])).rejects.toThrowMatchingInlineSnapshot(`
       "[./post/[...post].tsx]: generateStaticParams() must return an array of params that match the dynamic route. Expected non-nullish values for key: "post".
       Received:
       {
         "post": null
       }"
     `);
-    await expect(loadWithParam([{ post: false }])).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(loadWithParam([{ post: false }])).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[...post].tsx" expected param "post" to be of type string, instead found "boolean" while parsing "false"."`
     );
   });
@@ -769,7 +769,7 @@ describe(loadStaticParamsAsync, () => {
       },
     });
     const route = getExactRoutes(ctx)!;
-    await expect(loadStaticParamsAsync(route)).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(loadStaticParamsAsync(route)).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[post].tsx" expected param "post" to be of type string, instead found "object" while parsing "123"."`
     );
   });
@@ -784,7 +784,7 @@ describe(loadStaticParamsAsync, () => {
       },
     });
     const route = getExactRoutes(ctx)!;
-    await expect(loadStaticParamsAsync(route)).rejects.toThrowErrorMatchingInlineSnapshot(
+    await expect(loadStaticParamsAsync(route)).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[post].tsx" expected param "post" to not contain "/" (multiple segments) while parsing "123/abc"."`
     );
   });
@@ -803,7 +803,7 @@ describe(loadStaticParamsAsync, () => {
           })
         )!
       )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    ).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[post].tsx" expected param "post" not to be empty while parsing "/"."`
     );
     await expect(
@@ -819,7 +819,7 @@ describe(loadStaticParamsAsync, () => {
           })
         )!
       )
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    ).rejects.toThrowMatchingInlineSnapshot(
       `"generateStaticParams() for route "./post/[post].tsx" expected param "post" not to be empty while parsing ""."`
     );
   });

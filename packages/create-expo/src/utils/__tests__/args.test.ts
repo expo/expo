@@ -69,7 +69,7 @@ describe(_resolveStringOrBooleanArgs, () => {
 
 describe(assertUnknownArgs, () => {
   it(`asserts unknown arguments`, () => {
-    expect(() => assertUnknownArgs({}, ['--foo', '--bar'])).toThrowError(
+    expect(() => assertUnknownArgs({}, ['--foo', '--bar'])).toThrow(
       `Unknown arguments: --foo, --bar`
     );
   });
@@ -143,6 +143,6 @@ describe(assertDuplicateArgs, () => {
   it(`asserts duplicate arguments`, () => {
     expect(() =>
       assertDuplicateArgs(['--device', '--bar', '--device'], [['--device', '-d']])
-    ).toThrowErrorMatchingInlineSnapshot(`"Can only provide one instance of --device or -d"`);
+    ).toThrowMatchingInlineSnapshot(`"Can only provide one instance of --device or -d"`);
   });
 });

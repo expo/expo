@@ -134,7 +134,7 @@ describe('imperative only', () => {
       act(() => {
         router.push('/profile/test-name');
       });
-    }).toThrowError(
+    }).toThrow(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
   });

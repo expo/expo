@@ -308,7 +308,7 @@ describe(createFastResolver, () => {
     });
 
     it('asserts not found module', () => {
-      expect(() => resolveTo('react-native-fake-lib', { platform })).toThrowError(
+      expect(() => resolveTo('react-native-fake-lib', { platform })).toThrow(
         /The module could not be resolved because no file or module matched the pattern:/
       );
     });
@@ -380,7 +380,7 @@ describe(createFastResolver, () => {
       expect(resolveTo('App.tsx', { platform, nodeModulesPaths: [originProjectRoot] })).toEqual(
         expect.stringMatching(/\/native-component-list\/App.tsx$/)
       );
-      expect(() => resolveTo('App.tsx', { platform })).toThrowError(
+      expect(() => resolveTo('App.tsx', { platform })).toThrow(
         /The module could not be resolved because no file or module matched the pattern:/
       );
     });
@@ -482,7 +482,7 @@ describe(createFastResolver, () => {
         filePaths: [expect.stringMatching(/\/native-component-list\/assets\/icons\/icon.png/)],
         type: 'assetFiles',
       });
-      expect(context.resolveAsset).toBeCalledWith(
+      expect(context.resolveAsset).toHaveBeenCalledWith(
         expect.stringMatching(/\/native-component-list\/assets\/icons$/),
         'icon',
         '.png'

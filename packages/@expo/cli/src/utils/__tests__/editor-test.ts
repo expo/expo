@@ -20,7 +20,7 @@ describe(guessEditor, () => {
     process.env.EXPO_EDITOR = 'bacon';
     guessEditor();
 
-    expect(editors.getEditor).toBeCalledWith('bacon');
+    expect(editors.getEditor).toHaveBeenCalledWith('bacon');
   });
 
   it(`defaults to vscode if the default editor cannot be guessed`, () => {
@@ -28,7 +28,7 @@ describe(guessEditor, () => {
       throw new Error('Could not guess default editor');
     });
     guessEditor();
-    expect(editors.getEditor).toBeCalledWith('vscode');
+    expect(editors.getEditor).toHaveBeenCalledWith('vscode');
   });
 });
 
@@ -45,7 +45,7 @@ describe(openInEditorAsync, () => {
 
     await expect(openInEditorAsync('/foo/bar')).resolves.toBe(false);
 
-    expect(spawnAsync).toBeCalledWith('my-editor-binary', ['/foo/bar']);
-    expect(spawnAsync).toBeCalledTimes(1);
+    expect(spawnAsync).toHaveBeenCalledWith('my-editor-binary', ['/foo/bar']);
+    expect(spawnAsync).toHaveBeenCalledTimes(1);
   });
 });

@@ -2783,7 +2783,7 @@ test('throws when invalid properties are specified in the config', () => {
         path: 'bar',
       },
     } as any)
-  ).toThrowErrorMatchingInlineSnapshot(`
+  ).toThrowMatchingInlineSnapshot(`
     "Found invalid properties in the configuration:
     - path (expected 'string', got 'number')
     - Foo (extraneous)
@@ -2813,7 +2813,7 @@ test('throws when invalid properties are specified in the config', () => {
         },
       },
     } as any)
-  ).toThrowErrorMatchingInlineSnapshot(`
+  ).toThrowMatchingInlineSnapshot(`
     "Found invalid properties in the configuration:
     - Qux (extraneous)
 
@@ -2835,7 +2835,7 @@ test('throws when invalid properties are specified in the config', () => {
     getStateFromPath<object>('', {
       path: 'foo/:id',
     } as any)
-  ).toThrowErrorMatchingInlineSnapshot(
+  ).toThrowMatchingInlineSnapshot(
     `"Found invalid path 'foo/:id'. The 'path' in the top-level configuration cannot contain patterns for params."`
   );
 });

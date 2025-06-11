@@ -18,7 +18,7 @@ jest.mock('crypto', () => {
 });
 
 const randomUUIDAsMock = (crypto as any).randomUUID as jest.Mock;
-let fetchAsMock: jest.SpyInstance;
+let fetchAsMock: jest.Spied<typeof globalThis.fetch>;
 
 function clearGlobals() {
   fetchAsMock.mockClear();
@@ -35,7 +35,9 @@ function clearGlobals() {
 
 describe('telemetry', () => {
   beforeAll(() => {
-    fetchAsMock = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({} as any));
+    fetchAsMock = jest
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(() => Promise.resolve({} as any));
   });
 
   describe('with no pre-existing state', () => {
@@ -71,7 +73,7 @@ describe('telemetry', () => {
           method: 'POST',
         })
       );
-      const bodyAsjson = JSON.parse(body);
+      const bodyAsjson = JSON.parse(String(body));
       const { batch, sentAt }: { batch: any[]; sentAt: string } = bodyAsjson;
       expect(Number.isNaN(Date.parse(sentAt))).toBeFalsy();
       expect(batch.length).toEqual(3);
@@ -184,7 +186,7 @@ describe('telemetry', () => {
           method: 'POST',
         })
       );
-      const bodyAsjson = JSON.parse(body);
+      const bodyAsjson = JSON.parse(String(body));
       const { batch, sentAt }: { batch: any[]; sentAt: string } = bodyAsjson;
       expect(Number.isNaN(Date.parse(sentAt))).toBeFalsy();
       expect(batch.length).toEqual(3);
@@ -259,7 +261,7 @@ describe('telemetry', () => {
       expect(fetchAsMock.mock.calls.length).toEqual(1);
       const [fetchRequestArgs] = fetchAsMock.mock.calls;
       const [, request] = fetchRequestArgs;
-      const { batch }: { batch: any[] } = JSON.parse(request.body);
+      const { batch }: { batch: any[] } = JSON.parse(String(request.body));
       batch.every(
         (message) =>
           message.anonymousId === existingAnonymousId && message.userId === existingUserId

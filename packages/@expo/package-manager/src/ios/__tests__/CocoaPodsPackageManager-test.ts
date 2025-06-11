@@ -144,7 +144,7 @@ describe('installAsync', () => {
       throw 'unhandled ig';
     });
 
-    await expect(manager.installAsync()).rejects.toThrowErrorMatchingInlineSnapshot(`
+    await expect(manager.installAsync()).rejects.toThrowMatchingInlineSnapshot(`
       "Command \`pod install --repo-update\` failed.
       └─ Cause: This is often due to native package versions mismatching. Try deleting the 'ios/Pods' folder or the 'ios/Podfile.lock' file and running 'npx pod-install' to resolve.
 

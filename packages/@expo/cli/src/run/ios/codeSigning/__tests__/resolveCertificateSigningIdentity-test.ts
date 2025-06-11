@@ -50,7 +50,7 @@ describe(selectDevelopmentTeamAsync, () => {
     const preferredId = 'A1BCDEF234';
     await selectDevelopmentTeamAsync(identities, preferredId);
 
-    expect(selectAsync).toBeCalledWith('Development team for signing the app', [
+    expect(selectAsync).toHaveBeenCalledWith('Development team for signing the app', [
       {
         title: '650 Industries, Inc. (A1BCDEF234) - Apple Development: Evan Bacon (XXX)',
         value: 0,
@@ -122,7 +122,7 @@ describe(resolveCertificateSigningIdentityAsync, () => {
     ]);
 
     // Store the preferred ID for the next time.
-    expect(Settings.setLastDeveloperCodeSigningIdAsync).toBeCalledWith('YYY');
+    expect(Settings.setLastDeveloperCodeSigningIdAsync).toHaveBeenCalledWith('YYY');
   });
 
   it(`stores the apple team id in app manifest when prompted`, async () => {

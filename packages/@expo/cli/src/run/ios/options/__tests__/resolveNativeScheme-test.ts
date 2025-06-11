@@ -79,7 +79,7 @@ describe(promptOrQueryNativeSchemeAsync, () => {
   it(`asserts no schemes`, async () => {
     jest.mocked(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj).mockReturnValueOnce([]);
 
-    await expect(promptOrQueryNativeSchemeAsync('/', { scheme: 'foobar' })).rejects.toThrowError(
+    await expect(promptOrQueryNativeSchemeAsync('/', { scheme: 'foobar' })).rejects.toThrow(
       /No native iOS build schemes found/
     );
   });

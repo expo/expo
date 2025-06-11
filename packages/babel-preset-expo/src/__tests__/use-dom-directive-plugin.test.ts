@@ -232,7 +232,7 @@ describe('errors', () => {
         return <div />
         }`;
 
-    expect(() => transformClient({ sourceCode })).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => transformClient({ sourceCode })).toThrowMatchingInlineSnapshot(`
       "/unknown: Modules with the "use dom" directive only support a single default export.
         2 |         "use dom"
         3 |
@@ -250,7 +250,7 @@ function App() {
     return <div />
 }`;
 
-    expect(() => transformClient({ sourceCode })).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => transformClient({ sourceCode })).toThrowMatchingInlineSnapshot(`
       "/unknown: The "use dom" directive requires a default export to be present in the file.
       > 1 |
           | ^

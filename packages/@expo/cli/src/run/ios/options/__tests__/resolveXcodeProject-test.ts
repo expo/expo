@@ -34,7 +34,7 @@ describe(resolveXcodeProject, () => {
   it(`throws if neither xcworkspace nor xcodeproj are available`, () => {
     vol.fromJSON({}, '/');
 
-    expect(() => resolveXcodeProject('/')).toThrowError(
+    expect(() => resolveXcodeProject('/')).toThrow(
       'Xcode project not found in project: /. You can generate a project with `npx expo prebuild`'
     );
   });

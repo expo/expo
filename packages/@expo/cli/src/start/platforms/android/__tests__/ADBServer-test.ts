@@ -39,7 +39,7 @@ describe('getAdbExecutablePath', () => {
   it('warns if Android SDK is not found', () => {
     process.env.ANDROID_HOME = '/Users/user/android';
     new ADBServer().getAdbExecutablePath();
-    expect(Log.warn).toBeCalledWith(
+    expect(Log.warn).toHaveBeenCalledWith(
       expect.stringContaining('Failed to resolve the Android SDK path')
     );
   });
@@ -56,14 +56,14 @@ describe('resolveAdbPromise', () => {
       // eslint-disable-next-line no-throw-literal
       throw { signal: 'SIGINT' };
     })();
-    await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(AbortCommandError);
+    await expect(server.resolveAdbPromise(rejects)).rejects.toThrow(AbortCommandError);
   });
   it(`formats error message`, async () => {
     const server = new ADBServer();
     const rejects = (async () => {
       throw new Error('error: foobar');
     })();
-    await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(/^foobar$/);
+    await expect(server.resolveAdbPromise(rejects)).rejects.toThrow(/^foobar$/);
   });
   it(`formats bad user number error`, async () => {
     const server = new ADBServer();
@@ -74,7 +74,7 @@ describe('resolveAdbPromise', () => {
         stdout: 'Error: java.lang.IllegalArgumentException: Bad user number: FUNKY\n',
       };
     })();
-    await expect(server.resolveAdbPromise(rejects)).rejects.toThrowError(
+    await expect(server.resolveAdbPromise(rejects)).rejects.toThrow(
       /^Invalid ADB user number "FUNKY" set with environment variable EXPO_ADB_USER. Run "adb shell pm list users" to see valid user numbers.$/
     );
   });
@@ -88,16 +88,16 @@ describe('startAsync', () => {
     const server = new ADBServer();
     await expect(server.startAsync()).resolves.toBe(true);
     expect(server.isRunning).toBe(true);
-    expect(installExitHooks).toBeCalledTimes(1);
-    expect(spawnAsync).toBeCalledTimes(1);
+    expect(installExitHooks).toHaveBeenCalledTimes(1);
+    expect(spawnAsync).toHaveBeenCalledTimes(1);
   });
   it(`does not start if the server is already running`, async () => {
     const server = new ADBServer();
     server.isRunning = true;
     await expect(server.startAsync()).resolves.toBe(false);
     expect(server.isRunning).toBe(true);
-    expect(installExitHooks).toBeCalledTimes(0);
-    expect(spawnAsync).toBeCalledTimes(0);
+    expect(installExitHooks).toHaveBeenCalledTimes(0);
+    expect(spawnAsync).toHaveBeenCalledTimes(0);
   });
 });
 describe('runAsync', () => {
@@ -111,11 +111,11 @@ describe('runAsync', () => {
     server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
     server.getAdbExecutablePath = jest.fn(() => 'adb');
     await expect(server.runAsync(['foo', 'bar'])).resolves.toBe('did thing');
-    expect(server.getAdbExecutablePath).toBeCalledTimes(1);
-    expect(server.startAsync).toBeCalledTimes(1);
-    expect(server.resolveAdbPromise).toBeCalledTimes(1);
-    expect(spawnAsync).toBeCalledTimes(1);
-    expect(spawnAsync).toBeCalledWith('adb', ['foo', 'bar']);
+    expect(server.getAdbExecutablePath).toHaveBeenCalledTimes(1);
+    expect(server.startAsync).toHaveBeenCalledTimes(1);
+    expect(server.resolveAdbPromise).toHaveBeenCalledTimes(1);
+    expect(spawnAsync).toHaveBeenCalledTimes(1);
+    expect(spawnAsync).toHaveBeenCalledWith('adb', ['foo', 'bar']);
   });
 });
 describe('getFileOutputAsync', () => {
@@ -126,11 +126,11 @@ describe('getFileOutputAsync', () => {
     server.resolveAdbPromise = jest.fn(server.resolveAdbPromise);
     server.getAdbExecutablePath = jest.fn(() => 'adb');
     await expect(server.getFileOutputAsync(['foo', 'bar'])).resolves.toBe('foobar');
-    expect(server.getAdbExecutablePath).toBeCalledTimes(1);
-    expect(server.startAsync).toBeCalledTimes(1);
-    expect(server.resolveAdbPromise).toBeCalledTimes(1);
-    expect(execFileSync).toBeCalledTimes(1);
-    expect(execFileSync).toBeCalledWith('adb', ['foo', 'bar'], {
+    expect(server.getAdbExecutablePath).toHaveBeenCalledTimes(1);
+    expect(server.startAsync).toHaveBeenCalledTimes(1);
+    expect(server.resolveAdbPromise).toHaveBeenCalledTimes(1);
+    expect(execFileSync).toHaveBeenCalledTimes(1);
+    expect(execFileSync).toHaveBeenCalledWith('adb', ['foo', 'bar'], {
       encoding: 'latin1',
       stdio: 'pipe',
     });
@@ -143,14 +143,14 @@ describe('stopAsync', () => {
     server.isRunning = true;
     await expect(server.stopAsync()).resolves.toBe(true);
     expect(server.isRunning).toBe(false);
-    expect(spawnAsync).toBeCalledTimes(1);
+    expect(spawnAsync).toHaveBeenCalledTimes(1);
   });
   it(`stops the ADB server when not running`, async () => {
     jest.mocked(spawnAsync).mockResolvedValueOnce({ output: [''] } as any);
     const server = new ADBServer();
     server.isRunning = false;
     await expect(server.stopAsync()).resolves.toBe(false);
-    expect(spawnAsync).toBeCalledTimes(0);
+    expect(spawnAsync).toHaveBeenCalledTimes(0);
   });
 
   it(`considers the ADB server stopped if the process fails`, async () => {
@@ -161,6 +161,6 @@ describe('stopAsync', () => {
     });
     await expect(server.stopAsync()).resolves.toBe(false);
     expect(server.isRunning).toBe(false);
-    expect(Log.error).toBeCalled();
+    expect(Log.error).toHaveBeenCalled();
   });
 });

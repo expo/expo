@@ -25,7 +25,7 @@ describe(resolveWithTsConfigPaths, () => {
       )
     ).toEqual('foo/bar');
 
-    expect(resolver).toBeCalledTimes(1);
+    expect(resolver).toHaveBeenCalledTimes(1);
     expect(resolver).toHaveBeenNthCalledWith(1, 'foo/bar');
   });
   it('cannot resolve baseUrl if paths were matched and did not resolve', () => {
@@ -53,7 +53,7 @@ describe(resolveWithTsConfigPaths, () => {
       )
     ).toEqual(null);
 
-    expect(resolver).toBeCalledTimes(1);
+    expect(resolver).toHaveBeenCalledTimes(1);
     expect(resolver).toHaveBeenNthCalledWith(1, 'paths/foo/bar');
   });
   it('resolves paths with identical matcher as paths', () => {
@@ -81,7 +81,7 @@ describe(resolveWithTsConfigPaths, () => {
       )
     ).toEqual('foo/bar');
 
-    expect(resolver).toBeCalledTimes(1);
+    expect(resolver).toHaveBeenCalledTimes(1);
     expect(resolver).toHaveBeenNthCalledWith(1, 'foo/bar');
   });
   it('does not evaluate all resolves paths with identical matcher as paths', () => {
@@ -109,7 +109,7 @@ describe(resolveWithTsConfigPaths, () => {
       )
     ).toEqual('foo/bar');
 
-    expect(resolver).toBeCalledTimes(1);
+    expect(resolver).toHaveBeenCalledTimes(1);
     expect(resolver).toHaveBeenNthCalledWith(1, 'foo/bar');
   });
   it('skips resolving less specific matcher if more specific matcher fails to resolve', () => {
@@ -138,7 +138,7 @@ describe(resolveWithTsConfigPaths, () => {
       )
     ).toEqual(null);
 
-    expect(resolver).toBeCalledTimes(1);
+    expect(resolver).toHaveBeenCalledTimes(1);
     expect(resolver).toHaveBeenNthCalledWith(1, 'paths/foo/bar');
   });
 
@@ -167,7 +167,7 @@ describe(resolveWithTsConfigPaths, () => {
       )
     ).toEqual('paths/foo/bar');
 
-    expect(resolver).toBeCalledTimes(1);
+    expect(resolver).toHaveBeenCalledTimes(1);
     expect(resolver).toHaveBeenNthCalledWith(1, 'paths/foo/bar');
   });
 

@@ -327,7 +327,7 @@ describe('getRedirectUrl', () => {
       'http://100.100.1.100:3000/_expo/loading?platform=ios'
     );
     expect(server.getRedirectUrl(null)).toBe('http://100.100.1.100:3000/_expo/loading');
-    expect(urlCreator.constructLoadingUrl).toBeCalledTimes(3);
+    expect(urlCreator.constructLoadingUrl).toHaveBeenCalledTimes(3);
   });
 });
 

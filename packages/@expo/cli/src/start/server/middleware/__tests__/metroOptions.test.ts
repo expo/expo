@@ -7,14 +7,14 @@ describe(getMetroDirectBundleOptions, () => {
         bytecode: true,
         platform: 'web',
       })
-    ).toThrowError(/Cannot use bytecode with the web platform/);
+    ).toThrow(/Cannot use bytecode with the web platform/);
   });
   it(`asserts unsupported options: using bytecode without hermes`, () => {
     expect(() =>
       getMetroDirectBundleOptions({
         bytecode: true,
       })
-    ).toThrowError(/Bytecode is only supported with the Hermes engine/);
+    ).toThrow(/Bytecode is only supported with the Hermes engine/);
   });
 
   it(`returns basic options`, () => {

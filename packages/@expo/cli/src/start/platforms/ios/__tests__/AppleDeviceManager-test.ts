@@ -60,7 +60,7 @@ describe('launchApplicationIdAsync', () => {
     device.activateWindowAsync = jest.fn();
     jest.mocked(openAppIdAsync).mockResolvedValueOnce({ status: 0 } as any);
     await device.launchApplicationIdAsync('host.exp.Exponent');
-    expect(device.activateWindowAsync).toBeCalled();
+    expect(device.activateWindowAsync).toHaveBeenCalled();
   });
   it(`asserts that an unexpected error occurred`, async () => {
     const device = createDevice();
@@ -75,7 +75,7 @@ describe('openUrlAsync', () => {
   it('launches into Expo Go', async () => {
     const device = createDevice();
     await device.openUrlAsync('exp://foobar');
-    expect(openUrlAsync).toBeCalledWith(
+    expect(openUrlAsync).toHaveBeenCalledWith(
       { name: 'iPhone 13', udid: '123' },
       { url: 'exp://foobar' }
     );
@@ -83,8 +83,8 @@ describe('openUrlAsync', () => {
   it('opens a URL on a device', async () => {
     const device = createDevice();
     await device.openUrlAsync('http://foobar');
-    expect(openAppIdAsync).not.toBeCalled();
-    expect(openUrlAsync).toBeCalledWith(
+    expect(openAppIdAsync).not.toHaveBeenCalled();
+    expect(openUrlAsync).toHaveBeenCalledWith(
       { name: 'iPhone 13', udid: '123' },
       { url: 'http://foobar' }
     );

@@ -82,7 +82,7 @@ describe('openAsync', () => {
     expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
 
     // Native invocation
-    expect(SimControl.openAppIdAsync).toBeCalledWith(
+    expect(SimControl.openAppIdAsync).toHaveBeenCalledWith(
       { name: 'iPhone 13', udid: '123' },
       { appId: 'dev.bacon.app' }
     );

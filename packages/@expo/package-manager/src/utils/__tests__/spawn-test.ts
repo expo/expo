@@ -24,7 +24,7 @@ describe(createPendingSpawnAsync, () => {
     );
 
     await pending;
-    expect(mockedSpawnAsync).toBeCalledWith('foo', ['custom', 'flags']);
+    expect(mockedSpawnAsync).toHaveBeenCalledWith('foo', ['custom', 'flags']);
   });
 
   it('pending promises resolves when both actions resolves', async () => {
@@ -60,6 +60,6 @@ describe(createPendingSpawnAsync, () => {
     await expect(pending).rejects.toBe(error);
     await expect(pending.child).resolves.toMatchObject(STUB_SPAWN_CHILD);
 
-    expect(mockedSpawnAsync).toBeCalledWith('foo', ['other', 'custom', 'flags']);
+    expect(mockedSpawnAsync).toHaveBeenCalledWith('foo', ['other', 'custom', 'flags']);
   });
 });

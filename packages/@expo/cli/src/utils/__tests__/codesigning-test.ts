@@ -65,15 +65,15 @@ describe(getCodeSigningInfoAsync, () => {
   });
 
   it('throws when expo-expect-signature header has invalid format', async () => {
-    await expect(getCodeSigningInfoAsync({} as any, 'hello', undefined)).rejects.toThrowError(
+    await expect(getCodeSigningInfoAsync({} as any, 'hello', undefined)).rejects.toThrow(
       'keyid not present in expo-expect-signature header'
     );
-    await expect(getCodeSigningInfoAsync({} as any, 'keyid=1', undefined)).rejects.toThrowError(
+    await expect(getCodeSigningInfoAsync({} as any, 'keyid=1', undefined)).rejects.toThrow(
       'Invalid value for keyid in expo-expect-signature header: 1'
     );
     await expect(
       getCodeSigningInfoAsync({} as any, 'keyid="hello", alg=1', undefined)
-    ).rejects.toThrowError('Invalid value for alg in expo-expect-signature header');
+    ).rejects.toThrow('Invalid value for alg in expo-expect-signature header');
   });
 
   it('returns null when user is not logged in', async () => {
@@ -152,7 +152,7 @@ describe(getCodeSigningInfoAsync, () => {
             'keyid="expo-root", alg="rsa-v1_5-sha256"',
             undefined
           )
-        ).rejects.toThrowError('wat');
+        ).rejects.toThrow('wat');
       });
 
       it('falls back to cached when offline', async () => {
@@ -196,7 +196,7 @@ describe(getCodeSigningInfoAsync, () => {
     it('throws', async () => {
       await expect(
         getCodeSigningInfoAsync({} as any, 'keyid="expo-go"', undefined)
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Invalid certificate requested: cannot sign with embedded keyid=expo-go key'
       );
     });
@@ -231,7 +231,7 @@ describe(getCodeSigningInfoAsync, () => {
           'keyid="test", alg="rsa-v1_5-sha256"',
           undefined
         )
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Must specify --private-key-path argument to sign development manifest for requested code signing key'
       );
     });
@@ -245,7 +245,7 @@ describe(getCodeSigningInfoAsync, () => {
           'keyid="test", alg="rsa-v1_5-sha256"',
           'keys/private-key.pem'
         )
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Must specify "codeSigningMetadata" under the "updates" field of your app config file to use EAS code signing'
       );
     });
@@ -262,7 +262,7 @@ describe(getCodeSigningInfoAsync, () => {
           'keyid="test", alg="rsa-v1_5-sha256"',
           'keys/private-key.pem'
         )
-      ).rejects.toThrowError('keyid mismatch: client=test, project=test2');
+      ).rejects.toThrow('keyid mismatch: client=test, project=test2');
 
       await expect(
         getCodeSigningInfoAsync(
@@ -275,7 +275,7 @@ describe(getCodeSigningInfoAsync, () => {
           'keyid="test", alg="fake2"',
           'keys/private-key.pem'
         )
-      ).rejects.toThrowError('"alg" field mismatch (client=fake2, project=fake)');
+      ).rejects.toThrow('"alg" field mismatch (client=fake2, project=fake)');
     });
 
     it('throws when it cannot load configured code signing info', async () => {
@@ -290,7 +290,7 @@ describe(getCodeSigningInfoAsync, () => {
           'keyid="test", alg="rsa-v1_5-sha256"',
           'keys/private-key.pem'
         )
-      ).rejects.toThrowError('Code signing certificate cannot be read from path: certs/cert.pem');
+      ).rejects.toThrow('Code signing certificate cannot be read from path: certs/cert.pem');
     });
   });
 });
@@ -319,6 +319,6 @@ describe(signManifestString, () => {
         privateKey: mockSelfSigned.privateKey,
         scopeKey: null,
       })
-    ).toThrowError('Invalid PEM formatted message.');
+    ).toThrow('Invalid PEM formatted message.');
   });
 });

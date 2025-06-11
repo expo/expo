@@ -13,7 +13,7 @@ jest.mock('../emulator', () => ({
 it(`asserts no devices are available`, async () => {
   jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([]);
   jest.mocked(listAvdsAsync).mockResolvedValueOnce([]);
-  await expect(getDevicesAsync()).rejects.toThrowError(CommandError);
-  expect(getAttachedDevicesAsync).toBeCalled();
-  expect(listAvdsAsync).toBeCalled();
+  await expect(getDevicesAsync()).rejects.toThrow(CommandError);
+  expect(getAttachedDevicesAsync).toHaveBeenCalled();
+  expect(listAvdsAsync).toHaveBeenCalled();
 });

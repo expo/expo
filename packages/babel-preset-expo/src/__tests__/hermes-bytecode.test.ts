@@ -360,7 +360,7 @@ LANGUAGE_SAMPLES.forEach((sample) => {
 
     if (sample.hermesError) {
       it(`Hermes does not have native support`, async () => {
-        await expect(compileToHermesBytecodeAsync({ code: sample.code })).rejects.toThrowError(
+        await expect(compileToHermesBytecodeAsync({ code: sample.code })).rejects.toThrow(
           sample.hermesError
         );
       });

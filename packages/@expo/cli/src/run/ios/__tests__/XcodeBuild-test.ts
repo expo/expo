@@ -70,7 +70,7 @@ describe(getXcodeBuildArgsAsync, () => {
       '-destination',
       'id=demo-udid',
     ]);
-    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toBeCalledTimes(0);
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
   });
 });
 

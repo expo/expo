@@ -8,5 +8,5 @@ it(`respects input types`, () => {
     return 0;
   });
   expect(profile({} as NormalizedOptions, fn)('a', 'b')).toBe(1);
-  expect(fn).toBeCalledWith('a', 'b');
+  expect(fn).toHaveBeenCalledWith('a', 'b');
 });

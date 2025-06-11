@@ -79,7 +79,7 @@ describe('async', () => {
   it(`has useful error messages for JSON parsing errors`, async () => {
     vol.fromJSON({ [testFilename]: loadFixture('syntax-error.json') });
 
-    await expect(JsonFile.readAsync(testFilename)).rejects.toThrowError(
+    await expect(JsonFile.readAsync(testFilename)).rejects.toThrow(
       // based on node version you may get different error messages
       /Cause: SyntaxError: (Unexpected string|Expected ':' after property name) in JSON at position 602/
     );
@@ -88,7 +88,7 @@ describe('async', () => {
   it(`has useful error messages for JSON5 parsing errors`, async () => {
     vol.fromJSON({ [testFilename]: loadFixture('syntax-error.json5') });
 
-    await expect(JsonFile.readAsync(testFilename, { json5: true })).rejects.toThrowError(
+    await expect(JsonFile.readAsync(testFilename, { json5: true })).rejects.toThrow(
       /Cause: SyntaxError: JSON5: invalid character ',' at 4:15/
     );
   });

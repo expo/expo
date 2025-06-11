@@ -12,7 +12,7 @@ describe(GDBProtocolReader, () => {
     });
     it(`parses device locked event`, () => {
       const reader = new GDBProtocolReader(() => {});
-      expect(() => reader.parseBody(DEVICE_LOCKED_BUFFER)).toThrowErrorMatchingInlineSnapshot(
+      expect(() => reader.parseBody(DEVICE_LOCKED_BUFFER)).toThrowMatchingInlineSnapshot(
         `"Device is currently locked."`
       );
     });

@@ -17,11 +17,11 @@ it(`should return a noop response for the sourcemap`, () => {
     jest.fn()
   );
 
-  expect(writeHead).toBeCalledWith(200, {
+  expect(writeHead).toHaveBeenCalledWith(200, {
     'Content-Type': 'application/json',
   });
 
-  expect(end).toBeCalledWith('{}');
+  expect(end).toHaveBeenCalledWith('{}');
 });
 it(`should skip unrelated requests`, () => {
   const middleware = new ContextModuleSourceMapsMiddleware();
@@ -41,8 +41,8 @@ it(`should skip unrelated requests`, () => {
     next
   );
 
-  expect(writeHead).not.toBeCalled();
-  expect(end).not.toBeCalled();
+  expect(writeHead).not.toHaveBeenCalled();
+  expect(end).not.toHaveBeenCalled();
 
-  expect(next).toBeCalled();
+  expect(next).toHaveBeenCalled();
 });

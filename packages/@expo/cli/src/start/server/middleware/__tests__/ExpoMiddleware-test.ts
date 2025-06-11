@@ -56,7 +56,7 @@ describe('getHandler', () => {
     );
 
     // Internals are invoked.
-    expect(middleware.handleRequestAsync).toBeCalled();
+    expect(middleware.handleRequestAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(200);
@@ -91,16 +91,16 @@ describe('getHandler', () => {
     );
 
     // Internals are invoked.
-    expect(middleware.handleRequestAsync).toBeCalled();
+    expect(middleware.handleRequestAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(500);
 
-    expect(next).not.toBeCalled();
+    expect(next).not.toHaveBeenCalled();
     // Returns error info.
-    expect(res.end).toBeCalledWith(JSON.stringify({ error: 'Error: demo' }));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
-    expect(Log.exception).toBeCalled();
+    expect(Log.exception).toHaveBeenCalled();
   });
 
   it(`continues`, async () => {
@@ -125,7 +125,7 @@ describe('getHandler', () => {
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(200);
-    expect(next).toBeCalled();
-    expect(middleware.handleRequestAsync).not.toBeCalled();
+    expect(next).toHaveBeenCalled();
+    expect(middleware.handleRequestAsync).not.toHaveBeenCalled();
   });
 });

@@ -23,7 +23,7 @@ describe(getProjectDevelopmentCertificateAsync, () => {
     const scope = nock(getExpoApiBaseUrl())
       .post('/v2/projects/123/development-certificates')
       .reply(500, 'something went wrong');
-    await expect(getProjectDevelopmentCertificateAsync('123', 'csr')).rejects.toThrowError(
+    await expect(getProjectDevelopmentCertificateAsync('123', 'csr')).rejects.toThrow(
       /Expo server/
     );
     expect(scope.isDone()).toBe(true);

@@ -97,7 +97,7 @@ describe(resolveTemplateOption, () => {
     });
   });
   it('asserts a missing file path template', () => {
-    expect(() => resolveTemplateOption('./bacon/bar')).toThrowError(
+    expect(() => resolveTemplateOption('./bacon/bar')).toThrow(
       /template file does not exist: .*bacon\/bar/
     );
   });

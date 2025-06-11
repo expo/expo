@@ -17,7 +17,7 @@ afterAll(() => {
 
 it(`fetches`, async () => {
   await expect(fetchAsync('https://example.com')).resolves.toBeDefined();
-  expect(global.fetch).toBeCalledWith('https://example.com', {
+  expect(global.fetch).toHaveBeenCalledWith('https://example.com', {
     headers: { 'expo-platform': 'web' },
     method: 'GET',
   });

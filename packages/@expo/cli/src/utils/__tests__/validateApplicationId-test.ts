@@ -142,7 +142,7 @@ describe(getBundleIdWarningInternalAsync, () => {
   it(`returns null and warns if running in offline-mode`, async () => {
     process.env.EXPO_OFFLINE = '1';
     await expect(getBundleIdWarningInternalAsync('bacon')).resolves.toBe(null);
-    expect(Log.warn).toBeCalledWith(expect.stringMatching(/offline-mode/));
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringMatching(/offline-mode/));
   });
   it(`returns warning if in use`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);
@@ -189,7 +189,7 @@ describe(getPackageNameWarningInternalAsync, () => {
   it(`returns null and warns if running in offline-mode`, async () => {
     process.env.EXPO_OFFLINE = '1';
     expect(await getPackageNameWarningInternalAsync('123')).toBe(null);
-    expect(Log.warn).toBeCalledWith(expect.stringMatching(/offline-mode/));
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringMatching(/offline-mode/));
   });
   it(`returns warning if in use`, async () => {
     jest.mocked(isUrlAvailableAsync).mockResolvedValueOnce(true);

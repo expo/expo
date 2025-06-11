@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^4.1.7",
-    "@testing-library/user-event": "^14.5.2"
+    "@testing-library/user-event": "^14.6.1"
   },
   "peerDependencies": {
     "expo": "*"

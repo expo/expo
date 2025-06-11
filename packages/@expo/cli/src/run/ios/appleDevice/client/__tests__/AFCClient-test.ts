@@ -91,7 +91,7 @@ describe('openFile', () => {
       client['openFile'](
         'PublicStaging/yolo83.app/assets/node_modules/react-native/Libraries/LogBox/UI/LogBoxImages/loader.png'
       )
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       /There was an unknown error opening file PublicStaging\/yolo83.app\/assets\/node_modules\/react-native\/Libraries\/LogBox\/UI\/LogBoxImages\/loader\.png, response: 6,0,0,0,0,0,0,0/
     );
   });

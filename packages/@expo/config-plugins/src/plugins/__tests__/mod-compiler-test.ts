@@ -57,7 +57,7 @@ describe(compileModsAsync, () => {
     // Adds base mods
     expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
 
-    expect(action).not.toBeCalled();
+    expect(action).not.toHaveBeenCalled();
   });
 
   it('asserts missing providers', async () => {

@@ -578,7 +578,7 @@ it('throws if the reserved dependency map name appears in the input', async () =
       ),
       { ...baseTransformOptions, dev: false, minify: true }
     )
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
+  ).rejects.toThrowMatchingInlineSnapshot(
     `"Source code contains the reserved string \`THE_DEP_MAP\` at character offset 55"`
   );
 });
