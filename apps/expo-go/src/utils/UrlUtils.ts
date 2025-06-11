@@ -16,22 +16,21 @@ export function normalizeSnackUrl(fullName: string, channelName?: string): strin
 }
 
 export function normalizeUrl(rawUrl: string): string {
-  let components = url.parse(rawUrl, false, true);
+  let components = new URL(rawUrl);
   if (
     components.protocol === 'localhost:' ||
-    (components.host == null && !components.protocol && !components.slashes)
+    (components.host == null && !components.protocol && !components.href.includes('/'))
   ) {
-    if (components.path && components.path.charAt(0) === '@') {
+    if (components.pathname && components.pathname.charAt(0) === '@') {
       // try parsing as @user/experience-id shortcut
-      components = url.parse(`exp://${Config.api.host}/${rawUrl}`);
+      components = new URL(`exp://${Config.api.host}/${rawUrl}`);
     } else {
       // just treat it as a url with no protocol and assume exp://
-      components = url.parse('exp://' + rawUrl);
+      components = new URL('exp://' + rawUrl);
     }
   }
   if (!components.protocol) {
     components.protocol = 'exp:';
-    components.slashes = true;
   }
   return url.format(components);
 }
@@ -41,7 +40,7 @@ export function toHttp(expUrl: string): string {
     return expUrl;
   }
 
-  const components = url.parse(expUrl);
+  const components = new URL(expUrl);
   if (components.host && HTTPS_HOSTS.includes(components.host)) {
     components.protocol = 'https:';
   } else {
@@ -51,13 +50,13 @@ export function toHttp(expUrl: string): string {
 }
 
 export function toExp(httpUrl: string): string {
-  const components = url.parse(httpUrl);
+  const components = new URL(httpUrl);
   components.protocol = 'exp:';
   return url.format(components);
 }
 
 export function toExps(httpUrl: string): string {
-  const components = url.parse(httpUrl);
+  const components = new URL(httpUrl);
   components.protocol = 'exps:';
   return url.format(components);
 }
