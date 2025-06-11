@@ -6,6 +6,8 @@ import fs from 'fs/promises';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
+// Change project.ts to trigger workflows
+
 /*
  * Change this to your own Expo account name
  */
