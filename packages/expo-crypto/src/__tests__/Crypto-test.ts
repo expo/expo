@@ -15,9 +15,7 @@ it(`asserts invalid algorithm errors`, async () => {
   await expect(Crypto.digestStringAsync('null' as any, '<DEBUG>')).rejects.toThrow(TypeError);
   await expect(Crypto.digestStringAsync(2 as any, '<DEBUG>')).rejects.toThrow(TypeError);
   await expect(Crypto.digestStringAsync(true as any, '<DEBUG>')).rejects.toThrow(TypeError);
-  await expect(Crypto.digestStringAsync(undefined as any, '<DEBUG>')).rejects.toThrow(
-    TypeError
-  );
+  await expect(Crypto.digestStringAsync(undefined as any, '<DEBUG>')).rejects.toThrow(TypeError);
   await expect(Crypto.digestStringAsync({} as any, '<DEBUG>')).rejects.toThrow(TypeError);
 });
 
