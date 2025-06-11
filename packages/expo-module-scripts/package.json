@@ -40,7 +40,6 @@
     "eslint-config-universe": "^15.0.3",
     "glob": "^10.4.2",
     "jest-expo": "~53.0.5",
-    "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
     "resolve-workspace-root": "^2.0.0",
     "ts-jest": "~29.0.4",
