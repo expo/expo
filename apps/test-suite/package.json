@@ -43,7 +43,7 @@
     "expo-speech": "~13.1.7",
     "expo-sqlite": "~15.2.12",
     "expo-task-manager": "~13.1.5",
-    "expo-web-browser": "~14.1.6",
+    "expo-web-browser": "~14.2.0",
     "firebase": "^9.3.0",
     "i18n-js": "^3.1.0",
     "immutable": "^4.0.0",
