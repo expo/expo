@@ -74,7 +74,3 @@ struct DevServerInfoModal: View {
     }
   }
 }
-
-#Preview {
-  DevServerInfoModal(showingInfoDialog: .constant(false))
-}
