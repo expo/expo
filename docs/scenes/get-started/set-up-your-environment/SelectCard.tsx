@@ -22,7 +22,6 @@ export function SelectCard({
   onClick,
 }: Props) {
   const { themeName } = useTheme();
-  const isDarkMode = themeName === 'dark';
 
   return (
     <ButtonBase onClick={onClick}>
@@ -37,7 +36,13 @@ export function SelectCard({
             isSelected ? 'bg-gradient-to-b from-palette-blue3 to-palette-blue4' : 'bg-subtle'
           )}>
           <picture className="relative flex h-full w-auto items-end">
-            {isDarkMode && <source srcSet={darkImgSrc} type="image/png" />}
+            {themeName !== 'light' && (
+              <source
+                srcSet={darkImgSrc}
+                type="image/png"
+                media={themeName === 'auto' ? '(prefers-color-scheme: dark)' : undefined}
+              />
+            )}
             <img
               src={imgSrc}
               alt={alt}
