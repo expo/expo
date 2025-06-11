@@ -25,7 +25,7 @@
 - [iOS] Fix player reporting status `readyToPlay` while a source is being loaded asynchronously. ([#37180](https://github.com/expo/expo/pull/37180) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player going into `loading` status for a single frame when unpausing with a full buffer. ([#37181](https://github.com/expo/expo/pull/37181) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player getting stuck in `loading` state for null sources. ([#37183](https://github.com/expo/expo/pull/37183) by [@behenate](https://github.com/behenate))
-- [iOS] Fix compilation failure on XCode 26/iOS 26. ([#37346](https://github.com/expo/expo/pull/37346) by [@behenate](https://github.com/fobos531))
+- [iOS] Fix compilation failure on XCode 26/iOS 26. ([#37346](https://github.com/expo/expo/pull/37346) by [@fobos531](https://github.com/fobos531))
 
 ## 2.1.9 — 2025-05-08
 
