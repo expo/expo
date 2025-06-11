@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import * as Changelogs from '../../Changelogs';
 import Git from '../../Git';
 import { getListOfPackagesAsync, Package } from '../../Packages';
+import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { PackagesGraph, PackagesGraphNode } from '../../packages-graph';
@@ -25,7 +26,10 @@ export const loadRequestedParcels = new Task<TaskArgs>(
 
     const allPackages = await runWithSpinner(
       'Loading requested workspace packages',
-      () => getListOfPackagesAsync(),
+      async () => [
+        ...(await getListOfPackagesAsync()),
+        ...(await getAvailableProjectTemplatesAsync()),
+      ],
       'Loaded requested workspace packages'
     );
 
