@@ -17,6 +17,7 @@
     "start:web-workers": "E2E_ROUTER_ASYNC=development E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo start",
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
     "start:link-preview": "E2E_ROUTER_SRC=link-preview expo start",
+    "start:modal": "E2E_ROUTER_SRC=modal expo start",
     "ios:link-preview": "E2E_ROUTER_SRC=link-preview expo run:ios",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
