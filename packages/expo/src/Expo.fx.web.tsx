@@ -1,4 +1,5 @@
 import './winter';
+import './async-require';
 import 'expo/virtual/rsc';
 
 // When users dangerously import a file inside of react-native, it breaks the web alias.
