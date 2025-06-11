@@ -3996,15 +3996,14 @@
     pretty-format "^29.0.3"
     redent "^3.0.0"
 
-"@testing-library/react-native@^13.1.0":
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-13.1.0.tgz#1afecca5e4d37e15371a433874a19bc3fb3d3f48"
-  integrity sha512-JDHDbhsBu6Q7tYGLQJcwZjI2qVoT8tnu+Vfg/48cZdYsnEJKwlE20CW6hZcSsZM/nzVQjFmLiW/SbnwQadW3sw==
+"@testing-library/react-native@^13.2.0":
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-13.2.0.tgz#b4f53c69a889728abe8bc3115ba803824bcafe10"
+  integrity sha512-3FX+vW/JScXkoH8VSCRTYF4KCHC56y4AI6TMDISfLna6r+z8kaSEmxH1I6NVaFOxoWX9yaHDyI26xh7BykmqKw==
   dependencies:
     chalk "^4.1.2"
     jest-matcher-utils "^29.7.0"
     pretty-format "^29.7.0"
-    react-native-gesture-handler "^2.23.1"
     redent "^3.0.0"
 
 "@testing-library/react@^16.3.0":
@@ -13879,7 +13878,7 @@ react-native-fade-in-image@^1.6.1:
     react-mixin "^3.0.5"
     react-timer-mixin "^0.13.3"
 
-react-native-gesture-handler@^2.23.1, react-native-gesture-handler@~2.28.0:
+react-native-gesture-handler@~2.28.0:
   version "2.28.0"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.28.0.tgz#07fb4f5eae72f810aac3019b060d26c1835bfd0c"
   integrity sha512-0msfJ1vRxXKVgTgvL+1ZOoYw3/0z1R+Ked0+udoJhyplC2jbVKIJ8Z1bzWdpQRCV3QcQ87Op0zJVE5DhKK2A0A==

@@ -32,7 +32,7 @@
     "expo-module-scripts": "^5.0.0"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.1.0"
+    "@testing-library/react-native": "^13.2.0"
   },
   "peerDependencies": {
     "react": "*",
