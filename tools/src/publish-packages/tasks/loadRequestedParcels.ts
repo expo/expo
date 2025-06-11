@@ -73,7 +73,7 @@ export const loadRequestedParcels = new Task<TaskArgs>(
     // The dependencies must precede the requested ones to select them first.
     const parcelsToSelect = new Set<Parcel>([...dependenciesParcels, ...requestedParcels]);
 
-    return [[...parcelsToSelect], options];
+    return [[...parcelsToSelect], options, []];
   }
 );
 
