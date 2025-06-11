@@ -107,7 +107,7 @@ internal class WebBrowserSession: NSObject, WKNavigationDelegate, WKUIDelegate, 
     self.webView = webView
 
     let window = NSWindow(
-      contentRect: NSRect(x: 0, y: 0, width: 1200, height: 800),
+      contentRect: self.options.presentationStyle.toContentRect(),
       styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
       backing: .buffered,
       defer: false

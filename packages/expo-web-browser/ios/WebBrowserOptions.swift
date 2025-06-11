@@ -83,5 +83,28 @@ internal enum PresentationStyle: String, Enumerable {
       return .automatic
     }
   }
+#else
+  func toContentRect() -> NSRect {
+    switch self {
+    case .fullScreen, .overFullScreen:
+      if let screenFrame = NSScreen.main?.frame {
+        return screenFrame
+      } else {
+        return NSRect(x: 0, y: 0, width: 1440, height: 900)
+      }
+
+    case .pageSheet:
+      return NSRect(x: 0, y: 0, width: 1000, height: 700)
+
+    case .formSheet:
+      return NSRect(x: 0, y: 0, width: 600, height: 400)
+
+    case .popover:
+      return NSRect(x: 0, y: 0, width: 300, height: 200)
+
+    case .automatic, .none, .currentContext, .overCurrentContext:
+      return NSRect(x: 0, y: 0, width: 1200, height: 800)
+    }
+  }
 #endif
 }
