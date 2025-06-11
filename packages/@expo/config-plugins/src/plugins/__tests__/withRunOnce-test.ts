@@ -13,7 +13,7 @@ describe(withRunOnce, () => {
     ]);
 
     // Unsafe runs multiple times
-    expect(pluginA).toBeCalledTimes(2);
+    expect(pluginA).toHaveBeenCalledTimes(2);
   });
 
   it('prevents running different plugins with same id', () => {
@@ -34,8 +34,8 @@ describe(withRunOnce, () => {
     ]);
 
     // Prove that each plugin is only run once
-    expect(pluginA).toBeCalledTimes(1);
-    expect(pluginB).toBeCalledTimes(0);
+    expect(pluginA).toHaveBeenCalledTimes(1);
+    expect(pluginB).toHaveBeenCalledTimes(0);
   });
 
   it('prevents running the same plugin twice', () => {
@@ -51,6 +51,6 @@ describe(withRunOnce, () => {
     ]);
 
     // Prove that each plugin is only run once
-    expect(pluginA).toBeCalledTimes(1);
+    expect(pluginA).toHaveBeenCalledTimes(1);
   });
 });

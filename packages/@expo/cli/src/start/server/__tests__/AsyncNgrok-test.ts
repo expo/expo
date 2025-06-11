@@ -69,7 +69,7 @@ describe('startAsync', () => {
     jest.mocked(hasAdbReverseAsync).mockReturnValueOnce(false);
 
     await ngrok.startAsync();
-    expect(startAdbReverseAsync).not.toBeCalled();
+    expect(startAdbReverseAsync).not.toHaveBeenCalled();
   });
   beforeEach(() => {
     delete process.env.EXPO_TUNNEL_SUBDOMAIN;
@@ -89,14 +89,14 @@ describe('startAsync', () => {
     const { ngrok } = createNgrokInstance();
     expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
     const instance = await new NgrokResolver('/').resolveAsync();
-    expect(instance.connect).toBeCalledWith(expect.objectContaining({ subdomain: 'test' }));
+    expect(instance.connect).toHaveBeenCalledWith(expect.objectContaining({ subdomain: 'test' }));
   });
   it(`starts with any subdomain`, async () => {
     process.env.EXPO_TUNNEL_SUBDOMAIN = '1';
     const { ngrok } = createNgrokInstance();
     expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
     const instance = await new NgrokResolver('/').resolveAsync();
-    expect(instance.connect).toBeCalledWith(
+    expect(instance.connect).toHaveBeenCalledWith(
       expect.objectContaining({ subdomain: expect.stringMatching(/.*-anonymous-3000$/) })
     );
   });

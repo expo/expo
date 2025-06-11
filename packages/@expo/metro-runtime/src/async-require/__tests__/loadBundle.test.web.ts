@@ -22,18 +22,18 @@ afterEach(() => {
 it('loads a bundle', async () => {
   process.env.NODE_ENV = 'development';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
+  expect(LoadingView.showMessage).not.toHaveBeenCalled();
+  expect(LoadingView.hide).not.toHaveBeenCalled();
   const url = `/Second.bundle?modulesOnly=true`;
-  expect(HMRClient.registerBundle).toBeCalledWith(url);
-  expect(fetchThenEvalAsync).toBeCalledWith(url);
+  expect(HMRClient.registerBundle).toHaveBeenCalledWith(url);
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
 });
 it('loads a bundle in production', async () => {
   process.env.NODE_ENV = 'production';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
-  expect(LoadingView.showMessage).not.toBeCalled();
-  expect(LoadingView.hide).not.toBeCalled();
+  expect(LoadingView.showMessage).not.toHaveBeenCalled();
+  expect(LoadingView.hide).not.toHaveBeenCalled();
   const url = `/Second.bundle?modulesOnly=true`;
-  expect(HMRClient.registerBundle).not.toBeCalled();
-  expect(fetchThenEvalAsync).toBeCalledWith(url);
+  expect(HMRClient.registerBundle).not.toHaveBeenCalled();
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
 });

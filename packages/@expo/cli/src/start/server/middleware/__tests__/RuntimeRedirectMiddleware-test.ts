@@ -55,11 +55,11 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(307);
-    expect(response.end).toBeCalledWith();
-    expect(response.setHeader).toBeCalledTimes(4);
+    expect(response.end).toHaveBeenCalledWith();
+    expect(response.setHeader).toHaveBeenCalledTimes(4);
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'Location', 'mock-location-expo');
-    expect(getLocation).toBeCalledWith({ runtime: 'expo' });
-    expect(onDeepLink).toBeCalledWith({ runtime: 'expo', platform: 'android' });
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'expo' });
+    expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'expo', platform: 'android' });
   });
 
   it('redirects to Expo Go with user agent header', async () => {
@@ -77,11 +77,11 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(307);
-    expect(response.end).toBeCalledWith();
-    expect(response.setHeader).toBeCalledTimes(4);
+    expect(response.end).toHaveBeenCalledWith();
+    expect(response.setHeader).toHaveBeenCalledTimes(4);
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'Location', 'mock-location-expo');
-    expect(getLocation).toBeCalledWith({ runtime: 'expo' });
-    expect(onDeepLink).toBeCalledWith({ runtime: 'expo', platform: 'android' });
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'expo' });
+    expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'expo', platform: 'android' });
   });
 
   it('redirects to a custom runtime', async () => {
@@ -95,10 +95,10 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(307);
-    expect(response.end).toBeCalledWith();
-    expect(response.setHeader).toBeCalledTimes(4);
+    expect(response.end).toHaveBeenCalledWith();
+    expect(response.setHeader).toHaveBeenCalledTimes(4);
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'Location', 'mock-location-custom');
-    expect(getLocation).toBeCalledWith({ runtime: 'custom' });
-    expect(onDeepLink).toBeCalledWith({ runtime: 'custom', platform: 'ios' });
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'custom' });
+    expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'custom', platform: 'ios' });
   });
 });

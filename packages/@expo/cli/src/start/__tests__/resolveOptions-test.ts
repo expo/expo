@@ -50,7 +50,7 @@ describe(resolveSchemeAsync, () => {
         devClient: true,
       })
     ).toBe('myapp');
-    expect(canResolveDevClient).not.toBeCalled();
+    expect(canResolveDevClient).not.toHaveBeenCalled();
     expect(getOptionalDevClientSchemeAsync).not.toHaveBeenCalled();
   });
 

@@ -19,14 +19,16 @@ it(`calls the lockPlatformAsync platform API with only Android properties`, asyn
     ...badProperties,
   });
 
-  expect(ExpoScreenOrientation.lockPlatformAsync).toBeCalledWith(screenOrientationConstantAndroid);
+  expect(ExpoScreenOrientation.lockPlatformAsync).toHaveBeenCalledWith(
+    screenOrientationConstantAndroid
+  );
 });
 
 it(`throws when lockPlatformAsync is called with unsupported types in its Android properties`, async () => {
   await expect(
     ScreenOrientation.lockPlatformAsync({ screenOrientationConstantAndroid: NaN as any })
-  ).rejects.toThrowError(TypeError);
+  ).rejects.toThrow(TypeError);
   await expect(
     ScreenOrientation.lockPlatformAsync({ screenOrientationConstantAndroid: 'test' as any })
-  ).rejects.toThrowError(TypeError);
+  ).rejects.toThrow(TypeError);
 });

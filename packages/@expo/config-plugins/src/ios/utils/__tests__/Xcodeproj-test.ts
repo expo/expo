@@ -29,14 +29,14 @@ describe(resolveXcodeBuildSetting, () => {
     expect(lookup).toHaveBeenNthCalledWith(1, 'CURRENT_VARIANT');
     expect(lookup).toHaveBeenNthCalledWith(2, 'PLATFORM_PREFERRED_ARCH');
     expect(lookup).toHaveBeenNthCalledWith(3, 'LINK_FILE_LIST_variant_arch');
-    expect(lookup).toBeCalledTimes(3);
+    expect(lookup).toHaveBeenCalledTimes(3);
     expect(r).toBe('foo');
   });
   it(`resolves build setting using "default" modifier`, () => {
     const lookup = jest.fn((v) => ({})[v]);
     const r = resolveXcodeBuildSetting('$(LINK_FILE_LIST:default=arm64)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'LINK_FILE_LIST');
-    expect(lookup).toBeCalledTimes(1);
+    expect(lookup).toHaveBeenCalledTimes(1);
     expect(r).toBe('arm64');
   });
   it(`resolves build settings looked up with more build settings`, () => {
@@ -45,7 +45,7 @@ describe(resolveXcodeBuildSetting, () => {
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(lookup).toHaveBeenNthCalledWith(2, 'BAR');
     expect(lookup).toHaveBeenNthCalledWith(3, 'hey');
-    expect(lookup).toBeCalledTimes(3);
+    expect(lookup).toHaveBeenCalledTimes(3);
     expect(r).toBe('found');
   });
   it(`resolves build setting using "default" modifier with variable`, () => {
@@ -53,7 +53,7 @@ describe(resolveXcodeBuildSetting, () => {
     const r = resolveXcodeBuildSetting('$(LINK_FILE_LIST:default=$(FOO:lower))', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(lookup).toHaveBeenNthCalledWith(2, 'LINK_FILE_LIST');
-    expect(lookup).toBeCalledTimes(2);
+    expect(lookup).toHaveBeenCalledTimes(2);
     expect(r).toBe('foo');
   });
   it(`resolves with "rfc1034identifier" modifier`, () => {

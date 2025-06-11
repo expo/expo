@@ -103,7 +103,7 @@ export default function Player(props: Props) {
     }
 
     return (
-      <TouchableOpacity onPress={onPress} disabled={!props.isLoaded}>
+      <TouchableOpacity onPressIn={onPress} disabled={!props.isLoaded}>
         <Ionicons name={iconName as 'pause' | 'play'} style={[styles.icon, styles.playPauseIcon]} />
       </TouchableOpacity>
     );

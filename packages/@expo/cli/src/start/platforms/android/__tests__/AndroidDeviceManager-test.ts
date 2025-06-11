@@ -61,7 +61,7 @@ describe('launchActivityAsync', () => {
         'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081'
       )
     ).resolves.toBeUndefined();
-    expect(launchActivityAsync).toBeCalledWith(
+    expect(launchActivityAsync).toHaveBeenCalledWith(
       expect.anything(), // Device context
       expect.objectContaining({
         launchActivity: 'dev.expo.test/.MainActivity',
@@ -75,14 +75,17 @@ describe('openUrlAsync', () => {
   it('opens Expo Go before launching into Expo Go', async () => {
     const device = createDevice();
     await device.openUrlAsync('exp://foobar');
-    expect(openAppIdAsync).toBeCalledWith({ pid: '123' }, { applicationId: 'host.exp.exponent' });
-    expect(openUrlAsync).toBeCalledWith({ pid: '123' }, { url: 'exp://foobar' });
+    expect(openAppIdAsync).toHaveBeenCalledWith(
+      { pid: '123' },
+      { applicationId: 'host.exp.exponent' }
+    );
+    expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'exp://foobar' });
   });
   it('opens a URL on a device', async () => {
     const device = createDevice();
     await device.openUrlAsync('http://foobar');
-    expect(openAppIdAsync).not.toBeCalled();
-    expect(openUrlAsync).toBeCalledWith({ pid: '123' }, { url: 'http://foobar' });
+    expect(openAppIdAsync).not.toHaveBeenCalled();
+    expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'http://foobar' });
   });
   it('launches nonstandard URL', async () => {
     const device = createDevice();
