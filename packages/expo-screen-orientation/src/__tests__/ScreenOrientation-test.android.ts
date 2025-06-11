@@ -19,7 +19,9 @@ it(`calls the lockPlatformAsync platform API with only Android properties`, asyn
     ...badProperties,
   });
 
-  expect(ExpoScreenOrientation.lockPlatformAsync).toHaveBeenCalledWith(screenOrientationConstantAndroid);
+  expect(ExpoScreenOrientation.lockPlatformAsync).toHaveBeenCalledWith(
+    screenOrientationConstantAndroid
+  );
 });
 
 it(`throws when lockPlatformAsync is called with unsupported types in its Android properties`, async () => {
