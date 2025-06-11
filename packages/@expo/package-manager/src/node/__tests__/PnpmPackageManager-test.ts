@@ -154,7 +154,11 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
 
       expect(await pnpm.getConfigAsync('registry')).toBe('https://custom.registry.org/');
-      expect(spawnAsync).toHaveBeenCalledWith('pnpm', ['config', 'get', 'registry'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'pnpm',
+        ['config', 'get', 'registry'],
+        expect.anything()
+      );
     });
   });
 

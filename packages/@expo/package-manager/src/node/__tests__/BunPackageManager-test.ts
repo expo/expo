@@ -141,7 +141,11 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
 
       expect(await bun.getConfigAsync('registry')).toBe('https://custom.registry.org/');
-      expect(spawnAsync).toHaveBeenCalledWith('bun', ['config', 'get', 'registry'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'bun',
+        ['config', 'get', 'registry'],
+        expect.anything()
+      );
     });
   });
 

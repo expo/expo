@@ -149,7 +149,11 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
 
       expect(await npm.getConfigAsync('registry')).toBe('https://custom.registry.org/');
-      expect(spawnAsync).toHaveBeenCalledWith('npm', ['config', 'get', 'registry'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npm',
+        ['config', 'get', 'registry'],
+        expect.anything()
+      );
     });
   });
 
