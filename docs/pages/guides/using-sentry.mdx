@@ -6,16 +6,13 @@ description: A guide on installing and configuring Sentry for crash reporting.
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with **real-time insight into production deployments with info to reproduce and fix crashes**.
 
 It notifies you of exceptions or errors that your users run into while using your app and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically. You can also provide additional context that is specific to your application such as the current route and user id.
-
 
 ## What you'll learn
 
@@ -196,6 +193,7 @@ To see your Sentry data in Expo dashboard:
 1. Open **Projects > [Your Project] > Updates > Deployments > [Deployment]** to view Sentry data from a Release.
 
 With this integration, you can:
+
 - View crash reports directly in your Expo dashboard
 - Access Session Replays to see exactly what happened before an error occurred
 - Get detailed stack traces with full context
