@@ -83,7 +83,7 @@ describe(resolveEntryPoint, () => {
       '/'
     );
 
-    expect(() => resolveEntryPoint('/')).toThrowErrorMatchingInlineSnapshot(
+    expect(() => resolveEntryPoint('/')).toThrowMatchingInlineSnapshot(
       `"Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path."`
     );
   });

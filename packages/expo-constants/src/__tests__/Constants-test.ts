@@ -188,7 +188,7 @@ describe(`manifest`, () => {
           executionEnvironment: env,
         });
         const ConstantsWithMock = require('../Constants').default;
-        expect(() => ConstantsWithMock.manifest).toThrowErrorMatchingSnapshot();
+        expect(() => ConstantsWithMock.manifest).toThrowMatchingSnapshot();
       });
     });
   }

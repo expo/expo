@@ -581,7 +581,7 @@ describe('assertions', () => {
   function foo() {
       "use server"
   }`)
-    ).toThrowErrorMatchingInlineSnapshot(`
+    ).toThrowMatchingInlineSnapshot(`
       "/unknown: functions marked with "use server" must be async
         1 |
       > 2 |   function foo() {
@@ -596,7 +596,7 @@ describe('assertions', () => {
   export default function foo() {
       "use server"
   }`)
-    ).toThrowErrorMatchingInlineSnapshot(`
+    ).toThrowMatchingInlineSnapshot(`
       "/unknown: functions marked with "use server" must be async
         1 |
       > 2 |   export default function foo() {
@@ -611,7 +611,7 @@ describe('assertions', () => {
   const foo = () => {
       "use server"
   }`)
-    ).toThrowErrorMatchingInlineSnapshot(`
+    ).toThrowMatchingInlineSnapshot(`
       "/unknown: functions marked with "use server" must be async
         1 |
       > 2 |   const foo = () => {

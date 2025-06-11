@@ -50,7 +50,7 @@ describe(resolveSchemeAsync, () => {
         devClient: true,
       })
     ).toBe('myapp');
-    expect(canResolveDevClient).not.toBeCalled();
+    expect(canResolveDevClient).not.toHaveBeenCalled();
     expect(getOptionalDevClientSchemeAsync).not.toHaveBeenCalled();
   });
 
@@ -155,7 +155,7 @@ describe(resolveOptionsAsync, () => {
         '--dev-client': true,
         '--go': true,
       })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    ).rejects.toThrowMatchingInlineSnapshot(
       `"Cannot use both --dev-client and --go together."`
     );
   });

@@ -29,9 +29,9 @@ describe(getDevicesAsync, () => {
       stdout: 'foobar',
     } as any);
 
-    await expect(getDevicesAsync()).rejects.toThrowError();
+    await expect(getDevicesAsync()).rejects.toThrow();
     // Blame for the error.
-    expect(Log.error).toBeCalledWith(expect.stringMatching(/Apple's simctl/));
+    expect(Log.error).toHaveBeenCalledWith(expect.stringMatching(/Apple's simctl/));
   });
 
   it(`returns a list of devices`, async () => {
@@ -85,7 +85,7 @@ describe(getContainerPathAsync, () => {
       '/path/to/my-app.app'
     );
 
-    expect(spawnAsync).toBeCalledWith(
+    expect(spawnAsync).toHaveBeenCalledWith(
       'xcrun',
       ['simctl', 'get_app_container', 'booted', 'foobar'],
       undefined

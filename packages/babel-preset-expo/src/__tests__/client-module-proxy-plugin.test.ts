@@ -54,7 +54,7 @@ it(`asserts that use client and use server cannot be used together`, () => {
     export const greet = (name: string) => \`Hello $\{name} from server!\`;
     `;
 
-  expect(() => babel.transform(sourceCode, options)).toThrowErrorMatchingSnapshot();
+  expect(() => babel.transform(sourceCode, options)).toThrowMatchingSnapshot();
 });
 
 function transformClient(sourceCode: string) {

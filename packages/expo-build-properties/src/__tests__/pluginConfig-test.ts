@@ -19,27 +19,27 @@ describe(validateConfig, () => {
   it('should throw error from unsupported android versions', () => {
     expect(() =>
       validateConfig({ android: { minSdkVersion: 14 } })
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).toThrowMatchingInlineSnapshot(
       `"\`android.minSdkVersion\` needs to be at least version 21."`
     );
     expect(() =>
       validateConfig({ android: { compileSdkVersion: 14 } })
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).toThrowMatchingInlineSnapshot(
       `"\`android.compileSdkVersion\` needs to be at least version 31."`
     );
     expect(() =>
       validateConfig({ android: { targetSdkVersion: 14 } })
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).toThrowMatchingInlineSnapshot(
       `"\`android.targetSdkVersion\` needs to be at least version 31."`
     );
     expect(() =>
       validateConfig({ android: { kotlinVersion: '1.3.0' } })
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).toThrowMatchingInlineSnapshot(
       `"\`android.kotlinVersion\` needs to be at least version 1.6.10."`
     );
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
-    ).toThrowErrorMatchingInlineSnapshot(
+    ).toThrowMatchingInlineSnapshot(
       `"\`ios.deploymentTarget\` needs to be at least version 15.1."`
     );
   });

@@ -35,8 +35,8 @@ describe('getAppIdAsync', () => {
       .mocked(AndroidConfig.Package.getApplicationIdAsync)
       .mockResolvedValueOnce('dev.bacon.myapp');
     expect(await resolver.getAppIdAsync()).toBe('dev.bacon.myapp');
-    expect(resolver.getAppIdFromNativeAsync).toBeCalledTimes(1);
-    expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
+    expect(resolver.getAppIdFromNativeAsync).toHaveBeenCalledTimes(1);
+    expect(resolver.hasNativeProjectAsync).toHaveBeenCalledTimes(1);
   });
 
   it('resolves the app id from project config', async () => {
@@ -52,7 +52,7 @@ describe('getAppIdAsync', () => {
       },
     } as any);
     expect(await resolver.getAppIdAsync()).toBe('dev.bacon.myapp');
-    expect(resolver.getAppIdFromConfigAsync).toBeCalledTimes(1);
-    expect(resolver.hasNativeProjectAsync).toBeCalledTimes(1);
+    expect(resolver.getAppIdFromConfigAsync).toHaveBeenCalledTimes(1);
+    expect(resolver.hasNativeProjectAsync).toHaveBeenCalledTimes(1);
   });
 });

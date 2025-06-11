@@ -17,7 +17,7 @@ it(`doesn't start with a number or special character`, () => {
 });
 
 it(`bails out if there aren't any ASCII characters in the slug to work with`, () => {
-  expect(() => getDefaultScheme({ slug: '👋' })).toThrowErrorMatchingInlineSnapshot(
+  expect(() => getDefaultScheme({ slug: '👋' })).toThrowMatchingInlineSnapshot(
     `"Unable to generate a scheme based on the "slug" (👋), because it does not contain any URL-friendly characters."`
   );
 });

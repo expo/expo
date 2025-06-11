@@ -689,7 +689,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context(42);
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(`
       "Invalid call at line 2: 42
       First argument of \`require.context\` should be a string denoting the directory to require."
     `);
@@ -698,7 +698,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context('./dir', 'hey');
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(`
       "Invalid call at line 2: 'hey'
       Second argument of \`require.context\` should be an optional boolean indicating if files should be imported recursively or not."
     `);
@@ -707,7 +707,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context('./dir', false, new RegExp('foobar'));
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(`
       "Invalid call at line 2: new RegExp('foobar')
       Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: NewExpression."
     `);
@@ -716,7 +716,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context('./dir', false, /foobar/, 34);
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(`
       "Invalid call at line 2: 34
       Fourth argument of \`require.context\` should be an optional string "mode" denoting how the modules will be resolved."
     `);
@@ -725,7 +725,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context('./dir', false, /foobar/, 'hello');
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(`
       "Invalid call at line 2: 'hello'
       require.context "hello" mode is not supported. Expected one of: sync, eager, lazy, lazy-once"
     `);
@@ -734,7 +734,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context('./dir', false, /foobar/, 'sync', 'hey');
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(`
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(`
       "Invalid call at line 2: require.context('./dir', false, /foobar/, 'sync', 'hey')
       Too many arguments provided to \`require.context\` call. Expected 4, got: 5"
     `);
@@ -743,7 +743,7 @@ describe(`require.context`, () => {
     const ast = astFromCode(`
   const a = require.context();
 `);
-    expect(() => collectDependencies(ast, optsWithContext)).toThrowErrorMatchingInlineSnapshot(
+    expect(() => collectDependencies(ast, optsWithContext)).toThrowMatchingInlineSnapshot(
       `"Invalid call at line 2: require.context()"`
     );
   });

@@ -39,7 +39,7 @@ describe(metroWatchTypeScriptFiles, () => {
     const { watcher, runner, invoke } = createRunner();
     const callback = jest.fn();
     metroWatchTypeScriptFiles({ projectRoot: '/app/', callback, ...runner });
-    expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
+    expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
     invoke([
       {
@@ -58,7 +58,7 @@ describe(metroWatchTypeScriptFiles, () => {
       },
     ]);
 
-    expect(callback).toBeCalledTimes(2);
+    expect(callback).toHaveBeenCalledTimes(2);
   });
 
   for (const filePath of ['/foo.ts', '/bar/foo.tsx', '/app/tsconfig.json']) {
@@ -66,7 +66,7 @@ describe(metroWatchTypeScriptFiles, () => {
       const { watcher, runner, invoke } = createRunner();
       const callback = jest.fn();
       metroWatchTypeScriptFiles({ projectRoot: '/app/', callback, throttle: true, ...runner });
-      expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
+      expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
       invoke([
         {
@@ -85,7 +85,7 @@ describe(metroWatchTypeScriptFiles, () => {
         },
       ]);
 
-      expect(callback).toBeCalledTimes(1);
+      expect(callback).toHaveBeenCalledTimes(1);
     });
   }
 
@@ -102,7 +102,7 @@ describe(metroWatchTypeScriptFiles, () => {
       const { watcher, runner, invoke } = createRunner();
       const callback = jest.fn();
       metroWatchTypeScriptFiles({ projectRoot: '/app/', callback, ...runner });
-      expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
+      expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
       invoke([
         {
@@ -114,7 +114,7 @@ describe(metroWatchTypeScriptFiles, () => {
         },
       ]);
 
-      expect(callback).toBeCalledTimes(0);
+      expect(callback).toHaveBeenCalledTimes(0);
     });
   }
 
@@ -127,7 +127,7 @@ describe(metroWatchTypeScriptFiles, () => {
       ...runner,
       eventTypes: ['delete'],
     });
-    expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
+    expect(watcher.addListener).toHaveBeenCalledWith('change', expect.any(Function));
 
     invoke([
       {
@@ -147,6 +147,6 @@ describe(metroWatchTypeScriptFiles, () => {
     ]);
 
     // Only called once
-    expect(callback).toBeCalledTimes(1);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 });
