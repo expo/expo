@@ -170,17 +170,16 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   fun setIsAnimating(setAnimating: Boolean) {
-    val resource = activeView.drawable
-    /* Animatable animations always start from the beginning when resumed.
-    So we check first if the resource is a GifDrawable, because it can continue
-    from where it was paused. */
-    when (resource) {
-      is GifDrawable -> toggleGifDrawableAnimation(resource, setAnimating)
-      is Animatable -> toggleAnimatableAnimation(resource, setAnimating)
+    // Animatable animations always start from the beginning when resumed.
+    // So we check first if the resource is a GifDrawable, because it can continue
+    // from where it was paused.
+    when (val resource = activeView.drawable) {
+      is GifDrawable -> setIsAnimating(resource, setAnimating)
+      is Animatable -> setIsAnimating(resource, setAnimating)
     }
   }
 
-  private fun toggleGifDrawableAnimation(resource: GifDrawable, setAnimating: Boolean) {
+  private fun setIsAnimating(resource: GifDrawable, setAnimating: Boolean) {
     if (setAnimating) {
       if (resource.isPaused) {
         resource.resume()
@@ -192,7 +191,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
   }
 
-  private fun toggleAnimatableAnimation(resource: Animatable, setAnimating: Boolean) {
+  private fun setIsAnimating(resource: Animatable, setAnimating: Boolean) {
     if (setAnimating) {
       resource.start()
     } else {

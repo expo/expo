@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -6,7 +6,7 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const expoImageRef = useRef<Image>(null);
 
-  const handleGifPlayback = async () => {
+  const handleGifPlayback = useCallback(async () => {
     if (isPlaying) {
       setIsPlaying(false);
       await expoImageRef.current?.stopAnimating();
@@ -14,7 +14,7 @@ export default function App() {
     }
     setIsPlaying(true);
     await expoImageRef.current?.startAnimating();
-  };
+  }, [isPlaying]);
 
   return (
     <View style={styles.container}>
