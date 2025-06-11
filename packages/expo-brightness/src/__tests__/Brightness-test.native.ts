@@ -9,11 +9,11 @@ it(`clamps the brightness value in setBrightnessAsync`, async () => {
 });
 
 it(`throws when setBrightnessAsync is called with an unsupported type`, async () => {
-  await expect(Brightness.setBrightnessAsync(NaN)).rejects.toThrowError(TypeError);
-  await expect(Brightness.setBrightnessAsync('test' as any)).rejects.toThrowError(TypeError);
+  await expect(Brightness.setBrightnessAsync(NaN)).rejects.toThrow(TypeError);
+  await expect(Brightness.setBrightnessAsync('test' as any)).rejects.toThrow(TypeError);
 });
 
 it(`throws when setSystemBrightnessAsync is called with an unsupported type`, async () => {
-  await expect(Brightness.setSystemBrightnessAsync(NaN)).rejects.toThrowError(TypeError);
-  await expect(Brightness.setSystemBrightnessAsync('test' as any)).rejects.toThrowError(TypeError);
+  await expect(Brightness.setSystemBrightnessAsync(NaN)).rejects.toThrow(TypeError);
+  await expect(Brightness.setSystemBrightnessAsync('test' as any)).rejects.toThrow(TypeError);
 });

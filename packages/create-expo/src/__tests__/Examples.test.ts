@@ -84,7 +84,7 @@ describe(fetchMetadataAsync, () => {
 describe(promptExamplesAsync, () => {
   it('throws when in CI mode', async () => {
     const spy = jest.spyOn(env, 'CI', 'get').mockReturnValue(true);
-    await expect(() => promptExamplesAsync()).rejects.toThrowError(/cannot prompt/i);
+    await expect(() => promptExamplesAsync()).rejects.toThrow(/cannot prompt/i);
     spy.mockRestore();
   });
 
