@@ -727,6 +727,32 @@ jobs:
       payload: object # required if message is not provided
 ```
 
+#### `require-approval`
+
+Requires approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job. See [Require Approval job documentation](/eas/workflows/pre-packaged-jobs#require-approval) for detailed information and examples.
+
+```yaml
+jobs:
+  confirm:
+    # @info #
+    type: require-approval
+    # @end #
+```
+
+#### `doc`
+
+Displays a Markdown section in the workflow logs. See [Doc job documentation](/eas/workflows/pre-packaged-jobs#doc) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: doc
+    params:
+      md: string
+    # @end #
+```
+
 ## Custom jobs
 
 Runs custom code and can use built-in EAS functions. Does not require a `type` field.
