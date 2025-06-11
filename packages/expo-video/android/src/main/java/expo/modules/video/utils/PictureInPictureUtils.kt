@@ -86,7 +86,7 @@ internal fun applyPiPParams(activity: Activity, autoEnterPiP: Boolean, aspectRat
     safeAspectRatio?.let {
       paramsBuilder.setAspectRatio(it)
     }
-    if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       paramsBuilder.setAutoEnterEnabled(autoEnterPiP)
     }
     runWithPiPMisconfigurationSoftHandling {
