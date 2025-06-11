@@ -30,7 +30,7 @@ describe('Checkbox', () => {
     const checkbox = await wrapper.findByRole('checkbox');
     checkbox.click();
 
-    expect(onChange).toBeCalledWith(expect.any(Object));
-    expect(onValueChange).toBeCalledWith(!checked);
+    expect(onChange).toHaveBeenCalledWith(expect.any(Object));
+    expect(onValueChange).toHaveBeenCalledWith(!checked);
   });
 });

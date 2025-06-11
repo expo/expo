@@ -22,7 +22,7 @@ it(`sets requires full screen`, () => {
     UIRequiresFullScreen: true,
   });
 
-  expect(WarningAggregator.addWarningIOS).not.toBeCalled();
+  expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
 
 it(`updates the UISupportedInterfaceOrientations~ipad values to support iPad multi-tasking`, () => {
@@ -38,7 +38,7 @@ it(`updates the UISupportedInterfaceOrientations~ipad values to support iPad mul
     ],
   });
 
-  expect(WarningAggregator.addWarningIOS).not.toBeCalled();
+  expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
 
 it(`does not set the UISupportedInterfaceOrientations~ipad values to support iPad multi-tasking if supportsTablet is false`, () => {
@@ -48,7 +48,7 @@ it(`does not set the UISupportedInterfaceOrientations~ipad values to support iPa
     UIRequiresFullScreen: false,
   });
 
-  expect(WarningAggregator.addWarningIOS).not.toBeCalled();
+  expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
 
 xit(`warns when the predefined UISupportedInterfaceOrientations~ipad values are invalid`, () => {
@@ -63,7 +63,7 @@ xit(`warns when the predefined UISupportedInterfaceOrientations~ipad values are 
     }
   );
 
-  expect(WarningAggregator.addWarningIOS).toBeCalledTimes(1);
+  expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(1);
 });
 
 it(`does not warn when predefined orientation mask matches required values`, () => {
@@ -79,7 +79,7 @@ it(`does not warn when predefined orientation mask matches required values`, () 
     }
   );
 
-  expect(WarningAggregator.addWarningIOS).not.toBeCalled();
+  expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
 
 it(`does not warn when predefined orientation mask is empty`, () => {
@@ -90,7 +90,7 @@ it(`does not warn when predefined orientation mask is empty`, () => {
     }
   );
 
-  expect(WarningAggregator.addWarningIOS).not.toBeCalled();
+  expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
 
 it(`cannot remove predefined orientation mask`, () => {
@@ -99,5 +99,5 @@ it(`cannot remove predefined orientation mask`, () => {
   expect(plist['UISupportedInterfaceOrientations~ipad']?.length).toBe(4);
   plist = setRequiresFullScreen({ ios: { requireFullScreen: true, isTabletOnly: true } }, plist);
   expect(plist['UISupportedInterfaceOrientations~ipad']?.length).toBe(4);
-  expect(WarningAggregator.addWarningIOS).not.toBeCalled();
+  expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
 });
