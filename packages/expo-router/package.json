@@ -97,7 +97,7 @@
   "devDependencies": {
     "@react-navigation/drawer": "^7.3.9",
     "@testing-library/jest-native": "^5.4.2",
-    "@testing-library/react": "^15.0.7",
+    "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.1.0",
     "@types/semver": "^7.7.0",
     "immer": "^10.1.1",
