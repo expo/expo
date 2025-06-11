@@ -371,19 +371,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun toggleFastRefresh() {
     val devToolsDelegate = getDevToolsDelegate()
-    val internalSettings = devToolsDelegate?.devInternalSettings
+    val internalSettings = devToolsDelegate?.devSettings
       ?: return
 
     val nextEnabled = !internalSettings.isHotModuleReplacementEnabled
     internalSettings.isHotModuleReplacementEnabled = nextEnabled
 
-    val reactApplicationContext = delegateReactContext?.applicationContext as? ReactApplicationContext
-    if (reactApplicationContext != null) {
-      if (nextEnabled) {
-        reactApplicationContext.getJSModule(HMRClient::class.java).enable()
-      } else {
-        reactApplicationContext.getJSModule(HMRClient::class.java).disable()
-      }
+    if (nextEnabled) {
+      delegateReactContext?.getJSModule(HMRClient::class.java)?.enable()
+    } else {
+      delegateReactContext?.getJSModule(HMRClient::class.java)?.disable()
     }
     if (nextEnabled && !internalSettings.isJSDevModeEnabled) {
       internalSettings.isJSDevModeEnabled = true

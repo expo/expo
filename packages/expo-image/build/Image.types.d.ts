@@ -59,18 +59,6 @@ export type ImageSource = {
      * @platform ios
      */
     isAnimated?: boolean;
-    /**
-     * Whether to use the Apple system WebP codec.
-     *
-     * When set to `true`, use the Apple system WebP codec from `SDWebImageAWebPCoder`.
-     * When set to `false`, use the libwebp codec from `SDWebImageWebPCoder`.
-     * The Apple system WebP codec is faster and uses less memory, but it has some issues with animated WebP images.
-     * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
-     *
-     * @default true
-     * @platform ios
-     */
-    useAppleWebpCodec?: boolean;
 };
 /**
  * @hidden
@@ -314,6 +302,17 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      * @platform android
      */
     decodeFormat?: ImageDecodeFormat;
+    /**
+     * Whether to use the Apple's default WebP codec.
+     *
+     * Set this prop to `false` to use the official standard-compliant [libwebp](https://github.com/webmproject/libwebp) codec for WebP images.
+     * The default implementation from Apple is faster and uses less memory but may render animated images with incorrect blending or play them at the wrong framerate.
+     * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
+     *
+     * @default true
+     * @platform ios
+     */
+    useAppleWebpCodec?: boolean;
 }
 /**
  * It narrows down some props to types expected by the native/web side.

@@ -68,6 +68,8 @@ public final class ImageView: ExpoView {
 
   var autoplay: Bool = true
 
+  var useAppleWebpCodec: Bool = true
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -134,7 +136,7 @@ public final class ImageView: ExpoView {
     if sdImageView.image == nil {
       sdImageView.contentMode = contentFit.toContentMode()
     }
-    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy)
+    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy, useAppleWebpCodec: useAppleWebpCodec)
 
     // Cancel currently running load requests.
     cancelPendingOperation()
@@ -314,7 +316,7 @@ public final class ImageView: ExpoView {
     // to cache them or apply the same policy as with the proper image?
     // Basically they are also cached in memory as the `placeholderImage` property,
     // so just `disk` policy sounds like a good idea.
-    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk)
+    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk, useAppleWebpCodec: useAppleWebpCodec)
 
     let isPlaceholderHash = placeholder.isBlurhash || placeholder.isThumbhash
 

@@ -8,12 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- [Android] Cleanup state machine resources when the module is destroyed. ([#37193](https://github.com/expo/expo/pull/37193) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.28.14 - 2025-06-04
+
+### 🐛 Bug fixes
+
 - Fix update failure reason not populated on iOS. ([#36893](https://github.com/expo/expo/pull/36893) by [@brainbicycle](https://github.com/brainbicycle))
 
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
-- [Android] Cleanup state machine resources when the module is destroyed. ([#37193](https://github.com/expo/expo/pull/37193) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.28.13 — 2025-05-08
 

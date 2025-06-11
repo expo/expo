@@ -158,7 +158,7 @@ func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
 /**
  Creates a default image context based on the source and the cache policy.
  */
-func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk) -> SDWebImageContext {
+func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk, useAppleWebpCodec: Bool = true) -> SDWebImageContext {
   var context = SDWebImageContext()
 
   // Modify URL request to add headers.
@@ -175,7 +175,7 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
 
   // Passing useAppleWebpCodec into WebPCoder
   context[.imageDecodeOptions] = [
-    imageCoderOptionUseAppleWebpCodec: source.useAppleWebpCodec
+    imageCoderOptionUseAppleWebpCodec: useAppleWebpCodec
   ]
 
   // Assets from the bundler have `scale` prop which needs to be passed to the context,

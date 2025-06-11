@@ -8,7 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 16.1.8 - 2025-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.7 - 2025-06-04
+
+### 🐛 Bug fixes
+
 - [Android] Fix the scenario where switching apps results in the loss of the recording video by throwing an error. ([#36854](https://github.com/expo/expo/pull/36854) by [@ladeira1](https://github.com/ladeira1))
+- [Android] Fix barcode scanner coordinates to UI mapping. ([#37198](https://github.com/expo/expo/pull/37198) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

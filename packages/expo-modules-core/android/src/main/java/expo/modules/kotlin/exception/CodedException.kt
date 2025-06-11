@@ -248,6 +248,13 @@ internal class CollectionElementCastException private constructor(
 }
 
 @DoNotStrip
+class DynamicCastException(
+  type: KClass<*>
+) : CodedException(
+  message = "Could not cast dynamic value to '${type.qualifiedName}'."
+)
+
+@DoNotStrip
 class JavaScriptEvaluateException(
   message: String,
   val jsStack: String

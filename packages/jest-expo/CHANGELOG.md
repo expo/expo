@@ -8,12 +8,21 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 53.0.7 - 2025-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.6 - 2025-06-04
+
+### 🐛 Bug fixes
+
 - Fix `requireOptionalNativeModule` throwing error if mock is missing. ([#36839](https://github.com/expo/expo/pull/36839) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
 - Fix ES6 import syntax inconsistency in setup.js by converting to CommonJS require. ([#37240](https://github.com/expo/expo/pull/37240) by [@huextrat](https://github.com/huextrat))
-
 - Rework mock generation for expo modules. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
 
 ## 53.0.5 — 2025-05-06
