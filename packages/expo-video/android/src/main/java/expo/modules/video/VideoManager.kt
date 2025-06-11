@@ -5,7 +5,7 @@ import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.video.player.VideoPlayer
-import expo.modules.video.utils.HashableWeakReference
+import expo.modules.video.utils.weakMutableHashSetOf
 import java.lang.ref.WeakReference
 
 // Helper class used to keep track of all existing VideoViews and VideoPlayers
@@ -21,7 +21,7 @@ object VideoManager {
   // Keeps track of all existing VideoPlayers, and whether they are attached to a VideoView
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
-  private var playersRequestingKeepAwake = hashSetOf<HashableWeakReference<VideoPlayer>>()
+  private var playersRequestingKeepAwake = weakMutableHashSetOf<VideoPlayer>()
 
   private lateinit var audioFocusManager: AudioFocusManager
   lateinit var cache: VideoCache
@@ -91,12 +91,12 @@ object VideoManager {
   }
 
   fun requestKeepAwake(player: VideoPlayer) {
-    playersRequestingKeepAwake.add(HashableWeakReference(player))
+    playersRequestingKeepAwake.add(player)
     applyKeepAwake()
   }
 
   fun releaseKeepAwake(player: VideoPlayer) {
-    playersRequestingKeepAwake.remove(HashableWeakReference(player))
+    playersRequestingKeepAwake.remove(player)
     applyKeepAwake()
   }
 
