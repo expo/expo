@@ -117,6 +117,7 @@
   },
   "devDependencies": {
     "@react-navigation/drawer": "^7.3.9",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.2.0",
     "@types/semver": "^7.7.0",
