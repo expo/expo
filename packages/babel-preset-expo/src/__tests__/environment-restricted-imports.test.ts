@@ -81,9 +81,7 @@ describe('forbidden server imports', () => {
     it(`does not assert importing client-side modules in client components (react server mode)`, () => {
       expect(() => runServerPass(`"use client"; import {} from 'client-only';`)).not.toThrow();
       expect(() => runServerPass(`"use client"; require("client-only")`)).not.toThrow();
-      expect(() =>
-        runServerPass(`"use client"; require.resolveWeak("client-only")`)
-      ).not.toThrow();
+      expect(() => runServerPass(`"use client"; require.resolveWeak("client-only")`)).not.toThrow();
       expect(() => runServerPass(`"use client"; export * from "client-only"`)).not.toThrow();
       expect(() =>
         runServerPass(`"use client";export { default } from "client-only"`)
