@@ -158,10 +158,7 @@ class CameraSessionManager: NSObject {
   }
 
   func enableTorch() {
-    guard let delegate else {
-      return
-    }
-    guard let device = captureDeviceInput?.device, device.hasTorch else {
+    guard let delegate, let device = captureDeviceInput?.device, device.hasTorch else {
       return
     }
 

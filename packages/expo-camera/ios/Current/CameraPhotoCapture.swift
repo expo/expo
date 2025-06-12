@@ -144,11 +144,11 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
       throw CameraSavingImageException("Failed to process image data")
     }
 
-    let previewSize: CGSize = {
-      return captureDelegate.deviceOrientation == .portrait ?
-      CGSize(width: captureDelegate.previewLayer.frame.size.height, height: captureDelegate.previewLayer.frame.size.width) :
+    let previewSize = if captureDelegate.deviceOrientation == .portrait {
+      CGSize(width: captureDelegate.previewLayer.frame.size.height, height: captureDelegate.previewLayer.frame.size.width)
+    } else {
       CGSize(width: captureDelegate.previewLayer.frame.size.width, height: captureDelegate.previewLayer.frame.size.height)
-    }()
+    }
 
     guard let takenCgImage = takenImage.cgImage else {
       throw CameraSavingImageException("Failed to get CGImage")

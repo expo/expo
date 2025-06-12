@@ -252,8 +252,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       AsyncFunction("takePictureRef") { (view, options: TakePictureOptions) -> PictureRef in
         #if targetEnvironment(simulator)
         return try takePictureRefForSimulator(self.appContext, view, options)
-        #else // not simulator
-
+        #else
         return try await view.takePictureRef(options: options)
         #endif
       }
@@ -261,7 +260,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
-        #else // not simulator
+        #else
         Task {
           do {
             let result = try await view.takePicturePromise(options: options)
