@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+[iOS] Fixes returning `PictureRef` objects.
+
 ### 💡 Others
 
 ## 16.1.8 - 2025-06-10
