@@ -962,3 +962,160 @@ jobs:
 ```
 
 </Collapsible>
+
+## Require Approval
+
+Require approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job.
+
+### Syntax
+
+```yaml
+jobs:
+  require_approval:
+    type: require-approval
+```
+
+#### Parameters
+
+This job doesn't take any parameters.
+
+### Examples
+
+Here are some practical examples of using the Require Approval job:
+
+<Collapsible summary="Ask for approval before deploying to production">
+
+This workflow deploys a web app to preview and then requires approval from a user before deploying to production.
+
+```yaml .eas/workflows/web.yml
+jobs:
+  web_preview:
+    name: Deploy Web Preview
+    type: deploy
+
+  require_approval:
+    name: Deploy Web to Production?
+    needs: [web_preview]
+    type: require-approval
+
+  web_production:
+    name: Deploy Web Production
+    needs: [require_approval]
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Control flow of the workflow">
+
+This workflow lets a user decide how the story ends by requiring approval before revealing the conclusion.
+
+```yaml .eas/workflows/dragon-knight-interactive.yml
+jobs:
+  show_story_intro:
+    name: Dragon and Knight Story Intro
+    type: doc
+    params:
+      md: |
+        # The Dragon and the Knight
+
+        Once upon a time, in a land far away, a brave knight set out to face a mighty dragon.
+
+        The dragon roared, breathing fire across the valley, but the knight stood firm, shield raised high.
+
+        Now, the fate of their encounter is in your hands...
+
+  require_approval:
+    name: Should the knight and dragon become friends?
+    needs: [show_story_intro]
+    type: require-approval
+
+  happy_ending:
+    name: Friendship Ending
+    needs: [require_approval]
+    type: doc
+    params:
+      md: |
+        ## A New Friendship
+
+        The knight lowered his sword, and the dragon ceased its fire. They realized they both longed for peace. From that day on, they became the best of friends, protecting the kingdom together.
+
+  epic_battle:
+    name: Epic Battle Ending
+    after: [require_approval]
+    if: ${{ failure() }}
+    type: doc
+    params:
+      md: |
+        ## The Epic Battle
+
+        The knight charged forward, and the dragon unleashed a mighty roar. Their battle shook the mountains and echoed through the ages. In the end, both were remembered as fierce and noble adversaries.
+```
+
+</Collapsible>
+
+## Doc
+
+Displays a Markdown section in the workflow logs.
+
+### Syntax
+
+```yaml
+jobs:
+  show_whats_next:
+    type: doc
+    params:
+      md: string
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                                                 |
+| --------- | ------ | ------------------------------------------------------------------------------------------- |
+| md        | string | Required. The Markdown content to display. You can use `${{ ... }}` workflow interpolation. |
+
+### Examples
+
+Here are some practical examples of using the Doc job:
+
+<Collapsible summary="Display instructions">
+
+This workflow builds an iOS app and then displays a Markdown section in the workflow logs.
+
+```yaml .eas/workflows/build-and-submit-ios.yml
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit:
+    name: Submit to App Store
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+
+  next_steps:
+    name: Next Steps
+    needs: [submit]
+    type: doc
+    params:
+      md: |
+        # To do next
+
+        Your app has just been sent to [App Store Connect](https://appstoreconnect.apple.com/apps).
+
+        1. Download the app from TestFlight.
+        2. Test the app a bunch.
+        3. Submit the app for review.
+```
+
+</Collapsible>
