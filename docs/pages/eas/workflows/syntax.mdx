@@ -679,7 +679,8 @@ jobs:
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_system_image_package: string # optional. Android emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`.
+      android_system_image_package: string # optional. Android emulator system image package to use.
+      device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
 ```
 
 #### `maestro-cloud`

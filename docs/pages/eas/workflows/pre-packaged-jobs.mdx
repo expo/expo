@@ -688,18 +688,30 @@ jobs:
       flow_path: string | string[] # required
       shards: number # optional, defaults to 1
       retries: number # optional, defaults to 1
+      record_screen: boolean # optional, defaults to false
+      include_tags: string | string[] # optional
+      exclude_tags: string | string[] # optional
+      maestro_version: string # optional, defaults to latest
+      android_system_image_package: string # optional
+      device_identifier: string | { android: string, ios: string } # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                             |
-| --------- | ------ | --------------------------------------------------------------------------------------- |
-| build_id  | string | Required. The ID of the build to test.                                                  |
-| flow_path | string | Required. The path to the Maestro flow file(s) to run.                                  |
-| shards    | number | Optional and experimental. The number of shards to split the tests into. Defaults to 1. |
-| retries   | number | Optional. The number of times to retry failed tests. Defaults to 1.                     |
+| Parameter                    | Type                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                     | string                                                | Required. The ID of the build to test.                                                                                                                                                                                                                                                                                                                                                                                                |
+| flow_path                    | string                                                | Required. The path to the Maestro flow file(s) to run.                                                                                                                                                                                                                                                                                                                                                                                |
+| shards                       | number                                                | Optional and experimental. The number of shards to split the tests into. Defaults to 1.                                                                                                                                                                                                                                                                                                                                               |
+| retries                      | number                                                | Optional. The number of times to retry failed tests. Defaults to 1.                                                                                                                                                                                                                                                                                                                                                                   |
+| record_screen                | boolean                                               | Optional. Whether to record the screen. Defaults to false. Note: recording screen may impact emulator performance. You may want to use large runners when recording screen.                                                                                                                                                                                                                                                           |
+| include_tags                 | string                                                | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
+| exclude_tags                 | string                                                | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
+| maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
+| android_system_image_package | string                                                | Optional. Android emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note newer images require more computing resources for which you may want to use large runners.                                                       |
+| device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 
 ### Examples
 
@@ -761,6 +773,27 @@ jobs:
       MAESTRO_APP_ID: 'com.yourhost.yourapp'
     params:
       build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+```
+
+</Collapsible>
+
+<Collapsible summary="Recording screen and using a specific device">
+
+This workflow runs Maestro tests on an Android emulator build with a specific device and records the screen.
+
+```yaml .eas/workflows/maestro-sharded.yml
+name: Pixel E2E Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    runs_on: linux-large-nested-virtualization
+    params:
+      build_id: ${{ needs.build_android_emulator.outputs.build_id }}
+      device_identifier: 'pixel_6'
+      record_screen: true
+      android_system_image_package: 'system-images;android-35;default;x86_64'
 ```
 
 </Collapsible>
