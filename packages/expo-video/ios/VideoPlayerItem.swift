@@ -80,9 +80,9 @@ class VideoPlayerItem: AVPlayerItem {
       return
     }
     if let audioGroup = self.asset.mediaSelectionGroup(forMediaCharacteristic: .audible),
-     let audioOption = audioGroup.defaultOption ?? audioGroup.options.first  {
-      self.select(audioOption, in: audioGroup)
-    }
+      let audioOption = audioGroup.defaultOption ?? audioGroup.options.first  {
+        self.select(audioOption, in: audioGroup)
+      }
   }
 
   // AVKit API doesn't provide us with a list of available tracks for a HLS source. We can download the playlist file and parse it ourselves
