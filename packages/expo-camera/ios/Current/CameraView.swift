@@ -2,10 +2,11 @@ import UIKit
 @preconcurrency import ExpoModulesCore
 import CoreMotion
 
-public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, CameraEvent, CameraSessionManagerDelegate, CameraPhotoCaptureDelegate, CameraVideoRecordingDelegate {
+public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, CameraEvent,
+  CameraSessionManagerDelegate, CameraPhotoCaptureDelegate, CameraVideoRecordingDelegate {
+  public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   // Needed to satisfy EXCameraInterface
   public var session: AVCaptureSession!
-  public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   private var sessionManager: CameraSessionManager!
   private var photoCapture: CameraPhotoCapture!
   private var videoRecording: CameraVideoRecording!
