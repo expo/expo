@@ -26,6 +26,7 @@ class VideoPlayerItem: AVPlayerItem {
     self.urlAsset = asset
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
+    self.loadHlsDefaultAudioTrack()
   }
 
   init?(videoSource: VideoSource) async throws {
@@ -47,6 +48,7 @@ class VideoPlayerItem: AVPlayerItem {
 
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
+    self.loadHlsDefaultAudioTrack()
   }
 
   func createTracksLoadingTask() {
@@ -70,6 +72,16 @@ class VideoPlayerItem: AVPlayerItem {
         }
       }
       return tracks
+    }
+  }
+
+  private func loadHlsDefaultAudioTrack() {
+    guard self.isHls else {
+      return
+    }
+    if let audioGroup = self.asset.mediaSelectionGroup(forMediaCharacteristic: .audible),
+     let audioOption = audioGroup.defaultOption ?? audioGroup.options.first  {
+      self.select(audioOption, in: audioGroup)
     }
   }
 
