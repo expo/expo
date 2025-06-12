@@ -215,10 +215,6 @@ identifier_name:
       'ViewManager',
     ]
 
-# Implicitly unwrapped optionals should be avoided when possible.
-implicitly_unwrapped_optional:
-  severity: error
-
 # Indent code using either one tab or the configured amount of spaces,
 # unindent to match previous indentations. Don’t indent the first line.
 indentation_width:
