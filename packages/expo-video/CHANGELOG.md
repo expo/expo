@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export types using the `export type` syntax.
+
 ## 2.2.2 - 2025-06-18
 
 ### 🐛 Bug fixes

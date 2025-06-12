@@ -7,12 +7,12 @@ export {
 export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
-export { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.types';
-export { VideoThumbnail } from './VideoThumbnail';
+export type { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.types';
+export { default as VideoThumbnail } from './VideoThumbnail';
 
 export { createVideoPlayer } from './VideoPlayer';
 
-export {
+export type {
   VideoPlayer,
   VideoPlayerStatus,
   VideoSource,
@@ -30,7 +30,7 @@ export {
   ContentType,
 } from './VideoPlayer.types';
 
-export {
+export type {
   VideoPlayerEvents,
   StatusChangeEventPayload,
   PlayingChangeEventPayload,
