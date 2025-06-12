@@ -200,6 +200,9 @@ export default class CameraView extends Component<CameraViewProps> {
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 
+    if (Platform.OS === 'ios' && options?.pictureRef) {
+      return this._cameraRef.current?.takePictureRef?.(options);
+    }
     return this._cameraRef.current?.takePicture(pictureOptions);
   }
 
