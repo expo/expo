@@ -170,19 +170,21 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
         throw CameraSavingImageException("Failed to process EXIF data")
       }
 
-      let updatedExif = ExpoCameraUtils.updateExif(
-        metadata: exifDict,
+      var updatedExif = ExpoCameraUtils.updateExif(
+        metadata: exifDict as? [String: Any] ?? [:],
         with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
-      updatedExif[kCGImagePropertyExifPixelYDimension] = width
-      updatedExif[kCGImagePropertyExifPixelXDimension] = height
+      updatedExif[kCGImagePropertyExifPixelYDimension as String] = width
+      updatedExif[kCGImagePropertyExifPixelXDimension as String] = height
       response["exif"] = updatedExif
 
       var updatedMetadata = metadata
 
       if let additionalExif = options.additionalExif {
-        updatedExif.addEntries(from: additionalExif)
+        for (key, value) in additionalExif {
+          updatedExif[key] = value
+        }
         var gpsDict = [String: Any]()
 
         if let latitude = additionalExif["GPSLatitude"] as? Double {
