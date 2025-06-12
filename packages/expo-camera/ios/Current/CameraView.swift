@@ -6,10 +6,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   CameraSessionManagerDelegate, CameraPhotoCaptureDelegate, CameraVideoRecordingDelegate {
   public var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   // Needed to satisfy EXCameraInterface
+  // swiftlint:disable implicitly_unwrapped_optional
   public var session: AVCaptureSession!
   private var sessionManager: CameraSessionManager!
   private var photoCapture: CameraPhotoCapture!
   private var videoRecording: CameraVideoRecording!
+  // swiftlint:enable implicitly_unwrapped_optional
 
   private var lifecycleManager: EXAppLifecycleService?
   internal var permissionsManager: EXPermissionsInterface?
