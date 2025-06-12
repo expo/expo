@@ -1,6 +1,6 @@
+import { Image } from 'expo-image';
 import { useRef, useState, useCallback } from 'react';
 import { TouchableOpacity, View, StyleSheet, Text } from 'react-native';
-import { Image } from 'expo-image';
 
 export default function App() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
