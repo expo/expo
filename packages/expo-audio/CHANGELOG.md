@@ -10,6 +10,7 @@
 
 - [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
 - Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS]: Fix changing pitch algorithm stops the playback if sampling is enabled ([#37320](https://github.com/expo/expo/pull/37320) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Improve audio tap memory safety and cleanup ([#37174](https://github.com/expo/expo/pull/37174) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
