@@ -80,7 +80,7 @@ class VideoPlayerItem: AVPlayerItem {
       return
     }
     if let audioGroup = self.asset.mediaSelectionGroup(forMediaCharacteristic: .audible),
-      let audioOption = audioGroup.defaultOption ?? audioGroup.options.first  {
+      let audioOption = audioGroup.defaultOption ?? audioGroup.options.first {
         self.select(audioOption, in: audioGroup)
       }
   }
