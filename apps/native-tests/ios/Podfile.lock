@@ -572,16 +572,8 @@ PODS:
   - fmt (11.0.2)
   - glog (0.3.5)
   - hermes-engine (0.80.0):
-    - hermes-engine/cdp (= 0.80.0)
-    - hermes-engine/Hermes (= 0.80.0)
-    - hermes-engine/inspector (= 0.80.0)
-    - hermes-engine/inspector_chrome (= 0.80.0)
-    - hermes-engine/Public (= 0.80.0)
-  - hermes-engine/cdp (0.80.0)
-  - hermes-engine/Hermes (0.80.0)
-  - hermes-engine/inspector (0.80.0)
-  - hermes-engine/inspector_chrome (0.80.0)
-  - hermes-engine/Public (0.80.0)
+    - hermes-engine/Pre-built (= 0.80.0)
+  - hermes-engine/Pre-built (0.80.0)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -3079,7 +3071,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 778b815a6fb3fa1599f581ffb9a5e85fad313c1d
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: 50e36d664adc3637672d46bdb6b6bec1a23fbd0b
+  hermes-engine: 7068e976238b29e97b3bafd09a994542af7d5c0b
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
