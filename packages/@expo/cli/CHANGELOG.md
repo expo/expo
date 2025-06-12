@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_USE_STICKY_RESOLVER` to enable experimental sticky resolution to native modules ([#37201](https://github.com/expo/expo/pull/37201) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - Allow anonymous sessions even when `projectId` is set ([#36874](https://github.com/expo/expo/pull/36874) by [@kadikraman](https://github.com/kadikraman))

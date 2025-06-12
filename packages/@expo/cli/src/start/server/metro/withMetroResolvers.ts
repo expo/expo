@@ -46,8 +46,9 @@ function optionsKeyForContext(context: ResolutionContext) {
  */
 export function withMetroResolvers(
   config: MetroConfig,
-  resolvers: ExpoCustomMetroResolver[]
+  inputResolvers: (ExpoCustomMetroResolver | undefined)[]
 ): MetroConfig {
+  const resolvers = inputResolvers.filter((x) => x != null);
   debug(
     `Appending ${
       resolvers.length
