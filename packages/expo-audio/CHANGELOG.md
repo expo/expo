@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed status property bug when track finishes ([#37389](https://github.com/expo/expo/pull/37389) by [@adiktiv](https://github.com/adiktiv))
 - [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
 - Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve audio tap memory safety and cleanup ([#37174](https://github.com/expo/expo/pull/37174) by [@alanjhughes](https://github.com/alanjhughes))
