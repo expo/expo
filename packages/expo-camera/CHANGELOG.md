@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+[iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 16.1.10 — 2025-07-01

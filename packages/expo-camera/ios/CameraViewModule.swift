@@ -239,7 +239,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         view.pausePreview()
       }
 
-      AsyncFunction("getAvailablePictureSizes") { (_: String?) in
+      AsyncFunction("getAvailablePictureSizes") {
         return PictureSize.allCases.map {
           $0.rawValue
         }
@@ -249,12 +249,25 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         view.getAvailableLenses()
       }
 
+      AsyncFunction("takePictureRef") { (view, options: TakePictureOptions) -> PictureRef in
+        #if targetEnvironment(simulator)
+        return try takePictureRefForSimulator(self.appContext, view, options)
+        #else
+        return try await view.takePictureRef(options: options)
+        #endif
+      }
+
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
-        #else // not simulator
+        #else
         Task {
-          await view.takePicture(options: options, promise: promise)
+          do {
+            let result = try await view.takePicturePromise(options: options)
+            promise.resolve(result)
+          } catch {
+            promise.reject(error)
+          }
         }
         #endif
       }

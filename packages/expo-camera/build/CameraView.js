@@ -124,6 +124,9 @@ export default class CameraView extends Component {
     _lastEventsTimes = {};
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
+        if (Platform.OS === 'ios' && options?.pictureRef) {
+            return this._cameraRef.current?.takePictureRef?.(options);
+        }
         return this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**
