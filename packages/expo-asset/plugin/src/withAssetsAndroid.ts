@@ -10,7 +10,7 @@ export const withAssetsAndroid: ConfigPlugin<string[]> = (config, assets) => {
     'android',
     async (config) => {
       const resolvedAssets = await resolveAssetPaths(assets, config.modRequest.projectRoot);
-      const validAssets = validateAssets(resolvedAssets);
+      const validAssets = validateAssets(resolvedAssets, 'android');
 
       validAssets.forEach((asset) => {
         const assetsDir = getAssetDir(asset, config.modRequest.platformProjectRoot);
