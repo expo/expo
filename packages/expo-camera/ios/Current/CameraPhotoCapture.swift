@@ -166,12 +166,12 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     var response = [String: Any]()
 
     if options.exif {
-      guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? NSDictionary else {
+      guard let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? [String: Any] else {
         throw CameraSavingImageException("Failed to process EXIF data")
       }
 
       var updatedExif = ExpoCameraUtils.updateExif(
-        metadata: exifDict as? [String: Any] ?? [:],
+        metadata: exifDict,
         with: ["Orientation": ExpoCameraUtils.toExifOrientation(orientation: takenImage.imageOrientation)]
       )
 
