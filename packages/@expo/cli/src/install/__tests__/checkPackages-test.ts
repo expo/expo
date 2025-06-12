@@ -35,12 +35,12 @@ jest.mock('@expo/config', () => ({
 }));
 
 describe(checkPackagesAsync, () => {
-  let mockConsoleLog: jest.SpyInstance;
-  let mockProcessExit: jest.SpyInstance;
+  let mockConsoleLog: jest.Spied<typeof console.log>;
+  let mockProcessExit: jest.Spied<typeof process.exit>;
 
   beforeEach(() => {
     mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
-    mockProcessExit = jest.spyOn(process, 'exit' as never).mockImplementation(() => {
+    mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('MOCK_EXIT');
     });
   });

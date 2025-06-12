@@ -23,6 +23,9 @@ function resolveOptions(options: Options): Options {
   if ([options.npm, options.pnpm, options.yarn, options.bun].filter(Boolean).length > 1) {
     throw new CommandError('BAD_ARGS', 'Specify at most one of: --npm, --pnpm, --yarn, --bun');
   }
+  if (options.json && !options.check) {
+    throw new CommandError('BAD_ARGS', 'The --json flag can only be used with --check');
+  }
   return {
     ...options,
   };

@@ -26,7 +26,6 @@ export const expoInstall: Command = async (argv) => {
       `npx expo install`,
       [
         `--check     Check which installed packages need to be updated`,
-        `--json      Output in JSON format (use with --check)`,
         '--dev       Save the dependencies as devDependencies',
         `--fix       Automatically update any invalid package versions`,
         chalk`--npm       Use npm to install dependencies. {dim Default when package-lock.json exists}`,
@@ -34,6 +33,7 @@ export const expoInstall: Command = async (argv) => {
         chalk`--bun       Use bun to install dependencies. {dim Default when bun.lock or bun.lockb exists}`,
         chalk`--pnpm      Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
         `-h, --help  Usage info`,
+        `--json      Output dependency information in JSON format with --check flag`,
       ].join('\n'),
       [
         '',
