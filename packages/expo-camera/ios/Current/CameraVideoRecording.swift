@@ -67,7 +67,12 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     videoFileOutput?.stopRecording()
   }
 
-  private func setVideoOptions(options: CameraRecordingOptions, for connection: AVCaptureConnection, videoFileOutput: AVCaptureMovieFileOutput, promise: Promise) async {
+  private func setVideoOptions(
+    options: CameraRecordingOptions,
+    for connection: AVCaptureConnection,
+    videoFileOutput: AVCaptureMovieFileOutput,
+    promise: Promise
+  ) async {
     isValidVideoOptions = true
 
     if let maxDuration = options.maxDuration {
@@ -95,7 +100,7 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     }
   }
 
-  public func fileOutput(
+  func fileOutput(
     _ output: AVCaptureFileOutput,
     didFinishRecordingTo outputFileURL: URL,
     from connections: [AVCaptureConnection],

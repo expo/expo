@@ -96,13 +96,13 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     }
   }
 
-  public func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+  func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
     if photoCaptureOptions?.shutterSound == false {
       AudioServicesDisposeSystemSoundID(1108)
     }
   }
 
-  public func photoOutput(
+  func photoOutput(
     _ output: AVCapturePhotoOutput,
     didFinishProcessingPhoto photo: AVCapturePhoto,
     error: Error?
@@ -230,9 +230,8 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     if options.pictureRef {
       if let image = UIImage(data: processedImageData) {
         return PictureRef(image)
-      } else {
-        throw CameraSavingImageException("Failed to create UIImage from processed data")
       }
+      throw CameraSavingImageException("Failed to create UIImage from processed data")
     }
 
     let path = FileSystemUtilities.generatePathInCache(
@@ -253,9 +252,8 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
     if options.fastMode {
       captureDelegate.onPictureSaved(["data": response, "id": options.id])
       return ()
-    } else {
-      return response
     }
+    return response
   }
 
   func cleanup() {

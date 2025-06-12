@@ -27,7 +27,7 @@ protocol CameraSessionManagerDelegate: AnyObject {
 class CameraSessionManager: NSObject {
   weak var delegate: CameraSessionManagerDelegate?
 
-  public let session = AVCaptureSession()
+  let session = AVCaptureSession()
   private let deviceDiscovery = DeviceDiscovery()
 
   private var captureDeviceInput: AVCaptureDeviceInput?
@@ -69,7 +69,9 @@ class CameraSessionManager: NSObject {
   }
 
   func updateDevice() {
-    guard let delegate = delegate else { return }
+    guard let delegate else {
+      return
+    }
 
     let lenses = delegate.presetCamera == .back
     ? deviceDiscovery.backCameraLenses
@@ -93,7 +95,9 @@ class CameraSessionManager: NSObject {
   }
 
   func updateCameraIsActive() {
-    guard let delegate = delegate else { return }
+    guard let delegate else {
+      return
+    }
     delegate.sessionQueue.async {
       if delegate.active {
         if !self.session.isRunning {
