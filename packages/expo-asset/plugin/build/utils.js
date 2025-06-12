@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateAssets = exports.resolveAssetPaths = exports.ACCEPTED_TYPES = exports.MEDIA_TYPES = exports.FONT_TYPES = exports.IMAGE_TYPES = void 0;
+exports.ACCEPTED_TYPES = exports.MEDIA_TYPES = exports.FONT_TYPES = exports.IMAGE_TYPES = void 0;
+exports.resolveAssetPaths = resolveAssetPaths;
+exports.validateAssets = validateAssets;
 const warnings_js_1 = require("@expo/config-plugins/build/utils/warnings.js");
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -23,7 +25,6 @@ async function resolveAssetPaths(assets, projectRoot) {
     });
     return (await Promise.all(promises)).flat();
 }
-exports.resolveAssetPaths = resolveAssetPaths;
 const validPattern = /^[a-z0-9_]+$/;
 function isAndroidAssetNameValid(assetName) {
     return validPattern.test(assetName);
@@ -50,4 +51,3 @@ function validateAssets(assets, platform) {
         return asset;
     });
 }
-exports.validateAssets = validateAssets;
