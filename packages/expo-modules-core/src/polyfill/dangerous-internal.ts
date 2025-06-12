@@ -1,11 +1,11 @@
-import { EventEmitter, NativeModule, SharedObject, SharedRef } from './CoreModule';
 import uuid from '../uuid';
+import { EventEmitter, NativeModule, SharedObject, SharedRef } from './CoreModule';
 
 // jest-expo imports to this file directly without going through the global types
 // Exporting the types to let jest-expo to know the globalThis types
 export * from '../ts-declarations/global';
 
-export function registerWebGlobals() {
+export function installExpoGlobalPolyfill() {
   if (globalThis.expo) return;
   globalThis.expo = {
     EventEmitter,
@@ -23,5 +23,3 @@ export function registerWebGlobals() {
     },
   };
 }
-
-registerWebGlobals();
