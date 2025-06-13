@@ -243,7 +243,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         self.ref.play()
       } else {
         self.updateStatus(with: [
-          "isPlaying": false,
+          "playing": false,
           "currentTime": self.duration,
           "didJustFinish": true
         ])
