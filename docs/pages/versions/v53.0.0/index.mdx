@@ -1,4 +1,68 @@
----
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { getAuth, signInAnonymously } from 'firebase/auth';
+import Constants from 'expo-constants';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIexP7uKFi9b4FFJTB9x5gpEqt59GgtDA",
+  authDomain: "budaweb-5e771.firebaseapp.com",
+  projectId: "budaweb-5e771",
+  storageBucket: "budaweb-5e771.firebasestorage.app",
+  messagingSenderId: "928936919127",
+  appId: "1:928936919127:web:279d2674b67f1cbfe9a312"
+};
+
+initializeApp(firebaseConfig);
+const db = getFirestore();
+const auth = getAuth();
+
+export default function App() {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    signInAnonymously(auth).then(() => {
+      const unsub = onSnapshot(collection(db, 'messages'), snap => {
+        setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      });
+      return () => unsub();
+    });
+  }, []);
+
+  const sendMessage = () => {
+    if (message.trim()) {
+      addDoc(collection(db, 'messages'), {
+        text: message,
+        createdAt: new Date().toISOString()
+      });
+      setMessage('');
+    }
+  };
+
+  return (
+    <View style={{ paddingTop: Constants.statusBarHeight, flex: 1, padding: 20 }}>
+      <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>BUDA Kingdom Chat</Text>
+      <FlatList
+        data={messages}
+        keyExtractor={i => i.id}
+        renderItem={({ item }) => <Text style={{ backgroundColor: '#eee', padding: 8, marginBottom: 4, borderRadius: 5 }}>{item.text}</Text>}
+      />
+      <View style={{ flexDirection: 'row', marginTop: 10 }}>
+        <TextInput
+          value={message}
+          onChangeText={setMessage}
+          placeholder="Andika ujumbe"
+          style={{ flex: 1, borderWidth: 1, padding: 10, borderRadius: 5 }}
+        />
+        <TouchableOpacity onPress={sendMessage} style={{ marginLeft: 10, backgroundColor: '#333', padding: 12, borderRadius: 5 }}>
+          <Text style={{ color: '#fff' }}>Tuma</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 title: Reference
 hideTOC: true
 ---
