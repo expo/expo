@@ -11,8 +11,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- Implemented `useScreenshotListener` hook. ([#37411](https://github.com/expo/expo/pull/37411) by [@hryhoriiK97](https://github.com/hryhoriiK97))
-
 ### 🐛 Bug fixes
 
 ## 53.0.0 — 2025-04-30
