@@ -195,7 +195,7 @@ export type FullscreenOrientation =
  */
 export type FullscreenOptions = {
   /**
-   * Specifies whether the fullscreen mode should be available to the user. When `false` the fullscreen button will be hidden in the player.
+   * Specifies whether the fullscreen mode should be available to the user. When `false`, the fullscreen button will be hidden in the player.
    * Equivalent to the `allowsFullscreen` prop.
    * @default true
    */
