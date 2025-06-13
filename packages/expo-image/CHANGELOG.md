@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+[Android] Fix animation resuming by casting image to GifDrawable ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 2.3.0 - 2025-06-11
