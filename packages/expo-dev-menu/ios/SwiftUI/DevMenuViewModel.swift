@@ -2,6 +2,7 @@
 
 import Foundation
 import UIKit
+import Combine
 
 @MainActor
 class DevMenuViewModel: ObservableObject {
@@ -13,10 +14,12 @@ class DevMenuViewModel: ObservableObject {
   @Published var isOnboardingFinished: Bool = true
 
   private let devMenuManager = DevMenuManager.shared
+  private var cancellables = Set<AnyCancellable>()
 
   init() {
     loadData()
     checkOnboardingStatus()
+    observeRegisteredCallbacks()
   }
 
   private func loadData() {
@@ -54,8 +57,6 @@ class DevMenuViewModel: ObservableObject {
   private func loadRegisteredCallbacks() {
     self.registeredCallbacks = devMenuManager.registeredCallbacks.map { $0.name }
   }
-
-  // MARK: - Actions
 
   func hideMenu() {
     devMenuManager.hideMenu()
@@ -166,5 +167,12 @@ class DevMenuViewModel: ObservableObject {
   func finishOnboarding() {
     UserDefaults.standard.set(true, forKey: "EXDevMenuIsOnboardingFinished")
     isOnboardingFinished = true
+  }
+
+  private func observeRegisteredCallbacks() {
+    devMenuManager.callbacksPublisher
+      .map { $0.map { $0.name } }
+      .receive(on: DispatchQueue.main)
+      .assign(to: &$registeredCallbacks)
   }
 }

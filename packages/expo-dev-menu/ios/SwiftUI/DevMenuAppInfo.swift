@@ -56,7 +56,3 @@ struct InfoRow: View {
     .padding()
   }
 }
-
-#Preview {
-  DevMenuAppInfo()
-}

@@ -3,6 +3,7 @@ import SwiftUI
 
 @objc public class DevLauncherViewController: UIViewController {
   private var hostingController: UIHostingController<DevLauncherRootView>?
+  var viewModel = DevLauncherViewModel()
 
   @objc public override init(nibName: String?, bundle: Bundle?) {
     super.init(nibName: nibName, bundle: bundle)
@@ -21,7 +22,8 @@ import SwiftUI
   private func setupViewController() {
     view.backgroundColor = UIColor.white
 
-    hostingController = UIHostingController(rootView: DevLauncherRootView())
+    let rootView = DevLauncherRootView(viewModel: viewModel)
+    hostingController = UIHostingController(rootView: rootView)
     hostingController?.view.backgroundColor = UIColor.clear
   }
 

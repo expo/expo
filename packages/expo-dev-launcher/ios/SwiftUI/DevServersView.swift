@@ -168,7 +168,3 @@ struct DevServerRow: View {
     .buttonStyle(PlainButtonStyle())
   }
 }
-
-#Preview {
-  DevServersView(showingInfoDialog: .constant(false))
-}
