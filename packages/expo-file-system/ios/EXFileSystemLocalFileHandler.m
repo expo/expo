@@ -17,7 +17,7 @@
     result[@"exists"] = @(YES);
     result[@"isDirectory"] = @(isDirectory);
     result[@"uri"] = [NSURL fileURLWithPath:path].absoluteString;
-    if (options[@"md5"]) {
+    if ([options[@"md5"] boolValue]) {
       result[@"md5"] = [[NSData dataWithContentsOfFile:path] md5String];
     }
     result[@"size"] = @([EXFileSystemLocalFileHandler getFileSize:path attributes:attributes]);
