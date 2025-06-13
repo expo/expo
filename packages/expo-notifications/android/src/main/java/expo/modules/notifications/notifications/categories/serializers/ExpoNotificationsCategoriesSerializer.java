@@ -49,7 +49,7 @@ public class ExpoNotificationsCategoriesSerializer implements NotificationsCateg
   private Bundle toBundle(NotificationAction action) {
     // First we bundle up the options
     Bundle serializedActionOptions = new Bundle();
-    serializedActionOptions.putBoolean("opensAppToForeground", action.opensAppToForeground());
+    serializedActionOptions.putBoolean("opensAppToForeground", action.getOpensAppToForeground());
 
     Bundle serializedAction = new Bundle();
     serializedAction.putString("identifier", action.getIdentifier());
