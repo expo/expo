@@ -75,7 +75,7 @@ internal struct VideoSourceLoadedEventPayload: Record {
 
 internal struct IsExternalPlaybackActiveChangedEventPayload: Record {
   @Field var isExternalPlaybackActive: Bool = false
-  @Field var oldIsExternalPlaybackActice: Bool? = nil
+  @Field var oldIsExternalPlaybackActive: Bool? = nil
 }
 
 // swiftlint:enable redundant_optional_initialization

@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import { ColorValue, ViewProps } from 'react-native';
 export interface VideoAirPlayButtonProps extends Omit<ViewProps, 'children'> {
     /**
      * The color of the button icon while AirPlay sharing is not active.
@@ -6,14 +6,14 @@ export interface VideoAirPlayButtonProps extends Omit<ViewProps, 'children'> {
      * @default undefined
      * @platform ios
      */
-    tint?: string;
+    tint?: ColorValue;
     /**
      * The color of the button icon while AirPlay sharing is active.
      *
      * @default undefined
      * @platform ios
      */
-    activeTint?: string;
+    activeTint?: ColorValue;
     /**
      * Determines whether the AirPlay device selection popup should show video outputs first.
      *

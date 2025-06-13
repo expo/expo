@@ -13,7 +13,7 @@ public final class VideoAirPlayButtonView: ExpoView {
   let onEndPresentingRoutes = EventDispatcher("onEndPresentingRoutes")
 
   lazy var delegate = {
-    ExpoContactAccessButtonDelegate(
+    ExpoRoutePickerButtonDelegate(
       onWillStartPresentingRoutes: { [weak self] in
         self?.onBeginPresentingRoutes()
       },
@@ -57,7 +57,7 @@ public final class VideoAirPlayButtonView: ExpoView {
   }
 }
 
-internal class ExpoContactAccessButtonDelegate: NSObject, AVRoutePickerViewDelegate {
+internal class ExpoRoutePickerButtonDelegate: NSObject, AVRoutePickerViewDelegate {
   let onWillStartPresentingRoutes: (() -> Void)?
   let onDidEndPresentingRoutes: (() -> Void)?
 

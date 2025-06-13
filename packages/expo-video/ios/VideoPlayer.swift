@@ -420,7 +420,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool) {
     let payload = IsExternalPlaybackActiveChangedEventPayload(
       isExternalPlaybackActive: newIsExternalPlaybackActive,
-      oldIsExternalPlaybackActice: oldIsExternalPlaybackActive
+      oldIsExternalPlaybackActive: oldIsExternalPlaybackActive
     )
     safeEmit(event: "isExternalPlaybackActiveChange", payload: payload)
   }
