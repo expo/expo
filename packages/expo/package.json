@@ -43,7 +43,8 @@
     "requiresExtraSetup.json",
     "tsconfig.base.json",
     "types",
-    "virtual"
+    "virtual",
+    "template.tgz"
   ],
   "scripts": {
     "build": "expo-module build",
