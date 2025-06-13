@@ -1,5 +1,5 @@
 import { PermissionStatus } from 'expo-modules-core';
-import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
+import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { RecordingPresets } from './RecordingConstants';
 import resolveAssetSource from './utils/resolveAssetSource';
 const nextId = (() => {
