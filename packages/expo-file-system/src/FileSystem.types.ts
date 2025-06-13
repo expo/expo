@@ -285,9 +285,9 @@ export type InfoOptions = {
    */
   md5?: boolean;
   /**
-  @deprecated
    * Explicitly specify that the file size should be included. For example, skipping this can prevent downloading the file if it's stored in iCloud.
    * The size is always returned for `file://` locations.
+   * @deprecated
    */
   size?: boolean;
 };
