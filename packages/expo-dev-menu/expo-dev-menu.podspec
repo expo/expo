@@ -87,26 +87,12 @@ Pod::Spec.new do |s|
       'DEFINES_MODULE' => 'YES',
       'SWIFT_COMPILATION_MODE' => 'wholemodule'
     }
-    if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-      safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
-      safearea.vendored_frameworks = "vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework"
-      safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
-    else
-      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m,swift}'
-      safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
-
-      safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
-    end
-  end
-
-  s.subspec 'Vendored' do |vendored|
-    vendored.dependency "expo-dev-menu/SafeAreaView"
   end
 
   s.subspec 'Main' do |main|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
-    s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*', 'vendored/**/*'
+    s.exclude_files  = 'ios/*Tests/**/*', 'ios/ReactNativeCompatibles/**/*'
     s.compiler_flags = compiler_flags
 
     # add_dependency() requires to be defined
@@ -120,8 +106,6 @@ Pod::Spec.new do |s|
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
-    main.dependency "expo-dev-menu/Vendored"
-    main.dependency 'ReactAppDependencyProvider'
   end
 
   s.subspec 'ReactNativeCompatibles' do |ss|

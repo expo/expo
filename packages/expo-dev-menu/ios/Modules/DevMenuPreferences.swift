@@ -91,6 +91,7 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: showsAtLaunchKey)
+      DevMenuManager.shared.updateAutoLaunchObserver()
     }
   }
 

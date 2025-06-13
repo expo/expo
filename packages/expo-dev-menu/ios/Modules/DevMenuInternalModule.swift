@@ -26,9 +26,7 @@ public class DevMenuInternalModule: Module {
     AsyncFunction("openJSInspector", DevMenuManager.shared.openJSInspector)
     AsyncFunction("toggleFastRefresh", DevMenuManager.shared.toggleFastRefresh)
 
-    AsyncFunction("loadFontsAsync") {
-      DevMenuManager.shared.loadFonts()
-    }
+    AsyncFunction("loadFontsAsync") {}
 
     AsyncFunction("hideMenu") {
       DevMenuManager.shared.hideMenu()
