@@ -1,7 +1,7 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { useMemo, MouseEvent } from 'react';
-import { TextProps, GestureResponderEvent, Platform } from 'react-native';
+import { useMemo, MouseEvent, type Ref } from 'react';
+import { TextProps, GestureResponderEvent, Platform, type Text } from 'react-native';
 
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
@@ -224,6 +224,16 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    * Prefetches the route when the component is rendered on a focused screen.
    */
   prefetch?: boolean;
+
+  /**
+   * Enables the experimental preview for the link.
+   * This allows peek and pop interactions on iOS.
+   *
+   * @platform ios
+   */
+  experimentalPreview?: boolean;
+
+  ref?: Ref<Text>;
 }
 
 // Mutate the style prop to add the className on web.

@@ -26,6 +26,7 @@
 - Collapse nested routes in Sitemap ([#36882](https://github.com/expo/expo/pull/36882) by [@Ubax](https://github.com/Ubax))
 - Update matching patterns for pathname groups and parameters ([#36961](https://github.com/expo/expo/pull/36961) by [@kitten](https://github.com/kitten))
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
+- Add experimental link preview (iOS only) ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
 
 ## 5.0.7 — 2025-05-13
 

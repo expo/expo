@@ -1,14 +1,41 @@
 import { act, fireEvent, render } from '@testing-library/react-native';
-import React from 'react';
-import { Platform, Text, View } from 'react-native';
+import React, { type PropsWithChildren } from 'react';
+import { Button, Platform, Text, View } from 'react-native';
 
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
 import { renderRouter, screen } from '../../testing-library';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
+import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
+import type { LinkPreviewNativeViewProps } from '../preview/native/types';
+import { useLocalSearchParams } from '../../hooks';
 
 // Render and observe the props of the Link component.
+
+jest.mock('../preview/native/index.ios', () => {
+  const { View, Pressable } = require('react-native');
+  return {
+    LinkPreviewNativeView: jest.fn(
+      ({ children, onWillPreviewOpen }: LinkPreviewNativeViewProps) => (
+        <Pressable
+          testID="link-preview-native-view"
+          children={children}
+          onPress={onWillPreviewOpen}
+        />
+      )
+    ),
+    LinkPreviewNativePreviewView: jest.fn(({ children }: PropsWithChildren) => (
+      <View testID="link-preview-native-preview-view" children={children} />
+    )),
+    LinkPreviewNativeTriggerView: jest.fn(({ children }: PropsWithChildren) => (
+      <View testID="link-preview-native-trigger-view" children={children} />
+    )),
+    LinkPreviewNativeActionView: jest.fn(({ children }: PropsWithChildren) => (
+      <View testID="link-preview-native-action-view" children={children} />
+    )),
+  };
+});
 
 it('renders a Link', () => {
   const { getByText } = render(<Link href="/foo">Foo</Link>);
@@ -536,5 +563,354 @@ describe('prefetch', () => {
       stale: false,
       type: 'stack',
     });
+  });
+});
+
+describe('Preview', () => {
+  it('when experimentalPreview is false and Link.Preview is not used, does not render LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+    });
+    expect(screen.queryByTestId('link-preview-native-view')).toBeNull();
+    expect(screen.queryByTestId('link-preview-native-preview-view')).toBeNull();
+    expect(screen.queryByTestId('link-preview-native-trigger-view')).toBeNull();
+  });
+  it('when experimentalPreview is true, renders LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" experimentalPreview />;
+      },
+      test: () => null,
+    });
+    expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-trigger-view')).toBeVisible();
+  });
+  it('when experimentalPreview is false and Link.Preview is used, renders LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
+    renderRouter({
+      index: () => {
+        return (
+          <Link prefetch href="/test">
+            <Link.Preview />
+            <Link.Trigger />
+          </Link>
+        );
+      },
+      test: () => null,
+    });
+    expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-trigger-view')).toBeVisible();
+  });
+  it('when experimentalPreview is true and no trigger is used, renders link correctly', () => {
+    renderRouter({
+      index: () => {
+        return (
+          <Link prefetch href="/test" experimentalPreview>
+            <View testID="inner-view" />
+          </Link>
+        );
+      },
+      test: () => null,
+    });
+    expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-trigger-view')).toBeVisible();
+    expect(screen.getByTestId('inner-view')).toBeVisible();
+  });
+  it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
+    expect(() => {
+      render(
+        <LinkPreviewContextProvider>
+          <Link href="/foo">
+            <Link.Preview />
+          </Link>
+        </LinkPreviewContextProvider>
+      );
+    }).toThrow(
+      'When you use Link.Preview, you must use Link.Trigger to specify the trigger element'
+    );
+  });
+  it('when experimentalPreview is true and trigger is used, renders link correctly', () => {
+    renderRouter({
+      index: () => {
+        return (
+          <Link prefetch href="/test" experimentalPreview>
+            <Link.Trigger>
+              <View testID="inner-view" />
+            </Link.Trigger>
+          </Link>
+        );
+      },
+      test: () => null,
+    });
+    expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-trigger-view')).toBeVisible();
+    expect(screen.getByTestId('inner-view')).toBeVisible();
+  });
+  describe('lazy loading', () => {
+    it('when using default preview, it is not visible on initial load', () => {
+      renderRouter({
+        index: () => {
+          return <Link prefetch href="/test" experimentalPreview />;
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+      expect(screen.queryByTestId('test-view')).toBeNull();
+    });
+    it('when using custom preview, it is not visible on initial load', () => {
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Trigger />
+              <Link.Preview>
+                <View testID="preview" />
+              </Link.Preview>
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+      expect(screen.queryByTestId('preview')).toBeNull();
+    });
+    it('when LinkNativeView emits onWillPreviewOpen, it loads the preview', () => {
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Trigger />
+              <Link.Preview>
+                <View testID="preview" />
+              </Link.Preview>
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      act(() => fireEvent.press(screen.getByTestId('link-preview-native-view')));
+      expect(screen.getByTestId('preview')).toBeVisible();
+    });
+    it('when LinkNativeView emits onWillPreviewOpen, it loads the default preview', () => {
+      renderRouter({
+        index: () => {
+          return <Link prefetch href="/test" experimentalPreview />;
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      act(() => fireEvent.press(screen.getByTestId('link-preview-native-view')));
+      expect(screen.getByTestId('test-view')).toBeVisible();
+    });
+  });
+  it('when Link.Menu items are passed, correct actions are passed to native', () => {
+    const LinkPreviewNativeActionView =
+      require('../preview/native/index.ios').LinkPreviewNativeActionView;
+    renderRouter({
+      index: () => {
+        return (
+          <Link prefetch href="/test" experimentalPreview>
+            <Link.Trigger>Trigger</Link.Trigger>
+            <Link.Menu>
+              <Link.MenuItem
+                title="Test Item"
+                onPress={() => {
+                  // Handle menu item press
+                }}
+              />
+              <Text>Text child</Text>
+              <Link.MenuItem
+                title="Second actions"
+                onPress={() => {
+                  // Handle menu item press
+                }}
+              />
+            </Link.Menu>
+          </Link>
+        );
+      },
+      test: () => <View testID="test-view" />,
+    });
+    expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+    expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+    expect(LinkPreviewNativeActionView.mock.calls[0][0]).toEqual({
+      id: 'Test Item',
+      title: 'Test Item',
+    });
+    expect(LinkPreviewNativeActionView.mock.calls[1][0]).toEqual({
+      id: 'Second actions',
+      title: 'Second actions',
+    });
+  });
+  it('correctly passes props to child component with asChild and experimentalPreview', () => {
+    const { getByText, getByTestId } = render(
+      <LinkPreviewContextProvider>
+        <Link asChild href="/foo" experimentalPreview>
+          <View testID="pressable">
+            <Text testID="inner-text">Button</Text>
+          </View>
+        </Link>
+      </LinkPreviewContextProvider>
+    );
+    const node = getByText('Button');
+    expect(node.props).toEqual({
+      children: 'Button',
+      testID: 'inner-text',
+    });
+
+    const pressable = getByTestId('pressable');
+    if (Platform.OS === 'web') {
+      expect(pressable.props).toEqual(
+        expect.objectContaining({
+          children: expect.anything(),
+          href: '/foo',
+          role: 'link',
+          testID: 'pressable',
+          onClick: expect.any(Function),
+        })
+      );
+    } else {
+      expect(pressable.props).toEqual(
+        expect.objectContaining({
+          children: expect.anything(),
+          href: '/foo',
+          role: 'link',
+          testID: 'pressable',
+          onPress: expect.any(Function),
+        })
+      );
+    }
+  });
+  it('correctly passes props to child component with asChild, experimentalPreview and trigger', () => {
+    const { getByText, getByTestId } = render(
+      <LinkPreviewContextProvider>
+        <Link asChild href="/foo" experimentalPreview>
+          <Link.Trigger>
+            <View testID="pressable">
+              <Text testID="inner-text">Button</Text>
+            </View>
+          </Link.Trigger>
+        </Link>
+      </LinkPreviewContextProvider>
+    );
+    const node = getByText('Button');
+    expect(node.props).toEqual({
+      children: 'Button',
+      testID: 'inner-text',
+    });
+
+    const pressable = getByTestId('pressable');
+    if (Platform.OS === 'web') {
+      expect(pressable.props).toEqual(
+        expect.objectContaining({
+          children: expect.anything(),
+          href: '/foo',
+          role: 'link',
+          testID: 'pressable',
+          onClick: expect.any(Function),
+        })
+      );
+    } else {
+      expect(pressable.props).toEqual(
+        expect.objectContaining({
+          children: expect.anything(),
+          href: '/foo',
+          role: 'link',
+          testID: 'pressable',
+          onPress: expect.any(Function),
+        })
+      );
+    }
+  });
+  describe('changing href', () => {
+    it('when preview is closed, href can change', () => {
+      renderRouter({
+        index: () => <ComponentWithButtonAndPreview href={(counter) => `/test/${counter}`} />,
+        '/test/[counter]': ComponentWithCounter,
+      });
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      act(() => fireEvent.press(button));
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+    });
+
+    it('when preview is closed, query params in href can change', () => {
+      renderRouter({
+        index: () => (
+          <ComponentWithButtonAndPreview href={(counter) => `/foo?counter=${counter}`} />
+        ),
+        foo: ComponentWithCounter,
+      });
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      act(() => fireEvent.press(button));
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+    });
+
+    it('when preview is open, href cannot change', () => {
+      renderRouter({
+        index: () => <ComponentWithButtonAndPreview href={(counter) => `/test/${counter}`} />,
+        '/test/[counter]': ComponentWithCounter,
+      });
+      act(() => fireEvent.press(screen.getByTestId('link-preview-native-view')));
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toBeVisible();
+      expect(() => act(() => fireEvent.press(button))).toThrow(
+        'Link does not support changing the href prop after the preview has been opened. Please ensure that the href prop is stable and does not change between renders.'
+      );
+    });
+
+    it('when preview is open, query params in href can change', () => {
+      renderRouter({
+        index: () => (
+          <ComponentWithButtonAndPreview href={(counter) => `/foo?counter=${counter}`} />
+        ),
+        foo: ComponentWithCounter,
+      });
+      act(() => fireEvent.press(screen.getByTestId('link-preview-native-view')));
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toHaveTextContent('Counter: 0');
+      act(() => fireEvent.press(button));
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toHaveTextContent('Counter: 1');
+    });
+
+    const ComponentWithCounter = () => {
+      const { counter } = useLocalSearchParams();
+      return <Text testID="counter-text">Counter: {counter}</Text>;
+    };
+
+    const ComponentWithButtonAndPreview = ({ href }: { href: (counter) => string }) => {
+      const [counter, setCounter] = React.useState(0);
+      return (
+        <View testID="component-with-button-and-preview">
+          <Button
+            title="Change counter"
+            onPress={() => setCounter((c) => c + 1)}
+            testID="change-counter-button"
+          />
+          <Link
+            href={href(counter)}
+            experimentalPreview
+            testID="link"
+            onPress={() => setCounter((c) => c + 1)}>
+            <Link.Trigger>
+              <Text>Counter: {counter}</Text>
+            </Link.Trigger>
+            <Link.Preview />
+          </Link>
+        </View>
+      );
+    };
   });
 });

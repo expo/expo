@@ -58,6 +58,7 @@ const href_1 = require("./link/href");
  * for more information.
  */
 function useNavigation(parent) {
+    // TODO: Show warning in preview. Something like `navigation.${String(prop)} should not be used in a previewed screen. To fix this issue, wrap navigation calls with 'if (!isPreview) { ... }'.`
     let navigation = (0, native_1.useNavigation)();
     let state = (0, native_1.useStateForPath)();
     if (parent === undefined) {

@@ -12,7 +12,7 @@ import {
 import { Stack } from '../../../layouts/Stack';
 import { renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
-import { Redirect } from '../../Link';
+import { Redirect } from '../../Redirect';
 import { HrefPreview } from '../HrefPreview';
 
 it.each([

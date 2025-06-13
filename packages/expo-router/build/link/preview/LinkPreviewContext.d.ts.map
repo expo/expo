@@ -1,0 +1,1 @@
+{"version":3,"file":"LinkPreviewContext.d.ts","sourceRoot":"","sources":["../../../src/link/preview/LinkPreviewContext.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAiB,iBAAiB,EAA0B,MAAM,OAAO,CAAC;AAUjF,wBAAgB,0BAA0B,CAAC,EAAE,QAAQ,EAAE,EAAE,iBAAiB,+BAIzE;AAED,eAAO,MAAM,qBAAqB;mBAZb,OAAO;sBACJ,CAAC,MAAM,EAAE,OAAO,KAAK,IAAI;CAmBhD,CAAC"}
