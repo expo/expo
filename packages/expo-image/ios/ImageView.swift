@@ -70,6 +70,11 @@ public final class ImageView: ExpoView {
 
   var useAppleWebpCodec: Bool = true
 
+  /**
+   The ideal image size that fills in the container size while maintaining the source aspect ratio.
+   */
+  var imageIdealSize: CGSize = .zero
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -117,6 +122,15 @@ public final class ImageView: ExpoView {
       reload()
     } else {
       loadPlaceholderIfNecessary()
+    }
+  }
+
+  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+      // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
+      // After that we have to recalculate the mask layer in `applyContentPosition`.
+      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
     }
   }
 
@@ -228,15 +242,15 @@ public final class ImageView: ExpoView {
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
-      let idealSize = idealSize(
+      imageIdealSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
         scale: scale,
         contentFit: contentFit
       ).rounded(.up)
 
-      let image = processImage(image, idealSize: idealSize, scale: scale)
-      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+      let image = processImage(image, idealSize: imageIdealSize, scale: scale)
+      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
       renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
