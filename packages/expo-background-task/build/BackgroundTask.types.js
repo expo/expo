@@ -1,8 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BackgroundTaskResult = exports.BackgroundTaskStatus = void 0;
 // @needsAudit
 /**
  * Availability status for background tasks
  */
-export var BackgroundTaskStatus;
+var BackgroundTaskStatus;
 (function (BackgroundTaskStatus) {
     /**
      * Background tasks are unavailable.
@@ -12,12 +15,12 @@ export var BackgroundTaskStatus;
      * Background tasks are available for the app.
      */
     BackgroundTaskStatus[BackgroundTaskStatus["Available"] = 2] = "Available";
-})(BackgroundTaskStatus || (BackgroundTaskStatus = {}));
+})(BackgroundTaskStatus || (exports.BackgroundTaskStatus = BackgroundTaskStatus = {}));
 // @needsAudit
 /**
  * Return value for background tasks.
  */
-export var BackgroundTaskResult;
+var BackgroundTaskResult;
 (function (BackgroundTaskResult) {
     /**
      * The task finished successfully.
@@ -27,5 +30,4 @@ export var BackgroundTaskResult;
      * The task failed.
      */
     BackgroundTaskResult[BackgroundTaskResult["Failed"] = 2] = "Failed";
-})(BackgroundTaskResult || (BackgroundTaskResult = {}));
-//# sourceMappingURL=BackgroundTask.types.js.map
+})(BackgroundTaskResult || (exports.BackgroundTaskResult = BackgroundTaskResult = {}));

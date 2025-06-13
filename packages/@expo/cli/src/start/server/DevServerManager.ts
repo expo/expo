@@ -13,7 +13,7 @@ import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptPr
 import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { resolveSchemeAsync } from '../resolveOptions';
-import { CLIPluginsManager } from './CLIPluginsManager';
+import { CliCommandsManager } from './CliCommandsManager';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -49,7 +49,7 @@ export class DevServerManager {
 
   private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
   public readonly devtoolsPluginManager: DevToolsPluginManager;
-  public readonly cliPluginsManager: CLIPluginsManager;
+  public readonly cliCommandsManager: CliCommandsManager;
 
   private notifier: FileNotifier | null = null;
 
@@ -62,7 +62,7 @@ export class DevServerManager {
       this.notifier = this.watchBabelConfig();
     }
     this.devtoolsPluginManager = new DevToolsPluginManager(projectRoot);
-    this.cliPluginsManager = new CLIPluginsManager(projectRoot);
+    this.cliCommandsManager = new CliCommandsManager(projectRoot, this);
   }
 
   private watchBabelConfig() {

@@ -159,30 +159,46 @@ export class DevServerManagerActions {
         },
       }));
       pluginMenuItems = pluginMenuItems.concat(
-        (await this.devServerManager.cliPluginsManager.queryPluginsAsync()).map((plugin) => ({
+        (await this.devServerManager.cliCommandsManager.queryPluginsAsync()).map((plugin) => ({
           title: chalk`{bold ${plugin.packageName}}`,
           value: `cliPlugin:${plugin.packageName}`,
           action: async () => {
+            // Verify that we have apps connected to the dev server.
+            const metroServerOrigin = this.devServerManager
+              .getDefaultDevServer()
+              .getJsInspectorBaseUrl();
+
+            const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+            if (!apps.length) {
+              return Log.warn(
+                chalk`{bold Debug:} No compatible apps connected, React Native DevTools can only be used with Hermes. ${learnMore(
+                  'https://docs.expo.dev/guides/using-hermes/'
+                )}`
+              );
+            }
+
             // Show selector with plugin commands.
             const commands = plugin.commands.map((cmd) => ({
               title: cmd.caption,
               value: cmd.cmd,
             }));
+
             const value = await selectAsync(chalk`{dim Select command}`, commands);
             const cmd = plugin.commands.find((c) => c.cmd === value);
             if (!cmd) {
               Log.warn(`No command found for ${plugin.packageName}`);
               return;
             }
-            const spinner = ora(`Executing ${cmd.caption}`).start();
+            const spinner = ora(
+              `Executing '${cmd.caption}'${apps.length > 0 ? ` (${apps.length} app(s))` : ''}`
+            ).start();
             try {
               // Execute the command with the plugin executor.
-              const results = await plugin.executor(value);
-              Log.log(results);
-              spinner.succeed(`${cmd.caption} succeeded.`).stop();
-            } catch (error) {
-              spinner.fail(`Failed executing ${cmd.caption}`);
-              throw error;
+              const results = await plugin.executor(value, apps);
+              spinner.succeed(`${cmd.caption} succeeded:`).stop();
+              Log.log(results.trim());
+            } catch (error: any) {
+              spinner.fail(`Failed executing task. ${error.toString()}`);
             }
           },
         }))
@@ -202,7 +218,6 @@ export class DevServerManagerActions {
       printHelp();
     }
   }
-
   toggleDevMenu() {
     Log.log(`${BLT} Toggling dev menu`);
     this.devServerManager.broadcastMessage('devMenu');

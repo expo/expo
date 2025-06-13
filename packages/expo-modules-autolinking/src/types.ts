@@ -139,9 +139,9 @@ export type ModuleDescriptor =
   | ModuleDescriptorAndroid
   | ModuleDescriptorIos
   | ModuleDescriptorDevTools
-  | ModuleDescriptorCLIPlugin;
+  | ModuleDescriptorCliCommandPlugin;
 
-export interface ModuleDescriptorCLIPlugin {
+export interface ModuleDescriptorCliCommandPlugin {
   packageName: string;
   packageRoot: string;
   description: string;

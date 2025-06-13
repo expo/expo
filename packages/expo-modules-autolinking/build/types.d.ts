@@ -104,8 +104,8 @@ export interface ModuleDescriptorDevTools {
     packageRoot: string;
     webpageRoot: string;
 }
-export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools | ModuleDescriptorCLIPlugin;
-export interface ModuleDescriptorCLIPlugin {
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools | ModuleDescriptorCliCommandPlugin;
+export interface ModuleDescriptorCliCommandPlugin {
     packageName: string;
     packageRoot: string;
     description: string;

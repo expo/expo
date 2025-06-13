@@ -1,5 +1,4 @@
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
-export declare const useBackgroundTaskPluginClient: () => void;
 /**
  * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
  * while on native platforms it returns `BackgroundTaskStatus.Available`.
@@ -50,4 +49,3 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
  */
 export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
 export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
-//# sourceMappingURL=BackgroundTask.d.ts.map

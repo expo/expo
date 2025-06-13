@@ -8,4 +8,3 @@ declare class ExpoBackgroundTaskModule extends NativeModule {
 }
 declare const _default: ExpoBackgroundTaskModule;
 export default _default;
-//# sourceMappingURL=ExpoBackgroundTaskModule.d.ts.map
