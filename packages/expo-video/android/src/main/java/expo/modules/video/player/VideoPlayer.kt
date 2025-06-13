@@ -174,6 +174,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var availableVideoTracks: List<VideoTrack> = emptyList()
     private set
 
+  var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
+
   private val playerListener = object : Player.Listener {
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
@@ -310,6 +312,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
     uncommittedSource = null
     commitedSource = null
+    // Releases the listeners from VideoPlayerKeepAwake
+    keepScreenOnWhilePlaying = false
   }
 
   override fun deallocate() {
