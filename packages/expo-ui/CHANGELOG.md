@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `BottomSheet` affecting layout outside. ([#37370](https://github.com/expo/expo/pull/37370) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.1.1-alpha.9 — 2025-06-08
