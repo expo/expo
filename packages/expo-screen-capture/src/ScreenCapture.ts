@@ -144,9 +144,7 @@ export function removeScreenshotListener(subscription: EventSubscription) {
  */
 export function useScreenshotListener(listener: () => void) {
   useEffect(() => {
-    const subscription = addScreenshotListener(() => {
-      listener();
-    });
+    const subscription = addScreenshotListener(listener);
 
     return () => {
       removeScreenshotListener(subscription);
