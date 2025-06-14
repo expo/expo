@@ -18,7 +18,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type }, defaults) {
+        getSystemRoute({ route, type, defaults, redirectConfig }) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {
@@ -64,11 +64,11 @@ function getRoutes(contextModule, options = {}) {
                     children: [],
                 };
             }
-            else if ((type === 'redirect' || type === 'rewrite') && defaults) {
+            else if ((type === 'redirect' || type === 'rewrite') && defaults && redirectConfig) {
                 return {
                     ...defaults,
                     loadRoute() {
-                        return require('./getRoutesRedirects').getRedirectModule(route);
+                        return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
                     },
                 };
             }
