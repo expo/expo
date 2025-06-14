@@ -3,6 +3,7 @@ package expo.modules.documentpicker
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import java.io.File
 
 class DocumentDetailsReader(private val context: Context) {
   fun read(uri: Uri): DocumentInfo? {
@@ -21,7 +22,28 @@ class DocumentDetailsReader(private val context: Context) {
           }
         }
         val mimeType = context.contentResolver.getType(uri)
-        return DocumentInfo(uri, name, mimeType, size)
+
+        // Get last modified time
+        val lastModified = try {
+          // First try to get it from the content resolver
+          val lastModifiedColumn = cursor.getColumnIndex("last_modified")
+          if (lastModifiedColumn != -1 && !cursor.isNull(lastModifiedColumn)) {
+            cursor.getLong(lastModifiedColumn)
+          } else {
+            // Fallback to getting it from the file
+            val file = File(uri.path ?: "")
+            if (file.exists()) {
+              file.lastModified()
+            } else {
+              System.currentTimeMillis()
+            }
+          }
+        } catch (e: Exception) {
+          // If all else fails, use current time
+          System.currentTimeMillis()
+        }
+
+        return DocumentInfo(uri, name, mimeType, size, lastModified)
       }
     return null
   }

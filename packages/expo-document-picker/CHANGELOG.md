@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS][Android] add lastModified for iOS and Android to align with web ([#37429](https://github.com/expo/expo/pull/37429) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
