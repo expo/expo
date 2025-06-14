@@ -199,12 +199,14 @@ export default function Page() {
 ```json postcss.config.json
 {
   "plugins": {
-    "autoprefixer": {}
+    "tailwindcss": {}
   }
 }
 ```
 
 Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
+
+> Expo websites do not need `autoprefixer` because we automatically add the necessary prefixes with native CSS parsing. Avoid using `autoprefixer` as it slows down the cold-boot performance.
 
 ### SASS
 
