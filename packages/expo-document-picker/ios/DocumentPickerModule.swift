@@ -49,8 +49,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
 
   func didPickDocumentsAt(urls: [URL]) {
     guard let options = self.pickingContext?.options,
-      let promise = self.pickingContext?.promise
-    else {
+      let promise = self.pickingContext?.promise else {
       log.error("Picking context has been lost.")
       return
     }
@@ -98,8 +97,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       }
     }
 
-    guard let contents = try? FileManager.default.contentsOfDirectory(atPath: path.absoluteString)
-    else {
+    guard let contents = try? FileManager.default.contentsOfDirectory(atPath: path.absoluteString) else {
       return 0
     }
 
