@@ -410,19 +410,6 @@ You can take advantage of [`named colors`](https://developer.apple.com/library/a
 <img src="./assets/configuration-ios-selectNamedColor.png" height="350" />
 </details>
 
-##### I'm targeting iOS version < 11
-
-You cannot use [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) feature in your Xcode project.
-Instead you have to create an additional image set that contains small 1x1px images, each with the desired background color. Then, you'll use this additional image resource as a background in the splash screen view.
-
-You can use this online generator to obtain 1x1px `.png` images with desired colors: http://www.1x1px.me.
-
-1. Create `SplashScreenBackground` `Image Set` with desired background colors for each mode in your `Images.xcassets` directory:
-   - open your `.xcassets` directory with images,
-   - in the content panel add `New image set` and name it `SplashScreenBackground`,
-   - convert this `Image set` to support `Dark Appearance` by navigating to `Attributes Inspector` in the right panel and changing `Appearance` to `Any, Dark`,
-   - provide images with colors for every mode (you can generate color 1x1px images using http://www.1x1px.me).
-
 <details>
  <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-addSplashScreenBackgroundImages.png" height="250" />
