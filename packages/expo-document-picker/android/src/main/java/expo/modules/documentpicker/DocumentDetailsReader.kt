@@ -23,7 +23,9 @@ class DocumentDetailsReader(private val context: Context) {
         }
         val mimeType = context.contentResolver.getType(uri)
 
-        // Get last modified time
+        // Get last modified date or use current date if not available.
+        // This follows the Web API spec.
+        // https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified
         val lastModified = try {
           // First try to get it from the content resolver
           val lastModifiedColumn = cursor.getColumnIndex("last_modified")
