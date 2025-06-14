@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `rawBody` handling on `/symbolicate` endpoint. Clients MUST send the header `'Content-Type': 'application/json'`. ([#35757](https://github.com/expo/expo/pull/35757) by [@huntie](https://github.com/huntie))
+
 ### 🎉 New features
 
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
