@@ -1013,44 +1013,6 @@
           "bareWorkflow": "To change your app's icon, edit or replace the files in `ios/<PROJECT-NAME>/Assets.xcassets/AppIcon.appiconset` (we recommend using Xcode), and `android/app/src/main/res/mipmap-<RESOLUTION>`. Be sure to follow the guidelines for each platform ([iOS](https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/app-icon/), [Android 7.1 and below](https://material.io/design/iconography/#icon-treatments), and [Android 8+](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive)) and to provide your new icon in each existing size."
         }
       },
-      "notification": {
-        "description": "Configuration for remote (push) notifications.",
-        "type": "object",
-        "properties": {
-          "icon": {
-            "description": "(Android only) Local path or remote URL to an image to use as the icon for push notifications. 96x96 png grayscale with transparency. We recommend following [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles). If not provided, defaults to your app icon.",
-            "type": "string",
-            "meta": {
-              "asset": true,
-              "contentTypePattern": "^image/png$",
-              "contentTypeHuman": ".png image",
-              "square": true
-            }
-          },
-          "color": {
-            "description": "(Android only) Tint color for the push notification image when it appears in the notification tray. Defaults to `#ffffff`",
-            "type": "string",
-            "pattern": "^#|(&#x23;)\\d{6}$",
-            "meta": {
-              "regexHuman": "6 character long hex color string, for example, `'#000000'`"
-            }
-          },
-          "iosDisplayInForeground": {
-            "description": "Whether or not to display notifications when the app is in the foreground on iOS. `_displayInForeground` option in the individual push notification message overrides this option. [Learn more.](https://docs.expo.dev/push-notifications/receiving-notifications/#foreground-notification-behavior) Defaults to `false`.",
-            "type": "boolean"
-          },
-          "androidMode": {
-            "description": "Show each push notification individually (`default`) or collapse into one (`collapse`).",
-            "enum": ["default", "collapse"],
-            "type": "string"
-          },
-          "androidCollapsedTitle": {
-            "description": "If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. For example, `'#{unread_notifications} new interactions'`.",
-            "type": "string"
-          }
-        },
-        "additionalProperties": false
-      },
       "appKey": {
         "description": "@deprecated By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.",
         "meta": {
