@@ -3,6 +3,7 @@ package expo.modules.documentpicker
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.provider.DocumentsContract
 import java.io.File
 
 class DocumentDetailsReader(private val context: Context) {
@@ -28,7 +29,7 @@ class DocumentDetailsReader(private val context: Context) {
         // https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified
         val lastModified = try {
           // First try to get it from the content resolver
-          val lastModifiedColumn = cursor.getColumnIndex("last_modified")
+          val lastModifiedColumn = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED)
           if (lastModifiedColumn != -1 && !cursor.isNull(lastModifiedColumn)) {
             cursor.getLong(lastModifiedColumn)
           } else {

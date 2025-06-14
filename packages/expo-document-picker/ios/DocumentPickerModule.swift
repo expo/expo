@@ -103,12 +103,10 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       return 0
     }
 
-    let folderSize = contents.reduce(0) { currentSize, file in
+    return contents.reduce(0) { currentSize, file in
       let fileSize = getFileSize(path: path.appendingPathComponent(file)) ?? 0
       return currentSize + fileSize
     }
-
-    return folderSize
   }
 
   private func readDocumentDetails(documentUrl: URL, copy: Bool) throws -> DocumentInfo {
