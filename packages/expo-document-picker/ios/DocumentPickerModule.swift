@@ -1,6 +1,6 @@
 import ExpoModulesCore
-import UIKit
 import MobileCoreServices
+import UIKit
 
 struct PickingContext {
   let promise: Promise
@@ -49,7 +49,8 @@ public class DocumentPickerModule: Module, PickingResultHandler {
 
   func didPickDocumentsAt(urls: [URL]) {
     guard let options = self.pickingContext?.options,
-    let promise = self.pickingContext?.promise else {
+      let promise = self.pickingContext?.promise
+    else {
       log.error("Picking context has been lost.")
       return
     }
@@ -97,7 +98,8 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       }
     }
 
-    guard let contents = try? FileManager.default.contentsOfDirectory(atPath: path.absoluteString) else {
+    guard let contents = try? FileManager.default.contentsOfDirectory(atPath: path.absoluteString)
+    else {
       return 0
     }
 
@@ -132,11 +134,20 @@ public class DocumentPickerModule: Module, PickingResultHandler {
 
     let mimeType = self.getMimeType(from: documentUrl.pathExtension) ?? "application/octet-stream"
 
+    // Get last modified date or use current date if not available.
+    // This follows the Web API spec.
+    // https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified
+    let lastModified = try? documentUrl.resourceValues(forKeys: [.contentModificationDateKey])
+      .contentModificationDate?.timeIntervalSince1970
+    // Convert to milliseconds and ensure integer value to match the Web API spec.
+    let lastModifiedMs = Int64((lastModified ?? Date().timeIntervalSince1970) * 1000)
+
     return DocumentInfo(
       uri: newUrl.absoluteString,
       name: documentUrl.lastPathComponent,
       size: fileSize,
-      mimeType: mimeType
+      mimeType: mimeType,
+      lastModified: lastModifiedMs
     )
   }
 
@@ -148,7 +159,8 @@ public class DocumentPickerModule: Module, PickingResultHandler {
         kUTTagClassFilenameExtension,
         pathExtension as NSString, nil
       )?.takeRetainedValue() {
-        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?
+          .takeRetainedValue() {
           return mimetype as String
         }
       }
@@ -202,7 +214,8 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     return uti as String
   }
 
-  private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
+  private func createDocumentPicker(with options: DocumentPickerOptions)
+    -> UIDocumentPickerViewController {
     if #available(iOS 14.0, *) {
       let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
       return UIDocumentPickerViewController(
