@@ -155,8 +155,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
         kUTTagClassFilenameExtension,
         pathExtension as NSString, nil
       )?.takeRetainedValue() {
-        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?
-          .takeRetainedValue() {
+        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
           return mimetype as String
         }
       }
@@ -210,8 +209,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     return uti as String
   }
 
-  private func createDocumentPicker(with options: DocumentPickerOptions)
-    -> UIDocumentPickerViewController {
+  private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
     if #available(iOS 14.0, *) {
       let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
       return UIDocumentPickerViewController(
