@@ -32,6 +32,7 @@ export type ButtonVariant =
   | 'default'
   | 'bordered'
   | 'plain'
+  | 'glass'
   // Apple-only
   | 'borderedProminent'
   | 'borderless'
