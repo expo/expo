@@ -85,6 +85,7 @@ android {
       cmake {
         abiFilters(*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
           "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
           "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
           "-DUSE_HERMES=${USE_HERMES}",
