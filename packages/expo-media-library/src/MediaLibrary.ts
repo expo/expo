@@ -411,6 +411,28 @@ function sortByOptionToString(sortBy: SortByValue | undefined): InternalSortByVa
   return `${sortBy} DESC`;
 }
 
+/**
+ * Parse sortBy to SortByValue[]
+ * @param sortBy - SortByValue or SortByValue[]
+ * @returns SortByValue[]
+ */
+function normalizeSortBy(input: SortByValue | SortByValue[] | undefined): SortByValue[] {
+  if (!input) return [];
+
+  // If input is an array, check if it's a SortByValue[] or [SortByKey, boolean]
+  if (Array.isArray(input)) {
+    const isTuple =
+      input.length === 2 && typeof input[0] === 'string' && typeof input[1] === 'boolean';
+    if (isTuple) {
+      return [input as [SortByKey, boolean]];
+    } else {
+      return input as SortByValue[];
+    }
+  }
+
+  return [input];
+}
+
 function dateToNumber(value?: Date | number): number | undefined {
   return value instanceof Date ? value.getTime() : value;
 }
@@ -823,7 +845,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     first: first == null ? 20 : first,
     after: getId(after),
     album: getId(album),
-    sortBy: arrayize(sortBy),
+    sortBy: normalizeSortBy(sortBy),
     mediaType: arrayize(mediaType || [MediaType.photo]),
     createdAfter: dateToNumber(createdAfter),
     createdBefore: dateToNumber(createdBefore),
