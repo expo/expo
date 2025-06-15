@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix missing CDP headers when using static frameworks.
+
 ### 💡 Others
 
 ### ⚠️ Notices
