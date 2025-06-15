@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Updated libSQL SDK to 0.9.11. ([#37442](https://github.com/expo/expo/pull/37442) by [@kudo](https://github.com/kudo))
+
 ## 15.2.12 - 2025-06-08
 
 ### 🐛 Bug fixes
