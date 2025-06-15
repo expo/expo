@@ -121,6 +121,25 @@ public final class VideoModule: Module {
       }
     }
 
+    View(VideoAirPlayButtonView.self) {
+      Events(
+        "onBeginPresentingRoutes",
+        "onEndPresentingRoutes"
+      )
+
+      Prop("tint") { (view, tint: UIColor) in
+        view.tint = tint
+      }
+
+      Prop("activeTint") { (view, activeTint: UIColor) in
+        view.activeTintColor = activeTint
+      }
+
+      Prop("prioritizeVideoDevices") { (view, prioritizeVideoDevices: Bool) in
+        view.prioritizeVideoDevices = prioritizeVideoDevices
+      }
+    }
+
     Class(VideoPlayer.self) {
       Constructor { (source: VideoSource?, useSynchronousReplace: Bool?) -> VideoPlayer in
         let useSynchronousReplace = useSynchronousReplace ?? false
@@ -280,6 +299,10 @@ public final class VideoModule: Module {
       }
       .set { player, audioTrack in
         player.audioTracks.selectAudioTrack(audioTrack: audioTrack)
+      }
+
+      Property("isExternalPlaybackActive") { player -> Bool in
+        return player.ref.isExternalPlaybackActive
       }
 
       Function("play") { player in
