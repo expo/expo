@@ -37,7 +37,8 @@ android {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
-            "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
       }
     }
   }
