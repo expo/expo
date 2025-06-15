@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- [Web] Changed web `uri` to use blob URLs instead of base64 data URLs for better performance. The `uri` property will now be a blob URL instead of a base64 data URL, while the `base64` property behavior remains unchanged.
+- [Web] Changed web `uri` to use blob URLs instead of base64 data URLs for better performance. The `uri` property will now be a blob URL instead of a base64 data URL, while the `base64` property behavior remains unchanged. ([#37447](https://github.com/expo/expo/pull/37447) by [@hirbod](https://github.com/hirbod))
 
 ### 🎉 New features
 
