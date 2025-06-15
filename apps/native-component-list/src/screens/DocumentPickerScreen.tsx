@@ -34,25 +34,29 @@ export default function DocumentPickerScreen() {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button onPress={openPicker} title="Open document picker" />
-      <TitleSwitch
-        style={{ marginVertical: 10 }}
-        value={copyToCache}
-        setValue={setCopyToCache}
-        title="Copy to cache"
-      />
-      <TitleSwitch
-        style={{ marginVertical: 10 }}
-        value={multiple}
-        setValue={setMultiple}
-        title="Pick multiple"
-      />
+      <View style={{ marginBottom: 20, marginTop: 20 }}>
+        <Button onPress={openPicker} title="Open document picker" />
+        <TitleSwitch
+          style={{ marginVertical: 10 }}
+          value={copyToCache}
+          setValue={setCopyToCache}
+          title="Copy to cache"
+        />
+        <TitleSwitch
+          style={{ marginVertical: 10 }}
+          value={multiple}
+          setValue={setMultiple}
+          title="Pick multiple"
+        />
+      </View>
+
       <FlatList
         data={pickerResult?.assets}
+        contentContainerStyle={{ padding: 20 }}
         keyExtractor={(item, index) => `${index}-${item.uri}`}
         renderItem={({ item: document }) => {
           return (
-            <View>
+            <View style={{ marginBottom: 20 }}>
               {document.name!.match(/\.(png|jpg)$/gi) ? (
                 <Image
                   source={{ uri: document.uri }}
@@ -66,6 +70,7 @@ export default function DocumentPickerScreen() {
               <Text>
                 URI: {document.uri} MimeType: {document.mimeType}
               </Text>
+              <Text>Last Modified: {document.lastModified}</Text>
             </View>
           );
         }}
