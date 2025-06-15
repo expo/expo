@@ -1,11 +1,7 @@
 'use client';
 
-import {
-  LinkingOptions,
-  NavigationAction,
-  StackRouter,
-  useNavigationBuilder,
-} from '@react-navigation/native';
+import { LinkingOptions, NavigationAction } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -18,7 +14,8 @@ import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { ImperativeApiEmitter } from './imperative-api';
-import { Screen } from './primitives';
+import { ModalComponent } from './modal/ModalComponent';
+import { ModalContextProvider } from './modal/ModalContext';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import * as SplashScreen from './views/Splash';
@@ -157,8 +154,10 @@ function ContextNavigator({
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ImperativeApiEmitter />
-            <Content />
+            <ModalContextProvider>
+              <ImperativeApiEmitter />
+              <Content />
+            </ModalContextProvider>
           </WrapperComponent>
         </ServerContext.Provider>
       </UpstreamNavigationContainer>
@@ -166,13 +165,19 @@ function ContextNavigator({
   );
 }
 
-function Content() {
-  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
-    id: INTERNAL_SLOT_NAME,
-  });
+const RootNativeStack = createNativeStackNavigator();
 
-  return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
+function Content() {
+  return (
+    <RootNativeStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootNativeStack.Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />
+      <RootNativeStack.Screen
+        name="__internal__modal"
+        component={ModalComponent}
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
+    </RootNativeStack.Navigator>
+  );
 }
 
 let onUnhandledAction: (action: NavigationAction) => void;
