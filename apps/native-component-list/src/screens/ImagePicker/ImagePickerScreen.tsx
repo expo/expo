@@ -150,6 +150,14 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       },
       { name: 'videoMaxDuration', type: 'number', values: [0, 10, 60] },
       {
+        name: 'cameraType',
+        type: 'enum',
+        values: [
+          { name: 'back', value: ImagePicker.CameraType.back },
+          { name: 'front', value: ImagePicker.CameraType.front },
+        ],
+      },
+      {
         name: 'presentationStyle',
         type: 'enum',
         platforms: ['ios'],
