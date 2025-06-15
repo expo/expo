@@ -68,7 +68,6 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
     }
 
     AsyncFunction("loadFontsAsync") {
-      DevMenuManager.shared.loadFonts()
     }
 
     AsyncFunction("saveNavigationState") { (serializedNavigationState: String) in

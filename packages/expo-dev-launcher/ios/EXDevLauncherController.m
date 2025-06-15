@@ -342,23 +342,15 @@
 
   [self _addInitModuleObserver];
 #endif
-
-  UIView *rootView;
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(onAppContentDidAppear)
-                                               name:RCTContentDidAppearNotification
-                                             object:rootView];
-
-  rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:@"main"
-                                                               initialProperties:nil
-                                                                   launchOptions:_launchOptions];
-
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
-  UIViewController *rootViewController = [self createRootViewController];
-  [self setRootView:rootView toRootViewController:rootViewController];
-  _window.rootViewController = rootViewController;
+  
+  DevLauncherViewController *swiftUIViewController = [[DevLauncherViewController alloc] init];
+  
+  _window.rootViewController = swiftUIViewController;
   [_window makeKeyAndVisible];
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self onAppContentDidAppear];
+  });
 }
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
@@ -639,21 +631,13 @@
  */
 - (void)onAppContentDidAppear
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
-
   dispatch_async(dispatch_get_main_queue(), ^{
-    #ifdef RCT_NEW_ARCH_ENABLED
-      #define EXPECTED_ROOT_VIEW RCTSurfaceView
-    #else
-      #define EXPECTED_ROOT_VIEW RCTRootContentView
-    #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
-      if (![view isKindOfClass:[EXPECTED_ROOT_VIEW class]]) {
+      if ([NSStringFromClass([view class]) containsString:@"SplashScreen"]) {
         [view removeFromSuperview];
       }
     }
-    #undef EXPECTED_ROOT_VIEW
   });
 }
 
@@ -721,7 +705,7 @@
 
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
+    NSString *appIconPath = [[resourcePath stringByAppendingPathComponent:appIconName] stringByAppendingString:@".png"];
     appIcon = [@"file://" stringByAppendingString:appIconPath];
   }
 
@@ -824,6 +808,16 @@
     }
   }
   return nil;
+}
+
+- (UIViewController *)createRootViewController
+{
+  return [[DevLauncherViewController alloc] init];
+}
+
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
+{
+  rootViewController.view = rootView;
 }
 
 @end
