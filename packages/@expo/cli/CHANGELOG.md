@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
+- Add support for `--` separator in `expo run <platform>`, `expo run:android` and `expo run:ios` commands, to allow running commands like `expo run android -d -- /path/to/my_app` ([#37301](https://github.com/expo/expo/pull/37301) by [@makl11](https://github.com/makl11))
 
 ### 🐛 Bug fixes
 

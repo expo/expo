@@ -56,7 +56,7 @@ it('runs `npx expo run android --help`', async () => {
         Run the native Android app locally
 
       Usage
-        $ npx expo run:android <dir>
+        $ npx expo run:android [Options] [--] [ProjectRoot] Default: PWD
 
       Options 
         --no-build-cache       Clear the native build cache
@@ -68,6 +68,8 @@ it('runs `npx expo run android --help`', async () => {
         -d, --device [device]  Device name to run the app on
         -p, --port <port>      Port to start the dev server on. Default: 8081
         -h, --help             Output usage information
+
+      Note: If specified, ProjectRoot must not be preceded by \`--device/-d\`. Use the \`--\` separator in that case.
     "
   `);
 });
@@ -81,7 +83,7 @@ it('runs `npx expo run ios --help`', async () => {
         Run the iOS app binary locally
 
       Usage
-        $ npx expo run:ios
+        $ npx expo run:ios [Options] [--] [ProjectRoot] Default: PWD
 
       Options
         --no-build-cache                 Clear the native derived data before building
@@ -93,6 +95,8 @@ it('runs `npx expo run ios --help`', async () => {
         -d, --device [device]            Device name or UDID to build the app on
         -p, --port <port>                Port to start the Metro bundler on. Default: 8081
         -h, --help                       Usage info
+
+      Note: If specified, ProjectRoot must not be preceded by \`--device/-d\` or \`--scheme\`. Use the \`--\` separator in that case.
 
       Build for production (unsigned) with the Release configuration:
         $ npx expo run:ios --configuration Release
