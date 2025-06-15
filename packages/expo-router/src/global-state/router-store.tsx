@@ -19,8 +19,11 @@ import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
 import { RedirectConfig } from '../getRoutesCore';
 import { defaultRouteInfo, getRouteInfoFromState, UrlObject } from './routeInfo';
-import { RequireContext } from '../types';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { RequireContext, type Href } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import { type LinkToOptions } from './routing';
+import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
 
@@ -71,6 +74,12 @@ export const store = {
   },
   get rootComponent() {
     return storeRef.current.rootComponent;
+  },
+  getStateForHref(href: Href, options?: LinkToOptions) {
+    href = resolveHref(href);
+
+    href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+    return this.linking?.getStateFromPath!(href, this.linking.config);
   },
   get linking() {
     return storeRef.current.linking;
@@ -224,8 +233,25 @@ const routeInfoSubscribe = (callback: () => void) => {
   };
 };
 
-export function useRouteInfo() {
-  return useSyncExternalStore(routeInfoSubscribe, store.getRouteInfo, store.getRouteInfo);
+export function useRouteInfo(): UrlObject {
+  const routeInfo = useSyncExternalStore(
+    routeInfoSubscribe,
+    store.getRouteInfo,
+    store.getRouteInfo
+  );
+  const { isPreview, segments, params, pathname } = usePreviewInfo();
+  if (isPreview) {
+    return {
+      pathname: pathname ?? '',
+      segments: segments ?? [],
+      unstable_globalHref: '',
+      params: params ?? {},
+      searchParams: new URLSearchParams(),
+      pathnameWithParams: pathname ?? '',
+      isIndex: false,
+    };
+  }
+  return routeInfo;
 }
 
 function getCachedRouteInfo(state: ReactNavigationState) {

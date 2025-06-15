@@ -25,6 +25,7 @@
 - Refactor sitemap file item to separate components for layout and standard route ([#36870](https://github.com/expo/expo/pull/36870) by [@Ubax](https://github.com/Ubax))
 - Collapse nested routes in Sitemap ([#36882](https://github.com/expo/expo/pull/36882) by [@Ubax](https://github.com/Ubax))
 - Update matching patterns for pathname groups and parameters ([#36961](https://github.com/expo/expo/pull/36961) by [@kitten](https://github.com/kitten))
+- Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
 
 ## 5.0.7 — 2025-05-13
 
