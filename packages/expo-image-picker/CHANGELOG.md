@@ -4,11 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- [Web] Changed web `uri` to use blob URLs instead of base64 data URLs for better performance. The `uri` property will now be a blob URL instead of a base64 data URL, while the `base64` property behavior remains unchanged.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - Prevent external applications from accessing the CropImageActivity ([#37223](https://github.com/expo/expo/pull/37223) by [@aladine](https://github.com/aladine))
+- [Web] Corrected camera capture attributes on web where front camera was using 'environment' and back camera was using 'user'. Reversed the values to ensure proper camera selection.
 
 ### 💡 Others
 
