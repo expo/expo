@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- [iOS] Accurately restore volume after interruption.
+
 ## 0.4.6 - 2025-06-04
 
 ### 🐛 Bug fixes
