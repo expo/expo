@@ -17,6 +17,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private samplingFailedForSource;
     private workletNode;
     private workletSourceNode;
+    private panner;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -30,11 +31,15 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     set playbackRate(value: number);
     get volume(): number;
     set volume(value: number);
+    get audioPan(): number;
+    set audioPan(value: number);
     get currentStatus(): AudioStatus;
     play(): void;
     pause(): void;
     replace(source: AudioSource): void;
     seekTo(seconds: number): Promise<void>;
+    /** value: -1 = full left, 0 = center, +1 = full right */
+    private setAudioPan;
     /**
      * Enable or disable audio sampling using AudioWorklet.
      * When enabling, if the worklet is already created, just reconnect the source node.

@@ -477,18 +477,19 @@ const VolumeSlider = React.memo(function VolumeSlider({
       <Slider
         value={isMutedActive ? 0 : value}
         maximumValue={1}
+        step={0.01}
         style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={(value) => {
           onValueChanged({ isMuted: value <= 0, volume: value });
-
-          if (value > 0) {
-            lastUserValue.current = value;
-          }
         }}
         onValueChange={(value) => {
           setValue(value);
+          onValueChanged({ isMuted: value <= 0, volume: value });
+          if (value > 0) {
+            lastUserValue.current = value;
+          }
         }}
       />
     </View>

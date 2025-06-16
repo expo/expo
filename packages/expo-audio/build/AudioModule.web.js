@@ -93,6 +93,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     samplingFailedForSource = false;
     workletNode = null;
     workletSourceNode = null;
+    panner = null;
     get playing() {
         return this.isPlaying;
     }
@@ -132,6 +133,12 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     set volume(value) {
         this.media.volume = value;
     }
+    get audioPan() {
+        return this.panner?.pan.value ?? 0;
+    }
+    set audioPan(value) {
+        this.setAudioPan(value);
+    }
     get currentStatus() {
         return getStatusFromMedia(this.media, this.id);
     }
@@ -170,6 +177,12 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     async seekTo(seconds) {
         this.media.currentTime = seconds;
     }
+    /** value: -1 = full left, 0 = center, +1 = full right */
+    setAudioPan(value) {
+        if (this.panner) {
+            this.panner.pan.value = Math.max(-1, Math.min(1, value));
+        }
+    }
     /**
      * Enable or disable audio sampling using AudioWorklet.
      * When enabling, if the worklet is already created, just reconnect the source node.
@@ -182,9 +195,12 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
             if (this.workletNode) {
                 if (this.workletSourceNode) {
                     try {
-                        // reconnect audio output
-                        this.workletSourceNode.connect(ctx.destination);
-                        // reconnect worklet for metering
+                        // ---- wire up panner before destination ----
+                        this.panner = ctx.createStereoPanner();
+                        this.panner.pan.value = 0;
+                        this.workletSourceNode.connect(this.panner);
+                        this.panner.connect(ctx.destination);
+                        // connect audio to worklet for metering
                         this.workletSourceNode.connect(this.workletNode);
                     }
                     catch { }
@@ -256,8 +272,11 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
                 if (!this.workletSourceNode) {
                     this.workletSourceNode = ctx.createMediaElementSource(this.media);
                 }
-                // connect audio to destination
-                this.workletSourceNode.connect(ctx.destination);
+                // ---- wire up panner before destination ----
+                this.panner = ctx.createStereoPanner();
+                this.panner.pan.value = this.audioPan;
+                this.workletSourceNode.connect(this.panner);
+                this.panner.connect(ctx.destination);
                 // connect audio to worklet for metering
                 this.workletSourceNode.connect(this.workletNode);
                 this.isAudioSamplingSupported = true;

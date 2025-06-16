@@ -119,6 +119,7 @@ export class AudioPlayerWeb
   private samplingFailedForSource: boolean = false;
   private workletNode: AudioWorkletNode | null = null;
   private workletSourceNode: MediaElementAudioSourceNode | null = null;
+  private panner: StereoPannerNode | null = null;
 
   get playing(): boolean {
     return this.isPlaying;
@@ -158,6 +159,12 @@ export class AudioPlayerWeb
   }
   set volume(value: number) {
     this.media.volume = value;
+  }
+  get audioPan(): number {
+    return this.panner?.pan.value ?? 0;
+  }
+  set audioPan(value: number) {
+    this.setAudioPan(value);
   }
   get currentStatus(): AudioStatus {
     return getStatusFromMedia(this.media, this.id);
@@ -199,6 +206,13 @@ export class AudioPlayerWeb
     this.media.currentTime = seconds;
   }
 
+  /** value: -1 = full left, 0 = center, +1 = full right */
+  private setAudioPan(value: number): void {
+    if (this.panner) {
+      this.panner.pan.value = Math.max(-1, Math.min(1, value));
+    }
+  }
+
   /**
    * Enable or disable audio sampling using AudioWorklet.
    * When enabling, if the worklet is already created, just reconnect the source node.
@@ -211,9 +225,12 @@ export class AudioPlayerWeb
       if (this.workletNode) {
         if (this.workletSourceNode) {
           try {
-            // reconnect audio output
-            this.workletSourceNode.connect(ctx.destination);
-            // reconnect worklet for metering
+            // ---- wire up panner before destination ----
+            this.panner = ctx.createStereoPanner();
+            this.panner.pan.value = 0;
+            this.workletSourceNode.connect(this.panner);
+            this.panner.connect(ctx.destination);
+            // connect audio to worklet for metering
             this.workletSourceNode.connect(this.workletNode);
           } catch {}
         }
@@ -284,8 +301,11 @@ export class AudioPlayerWeb
         if (!this.workletSourceNode) {
           this.workletSourceNode = ctx.createMediaElementSource(this.media);
         }
-        // connect audio to destination
-        this.workletSourceNode.connect(ctx.destination);
+        // ---- wire up panner before destination ----
+        this.panner = ctx.createStereoPanner();
+        this.panner.pan.value = this.audioPan;
+        this.workletSourceNode.connect(this.panner);
+        this.panner.connect(ctx.destination);
         // connect audio to worklet for metering
         this.workletSourceNode.connect(this.workletNode);
 
