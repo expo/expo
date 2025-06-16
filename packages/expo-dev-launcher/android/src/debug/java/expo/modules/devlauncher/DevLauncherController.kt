@@ -300,6 +300,9 @@ class DevLauncherController private constructor() :
   }
 
   private fun setupDevMenu(launchUrl: String) {
+    devMenuManager.setGoToHomeAction {
+      navigateToLauncher()
+    }
     devMenuManager.currentManifest = manifest
     devMenuManager.currentManifestURL = manifestURL.toString()
     devMenuManager.launchUrl = launchUrl

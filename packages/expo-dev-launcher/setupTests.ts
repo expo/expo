@@ -30,6 +30,17 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
   };
 });
 
+jest.mock('react-native/Libraries/Components/RefreshControl/RefreshControl', () => {
+  const React = require('react');
+  function MockedRefreshControl(props) {
+    return React.createElement('MockedRefreshControl', props);
+  }
+  return {
+    __esModule: true,
+    default: MockedRefreshControl,
+  };
+});
+
 jest.mock('./bundle/native-modules/DevLauncherInternal');
 jest.mock('./bundle/native-modules/DevLauncherAuth');
 jest.mock('./bundle/native-modules/DevMenuPreferences');

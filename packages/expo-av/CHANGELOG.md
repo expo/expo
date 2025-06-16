@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.1.6 - 2025-06-10
+
+_This version does not introduce any user-facing changes._
+
 ## 15.1.5 - 2025-06-04
 
 ### 💡 Others

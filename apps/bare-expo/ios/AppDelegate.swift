@@ -1,4 +1,5 @@
 import Expo
+import Network
 import React
 import ReactAppDependencyProvider
 
@@ -16,6 +17,9 @@ public class AppDelegate: ExpoAppDelegate {
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    // Fixes networking related crashes on simulator in iOS 26 beta 1
+    nw_tls_create_options()
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory

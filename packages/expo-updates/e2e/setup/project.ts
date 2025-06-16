@@ -325,6 +325,8 @@ async function preparePackageJson(
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
+        'tvos:build':
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build',
         postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
@@ -384,8 +386,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.79.1-0',
-        '@react-native-tvos/config-tv': '^0.1.1',
+        'react-native': 'npm:react-native-tvos@0.80.0-0rc5',
+        '@react-native-tvos/config-tv': '^0.1.3',
       },
       expo: {
         install: {

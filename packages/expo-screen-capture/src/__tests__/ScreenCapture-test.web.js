@@ -32,10 +32,10 @@ describe('Test key functionality', () => {
   });
 
   it('throws for preventScreenCapture on web platform', async () => {
-    await expect(ScreenCapture.preventScreenCaptureAsync).rejects.toThrowError('not available');
+    await expect(ScreenCapture.preventScreenCaptureAsync).rejects.toThrow('not available');
   });
 
   it('throws for allowScreenCapture on web platform', async () => {
-    await expect(ScreenCapture.allowScreenCaptureAsync).rejects.toThrowError('not available');
+    await expect(ScreenCapture.allowScreenCaptureAsync).rejects.toThrow('not available');
   });
 });

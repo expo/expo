@@ -140,7 +140,7 @@ describe(DevToolsPluginMiddleware, () => {
     );
     await delayAsync(0);
     expect(response.statusCode).toBe(200);
-    expect(response.setHeader).toBeCalledWith('Content-Type', 'image/png');
+    expect(response.setHeader).toHaveBeenCalledWith('Content-Type', 'image/png');
   });
 
   it('handleRequestAsync should return 404 if plugin is not found', async () => {

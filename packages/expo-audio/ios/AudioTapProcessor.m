@@ -77,10 +77,10 @@ typedef struct AVAudioTapProcessorContext {
   callbacks.init = tapInit;
   callbacks.finalize = tapFinalize;
   callbacks.prepare = tapPrepare;
-  callbacks.unprepare = tapUnprepare;
+  callbacks.unprepare = nil;
   callbacks.process = tapProcess;
   
-  OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &_audioProcessingTap);
+  OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PostEffects, &_audioProcessingTap);
   if (status == noErr) {
     audioMixInputParameters.audioTapProcessor = _audioProcessingTap;
     audioMix.inputParameters = @[audioMixInputParameters];
@@ -180,14 +180,6 @@ void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioS
   
   if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved) {
     context->isNonInterleaved = true;
-  }
-}
-
-void tapUnprepare(MTAudioProcessingTapRef tap) {
-  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  if (context) {
-    context->isValid = false;
-    context->self = NULL;
   }
 }
 
