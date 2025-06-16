@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - [Android] Improve time to retrieve the Expo module. ([#37082](https://github.com/expo/expo/pull/37082) by [@lukmccall](https://github.com/lukmccall))

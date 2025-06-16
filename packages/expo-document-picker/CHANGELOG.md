@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- [iOS][Android] add lastModified for iOS and Android to align with web ([#37429](https://github.com/expo/expo/pull/37429) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
+
+- [Android] avoid hard crash in case of an exception ([#37110](https://github.com/expo/expo/pull/37110) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

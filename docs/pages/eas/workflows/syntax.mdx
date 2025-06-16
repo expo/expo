@@ -658,7 +658,7 @@ This job outputs the following properties:
 
 #### `maestro`
 
-Runs [Maestro](https://maestro.mobile.dev/) tests on a build. See [Maestro job documentation](/eas/workflows/pre-packaged-jobs#maestro) for detailed information and examples.
+Runs [Maestro](https://maestro.dev/) tests on a build. See [Maestro job documentation](/eas/workflows/pre-packaged-jobs#maestro) for detailed information and examples.
 
 > **important** Maestro tests are experimental and may experience flakiness.
 
@@ -679,12 +679,13 @@ jobs:
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
-      android_system_image_package: string # optional. Android emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`.
+      android_system_image_package: string # optional. Android emulator system image package to use.
+      device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
 ```
 
 #### `maestro-cloud`
 
-Runs [Maestro](https://maestro.mobile.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
+Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
 
 > **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
 
@@ -725,6 +726,32 @@ jobs:
       webhook_url: string # required
       message: string # required if payload is not provided
       payload: object # required if message is not provided
+```
+
+#### `require-approval`
+
+Requires approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job. See [Require Approval job documentation](/eas/workflows/pre-packaged-jobs#require-approval) for detailed information and examples.
+
+```yaml
+jobs:
+  confirm:
+    # @info #
+    type: require-approval
+    # @end #
+```
+
+#### `doc`
+
+Displays a Markdown section in the workflow logs. See [Doc job documentation](/eas/workflows/pre-packaged-jobs#doc) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: doc
+    params:
+      md: string
+    # @end #
 ```
 
 ## Custom jobs

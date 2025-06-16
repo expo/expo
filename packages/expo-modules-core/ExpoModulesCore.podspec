@@ -65,6 +65,7 @@ Pod::Spec.new do |s|
     header_search_paths.concat([
       # Transitive dependency of React-Core
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectorcdp/jsinspector_moderncdp.framework/Headers"'
     ])
   end
   # Swift/Objective-C compatibility

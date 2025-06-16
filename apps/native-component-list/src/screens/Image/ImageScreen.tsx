@@ -21,6 +21,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Animation resuming',
+    route: 'image/animation-resuming',
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimationResuming'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},

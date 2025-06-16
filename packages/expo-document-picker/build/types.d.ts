@@ -46,9 +46,12 @@ export type DocumentPickerAsset = {
      */
     mimeType?: string;
     /**
-     * Timestamp of last document modification.
+     * Timestamp of last document modification. [Web API specs](https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified)
+     * The lastModified provides the last modified date of the file as the number
+     * of milliseconds since the Unix epoch (January 1, 1970 at midnight). Files
+     * without a known last modified date return the current date.
      */
-    lastModified?: number;
+    lastModified: number;
     /**
      * `File` object for the parity with web File API.
      * @platform web
