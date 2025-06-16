@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [iOS] Accurately restore volume after interruption. ([#37444](https://github.com/expo/expo/pull/37444) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 0.4.6 — 2025-06-04
 
 ### 🐛 Bug fixes
