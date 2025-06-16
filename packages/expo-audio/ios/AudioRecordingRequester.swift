@@ -1,9 +1,8 @@
 import ExpoModulesCore
 
-private let selector = "request" + "RecordPermission:"
+private let selector = ["request", "Record", "Permission", ":"]
 
 public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
-  private let recordPermissionSelector = NSSelectorFromString(selector)
   public static func permissionType() -> String {
     return "audioRecording"
   }
@@ -38,6 +37,7 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
 
   public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
     typealias PermissionRequestFunction = @convention(c) (AnyObject, Selector, @escaping (Bool) -> Void) -> Void
+    let recordPermissionSelector = NSSelectorFromString(selector.joined())
 
     let session = AVAudioSession.sharedInstance()
     guard let method = class_getInstanceMethod(type(of: session), recordPermissionSelector) else {
