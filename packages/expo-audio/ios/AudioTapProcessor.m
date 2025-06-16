@@ -80,7 +80,7 @@ typedef struct AVAudioTapProcessorContext {
   callbacks.unprepare = nil;
   callbacks.process = tapProcess;
   
-  OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &_audioProcessingTap);
+  OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PostEffects, &_audioProcessingTap);
   if (status == noErr) {
     audioMixInputParameters.audioTapProcessor = _audioProcessingTap;
     audioMix.inputParameters = @[audioMixInputParameters];
