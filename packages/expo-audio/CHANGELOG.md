@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed useAudioRecorderState not reacting to interval change ([#34864](https://github.com/expo/expo/pull/34864) by [@davidlukerice](https://github.com/davidlukerice))
+
 ### 💡 Others
 
 ## 0.3.5 — 2025-02-19
