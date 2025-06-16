@@ -10,6 +10,7 @@
 
 - Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix unused recording permission causing app store rejection. ([#37457](https://github.com/expo/expo/pull/37457) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
