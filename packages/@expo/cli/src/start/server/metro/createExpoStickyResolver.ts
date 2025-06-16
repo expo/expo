@@ -9,9 +9,12 @@ const debug = require('debug')('expo:start:server:metro:sticky-resolver') as typ
 const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
 type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
+const escapeDependencyName = (dependency: string) =>
+  dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
+
 /** Converts a list of module names to a regex that may either match bare module names or sub-modules of modules */
 const dependenciesToRegex = (dependencies: string[]) =>
-  new RegExp(`^(${dependencies.join('|')})($|/.*)`);
+  new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
 
 /** Creates a function to load a dependency of the `expo` package */
 const createExpoDependencyLoader = <T>(request: string) => {
