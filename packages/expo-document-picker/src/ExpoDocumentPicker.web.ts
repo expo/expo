@@ -6,7 +6,7 @@ export default {
   async getDocumentAsync({
     type = '*/*',
     multiple = false,
-    base64 = true,
+    base64 = false,
   }: DocumentPickerOptions): Promise<DocumentPickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
@@ -59,7 +59,7 @@ function readFileAsync(targetFile: File, base64: boolean = true): Promise<Docume
     const mimeType = targetFile.type;
     if (!base64) {
       resolve({
-        uri: targetFile.webkitRelativePath,
+        uri: URL.createObjectURL(targetFile),
         mimeType,
         name: targetFile.name,
         lastModified: targetFile.lastModified,
@@ -73,9 +73,10 @@ function readFileAsync(targetFile: File, base64: boolean = true): Promise<Docume
       reject(new Error(`Failed to read the selected media because the operation failed.`));
     };
     reader.onload = ({ target }) => {
-      const uri = (target as any).result;
+      const base64 = (target as any).result;
       resolve({
-        uri,
+        uri: URL.createObjectURL(targetFile),
+        base64,
         mimeType,
         name: targetFile.name,
         lastModified: targetFile.lastModified,
