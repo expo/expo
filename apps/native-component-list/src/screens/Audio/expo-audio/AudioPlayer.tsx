@@ -16,10 +16,13 @@ const remoteSource =
 
 export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const [currentSource, setCurrentSource] = React.useState(source);
-  const player = useAudioPlayer(source, 4000);
+  const player = useAudioPlayer(source);
   const status = useAudioPlayerStatus(player);
-  const setVolume = (volume: number, audioPan?: number) => {
+  const setVolume = (volume: number) => {
     player.volume = volume;
+  };
+
+  const setAudioPan = (audioPan: number) => {
     player.audioPan = audioPan;
   };
 
@@ -42,8 +45,6 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     setCurrentSource(source);
   };
 
-  console.log('render', status.currentTime);
-
   return (
     <Player
       {...status}
@@ -64,6 +65,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
       setRate={setRate}
       setIsMuted={setIsMuted}
       setVolume={setVolume}
+      setAudioPan={setAudioPan}
       showJsiAudioBar
     />
   );

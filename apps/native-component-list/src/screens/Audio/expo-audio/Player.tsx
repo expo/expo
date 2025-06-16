@@ -44,8 +44,8 @@ interface Props {
   setIsMuted: (isMuted: boolean) => void;
   setPosition: (position: number) => Promise<any>;
   setIsLooping: (isLooping: boolean) => void;
-  setVolume: (volume: number, audioPan?: number) => void;
-
+  setVolume: (volume: number) => void;
+  setAudioPan: (audioPan: number) => void;
   // Status
   isLoaded: boolean;
   loop: boolean;
@@ -226,9 +226,9 @@ export default function Player(props: Props) {
         <PanSlider
           audioPan={props.audioPan}
           disabled={!props.isLoaded}
-          onValueChanged={(value) => {
-            props.setVolume(props.volume, value);
-          }}
+          onValueChanged={useCallback((value) => {
+            props.setAudioPan(value);
+          }, [])}
         />
       </View>
 
@@ -368,7 +368,7 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
   );
 }
 
-function PanSlider({
+const PanSlider = React.memo(function PanSlider({
   audioPan,
   color = Colors.tintColor,
   disabled,
@@ -401,17 +401,19 @@ function PanSlider({
         minimumValue={-1}
         style={{ height, flex: 1 }}
         thumbTintColor={color}
+        step={0.01}
         minimumTrackTintColor={color}
         onSlidingComplete={(value) => {
           onValueChanged(value);
         }}
         onValueChange={(val) => {
           setValue(val);
+          onValueChanged(val);
         }}
       />
     </View>
   );
-}
+});
 
 const VolumeSlider = React.memo(function VolumeSlider({
   volume,

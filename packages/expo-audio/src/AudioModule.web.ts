@@ -104,6 +104,13 @@ export class AudioPlayerWeb
     this.src = source;
     this.interval = interval;
     this.media = this._createMediaElement();
+    // initial panner setup for non-sampling path
+    const ctx = AudioPlayerWeb.getAudioContext();
+    this.panner = ctx.createStereoPanner();
+    this.panner.pan.value = 0;
+    this.workletSourceNode = ctx.createMediaElementSource(this.media);
+    this.workletSourceNode.connect(this.panner);
+    this.panner.connect(ctx.destination);
   }
 
   id: number = nextId();
@@ -164,7 +171,7 @@ export class AudioPlayerWeb
     return this.panner?.pan.value ?? 0;
   }
   set audioPan(value: number) {
-    this.setAudioPan(value);
+    this.setAudioPan(value ?? 0);
   }
   get currentStatus(): AudioStatus {
     return getStatusFromMedia(this.media, this.id);
@@ -225,7 +232,7 @@ export class AudioPlayerWeb
       if (this.workletNode) {
         if (this.workletSourceNode) {
           try {
-            // ---- wire up panner before destination ----
+            // wire up panner before destination
             this.panner = ctx.createStereoPanner();
             this.panner.pan.value = 0;
             this.workletSourceNode.connect(this.panner);
@@ -239,46 +246,47 @@ export class AudioPlayerWeb
       }
       if (this.samplingFailedForSource) return;
       try {
-        // inline the processor as a Blob so it runs in AudioWorkletGlobalScope
+        // had to inline the processor as a Blob because I couldn't require it with metro
         const processorCode = `
-  (function() {
-    try {
-      class MeterProcessor extends AudioWorkletProcessor {
-        constructor() {
-          super();
-          this._sum = 0;
-          this._count = 0;
-          this._lastRms = 0;
-        }
-        process(inputs) {
-          const input = inputs[0] && inputs[0][0];
-          if (input) {
-            for (let i = 0; i < input.length; i++) {
-              const s = input[i];
-              this._sum += s * s;
-              this._count++;
-            }
-            const FRAME_BATCH = Math.floor(sampleRate / 30); // ~30fps
-            if (this._count >= FRAME_BATCH) {
-              const rms = Math.sqrt(this._sum / this._count);
-              const THRESH_RMS = 0.0005;
-              if (Math.abs(rms - this._lastRms) > THRESH_RMS) {
-                this.port.postMessage(rms);
-                this._lastRms = rms;
+          (function() {
+            try {
+              class MeterProcessor extends AudioWorkletProcessor {
+                constructor() {
+                  super();
+                  this._sum = 0;
+                  this._count = 0;
+                  this._lastRms = 0;
+                }
+                process(inputs) {
+                  const input = inputs[0] && inputs[0][0];
+                  if (input) {
+                    for (let i = 0; i < input.length; i++) {
+                      const s = input[i];
+                      this._sum += s * s;
+                      this._count++;
+                    }
+                    const FRAME_BATCH = Math.floor(sampleRate / 30); // ~30fps
+                    if (this._count >= FRAME_BATCH) {
+                      const rms = Math.sqrt(this._sum / this._count);
+                      const THRESH_RMS = 0.0005;
+                      if (Math.abs(rms - this._lastRms) > THRESH_RMS) {
+                        this.port.postMessage(rms);
+                        this._lastRms = rms;
+                      }
+                      this._sum = 0;
+                      this._count = 0;
+                    }
+                  }
+                  return true;
+                }
               }
-              this._sum = 0;
-              this._count = 0;
+              registerProcessor('meter-processor', MeterProcessor);
+            } catch (e) {
+              // ignore already registered
             }
-          }
-          return true;
-        }
-      }
-      registerProcessor('meter-processor', MeterProcessor);
-    } catch (e) {
-      // ignore already registered
-    }
-  })();
-`;
+          })();
+        `;
+
         const blob = new Blob([processorCode], { type: 'application/javascript' });
         const blobUrl = URL.createObjectURL(blob);
         console.debug('AudioWorklet: loading inline worklet from Blob URL', blobUrl);
@@ -301,7 +309,7 @@ export class AudioPlayerWeb
         if (!this.workletSourceNode) {
           this.workletSourceNode = ctx.createMediaElementSource(this.media);
         }
-        // ---- wire up panner before destination ----
+        // wire up panner before destination
         this.panner = ctx.createStereoPanner();
         this.panner.pan.value = this.audioPan;
         this.workletSourceNode.connect(this.panner);
