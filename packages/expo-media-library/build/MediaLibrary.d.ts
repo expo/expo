@@ -241,6 +241,11 @@ export type AssetsOptions = {
      */
     mediaType?: MediaTypeValue[] | MediaTypeValue;
     /**
+     * An array of [MediaSubtype](#mediasubtype)s or a single `MediaSubtype`.
+     * @platform ios
+     */
+    mediaSubtypes?: MediaSubtype[] | MediaSubtype;
+    /**
      * `Date` object or Unix timestamp in milliseconds limiting returned assets only to those that
      * were created after this date.
      */
