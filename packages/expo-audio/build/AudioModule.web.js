@@ -80,13 +80,6 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
         this.interval = interval;
         this.media = this._createMediaElement();
-        // initial panner setup for non-sampling path
-        const ctx = AudioPlayerWeb.getAudioContext();
-        this.panner = ctx.createStereoPanner();
-        this.panner.pan.value = 0;
-        this.workletSourceNode = ctx.createMediaElementSource(this.media);
-        this.workletSourceNode.connect(this.panner);
-        this.panner.connect(ctx.destination);
     }
     id = nextId();
     isAudioSamplingSupported = true;
