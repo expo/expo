@@ -157,7 +157,7 @@ async function readFileAsBase64(file) {
                 return;
             }
             // Remove the data URL prefix to get just the base64 data
-            resolve(result.substring(result.indexOf(',') + 1));
+            resolve(result.split(',')[1]);
         };
         reader.readAsDataURL(file);
     });
