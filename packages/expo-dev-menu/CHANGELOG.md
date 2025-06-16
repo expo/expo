@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix Fast Refresh toggled off by default on Android. ([#37132](https://github.com/expo/expo/pull/37132) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
+- [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
