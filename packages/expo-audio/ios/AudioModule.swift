@@ -8,6 +8,7 @@ public class AudioModule: Module {
   private var shouldPlayInBackground = false
   private var interruptionMode: InterruptionMode = .mixWithOthers
   private var interruptedPlayers = Set<String>()
+  private var playerVolumes = [String: Float]()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -309,12 +310,14 @@ public class AudioModule: Module {
 
   private func handleInterruptionBegan() {
     interruptedPlayers.removeAll()
+    playerVolumes.removeAll()
 
     AudioComponentRegistry.shared.allPlayers.values.forEach { player in
       if player.isPlaying {
         interruptedPlayers.insert(player.id)
         switch interruptionMode {
         case .duckOthers:
+          playerVolumes[player.id] = player.ref.volume
           player.ref.volume *= 0.5
         case .doNotMix, .mixWithOthers:
           player.ref.pause()
@@ -362,7 +365,9 @@ public class AudioModule: Module {
       if interruptedPlayers.contains(player.id) {
         switch interruptionMode {
         case .duckOthers:
-          player.ref.volume *= 2.0
+          if let originalVolume = playerVolumes[player.id] {
+            player.ref.volume = originalVolume
+          }
         case .doNotMix, .mixWithOthers:
           player.ref.play()
         }
@@ -378,6 +383,7 @@ public class AudioModule: Module {
 #endif
 
     interruptedPlayers.removeAll()
+    playerVolumes.removeAll()
   }
 
   private func pauseAllPlayers() {

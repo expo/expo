@@ -14,24 +14,31 @@ export default function DocumentPickerScreen() {
     React.useState<DocumentPicker.DocumentPickerResult | null>(null);
 
   const openPicker = async () => {
-    const time = Date.now();
-    const result = await DocumentPicker.getDocumentAsync({
-      copyToCacheDirectory: copyToCache,
-      multiple,
-      base64,
-    });
-    console.log(`Duration: ${Date.now() - time}ms`);
-    console.log(`Results:`, result);
-    if (!result.canceled) {
-      setPickerResult(result);
-    } else {
+    try {
+      const time = Date.now();
+      const result = await DocumentPicker.getDocumentAsync({
+        copyToCacheDirectory: copyToCache,
+        multiple,
+        base64,
+      });
+      console.log(`Duration: ${Date.now() - time}ms`);
+      console.log(`Results:`, result);
+      if (!result.canceled) {
+        setPickerResult(result);
+      } else {
+        setTimeout(() => {
+          if (Platform.OS === 'web') {
+            alert('Cancelled');
+          } else {
+            Alert.alert('Cancelled');
+          }
+        }, 100);
+      }
+    } catch (err) {
+      console.error('Error picking document:', err);
       setTimeout(() => {
-        if (Platform.OS === 'web') {
-          alert('Cancelled');
-        } else {
-          Alert.alert('Cancelled');
-        }
-      }, 100);
+        Alert.alert('error', `Error picking document: ${err}`);
+      }, 150);
     }
   };
 

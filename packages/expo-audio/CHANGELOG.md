@@ -13,8 +13,11 @@
 - Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS]: Fix changing pitch algorithm stops the playback if sampling is enabled ([#37320](https://github.com/expo/expo/pull/37320) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Improve audio tap memory safety and cleanup ([#37174](https://github.com/expo/expo/pull/37174) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix unused recording permission causing app store rejection. ([#37457](https://github.com/expo/expo/pull/37457) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- [iOS] Accurately restore volume after interruption. ([#37444](https://github.com/expo/expo/pull/37444) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.4.6 - 2025-06-04
 
