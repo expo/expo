@@ -3,17 +3,20 @@ package expo.modules.devmenu.compose
 import androidx.compose.runtime.mutableStateOf
 
 class DevMenuViewModel(
-  appInfo: DevMenuState.AppInfo,
+  appInfo: DevMenuState.AppInfo
 ) {
-  private val _state = mutableStateOf(DevMenuState(
-    appInfo = appInfo
-  ))
+  private val _state = mutableStateOf(
+    DevMenuState(
+      appInfo = appInfo
+    )
+  )
 
   val state
     get() = _state.value
 
   fun onAction(action: DevMenuAction) {
     when (action) {
+      DevMenuAction.Open -> TODO()
       DevMenuAction.Reload -> TODO()
       DevMenuAction.GoHome -> TODO()
       DevMenuAction.TogglePerformanceMonitor -> TODO()

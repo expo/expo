@@ -31,7 +31,7 @@ import expo.modules.devmenu.compose.ui.Warning
 @Composable
 fun DevMenuContent(
   appInfo: DevMenuState.AppInfo,
-  onAction: DevMenuActionHandler = {},
+  onAction: DevMenuActionHandler = {}
 ) {
   Column {
     BundlerInfo(
