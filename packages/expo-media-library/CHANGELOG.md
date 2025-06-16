@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- [Android] Add granularPermissions option to config plugin. ([#37036](https://github.com/expo/expo/pull/37036) by [@maykonmichel](https://github.com/maykonmichel))
+
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
