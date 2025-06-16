@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { AudioPlayer } from 'expo-audio';
 import { AVMetadata } from 'expo-av';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   GestureResponderEvent,
   Platform,
@@ -15,18 +16,19 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { JsiAudioBar } from './JsiAudioBar';
 import Colors from '../../../constants/Colors';
 
 interface Props {
   header?: React.ReactElement;
   extraButtons?: (
     | {
-        iconName: string;
-        title: string;
-        onPress: (event: GestureResponderEvent) => void;
-        active: boolean;
-        disable?: boolean;
-      }
+      iconName: string;
+      title: string;
+      onPress: (event: GestureResponderEvent) => void;
+      active: boolean;
+      disable?: boolean;
+    }
     | (() => React.ReactNode)
   )[];
   extraIndicator?: React.ReactElement;
@@ -56,6 +58,8 @@ interface Props {
   playing: boolean;
   mute: boolean;
   metadata?: AVMetadata;
+  showJsiAudioBar?: boolean;
+  player: AudioPlayer;
 
   // Error
   errorMessage?: string;
@@ -200,18 +204,22 @@ export default function Player(props: Props) {
 
       <Text>{props.metadata?.title ?? ''}</Text>
 
-      <View style={styles.container}>{props.extraIndicator}</View>
+      {props.showJsiAudioBar && (
+        <View style={styles.container}>
+          <JsiAudioBar isPlaying={props.playing} player={props.player} />
+        </View>
+      )}
 
       <View style={styles.container}>
         <VolumeSlider
           isMuted={props.mute}
           disabled={!props.isLoaded}
-          style={{ width: undefined, flex: 1 }}
+          style={useMemo(() => ({ width: undefined, flex: 1 }), [])}
           volume={props.volume}
-          onValueChanged={({ isMuted, volume }) => {
+          onValueChanged={useCallback(({ isMuted, volume }) => {
             props.setIsMuted(isMuted);
             props.setVolume(volume);
-          }}
+          }, [])}
         />
       </View>
       <View style={styles.container}>
@@ -405,7 +413,7 @@ function PanSlider({
   );
 }
 
-function VolumeSlider({
+const VolumeSlider = React.memo(function VolumeSlider({
   volume,
   isMuted,
   disabled,
@@ -422,6 +430,7 @@ function VolumeSlider({
 }) {
   const [value, setValue] = React.useState(volume);
   const lastUserValue = React.useRef(volume);
+  console.log('VolumeSlider', volume, isMuted);
 
   React.useEffect(() => {
     if (!isMuted && lastUserValue.current !== value) {
@@ -484,7 +493,7 @@ function VolumeSlider({
       />
     </View>
   );
-}
+});
 
 const _formatTime = (duration: number) => {
   const paddedSecs = _leftPad(`${Math.floor(duration % 60)}`, '0', 2);

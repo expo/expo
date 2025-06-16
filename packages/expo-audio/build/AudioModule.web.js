@@ -1,5 +1,5 @@
 import { PermissionStatus } from 'expo-modules-core';
-import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
+import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
 import resolveAssetSource from './utils/resolveAssetSource';
 const nextId = (() => {
@@ -21,7 +21,6 @@ async function getPermissionWithQueryAsync(name) {
         }
     }
     catch {
-        // Firefox - TypeError: 'microphone' (value of 'name' member of PermissionDescriptor) is not a valid value for enumeration PermissionName.
         return PermissionStatus.UNDETERMINED;
     }
 }
@@ -29,13 +28,7 @@ function getUserMedia(constraints) {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         return navigator.mediaDevices.getUserMedia(constraints);
     }
-    // Some browsers partially implement mediaDevices. We can't just assign an object
-    // with getUserMedia as it would overwrite existing properties.
-    // Here, we will just add the getUserMedia property if it's missing.
-    // First get ahold of the legacy getUserMedia, if present
-    const getUserMedia = 
-    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    navigator.getUserMedia ||
+    const getUserMediaFn = navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
         function () {
@@ -45,10 +38,8 @@ function getUserMedia(constraints) {
             throw error;
         };
     return new Promise((resolve, reject) => {
-        // TODO(@kitten): The types indicates that this is incorrect.
-        // Please check whether this is correct!
-        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
-        getUserMedia.call(navigator, constraints, resolve, reject);
+        // @ts-expect-error: legacy callback signature
+        getUserMediaFn.call(navigator, constraints, resolve, reject);
     });
 }
 function getStatusFromMedia(media, id) {
@@ -56,7 +47,7 @@ function getStatusFromMedia(media, id) {
         !media.paused &&
         !media.ended &&
         media.readyState > 2);
-    const status = {
+    return {
         id,
         isLoaded: true,
         duration: media.duration,
@@ -72,9 +63,18 @@ function getStatusFromMedia(media, id) {
         mute: media.muted,
         loop: media.loop,
     };
-    return status;
 }
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
+    // Reuse a single AudioContext for all instances to avoid context leaks
+    static sharedAudioContext = null;
+    static getAudioContext() {
+        if (!AudioPlayerWeb.sharedAudioContext) {
+            AudioPlayerWeb.sharedAudioContext = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            console.debug('Created new AudioContext');
+        }
+        return AudioPlayerWeb.sharedAudioContext;
+    }
     constructor(source, interval) {
         super();
         this.src = source;
@@ -82,15 +82,17 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media = this._createMediaElement();
     }
     id = nextId();
-    isAudioSamplingSupported = false;
+    isAudioSamplingSupported = true;
     isBuffering = false;
     shouldCorrectPitch = false;
     src = null;
     media;
-    // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
-    interval = 100;
+    interval = 500;
     isPlaying = false;
     loaded = false;
+    samplingFailedForSource = false;
+    workletNode = null;
+    workletSourceNode = null;
     get playing() {
         return this.isPlaying;
     }
@@ -134,23 +136,166 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         return getStatusFromMedia(this.media, this.id);
     }
     play() {
+        console.log('play', this.interval);
+        const ctx = AudioPlayerWeb.getAudioContext();
+        if (ctx.state === 'suspended')
+            ctx.resume();
         this.media.play();
         this.isPlaying = true;
+        // reconnect meter branch
+        if (this.workletNode && this.workletSourceNode) {
+            try {
+                this.workletSourceNode.connect(this.workletNode);
+            }
+            catch { }
+        }
     }
     pause() {
         this.media.pause();
         this.isPlaying = false;
+        // disconnect only from worklet to stop metering, keep audio output connected
+        if (this.workletSourceNode && this.workletNode) {
+            try {
+                this.workletSourceNode.disconnect(this.workletNode);
+            }
+            catch { }
+        }
     }
     replace(source) {
+        this.cleanupSampling(false);
+        this.samplingFailedForSource = false;
         this.src = source;
         this.media = this._createMediaElement();
     }
     async seekTo(seconds) {
         this.media.currentTime = seconds;
     }
-    // Not supported on web
-    setAudioSamplingEnabled(enabled) {
-        this.isAudioSamplingSupported = false;
+    /**
+     * Enable or disable audio sampling using AudioWorklet.
+     * When enabling, if the worklet is already created, just reconnect the source node.
+     * When disabling, only disconnect the source node, keeping the worklet alive.
+     */
+    async setAudioSamplingEnabled(enabled) {
+        const ctx = AudioPlayerWeb.getAudioContext();
+        if (enabled) {
+            // If worklet already created, just reconnect source and return
+            if (this.workletNode) {
+                if (this.workletSourceNode) {
+                    try {
+                        // reconnect audio output
+                        this.workletSourceNode.connect(ctx.destination);
+                        // reconnect worklet for metering
+                        this.workletSourceNode.connect(this.workletNode);
+                    }
+                    catch { }
+                }
+                this.isAudioSamplingSupported = true;
+                return;
+            }
+            if (this.samplingFailedForSource)
+                return;
+            try {
+                // inline the processor as a Blob so it runs in AudioWorkletGlobalScope
+                const processorCode = `
+  (function() {
+    try {
+      class MeterProcessor extends AudioWorkletProcessor {
+        constructor() {
+          super();
+          this._sum = 0;
+          this._count = 0;
+          this._lastRms = 0;
+        }
+        process(inputs) {
+          const input = inputs[0] && inputs[0][0];
+          if (input) {
+            for (let i = 0; i < input.length; i++) {
+              const s = input[i];
+              this._sum += s * s;
+              this._count++;
+            }
+            const FRAME_BATCH = Math.floor(sampleRate / 30); // ~30fps
+            if (this._count >= FRAME_BATCH) {
+              const rms = Math.sqrt(this._sum / this._count);
+              const THRESH_RMS = 0.0005;
+              if (Math.abs(rms - this._lastRms) > THRESH_RMS) {
+                this.port.postMessage(rms);
+                this._lastRms = rms;
+              }
+              this._sum = 0;
+              this._count = 0;
+            }
+          }
+          return true;
+        }
+      }
+      registerProcessor('meter-processor', MeterProcessor);
+    } catch (e) {
+      // ignore already registered
+    }
+  })();
+`;
+                const blob = new Blob([processorCode], { type: 'application/javascript' });
+                const blobUrl = URL.createObjectURL(blob);
+                console.debug('AudioWorklet: loading inline worklet from Blob URL', blobUrl);
+                await ctx.audioWorklet.addModule(blobUrl);
+                console.debug('AudioWorklet: loaded inline worklet');
+                // instantiate & wire up
+                if (!this.workletNode) {
+                    this.workletNode = new AudioWorkletNode(ctx, 'meter-processor');
+                    this.workletNode.port.onmessage = (e) => {
+                        const rms = e.data;
+                        const status = getStatusFromMedia(this.media, this.id);
+                        this.emit(AUDIO_SAMPLE_UPDATE, {
+                            ...status,
+                            channels: [{ frames: [rms] }],
+                            timestamp: this.media.currentTime,
+                        });
+                    };
+                }
+                if (!this.workletSourceNode) {
+                    this.workletSourceNode = ctx.createMediaElementSource(this.media);
+                }
+                // connect audio to destination
+                this.workletSourceNode.connect(ctx.destination);
+                // connect audio to worklet for metering
+                this.workletSourceNode.connect(this.workletNode);
+                this.isAudioSamplingSupported = true;
+            }
+            catch (err) {
+                console.error('AudioWorklet: inline worklet failed', err);
+                this.isAudioSamplingSupported = false;
+                this.samplingFailedForSource = true;
+            }
+        }
+        else {
+            // disable sampling: disconnect source, keep worklet alive
+            if (this.workletSourceNode) {
+                try {
+                    this.workletSourceNode.disconnect();
+                }
+                catch { }
+            }
+            this.isAudioSamplingSupported = false;
+        }
+    }
+    cleanupSampling(recreateAudio = false) {
+        if (this.workletNode) {
+            this.workletNode.disconnect();
+            this.workletNode.port.onmessage = null;
+            this.workletNode = null;
+        }
+        this.media.onpause = null;
+        this.media.onplay = null;
+        if (recreateAudio) {
+            const currentTime = this.media.currentTime;
+            const wasPlaying = !this.media.paused;
+            this.media = this._createMediaElement();
+            this.media.currentTime = currentTime;
+            if (wasPlaying) {
+                this.media.play();
+            }
+        }
     }
     setPlaybackRate(second, pitchCorrectionQuality) {
         this.media.playbackRate = second;
@@ -158,6 +303,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.preservesPitch = this.shouldCorrectPitch;
     }
     remove() {
+        this.cleanupSampling(false);
         this.media.pause();
         this.media.removeAttribute('src');
         this.media.load();
@@ -166,11 +312,45 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
         const media = new Audio(newSource);
+        media.crossOrigin = 'anonymous';
+        let lastEmitTime = 0;
+        const intervalSec = this.interval / 1000;
         media.ontimeupdate = () => {
-            this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+            const now = media.currentTime;
+            // detect loop or big seek
+            if (now < lastEmitTime) {
+                lastEmitTime = now;
+            }
+            if (now - lastEmitTime >= intervalSec) {
+                lastEmitTime = now;
+                this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+            }
+        };
+        media.onplay = () => {
+            this.isPlaying = true;
+            lastEmitTime = media.currentTime; // reset throttle
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                playing: this.isPlaying,
+            });
+        };
+        media.onpause = () => {
+            this.isPlaying = false;
+            lastEmitTime = media.currentTime; // reset throttle
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                playing: this.isPlaying,
+            });
+        };
+        media.onseeked = () => {
+            lastEmitTime = media.currentTime; // user seeked
+        };
+        media.onended = () => {
+            lastEmitTime = 0; // looped
         };
         media.onloadeddata = () => {
             this.loaded = true;
+            lastEmitTime = media.currentTime; // initial load
             this.emit(PLAYBACK_STATUS_UPDATE, {
                 ...getStatusFromMedia(media, this.id),
                 isLoaded: this.loaded,
@@ -180,16 +360,13 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     }
 }
 function getSourceUri(source) {
-    if (typeof source === 'string') {
+    if (typeof source === 'string')
         return source;
-    }
-    if (typeof source === 'number') {
-        return resolveAssetSource(source)?.uri ?? undefined;
-    }
-    if (typeof source?.assetId === 'number' && !source?.uri) {
-        return resolveAssetSource(source.assetId)?.uri ?? undefined;
-    }
-    return source?.uri ?? undefined;
+    if (typeof source === 'number')
+        return resolveAssetSource(source)?.uri;
+    if (typeof source?.assetId === 'number' && !source?.uri)
+        return resolveAssetSource(source.assetId)?.uri;
+    return source?.uri;
 }
 export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     constructor(options) {
@@ -211,25 +388,19 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         return this.mediaRecorder?.state === 'recording';
     }
     record() {
-        if (this.mediaRecorder === null) {
-            throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
+        if (!this.mediaRecorder) {
+            throw new Error('Cannot start an audio recording without initializing a MediaRecorder.');
         }
-        if (this.mediaRecorder?.state === 'paused') {
+        if (this.mediaRecorder.state === 'paused')
             this.mediaRecorder.resume();
-        }
-        else {
-            this.mediaRecorder?.start();
-        }
+        else
+            this.mediaRecorder.start();
     }
     getAvailableInputs() {
         return [];
     }
     getCurrentInput() {
-        return {
-            type: 'Default',
-            name: 'Default',
-            uid: 'Default',
-        };
+        return { type: 'Default', name: 'Default', uid: 'Default' };
     }
     async prepareToRecordAsync() {
         return this.setup();
@@ -244,29 +415,23 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         };
     }
     pause() {
-        if (this.mediaRecorder === null) {
-            throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
-        }
-        this.mediaRecorder?.pause();
+        if (!this.mediaRecorder)
+            throw new Error('Cannot pause without initializing MediaRecorder.');
+        this.mediaRecorder.pause();
     }
     recordForDuration(seconds) {
         this.record();
-        this.timeoutIds.push(setTimeout(() => {
-            this.stop();
-        }, seconds * 1000));
+        this.timeoutIds.push(setTimeout(() => this.stop(), seconds * 1000));
     }
     setInput(input) { }
     startRecordingAtTime(seconds) {
-        this.timeoutIds.push(setTimeout(() => {
-            this.record();
-        }, seconds * 1000));
+        this.timeoutIds.push(setTimeout(() => this.record(), seconds * 1000));
     }
     async stop() {
-        if (this.mediaRecorder === null) {
-            throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
-        }
+        if (!this.mediaRecorder)
+            throw new Error('Cannot stop without initializing MediaRecorder.');
         const dataPromise = new Promise((resolve) => this.mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data)));
-        this.mediaRecorder?.stop();
+        this.mediaRecorder.stop();
         this.mediaRecorder = null;
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
@@ -283,13 +448,12 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this.timeoutIds.forEach((id) => clearTimeout(id));
     }
     async createMediaRecorder(options) {
-        if (typeof navigator !== 'undefined' && !navigator.mediaDevices) {
+        if (typeof navigator !== 'undefined' && !navigator.mediaDevices)
             throw new Error('No media devices available');
-        }
         this.mediaRecorderUptimeOfLastStartResume = 0;
         this.currentTime = 0;
         const stream = await getUserMedia({ audio: true });
-        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingPresets.HIGH_QUALITY.web);
+        const mediaRecorder = new window.MediaRecorder(stream, options.web || RecordingPresets.HIGH_QUALITY.web);
         mediaRecorder.addEventListener('pause', () => {
             this.currentTime = this.getAudioRecorderDurationMillis();
             this.mediaRecorderIsRecording = false;
@@ -303,10 +467,9 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             this.currentTime = 0;
             this.mediaRecorderIsRecording = true;
         });
-        mediaRecorder?.addEventListener('stop', () => {
+        mediaRecorder.addEventListener('stop', () => {
             this.currentTime = 0;
             this.mediaRecorderIsRecording = false;
-            // Clears recording icon in Chrome tab
             stream.getTracks().forEach((track) => track.stop());
         });
         return mediaRecorder;
@@ -346,20 +509,10 @@ export async function requestRecordingPermissionsAsync() {
     try {
         const stream = await getUserMedia({ audio: true });
         stream.getTracks().forEach((track) => track.stop());
-        return {
-            status: PermissionStatus.GRANTED,
-            expires: 'never',
-            canAskAgain: true,
-            granted: true,
-        };
+        return { status: PermissionStatus.GRANTED, expires: 'never', canAskAgain: true, granted: true };
     }
     catch {
-        return {
-            status: PermissionStatus.DENIED,
-            expires: 'never',
-            canAskAgain: true,
-            granted: false,
-        };
+        return { status: PermissionStatus.DENIED, expires: 'never', canAskAgain: true, granted: false };
     }
 }
 //# sourceMappingURL=AudioModule.web.js.map

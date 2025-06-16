@@ -2,6 +2,8 @@ import { PermissionResponse } from 'expo-modules-core';
 import { AudioMode, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions } from './Audio.types';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
+    private static sharedAudioContext;
+    static getAudioContext(): AudioContext;
     constructor(source: AudioSource, interval: number);
     id: number;
     isAudioSamplingSupported: boolean;
@@ -12,6 +14,9 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private interval;
     private isPlaying;
     private loaded;
+    private samplingFailedForSource;
+    private workletNode;
+    private workletSourceNode;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -30,7 +35,13 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     pause(): void;
     replace(source: AudioSource): void;
     seekTo(seconds: number): Promise<void>;
-    setAudioSamplingEnabled(enabled: boolean): void;
+    /**
+     * Enable or disable audio sampling using AudioWorklet.
+     * When enabling, if the worklet is already created, just reconnect the source node.
+     * When disabling, only disconnect the source node, keeping the worklet alive.
+     */
+    setAudioSamplingEnabled(enabled: boolean): Promise<void>;
+    private cleanupSampling;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
     _createMediaElement(): HTMLAudioElement;
