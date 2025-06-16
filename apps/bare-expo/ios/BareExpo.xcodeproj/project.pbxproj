@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		40D522852D01F86E00C1F086 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40D522842D01F86E00C1F086 /* SplashScreen.storyboard */; };
-		4667516DBCF9FA4AB6537705 /* libPods-BareExpoMain-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BC69AA2C822733C399D3F51A /* libPods-BareExpoMain-BareExpoTests.a */; };
 		47A7E3329B8846E5A11CF543 /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8A7D56FD58374F2AB74FD825 /* icomoon.ttf */; };
 		49A036999684C855A5227246 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9B31297D4608C9B205791D /* ExpoModulesProvider.swift */; };
+		560C7CD31552299DC0A5759E /* libPods-BareExpoMain-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9267F7CD14821A018B2C29CA /* libPods-BareExpoMain-BareExpo.a */; };
 		827760385250CFC98D41B991 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AF6A6B5FB606A30EC7A219 /* ExpoModulesProvider.swift */; };
-		ABCF9CC15EA7B0ABD1F7543B /* libPods-BareExpoMain-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BB45853D4CDE4FB440C9D11 /* libPods-BareExpoMain-BareExpo.a */; };
+		B2D985A94FF42DA32D5A5517 /* libPods-BareExpoMain-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1B3E50E39B95AF8044B710 /* libPods-BareExpoMain-BareExpoTests.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		C4646A25A05E494F9DC4A1B3 /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6F906615D6F7426F93226251 /* notification.wav */; };
 		D7D1CD9FF756FCC49A9B873F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 638290664253FC5AFF306E0F /* PrivacyInfo.xcprivacy */; };
@@ -37,9 +37,9 @@
 		7A4D352CD337FB3A3BF06240 /* Pods-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpo.release.xcconfig"; path = "Target Support Files/Pods-BareExpo/Pods-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
 		89AF6A6B5FB606A30EC7A219 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoMain-BareExpo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		8A7D56FD58374F2AB74FD825 /* icomoon.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = icomoon.ttf; path = ../assets/icomoon.ttf; sourceTree = "<group>"; };
-		8BB45853D4CDE4FB440C9D11 /* libPods-BareExpoMain-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9267F7CD14821A018B2C29CA /* libPods-BareExpoMain-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA1B3E50E39B95AF8044B710 /* libPods-BareExpoMain-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		BC69AA2C822733C399D3F51A /* libPods-BareExpoMain-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD9B31297D4608C9B205791D /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoMain-BareExpoTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748332CFB461C0044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -50,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4667516DBCF9FA4AB6537705 /* libPods-BareExpoMain-BareExpoTests.a in Frameworks */,
+				B2D985A94FF42DA32D5A5517 /* libPods-BareExpoMain-BareExpoTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,7 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABCF9CC15EA7B0ABD1F7543B /* libPods-BareExpoMain-BareExpo.a in Frameworks */,
+				560C7CD31552299DC0A5759E /* libPods-BareExpoMain-BareExpo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,8 +92,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				8BB45853D4CDE4FB440C9D11 /* libPods-BareExpoMain-BareExpo.a */,
-				BC69AA2C822733C399D3F51A /* libPods-BareExpoMain-BareExpoTests.a */,
+				9267F7CD14821A018B2C29CA /* libPods-BareExpoMain-BareExpo.a */,
+				BA1B3E50E39B95AF8044B710 /* libPods-BareExpoMain-BareExpoTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
