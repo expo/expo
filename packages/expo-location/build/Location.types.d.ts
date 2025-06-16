@@ -195,9 +195,9 @@ export type LocationTaskServiceOptions = {
      */
     killServiceOnDestroy?: boolean;
     /**
-     * Boolean value whether to show the notification in the status bar. Defaults to false.
+     * Boolean value whether to show the notification in the status bar.
      * @default false
-     * @android
+     * @platform android
     */
     ongoing?: boolean;
 };
