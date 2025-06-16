@@ -60,7 +60,8 @@ open class NonFinalBridgelessDevSupportManager(
     customPackagerCommandHandlers,
     surfaceDelegateFactory,
     devLoadingViewManager,
-    pausedInDebuggerOverlayManager) {
+    pausedInDebuggerOverlayManager
+  ) {
 
   constructor(
     context: Context,
@@ -77,7 +78,8 @@ open class NonFinalBridgelessDevSupportManager(
     customPackagerCommandHandlers = null,
     surfaceDelegateFactory = null,
     devLoadingViewManager = null,
-    pausedInDebuggerOverlayManager = null)
+    pausedInDebuggerOverlayManager = null
+  )
 
   override val uniqueTag: String
     get() = "Bridgeless"

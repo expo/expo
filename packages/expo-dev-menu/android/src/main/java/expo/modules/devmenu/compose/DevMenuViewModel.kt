@@ -1,30 +1,38 @@
 package expo.modules.devmenu.compose
 
 import androidx.compose.runtime.mutableStateOf
+import expo.modules.devmenu.DevMenuManager
 
-class DevMenuViewModel(
-  appInfo: DevMenuState.AppInfo
-) {
-  private val _state = mutableStateOf(
-    DevMenuState(
-      appInfo = appInfo
-    )
-  )
+class DevMenuViewModel {
+  private val _state = mutableStateOf<DevMenuState>(DevMenuState())
 
   val state
     get() = _state.value
 
-  fun onAction(action: DevMenuAction) {
+  fun updateAppInfo(appInfo: DevMenuState.AppInfo) {
+    _state.value = _state.value.copy(appInfo = appInfo)
+  }
+
+  private fun closeMenu() {
+    _state.value = _state.value.copy(isOpen = false)
+  }
+
+  private fun openMenu() {
+    _state.value = _state.value.copy(isOpen = true)
+  }
+
+  fun onAction(action: DevMenuAction) = with(DevMenuManager) {
     when (action) {
-      DevMenuAction.Open -> TODO()
-      DevMenuAction.Reload -> TODO()
-      DevMenuAction.GoHome -> TODO()
-      DevMenuAction.TogglePerformanceMonitor -> TODO()
-      DevMenuAction.Close -> TODO()
-      DevMenuAction.OpenJSDebugger -> TODO()
-      DevMenuAction.OpenReactNativeDevMenu -> TODO()
-      DevMenuAction.ToggleElementInspector -> TODO()
-      is DevMenuAction.ToggleFastRefresh -> TODO()
+      DevMenuAction.Open -> this@DevMenuViewModel.openMenu()
+      DevMenuAction.Close -> this@DevMenuViewModel.closeMenu()
+      DevMenuAction.Reload -> reload()
+      DevMenuAction.GoHome -> goToHome()
+      DevMenuAction.TogglePerformanceMonitor -> togglePerformanceMonitor()
+      DevMenuAction.OpenJSDebugger -> openJSInspector()
+      DevMenuAction.OpenReactNativeDevMenu -> {
+      }
+      DevMenuAction.ToggleElementInspector -> toggleInspector()
+      is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
     }
   }
 }

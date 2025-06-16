@@ -82,8 +82,8 @@ object DevLauncherReactHost {
         object : ModulesProvider {
           override fun getModulesList() =
             listOf(
-              DevLauncherInternalModule::class.java,
               DevMenuPreferences::class.java,
+              DevLauncherInternalModule::class.java,
               SafeAreaProviderManager::class.java
             )
         }
