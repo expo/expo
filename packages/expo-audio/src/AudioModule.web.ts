@@ -104,6 +104,13 @@ export class AudioPlayerWeb
     this.src = source;
     this.interval = interval;
     this.media = this._createMediaElement();
+    // initial panner setup for non-sampling path
+    const ctx = AudioPlayerWeb.getAudioContext();
+    this.panner = ctx.createStereoPanner();
+    this.panner.pan.value = 0;
+    this.workletSourceNode = ctx.createMediaElementSource(this.media);
+    this.workletSourceNode.connect(this.panner);
+    this.panner.connect(ctx.destination);
   }
 
   id: number = nextId();
@@ -222,18 +229,10 @@ export class AudioPlayerWeb
     const ctx = AudioPlayerWeb.getAudioContext();
     if (enabled) {
       // If worklet already created, just reconnect source and return
-      if (this.workletNode) {
-        if (this.workletSourceNode) {
-          try {
-            // wire up panner before destination
-            this.panner = ctx.createStereoPanner();
-            this.panner.pan.value = 0;
-            this.workletSourceNode.connect(this.panner);
-            this.panner.connect(ctx.destination);
-            // connect audio to worklet for metering
-            this.workletSourceNode.connect(this.workletNode);
-          } catch {}
-        }
+      if (this.workletNode && this.workletSourceNode) {
+        try {
+          this.workletSourceNode.connect(this.workletNode);
+        } catch {}
         this.isAudioSamplingSupported = true;
         return;
       }
@@ -302,13 +301,9 @@ export class AudioPlayerWeb
         if (!this.workletSourceNode) {
           this.workletSourceNode = ctx.createMediaElementSource(this.media);
         }
-        // wire up panner before destination
-        this.panner = ctx.createStereoPanner();
-        this.panner.pan.value = this.audioPan;
-        this.workletSourceNode.connect(this.panner);
-        this.panner.connect(ctx.destination);
-        // connect audio to worklet for metering
-        this.workletSourceNode.connect(this.workletNode);
+        if (this.workletSourceNode && this.workletNode) {
+          this.workletSourceNode.connect(this.workletNode);
+        }
 
         this.isAudioSamplingSupported = true;
       } catch (err) {
@@ -318,9 +313,9 @@ export class AudioPlayerWeb
       }
     } else {
       // disable sampling: disconnect source, keep worklet alive
-      if (this.workletSourceNode) {
+      if (this.workletSourceNode && this.workletNode) {
         try {
-          this.workletSourceNode.disconnect();
+          this.workletSourceNode.disconnect(this.workletNode);
         } catch {}
       }
       this.isAudioSamplingSupported = false;
