@@ -41,6 +41,7 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
 
     let session = AVAudioSession.sharedInstance()
     guard let method = class_getInstanceMethod(type(of: session), recordPermissionSelector) else {
+      reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
       return
     }
 
@@ -49,6 +50,7 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     let requestPermission = unsafeBitCast(imp, to: PermissionRequestFunction.self)
     requestPermission(session, recordPermissionSelector) { [weak self] _ in
       guard let self else {
+        reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
         return
       }
       resolve(self.getPermissions())
