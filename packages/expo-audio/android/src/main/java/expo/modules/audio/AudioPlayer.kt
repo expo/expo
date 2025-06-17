@@ -91,7 +91,11 @@ class AudioPlayer(
         delay(updateInterval.toLong())
       }
     }
-      .onEach { sendPlayerUpdate() }
+      .onEach {
+        if (playing) {
+          sendPlayerUpdate()
+        }
+      }
       .launchIn(playerScope)
   }
 
@@ -105,7 +109,7 @@ class AudioPlayer(
 
     override fun onIsLoadingChanged(isLoading: Boolean) {
       playerScope.launch {
-        sendPlayerUpdate(mapOf("isLoaded" to isLoading))
+        sendPlayerUpdate(mapOf("isLoaded" to !isLoading))
       }
     }
 
@@ -204,7 +208,7 @@ class AudioPlayer(
           object : Visualizer.OnDataCaptureListener {
             override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
               waveform?.let {
-                if (samplingEnabled) {
+                if (samplingEnabled && ref.isPlaying) {
                   val data = extractAmplitudes(it)
                   sendAudioSampleUpdate(data)
                 }
