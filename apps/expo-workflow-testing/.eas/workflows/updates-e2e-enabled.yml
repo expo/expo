@@ -59,6 +59,7 @@ jobs:
           /opt/homebrew/bin/brew tap wix/brew
           /opt/homebrew/bin/brew install applesimutils
           xcrun simctl list
+      - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
@@ -81,8 +82,11 @@ jobs:
         id: build
         working_directory: ../../../updates-e2e
         run: |
-          npx detox build -c ios.debug
-          npx detox build -c ios.release
+          yarn maestro:ios:debug:build
+          yarn maestro:ios:release:build
+      - uses: eas/start_ios_simulator
+        with:
+          device_identifier: iPhone 16
       - name: Test E2E project (debug and release)
         id: test
         env:
@@ -90,8 +94,8 @@ jobs:
           UPDATES_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
-          npx detox test -c ios.debug          
-          npx detox test -c ios.release
+          ./maestro/updates-e2e-enabled.sh ios debug
+          ./maestro/updates-e2e-enabled.sh ios release
   android:
     runs_on: linux-large-nested-virtualization
     steps:
@@ -102,6 +106,7 @@ jobs:
         run: |
           sudo apt-get --quiet update --yes
           sudo apt-get --quiet install openjdk-17-jdk openjdk-17-jre libc6 libdbus-1-3 libfontconfig1 libgcc1 libpulse0 libtinfo5 libx11-6 libxcb1 libxdamage1 libnss3 libxcomposite1 libxcursor1 libxi6 libxext6 libxfixes3 zlib1g libgl1 pulseaudio socat --yes
+      - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
@@ -130,8 +135,8 @@ jobs:
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
-          npx detox build -c android.debug
-          npx detox build -c android.release
+          yarn maestro:android:debug:build
+          yarn maestro:android:release:build
       - name: Test E2E project (debug and release)
         id: test
         env:
@@ -141,5 +146,6 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           yarn check-android-emulator
-          npx detox test -c android.debug
-          npx detox test -c android.release
+          adb reverse tcp:4747 tcp:4747
+          ./maestro/updates-e2e-enabled.sh android debug
+          ./maestro/updates-e2e-enabled.sh android release
