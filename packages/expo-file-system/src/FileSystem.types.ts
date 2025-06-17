@@ -204,7 +204,7 @@ export type FileInfo =
        */
       uri: string;
       /**
-       * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
+       * The size of the file in bytes.
        */
       size: number;
       /**
@@ -284,12 +284,6 @@ export type InfoOptions = {
    * @default false
    */
   md5?: boolean;
-  /**
-   * Explicitly specify that the file size should be included. For example, skipping this can prevent downloading the file if it's stored in iCloud.
-   * The size is always returned for `file://` locations.
-   * @deprecated
-   */
-  size?: boolean;
 };
 
 export type RelocatingOptions = {
