@@ -136,7 +136,7 @@ export function test({ describe, expect, it, ...t }: any) {
       });
     });
 
-    describe('Player.replace', () => {
+    describe('Player.replace()', () => {
       it('replaces the audio source', async () => {
         player = createAudioPlayer(mainTestingSource);
         await retryForStatus(player, { isLoaded: true });
