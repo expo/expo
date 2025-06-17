@@ -40,7 +40,7 @@ export type SymbolViewProps = {
   tintColor?: ColorValue;
   /**
    * Determines how the image should be resized to fit its container.
-   * @default 'scaleToAspectFit'
+   * @default 'scaleAspectFit'
    */
   resizeMode?: ContentMode;
   /**
