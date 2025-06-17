@@ -174,11 +174,11 @@ export interface AndroidMavenRepository {
  */
 export interface AndroidMavenRepositoryPasswordCredentials {
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     username: string;
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     password: string;
 }
@@ -188,11 +188,11 @@ export interface AndroidMavenRepositoryPasswordCredentials {
  */
 export interface AndroidMavenRepositoryHttpHeaderCredentials {
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     name: string;
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     value: string;
 }
@@ -202,15 +202,15 @@ export interface AndroidMavenRepositoryHttpHeaderCredentials {
  */
 export interface AndroidMavenRepositoryAWSCredentials {
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     accessKey: string;
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     secretKey: string;
     /**
-     * The credetial value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from the an environment variable.
+     * The credential value. You can also pass `"System.getenv('ENV_VAR_NAME')"` to get the value from an environment variable.
      */
     sessionToken?: string;
 }
