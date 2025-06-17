@@ -44,6 +44,11 @@ internal class UnableToWriteHandleException(reason: String) :
     "Unable to write to a file handle: '$reason'"
   )
 
+internal class UnableToGetInfoAsyncException(reason: String) :
+  CodedException(
+    "Unable to getInfoAsync from a file: '$reason'"
+  )
+
 internal class DestinationAlreadyExistsException :
   CodedException(
     "Destination already exists"
