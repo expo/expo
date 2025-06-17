@@ -24,6 +24,11 @@ export type SpeechOptions = {
    */
   rate?: number;
   /**
+   * If you set this value to `false`, the system creates a separate audio session to automatically manage speech, interruptions, and mixing and ducking the speech with other audio sources.
+   * @platform ios
+   */
+  useApplicationAudioSession?: boolean;
+  /**
    * A callback that is invoked when speaking starts.
    */
   onStart?: () => void | SpeechEventCallback;
