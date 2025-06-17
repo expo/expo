@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for `@babel/plugin-transform-class-static-block` on web and native.
 - Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
 
 ### 🐛 Bug fixes
