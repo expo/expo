@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Support SSR imports of internal node builtins such as `_http_agent`.
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
 
 ### 🐛 Bug fixes
