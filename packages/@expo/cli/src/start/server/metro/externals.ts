@@ -34,8 +34,6 @@ export const NODE_STDLIB_MODULES: string[] = [
   ).filter((x) => !/^(internal|v8|node-inspect)\/|\//.test(x) && !['sys'].includes(x)),
 ].sort();
 
-console.log('NODE_STDLIB_MODULES', NODE_STDLIB_MODULES);
-
 const shimsFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/shims');
 const canaryFolder = path.join(require.resolve('@expo/cli/package.json'), '../static/canary');
 
