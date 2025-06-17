@@ -53,7 +53,7 @@ describe(resolvePackageVersionAsync, () => {
   it('throws when package is not installed', async () => {
     vol.fromJSON({}, projectRoot);
 
-    await expect(resolvePackageVersionAsync(projectRoot, 'expo')).rejects.toThrowError(
+    await expect(resolvePackageVersionAsync(projectRoot, 'expo')).rejects.toThrow(
       `"expo" is added as a dependency in your project's package.json but it doesn't seem to be installed`
     );
   });

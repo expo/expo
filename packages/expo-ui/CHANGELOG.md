@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `BottomSheet` affecting layout outside. ([#37370](https://github.com/expo/expo/pull/37370) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))

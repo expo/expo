@@ -133,6 +133,25 @@ export function removeScreenshotListener(subscription: EventSubscription) {
   subscription.remove();
 }
 
+// @needsAudit
+/**
+ * A React hook that listens for screenshots taken while the component is mounted.
+ *
+ * @param listener A function that will be called whenever a screenshot is detected.
+ *
+ * This hook automatically starts listening when the component mounts, and stops
+ * listening when the component unmounts.
+ */
+export function useScreenshotListener(listener: () => void) {
+  useEffect(() => {
+    const subscription = addScreenshotListener(listener);
+
+    return () => {
+      removeScreenshotListener(subscription);
+    };
+  }, [listener]);
+}
+
 /**
  * Checks user's permissions for detecting when a screenshot is taken.
  * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.

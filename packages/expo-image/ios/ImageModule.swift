@@ -107,6 +107,10 @@ public final class ImageModule: Module {
         view.autoplay = autoplay ?? true
       }
 
+      Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
+        view.useAppleWebpCodec = useAppleWebpCodec
+      }
+
       AsyncFunction("startAnimating") { (view: ImageView) in
         view.sdImageView.startAnimating()
       }

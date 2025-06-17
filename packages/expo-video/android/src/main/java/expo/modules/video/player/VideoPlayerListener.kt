@@ -6,7 +6,9 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.PlaybackError
+import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoTrack
@@ -25,5 +27,6 @@ interface VideoPlayerListener {
   fun onPlayedToEnd(player: VideoPlayer) {}
   fun onAudioMixingModeChanged(player: VideoPlayer, audioMixingMode: AudioMixingMode, oldAudioMixingMode: AudioMixingMode?) {}
   fun onVideoTrackChanged(player: VideoPlayer, videoTrack: VideoTrack?, oldVideoTrack: VideoTrack?) {}
+  fun onVideoSourceLoaded(player: VideoPlayer, videoSource: VideoSource?, duration: Double?, availableVideoTracks: List<VideoTrack>, availableSubtitleTracks: List<SubtitleTrack>, availableAudioTracks: List<AudioTrack>) {}
   fun onRenderedFirstFrame(player: VideoPlayer) {}
 }

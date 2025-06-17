@@ -44,8 +44,8 @@ export declare function usePreventScreenCapture(key?: string): void;
  * Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded.
  *
  * Permission requirements for this method depend on your device’s Android version:
- * - **Before Android 13**: Requires READ_EXTERNAL_STORAGE.
- * - **Android 13**: Switches to READ_MEDIA_IMAGES.
+ * - **Before Android 13**: Requires `READ_EXTERNAL_STORAGE`.
+ * - **Android 13**: Switches to `READ_MEDIA_IMAGES`.
  * - **Post-Android 13**: No additional permissions required.
  * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
  *
@@ -74,6 +74,15 @@ export declare function addScreenshotListener(listener: () => void): EventSubscr
  * ```
  */
 export declare function removeScreenshotListener(subscription: EventSubscription): void;
+/**
+ * A React hook that listens for screenshots taken while the component is mounted.
+ *
+ * @param listener A function that will be called whenever a screenshot is detected.
+ *
+ * This hook automatically starts listening when the component mounts, and stops
+ * listening when the component unmounts.
+ */
+export declare function useScreenshotListener(listener: () => void): void;
 /**
  * Checks user's permissions for detecting when a screenshot is taken.
  * > Only Android requires additional permissions to detect screenshots. On iOS devices, this method will always resolve to a `granted` permission response.

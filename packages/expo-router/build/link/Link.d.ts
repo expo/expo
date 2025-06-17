@@ -20,7 +20,7 @@ export type RedirectProps = {
      *
      * export default function RedirectToAbout() {
      *  return (
-     *    <Redirect href="/about">About</Link>
+     *    <Redirect href="/about">
      *  );
      *}
      * ```

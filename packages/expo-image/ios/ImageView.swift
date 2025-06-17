@@ -68,6 +68,13 @@ public final class ImageView: ExpoView {
 
   var autoplay: Bool = true
 
+  var useAppleWebpCodec: Bool = true
+
+  /**
+   The ideal image size that fills in the container size while maintaining the source aspect ratio.
+   */
+  var imageIdealSize: CGSize = .zero
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -118,6 +125,15 @@ public final class ImageView: ExpoView {
     }
   }
 
+  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+      // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
+      // After that we have to recalculate the mask layer in `applyContentPosition`.
+      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    }
+  }
+
   // MARK: - Implementation
 
   func reload(force: Bool = false) {
@@ -134,7 +150,7 @@ public final class ImageView: ExpoView {
     if sdImageView.image == nil {
       sdImageView.contentMode = contentFit.toContentMode()
     }
-    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy)
+    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy, useAppleWebpCodec: useAppleWebpCodec)
 
     // Cancel currently running load requests.
     cancelPendingOperation()
@@ -226,15 +242,15 @@ public final class ImageView: ExpoView {
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
-      let idealSize = idealSize(
+      imageIdealSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
         scale: scale,
         contentFit: contentFit
       ).rounded(.up)
 
-      let image = processImage(image, idealSize: idealSize, scale: scale)
-      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+      let image = processImage(image, idealSize: imageIdealSize, scale: scale)
+      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
       renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
@@ -314,7 +330,7 @@ public final class ImageView: ExpoView {
     // to cache them or apply the same policy as with the proper image?
     // Basically they are also cached in memory as the `placeholderImage` property,
     // so just `disk` policy sounds like a good idea.
-    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk)
+    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk, useAppleWebpCodec: useAppleWebpCodec)
 
     let isPlaceholderHash = placeholder.isBlurhash || placeholder.isThumbhash
 

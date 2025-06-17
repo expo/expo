@@ -57,7 +57,8 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
   }
 
   private func showSplashScreen() {
-    if let vc = UIStoryboard(name: "SplashScreen", bundle: nil).instantiateInitialViewController() {
+    let splashScreenFilename = Bundle.main.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "SplashScreen"
+    if let vc = UIStoryboard(name: splashScreenFilename, bundle: nil).instantiateInitialViewController() {
       loadingView = vc.view
       loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
