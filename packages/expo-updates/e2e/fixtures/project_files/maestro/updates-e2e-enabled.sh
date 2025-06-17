@@ -29,7 +29,7 @@ set -eox pipefail
 trap cleanup EXIT
 
 function beforeAll() {
-  npx ts-node ./maestro/updates-server/start.ts &
+  npx ts-node ./maestro/updates-server/start.ts >/dev/null 2>&1 &
 }
 
 function beforeTest()
