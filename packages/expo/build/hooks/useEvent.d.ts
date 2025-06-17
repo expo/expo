@@ -1,3 +1,4 @@
+import type { EventEmitter } from 'expo-modules-core/types';
 type AnyEventListener = (...args: any[]) => any;
 /**
  * Type helper that infers the event name from the emitter's events map.
