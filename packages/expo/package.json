@@ -8,7 +8,8 @@
   "sideEffects": [
     "*.fx.tsx",
     "*.fx.web.tsx",
-    "./src/winter/*.ts"
+    "./src/winter/*.ts",
+    "./src/async-require/*.ts"
   ],
   "bin": {
     "expo": "bin/cli",
