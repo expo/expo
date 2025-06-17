@@ -52,6 +52,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
 #endif
   }
 
+#if !os(tvOS)
   @available(iOS 16.0, *)
   @ViewBuilder
   private func shareLink(
@@ -98,4 +99,5 @@ struct ShareLinkView: ExpoSwiftUI.View {
       SwiftUI.ShareLink(item: item, subject: subject, message: message)
     }
   }
+#endif
 }
