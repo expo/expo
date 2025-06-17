@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix memory usage issue in getInfoAsync
+- Fix memory usage issue in getInfoAsync ([#37417](https://github.com/expo/expo/pull/37417) by [@Wenszel](https://github.com/Wenszel))
 - Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37107](https://github.com/expo/expo/pull/37107) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
