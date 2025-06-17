@@ -1,5 +1,6 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import Constants from 'expo-constants';
+import { ExpoUpdatesManifest } from 'expo-manifests';
 import { requireNativeModule } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
@@ -133,6 +134,17 @@ export default function App() {
   const handleReadLogEntries = runBlockAsync(async () => {
     const logEntries = await Updates.readLogEntriesAsync(60000);
     setLogs(logEntries);
+    try {
+      await fetch('http://localhost:4747/upload-log-entries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(logEntries),
+      });
+    } catch (e) {
+      console.log('Server does not support the log entry endpoints');
+    }
   });
 
   const handleClearLogEntries = runBlockAsync(async () => {
@@ -236,7 +248,7 @@ export default function App() {
       <Text>Updates expoConfig</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>
         <Text testID="updates.expoClient" style={styles.logEntriesText}>
-          {JSON.stringify(Updates.manifest?.extra?.expoClient || {})}
+          {JSON.stringify((Updates.manifest as ExpoUpdatesManifest)?.extra?.expoClient || {})}
         </Text>
       </ScrollView>
 

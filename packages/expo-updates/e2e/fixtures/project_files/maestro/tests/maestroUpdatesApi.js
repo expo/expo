@@ -32,9 +32,16 @@ function staticFileCount() {
   return JSON.parse(response.body).count;
 }
 
+function logEntries() {
+  var requestString = `${serverBaseUrl}/log-entries`;
+  const response = http.get(requestString);
+  return JSON.parse(response.body);
+}
+
 output.api = {
   delay: delay,
   lastRequestHeaders: lastRequestHeaders,
+  logEntries: logEntries,
   restartUpdatesServer: restartUpdatesServer,
   serveManifest: serveManifest,
   staticFileCount: staticFileCount,

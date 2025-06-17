@@ -14,12 +14,12 @@ onFlowStart:
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
-- assertTrue:
-    condition: ${maestro.copiedText == "test"}
-    label: Assert update string is from embedded bundle
 - evalScript:
     script: ${output.api.delay(3000)}
     label: Delay for 3 seconds
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
 - assertTrue:
     condition:  ${output.api.staticFileCount() == 4}
     label: Assert that exactly 4 static files were requested
@@ -37,10 +37,13 @@ onFlowStart:
 - evalScript:
     script: ${output.api.delay(500)}
     label: Delay for 0.5 seconds
-- copyTextFrom:
-    label: Copy text from log entries
-    id: logEntries
+- evalScript:
+    script: ${output.logs = output.api.logEntries()}
+    label: Read log entries uploaded to server
 - assertTrue:
-    condition: ${maestro.copiedText.includes("AssetsFailedToLoad")}
+    condition: ${output.logs.length > 0}
+    label: Assert that logs were uploaded
+- assertTrue:
+    condition: ${JSON.stringify(output.logs).includes("AssetsFailedToLoad")}
     label: Assert that the update failed to apply due to an invalid asset hash
 - stopApp

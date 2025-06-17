@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 import type * as cryptoTypes from 'crypto';
+import { UpdatesLogEntry } from 'expo-updates';
 const express = require('express');
 const FormData = require('form-data');
 const fs = require('fs');
@@ -23,6 +24,8 @@ let updateRequest: Request | null = null;
 
 let manifestToServe: null = null;
 let manifestHeadersToServe: { [x: string]: any } | null = null;
+
+let logEntries: UpdatesLogEntry[] = [];
 
 let multipartResponseToServe: any = null;
 let requestedStaticFiles: string[] = [];
@@ -65,6 +68,7 @@ function stop() {
   manifestHeadersToServe = null;
   multipartResponseToServe = null;
   requestedStaticFiles = [];
+  logEntries = [];
 }
 
 function restart() {
@@ -341,9 +345,23 @@ async function stopServer() {
 
 app.get('/static-file-count', (_: Request, res: Response) => {
   console.log('Received request for static file count');
+  const count = getRequestedStaticFilesLength();
+  console.log('Static file count: ', count);
   res.status(200).send({
-    count: getRequestedStaticFilesLength(),
+    count,
   });
+});
+
+app.post('/upload-log-entries', (req: Request, res: Response) => {
+  console.log('Received request to upload logs');
+  logEntries = req.body as unknown as UpdatesLogEntry[];
+  console.log(`Received ${logEntries.length} log entries`);
+  res.status(200).send('OK');
+});
+
+app.get('/log-entries', (_: Request, res: Response) => {
+  console.log('Received request for log entries');
+  res.status(200).json(logEntries).end();
 });
 
 app.get('/delay', async (req: Request, res: Response) => {
