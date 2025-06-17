@@ -1,0 +1,33 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runScript: ./maestroUpdatesApi.js
+  - evalScript:
+      script:  ${output.api.restartUpdatesServer()}
+      label: Restart updates server
+---
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- tapOn: "reload"
+- evalScript:
+    script: ${output.api.delay(2000)}
+    label: Delay for 2 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- stopApp

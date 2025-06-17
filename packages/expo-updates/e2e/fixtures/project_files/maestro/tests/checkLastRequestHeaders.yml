@@ -1,0 +1,18 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runScript: ./maestroUpdatesApi.js
+  - evalScript:
+      script:  ${output.api.restartUpdatesServer()}
+      label: Restart updates server
+---
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updatestring
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- assertTrue:
+    condition:  ${output.api.lastRequestHeaders().host == 'localhost:4747'}
+    label: Check that request contains correct headers
+- stopApp

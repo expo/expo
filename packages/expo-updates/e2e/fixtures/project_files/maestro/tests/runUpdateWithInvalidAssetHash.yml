@@ -1,0 +1,43 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runScript: ./maestroUpdatesApi.js
+  - evalScript:
+      script:  ${output.api.restartUpdatesServer()}
+      label: Restart updates server
+---
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-with-invalid-asset-hash', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve an update with invalid asset hash
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- assertTrue:
+    condition:  ${output.api.staticFileCount() == 4}
+    label: Assert that exactly 4 static files were requested
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle (update not applied)
+- tapOn:
+    label: Tap on read log entries
+    id: readLogEntries
+- copyTextFrom:
+    label: Copy text from log entries
+    id: logEntries
+- assertTrue:
+    condition: ${maestro.copiedText.includes("AssetsFailedToLoad")}
+    label: Assert that the update failed to apply due to an invalid asset hash
+- stopApp
