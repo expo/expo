@@ -1,6 +1,9 @@
 /**
  * Copyright © 2025 650 Industries.
  */
+
+const debug = require('debug')('expo:metro:browserslist') as typeof console.log;
+
 const browserslistCache: Record<string, import('lightningcss').Targets> = {};
 
 export async function getBrowserslistTargets(
@@ -20,6 +23,7 @@ export async function getBrowserslistTargets(
     })
   );
 
+  debug('Browserslist targets: %O', targets);
   browserslistCache[projectRoot] = targets;
   return targets;
 }

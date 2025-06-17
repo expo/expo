@@ -1,9 +1,10 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBrowserslistTargets = getBrowserslistTargets;
 /**
  * Copyright © 2025 650 Industries.
  */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getBrowserslistTargets = getBrowserslistTargets;
+const debug = require('debug')('expo:metro:browserslist');
 const browserslistCache = {};
 async function getBrowserslistTargets(projectRoot) {
     if (browserslistCache[projectRoot]) {
@@ -16,6 +17,7 @@ async function getBrowserslistTargets(projectRoot) {
         ignoreUnknownVersions: true,
         path: projectRoot,
     }));
+    debug('Browserslist targets: %O', targets);
     browserslistCache[projectRoot] = targets;
     return targets;
 }
