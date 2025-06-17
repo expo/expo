@@ -14,6 +14,7 @@
 - [iOS]: Fix changing pitch algorithm stops the playback if sampling is enabled ([#37320](https://github.com/expo/expo/pull/37320) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Improve audio tap memory safety and cleanup ([#37174](https://github.com/expo/expo/pull/37174) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix unused recording permission causing app store rejection. ([#37457](https://github.com/expo/expo/pull/37457) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Prevent status updates when the player is paused.
 
 ### 💡 Others
 
