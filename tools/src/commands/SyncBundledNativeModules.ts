@@ -2,9 +2,9 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import fetch from 'node-fetch';
 import path from 'path';
 import semver from 'semver';
+import { fetch } from 'undici';
 
 import { EXPO_DIR, LOCAL_API_HOST } from '../Constants';
 import logger from '../Logger';
@@ -130,7 +130,7 @@ async function getCurrentBundledNativeModules(
 ): Promise<BundledNativeModulesList> {
   const baseApiUrl = resolveBaseApiUrl(env);
   const result = await fetch(`${baseApiUrl}/v2/sdks/${sdkVersion}/native-modules`);
-  const resultJson: GetBundledNativeModulesResult = await result.json();
+  const resultJson = (await result.json()) as GetBundledNativeModulesResult;
   return resultJson.data;
 }
 

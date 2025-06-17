@@ -6,10 +6,10 @@ import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
-import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
 import semver from 'semver';
+import { fetch } from 'undici';
 import { v4 as uuidv4 } from 'uuid';
 
 import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
