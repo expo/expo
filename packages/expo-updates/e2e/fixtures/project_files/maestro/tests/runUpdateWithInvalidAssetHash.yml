@@ -34,6 +34,9 @@ onFlowStart:
 - tapOn:
     label: Tap on read log entries
     id: readLogEntries
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
 - copyTextFrom:
     label: Copy text from log entries
     id: logEntries
