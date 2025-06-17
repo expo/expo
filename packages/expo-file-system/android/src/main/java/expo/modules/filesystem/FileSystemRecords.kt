@@ -7,8 +7,6 @@ import expo.modules.kotlin.types.Enumerable
 data class InfoOptions(
   @Field
   val md5: Boolean?,
-  @Field
-  val size: Boolean?
 ) : Record
 
 data class DeletingOptions(
