@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add shims for React 19 meta tags on native. ([#36279](https://github.com/expo/expo/pull/36279) by [@EvanBacon](https://github.com/EvanBacon))
+- Add improved error messages for React DOM elements on native. ([#36279](https://github.com/expo/expo/pull/36279) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
