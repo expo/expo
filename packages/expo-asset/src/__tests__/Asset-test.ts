@@ -157,7 +157,7 @@ it(`throws when creating an asset from a missing module`, () => {
   const { getAssetByID } = require('@react-native/assets-registry/registry');
   getAssetByID.mockReturnValueOnce(undefined);
 
-  expect(() => Asset.fromModule(2)).toThrowError();
+  expect(() => Asset.fromModule(2)).toThrow();
 });
 
 it(`downloads uncached assets`, async () => {

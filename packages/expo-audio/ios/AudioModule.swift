@@ -8,6 +8,7 @@ public class AudioModule: Module {
   private var shouldPlayInBackground = false
   private var interruptionMode: InterruptionMode = .mixWithOthers
   private var interruptedPlayers = Set<String>()
+  private var playerVolumes = [String: Float]()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -219,7 +220,7 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
-        recorder.prepare(options: options)
+        try recorder.prepare(options: options)
       }
 
       Function("record") { (recorder: AudioRecorder) -> [String: Any] in
@@ -309,12 +310,14 @@ public class AudioModule: Module {
 
   private func handleInterruptionBegan() {
     interruptedPlayers.removeAll()
+    playerVolumes.removeAll()
 
-    AudioComponentRegistry.shared.players.values.forEach { player in
+    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
       if player.isPlaying {
         interruptedPlayers.insert(player.id)
         switch interruptionMode {
         case .duckOthers:
+          playerVolumes[player.id] = player.ref.volume
           player.ref.volume *= 0.5
         case .doNotMix, .mixWithOthers:
           player.ref.pause()
@@ -323,7 +326,7 @@ public class AudioModule: Module {
     }
 
 #if os(iOS)
-    AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+    AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
       if recorder.isRecording {
         recorder.pauseRecording()
       }
@@ -358,11 +361,13 @@ public class AudioModule: Module {
   }
 
   private func resumeInterruptedPlayers() {
-    AudioComponentRegistry.shared.players.values.forEach { player in
+    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
       if interruptedPlayers.contains(player.id) {
         switch interruptionMode {
         case .duckOthers:
-          player.ref.volume *= 2.0
+          if let originalVolume = playerVolumes[player.id] {
+            player.ref.volume = originalVolume
+          }
         case .doNotMix, .mixWithOthers:
           player.ref.play()
         }
@@ -370,7 +375,7 @@ public class AudioModule: Module {
     }
 
 #if os(iOS)
-    AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+    AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
       if recorder.allowsRecording && !recorder.isRecording {
         _ = recorder.startRecording()
       }
@@ -378,10 +383,11 @@ public class AudioModule: Module {
 #endif
 
     interruptedPlayers.removeAll()
+    playerVolumes.removeAll()
   }
 
   private func pauseAllPlayers() {
-    AudioComponentRegistry.shared.players.values.forEach { player in
+    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
       if player.isPlaying {
         player.wasPlaying = true
         player.ref.pause()
@@ -390,7 +396,7 @@ public class AudioModule: Module {
   }
 
   private func resumeAllPlayers() {
-    AudioComponentRegistry.shared.players.values.forEach { player in
+    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
       if player.wasPlaying {
         player.ref.play()
         player.wasPlaying = false
@@ -429,14 +435,14 @@ public class AudioModule: Module {
 
     #if os(iOS)
     if !mode.allowsRecording {
-      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+      AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
         if recorder.isRecording {
           recorder.ref.stop()
           recorder.allowsRecording = false
         }
       }
     } else {
-      AudioComponentRegistry.shared.recorders.values.forEach { recorder in
+      AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
         recorder.allowsRecording = true
       }
     }

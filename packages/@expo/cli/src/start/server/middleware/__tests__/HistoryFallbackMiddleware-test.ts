@@ -17,8 +17,8 @@ it(`redirects to provided middleware on web with query parameter`, () => {
     next
   );
   // Redirects to middleware with URL intact.
-  expect(indexMiddleware).toBeCalledTimes(1);
-  expect(indexMiddleware).toBeCalledWith(
+  expect(indexMiddleware).toHaveBeenCalledTimes(1);
+  expect(indexMiddleware).toHaveBeenCalledWith(
     expect.objectContaining({
       url: 'https://localhost:8081/foobar?platform=web',
     }),
@@ -26,7 +26,7 @@ it(`redirects to provided middleware on web with query parameter`, () => {
     expect.anything()
   );
   // Next is not called...
-  expect(next).toBeCalledTimes(0);
+  expect(next).toHaveBeenCalledTimes(0);
 });
 
 // NOTE(EvanBacon): The default behavior of the HistoryFallbackMiddleware is to redirect to the index.html
@@ -45,8 +45,8 @@ it(`redirects to provided middleware on web with no indication of a custom platf
     next
   );
   // Redirects to middleware with URL intact.
-  expect(indexMiddleware).toBeCalledTimes(1);
-  expect(indexMiddleware).toBeCalledWith(
+  expect(indexMiddleware).toHaveBeenCalledTimes(1);
+  expect(indexMiddleware).toHaveBeenCalledWith(
     expect.objectContaining({
       url: 'https://localhost:8081/foobar',
     }),
@@ -54,7 +54,7 @@ it(`redirects to provided middleware on web with no indication of a custom platf
     expect.anything()
   );
   // Next is not called...
-  expect(next).toBeCalledTimes(0);
+  expect(next).toHaveBeenCalledTimes(0);
 });
 
 // NOTE(EvanBacon): I can see this potentially changing in the future, React Suspense + React Navigation is a good example.
@@ -73,8 +73,8 @@ it(`does not redirect on native`, () => {
   );
 
   // Does not redirect
-  expect(indexMiddleware).toBeCalledTimes(0);
+  expect(indexMiddleware).toHaveBeenCalledTimes(0);
 
   // Move on to the next middleware
-  expect(next).toBeCalledTimes(1);
+  expect(next).toHaveBeenCalledTimes(1);
 });

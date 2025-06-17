@@ -12,8 +12,9 @@ import android.widget.ImageButton
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.video.player.VideoPlayer
-import expo.modules.video.utils.applyAutoEnterPiP
+import expo.modules.video.utils.applyPiPParams
 import expo.modules.video.utils.applyRectHint
+import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -44,7 +45,10 @@ class FullscreenPlayerActivity : Activity() {
     videoPlayer = videoView.videoPlayer
     videoPlayer?.changePlayerView(playerView)
     VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
-    applyAutoEnterPiP(this, videoView.autoEnterPiP)
+    playerView.player?.let {
+      val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)
+      applyPiPParams(this, videoView.autoEnterPiP, aspectRatio)
+    }
   }
 
   override fun onPostCreate(savedInstanceState: Bundle?) {

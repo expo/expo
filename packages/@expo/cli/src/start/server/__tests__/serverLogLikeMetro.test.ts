@@ -100,6 +100,6 @@ describe(logLikeMetro, () => {
   it(`logs a basic server log`, () => {
     const log = jest.fn();
     logLikeMetro(log, 'log', 'λ', 'hello');
-    expect(log).toBeCalledWith(expect.stringContaining('λ'), 'hello');
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('λ'), 'hello');
   });
 });

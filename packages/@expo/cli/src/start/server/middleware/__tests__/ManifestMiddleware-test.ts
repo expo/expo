@@ -111,8 +111,8 @@ describe('checkBrowserRequestAsync', () => {
         '/index.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
       ],
     });
-    expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
-    expect(res.end).toBeCalledWith('<html />');
+    expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html');
+    expect(res.end).toHaveBeenCalledWith('<html />');
   });
 
   it('skips handling browser requests when the web bundler is "webpack"', async () => {
@@ -313,16 +313,16 @@ describe('getHandler', () => {
     );
 
     // Ensure that devices are stored successfully.
-    expect(ProjectDevices.saveDevicesAsync).toBeCalledWith('/', 'client-id');
+    expect(ProjectDevices.saveDevicesAsync).toHaveBeenCalledWith('/', 'client-id');
 
     // Internals are invoked.
-    expect(middleware._getManifestResponseAsync).toBeCalled();
+    expect(middleware._getManifestResponseAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(200);
-    expect(next).not.toBeCalled();
-    expect(res.end).toBeCalledWith('body');
-    expect(res.setHeader).toBeCalledWith('header', 'value');
+    expect(next).not.toHaveBeenCalled();
+    expect(res.end).toHaveBeenCalledWith('body');
+    expect(res.setHeader).toHaveBeenCalledWith('header', 'value');
   });
 
   it(`returns error info in the response`, async () => {
@@ -358,18 +358,18 @@ describe('getHandler', () => {
     );
 
     // Ensure that devices are stored successfully.
-    expect(ProjectDevices.saveDevicesAsync).toBeCalledWith('/', 'client-id');
+    expect(ProjectDevices.saveDevicesAsync).toHaveBeenCalledWith('/', 'client-id');
 
     // Internals are invoked.
-    expect(middleware._getManifestResponseAsync).toBeCalled();
+    expect(middleware._getManifestResponseAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(500);
 
-    expect(next).not.toBeCalled();
+    expect(next).not.toHaveBeenCalled();
     // Returns error info.
-    expect(res.end).toBeCalledWith(JSON.stringify({ error: 'Error: demo' }));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
-    expect(Log.exception).toBeCalled();
+    expect(Log.exception).toHaveBeenCalled();
   });
 });

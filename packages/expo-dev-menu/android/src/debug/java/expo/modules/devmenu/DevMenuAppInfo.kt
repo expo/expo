@@ -1,22 +1,22 @@
 package expo.modules.devmenu
 
+import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.ReactHostWrapper
+import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.manifests.core.ExpoUpdatesManifest
 
 object DevMenuAppInfo {
-  fun getAppInfo(reactHost: ReactHostWrapper, reactContext: ReactContext): Bundle {
-    val packageManager = reactContext.packageManager
-    val packageName = reactContext.packageName
+  fun getAppInfo(reactHost: ReactHostWrapper, context: Context): DevMenuState.AppInfo {
+    val packageManager = context.packageManager
+    val packageName = context.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
     var appVersion = packageInfo.versionName
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     var appName = packageManager.getApplicationLabel(applicationInfo).toString()
-    val appIcon = getApplicationIconUri(reactContext)
-    var hostUrl = reactContext.sourceURL
+    var hostUrl = reactHost.currentReactContext?.sourceURL
     var runtimeVersion = ""
     val manifest = DevMenuManager.currentManifest
 
@@ -47,14 +47,13 @@ object DevMenuAppInfo {
       else -> "JSC"
     }
 
-    return Bundle().apply {
-      putString("appVersion", appVersion)
-      putString("appName", appName)
-      putString("appIcon", appIcon)
-      putString("runtimeVersion", runtimeVersion)
-      putString("hostUrl", hostUrl)
-      putString("engine", engine)
-    }
+    return DevMenuState.AppInfo(
+      appVersion = appVersion,
+      appName = appName,
+      runtimeVersion = runtimeVersion,
+      hostUrl = hostUrl ?: "Unknown",
+      engine = engine
+    )
   }
 
   private fun getApplicationIconUri(reactContext: ReactContext): String {

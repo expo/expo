@@ -151,7 +151,7 @@ describe(setMinBuildScriptExtVersion, () => {
         minVersion: 12,
       })
     ).toBe(EXAMPLE_PROJECT_BUILD_GRADLE);
-    expect(WarningAggregator.addWarningAndroid).toBeCalledWith(
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'withBuildScriptExtVersion',
       'Cannot set minimum buildscript.ext.foobar version because the property "foobar" cannot be found or does not have a numeric value.'
     );
@@ -163,7 +163,7 @@ describe(setMinBuildScriptExtVersion, () => {
         minVersion: 12,
       })
     ).toBe(EXAMPLE_PROJECT_BUILD_GRADLE);
-    expect(WarningAggregator.addWarningAndroid).toBeCalledWith(
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'withBuildScriptExtVersion',
       'Cannot set minimum buildscript.ext.buildToolsVersion version because the property "buildToolsVersion" cannot be found or does not have a numeric value.'
     );

@@ -56,7 +56,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(405);
-    expect(response.end).toBeCalledWith('Method Not Allowed');
+    expect(response.end).toHaveBeenCalledWith('Method Not Allowed');
   });
   it('creates a basic file', async () => {
     const { middleware } = createMiddleware();
@@ -74,7 +74,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
+    expect(response.end).toHaveBeenCalledWith('OK');
     expect(vol.readFileSync('/hello.txt', 'utf8')).toBe('hello world');
   });
   it('creates a TypeScript file when added to a project with a tsconfig', async () => {
@@ -95,7 +95,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
+    expect(response.end).toHaveBeenCalledWith('OK');
     expect(vol.readFileSync('/hello.tsx', 'utf8')).toBe('hello world');
   });
   it('creates a basic JavaScript file', async () => {
@@ -114,7 +114,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
+    expect(response.end).toHaveBeenCalledWith('OK');
     expect(vol.readFileSync('/hello.js', 'utf8')).toBe('hello world');
   });
 });

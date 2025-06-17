@@ -30,8 +30,8 @@ it('loads a bundle', async () => {
   );
   const url =
     'http://localhost:19000/Second.bundle?platform=ios&modulesOnly=true&runModule=false&runtimeBytecodeVersion=';
-  expect(HMRClient.registerBundle).toBeCalledWith(url);
-  expect(fetchThenEvalAsync).toBeCalledWith(url);
+  expect(HMRClient.registerBundle).toHaveBeenCalledWith(url);
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
 });
 
 it('asserts in production when attempting to load a bundle and the user-defined origin is missing.', async () => {
@@ -55,6 +55,6 @@ it('loads a bundle in production with user-defined location.origin', async () =>
 
   await loadBundleAsync('/_expo/js/index.bundle');
   const url = 'https://example.com/_expo/js/index.bundle';
-  expect(HMRClient.registerBundle).not.toBeCalled();
-  expect(fetchThenEvalAsync).toBeCalledWith(url);
+  expect(HMRClient.registerBundle).not.toHaveBeenCalled();
+  expect(fetchThenEvalAsync).toHaveBeenCalledWith(url);
 });

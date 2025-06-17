@@ -33,10 +33,10 @@ describe('getHandler', () => {
     );
 
     // Not called
-    expect(send).not.toBeCalled();
+    expect(send).not.toHaveBeenCalled();
 
     // Skip to the next middleware
-    expect(next).toBeCalled();
+    expect(next).toHaveBeenCalled();
   });
 
   it(`serves static content from the public folder`, async () => {
@@ -52,13 +52,13 @@ describe('getHandler', () => {
       next
     );
 
-    expect(send).toBeCalledWith(
+    expect(send).toHaveBeenCalledWith(
       { headers: {}, method: 'GET', url: 'http://localhost:8080/favicon.ico' },
       '/favicon.ico',
       { root: '/public' }
     );
 
-    expect(next).not.toBeCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 
   // NOTE(EvanBacon): We could change this in the future.
@@ -78,9 +78,9 @@ describe('getHandler', () => {
     );
 
     // Not called
-    expect(send).not.toBeCalled();
+    expect(send).not.toHaveBeenCalled();
 
     // Skip to the next middleware
-    expect(next).toBeCalled();
+    expect(next).toHaveBeenCalled();
   });
 });
