@@ -56,21 +56,21 @@ export type LocalAuthenticationOptions = {
      */
     promptMessage?: string;
     /**
-     * A subtitle displayed below the prompt message in the TouchID or FaceID prompt.
+     * A subtitle displayed below the prompt message in the authentication prompt.
      * @platform android
      */
     promptSubtitle?: string;
     /**
-     * A description displayed in the middle of the TouchID or FaceID prompt.
+     * A description displayed in the middle of the authentication prompt.
      * @platform android
      */
     promptDescription?: string;
     /**
-     * Allows to customize the default `Cancel` label shown.
+     * Allows customizing the default `Cancel` label shown.
      */
     cancelLabel?: string;
     /**
-     * After several failed attempts the system will fallback to the device passcode. This setting
+     * After several failed attempts, the system falls back to the device passcode. This setting
      * allows you to disable this option and instead handle the fallback yourself. This can be
      * preferable in certain custom authentication workflows. This behaviour maps to using the iOS
      * [`LAPolicyDeviceOwnerAuthenticationWithBiometrics`](https://developer.apple.com/documentation/localauthentication/lapolicy/deviceownerauthenticationwithbiometrics)

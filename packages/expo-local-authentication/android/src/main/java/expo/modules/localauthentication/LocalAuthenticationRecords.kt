@@ -22,13 +22,13 @@ internal class AuthOptions : Record {
   val promptMessage: String = ""
 
   @Field
-  val promptSubtitle: String = ""
+  val promptSubtitle: String? = null
 
   @Field
-  val promptDescription: String = ""
+  val promptDescription: String? = null
 
   @Field
-  val cancelLabel: String = ""
+  val cancelLabel: String? = null
 
   @Field
   val disableDeviceFallback: Boolean = false
