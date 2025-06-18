@@ -137,8 +137,9 @@ export default function App() {
   const handleReadLogEntries = runBlockAsync(async () => {
     const logEntries = await Updates.readLogEntriesAsync(60000);
     setLogs(logEntries);
+    const server_port = process.env.MAESTRO_UPDATES_SERVER_PORT;
     try {
-      await fetch('http://localhost:4747/upload-log-entries', {
+      await fetch(`http://localhost:${server_port}/upload-log-entries`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

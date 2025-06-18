@@ -12,12 +12,9 @@ import type { PathLike } from 'fs';
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
 const RUNTIME_VERSION = '1.0.0';
-/*
-const serverHost = process.env.UPDATES_HOST;
-const serverPort = parseInt(process.env.UPDATES_PORT || '', 10);
- */
+
 const serverHost = 'localhost';
-const serverPort = 4747;
+const serverPort = parseInt(process.env.MAESTRO_UPDATES_SERVER_PORT, 10);
 
 if (!serverHost || isNaN(serverPort)) {
   console.error(

@@ -1,6 +1,5 @@
 appId: dev.expo.updatese2e
 onFlowStart:
-  - runScript: ./maestroUpdatesApi.js
   - runFlow:
       file: beforeEach.yml
 ---
@@ -12,6 +11,8 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - assertTrue:
-    condition:  ${output.api.lastRequestHeaders().host == 'localhost:4747'}
+    condition:  ${output.api.lastRequestHeaders().host == 'localhost:' + MAESTRO_UPDATES_SERVER_PORT}
     label: Check that request contains correct headers
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
 - stopApp

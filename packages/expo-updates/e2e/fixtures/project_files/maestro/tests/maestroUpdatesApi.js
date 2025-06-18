@@ -1,7 +1,7 @@
 /**
  * These are functions that only run within the Maestro JS environment.
  */
-const serverBaseUrl = 'http://localhost:4747';
+const serverBaseUrl = 'http://localhost:' + MAESTRO_UPDATES_SERVER_PORT;
 
 function serveManifest(name, platform) {
   var requestString = `${serverBaseUrl}/serve-manifest?name=${name}&platform=${platform}`;

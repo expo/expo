@@ -1,6 +1,5 @@
 appId: dev.expo.updatese2e
 onFlowStart:
-  - runScript: ./maestroUpdatesApi.js
   - runFlow:
       file: beforeEach.yml
 ---
