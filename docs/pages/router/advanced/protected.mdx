@@ -4,8 +4,13 @@ description: Learn how to make screens inaccessible to client-side navigation.
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **warning** Protected routes are available in SDK 53 and above.
+
+<VideoBoxLink videoId="zHZjJDTTHJg" title="Watch: Using protected routes" />
+
+## Overview
 
 Protected screens allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, or if a screen becomes protected while it is active, they will be redirected to the anchor route (usually the index screen) or the first available screen in the stack.
 
