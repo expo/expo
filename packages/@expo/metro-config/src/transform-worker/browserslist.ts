@@ -13,7 +13,7 @@ export async function getBrowserslistTargets(
     return browserslistCache[projectRoot];
   }
   const browserslist = await import('browserslist');
-  const { browserslistToTargets } = require('lightningcss') as typeof import('lightningcss');
+  const { browserslistToTargets } = await import('lightningcss');
 
   const targets = browserslistToTargets(
     browserslist.default(undefined, {
