@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `structuredClone` built-in to native platforms.
+- Add `structuredClone` built-in to native platforms. ([#37503](https://github.com/expo/expo/pull/37503) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable async requires by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
