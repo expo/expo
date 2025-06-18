@@ -107,6 +107,45 @@
               }
             }
           }
+        },
+        "rewrites": {
+          "description": "Enable static rewrites. Rewrites allow you to map an incoming request path to a different destination path without changing the URL.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "source",
+              "destination"
+            ],
+            "properties": {
+              "source": {
+                "description": "The incoming request path pattern to match",
+                "type": "string"
+              },
+              "destination": {
+                "description": "The target path to rewrite the request to",
+                "type": "string"
+              },
+              "methods": {
+                "description": "HTTP methods that should be rewritten. Omit to rewrite all methods.",
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH",
+                    "OPTIONS",
+                    "HEAD"
+                  ]
+                }
+              }
+            }
+          }
         }
       },
       "additionalProperties": false
