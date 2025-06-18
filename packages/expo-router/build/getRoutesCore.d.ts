@@ -25,6 +25,7 @@ export type Options = {
 export type RedirectConfig = {
     source: string;
     destination: string;
+    destinationContextKey: string;
     permanent?: boolean;
     methods?: string[];
     external?: boolean;
@@ -32,6 +33,7 @@ export type RedirectConfig = {
 export type RewriteConfig = {
     source: string;
     destination: string;
+    destinationContextKey: string;
     methods?: string[];
 };
 /**
@@ -47,7 +49,6 @@ export type RewriteConfig = {
  *      - If multiple routes have the same name, the most specific route is used
  */
 export declare function getRoutes(contextModule: RequireContext, options: Options): RouteNode | null;
-export declare function getIgnoreList(options?: Options): RegExp[];
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *

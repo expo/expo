@@ -244,7 +244,7 @@ it('can push to a redirect', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'bar', '_sitemap', '+not-found'],
+          routeNames: ['index', 'bar', 'foo', '_sitemap', '+not-found'],
           routes: [
             {
               key: expect.any(String),
@@ -376,4 +376,63 @@ it('tabs can still work for external redirects', () => {
   fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
 
   expect(mockOpenURL.mock.calls).toEqual([['https://example.com']]);
+});
+
+it('not existing nested route redirects correctly', () => {
+  mockRedirects.mockReturnValue([
+    {
+      source: '/test/1234',
+      destination: '/explore',
+    },
+  ]);
+
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[id]': () => <Text testID="id">ID</Text>,
+      index: () => <Text testID="index">Index</Text>,
+      explore: () => <Text testID="explore">Explore</Text>,
+    },
+    {}
+  );
+
+  act(() => router.push('/test/1234'));
+
+  expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    preloadedRoutes: [],
+    routeNames: ['__root'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        params: undefined,
+        state: {
+          index: 1,
+          key: expect.any(String),
+          preloadedRoutes: [],
+          routeNames: ['index', 'explore', '_sitemap', 'test/1234', '[id]', '+not-found'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
+              params: undefined,
+              path: '/',
+            },
+            {
+              key: expect.any(String),
+              name: 'explore',
+              params: {},
+              path: undefined,
+            },
+          ],
+          stale: false,
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    type: 'stack',
+  });
 });

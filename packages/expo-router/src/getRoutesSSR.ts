@@ -82,4 +82,4 @@ export function getExactRoutes(
   });
 }
 
-export { generateDynamic, extrapolateGroups, getIgnoreList } from './getRoutesCore';
+export { generateDynamic, extrapolateGroups } from './getRoutesCore';

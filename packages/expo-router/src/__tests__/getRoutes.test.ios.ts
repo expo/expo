@@ -830,11 +830,11 @@ describe('group expansion', () => {
     });
   });
 
-  it(`multiple s`, () => {
+  it(`multiple groups`, () => {
     expect(
       getRoutes(
         inMemoryContext({
-          './(a,b)/(c,d)/multiple-s': () => null,
+          './(a,b)/(c,d)/multiple-groups': () => null,
         }),
         { internal_stripLoadRoute: true, skipGenerated: true }
       )
@@ -842,34 +842,34 @@ describe('group expansion', () => {
       children: [
         {
           children: [],
-          contextKey: './(a,b)/(c,d)/multiple-s.js',
+          contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-s.js'],
-          route: '(a)/(c)/multiple-s',
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
+          route: '(a)/(c)/multiple-groups',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/(c,d)/multiple-s.js',
+          contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-s.js'],
-          route: '(a)/(d)/multiple-s',
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
+          route: '(a)/(d)/multiple-groups',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/(c,d)/multiple-s.js',
+          contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-s.js'],
-          route: '(b)/(c)/multiple-s',
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
+          route: '(b)/(c)/multiple-groups',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/(c,d)/multiple-s.js',
+          contextKey: './(a,b)/(c,d)/multiple-groups.js',
           dynamic: null,
-          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-s.js'],
-          route: '(b)/(d)/multiple-s',
+          entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/(c,d)/multiple-groups.js'],
+          route: '(b)/(d)/multiple-groups',
           type: 'route',
         },
       ],
@@ -881,11 +881,11 @@ describe('group expansion', () => {
     });
   });
 
-  it(`multiple s with brackets`, () => {
+  it(`multiple groups with brackets`, () => {
     expect(
       getRoutes(
         inMemoryContext({
-          './(a,b)/((c),d,(e))/multiple-s-with-brackets': () => null,
+          './(a,b)/((c),d,(e))/multiple-groups-with-brackets': () => null,
         }),
         { internal_stripLoadRoute: true, skipGenerated: true }
       )
@@ -893,68 +893,68 @@ describe('group expansion', () => {
       children: [
         {
           children: [],
-          contextKey: './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+          contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
-            './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+            './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           ],
-          route: '(a)/((c))/multiple-s-with-brackets',
+          route: '(a)/((c))/multiple-groups-with-brackets',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+          contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
-            './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+            './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           ],
-          route: '(a)/(d)/multiple-s-with-brackets',
+          route: '(a)/(d)/multiple-groups-with-brackets',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+          contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
-            './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+            './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           ],
-          route: '(a)/((e))/multiple-s-with-brackets',
+          route: '(a)/((e))/multiple-groups-with-brackets',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+          contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
-            './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+            './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           ],
-          route: '(b)/((c))/multiple-s-with-brackets',
+          route: '(b)/((c))/multiple-groups-with-brackets',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+          contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
-            './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+            './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           ],
-          route: '(b)/(d)/multiple-s-with-brackets',
+          route: '(b)/(d)/multiple-groups-with-brackets',
           type: 'route',
         },
         {
           children: [],
-          contextKey: './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+          contextKey: './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           dynamic: null,
           entryPoints: [
             'expo-router/build/views/Navigator.js',
-            './(a,b)/((c),d,(e))/multiple-s-with-brackets.js',
+            './(a,b)/((c),d,(e))/multiple-groups-with-brackets.js',
           ],
-          route: '(b)/((e))/multiple-s-with-brackets',
+          route: '(b)/((e))/multiple-groups-with-brackets',
           type: 'route',
         },
       ],
@@ -1031,7 +1031,7 @@ describe('redirects', () => {
       children: [
         {
           children: [],
-          contextKey: 'old',
+          contextKey: './old.js',
           destinationContextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -1096,7 +1096,7 @@ describe('redirects', () => {
         },
         {
           children: [],
-          contextKey: 'old/[slug]',
+          contextKey: './old/[slug].js',
           destinationContextKey: './(app)/[slug].js',
           dynamic: [
             {
