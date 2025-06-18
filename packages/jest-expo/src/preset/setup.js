@@ -4,9 +4,8 @@
  */
 'use strict';
 
-const merge = require('lodash/merge');
-
 const findUp = require('find-up');
+const merge = require('lodash/merge');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
@@ -186,6 +185,14 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
       // Do nothing.
     },
   },
+}));
+
+jest.doMock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({
+    url: 'http://localhost:8081',
+    bundleLoadedFromServer: true,
+  }),
 }));
 
 // Mock the `createSnapshotFriendlyRef` to return an ref that can be serialized in snapshots.
