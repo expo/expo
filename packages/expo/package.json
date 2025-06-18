@@ -80,6 +80,7 @@
     "@expo/fingerprint": "0.13.0",
     "@expo/metro-config": "0.20.14",
     "@expo/vector-icons": "^14.0.0",
+    "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "~13.1.11",
     "expo-asset": "~11.1.5",
     "expo-constants": "~17.1.6",
