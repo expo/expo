@@ -1,9 +1,7 @@
 ---
-title: Platform-specific Modules
+title: Platform-specific modules
 description: Learn how to switch modules based on the platform in Expo Router.
 ---
-
-> **warning** Platform specific extensions were added in Expo Router `3.5.0`. Follow this guide only if you are using an older version of Expo Router.
 
 import { FileTree } from '~/ui/components/FileTree';
 
@@ -40,7 +38,9 @@ export default function Layout() {
 }
 ```
 
-## Platform specific extensions
+## Platform-specific extensions
+
+> **warning** Platform-specific extensions were added in Expo Router `3.5.x`. If you are using an older version of the library, follow instructions from [Platform-specific modules](#platform-module).
 
 Metro bundler's platform-specific extensions (for example, **.ios.tsx** or **.native.tsx**) are not supported in the **app** directory. This ensures that routes are universal across platforms for deep linking. However, you can create platform-specific files outside the **app** directory and use them from within the **app** directory.
 
