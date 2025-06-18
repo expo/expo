@@ -12,7 +12,7 @@ import expo.modules.devmenu.R
 private const val BASE_FONT_SIZE = 16f
 
 @JvmInline
-value class FontSize(internal val font: TextStyle) {
+value class FontSize(val font: TextStyle) {
   companion object {
     internal fun create(
       fontSize: Int,
