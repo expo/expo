@@ -1,9 +1,8 @@
 appId: dev.expo.updatese2e
 onFlowStart:
   - runScript: ./maestroUpdatesApi.js
-  - evalScript:
-      script:  ${output.api.restartUpdatesServer()}
-      label: Restart updates server
+  - runFlow:
+      file: beforeEach.yml
 ---
 - evalScript:
     script:  ${output.api.serveManifest('test-update-with-invalid-asset-hash', MAESTRO_PLATFORM)}

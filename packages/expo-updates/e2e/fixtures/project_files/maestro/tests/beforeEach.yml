@@ -1,0 +1,20 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runScript: ./maestroUpdatesApi.js
+---
+# This script should run at the beginning of each test
+- evalScript:
+    script: ${output.api.uninstallClient(MAESTRO_PLATFORM)}
+    label: Remove app from simulator
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- evalScript:
+    script: ${output.api.installClient(MAESTRO_PLATFORM, MAESTRO_CONFIGURATION)}
+    label: Install app on simulator
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+      MAESTRO_CONFIGURATION: ${MAESTRO_CONFIGURATION}
+- evalScript:
+    script:  ${output.api.restartUpdatesServer()}
+    label: Restart updates server
+

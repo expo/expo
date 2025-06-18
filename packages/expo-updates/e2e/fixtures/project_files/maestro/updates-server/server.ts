@@ -3,6 +3,7 @@ import type * as cryptoTypes from 'crypto';
 import { UpdatesLogEntry } from 'expo-updates';
 const express = require('express');
 const FormData = require('form-data');
+const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs');
 const path = require('path');
 const serializeDictionary = require('structured-headers').serializeDictionary;
@@ -12,6 +13,19 @@ const Update = require('./update').Update;
 const projectRoot = path.resolve(__dirname, '../..');
 
 import type { Request, Response } from 'express';
+
+const supportedPlatforms = new Set(['android', 'ios']);
+const supportedConfigurations = new Set(['debug', 'release']);
+const supportedManifestRequests = new Set([
+  'test-update-basic',
+  'test-update-invalid-hash',
+  'test-update-with-invalid-asset-hash',
+  'test-update-with-multiple-assets',
+  'test-update-with-older-commit-time',
+  'test-update-before-rollback',
+  'test-rollback',
+  'test-update-for-asset-deletion',
+]);
 
 const app = express();
 
@@ -317,6 +331,53 @@ async function serveSignedDirective(directive: any, projectRoot: string) {
 // Endpoints for use by Maestro to control the server and get info
 // on recent requests
 
+app.get('/uninstall-client', async (req: Request, res: Response) => {
+  console.log(`Received request to remove client on platform ${req.query.platform}`);
+  if (!supportedPlatforms.has(req.query.platform as string)) {
+    res.status(400).send(`Missing or unknown platform: ${req.query.platform}`);
+    return;
+  }
+  await uninstallClient(req.query.platform as string);
+  await setTimeout(2000);
+  res.status(200).send('OK');
+});
+
+app.get('/install-client', async (req: Request, res: Response) => {
+  console.log(
+    `Received request to install client on platform ${req.query.platform} with configuration ${req.query.configuration}`
+  );
+  if (!supportedConfigurations.has(req.query.configuration as string)) {
+    res.status(400).send(`Missing or unknown configuration: ${req.query.configuration}`);
+    return;
+  }
+  if (!supportedPlatforms.has(req.query.platform as string)) {
+    res.status(400).send(`Missing or unknown platform: ${req.query.platform}`);
+    return;
+  }
+  await installClient(req.query.platform as string, req.query.configuration as string);
+  await setTimeout(5000);
+  res.status(200).send('OK');
+});
+
+async function uninstallClient(platform: string) {
+  console.log(`yarn maestro:${platform}:uninstall`);
+  // If app not present, this will fail but that's OK
+  try {
+    await spawnAsync('yarn', [`maestro:${platform}:uninstall`], {
+      cwd: projectRoot,
+    });
+  } catch (e) {
+    console.log("Failed to uninstall app, but that's OK if it wasn't installed", e);
+  }
+}
+
+async function installClient(platform: string, configuration: string) {
+  console.log(`yarn maestro:${platform}:${configuration}:install`);
+  await spawnAsync('yarn', [`maestro:${platform}:${configuration}:install`], {
+    cwd: projectRoot,
+  });
+}
+
 app.get('/restart-server', (_: Request, res: Response) => {
   console.log('Received request to restart server');
   res.status(200).send('OK');
@@ -414,18 +475,6 @@ app.get('/serve-manifest', async (req: Request, res: Response) => {
 });
 
 // Set up the updates server to serve the different test updates
-
-const supportedPlatforms = new Set(['android', 'ios']);
-const supportedManifestRequests = new Set([
-  'test-update-basic',
-  'test-update-invalid-hash',
-  'test-update-with-invalid-asset-hash',
-  'test-update-with-multiple-assets',
-  'test-update-with-older-commit-time',
-  'test-update-before-rollback',
-  'test-rollback',
-  'test-update-for-asset-deletion',
-]);
 
 async function respondToServeManifestRequest(
   name: string,

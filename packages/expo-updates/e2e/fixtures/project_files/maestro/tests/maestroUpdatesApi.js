@@ -1,3 +1,6 @@
+/**
+ * These are functions that only run within the Maestro JS environment.
+ */
 const serverBaseUrl = 'http://localhost:4747';
 
 function serveManifest(name, platform) {
@@ -22,6 +25,14 @@ function restartUpdatesServer() {
   http.get(`${serverBaseUrl}/delay?ms=500`);
 }
 
+function installClient(platform, configuration) {
+  http.get(`${serverBaseUrl}/install-client?platform=${platform}&configuration=${configuration}`);
+}
+
+function uninstallClient(platform) {
+  http.get(`${serverBaseUrl}/uninstall-client?platform=${platform}`);
+}
+
 function delay(ms) {
   http.get(`${serverBaseUrl}/delay?ms=${ms}`);
 }
@@ -40,6 +51,8 @@ function logEntries() {
 
 output.api = {
   delay: delay,
+  installClient: installClient,
+  uninstallClient: uninstallClient,
   lastRequestHeaders: lastRequestHeaders,
   logEntries: logEntries,
   restartUpdatesServer: restartUpdatesServer,

@@ -6,7 +6,7 @@ if [[ "$#" -ne 2 ]]; then
 fi
 
 export MAESTRO_PLATFORM=$1
-export E2E_CONFIGURATION=$2
+export MAESTRO_CONFIGURATION=$2
 
 function killUpdatesServerIfNeeded() {
   UPDATES_SERVER_PID=$(lsof -t -i:4747)
@@ -35,37 +35,5 @@ function beforeAll() {
   fi
 }
 
-function beforeTest()
-{
-  yarn maestro:$MAESTRO_PLATFORM:uninstall || true
-  yarn maestro:$MAESTRO_PLATFORM:$E2E_CONFIGURATION:install
-  sleep 2
-}
-
 beforeAll
-
-beforeTest
-maestro test maestro/tests/basic_startAndStop.yml
-beforeTest
-maestro test maestro/tests/basic_checkRequestHeaders.yml
-beforeTest
-maestro test maestro/tests/basic_reload.yml
-beforeTest
-maestro test maestro/tests/basic_runUpdate.yml
-beforeTest
-maestro test maestro/tests/basic_updateInvalidHash.yml
-beforeTest
-maestro test maestro/tests/basic_updateInvalidAssetHash.yml
-beforeTest
-maestro test maestro/tests/basic_updateMultipleAssets.yml
-beforeTest
-maestro test maestro/tests/basic_updateOldCommitTime.yml
-beforeTest
-maestro test maestro/tests/basic_rollback.yml
-beforeTest
-maestro test maestro/tests/jsapi_runUpdate.yml
-beforeTest
-maestro test maestro/tests/jsapi_stateMachine.yml
-beforeTest
-maestro test maestro/tests/assetRecovery_restoreAssetFiles.yml
-
+maestro test maestro/tests/updates-e2e-enabled.yml
