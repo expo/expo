@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `TextDecoderStream` and `TextEncoderStream` APIs to the native runtime.
 - Enable async requires by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
