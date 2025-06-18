@@ -4,6 +4,8 @@ import { mockProperty, unmockAllProperties } from 'jest-expo';
 import ExpoLocation from '../ExpoLocation';
 import * as Location from '../index';
 
+jest.mock('expo', () => ({ isRunningInExpoGo: jest.fn(() => true) }));
+
 const fakeReturnValue = {
   coords: {
     latitude: 1,
