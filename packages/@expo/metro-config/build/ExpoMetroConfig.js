@@ -26,9 +26,11 @@ const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
+const customPlatforms_1 = require("./utils/customPlatforms");
 const filePath_1 = require("./utils/filePath");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutExotic = false;
+let hasWarnedAboutCustomPlatforms = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
@@ -119,7 +121,7 @@ function createStableModuleIdFactory(root) {
         return memoizedGetModulePath(modulePath, scope);
     };
 }
-function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
+function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins, unstable_outOfTreePlatforms, } = {}) {
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = (0, metro_config_1.importMetroConfig)(projectRoot);
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
@@ -128,6 +130,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     if (isExotic && !hasWarnedAboutExotic) {
         hasWarnedAboutExotic = true;
         console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
+    }
+    if (unstable_outOfTreePlatforms && !hasWarnedAboutCustomPlatforms) {
+        hasWarnedAboutCustomPlatforms = true;
+        console.log(chalk_1.default.yellow(`\u203A Out-Of-Tree Platforms are not officially supported by Expo and may not work with EAS, CNG, or other Expo features.`));
     }
     const reactNativePath = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
     const sourceExtsConfig = { isTS: true, isReact: true, isModern: true };
@@ -145,6 +151,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const pkg = (0, config_1.getPackageJson)(projectRoot);
     const watchFolders = (0, getWatchFolders_1.getWatchFolders)(projectRoot);
     const nodeModulesPaths = (0, getModulesPaths_1.getModulesPaths)(projectRoot);
+    const customPlatforms = unstable_outOfTreePlatforms !== undefined
+        ? (0, customPlatforms_1.resolveCustomPlatforms)(pkg, unstable_outOfTreePlatforms)
+        : null;
     if (env_1.env.EXPO_DEBUG) {
         console.log();
         console.log(`Expo Metro config:`);
@@ -158,6 +167,11 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
         console.log(`- Sass: ${sassVersion}`);
         console.log(`- Reanimated: ${reanimatedVersion}`);
+        if (customPlatforms) {
+            console.log(`- Out-Of-Tree Platforms:`, Object.entries(customPlatforms)
+                .map(([name, pkg]) => `${name} -> ${pkg}`)
+                .join(', '));
+        }
         console.log();
     }
     const { 
@@ -190,6 +204,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,
+            resolveRequest: (0, customPlatforms_1.createCustomPlatformResolver)(customPlatforms),
         },
         cacheStores: [cacheStore],
         watcher: {
@@ -216,6 +231,19 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),
                 ];
+                // Add the initialize core for OOT platforms
+                if (customPlatforms) {
+                    for (const platformName in customPlatforms) {
+                        const initializeFile = `${customPlatforms[platformName]}/Libraries/Core/InitializeCore`;
+                        const initializePath = resolve_from_1.default.silent(projectRoot, initializeFile);
+                        if (initializePath) {
+                            preModules.push(initializePath);
+                        }
+                        else {
+                            debug(`${initializeFile} not found, out-of-tree platform "${platformName}" might not work`);
+                        }
+                    }
+                }
                 const stdRuntime = resolve_from_1.default.silent(projectRoot, 'expo/src/winter/index.ts');
                 if (stdRuntime) {
                     preModules.push(stdRuntime);

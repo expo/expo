@@ -4,7 +4,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname, { unstable_outOfTreePlatforms: true });
 const monorepoRoot = path.join(__dirname, '../..');
 
 config.resolver.assetExts.push(
@@ -23,30 +23,6 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/native-component-list'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/native-component-list`
   path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
-
-// When testing on MacOS we need to swap out `react-native` for `react-native-macos`
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (
-    platform === 'macos' &&
-    (moduleName === 'react-native' || moduleName.startsWith('react-native/'))
-  ) {
-    const newModuleName = moduleName.replace('react-native', 'react-native-macos');
-    return context.resolveRequest(context, newModuleName, platform);
-  }
-  return context.resolveRequest(context, moduleName, platform);
-};
-
-// When testing on MacOS we need to include the `react-native-macos/Libraries/Core/InitializeCore` as prepended global module
-const originalGetModulesRunBeforeMainModule = config.serializer.getModulesRunBeforeMainModule;
-config.serializer.getModulesRunBeforeMainModule = () => {
-  try {
-    return [
-      require.resolve('react-native/Libraries/Core/InitializeCore'),
-      require.resolve('react-native-macos/Libraries/Core/InitializeCore'),
-    ];
-  } catch {}
-  return originalGetModulesRunBeforeMainModule();
-};
 
 // `expo-sqlite` uses `SharedArrayBuffer` on web, which requires explicit COOP and COEP headers
 // See: https://github.com/expo/expo/pull/35208
