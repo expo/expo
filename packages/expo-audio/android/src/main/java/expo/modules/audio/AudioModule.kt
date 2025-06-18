@@ -309,6 +309,12 @@ class AudioModule : Module() {
         }
       }
 
+      Property("paused") { player ->
+        runOnMain {
+          !player.ref.isPlaying
+        }
+      }
+
       Property("muted") { player ->
         player.isMuted
       }.set { player, muted: Boolean? ->
@@ -402,7 +408,7 @@ class AudioModule : Module() {
 
       Function("setPlaybackRate") { player: AudioPlayer, rate: Float ->
         appContext.mainQueue.launch {
-          val playbackRate = if (rate < 0) 0f else min(rate, 2.0f)
+          val playbackRate = if (rate <= 0) 0.1f else min(rate, 2.0f)
           val pitch = if (player.preservesPitch) 1f else playbackRate
           player.ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
