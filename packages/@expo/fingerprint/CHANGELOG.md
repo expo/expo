@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Move `glob` from `devDependencies` to `dependencies` as its used outside test code. ([#37332](https://github.com/expo/expo/pull/37332) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.13.1 — 2025-06-18
+
+### 🐛 Bug fixes
+
+- Move `glob` from `devDependencies` to `dependencies` as its used outside test code. ([#37332](https://github.com/expo/expo/pull/37332) by [@byCedric](https://github.com/byCedric))
 
 ## 0.13.0 — 2025-06-08
 

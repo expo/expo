@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.11.0 — 2025-06-18
+
+### 🎉 New features
+
+- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
 
 ## 0.10.0 — 2025-05-08
 

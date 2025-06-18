@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.20.15 — 2025-06-18
+
+### 🐛 Bug fixes
+
 - Fix tree shaking overlapping exports ([#36717](https://github.com/expo/expo/pull/36717) by [@EvanBacon](https://github.com/EvanBacon))
 - Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
 
