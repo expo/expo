@@ -83,6 +83,47 @@ it(`transforms a global CSS file in dev for native`, async () => {
   ).toMatchInlineSnapshot(`""`);
 });
 
+describe('Global CSS', () => {
+  it(`automatically strips redundant vendor prefixes`, async () => {
+    const fixture = `
+      .button {
+        -webkit-border-radius: 10px; /* Chrome, Safari, Edge (WebKit) */
+        -moz-border-radius: 10px;    /* Firefox */
+        -ms-border-radius: 10px;     /* Internet Explorer */
+        border-radius: 10px;         /* Standard, unprefixed property */
+      }
+      `;
+
+    const css = (
+      await doTransformForOutput('acme.css', fixture, {
+        dev: true,
+        minify: true,
+        platform: 'web',
+      })
+    ).output.output[0].data.css.code;
+
+    expect(css).not.toMatch(/-webkit-transition/);
+    expect(css).toEqual('.button{-ms-border-radius:10px;border-radius:10px}');
+  });
+  it(`automatically injects vendor prefixes`, async () => {
+    const fixture = `
+      .button {
+         background: image-set("image1.jpg" 1x, "image2.jpg" 2x);
+      }
+      `;
+
+    const css = (
+      await doTransformForOutput('acme.css', fixture, {
+        dev: true,
+        minify: true,
+        platform: 'web',
+      })
+    ).output.output[0].data.css.code;
+
+    expect(css).toMatch(/-webkit-image-set/);
+  });
+});
+
 describe('CSS Modules', () => {
   describe('ios', () => {
     it(`transforms for dev, minified`, async () => {
@@ -133,6 +174,28 @@ describe('CSS Modules', () => {
           platform: 'web',
         })
       ).toMatchSnapshot();
+    });
+
+    it(`automatically strips redundant vendor prefixes`, async () => {
+      const fixture = `
+      .button {
+        -webkit-border-radius: 10px; /* Chrome, Safari, Edge (WebKit) */
+        -moz-border-radius: 10px;    /* Firefox */
+        -ms-border-radius: 10px;     /* Internet Explorer */
+        border-radius: 10px;         /* Standard, unprefixed property */
+      }
+      `;
+
+      const css = (
+        await doTransformForOutput('acme.module.css', fixture, {
+          dev: true,
+          minify: true,
+          platform: 'web',
+        })
+      ).output.output[0].data.css.code;
+
+      expect(css).not.toMatch(/-webkit-transition/);
+      expect(css).toEqual('._R_BGG_button{-ms-border-radius:10px;border-radius:10px}');
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
