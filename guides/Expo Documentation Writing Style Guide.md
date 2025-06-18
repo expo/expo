@@ -179,9 +179,9 @@ We, sometimes, have buttons that lead to an Expo Snack. Use title case for these
 - Correct: Try this example on Snack
 - Incorrect: Try This Example On Snack
 
-### File, directory names, extensions as bold text
+### File names, directory names, file extensions as bold text
 
-File, directory names and file extensions are used as bold text in the markdown files.
+File names, directory names and file extensions are used as bold text in the markdown files.
 
 Example:
 
