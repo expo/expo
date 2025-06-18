@@ -3,7 +3,7 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXConstants (17.1.6):
     - ExpoModulesCore
-  - Expo (53.0.9):
+  - Expo (53.0.11):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -29,7 +29,7 @@ PODS:
     - Yoga
   - ExpoAsset (11.1.5):
     - ExpoModulesCore
-  - ExpoCrypto (14.1.4):
+  - ExpoCrypto (14.1.5):
     - ExpoModulesCore
   - ExpoFileSystem (18.1.10):
     - ExpoModulesCore
@@ -43,7 +43,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMeshGradient (0.3.4):
     - ExpoModulesCore
-  - ExpoModulesCore (2.3.13):
+  - ExpoModulesCore (2.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -65,17 +65,25 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoSQLite (15.2.10):
+  - ExpoSQLite (15.2.12):
     - ExpoModulesCore
-  - ExpoWebBrowser (14.1.6):
+  - ExpoWebBrowser (14.2.0):
     - ExpoModulesCore
   - fast_float (6.1.4)
   - FBLazyVector (0.78.3)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - hermes-engine (0.78.2):
-    - hermes-engine/Pre-built (= 0.78.2)
-  - hermes-engine/Pre-built (0.78.2)
+  - hermes-engine (0.78.3):
+    - hermes-engine/cdp (= 0.78.3)
+    - hermes-engine/Hermes (= 0.78.3)
+    - hermes-engine/inspector (= 0.78.3)
+    - hermes-engine/inspector_chrome (= 0.78.3)
+    - hermes-engine/Public (= 0.78.3)
+  - hermes-engine/cdp (0.78.3)
+  - hermes-engine/Hermes (0.78.3)
+  - hermes-engine/inspector (0.78.3)
+  - hermes-engine/inspector_chrome (0.78.3)
+  - hermes-engine/Public (0.78.3)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1683,7 +1691,7 @@ PODS:
     - React-logger (= 0.78.3)
     - React-perflogger (= 0.78.3)
     - React-utils (= 0.78.3)
-  - RNCAsyncStorage (2.2.0):
+  - RNCAsyncStorage (2.1.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2006,23 +2014,23 @@ SPEC CHECKSUMS:
   boost: 7d49a506d1ac47358fea28558d184dd6431170ca
   DoubleConversion: 10f51d3e1238973c033faac2d84c0ea114942f53
   EXConstants: be238322d57d084dc055dbd5d6fe6479510504ce
-  Expo: a83417971ce4165d6fff913a381224abc1831762
+  Expo: 1da57037d958f48b5bccfe399e633970b02a6bbd
   ExpoAsset: 3ea3275cca6a7793b3d36fbf1075c590f803fbcb
-  ExpoCrypto: fc94a8865ce0e06c68c10c3993f9ac9a6424d0c2
+  ExpoCrypto: fcb6a8a08d1929f346cb95eb05a8f7818627177a
   ExpoFileSystem: 3a98ca2a6f13674ecfd97327d1b44a8ace444cbd
   ExpoFont: 312c73403bbd4f98e1d6a5330641a56292583cd2
   ExpoKeepAwake: e8dedc115d9f6f24b153ccd2d1d8efcdfd68a527
   ExpoLinking: 5d151d4a497d7e375308602f0a89b4e8acf7b5f8
   ExpoLocalAuthentication: fd8b38cdb709f6c327995668223529763619a5c6
   ExpoMeshGradient: ee97f0bfd80356910ca4fc2b67663ea0d9e14a41
-  ExpoModulesCore: 81aba1cc8072d3ea46125d8276bc414b7be67aec
-  ExpoSQLite: c092c9454ad72ba09e29c494470a4fe41996f741
-  ExpoWebBrowser: 8aa522ab60113768d4dc5691c36d3315cc3b297b
+  ExpoModulesCore: 5cf289874a79862132511e85593a4da1f1e8cfdd
+  ExpoSQLite: ab6edd420e3d99c399f731f6fae162365fb436e2
+  ExpoWebBrowser: eeb47f52e85b2686b56178749675cf90d0822f86
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
   FBLazyVector: b61b46a4137164b884a21e2ae3e289e1ccef5700
   fmt: f6af2d677a106e3e44c9536a4c0c7f03ab53c854
   glog: b7594b792ee4e02ed1f44b01d046ca25fa713e3d
-  hermes-engine: 2771b98fb813fdc6f92edd7c9c0035ecabf9fee7
+  hermes-engine: 7c9a53b8059a788512e0167e41835b07c0abce71
   RCT-Folly: abec2d7f4af402b4957c44e86ceff8725b23c1b4
   RCTDeprecation: cf39863b43871c2031050605fb884019b6193910
   RCTRequired: 8e45f166ea2d154c59dd209c5bb710ad3ac0e752
@@ -2084,7 +2092,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: dda2eca447ef13387ed59b9605382e036858c801
   ReactCodegen: 0e6b627e262ae3216aaa7735bb44853899347254
   ReactCommon: 06d6013a960cfd9223a4f6d335343ce04c0edbbe
-  RNCAsyncStorage: efa02b644121f4e1f7f33e712f4f82c30aa4ff4a
+  RNCAsyncStorage: 4f4de141719fef3490c87a0dd779575c64c0472c
   RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: f89a870053f1a8fbee8c98e35a1b9eff44ce2015
