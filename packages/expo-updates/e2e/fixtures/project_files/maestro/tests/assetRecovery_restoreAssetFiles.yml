@@ -1,0 +1,71 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runScript: ./maestroUpdatesApi.js
+  - evalScript:
+      script:  ${output.api.restartUpdatesServer()}
+      label: Restart updates server
+---
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-with-multiple-assets', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve an update with multiple assets
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-2"}
+    label: Assert update string is from downloaded update
+- tapOn:
+    label: Read asset files
+    id: readAssetFiles
+- evalScript:
+    scripts: ${output.api.delay(500)}
+    label: Wait for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from asset files counter
+    id: numAssetFiles
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) > 2}
+    label: Assert that there are more than 2 asset files
+- tapOn:
+    label: Clear asset files
+    id: clearAssetFiles
+- evalScript:
+    scripts: ${output.api.delay(500)}
+    label: Wait for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from asset files counter
+    id: numAssetFiles
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) == 0}
+    label: Assert that there are no asset files
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-2"}
+    label: Assert update string is from downloaded update
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- tapOn:
+    label: Read asset files
+    id: readAssetFiles
+- evalScript:
+    scripts: ${output.api.delay(500)}
+    label: Wait for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from asset files counter
+    id: numAssetFiles
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) > 2}
+    label: Assert that there are more than 2 asset files
