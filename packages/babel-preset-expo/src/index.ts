@@ -246,7 +246,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    extraPlugins.push(
+      require('@babel/plugin-transform-parameters'),
+
+      // Add support for class static blocks.
+      [require('@babel/plugin-transform-class-static-block'), { loose: true }]
+    );
   }
 
   const inlines: Record<string, null | boolean | string> = {

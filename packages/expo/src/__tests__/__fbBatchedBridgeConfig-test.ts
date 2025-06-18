@@ -2,6 +2,8 @@ import 'react-native';
 import '../Expo.fx';
 import { Platform } from 'expo-modules-core';
 
+jest.mock('../async-require/getDevServer');
+
 if (Platform.OS === 'web') {
   it('provides a helpful error message on web', () => {
     // @ts-ignore
