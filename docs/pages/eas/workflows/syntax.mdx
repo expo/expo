@@ -992,7 +992,7 @@ jobs:
 
 #### `eas/download_build`
 
-Downloads application archive of a given build. By default, the downloaded artifact can be an .apk, .aab, .ipa, or .app file, or a .tar.gz archive containing one or more of these files. If the artifact is a .tar.gz archive, it will be extracted and the first file matching the specified extensions will be returned. If the build produced no application archive, the step will fail.
+Downloads application archive of a given build. By default, the downloaded artifact can be an **.apk**, **.aab**, **.ipa**, or **.app** file, or a **.tar.gz** archive containing one or more of these files. If the artifact is a **.tar.gz** archive, it will be extracted and the first file matching the specified extensions will be returned. If the build produced no application archive, the step will fail.
 
 ```yaml
 jobs:
@@ -1000,8 +1000,8 @@ jobs:
     steps:
       - uses: eas/download_build
         with:
-          build_id: string # required. ID of the build to download.
-          extensions: [apk, aab, ipa, app] # optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
+          build_id: string # Required. ID of the build to download.
+          extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
 ```
 
 | Property     | Type     | Required | Default                        | Description                                                                |
@@ -1011,7 +1011,7 @@ jobs:
 
 **Outputs:**
 
-- `artifact_path`: The absolute path to the matching application archive. This output can be used as input into other steps in your workflow, for example to upload or process the artifact further.
+- `artifact_path`: The absolute path to the matching application archive. This output can be used as input into other steps in your workflow. For example, to upload or process the artifact further.
 
 Example usage:
 
