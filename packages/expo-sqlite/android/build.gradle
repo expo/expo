@@ -58,6 +58,7 @@ android {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
           "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
           "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}",
           "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}",
