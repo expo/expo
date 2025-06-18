@@ -240,6 +240,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
+      expect(error.message).toMatch(/cancell?ed/i);
       expect(hasReceivedChunk).toBe(false);
     });
   });
