@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- [Android] Bumped GIF Glide plugin to 3.0.5 for Android 16KB page size support. ([#37454](https://github.com/expo/expo/pull/37454) by [@kudo](https://github.com/kudo))
+
 ## 2.3.0 — 2025-06-11
 
 ### 🛠 Breaking changes
