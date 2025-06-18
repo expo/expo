@@ -30,35 +30,13 @@ android {
   sourceSets {
     debug {
       java {
-        srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
-
       }
     }
   }
   buildFeatures {
     buildConfig true
   }
-}
-
-task clenupAssets(type: Delete) {
-  // In the past, assets were placed in the `main` directory.
-  // However, this is no longer the case. To ensure a smooth transition,
-  // we’re also removing assets from the old location.
-  delete files("src/main/assets")
-}
-
-task copyAssets(type: Copy) {
-  dependsOn(clenupAssets)
-
-  from('../assets') {
-    exclude "*.ios.*"
-  }
-  into 'src/debug/assets'
-}
-
-project.afterEvaluate {
-  preBuild.dependsOn copyAssets
 }
 
 repositories {
