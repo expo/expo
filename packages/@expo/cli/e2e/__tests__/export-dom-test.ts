@@ -99,10 +99,10 @@ describe('Export DOM Components', () => {
 
     // Linked assets should be MD5 named
     //   - icon.png
-    const iconAssetModule = `__d((function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
+    const iconAssetModule = `__d(function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
     expect(domJsBundleContent.indexOf(iconAssetModule)).toBeGreaterThan(-1);
     //   - font.ttf
-    const ttfModule = `__d((function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"}),`;
+    const ttfModule = `__d(function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"},`;
     expect(domJsBundleContent.indexOf(ttfModule)).toBeGreaterThan(-1);
 
     // Because sourceMappingURL contains path info, we have to remove it and re-generate the MD5 hash files.

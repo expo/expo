@@ -8,7 +8,8 @@
   "sideEffects": [
     "*.fx.tsx",
     "*.fx.web.tsx",
-    "./src/winter/*.ts"
+    "./src/winter/*.ts",
+    "./src/async-require/*.ts"
   ],
   "bin": {
     "expo": "bin/cli",
@@ -87,6 +88,7 @@
     "expo-keep-awake": "~14.1.4",
     "expo-modules-autolinking": "2.1.10",
     "expo-modules-core": "2.3.13",
+    "pretty-format": "^29.7.0",
     "react-native-edge-to-edge": "1.6.0",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
@@ -104,7 +106,9 @@
   "peerDependencies": {
     "@expo/dom-webview": "*",
     "@expo/metro-runtime": "*",
+    "metro-runtime": "*",
     "react": "*",
+    "react-refresh": "*",
     "react-native": "*",
     "react-native-webview": "*"
   },
