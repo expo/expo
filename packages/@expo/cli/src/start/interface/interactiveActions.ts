@@ -168,70 +168,6 @@ export class DevServerManagerActions {
         {} as Record<string, { cli?: CliCommandPlugin; devtool?: DevToolsPlugin }>
       );
 
-      // Create factories for devtools and CLI commands
-      const devtoolFactory = (plugin: DevToolsPlugin): MoreToolMenuItem => ({
-        title: chalk`Open {bold ${plugin.packageName}}`,
-        value: `devtoolsPlugin:${plugin.packageName}`,
-        action: async () => {
-          const url = new URL(
-            plugin.webpageEndpoint,
-            this.devServerManager
-              .getDefaultDevServer()
-              .getUrlCreator()
-              .constructUrl({ scheme: 'http' })
-          );
-          await openBrowserAsync(url.toString());
-        },
-      });
-
-      const executeCliCommand = async (plugin: CliCommandPlugin, cmd: CliCommand) => {
-        // Verify that we have apps connected to the dev server.
-        const metroServerOrigin = this.devServerManager
-          .getDefaultDevServer()
-          .getJsInspectorBaseUrl();
-
-        const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-        if (!apps.length) {
-          return Log.warn(
-            chalk`{bold Debug:} No compatible apps connected, React Native DevTools can only be used with Hermes. ${learnMore(
-              'https://docs.expo.dev/guides/using-hermes/'
-            )}`
-          );
-        }
-
-        const spinner = ora(
-          `Executing '${cmd.caption}'${apps.length > 0 ? ` (${apps.length} app(s))` : ''}`
-        ).start();
-        try {
-          // Execute the command with the plugin executor.
-          const results = await plugin.executor(value, apps);
-          spinner.succeed(`${cmd.caption} succeeded:`).stop();
-          Log.log(results.trim());
-        } catch (error: any) {
-          spinner.fail(`Failed executing task. ${error.toString()}`);
-        }
-      };
-
-      const cliFactory = (plugin: CliCommandPlugin): MoreToolMenuItem => ({
-        title: chalk`{bold ${plugin.packageName}}`,
-        value: `cliPlugin:${plugin.packageName}`,
-        action: async () => {
-          // Show selector with plugin commands.
-          const commands = plugin.commands.map((cmd) => ({
-            title: cmd.caption,
-            value: cmd.cmd,
-          }));
-
-          const value = await selectAsync(chalk`{dim Select command}`, commands);
-          const cmd = plugin.commands.find((c) => c.cmd === value);
-          if (!cmd) {
-            Log.warn(`No command found for ${plugin.packageName}`);
-          } else {
-            await executeCliCommand(plugin, cmd);
-          }
-        },
-      });
-
       // Enumerate plugins and build menuitem strcuture - with a submenu for plugins that have both CLI commands and devtools.
       const pluginMenuItems: MoreToolMenuItem[] = Object.keys(pluginMap)
         .map((key) => {
@@ -244,12 +180,12 @@ export class DevServerManagerActions {
               action: async () => {
                 // Create on menu with the devtool and for each CLI command
                 const submenuItems: MoreToolMenuItem[] = [
-                  devtoolFactory(pluginItem.devtool!),
+                  devtoolFactory(pluginItem.devtool!, this.devServerManager),
                   ...pluginItem.cli!.commands.map((cmd) => ({
                     title: cmd.caption,
                     value: cmd.cmd,
                     action: () => {
-                      executeCliCommand(pluginItem.cli!, cmd);
+                      executeCliCommand(pluginItem.cli!, cmd, this.devServerManager);
                     },
                   })),
                 ];
@@ -258,9 +194,9 @@ export class DevServerManagerActions {
               },
             };
           } else if (pluginItem.devtool) {
-            return devtoolFactory(pluginItem.devtool);
+            return devtoolFactory(pluginItem.devtool, this.devServerManager);
           } else if (pluginItem.cli) {
-            return cliFactory(pluginItem.cli);
+            return cliFactory(pluginItem.cli, this.devServerManager);
           }
           return null;
         })
@@ -286,3 +222,72 @@ export class DevServerManagerActions {
     this.devServerManager.broadcastMessage('devMenu');
   }
 }
+
+// Create factories for devtools and CLI commands
+const devtoolFactory = (
+  plugin: DevToolsPlugin,
+  devServerManager: DevServerManager
+): MoreToolMenuItem => ({
+  title: chalk`Open {bold ${plugin.packageName}}`,
+  value: `devtoolsPlugin:${plugin.packageName}`,
+  action: async () => {
+    const url = new URL(
+      plugin.webpageEndpoint,
+      devServerManager.getDefaultDevServer().getUrlCreator().constructUrl({ scheme: 'http' })
+    );
+    await openBrowserAsync(url.toString());
+  },
+});
+
+const executeCliCommand = async (
+  plugin: CliCommandPlugin,
+  cmd: CliCommand,
+  devServerManager: DevServerManager
+) => {
+  // Verify that we have apps connected to the dev server.
+  const metroServerOrigin = devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
+
+  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+  if (!apps.length) {
+    return Log.warn(
+      chalk`{bold Debug:} No compatible apps connected, React Native DevTools can only be used with Hermes. ${learnMore(
+        'https://docs.expo.dev/guides/using-hermes/'
+      )}`
+    );
+  }
+
+  const spinner = ora(
+    `Executing '${cmd.caption}'${apps.length > 0 ? ` (${apps.length} app(s))` : ''}`
+  ).start();
+  try {
+    // Execute the command with the plugin executor.
+    const results = await plugin.executor(cmd.cmd, apps);
+    spinner.succeed(`${cmd.caption} succeeded:`).stop();
+    Log.log(results.trim());
+  } catch (error: any) {
+    spinner.fail(`Failed executing task. ${error.toString()}`);
+  }
+};
+
+const cliFactory = (
+  plugin: CliCommandPlugin,
+  devServerManager: DevServerManager
+): MoreToolMenuItem => ({
+  title: chalk`{bold ${plugin.packageName}}`,
+  value: `cliPlugin:${plugin.packageName}`,
+  action: async () => {
+    // Show selector with plugin commands.
+    const commands = plugin.commands.map((cmd) => ({
+      title: cmd.caption,
+      value: cmd.cmd,
+    }));
+
+    const value = await selectAsync(chalk`{dim Select command}`, commands);
+    const cmd = plugin.commands.find((c) => c.cmd === value);
+    if (cmd == null) {
+      Log.warn(`No command found for ${plugin.packageName}`);
+    } else {
+      await executeCliCommand(plugin, cmd, devServerManager);
+    }
+  },
+});
