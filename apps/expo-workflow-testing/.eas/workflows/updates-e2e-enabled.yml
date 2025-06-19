@@ -80,15 +80,11 @@ jobs:
           npx pod-install
       - name: Build E2E test app (debug)
         id: builddebug
-        env:
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
           yarn maestro:ios:debug:build
       - name: Build E2E test app (release)
         id: buildrelease
-        env:
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
           yarn maestro:ios:release:build
@@ -97,15 +93,11 @@ jobs:
           device_identifier: iPhone 16
       - name: Run Maestro tests (debug)
         id: testdebug
-        env:
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/updates-e2e-enabled.sh ios debug
       - name: Run Maestro tests (release)
         id: testrelease
-        env:
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/updates-e2e-enabled.sh ios release
@@ -137,7 +129,6 @@ jobs:
         working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         run: |
           yarn generate-test-update-bundles
       - uses: eas/start_android_emulator
@@ -148,7 +139,6 @@ jobs:
         working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         run: |
           yarn maestro:android:debug:build
       - name: Build E2E test app (release)
@@ -156,14 +146,12 @@ jobs:
         working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         run: |
           yarn maestro:android:release:build
       - name: Run Maestro tests (debug)
         id: testdebug
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/updates-e2e-enabled.sh android debug
@@ -171,7 +159,6 @@ jobs:
         id: testrelease
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          MAESTRO_UPDATES_SERVER_PORT: "4747"
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/updates-e2e-enabled.sh android release

@@ -5,8 +5,10 @@ if [[ "$#" -ne 2 ]]; then
   exit 1
 fi
 
+. .env
 export MAESTRO_PLATFORM=$1
 export MAESTRO_CONFIGURATION=$2
+export MAESTRO_UPDATES_SERVER_PORT=$EXPO_PUBLIC_UPDATES_SERVER_PORT
 
 function killUpdatesServerIfNeeded() {
   UPDATES_SERVER_PID=$(lsof -t -i:$MAESTRO_UPDATES_SERVER_PORT)

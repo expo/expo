@@ -345,7 +345,6 @@ async function preparePackageJson(
         '@config-plugins/detox': '^9.0.0',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
-        'babel-plugin-transform-inline-environment-variables': '^0.4.4',
         detox: '^20.33.0',
         express: '^4.18.2',
         'form-data': '^4.0.0',
@@ -950,7 +949,7 @@ export async function setupE2EAppAsync(
     [
       'tsconfig.json',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -1011,7 +1010,7 @@ export async function setupUpdatesDisabledE2EAppAsync(
     [
       'tsconfig.json',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -1048,7 +1047,7 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
     [
       'tsconfig.json',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -1082,7 +1081,7 @@ export async function setupUpdatesFingerprintE2EAppAsync(
       'tsconfig.json',
       '.fingerprintignore',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -1115,7 +1114,7 @@ export async function setupUpdatesStartupE2EAppAsync(
     [
       'tsconfig.json',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -1148,7 +1147,7 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
     [
       'tsconfig.json',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
@@ -1181,7 +1180,7 @@ export async function setupUpdatesDevClientE2EAppAsync(
     [
       'tsconfig.json',
       '.detoxrc.json',
-      'babel.config.js',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
