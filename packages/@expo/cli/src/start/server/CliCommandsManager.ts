@@ -17,15 +17,17 @@ import { learnMore } from '../../utils/link';
 
 const debug = require('debug')('expo:start:server:config');
 
-interface CliCommandPlugin {
+export interface CliCommand {
+  cmd: string;
+  caption: string;
+}
+export interface CliCommandPlugin {
   packageName: string;
   packageRoot: string;
   description: string;
-  commands: {
-    cmd: string;
-    caption: string;
-  }[];
+  commands: CliCommand[];
   mcpEnabled: boolean;
+  cliEnabled?: boolean;
   main: string;
   executor: (cmd: string, apps: MetroInspectorProxyApp[]) => Promise<string>;
 }

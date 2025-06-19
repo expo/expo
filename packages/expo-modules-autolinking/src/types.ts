@@ -150,6 +150,7 @@ export interface ModuleDescriptorCliCommandPlugin {
     caption: string;
   }[];
   mcpEnabled: boolean;
+  cliEnabled?: boolean;
   main: string;
 }
 
@@ -354,6 +355,12 @@ export interface RawExpoModuleConfig {
     }[];
     /* Set to true to expose as MCP server */
     mcpEnabled: boolean;
+    /**
+     * Whether the CLI extension is enabled in the CLI.
+     * If false, the extension will not be loaded in the CLI, but it can still be used in the MCP server.
+     * @default true
+     */
+    cliEnabled?: boolean;
     /**
      * Main entry point of the CLI extension.
      */
