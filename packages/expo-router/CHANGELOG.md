@@ -11,6 +11,7 @@
 - Allow for multiple children in Link.Trigger ([#37700](https://github.com/expo/expo/pull/37700) by [@Ubax](https://github.com/Ubax))
 - Add icon prop to Link.MenuAction ([#37783](https://github.com/expo/expo/pull/37783) by [@Ubax](https://github.com/Ubax))
 - Add submenus to link preview context menu ([#37784](https://github.com/expo/expo/pull/37784) by [@Ubax](https://github.com/Ubax))
+- [web] Add styled modals and sheets on web with a custom modal stack using vaul ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
 

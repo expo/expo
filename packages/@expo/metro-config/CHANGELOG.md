@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix require path of assets with RSC client references ([#37663](https://github.com/expo/expo/pull/37663) by [@byCedric](https://github.com/byCedric))
+- Fix Fast Refresh on web by calling `module.hot.accept()` in the transformer. ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
 
 ### 💡 Others
 

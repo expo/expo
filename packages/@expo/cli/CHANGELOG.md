@@ -20,6 +20,7 @@
 
 - add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
 - Bumped `playwright` version to 1.53.1. ([#37631](https://github.com/expo/expo/pull/37631) by [@kudo](https://github.com/kudo))
+- Use Vaul for modals and sheets on web with a custom stack ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
 - fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
 
 ### ⚠️ Notices
