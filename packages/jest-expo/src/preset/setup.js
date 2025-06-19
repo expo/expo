@@ -36,9 +36,6 @@ if (typeof globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
   globalThis.window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 }
 
-// Mock Expo's default async require messaging sockets when running tests
-jest.mock('expo/src/async-require/messageSocket', () => undefined);
-
 const mockImageLoader = {
   configurable: true,
   enumerable: true,
@@ -129,6 +126,9 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
     });
   }
 );
+
+// Mock Expo's default async require messaging sockets when running tests
+jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 try {
   jest.mock('expo-file-system', () => ({
