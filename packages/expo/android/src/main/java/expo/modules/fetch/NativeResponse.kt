@@ -69,11 +69,11 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
       return
     }
-    state = ResponseState.BODY_STREAMING_CANCELLED
+    state = ResponseState.BODY_STREAMING_CANCELED
   }
 
-  fun emitRequestCancelled() {
-    val error = FetchRequestCancelledException()
+  fun emitRequestCanceled() {
+    val error = FetchRequestCanceledException()
     this.error = error
     if (state == ResponseState.BODY_STREAMING_STARTED) {
       emit("didFailWithError", error.localizedMessageWithCauseLocalizedMessage())
@@ -98,7 +98,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   //region Callback implementations
 
   override fun onFailure(call: Call, e: IOException) {
-    // Canceled request should be handled by emitRequestCancelled
+    // Canceled request should be handled by emitRequestCanceled
     if (e.message === "Canceled") {
       return
     }
@@ -107,7 +107,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         ResponseState.STARTED,
         ResponseState.RESPONSE_RECEIVED,
         ResponseState.BODY_STREAMING_STARTED,
-        ResponseState.BODY_STREAMING_CANCELLED
+        ResponseState.BODY_STREAMING_CANCELED
       )
     ) {
       return
@@ -175,7 +175,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         if (isInvalidState(
             ResponseState.RESPONSE_RECEIVED,
             ResponseState.BODY_STREAMING_STARTED,
-            ResponseState.BODY_STREAMING_CANCELLED
+            ResponseState.BODY_STREAMING_CANCELED,
           )
         ) {
           break
