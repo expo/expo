@@ -175,7 +175,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         if (isInvalidState(
             ResponseState.RESPONSE_RECEIVED,
             ResponseState.BODY_STREAMING_STARTED,
-            ResponseState.BODY_STREAMING_CANCELED,
+            ResponseState.BODY_STREAMING_CANCELED
           )
         ) {
           break
