@@ -4,9 +4,8 @@
  */
 'use strict';
 
-const merge = require('lodash/merge');
-
 const findUp = require('find-up');
+const merge = require('lodash/merge');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
@@ -36,6 +35,9 @@ if (typeof globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
   // React is inconsistent with how it checks for the global hook
   globalThis.window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = globalThis.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 }
+
+// Mock Expo's default async require messaging sockets when running tests
+jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 const mockImageLoader = {
   configurable: true,
