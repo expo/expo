@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# update with bad asset hash yields expected log entry, and does not run
 - evalScript:
     script:  ${output.api.serveManifest('test-update-with-invalid-asset-hash', MAESTRO_PLATFORM)}
     label: Setup updates server to serve an update with invalid asset hash

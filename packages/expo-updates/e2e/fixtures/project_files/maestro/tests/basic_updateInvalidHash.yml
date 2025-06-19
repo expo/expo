@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# does not run update with incorrect hash
 - evalScript:
     script:  ${output.api.serveManifest('test-update-invalid-hash', MAESTRO_PLATFORM)}
     label: Setup updates server to serve an update with invalid hash

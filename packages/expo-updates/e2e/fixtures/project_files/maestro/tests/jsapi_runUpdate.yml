@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# Test using checkForUpdate, downloadUpdate JS API to download and run an update
 - evalScript:
     script:  ${output.downloadedUpdateId = output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
     label: Setup updates server to serve a basic update

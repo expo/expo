@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# Test rollbacks
 - evalScript:
     script:  ${output.updateBeforeRollbackId = output.api.serveManifest('test-update-before-rollback', MAESTRO_PLATFORM)}
     label: Setup updates server to serve the first update

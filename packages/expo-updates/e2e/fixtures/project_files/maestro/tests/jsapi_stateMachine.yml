@@ -3,6 +3,8 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# Check that state is correct at different points in the update lifecycle
+#
 # Check state on initial launch with embedded bundle
 - launchApp
 - copyTextFrom:

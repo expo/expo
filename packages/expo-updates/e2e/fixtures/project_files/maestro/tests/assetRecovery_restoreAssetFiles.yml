@@ -4,6 +4,17 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# This test ensures we can (or at least try to) recover missing assets that originated from a
+# downloaded update. We install an app with multiple assets, then clear all the assets from
+# .expo-internal storage (but not SQLite). This simulates scenarios such as: a bug in our code that
+# deletes assets unintentionally; OS deleting files from app storage if it runs out of memory; etc.
+#
+# Recovery code for this situation exists in the DatabaseLauncher, so this test ensures that
+# this logic doesn't regress.
+#
+# This test makes use of the additional UpdatesE2ETestModule, which provides methods for
+# clearing and reading the .expo-internal folder.
+#
 - evalScript:
     script:  ${output.api.serveManifest('test-update-with-multiple-assets', MAESTRO_PLATFORM)}
     label: Setup updates server to serve an update with multiple assets

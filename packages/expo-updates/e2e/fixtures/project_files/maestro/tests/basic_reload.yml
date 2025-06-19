@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# Test reload
 - launchApp
 - copyTextFrom:
     label: Copy text from update string

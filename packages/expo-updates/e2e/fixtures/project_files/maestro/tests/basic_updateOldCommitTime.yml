@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# does not download any assets for an older update
 - evalScript:
     script:  ${output.api.serveManifest('test-update-with-older-commit-time', MAESTRO_PLATFORM)}
     label: Setup updates server to serve an old update
@@ -18,6 +19,9 @@ onFlowStart:
 - evalScript:
     script: ${output.api.delay(3000)}
     label: Delay for 3 seconds
+- assertTrue:
+    condition:  ${output.api.staticFileCount() == 0}
+    label: Assert that no static files were requested
 - stopApp
 - launchApp
 - copyTextFrom:

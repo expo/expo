@@ -3,6 +3,7 @@ onFlowStart:
   - runFlow:
       file: beforeEach.yml
 ---
+# downloads and runs update with multiple assets, verifies number of assets requested
 - evalScript:
     script:  ${output.api.serveManifest('test-update-with-multiple-assets', MAESTRO_PLATFORM)}
     label: Setup updates server to serve an update with multiple assets
