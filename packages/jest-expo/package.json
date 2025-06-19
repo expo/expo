@@ -45,6 +45,7 @@
     "find-up": "^5.0.0",
     "jest-environment-jsdom": "^29.2.1",
     "jest-snapshot": "^29.2.1",
+    "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",

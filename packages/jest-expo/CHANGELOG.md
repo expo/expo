@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Auto-configure `prettierPath` to enable Jest snapshot updates ([#36010](https://github.com/expo/expo/pull/36010) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 53.0.7 - 2025-06-06
