@@ -2495,6 +2495,8 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
+  - react-native-maps (1.20.1):
+    - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-pager-view (6.7.1):
@@ -2618,6 +2620,37 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
+  - react-native-skia (2.0.3):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React
+    - React-callinvoker
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-slider (4.5.6):
     - boost
     - DoubleConversion
@@ -3804,10 +3837,12 @@ DEPENDENCIES:
   - React-logger (from `../../../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-maps (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
+  - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../../../node_modules/react-native-view-shot`)
   - react-native-webview (from `../../../node_modules/react-native-webview`)
@@ -4179,6 +4214,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../../../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-maps:
+    :path: "../../../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -4187,6 +4224,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/@react-native-segmented-control/segmented-control"
+  react-native-skia:
+    :path: "../../../node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -4404,10 +4443,12 @@ SPEC CHECKSUMS:
   React-logger: b69e65dc60f768e5509ac0cc27a360124bf70478
   React-Mapbuffer: b48f9f3311fd0ec0f7a5dc39d707eff521fb5f38
   React-microtasksnativemodule: d8568d0485a350c720c061ae835e09fc88c28715
+  react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-pager-view: 03553493db7fd49946d709ab6d65c7ef0cc929be
   react-native-safe-area-context: 47c1782a327ca2affa9bec5a2f95534cbabb620a
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
+  react-native-skia: 84cafee0d95a8bf910ca1c8fea74bfd016d7296a
   react-native-slider: dd3636cb9b888b4d8aaf7ac0bb5e0d2921c5eec6
   react-native-view-shot: a18275ac858eb4866365148517774182319c7aee
   react-native-webview: a53cadbdc946b2d14055284ee9f5f81c1d4817a3
