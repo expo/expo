@@ -5,7 +5,6 @@ exports.StackRouter = exports.stackRouterOverride = void 0;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const non_secure_1 = require("nanoid/non-secure");
-const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const useScreens_1 = require("../useScreens");
@@ -261,14 +260,7 @@ function filterSingular(state, getId) {
     };
 }
 const Stack = Object.assign((props) => {
-    const { isPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
-    const screenOptions = (0, react_1.useMemo)(() => {
-        if (isPreviewOpen) {
-            return disableAnimationInScreenOptions(props.screenOptions);
-        }
-        return props.screenOptions;
-    }, [props.screenOptions, isPreviewOpen]);
-    return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,

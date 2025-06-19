@@ -142,7 +142,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         // END FORK
         // Make sure that the routes in the state exist in the root navigator
         // Otherwise there's an error in the linking configuration
-        return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
+        return state?.routes.some((r) => !rootState?.routeNames?.includes?.(r.name));
     }, [ref]);
     const server = React.use(serverLocationContext_1.ServerContext);
     const getInitialState = React.useCallback(() => {

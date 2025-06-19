@@ -156,7 +156,7 @@ export function useLinking(
 
       // Make sure that the routes in the state exist in the root navigator
       // Otherwise there's an error in the linking configuration
-      return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
+      return state?.routes.some((r) => !rootState?.routeNames?.includes?.(r.name));
     },
     [ref]
   );

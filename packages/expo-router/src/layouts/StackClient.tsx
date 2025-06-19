@@ -18,8 +18,10 @@ import {
 } from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
 import { ComponentProps, useMemo } from 'react';
+import { Platform } from 'react-native';
 import { StackAnimationTypes } from 'react-native-screens';
 
+import { RouterModal } from './ModalStack';
 import { withLayoutContext } from './withLayoutContext';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import { SingularOptions, getSingularId } from '../useScreens';
@@ -29,8 +31,45 @@ type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
 
+/**
+ * We extend NativeStackNavigationOptions with our custom props
+ * to allow for several extra props to be used on web, like modalWidth
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+  /**
+   * Override the width of the modal (px or percentage). Only applies on web platform.
+   * @platform web
+   */
+  modalWidth?: number | string;
+  /**
+   * Override the height of the modal (px or percentage). Applies on web desktop.
+   * @platform web
+   */
+  modalHeight?: number | string;
+  /**
+   * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+   * @platform web
+   */
+  modalMinHeight?: number | string;
+  /**
+   * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+   * @platform web
+   */
+  modalMinWidth?: number | string;
+  /**
+   * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+   * @platform web
+   */
+  modalBorder?: string;
+  /**
+   * Override the overlay background color (any valid CSS color or rgba/hsla value).
+   * @platform web
+   */
+  modalOverlayBackground?: string;
+};
+
 const RNStack = withLayoutContext<
-  NativeStackNavigationOptions,
+  ExtendedStackNavigationOptions,
   typeof NativeStackNavigator,
   StackNavigationState<ParamListBase>,
   NativeStackNavigationEventMap
@@ -359,9 +398,15 @@ const Stack = Object.assign(
       }
       return props.screenOptions;
     }, [props.screenOptions, isPreviewOpen]);
-    return (
-      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
-    );
+    const isWeb = Platform.OS === 'web';
+
+    if (isWeb) {
+      return <RouterModal {...props} UNSTABLE_router={stackRouterOverride} />;
+    } else {
+      return (
+        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+      );
+    }
   },
   {
     Screen: RNStack.Screen as (
