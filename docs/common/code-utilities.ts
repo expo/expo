@@ -207,7 +207,8 @@ export function getCodeBlockDataFromChildren(children?: ReactNode, className?: s
     'className'
   );
   const code = parseValue(codeNode?.children?.toString() ?? '');
-  const codeLanguage = codeNode?.className ? codeNode.className.split('-')[1] : 'jsx';
+  const codeLanguage =
+    typeof codeNode?.className === 'string' ? codeNode.className.split('-')[1] : 'jsx';
 
   return { ...code, language: codeLanguage };
 }
