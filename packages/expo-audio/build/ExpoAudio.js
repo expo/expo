@@ -13,6 +13,15 @@ const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source) {
     return replace.call(this, resolveSource(source));
 };
+const setPlaybackRate = AudioModule.AudioPlayer.prototype.setPlaybackRate;
+AudioModule.AudioPlayer.prototype.setPlaybackRate = function (rate, pitchCorrectionQuality) {
+    if (Platform.OS === 'android') {
+        return setPlaybackRate.call(this, rate);
+    }
+    else {
+        return setPlaybackRate.call(this, rate, pitchCorrectionQuality);
+    }
+};
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);

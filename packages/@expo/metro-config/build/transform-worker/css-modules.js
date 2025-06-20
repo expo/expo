@@ -9,6 +9,7 @@ exports.matchCssModule = matchCssModule;
 exports.printCssWarnings = printCssWarnings;
 exports.collectCssImports = collectCssImports;
 const code_frame_1 = __importDefault(require("@babel/code-frame"));
+const browserslist_1 = require("./browserslist");
 const css_1 = require("./css");
 const RNW_CSS_CLASS_ID = '_';
 async function transformCssModuleWeb(props) {
@@ -31,6 +32,8 @@ async function transformCssModuleWeb(props) {
         minify: props.options.minify,
         // @ts-expect-error: Added for testing against virtual file system.
         resolver: props.options._test_resolveCss,
+        targets: await (0, browserslist_1.getBrowserslistTargets)(props.options.projectRoot),
+        include: 1, // Nesting
     });
     printCssWarnings(props.filename, props.src, cssResults.warnings);
     const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(cssResults.exports);

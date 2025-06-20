@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Mock Expo's default async-require messaging socket. ([#37524](https://github.com/expo/expo/pull/37524) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 53.0.7 - 2025-06-06

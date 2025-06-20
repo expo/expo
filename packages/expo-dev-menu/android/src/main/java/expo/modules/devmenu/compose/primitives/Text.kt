@@ -14,7 +14,7 @@ import expo.modules.devmenu.compose.theme.Theme
 @Composable
 fun Text(
   text: String,
-  fontSize: FontSize = Theme.typography.size16,
+  fontSize: FontSize = Theme.typography.medium,
   color: Color? = null,
   maxLines: Int = Int.MAX_VALUE,
   softWrap: Boolean = true,
@@ -36,7 +36,7 @@ fun Text(
 @Composable
 fun Heading(
   text: String,
-  fontSize: FontSize = Theme.typography.size18,
+  fontSize: FontSize = Theme.typography.large,
   color: Color = Theme.colors.text.default,
   maxLines: Int = Int.MAX_VALUE
 ) {

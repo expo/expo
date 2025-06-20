@@ -371,14 +371,14 @@ class DevLauncherController private constructor() :
             categories.addAll(it)
           }
         } ?: run {
-          // If no pending intent is available, use the extras from the intent that was used to launch the app.
-          pendingIntentExtras?.let {
-            putExtras(it)
-          }
+        // If no pending intent is available, use the extras from the intent that was used to launch the app.
+        pendingIntentExtras?.let {
+          putExtras(it)
         }
+      }
 
-        // Clear the pending intent extras after using them.
-        pendingIntentExtras = null
+      // Clear the pending intent extras after using them.
+      pendingIntentExtras = null
     }
 
   private fun createBasicAppIntent() =
