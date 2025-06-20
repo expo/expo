@@ -10,7 +10,6 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var isPrepared = false
   private var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = true
-  weak var owningRegistry: AudioComponentRegistry?
 
   override init(_ ref: AVAudioRecorder) {
     super.init(ref)
@@ -138,7 +137,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   override func sharedObjectWillRelease() {
-    owningRegistry?.remove(self)
+    AudioComponentRegistry.shared.remove(self)
 
     if ref.isRecording {
       ref.stop()
