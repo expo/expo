@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { LightboxImage } from './LightboxImage';
 
