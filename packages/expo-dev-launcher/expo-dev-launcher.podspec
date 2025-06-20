@@ -34,6 +34,7 @@ Pod::Spec.new do |s|
   s.resource_bundles = {
     'EXDevLauncher' => [
       'ios/assets',
+      'ios/Assets.xcassets',
       'ios/main.jsbundle',
       'ios/Views/EXDevLauncherErrorView.storyboard'
     ]
