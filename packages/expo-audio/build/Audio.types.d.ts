@@ -207,6 +207,14 @@ export type RecordingOptionsIos = {
      * A boolean describing if the PCM data should be encoded in floating point or integral values.
      */
     linearPCMIsFloat?: boolean;
+    /**
+     * Whether to allow Bluetooth audio devices during recording.
+     * When `true` or `undefined` (default), Bluetooth devices will remain connected and can be used for audio input/output.
+     * When `false`, forces audio to route through the device's built-in microphone and speaker, potentially disconnecting Bluetooth devices.
+     *
+     * @default true
+     */
+    allowBluetoothAudio?: boolean;
 };
 /**
  * @platform android

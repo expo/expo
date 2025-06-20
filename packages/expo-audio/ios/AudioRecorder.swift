@@ -72,7 +72,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     resetDurationTracking()
 
     do {
-      try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+      var sessionOptions: AVAudioSession.CategoryOptions = [.allowBluetooth]
+
+      if let options, !options.allowBluetoothAudio {
+        sessionOptions = [.defaultToSpeaker]
+      }
+      try recordingSession.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
       try recordingSession.setActive(true)
     } catch {
       currentState = .error
