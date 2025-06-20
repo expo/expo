@@ -5,6 +5,7 @@ import EXDevMenuInterface
 import EXManifests
 import CoreGraphics
 import CoreMedia
+import Combine
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -80,8 +81,8 @@ open class DevMenuManager: NSObject {
     didSet {
       updateAutoLaunchObserver()
 
-      if let bridge = currentBridge {
-        disableRNDevMenuHoykeys(for: bridge)
+      if let currentBridge {
+        disableRNDevMenuHoykeys(for: currentBridge)
       }
     }
   }
@@ -217,8 +218,6 @@ open class DevMenuManager: NSObject {
     eventDispatcher?.sendDeviceEvent(withName: eventName, body: data)
   }
 
-  // MARK: delegate stubs
-
   /**
    Returns a bool value whether the dev menu can change its visibility.
    Returning `false` entirely disables the dev menu.
@@ -258,8 +257,6 @@ open class DevMenuManager: NSObject {
     return UIUserInterfaceStyle.unspecified
   }
 
-  // MARK: private
-
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
     if !canChangeVisibility(to: visible) {
       return false
@@ -286,14 +283,23 @@ open class DevMenuManager: NSObject {
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
-  public var registeredCallbacks: [Callback] = []
+  private let callbacksSubject = PassthroughSubject<[Callback], Never>()
+  public var callbacksPublisher: AnyPublisher<[Callback], Never> {
+    callbacksSubject.eraseToAnyPublisher()
+  }
+
+  public var registeredCallbacks: [Callback] = [] {
+    didSet {
+      callbacksSubject.send(registeredCallbacks)
+    }
+  }
 
   func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
-    guard let bridge = currentBridge else {
+    guard let currentBridge else {
       return nil
     }
 
-    let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
+    let devDelegate = DevMenuDevOptionsDelegate(forBridge: currentBridge)
     guard devDelegate.devSettings != nil else {
       return nil
     }

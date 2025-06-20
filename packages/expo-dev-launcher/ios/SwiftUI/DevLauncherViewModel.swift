@@ -18,6 +18,8 @@ class DevLauncherViewModel: ObservableObject {
   @Published var buildInfo: [AnyHashable: Any] = [:]
   @Published var devServers: [DevServer] = []
   @Published var isDiscoveringServers = false
+  @Published var currentError: EXDevLauncherAppError?
+  @Published var showingError = false
   @Published var shakeDevice = true {
     didSet {
       saveMenuPreference(key: "EXDevMenuMotionGestureEnabled", value: shakeDevice)
@@ -69,10 +71,22 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func openApp(url: String) {
-    guard let nsURL = URL(string: url) else {
+    guard let bundleUrl = URL(string: url) else {
       return
     }
-    EXDevLauncherController.sharedInstance().loadApp(nsURL, onSuccess: nil, onError: nil)
+
+    EXDevLauncherController.sharedInstance().loadApp(
+      bundleUrl,
+      onSuccess: nil,
+      onError: { [weak self] error in
+        let appError = EXDevLauncherAppError(
+          message: "Failed to load app from \(url) with error: \(error.localizedDescription)",
+          stack: nil
+        )
+        DispatchQueue.main.async {
+          self?.showError(appError)
+        }
+      })
   }
 
   func clearRecentlyOpenedApps() {
@@ -142,6 +156,32 @@ class DevLauncherViewModel: ObservableObject {
     discoverDevServers()
   }
 
+  func showError(_ error: EXDevLauncherAppError) {
+    currentError = error
+    showingError = true
+  }
+
+  func dismissError() {
+    currentError = nil
+    showingError = false
+  }
+
+  func reloadCurrentApp() {
+    guard let appUrl = EXDevLauncherController.sharedInstance().appManifestURLWithFallback() else {
+      dismissError()
+      return
+    }
+
+    EXDevLauncherController.sharedInstance().loadApp(
+      appUrl,
+      onSuccess: { [weak self] in
+        self?.dismissError()
+      },
+      onError: { [weak self] _ in
+        self?.dismissError()
+      })
+  }
+
   private func loadMenuPreferences() {
     let defaults = UserDefaults.standard
 
@@ -154,8 +194,6 @@ class DevLauncherViewModel: ObservableObject {
     UserDefaults.standard.set(value, forKey: key)
     UserDefaults.standard.synchronize()
   }
-
-  // MARK: - Authentication
 
   private func checkAuthenticationStatus() {
     let sessionSecret = UserDefaults.standard.string(forKey: "expo-session-secret")

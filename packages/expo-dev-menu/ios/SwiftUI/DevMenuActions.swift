@@ -29,7 +29,3 @@ struct DevMenuActions: View {
     .padding(.vertical, 8)
   }
 }
-
-#Preview {
-  DevMenuActions(isDevLauncherInstalled: true, onReload: {}, onGoHome: {})
-}

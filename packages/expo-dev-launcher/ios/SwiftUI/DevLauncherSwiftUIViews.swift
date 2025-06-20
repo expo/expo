@@ -4,8 +4,12 @@ import SwiftUI
 import UIKit
 
 public struct DevLauncherRootView: View {
-  @StateObject private var viewModel = DevLauncherViewModel()
+  @ObservedObject var viewModel: DevLauncherViewModel
   @State private var showingUserProfile = false
+
+  init(viewModel: DevLauncherViewModel) {
+    self.viewModel = viewModel
+  }
 
   public var body: some View {
     NavigationView {
@@ -42,6 +46,19 @@ public struct DevLauncherRootView: View {
     .sheet(isPresented: $showingUserProfile) {
       AccountSheet()
         .environmentObject(viewModel)
+    }
+    .fullScreenCover(isPresented: $viewModel.showingError) {
+      if let error = viewModel.currentError {
+        ErrorView(
+          error: error,
+          onReload: {
+            viewModel.reloadCurrentApp()
+          },
+          onGoHome: {
+            viewModel.dismissError()
+          }
+        )
+      }
     }
   }
 }
