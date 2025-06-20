@@ -222,7 +222,7 @@ function attemptLookup(moduleName) {
 try {
   jest.doMock('expo-modules-core', () => {
     const ExpoModulesCore = jest.requireActual('expo-modules-core');
-    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid.web');
+    const uuid = jest.requireActual('expo-modules-core/src/uuid/uuid');
 
     const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
@@ -299,8 +299,8 @@ try {
   }
 }
 
-// Installs web implementations of global things that are normally installed through JSI.
-require('expo-modules-core/src/web/index.web');
+// Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
+require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
 
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,
