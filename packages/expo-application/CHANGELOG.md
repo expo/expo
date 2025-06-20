@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- update nativeBuildVersion example ([#33364](https://github.com/expo/expo/pull/33364) by [@radko93](https://github.com/radko93))
-
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
