@@ -105,41 +105,13 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
         )}
 
         {this.state.voiceList && (
-          <View>
-            {Platform.select({
-              ios: (
-                <ExPicker
-                  options={this.state.voiceList.map((it) => it.name)}
-                  selectedIndex={this.state.voiceList.findIndex(
-                    (it) => it.identifier === this.state.voice
-                  )}
-                  onOptionSelected={({ nativeEvent: { index } }) => {
-                    const voice = this.state.voiceList?.[index].identifier;
-                    if (voice) {
-                      this.setState({ voice });
-                    }
-                  }}
-                  variant="wheel"
-                  style={{
-                    height: 200,
-                  }}
-                />
-              ),
-              default: (
-                <Picker
-                  selectedValue={this.state.voice}
-                  onValueChange={(voice) => this.setState({ voice })}>
-                  {this.state.voiceList.map((voice) => (
-                    <Picker.Item
-                      key={voice.identifier}
-                      label={voice.name}
-                      value={voice.identifier}
-                    />
-                  ))}
-                </Picker>
-              ),
-            })}
-          </View>
+          <Picker
+            selectedValue={this.state.voice}
+            onValueChange={(voice) => this.setState({ voice })}>
+            {this.state.voiceList.map((voice) => (
+              <Picker.Item key={voice.identifier} label={voice.name} value={voice.identifier} />
+            ))}
+          </Picker>
         )}
 
         <Text style={styles.controlText}>Pitch: {this.state.pitch.toFixed(2)}</Text>
