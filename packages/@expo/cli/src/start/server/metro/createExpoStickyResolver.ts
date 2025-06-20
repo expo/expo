@@ -13,7 +13,7 @@ const escapeDependencyName = (dependency: string) =>
   dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
 
 /** Converts a list of module names to a regex that may either match bare module names or sub-modules of modules */
-const dependenciesToRegex = (dependencies: string[]) =>
+export const _dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(${dependencies.map(escapeDependencyName).join('|')})($|/.*)`);
 
 /** Creates a function to load a dependency of the `expo` package */
@@ -102,7 +102,7 @@ const getPlatformModuleDescription = async (
   );
   return {
     platform,
-    moduleTestRe: dependenciesToRegex(resolvedModuleNames),
+    moduleTestRe: _dependenciesToRegex(resolvedModuleNames),
     resolvedModulePaths,
   };
 };
