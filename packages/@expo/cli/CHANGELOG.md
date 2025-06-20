@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove flipper hack support
+- Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
