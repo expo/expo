@@ -520,37 +520,6 @@ PODS:
   - libwebp/sharpyuv (1.5.0)
   - libwebp/webp (1.5.0):
     - libwebp/sharpyuv
-  - lottie-ios (4.5.0)
-  - lottie-react-native (7.2.2):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - lottie-ios (= 4.5.0)
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - MBProgressHUD (1.2.0)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
@@ -3075,7 +3044,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNFlashList (1.7.6):
+  - RNFlashList (1.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3402,9 +3371,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - SDWebImage (5.21.0):
-    - SDWebImage/Core (= 5.21.0)
-  - SDWebImage/Core (5.21.0)
+  - SDWebImage (5.21.1):
+    - SDWebImage/Core (= 5.21.1)
+  - SDWebImage/Core (5.21.1)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -3615,7 +3584,6 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - lottie-react-native (from `../../../node_modules/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - nanopb
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -3728,7 +3696,6 @@ SPEC REPOS:
     - libavif
     - libdav1d
     - libwebp
-    - lottie-ios
     - MBProgressHUD
     - nanopb
     - Nimble
@@ -3901,8 +3868,6 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-05-06-RNv0.80.0-4eb6132a5bf0450bf4c6c91987675381d7ac8bca
-  lottie-react-native:
-    :path: "../../../node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -4166,12 +4131,10 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 21a3748da60853740e40390f33f2458c2718db7c
+  hermes-engine: 1b2e9eb12eb29f181c50bdfdbdf7967c7bb279a8
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
-  lottie-ios: a881093fab623c467d3bce374367755c272bdd59
-  lottie-react-native: 75b793d20dd0c6c16605e9af592ca9d008cdb92a
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
@@ -4257,13 +4220,13 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 767abb068db6ad28b5f59a129fbc9fab18b377e2
   RNCMaskedView: aac38cf7e947ff80e483996d1acd43c5ad4ab610
   RNCPicker: 9f14f7b5511d88d7608b344e9089916ff8a47298
-  RNDateTimePicker: 60f9e986d61e42169a2716c1b51f1f93dfa82665
-  RNFlashList: 30e89fd3a2a5825e2d317e27b963302b2f4a0030
+  RNDateTimePicker: 1de15b857d1bb8fc5884fbf42dcf17e0041b2fe7
+  RNFlashList: 995a7cad345dcb6f203db0f50bcf4b83cc04f3c9
   RNGestureHandler: 9d04ec6e1379b595222c2467f5e8d1c44157fcc9
   RNReanimated: 9afbfc6ca21aea3291cc058334b53b6069a2808b
   RNScreens: 45a4564413205e2a1695d40bbc0297f6eefc9b74
   RNSVG: c73af7848d94ca3e8136a5191d055e3c1d6fedab
-  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
+  SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
