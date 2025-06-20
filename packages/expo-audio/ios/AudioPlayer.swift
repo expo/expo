@@ -27,6 +27,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var audioProcessor: AudioTapProcessor?
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
+  weak var owningRegistry: AudioComponentRegistry?
 
   var duration: Double {
     ref.currentItem?.duration.seconds ?? 0.0
@@ -270,8 +271,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   public override func sharedObjectWillRelease() {
-    AudioComponentRegistry.shared.remove(self)
-
+    owningRegistry?.remove(self)
     cancellables.removeAll()
 
     if samplingEnabled {
