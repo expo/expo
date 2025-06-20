@@ -79,7 +79,6 @@ export type HookArguments = {
 };
 export type ExpoGoConfig = {
     mainModuleName: string;
-    __flipperHack: 'React Native packager is running';
     debuggerHost: string;
     developer: {
         tool: string | null;
