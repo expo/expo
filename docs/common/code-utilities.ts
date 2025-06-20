@@ -165,13 +165,16 @@ export function parseValue(value: string) {
   };
 }
 
-export function findNodeByPropInChildren<T>(element: ReactElement, propToFind: string): T | null {
+export function findNodeByPropInChildren<T>(
+  element: ReactElement,
+  propToFind: string
+): PropsWithChildren<{ [propToFind]: T }> | T | null {
   if (!element || typeof element !== 'object') {
     return null;
   }
 
   if (isValidElement<PropsWithChildren<{ [propToFind]: T }>>(element)) {
-    return element.props[propToFind];
+    return element.props;
   }
 
   if (isValidElement<PropsWithChildren>(element)) {
