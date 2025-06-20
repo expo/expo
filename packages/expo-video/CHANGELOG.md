@@ -10,6 +10,8 @@
 
 - [Android] Fix aspect ratio of the Picture in Picture window when auto-entering for sources with ratio different from 16:9. ([#37225](https://github.com/expo/expo/pull/37225) by [@behenate](https://github.com/behenate))
 
+- [ios] Fix tracks not loading due to checking status instead of newStatus. ([]() by [@HADeveloper](https://github.com/HADeveloper))
+
 ### 💡 Others
 
 ## 2.2.1 - 2025-06-10
