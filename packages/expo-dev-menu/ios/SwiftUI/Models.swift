@@ -1,8 +1,17 @@
-//
-//  Models.swift
-//  expo-dev-menu
-//
-//  Created by Alan Hughes on 09/06/2025.
-//
+struct AppInfo {
+  let appName: String
+  let appVersion: String
+  let runtimeVersion: String?
+  let sdkVersion: String?
+  let hostUrl: String?
+  let appIcon: String?
+  let engine: String?
+}
 
-import Foundation
+struct DevSettings {
+  let isElementInspectorAvailable: Bool
+  let isHotLoadingAvailable: Bool
+  let isPerfMonitorAvailable: Bool
+  let isJSInspectorAvailable: Bool
+  let isHotLoadingEnabled: Bool
+}
