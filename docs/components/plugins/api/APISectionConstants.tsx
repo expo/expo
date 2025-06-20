@@ -20,7 +20,7 @@ const renderConstant = (
   { name, comment, type }: ConstantDefinitionData,
   sdkVersion: string,
   apiName?: string
-): JSX.Element => (
+) => (
   <div key={`constant-definition-${name}`} className={STYLES_APIBOX}>
     <APISectionDeprecationNote comment={comment} sticky />
     <APIBoxHeader

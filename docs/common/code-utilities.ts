@@ -1,6 +1,6 @@
 import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
-import { Children, ReactElement, ReactNode, PropsWithChildren } from 'react';
+import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
 // Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
 async function initPrismAsync() {
@@ -170,11 +170,11 @@ export function findNodeByPropInChildren<T>(element: ReactElement, propToFind: s
     return null;
   }
 
-  if (element.props?.[propToFind]) {
-    return element.props;
+  if (isValidElement<PropsWithChildren<{ [propToFind]: T }>>(element)) {
+    return element.props[propToFind];
   }
 
-  if (element.props?.children) {
+  if (isValidElement<PropsWithChildren>(element)) {
     const children = element.props.children;
 
     if (Array.isArray(children)) {
