@@ -183,6 +183,25 @@ public class AudioModule: Module {
         }
       }
 
+      Function("setActiveForLockScreen") { (player: AudioPlayer, active: Bool, metadata: Metadata?) in
+        player.setActiveForLockScreen(active, metadata: metadata)
+      }
+
+      Function("updateLockScreenMetadata") { (player: AudioPlayer, metadata: Metadata?) in
+        if player.isActiveForLockScreen {
+          player.metadata = metadata
+          MediaController.shared.updateNowPlayingInfo(for: player)
+        }
+      }
+
+      Function("clearLockScreenControls") { (player: AudioPlayer) in
+        if player.isActiveForLockScreen {
+          player.metadata = nil
+          player.isActiveForLockScreen = false
+          MediaController.shared.setActivePlayer(nil)
+        }
+      }
+
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
         await player.ref.currentItem?.seek(
           to: CMTime(
@@ -431,8 +450,7 @@ public class AudioModule: Module {
     try AudioUtils.validateAudioMode(mode: mode)
     let session = AVAudioSession.sharedInstance()
     var category: AVAudioSession.Category = session.category
-    var options: AVAudioSession.CategoryOptions = session.categoryOptions
-
+    var options: AVAudioSession.CategoryOptions = []
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
 
@@ -469,7 +487,11 @@ public class AudioModule: Module {
       }
     }
 
-    try session.setCategory(category, options: options)
+    if options.isEmpty {
+      try session.setCategory(category, mode: .default)
+    } else {
+      try session.setCategory(category, options: options)
+    }
     try session.setActive(true, options: [.notifyOthersOnDeactivation])
   }
 
