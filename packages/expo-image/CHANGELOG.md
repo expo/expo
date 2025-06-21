@@ -43,6 +43,7 @@ _This version does not introduce any user-facing changes._
 - Fix React Server Components support. ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Fix PhotoLibrary assets being scaled twice. ([#36776](https://github.com/expo/expo/pull/36776) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Don't add transformers when unnecessary. ([#36884](https://github.com/expo/expo/pull/36884) by [@jakex7](https://github.com/jakex7))
+- [Web] Fix `tintColor` in React 19. ([#37133](https://github.com/expo/expo/pull/37133) by [@bradleyayers](https://github.com/bradleyayers))
 
 ## 2.1.7 — 2025-05-06
 
