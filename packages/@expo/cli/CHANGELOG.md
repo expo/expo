@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `rawBody` handling on `/symbolicate` endpoint. Clients MUST send the header `'Content-Type': 'application/json'`. ([#35757](https://github.com/expo/expo/pull/35757) by [@huntie](https://github.com/huntie))
+
 ### 🎉 New features
 
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
