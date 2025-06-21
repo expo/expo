@@ -23,6 +23,9 @@ export default function ButtonScreen() {
           <Button style={styles.button} variant="default">
             Default
           </Button>
+          <Button style={styles.button} variant="glass">
+            Glass button
+          </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
           </Button>
@@ -96,6 +99,7 @@ const styles = StyleSheet.create({
   button: {
     width: 150,
     margin: 5,
+    marginLeft: 20,
     overflow: 'visible',
   },
   buttonHost: {
