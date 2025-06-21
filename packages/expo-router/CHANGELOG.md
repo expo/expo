@@ -8,6 +8,7 @@
 
 - Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
 - Add Tabs.Protected ([#37085](https://github.com/expo/expo/pull/37085) by [@marklawlor](https://github.com/marklawlor))
+- Add experimental link preview (iOS only) ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

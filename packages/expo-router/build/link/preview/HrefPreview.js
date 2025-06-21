@@ -2,7 +2,6 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HrefPreview = HrefPreview;
-exports.getParamsAndNodeFromHref = getParamsAndNodeFromHref;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const PreviewRouteContext_1 = require("./PreviewRouteContext");

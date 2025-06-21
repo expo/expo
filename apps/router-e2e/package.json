@@ -16,6 +16,8 @@
     "export:web-workers": "E2E_ROUTER_ASYNC=true E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo export -p web",
     "start:web-workers": "E2E_ROUTER_ASYNC=development E2E_ROUTER_SRC=web-workers EXPO_USE_STATIC=single expo start",
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
+    "start:link-preview": "E2E_ROUTER_SRC=link-preview expo start",
+    "ios:link-preview": "E2E_ROUTER_SRC=link-preview expo run:ios",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
     "android": "expo run:android",
@@ -33,7 +35,7 @@
     "react": "19.1.0",
     "react-native": "0.80.0",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "4.11.1",
+    "react-native-screens": "4.11.1-nightly-20250611-8b82e081e",
     "react-native-webview": "13.13.5"
   },
   "devDependencies": {
