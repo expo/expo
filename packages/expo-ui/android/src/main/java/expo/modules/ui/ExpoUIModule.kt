@@ -9,6 +9,10 @@ class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
 
+    View(BottomSheetView::class) {
+      Events("onIsOpenedChange")
+    }
+
     // Defines a single view for now – a single choice segmented control
     View(PickerView::class) {
       Events("onOptionSelected")
