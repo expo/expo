@@ -1,6 +1,5 @@
 import type { ExpoConfig } from 'expo/config';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
-import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
 import type {
   EmbeddedManifest,
   EASConfig,
@@ -8,6 +7,8 @@ import type {
   ExpoUpdatesManifest,
   // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 } from 'expo-manifests';
+type DevLauncherManifest = ExpoUpdatesManifest;
+
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { Manifest as UpdatesManifest, ExpoUpdatesModule } from 'expo-updates';

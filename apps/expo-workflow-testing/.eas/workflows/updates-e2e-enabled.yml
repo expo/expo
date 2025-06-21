@@ -95,12 +95,12 @@ jobs:
         id: testdebug
         working_directory: ../../../updates-e2e
         run: |
-          ./maestro/updates-e2e-enabled.sh ios debug
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
       - name: Run Maestro tests (release)
         id: testrelease
         working_directory: ../../../updates-e2e
         run: |
-          ./maestro/updates-e2e-enabled.sh ios release
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios release
   android:
     runs_on: linux-large-nested-virtualization
     steps:
@@ -154,11 +154,11 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         working_directory: ../../../updates-e2e
         run: |
-          ./maestro/updates-e2e-enabled.sh android debug
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
       - name: Run Maestro tests (release)
         id: testrelease
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         working_directory: ../../../updates-e2e
         run: |
-          ./maestro/updates-e2e-enabled.sh android release
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release

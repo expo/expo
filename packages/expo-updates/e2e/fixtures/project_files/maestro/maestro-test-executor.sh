@@ -1,13 +1,16 @@
 #!/bin/bash
 
-if [[ "$#" -ne 2 ]]; then
-  echo "Usage: $0 <ios|android> <debug|release>"
+# Executes a suite of Maestro tests tests defined in a YAML file
+
+if [[ "$#" -ne 3 ]]; then
+  echo "Usage: $0 <test_suite_path> <ios|android> <debug|release>"
   exit 1
 fi
 
 . .env
-export MAESTRO_PLATFORM=$1
-export MAESTRO_CONFIGURATION=$2
+export MAESTRO_TEST_SUITE=$1
+export MAESTRO_PLATFORM=$2
+export MAESTRO_CONFIGURATION=$3
 export MAESTRO_UPDATES_SERVER_PORT=$EXPO_PUBLIC_UPDATES_SERVER_PORT
 
 function killUpdatesServerIfNeeded() {
@@ -43,4 +46,4 @@ function beforeAll() {
 
 beforeAll
 
-maestro test maestro/tests/updates-e2e-enabled.yml
+maestro test $MAESTRO_TEST_SUITE
