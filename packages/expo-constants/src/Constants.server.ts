@@ -1,7 +1,7 @@
 import type { ExpoConfig } from 'expo/config';
-import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
-import type { EmbeddedManifest, EASConfig, ExpoGoConfig } from 'expo-manifests';
+import type { EmbeddedManifest, EASConfig, ExpoGoConfig, ExpoUpdatesManifest } from 'expo-manifests';
 import type { Manifest as UpdatesManifest } from 'expo-updates';
+type DevLauncherManifest = ExpoUpdatesManifest;
 
 import {
   AndroidManifest,
