@@ -286,11 +286,6 @@ export abstract class ManifestMiddleware<
       },
       // Indicates the name of the main bundle.
       mainModuleName,
-      // Add this string to make Flipper register React Native / Metro as "running".
-      // Can be tested by running:
-      // `METRO_SERVER_PORT=8081 open -a flipper.app`
-      // Where 8081 is the port where the Expo project is being hosted.
-      __flipperHack: 'React Native packager is running',
     };
   }
 
