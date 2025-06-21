@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
-import { Fragment, ReactNode } from 'react';
+import { Fragment } from 'react';
 
 import { APIBox } from '~/components/plugins/APIBox';
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
@@ -43,7 +43,7 @@ const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
-): ReactNode => (
+) => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {index && index > 0 ? (
       <CALLOUT
@@ -66,7 +66,7 @@ const renderTypeMethodEntry = (
   { children, signatures, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   inline: boolean = false
-): ReactNode => {
+) => {
   const baseSignature = signatures?.[0];
 
   if (!baseSignature?.type) {
@@ -108,7 +108,7 @@ const renderTypeMethodEntry = (
 const renderTypePropertyRow = (
   { name, flags, type, comment, defaultValue, signatures, kind }: PropData,
   sdkVersion: string
-): JSX.Element => {
+) => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined)
@@ -161,7 +161,7 @@ const renderTypePropertyRow = (
 const renderType = (
   { name, comment, type, typeParameter }: TypeGeneralData,
   sdkVersion: string
-): ReactNode => {
+) => {
   if (type.declaration) {
     // Object Types
     const signature = type?.declaration?.signatures?.[0];
