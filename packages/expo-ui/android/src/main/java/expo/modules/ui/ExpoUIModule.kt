@@ -42,6 +42,10 @@ class ExpoUIModule : Module() {
       }
     }
 
+    View(BottomSheetView::class) {
+      Events("onIsOpenedChange")
+    }
+
     // Defines a single view for now – a single choice segmented control
     View(PickerView::class) {
       Events("onOptionSelected")
