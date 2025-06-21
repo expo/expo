@@ -1,3 +1,4 @@
+import { InfoOptions } from '../FileSystem.types';
 export type CreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -122,6 +123,10 @@ export declare class File {
      */
     delete(): void;
     /**
+     *  Retrieves a file info.
+     */
+    getInfoAsync(options?: InfoOptions): Promise<FileInfo>;
+    /**
      * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
      * Also, `false` if the application does not have read access to the file.
      */
@@ -176,4 +181,42 @@ export declare class FileHandle {
     offset: number | null;
     size: number | null;
 }
+export type FileInfo = 
+/**
+ * Object returned when file exist.
+ */
+{
+    /**
+     * Signifies that the requested file exist.
+     */
+    exists: true;
+    /**
+     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     */
+    uri: string;
+    /**
+     * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
+     */
+    size: number;
+    /**
+     * Boolean set to `true` if this is a directory and `false` if it is a file.
+     */
+    isDirectory: boolean;
+    /**
+     * The last modification time of the file expressed in seconds since epoch.
+     */
+    modificationTime: number;
+    /**
+     * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+     */
+    md5?: string;
+}
+/**
+ * Object returned when file do not exist.
+ */
+ | {
+    exists: false;
+    uri: string;
+    isDirectory: false;
+};
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

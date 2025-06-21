@@ -3,7 +3,10 @@ package expo.modules.filesystem.next
 import android.net.Uri
 import android.util.Base64
 import android.webkit.MimeTypeMap
+import expo.modules.filesystem.InfoOptions
+import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
@@ -110,5 +113,35 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   val type: String? get() {
     return MimeTypeMap.getFileExtensionFromUrl(file.path)
       ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
+  }
+
+  val modificationTime: Long get() {
+    validateType()
+    return file.lastModified()
+  }
+
+  fun getInfoAsync(options: InfoOptions?, promise: Promise) {
+    validateType()
+    if (!file.exists()) {
+      return promise.reject(UnableToGetInfoAsyncException("file does not exists."))
+    }
+    when {
+      file.toURI().scheme == "file" -> {
+        val fileInfo = FileInfo(
+          exists = true,
+          uri = slashifyFilePath(file.toURI().toString()),
+          isDirectory = false,
+          size = size,
+          modificationTime = modificationTime
+        )
+        if (options != null) {
+          if (options.md5 == true) {
+            fileInfo.md5 = md5
+          }
+        }
+        promise.resolve(fileInfo)
+      }
+      else -> promise.reject(UnableToGetInfoAsyncException("file schema is not supported"))
+    }
   }
 }

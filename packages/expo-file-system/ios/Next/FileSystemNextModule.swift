@@ -89,6 +89,10 @@ public final class FileSystemNextModule: Module {
         return try FileSystemFileHandle(file: file)
       }
 
+      AsyncFunction("getInfoAsync") { (file: FileSystemFile, options: InfoOptions?) in
+        return try file.getInfoAsync(options: options ?? InfoOptions())
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)

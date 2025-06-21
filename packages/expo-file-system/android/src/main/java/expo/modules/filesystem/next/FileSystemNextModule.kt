@@ -3,7 +3,9 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
+import expo.modules.filesystem.InfoOptions
 import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
@@ -110,6 +112,10 @@ class FileSystemNextModule : Module() {
 
       Function("bytes") { file: FileSystemFile ->
         file.bytes()
+      }
+
+      AsyncFunction("getInfoAsync") { file: FileSystemFile, options: InfoOptions?, promise: Promise ->
+        file.getInfoAsync(options, promise)
       }
 
       Property("exists") { file: FileSystemFile ->

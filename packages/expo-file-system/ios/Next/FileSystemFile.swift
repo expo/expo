@@ -74,6 +74,20 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
+  var modificationTime: Int64 {
+    get throws {
+      try validatePermission(.read)
+      let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
+      guard let modificationTime = attributes[.modificationDate] else {
+        throw UnableToGetModificationTimeException("attributes do not contain modificationDate")
+      }
+      guard let modificationTime = modificationTime as? Date else {
+        throw UnableToGetModificationTimeException("modificationTime is not a date")
+      }
+      return Int64(modificationTime.timeIntervalSince1970)
+    }
+  }
+
   var type: String? {
     let pathExtension = url.pathExtension
     if let utType = UTType(filenameExtension: pathExtension),
@@ -111,5 +125,26 @@ internal final class FileSystemFile: FileSystemPath {
   func base64() throws -> String {
     try validatePermission(.read)
     return try Data(contentsOf: url).base64EncodedString()
+  }
+
+  func getInfoAsync(options: InfoOptions) throws -> FileInfo {
+    try validatePermission(.read)
+    switch url.scheme {
+    case "file":
+      let result = FileInfo()
+      if try exists {
+        result.exists = true
+        result.isDirectory = false
+        result.uri = url.absoluteString
+        result.size = try size
+        result.modificationTime = try modificationTime
+      }
+      if options.md5 {
+        result.md5 = try md5
+      }
+      return result
+    default:
+      throw UnableToGetAsyncInfoException("url scheme is not supported")
+    }
   }
 }

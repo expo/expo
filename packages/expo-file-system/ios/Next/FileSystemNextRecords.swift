@@ -10,3 +10,12 @@ struct CreateOptions: Record {
 struct DownloadOptionsNext: Record {
   @Field var headers: [String: String]?
 }
+
+struct FileInfo: Record {
+  @Field var exists: Bool?
+  @Field var uri: String?
+  @Field var isDirectory: Bool?
+  @Field var md5: String?
+  @Field var size: Int64?
+  @Field var modificationTime: Int64?
+}

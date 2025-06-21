@@ -31,6 +31,12 @@ internal final class UnableToGetFileSizeException: GenericException<String> {
   }
 }
 
+internal final class UnableToGetModificationTimeException: GenericException<String> {
+  override var reason: String {
+    "Unable to get modification time: \(param)"
+  }
+}
+
 internal final class UnableToDeleteException: GenericException<String> {
   override var reason: String {
     "Unable to delete file or directory: \(param)"
@@ -46,6 +52,12 @@ internal final class UnableToCreateException: GenericException<String> {
 internal final class UnableToReadHandleException: GenericException<String> {
   override var reason: String {
     "Unable to read from a file handle: \(param)"
+  }
+}
+
+internal final class UnableToGetAsyncInfoException: GenericException<String> {
+  override var reason: String {
+    "Unable to getAsyncInfo from a file: \(param)"
   }
 }
 
