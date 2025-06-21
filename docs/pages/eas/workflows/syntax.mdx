@@ -754,6 +754,20 @@ jobs:
     # @end #
 ```
 
+#### `repack`
+
+Repackages an app from an existing build. This job repackages the app's metadata and JavaScript bundle without performing a full native rebuild, which is useful for creating a faster build compatible with a specific fingerprint. See [Repack job documentation](/eas/workflows/pre-packaged-jobs#repack) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: repack
+    params:
+      build_id: string
+    # @end #
+```
+
 ## Custom jobs
 
 Runs custom code and can use built-in EAS functions. Does not require a `type` field.
