@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoRoot = ExpoRoot;
-const native_1 = require("@react-navigation/native");
+const native_stack_1 = require("@react-navigation/native-stack");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -46,7 +46,7 @@ const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
 const imperative_api_1 = require("./imperative-api");
-const primitives_1 = require("./primitives");
+const ModalContext_1 = require("./modal/ModalContext");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -146,12 +146,13 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
       </NavigationContainer_1.NavigationContainer>
     </storeContext_1.StoreContext.Provider>);
 }
+const RootNativeStack = (0, native_stack_1.createNativeStackNavigator)();
 function Content() {
-    const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
-        children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
-        id: constants_1.INTERNAL_SLOT_NAME,
-    });
-    return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
+    return (<ModalContext_1.ModalContextProvider>
+      <RootNativeStack.Navigator screenOptions={{ headerShown: false }}>
+        <RootNativeStack.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>
+      </RootNativeStack.Navigator>
+    </ModalContext_1.ModalContextProvider>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {
