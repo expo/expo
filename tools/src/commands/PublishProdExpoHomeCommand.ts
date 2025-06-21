@@ -5,11 +5,14 @@ import {
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
 import chalk from 'chalk';
+import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
-import fetch, { Response } from 'node-fetch';
 import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+import { fetch, type Response } from 'undici';
 
 import { EXPO_GO_ANDROID_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import { deepCloneObject } from '../Utils';
@@ -160,12 +163,18 @@ async function fetchManifestAndBundleAsync(
       ...bundleRequestHeaders,
     },
   });
+  if (!bundleResponse.ok || !bundleResponse.body) {
+    throw new Error(`Failed to download bundle from ${bundleUrl}`);
+  }
 
   const manifestPath = platform === 'ios' ? iosManifestPath : androidManifestPath;
   await fs.writeFile(path.resolve(manifestPath), JSON.stringify(manifest));
 
   const bundlePath = platform === 'ios' ? iosPublishBundlePath : androidPublishBundlePath;
-  await fs.writeFile(path.resolve(bundlePath), await bundleResponse.buffer());
+  await pipeline(
+    Readable.fromWeb(bundleResponse.body),
+    createWriteStream(path.resolve(bundlePath))
+  );
 }
 
 /**

@@ -1,10 +1,12 @@
-import { Config, Versions } from '@expo/xdl';
-
 import logger from './Logger';
 
+/**
+ * Utilities for versions API.
+ */
+
 export enum VersionsApiHost {
-  PRODUCTION = 'exp.host',
-  STAGING = 'staging.exp.host',
+  PRODUCTION = 'api.expo.dev',
+  STAGING = 'staging-api.expo.dev',
 }
 
 export type VersionsSchema = {
@@ -37,10 +39,13 @@ export async function getVersionsAsync(
   if (process.env.CI) {
     logger.info(`Getting versions from API host: ${apiHost}`);
   }
-  const result = await runWithApiHost(
-    apiHost,
-    () => Versions.versionsAsync() as Promise<VersionsSchema>
-  );
+  const resp = await fetch(`https://${apiHost}/v2/versions/latest`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const { data: result } = await resp.json();
   if (process.env.CI) {
     logger.debug('Received versions:', JSON.stringify(result, null, 2));
   }
@@ -70,7 +75,21 @@ export async function setVersionsAsync(
     logger.info(`Setting versions on API host: ${apiHost}`);
     logger.debug('Setting versions data:', JSON.stringify(versions, null, 2));
   }
-  return await runWithApiHost(apiHost, () => Versions.setVersionsAsync(versions));
+  if (!process.env.EXPO_VERSIONS_SECRET) {
+    throw new Error('EXPO_VERSIONS_SECRET is not set');
+  }
+  const resp = await fetch(`https://${apiHost}/v2/versions/update`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      value: versions,
+      secret: process.env.EXPO_VERSIONS_SECRET,
+    }),
+  });
+  await resp.json();
 }
 
 export async function modifyVersionsAsync(
@@ -105,21 +124,4 @@ export async function modifySdkVersionsAsync(
     logger.info(`Successfully modified and saved SDK version: ${sdkVersion}`);
   }
   return sdkVersions;
-}
-
-async function runWithApiHost<T = any>(
-  apiHost: VersionsApiHost,
-  lambda: () => T | Promise<T>
-): Promise<T> {
-  if (process.env.CI) {
-    logger.debug(`Temporarily switching API host to: ${apiHost}`);
-  }
-  const originalHost = Config.api.host;
-  Config.api.host = apiHost;
-  const result = await lambda();
-  Config.api.host = originalHost;
-  if (process.env.CI) {
-    logger.debug('Restored original API host:', originalHost);
-  }
-  return result;
 }

@@ -1,10 +1,10 @@
-import { IosPlist } from '@expo/xdl';
+import plist from '@expo/plist';
 import chalk from 'chalk';
-import fs from 'fs-extra';
-import path from 'path';
-import plist from 'plist';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import * as Directories from '../Directories';
+import * as Versions from '../Versions';
 
 interface PlistObject {
   [key: string]: any;
@@ -13,30 +13,41 @@ interface PlistObject {
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
 async function readPlistAsync(plistPath: string): Promise<PlistObject> {
-  const plistFileContent = await fs.readFile(plistPath, 'utf8');
+  const plistFileContent = await fs.promises.readFile(plistPath, 'utf8');
   return plist.parse(plistFileContent);
 }
 
+async function updatePlistAsync(
+  plistPath: string,
+  updater: (obj: PlistObject) => PlistObject
+): Promise<PlistObject> {
+  let data: PlistObject;
+  try {
+    const contents = await fs.promises.readFile(plistPath, 'utf8');
+    data = await plist.parse(contents);
+  } catch {
+    data = {};
+  }
+
+  const updatedData = updater(data);
+  const updatedContents = plist.build(updatedData);
+  await fs.promises.writeFile(plistPath, updatedContents);
+  return updatedData;
+}
+
 async function generateBuildConstantsFromMacrosAsync(
-  buildConfigPlistPath,
+  buildConstantsPath: string,
   macros,
   buildConfiguration,
   infoPlistContents,
   keys
 ): Promise<PlistObject> {
-  const plistPath = path.dirname(buildConfigPlistPath);
-  const plistName = path.basename(buildConfigPlistPath);
-
-  if (!(await fs.pathExists(buildConfigPlistPath))) {
-    await IosPlist.createBlankAsync(plistPath, plistName);
-  }
-
   console.log(
     'Generating build config %s ...',
-    chalk.cyan(path.relative(EXPO_DIR, buildConfigPlistPath))
+    chalk.cyan(path.relative(EXPO_DIR, buildConstantsPath))
   );
 
-  const result = await IosPlist.modifyAsync(plistPath, plistName, (config) => {
+  const result = await updatePlistAsync(buildConstantsPath, (config) => {
     if (config.USE_GENERATED_DEFAULTS === false) {
       // this flag means don't generate anything, let the user override.
       return config;
@@ -51,13 +62,17 @@ async function generateBuildConstantsFromMacrosAsync(
       : infoPlistContents.CFBundleShortVersionString;
 
     if (!config.API_SERVER_ENDPOINT) {
-      config.API_SERVER_ENDPOINT = 'https://exp.host/--/api/v2/';
+      config.API_SERVER_ENDPOINT = `https://${Versions.VersionsApiHost.PRODUCTION}/v2/`;
     }
     if (keys) {
       const { GOOGLE_MAPS_IOS_API_KEY } = keys;
       config.DEFAULT_API_KEYS = { GOOGLE_MAPS_IOS_API_KEY };
     }
-    return validateBuildConstants(config, buildConfiguration);
+    const validatedConfig = validateBuildConstants(config, buildConfiguration);
+    const sortedConfig = Object.fromEntries(
+      Object.entries(validatedConfig).sort(([a], [b]) => a.localeCompare(b))
+    );
+    return sortedConfig;
   });
 
   return result;
@@ -67,7 +82,7 @@ async function generateBuildConstantsFromMacrosAsync(
  *  Adds IS_DEV_KERNEL (bool) and DEV_KERNEL_SOURCE (PUBLISHED, LOCAL)
  *  and errors if there's a problem with the chosen environment.
  */
-function validateBuildConstants(config, buildConfiguration) {
+function validateBuildConstants(config: PlistObject, buildConfiguration: string): PlistObject {
   config.USE_GENERATED_DEFAULTS = true;
 
   let IS_DEV_KERNEL = false;
