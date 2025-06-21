@@ -3,6 +3,7 @@
 package expo.modules.fetch
 
 import android.util.Log
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
@@ -75,7 +76,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     val error = FetchRequestCancelledException()
     this.error = error
     if (state == ResponseState.BODY_STREAMING_STARTED) {
-      emit("didFailWithError", error)
+      emit("didFailWithError", error.localizedMessageWithCauseLocalizedMessage())
     }
     state = ResponseState.ERROR_RECEIVED
   }
@@ -113,7 +114,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     }
 
     if (state == ResponseState.BODY_STREAMING_STARTED) {
-      emit("didFailWithError", e)
+      emit("didFailWithError", e.localizedMessageWithCauseLocalizedMessage())
     }
     error = e
     state = ResponseState.ERROR_RECEIVED
@@ -190,7 +191,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     } catch (e: IOException) {
       this.error = e
       if (state == ResponseState.BODY_STREAMING_STARTED) {
-        emit("didFailWithError", e)
+        emit("didFailWithError", e.localizedMessageWithCauseLocalizedMessage())
       }
       state = ResponseState.ERROR_RECEIVED
     }
