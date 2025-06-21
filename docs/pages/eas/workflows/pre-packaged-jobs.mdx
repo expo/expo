@@ -1181,11 +1181,11 @@ You can pass the following parameters into the `params` list:
 
 ### Examples
 
-Here are some practical examples of using the Fingerprint + Repack jobs:
+Here are some practical examples of using the Fingerprint with Repack jobs:
 
 <Collapsible summary="Continuous Deployment with Fingerprint and Repack">
 
-This workflow first generates a fingerprint, then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
+This workflow first generates a fingerprint and then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
 
 ```yaml .eas/workflows/cd-fingerprint-repack.yml
 name: continuous-deploy-fingerprint
