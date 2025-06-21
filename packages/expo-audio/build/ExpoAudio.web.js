@@ -1,4 +1,5 @@
 import { useEvent } from 'expo';
+import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 import * as AudioModule from './AudioModule.web';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
@@ -10,19 +11,18 @@ export function createAudioPlayer(source = null, updateInterval = 500) {
 }
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
-    const player = useMemo(() => new AudioModule.AudioPlayerWeb(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
-    useEffect(() => {
-        return () => player.remove();
-    }, []);
-    return player;
+    return useReleasingSharedObject(() => new AudioModule.AudioPlayerWeb(parsedSource, updateInterval), [JSON.stringify(parsedSource)]);
 }
 export function useAudioPlayerStatus(player) {
     const currentStatus = useMemo(() => player.currentStatus, [player.id]);
     return useEvent(player, PLAYBACK_STATUS_UPDATE, currentStatus);
 }
 export function useAudioSampleListener(player, listener) {
-    player.setAudioSamplingEnabled(true);
     useEffect(() => {
+        if (!player.isAudioSamplingSupported) {
+            return;
+        }
+        player.setAudioSamplingEnabled(true);
         const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
         return () => {
             player.setAudioSamplingEnabled(false);

@@ -22,6 +22,10 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     player.volume = volume;
   };
 
+  const setAudioPan = (audioPan: number) => {
+    player.audioPan = audioPan;
+  };
+
   const setIsMuted = (isMuted: boolean) => {
     player.muted = isMuted;
   };
@@ -45,6 +49,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     <Player
       {...status}
       audioPan={0}
+      player={player}
       volume={player.volume}
       style={style}
       play={() => player.play()}
@@ -60,7 +65,8 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
       setRate={setRate}
       setIsMuted={setIsMuted}
       setVolume={setVolume}
-      extraIndicator={<JsiAudioBar isPlaying={status.playing} player={player} />}
+      setAudioPan={setAudioPan}
+      showJsiAudioBar
     />
   );
 }

@@ -1,5 +1,5 @@
 import { useEvent } from 'expo';
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useState, useMemo } from 'react';
 
 import {
@@ -29,16 +29,10 @@ export function useAudioPlayer(
   updateInterval: number = 500
 ): AudioModule.AudioPlayerWeb {
   const parsedSource = resolveSource(source);
-  const player = useMemo(
+  return useReleasingSharedObject(
     () => new AudioModule.AudioPlayerWeb(parsedSource, updateInterval),
     [JSON.stringify(parsedSource)]
   );
-
-  useEffect(() => {
-    return () => player.remove();
-  }, []);
-
-  return player;
 }
 
 export function useAudioPlayerStatus(player: AudioModule.AudioPlayerWeb): AudioStatus {
@@ -50,8 +44,12 @@ export function useAudioSampleListener(
   player: AudioModule.AudioPlayerWeb,
   listener: (data: AudioSample) => void
 ) {
-  player.setAudioSamplingEnabled(true);
   useEffect(() => {
+    if (!player.isAudioSamplingSupported) {
+      return;
+    }
+    player.setAudioSamplingEnabled(true);
+
     const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
     return () => {
       player.setAudioSamplingEnabled(false);
