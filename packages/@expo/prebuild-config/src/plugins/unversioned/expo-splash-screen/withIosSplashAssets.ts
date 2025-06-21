@@ -126,7 +126,7 @@ async function copyImageFiles({
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      [
+      await Promise.all([
         { ratio: 1, suffix: '' },
         { ratio: 2, suffix: '@2x' },
         { ratio: 3, suffix: '@3x' },
@@ -149,7 +149,7 @@ async function copyImageFiles({
           ),
           source
         );
-      });
+      }));
     },
     anyItem: image,
     darkItem: darkImage,

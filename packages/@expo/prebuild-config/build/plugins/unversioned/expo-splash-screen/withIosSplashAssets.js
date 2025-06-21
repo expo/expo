@@ -140,7 +140,7 @@ async function copyImageFiles({
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      [{
+      await Promise.all([{
         ratio: 1,
         suffix: ''
       }, {
@@ -169,7 +169,7 @@ async function copyImageFiles({
         // Write image buffer to the file system.
         // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
         await _fs().default.promises.writeFile(_path().default.resolve(iosNamedProjectRoot, enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH, `${fileName}${suffix}.png`), source);
-      });
+      }));
     },
     anyItem: image,
     darkItem: darkImage,
