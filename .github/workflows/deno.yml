@@ -1,0 +1,114 @@
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
+
+export default function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [series, setSeries] = useState([]);
+  const [title, setTitle] = useState('');
+  const [desc, setDesc] = useState('');
+
+  const USERNAME = 'hs.series';
+  const PASSWORD = '1234';
+
+  const login = () => {
+    if (user === USERNAME && password === PASSWORD) {
+      setLoggedIn(true);
+    } else {
+      alert('Usuario o contraseña incorrectos');
+    }
+  };
+
+  const addSeries = () => {
+    if(title && desc){
+      setSeries([...series, {id: Date.now().toString(), title, desc}]);
+      setTitle('');
+      setDesc('');
+    } else {
+      alert('Ingresa título y descripción');
+    }
+  };
+
+  if (!loggedIn) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>hs.series</Text>
+        <TextInput
+          placeholder="Usuario"
+          value={user}
+          onChangeText={setUser}
+          style={styles.input}
+          autoCapitalize="none"
+        />
+        <TextInput
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+        />
+        <Button title="Entrar" onPress={login} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Mis Series</Text>
+      <TextInput
+        placeholder="Título de la serie"
+        value={title}
+        onChangeText={setTitle}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Descripción"
+        value={desc}
+        onChangeText={setDesc}
+        style={styles.input}
+      />
+      <Button title="Agregar Serie" onPress={addSeries} />
+      <FlatList
+        data={series}
+        keyExtractor={item => item.id}
+        renderItem={({item}) => (
+          <View style={styles.seriesItem}>
+            <Text style={styles.seriesTitle}>{item.title}</Text>
+            <Text>{item.desc}</Text>
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    padding: 20,
+  },
+  title: {
+    fontSize: 32,
+    color: '#fff',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    backgroundColor: '#222',
+    color: '#fff',
+    padding: 10,
+    marginBottom: 10,
+  },
+  seriesItem: {
+    backgroundColor: '#111',
+    padding: 15,
+    marginVertical: 8,
+  },
+  seriesTitle: {
+    fontSize: 20,
+    color: '#fff',
+    marginBottom: 5,
+  },
+});
