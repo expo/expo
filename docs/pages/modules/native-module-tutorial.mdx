@@ -92,7 +92,9 @@ import { NativeModule, requireNativeModule } from 'expo';
 
 import { ExpoSettingsModuleEvents } from './ExpoSettings.types';
 
-declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {}
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  getTheme: () => string;
+}
 
 // This call loads the native module object from the JSI.
 export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
@@ -218,6 +220,22 @@ public class ExpoSettingsModule: Module {
 
 ### TypeScript module
 
+Update the ExpoSettingsModule.
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  setTheme: (theme: string) => void;
+  getTheme: () => string;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
 Now, call your native modules from TypeScript.
 
 ```ts src/index.ts
@@ -331,7 +349,7 @@ public class ExpoSettingsModule: Module {
 
 ```ts src/ExpoSettings.types.ts
 export type ThemeChangeEvent = {
-  theme: Theme;
+  theme: string;
 };
 
 export type ExpoSettingsModuleEvents = {
@@ -483,12 +501,26 @@ export type ExpoSettingsModuleEvents = {
 };
 ```
 
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents, Theme } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  setTheme: (theme: Theme) => void;
+  getTheme: () => Theme;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
 ```ts src/index.ts
 import { EventSubscription } from 'expo-modules-core';
 
 import ExpoSettingsModule from './ExpoSettingsModule';
 
-import { Theme, ThemeChangeEvent } from './ExpoSettingsModule';
+import { Theme, ThemeChangeEvent } from './ExpoSettings.types';
 
 export function addThemeListener(listener: (event: ThemeChangeEvent) => void): EventSubscription {
   return ExpoSettingsModule.addListener('onChangeTheme', listener);
