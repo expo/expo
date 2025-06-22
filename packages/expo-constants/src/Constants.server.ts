@@ -1,7 +1,11 @@
 import type { ExpoConfig } from 'expo/config';
-import type { EmbeddedManifest, EASConfig, ExpoGoConfig, ExpoUpdatesManifest } from 'expo-manifests';
+import type {
+  EmbeddedManifest,
+  EASConfig,
+  ExpoGoConfig,
+  ExpoUpdatesManifest,
+} from 'expo-manifests';
 import type { Manifest as UpdatesManifest } from 'expo-updates';
-type DevLauncherManifest = ExpoUpdatesManifest;
 
 import {
   AndroidManifest,
@@ -15,6 +19,7 @@ import {
   WebManifest,
 } from './Constants.types';
 import ExponentConstants from './ExponentConstants.web.js';
+type DevLauncherManifest = ExpoUpdatesManifest;
 
 export {
   AndroidManifest,
