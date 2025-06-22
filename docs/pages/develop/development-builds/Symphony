@@ -1,0 +1,171 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, Platform, Button } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Audio } from 'expo-av';
+
+const songs = [
+  {
+    id: '1',
+    title: 'Sample Track 1',
+    uri: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  },
+  {
+    id: '2',
+    title: 'Sample Track 2',
+    uri: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  },
+];
+
+export default function App() {
+  const [playbackInstance, setPlaybackInstance] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [loopMode, setLoopMode] = useState('none'); // 'none', 'one', 'all'
+  const [avatar, setAvatar] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('需要相簿權限才能換頭像');
+        }
+      }
+      await Audio.setAudioModeAsync({
+        staysActiveInBackground: true,
+        playsInSilentModeIOS: true,
+      });
+      loadAudio();
+    })();
+
+    return () => {
+      if (playbackInstance) {
+        playbackInstance.unloadAsync();
+      }
+    };
+  }, [currentIndex]);
+
+  const loadAudio = async () => {
+    if (playbackInstance) {
+      await playbackInstance.unloadAsync();
+      setPlaybackInstance(null);
+    }
+    const { sound } = await Audio.Sound.createAsync(
+      { uri: songs[currentIndex].uri },
+      { shouldPlay: isPlaying, isLooping: loopMode === 'one' },
+      onPlaybackStatusUpdate
+    );
+    setPlaybackInstance(sound);
+  };
+
+  const onPlaybackStatusUpdate = status => {
+    if (status.didJustFinish) {
+      if (loopMode === 'all') {
+        playNext();
+      } else if (loopMode === 'none') {
+        setIsPlaying(false);
+      }
+    }
+  };
+
+  const playPause = async () => {
+    if (playbackInstance) {
+      if (isPlaying) {
+        await playbackInstance.pauseAsync();
+      } else {
+        await playbackInstance.playAsync();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const playNext = () => {
+    let nextIndex = currentIndex + 1;
+    if (nextIndex >= songs.length) {
+      nextIndex = 0;
+    }
+    setCurrentIndex(nextIndex);
+    setIsPlaying(true);
+  };
+
+  const changeLoopMode = () => {
+    if (loopMode === 'none') setLoopMode('one');
+    else if (loopMode === 'one') setLoopMode('all');
+    else setLoopMode('none');
+  };
+
+  const pickAvatar = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setAvatar(result.uri);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Symphony</Text>
+        <TouchableOpacity onPress={pickAvatar}>
+          {avatar ? (
+            <Image source={{ uri: avatar }} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatar, styles.avatarPlaceholder]}>
+              <Text style={{color:'#fff'}}>換頭像</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={songs}
+        keyExtractor={item => item.id}
+        renderItem={({ item, index }) => (
+          <TouchableOpacity
+            style={[
+              styles.songItem,
+              index === currentIndex && styles.selectedSong,
+            ]}
+            onPress={() => {
+              setCurrentIndex(index);
+              setIsPlaying(true);
+            }}
+          >
+            <Text style={styles.songTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        )}
+      />
+
+      <View style={styles.controls}>
+        <TouchableOpacity onPress={playPause} style={styles.controlButton}>
+          <Text style={styles.controlText}>{isPlaying ? '暫停' : '播放'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={playNext} style={styles.controlButton}>
+          <Text style={styles.controlText}>下一首</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={changeLoopMode} style={styles.controlButton}>
+          <Text style={styles.controlText}>
+            循環: {loopMode === 'none' ? '無' : loopMode === 'one' ? '單曲' : '全部'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, paddingTop: 40, backgroundColor: '#e0f2f1' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 10 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#00796b' },
+  avatar: { width: 50, height: 50, borderRadius: 25 },
+  avatarPlaceholder: { backgroundColor: '#004d40', justifyContent: 'center', alignItems: 'center' },
+  songItem: { padding: 15, borderBottomWidth: 1, borderColor: '#004d40' },
+  selectedSong: { backgroundColor: '#b2dfdb' },
+  songTitle: { fontSize: 18, color: '#004d40' },
+  controls: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 },
+  controlButton: { padding: 15, backgroundColor: '#00796b', borderRadius: 10 },
+  controlText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+});
