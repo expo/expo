@@ -1,4 +1,123 @@
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MCES School App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f6ff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #003366;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #0055aa;
+    }
+    nav button {
+      padding: 1rem;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    nav button:hover {
+      background: #003f7f;
+    }
+    section {
+      display: none;
+      padding: 2rem;
+    }
+    section.active {
+      display: block;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>MCES School App</h1>
+  <p>Empowering Students & Teachers</p>
+</header>
+
+<nav>
+  <button onclick="showSection('announcement')">📢 Announcements</button>
+  <button onclick="showSection('notes')">📚 Notes</button>
+  <button onclick="showSection('students')">👨‍🎓 Students</button>
+  <button onclick="showSection('about')">🏫 About School</button>
+</nav>
+
+<main>
+  <!-- Announcements Section -->
+  <section id="announcement" class="active">
+    <h2>📢 Post Announcement</h2>
+    <input type="text" placeholder="Title">
+    <textarea rows="5" placeholder="Write announcement here..."></textarea>
+    <button>Post</button>
+  </section>
+
+  <!-- Notes Section -->
+  <section id="notes">
+    <h2>📚 Upload Notes</h2>
+    <input type="file" accept="image/*,application/pdf">
+    <button>Upload</button>
+  </section>
+
+  <!-- Students Section -->
+  <section id="students">
+    <h2>👨‍🎓 Student Details</h2>
+    <div class="card">
+      <strong>Name:</strong> Ravi Kumar<br>
+      <strong>Class:</strong> 10th A<br>
+      <strong>Roll No:</strong> 23
+    </div>
+    <div class="card">
+      <strong>Name:</strong> Priya Singh<br>
+      <strong>Class:</strong> 9th B<br>
+      <strong>Roll No:</strong> 12
+    </div>
+  </section>
+
+  <!-- About School -->
+  <section id="about">
+    <h2>🏫 About MCES School</h2>
+    <p>MCES School is committed to excellence in education. We focus on all-round development of students through academic, cultural and sports programs.</p>
+    <p>📍 Location: Bihar, India<br>
+       📞 Contact: 0123-456789<br>
+       ✉️ Email: info@mcesschool.edu.in</p>
+  </section>
+</main>
+
+<script>
+  function showSection(id) {
+    const sections = document.querySelectorAll("section");
+    sections.forEach(sec => sec.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+</script>
+
+</body>
+</html>---
 title: Create a project
 description: Learn how to create a new Expo project.
 hideTOC: true
