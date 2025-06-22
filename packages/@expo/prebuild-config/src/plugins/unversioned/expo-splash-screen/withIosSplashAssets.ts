@@ -126,30 +126,35 @@ async function copyImageFiles({
 }) {
   await generateImagesAssetsAsync({
     async generateImageAsset(item, fileName) {
-      await Promise.all([
-        { ratio: 1, suffix: '' },
-        { ratio: 2, suffix: '@2x' },
-        { ratio: 3, suffix: '@3x' },
-      ].map(async ({ ratio, suffix }) => {
-        const size = imageWidth * ratio;
-        // Using this method will cache the images in `.expo` based on the properties used to generate them.
-        // this method also supports remote URLs and using the global sharp instance.
-        const { source } = await generateImageAsync({ projectRoot, cacheType: IMAGE_CACHE_NAME }, {
-          src: item,
-          width: enableFullScreenImage ? undefined : size,
-          height: enableFullScreenImage ? undefined : size,
-        } as any);
-        // Write image buffer to the file system.
-        // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-        await fs.promises.writeFile(
-          path.resolve(
-            iosNamedProjectRoot,
-            enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH,
-            `${fileName}${suffix}.png`
-          ),
-          source
-        );
-      }));
+      await Promise.all(
+        [
+          { ratio: 1, suffix: '' },
+          { ratio: 2, suffix: '@2x' },
+          { ratio: 3, suffix: '@3x' },
+        ].map(async ({ ratio, suffix }) => {
+          const size = imageWidth * ratio;
+          // Using this method will cache the images in `.expo` based on the properties used to generate them.
+          // this method also supports remote URLs and using the global sharp instance.
+          const { source } = await generateImageAsync(
+            { projectRoot, cacheType: IMAGE_CACHE_NAME },
+            {
+              src: item,
+              width: enableFullScreenImage ? undefined : size,
+              height: enableFullScreenImage ? undefined : size,
+            } as any
+          );
+          // Write image buffer to the file system.
+          // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
+          await fs.promises.writeFile(
+            path.resolve(
+              iosNamedProjectRoot,
+              enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH,
+              `${fileName}${suffix}.png`
+            ),
+            source
+          );
+        })
+      );
     },
     anyItem: image,
     darkItem: darkImage,
