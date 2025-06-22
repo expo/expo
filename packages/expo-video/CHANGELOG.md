@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Support Foreground service when `showNowPlayingNotification` and `supportsBackgroundPlayback` are configured. ([#37225](https://github.com/expo/expo/pull/37566) by [@kerwanp](https://github.com/kerwanp))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix aspect ratio of the Picture in Picture window when auto-entering for sources with ratio different from 16:9. ([#37225](https://github.com/expo/expo/pull/37225) by [@behenate](https://github.com/behenate))
