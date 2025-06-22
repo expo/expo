@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Support Foreground service when `showNowPlayingNotification` and `supportsBackgroundPlayback` are configured. ([#37225](https://github.com/expo/expo/pull/37566) by [@kerwanp](https://github.com/kerwanp))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
