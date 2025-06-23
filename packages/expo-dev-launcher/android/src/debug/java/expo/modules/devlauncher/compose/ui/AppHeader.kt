@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.compose.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -33,7 +34,8 @@ fun AppHeaderContainer(content: @Composable () -> Unit) {
 
 @Composable
 fun AppHeader(
-  appName: String
+  appName: String,
+  onProfileClick: () -> Unit = {}
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically
@@ -57,7 +59,7 @@ fun AppHeader(
 
     Spacer(modifier = Modifier.weight(1f))
 
-    Surface(shape = RoundedCornerShape(Theme.sizing.borderRadius.full)) {
+    Surface(shape = RoundedCornerShape(Theme.sizing.borderRadius.full), modifier = Modifier.clickable(onClick = onProfileClick)) {
       Icon(
         painter = painterResource(R.drawable._expodevclientcomponents_assets_usericonlight),
         contentDescription = "Expo Logo",
