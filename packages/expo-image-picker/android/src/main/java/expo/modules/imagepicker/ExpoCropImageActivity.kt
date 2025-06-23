@@ -1,15 +1,9 @@
 package expo.modules.imagepicker
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.Menu
-import androidx.appcompat.widget.Toolbar
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import android.util.TypedValue
 import com.canhub.cropper.CropImageActivity
 import com.canhub.cropper.CropImageOptions
-import java.io.Serializable
 
 /**
  * A wrapper around `CropImageActivity` to provide custom theming and functionality.
@@ -49,40 +43,18 @@ class ExpoCropImageActivity : CropImageActivity() {
   // endregion
 
   private fun applyPalette(isNight: Boolean, opts: CropImageOptions) {
-    fun getThemeColor(attr: Int): Int? = runCatching {
-      val tv = TypedValue()
-      if (theme.resolveAttribute(attr, tv, true)) tv.data else null
-    }.getOrNull()
+    // Apply palette to options and get the toolbar widget color
+    val toolbarWidgetColor = ExpoCropImageUtils.applyPaletteToOptions(theme, resources, isNight, opts)
 
-    val customToolbar = getThemeColor(R.attr.expoCropToolbarColor)
-    val customIconColor = getThemeColor(R.attr.expoCropToolbarIconColor)
-    val customActionTextColor = getThemeColor(R.attr.expoCropToolbarActionTextColor)
-    val customBackButtonIconColor = getThemeColor(R.attr.expoCropBackButtonIconColor)
-    val customBg = getThemeColor(R.attr.expoCropBackgroundColor)
+    // Set the current icon color for menu tinting
+    currentIconColor = toolbarWidgetColor
 
-    if (isNight) {
-      opts.activityBackgroundColor = customBg ?: Color.BLACK
-      opts.toolbarColor = customToolbar ?: Color.BLACK
-      val toolbarWidgetColor = customIconColor ?: Color.WHITE
-      opts.toolbarTitleColor = toolbarWidgetColor
-      opts.toolbarBackButtonColor = customBackButtonIconColor ?: toolbarWidgetColor
-      opts.activityMenuIconColor = toolbarWidgetColor
-      opts.activityMenuTextColor = customActionTextColor ?: Color.WHITE
-      currentIconColor = toolbarWidgetColor
-      window.statusBarColor = opts.toolbarColor ?: Color.BLACK
-      WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
-    } else {
-      opts.activityBackgroundColor = customBg ?: Color.WHITE
-      opts.toolbarColor = customToolbar ?: opts.activityBackgroundColor ?: Color.WHITE
-      val toolbarWidgetColor = customIconColor ?: Color.BLACK
-      opts.toolbarTitleColor = toolbarWidgetColor
-      opts.toolbarBackButtonColor = customBackButtonIconColor ?: toolbarWidgetColor
-      opts.activityMenuIconColor = toolbarWidgetColor
-      opts.activityMenuTextColor = customActionTextColor ?: Color.BLACK
-      currentIconColor = toolbarWidgetColor
-      window.statusBarColor = opts.toolbarColor ?: Color.WHITE
-      WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
-    }
+    // Set up toolbar color with fallback for status bar theming
+    val defaultToolbarColor = if (isNight) Color.BLACK else Color.WHITE
+    val toolbarColor = opts.toolbarColor ?: defaultToolbarColor
+    ExpoCropImageUtils.applyWindowTheming(window, toolbarColor, isNight)
+
+    // Remove action bar elevation for a flat design
     supportActionBar?.elevation = 0f
   }
 

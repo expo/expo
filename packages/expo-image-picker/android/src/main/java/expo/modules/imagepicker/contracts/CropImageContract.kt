@@ -8,7 +8,6 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
-import com.canhub.cropper.CropImageActivity
 import com.canhub.cropper.CropImageOptions
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
