@@ -50,20 +50,6 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
-  var size: Int64 {
-    get throws {
-      try validatePermission(.read)
-      let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
-      guard let size = attributes[.size] else {
-        throw UnableToGetSizeException("attributes do not contain size")
-      }
-      guard let size = size as? NSNumber else {
-        throw UnableToGetSizeException("size is not a number")
-      }
-      return size.int64Value
-    }
-  }
-
   var md5: String {
     get throws {
       try validatePermission(.read)
@@ -73,18 +59,30 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
+  var size: Int64 {
+    get throws {
+      return try getAttribute(.size, atPath: url.path)
+    }
+  }
+
   var modificationTime: Int64 {
     get throws {
-      try validatePermission(.read)
-      let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
-      guard let modificationTime = attributes[.modificationDate] else {
-        throw UnableToGetModificationTimeException("attributes do not contain modificationDate")
-      }
-      guard let modificationTime = modificationTime as? Date else {
-        throw UnableToGetModificationTimeException("modificationTime is not a date")
-      }
-      return Int64(modificationTime.timeIntervalSince1970)
+      let modificationDate: Date = try getAttribute(.modificationDate, atPath: url.path)
+      return Int64(modificationDate.timeIntervalSince1970)
     }
+  }
+
+  private func getAttribute<T>(_ key: FileAttributeKey, atPath path: String) throws -> T {
+    try validatePermission(.read)
+    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+
+    guard let attribute = attributes[key] else {
+      throw UnableToGetFileAttribute("attributes do not contain \(key)")
+    }
+    guard let attributeCasted = attribute as? T else {
+      throw UnableToGetFileAttribute("\(key) is not of expected type")
+    }
+    return attributeCasted
   }
 
   var type: String? {

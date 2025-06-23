@@ -25,15 +25,15 @@ internal final class InvalidTypeDirectoryException: Exception {
   }
 }
 
-internal final class UnableToGetSizeException: GenericException<String> {
+internal final class UnableToGetFileAttribute: GenericException<String> {
   override var reason: String {
-    "Unable to get file or directory size: \(param)"
+    "Unable to get file attribute: \(param)"
   }
 }
 
-internal final class UnableToGetModificationTimeException: GenericException<String> {
+internal final class UnableToGetSizeException: GenericException<String> {
   override var reason: String {
-    "Unable to get modification time: \(param)"
+    "Unable to get file or directory size: \(param)"
   }
 }
 
