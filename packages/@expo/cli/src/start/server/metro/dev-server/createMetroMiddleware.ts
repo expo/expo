@@ -18,9 +18,6 @@ export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoo
     // Support opening stack frames from clients directly in the editor
     .use('/open-stack-frame', rawBodyMiddleware)
     .use('/open-stack-frame', metroOpenStackFrameMiddleware)
-    // Support the symbolication endpoint of Metro
-    // See: https://github.com/facebook/metro/blob/a792d85ffde3c21c3fbf64ac9404ab0afe5ff957/packages/metro/src/Server.js#L1266
-    .use('/symbolicate', rawBodyMiddleware)
     // Support status check to detect if the packager needs to be started from the native side
     .use('/status', createMetroStatusMiddleware(metroConfig));
 
