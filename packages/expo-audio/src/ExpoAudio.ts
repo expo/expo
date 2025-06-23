@@ -39,6 +39,12 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (
   }
 };
 
+const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
+  const processedOptions = options ? createRecordingOptions(options) : undefined;
+  return prepareToRecordAsync.call(this, processedOptions);
+};
+
 // @docsMissing
 export function useAudioPlayer(
   source: AudioSource = null,
