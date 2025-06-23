@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add experimental macOS support ([#37352](https://github.com/expo/expo/pull/37352) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 14.2.0 - 2025-06-11
+
+### 🎉 New features
+
+- Add experimental macOS support ([#37352](https://github.com/expo/expo/pull/37352) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 14.1.6 — 2025-04-30
 
