@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Restructure Jest polyfills to not import forbidden platform extension directly.
+- Restructure Jest polyfills to not import forbidden platform extension directly. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Improve time to retrieve the Expo module. ([#37082](https://github.com/expo/expo/pull/37082) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Reduce the memory footprint of calling function from the native module. ([#37080](https://github.com/expo/expo/pull/37080) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Changed how nullable types are converted. ([#37055](https://github.com/expo/expo/pull/37055) by [@lukmccall](https://github.com/lukmccall))
