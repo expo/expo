@@ -76,7 +76,7 @@ jobs:
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
-          yarn generate-test-update-bundles
+          yarn generate-test-update-bundles ios
           npx pod-install
       - name: Build E2E test app (debug)
         id: builddebug
@@ -130,7 +130,7 @@ jobs:
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
-          yarn generate-test-update-bundles
+          yarn generate-test-update-bundles android
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4
