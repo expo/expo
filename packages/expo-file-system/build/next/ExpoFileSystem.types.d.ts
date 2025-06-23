@@ -199,7 +199,7 @@ export type FileInfo =
      */
     uri: string;
     /**
-     * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
+     * The size of the file in bytes.
      */
     size: number;
     /**

@@ -136,10 +136,8 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
           size = size,
           modificationTime = modificationTime
         )
-        if (options != null) {
-          if (options.md5 == true) {
-            fileInfo.md5 = md5
-          }
+        if (options != null && options.md5 == true) {
+          fileInfo.md5 = md5
         }
         return fileInfo
       }
