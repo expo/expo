@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Simplify expo-modules-core usage.
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
