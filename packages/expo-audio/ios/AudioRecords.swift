@@ -43,7 +43,6 @@ struct RecordingOptions: Record {
   @Field var linearPCMIsBigEndian: Bool?
   @Field var linearPCMIsFloat: Bool?
   @Field var isMeteringEnabled: Bool = false
-  @Field var allowBluetoothAudio: Bool = true
 }
 
 enum BitRateStrategy: String, Enumerable {

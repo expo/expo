@@ -72,7 +72,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     resetDurationTracking()
 
     do {
-       try session.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth])
+      try session.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth])
       try session.setActive(true)
     } catch {
       currentState = .error
@@ -141,6 +141,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func getRecordingStatus() -> [String: Any] {
+    let currentDuration = isRecording ? currentDuration : 0
+    let duration = previousRecordingDuration + currentDuration
+
     var result: [String: Any] = [
       "canRecord": isPrepared && allowsRecording,
       "isRecording": currentState == .recording,
