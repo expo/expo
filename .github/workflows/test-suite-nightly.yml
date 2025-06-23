@@ -164,8 +164,6 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🛠️ Generate dynamic macros
-        run: expotools android-generate-dynamic-macros --configuration release --bare
       - name: 🤖 Build Android project
         run: ./scripts/start-android-e2e-test.js --build
         working-directory: apps/bare-expo
