@@ -24,7 +24,7 @@ import java.io.Serializable
 internal class CropImageContract(
   private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
-  override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
+  override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, expo.modules.imagepicker.ExpoCropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri.toUri())
     val compressFormat = mediaType.toBitmapCompressFormat()
     val cacheDirectory = appContextProvider.appContext.cacheDirectory
