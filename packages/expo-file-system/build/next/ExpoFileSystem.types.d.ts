@@ -191,7 +191,7 @@ export type FileInfo =
  */
 {
     /**
-     * Signifies that the requested file exist.
+     * Signifies whether the requested file exists.
      */
     exists: true;
     /**
@@ -210,6 +210,10 @@ export type FileInfo =
      * The last modification time of the file expressed in seconds since epoch.
      */
     modificationTime: number;
+    /**
+     * The last modification time of the file expressed in seconds since epoch.
+     */
+    creationTime: number;
     /**
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */

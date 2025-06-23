@@ -244,7 +244,7 @@ export type FileInfo =
    */
   | {
       /**
-       * Signifies that the requested file exist.
+       * Signifies whether the requested file exists.
        */
       exists: true;
       /**
