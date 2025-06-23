@@ -129,7 +129,7 @@ export declare class File {
     /**
      *  Retrieves a file info.
      */
-    getInfoAsync(options?: InfoOptions): Promise<FileInfo>;
+    info(options?: InfoOptions): FileInfo;
     /**
      * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
      * Also, `false` if the application does not have read access to the file.

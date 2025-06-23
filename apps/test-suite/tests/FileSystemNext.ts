@@ -613,12 +613,12 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
       describe('When getting file info', () => {
-        it('executes correctly', async () => {
+        it('executes correctly', () => {
           const url = `${testDirectory}execute_correctly.txt`;
           const src = new File(url);
           src.create();
           src.write('Hello World');
-          const result = await src.getInfoAsync({ md5: true });
+          const result = src.info({ md5: true });
           expect(result.exists).toBe(true);
           if (result.exists) {
             const { uri, size, isDirectory, modificationTime, md5 } = result;
@@ -629,11 +629,11 @@ export async function test({ describe, expect, it, ...t }) {
             expect(size).toBe(11);
           }
         });
-        it('executes correctly if options are undefined', async () => {
+        it('executes correctly if options are undefined', () => {
           const url = `${testDirectory}executes_correctly_if_options_are_undefined.txt`;
           const src = new File(url);
           src.write('Hello World');
-          const result = await src.getInfoAsync();
+          const result = src.info();
           expect(result.exists).toBe(true);
           if (result.exists) {
             expect(result.md5).toBeNull();
@@ -647,7 +647,7 @@ export async function test({ describe, expect, it, ...t }) {
 
           expect(src.exists).toBe(false);
           try {
-            await src.getInfoAsync();
+            src.info();
             fail('Promise should have rejected');
           } catch (err) {
             expect(err).not.toBeNull();

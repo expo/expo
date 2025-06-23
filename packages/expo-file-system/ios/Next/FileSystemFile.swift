@@ -124,7 +124,7 @@ internal final class FileSystemFile: FileSystemPath {
     return try Data(contentsOf: url).base64EncodedString()
   }
 
-  func getInfoAsync(options: InfoOptions) throws -> FileInfo {
+  func info(options: InfoOptions) throws -> FileInfo {
     try validatePermission(.read)
     switch url.scheme {
     case "file":
