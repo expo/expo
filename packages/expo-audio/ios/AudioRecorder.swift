@@ -54,7 +54,6 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     return deviceCurrentTime - startTimestamp
   }
 
-<<<<<<< HEAD
   private var totalDuration: Int {
     switch currentState {
     case .recording:
@@ -63,16 +62,6 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       return totalRecordedDuration
     case .stopped, .idle, .prepared, .error:
       return 0
-||||||| parent of f111d22162 (link)
-  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
-    if !allowsRecording {
-      return
-=======
-  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
-    if !allowsRecording {
-      log.info("Calling prepare on recorder while recording is not allowed")
-      return
->>>>>>> f111d22162 (link)
     }
   }
 
@@ -81,7 +70,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       ref.stop()
     }
     resetDurationTracking()
-
+    let session = AVAudioSession.sharedInstance()
     do {
       try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
       try session.setActive(true)
@@ -152,23 +141,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func getRecordingStatus() -> [String: Any] {
-    let activeDuration = isRecording ? self.currentDuration : 0
-    let totalDuration = previousRecordingDuration + activeDuration
-
     var result: [String: Any] = [
-      "canRecord": isPrepared && allowsRecording,
-<<<<<<< HEAD
+      "canRecord": isPrepared,
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
-||||||| parent of 36580b5507 (fix options)
-      "isRecording": isRecording,
-      "durationMillis": duration,
-=======
-      "isRecording": isRecording,
-      "durationMillis": totalDuration,
->>>>>>> 36580b5507 (fix options)
       "mediaServicesDidReset": false,
-      "url": ref.url.absoluteString
+      "url": ref.url
     ]
 
     if ref.isMeteringEnabled {
