@@ -21,6 +21,7 @@
 
 ### 💡 Others
 
+- Remove flipper hack support from types. ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.20.14 — 2025-05-06

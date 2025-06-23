@@ -231,7 +231,6 @@ describe('_resolveProjectSettingsAsync', () => {
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       expoGoConfig: {
-        __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
         mainModuleName: 'index',
@@ -262,7 +261,6 @@ describe('_resolveProjectSettingsAsync', () => {
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       expoGoConfig: {
-        __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
         mainModuleName: 'index',
