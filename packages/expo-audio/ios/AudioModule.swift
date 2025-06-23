@@ -463,22 +463,14 @@ public class AudioModule: Module {
     } else {
       category = mode.allowsRecording ? .playAndRecord : .playback
 
-      var categoryOptions: AVAudioSession.CategoryOptions = []
-
       switch mode.interruptionMode {
       case .doNotMix:
         break
       case .duckOthers:
-        categoryOptions.insert(.duckOthers)
+        options = [.duckOthers]
       case .mixWithOthers:
-        categoryOptions.insert(.mixWithOthers)
+        options = [.mixWithOthers]
       }
-
-      if mode.allowsRecording {
-        categoryOptions.insert(.allowBluetooth)
-      }
-
-      options = categoryOptions
     }
 
     try session.setCategory(category, options: options)

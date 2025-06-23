@@ -73,18 +73,8 @@ struct AudioUtils {
   static func createRecorder(directory: URL?, with options: RecordingOptions) -> AVAudioRecorder {
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
-      let settings = AudioUtils.createRecordingOptions(options)
       do {
-<<<<<<< HEAD
-        let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
-        recorder.isMeteringEnabled = options.isMeteringEnabled
-        return recorder
-||||||| parent of bf60a211c3 (fix allowsRecording)
         return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
-=======
-        let recorder = try AVAudioRecorder(url: fileUrl, settings: settings)
-        return recorder
->>>>>>> bf60a211c3 (fix allowsRecording)
       } catch {
         return AVAudioRecorder()
       }
