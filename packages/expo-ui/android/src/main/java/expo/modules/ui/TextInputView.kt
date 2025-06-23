@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.Direction
 import java.util.EnumSet
@@ -29,7 +30,8 @@ data class TextInputProps(
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
-  val autocorrection: MutableState<Boolean> = mutableStateOf(true)
+  val autocorrection: MutableState<Boolean> = mutableStateOf(true),
+  val capitalization: MutableState<String> = mutableStateOf("none")
 ) : ComposeProps
 
 fun String.keyboardType(): KeyboardType {
@@ -44,6 +46,17 @@ fun String.keyboardType(): KeyboardType {
     "url" -> KeyboardType.Uri
     "number-password" -> KeyboardType.NumberPassword
     else -> KeyboardType.Text
+  }
+}
+
+fun String.capitalization(): KeyboardCapitalization {
+  return when (this) {
+    "characters" -> KeyboardCapitalization.Characters
+    "none" -> KeyboardCapitalization.None
+    "sentences" -> KeyboardCapitalization.Sentences
+    "unspecified" -> KeyboardCapitalization.Unspecified
+    "words" -> KeyboardCapitalization.Words
+    else -> KeyboardCapitalization.None
   }
 }
 
@@ -65,9 +78,10 @@ class TextInputView(context: Context, appContext: AppContext) :
         placeholder = { Text(props.placeholder.value) },
         maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
         singleLine = !props.multiline.value,
-        keyboardOptions = KeyboardOptions.Default.copy(
+        keyboardOptions = KeyboardOptions(
           keyboardType = props.keyboardType.value.keyboardType(),
-          autoCorrectEnabled = props.autocorrection.value
+          autoCorrectEnabled = props.autocorrection.value,
+          capitalization = props.capitalization.value.capitalization()
         )
       )
     }

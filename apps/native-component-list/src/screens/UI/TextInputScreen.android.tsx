@@ -2,12 +2,12 @@ import { TextInput } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { Text } from 'react-native';
 
-import { Page, Section } from '../../components/Page';
+import { ScrollPage, Section } from '../../components/Page';
 
 export default function TextInputScreen() {
   const [value, setValue] = React.useState<string>('');
   return (
-    <Page>
+    <ScrollPage>
       <Section title="Current value">
         <Text>{JSON.stringify(value)}</Text>
       </Section>
@@ -33,7 +33,36 @@ export default function TextInputScreen() {
           onChangeText={setValue}
         />
       </Section>
-    </Page>
+
+      <Section title="Capitalization">
+        <TextInput
+          multiline
+          numberOfLines={5}
+          autocorrection={false}
+          defaultValue="CHARACTERS"
+          onChangeText={setValue}
+          capitalization="characters"
+        />
+
+        <TextInput
+          multiline
+          numberOfLines={5}
+          autocorrection={false}
+          defaultValue="Capitalizing Words"
+          onChangeText={setValue}
+          capitalization="words"
+        />
+
+        <TextInput
+          multiline
+          numberOfLines={5}
+          autocorrection={false}
+          defaultValue="Capitalizing sentences. This is a test."
+          onChangeText={setValue}
+          capitalization="sentences"
+        />
+      </Section>
+    </ScrollPage>
   );
 }
 

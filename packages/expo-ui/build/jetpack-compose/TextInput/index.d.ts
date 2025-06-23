@@ -50,6 +50,19 @@ export type TextInputProps = {
      * @default true
      */
     autocorrection?: boolean;
+    /**
+     * Options to request software keyboard to capitalize the text. Applies to languages which has upper-case and lower-case letters.
+     *
+     * Available options:
+     * - characters
+     * - none
+     * - sentences
+     * - unspecified
+     * - words
+     * @default none
+     * @platform android
+     */
+    capitalization?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
