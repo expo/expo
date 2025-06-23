@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
+- Added `placeholder` property TypeScript definition ([#37597](https://github.com/expo/expo/pull/37597) by [@mateoguzmana](https://github.com/mateoguzmana))
 
 ### 🐛 Bug fixes
 
