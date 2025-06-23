@@ -54,6 +54,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     return deviceCurrentTime - startTimestamp
   }
 
+<<<<<<< HEAD
   private var totalDuration: Int {
     switch currentState {
     case .recording:
@@ -62,6 +63,16 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       return totalRecordedDuration
     case .stopped, .idle, .prepared, .error:
       return 0
+||||||| parent of f111d22162 (link)
+  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
+    if !allowsRecording {
+      return
+=======
+  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
+    if !allowsRecording {
+      log.info("Calling prepare on recorder while recording is not allowed")
+      return
+>>>>>>> f111d22162 (link)
     }
   }
 
