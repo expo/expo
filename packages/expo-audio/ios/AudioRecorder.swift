@@ -18,7 +18,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var totalRecordedDuration = 0
   private var currentState: RecordingState = .idle
   private var recordingSession = AVAudioSession.sharedInstance()
-  var allowsRecording = true
+  var allowsRecording = false
   weak var owningRegistry: AudioComponentRegistry?
 
   private var isPrepared: Bool {
@@ -72,13 +72,8 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     resetDurationTracking()
 
     do {
-      var sessionOptions: AVAudioSession.CategoryOptions = [.allowBluetooth]
-
-      if let options, !options.allowBluetoothAudio {
-        sessionOptions = [.defaultToSpeaker]
-      }
-      try recordingSession.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
-      try recordingSession.setActive(true)
+       try session.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth])
+      try session.setActive(true)
     } catch {
       currentState = .error
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
@@ -147,11 +142,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
   func getRecordingStatus() -> [String: Any] {
     var result: [String: Any] = [
-      "canRecord": isPrepared,
+      "canRecord": isPrepared && allowsRecording,
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
       "mediaServicesDidReset": false,
-      "url": ref.url
+      "url": ref.url.absoluteString
     ]
 
     if ref.isMeteringEnabled {
@@ -183,10 +178,10 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   private var recordingDirectory: URL? {
-    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
       return nil
     }
-    return directory
+    return URL(fileURLWithPath: cachesDir)
   }
 
   override func sharedObjectWillRelease() {
@@ -198,10 +193,5 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
     ref.delegate = nil
     recordingDelegate = nil
-
-    do {
-      try recordingSession.setActive(false, options: [.notifyOthersOnDeactivation])
-    } catch {
-    }
   }
 }

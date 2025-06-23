@@ -10,6 +10,7 @@ public class AudioModule: Module {
   private var interruptionMode: InterruptionMode = .mixWithOthers
   private var interruptedPlayers = Set<String>()
   private var playerVolumes = [String: Float]()
+  private var allowsRecording = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -201,6 +202,7 @@ public class AudioModule: Module {
         let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
         let recorder = AudioRecorder(avRecorder)
         recorder.owningRegistry = self.registry
+        recorder.allowsRecording = allowsRecording
         self.registry.add(recorder)
 
         return recorder
@@ -408,10 +410,10 @@ public class AudioModule: Module {
   }
 
   private func recordingDirectory() throws -> URL {
-    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
       throw Exceptions.AppContextLost()
     }
-    return directory
+    return URL(fileURLWithPath: cachesDir)
   }
 
   private func setIsAudioActive(_ isActive: Bool) throws {
@@ -435,14 +437,15 @@ public class AudioModule: Module {
 
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
+    self.allowsRecording = mode.allowsRecording
 
     #if os(iOS)
     if !mode.allowsRecording {
       registry.allRecorders.values.forEach { recorder in
         if recorder.isRecording {
           recorder.ref.stop()
-          recorder.allowsRecording = false
         }
+        recorder.allowsRecording = false
       }
     } else {
       registry.allRecorders.values.forEach { recorder in
@@ -459,14 +462,23 @@ public class AudioModule: Module {
       }
     } else {
       category = mode.allowsRecording ? .playAndRecord : .playback
+
+      var categoryOptions: AVAudioSession.CategoryOptions = []
+      
       switch mode.interruptionMode {
       case .doNotMix:
         break
       case .duckOthers:
-        options = [.duckOthers]
+        categoryOptions.insert(.duckOthers)
       case .mixWithOthers:
-        options = [.mixWithOthers]
+        categoryOptions.insert(.mixWithOthers)
       }
+      
+      if mode.allowsRecording {
+        categoryOptions.insert(.allowBluetooth)
+      }
+      
+      options = categoryOptions
     }
 
     try session.setCategory(category, options: options)

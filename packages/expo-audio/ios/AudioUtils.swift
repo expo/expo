@@ -71,16 +71,30 @@ struct RecordingUtils {
 struct AudioUtils {
   #if os(iOS)
   static func createRecorder(directory: URL?, with options: RecordingOptions) -> AVAudioRecorder {
+    print("AudioUtils.createRecorder - directory: \(String(describing: directory))")
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
+      print("AudioUtils.createRecorder - fileUrl: \(fileUrl)")
+      let settings = AudioUtils.createRecordingOptions(options)
+      print("AudioUtils.createRecorder - settings: \(settings)")
       do {
+<<<<<<< HEAD
         let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
         recorder.isMeteringEnabled = options.isMeteringEnabled
         return recorder
+||||||| parent of bf60a211c3 (fix allowsRecording)
+        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+=======
+        let recorder = try AVAudioRecorder(url: fileUrl, settings: settings)
+        print("AudioUtils.createRecorder - SUCCESS: recorder.url = \(String(describing: recorder.url))")
+        return recorder
+>>>>>>> bf60a211c3 (fix allowsRecording)
       } catch {
+        print("AudioUtils.createRecorder - ERROR creating recorder: \(error)")
         return AVAudioRecorder()
       }
     }
+    print("AudioUtils.createRecorder - NO DIRECTORY - returning empty recorder")
     return AVAudioRecorder()
   }
   #endif
