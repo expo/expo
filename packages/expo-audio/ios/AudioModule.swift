@@ -11,6 +11,7 @@ public class AudioModule: Module {
   private var interruptedPlayers = Set<String>()
   private var playerVolumes = [String: Float]()
   private var allowsRecording = false
+  private var sessionOptions: AVAudioSession.CategoryOptions = []
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -225,7 +226,7 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
-        try recorder.prepare(options: options)
+        try recorder.prepare(options: options, sessionOptions: sessionOptions)
       }
 
       Function("record") { (recorder: AudioRecorder) -> [String: Any] in
@@ -433,7 +434,6 @@ public class AudioModule: Module {
     try AudioUtils.validateAudioMode(mode: mode)
     let session = AVAudioSession.sharedInstance()
     var category: AVAudioSession.Category = session.category
-    var options: AVAudioSession.CategoryOptions = session.categoryOptions
 
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
@@ -460,20 +460,28 @@ public class AudioModule: Module {
       } else {
         category = .ambient
       }
+      sessionOptions = []
     } else {
       category = mode.allowsRecording ? .playAndRecord : .playback
 
+      var categoryOptions: AVAudioSession.CategoryOptions = []
       switch mode.interruptionMode {
       case .doNotMix:
         break
       case .duckOthers:
-        options = [.duckOthers]
+        categoryOptions.insert(.duckOthers)
       case .mixWithOthers:
-        options = [.mixWithOthers]
+        categoryOptions.insert(.mixWithOthers)
       }
+
+      if category == .playAndRecord {
+        categoryOptions.insert(.allowBluetooth)
+      }
+
+      sessionOptions = categoryOptions
     }
 
-    try session.setCategory(category, options: options)
+    try session.setCategory(category, options: sessionOptions)
     try session.setActive(true, options: [.notifyOthersOnDeactivation])
   }
 

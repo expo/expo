@@ -65,14 +65,14 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
   }
 
-  func prepare(options: RecordingOptions?) throws {
+  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
     if currentState == .recording {
       ref.stop()
     }
     resetDurationTracking()
 
     do {
-      try session.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth])
+      try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
       try session.setActive(true)
     } catch {
       currentState = .error
@@ -141,13 +141,21 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func getRecordingStatus() -> [String: Any] {
-    let currentDuration = isRecording ? currentDuration : 0
-    let duration = previousRecordingDuration + currentDuration
+    let activeDuration = isRecording ? self.currentDuration : 0
+    let totalDuration = previousRecordingDuration + activeDuration
 
     var result: [String: Any] = [
       "canRecord": isPrepared && allowsRecording,
+<<<<<<< HEAD
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
+||||||| parent of 36580b5507 (fix options)
+      "isRecording": isRecording,
+      "durationMillis": duration,
+=======
+      "isRecording": isRecording,
+      "durationMillis": totalDuration,
+>>>>>>> 36580b5507 (fix options)
       "mediaServicesDidReset": false,
       "url": ref.url.absoluteString
     ]
