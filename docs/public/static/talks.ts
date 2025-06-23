@@ -14,6 +14,13 @@ export const TALKS = [
     home: true,
   },
   {
+    title: 'Embracing Native Code and Capabilities',
+    event: 'App.js Conf 2025',
+    description: 'Keith Kurak',
+    videoId: 'TLoHua8bzPg',
+    home: true,
+  },
+  {
     title: 'Keynote: flexibility & iteration speed',
     event: 'App.js Conf 2024',
     description: 'Charlie Cheever, James Ide',
@@ -30,7 +37,6 @@ export const TALKS = [
     event: 'App.js Conf 2024',
     description: 'Evan Bacon',
     videoId: 'BK2xbPW2uUU',
-    home: true,
   },
   {
     title: 'Launching Desktop Apps to Orbit with React Native',
