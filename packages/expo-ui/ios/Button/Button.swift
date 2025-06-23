@@ -62,6 +62,8 @@ struct Button: ExpoSwiftUI.View {
       button.if(props.variant == .glass, {
         $0.buttonStyle(.glass)
       })
+      #else
+      button
       #endif
     } else {
       button
