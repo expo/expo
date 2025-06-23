@@ -67,6 +67,10 @@ export declare class Directory {
      * Lists the contents of a directory.
      */
     list(): (Directory | File)[];
+    /**
+     * A size of the directory in bytes. Null if the directory does not exist, or it cannot be read.
+     */
+    size: number | null;
 }
 export type DownloadOptions = {
     /**
