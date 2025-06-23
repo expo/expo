@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
+- [android] text input keyboard capitalization ([#37595](https://github.com/expo/expo/pull/37595) by [@mateoguzmana](https://github.com/mateoguzmana))
 
 ### 🐛 Bug fixes
 
