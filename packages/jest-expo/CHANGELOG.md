@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Mock Expo's default async-require messaging socket. ([#37524](https://github.com/expo/expo/pull/37524) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Change the `global.expo` polyfill to work with package exports and be more explicit. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))

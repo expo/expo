@@ -17,12 +17,13 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * - `borderedProminent` - A bordered button with a prominent appearance.
  * - `plain` - A button with no border or background and a less prominent text.
  * macOS-only styles:
+ * - `glass` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta version of Xcode)
  * - `accessoryBar` - A button style for accessory bars.
  * - `accessoryBarAction` - A button style for accessory bar actions.
  * - `card` - A button style for cards.
  * - `link` - A button style for links.
  */
-export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link';
+export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'glass' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link';
 export type ButtonProps = {
     /**
      * A callback that is called when the button is pressed.

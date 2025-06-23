@@ -1,42 +1,22 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import React
 
-private func firstSubview<T: UIView>(_ rootView: UIView, ofType type: T.Type) -> T? {
-  var resultView: T?
-  for view in rootView.subviews {
-    if let view = view as? T {
-      resultView = view
-      break
-    }
-
-    if let foundView = firstSubview(view, ofType: T.self) {
-      resultView = foundView
-      break
-    }
-  }
-  return resultView
-}
-
-class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
+class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
   private let manager: DevMenuManager
-
-  private let bottomSheetController: OverlayContainerViewController
   private let devMenuViewController: DevMenuViewController
+  private var isPresenting = false
+  private var isDismissing = false
 
-  init(manager: DevMenuManager) {
+  required init(manager: DevMenuManager) {
     self.manager = manager
-    bottomSheetController = OverlayContainerViewController(style: .flexibleHeight)
-    devMenuViewController = DevMenuViewController(manager: manager)
+    self.devMenuViewController = DevMenuViewController(manager: manager)
 
     super.init(frame: UIScreen.main.bounds)
 
-    bottomSheetController.delegate = self
-    bottomSheetController.viewControllers = [devMenuViewController]
-
-    self.rootViewController = bottomSheetController
+    self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
-    self.bounds = UIScreen.main.bounds
     self.windowLevel = .statusBar
     self.isHidden = true
   }
@@ -47,75 +27,93 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
   }
 
   override func becomeKey() {
-    // We set up the background of the RN root view to mask all artifacts caused by Yoga when the bottom sheet is dragged.
-    devMenuViewController.view.backgroundColor = UIColor(red: 0.97, green: 0.97, blue: 0.98, alpha: 1)
-
-    devMenuViewController.updateProps()
-    bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.open.rawValue, animated: true)
-
-    setDrivingScrollView()
+    super.becomeKey()
+    if !isPresenting && !isDismissing {
+      presentDevMenu()
+    }
   }
 
-  // In order to create a smooth interplay between a mobile bottom sheet and scrolling through its contents,
-  // the 'drivingScrollView' property must be established. However, it may not be immediately accessible
-  // when the menu is first opened. As a result, we schedule a task that periodically verifies the availability of the scroll view.
-  // TODO(@lukmccall): find a better way how to detect if the scroll view is available.
-  private func setDrivingScrollView() {
-    let scrollView = firstSubview(devMenuViewController.view, ofType: UIScrollView.self)
-    if scrollView == nil {
-      DispatchQueue.main.async {
-        self.setDrivingScrollView()
-      }
-    } else {
-      bottomSheetController.drivingScrollView = scrollView
+  private func presentDevMenu() {
+    guard !isPresenting && !isDismissing else {
+      return
     }
+
+    isPresenting = true
+    devMenuViewController.modalPresentationStyle = .pageSheet
+
+    if #available(iOS 15.0, *) {
+      if let sheet = devMenuViewController.sheetPresentationController {
+        if #available(iOS 16.0, *) {
+          sheet.detents = [
+            .custom(resolver: { context in
+              return context.maximumDetentValue * 0.6
+            }),
+            .large()
+          ]
+        } else {
+          sheet.detents = [.medium(), .large()]
+        }
+
+        sheet.largestUndimmedDetentIdentifier = .large
+        sheet.prefersEdgeAttachedInCompactHeight = true
+        sheet.delegate = self
+      }
+    }
+
+    self.rootViewController?.present(devMenuViewController, animated: true) {
+      self.isPresenting = false
+    }
+  }
+
+  func closeBottomSheet(_ completion: (() -> Void)? = nil) {
+    guard !isDismissing && !isPresenting else {
+      return
+    }
+    isDismissing = true
+
+    resetScrollPosition()
+    UIView.animate(withDuration: 0.3) {
+      self.backgroundColor = .clear
+    }
+
+    devMenuViewController.dismiss(animated: true) {
+      self.isDismissing = false
+      self.isHidden = true
+      self.backgroundColor = UIColor(white: 0, alpha: 0.4)
+      completion?()
+    }
+  }
+
+  private func resetScrollPosition() {
+    if let scrollView = findScrollView(in: devMenuViewController.view) {
+      scrollView.setContentOffset(.zero, animated: false)
+    }
+  }
+
+  private func findScrollView(in view: UIView) -> UIScrollView? {
+    if let scrollView = view as? UIScrollView {
+      return scrollView
+    }
+
+    for subview in view.subviews {
+      if let scrollView = findScrollView(in: subview) {
+        return scrollView
+      }
+    }
+
+    return nil
   }
 
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     let view = super.hitTest(point, with: event)
-    if view == self && event?.type == .touches {
-      bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true)
-    }
-
-    return view == self ? nil : view
-  }
-
-  enum OverlayNotch: Int, CaseIterable {
-    case hidden, open, fullscreen
-  }
-
-  func numberOfNotches(in containerViewController: OverlayContainerViewController) -> Int {
-    return OverlayNotch.allCases.count
-  }
-
-  func overlayContainerViewController(
-    _ containerViewController: OverlayContainerViewController,
-    heightForNotchAt index: Int,
-    availableSpace: CGFloat
-  ) -> CGFloat {
-    switch OverlayNotch.allCases[index] {
-    case .fullscreen:
-    // Before the dev menu is opened for the first time the availableSpace equals zero (correct value is loaded while opening the dev menu).
-    // In order to avoid crashing the app because of returning a negative value make sure that the returned value is >= 0.
-    return max(availableSpace - 45, 0)
-    case .open:
-      return availableSpace * 0.6
-    case .hidden:
-      return 0
-    }
-  }
-
-  func overlayContainerViewController(
-    _ containerViewController: OverlayContainerViewController,
-    didMoveOverlay overlayViewController: UIViewController,
-    toNotchAt index: Int
-  ) {
-    if index == OverlayNotch.hidden.rawValue {
+    if view == self.rootViewController?.view && event?.type == .touches {
       manager.hideMenu()
+      return self.rootViewController?.view
     }
+    return view
   }
 
-  func closeBottomSheet(completion: (() -> Void)? = nil) {
-    bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true, completion: completion)
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    manager.hideMenu()
   }
 }

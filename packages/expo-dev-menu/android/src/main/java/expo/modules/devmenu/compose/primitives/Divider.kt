@@ -10,7 +10,7 @@ import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun Divider() {
-  val thickness = Theme.sizing.borderRadius.hairlineWidth
+  val thickness = Theme.sizing.border.hairlineWidth
   val color = Theme.colors.border.default
   Canvas(Modifier.fillMaxWidth().height(thickness)) {
     drawLine(

@@ -1,8 +1,6 @@
 import Foundation
 
 class AudioComponentRegistry {
-  static let shared = AudioComponentRegistry()
-
   private var players = [String: AudioPlayer]()
   #if os(iOS)
   private var recorders = [String: AudioRecorder]()
@@ -10,7 +8,7 @@ class AudioComponentRegistry {
 
   private let registryQueue = DispatchQueue(label: "expo.audio.registry", attributes: .concurrent)
 
-  private init() {}
+  init() {}
 
   func add(_ player: AudioPlayer) {
     registryQueue.async(flags: .barrier) {
@@ -42,8 +40,11 @@ class AudioComponentRegistry {
 
   func removeAll() {
     registryQueue.async(flags: .barrier) {
+      self.players.values.forEach { $0.owningRegistry = nil }
       self.players.removeAll()
+
       #if os(iOS)
+      self.recorders.values.forEach { $0.owningRegistry = nil }
       self.recorders.removeAll()
       #endif
     }

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [android] Introduce customizable cropping UI with light and dark theme support ([#37573](https://github.com/expo/expo/pull/37573) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 - Prevent external applications from accessing the CropImageActivity ([#37223](https://github.com/expo/expo/pull/37223) by [@aladine](https://github.com/aladine))
