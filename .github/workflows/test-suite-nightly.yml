@@ -131,7 +131,7 @@ jobs:
           author_name: Test Suite Nightly (iOS)
 
   android-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -187,7 +187,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         api-level: [34]
