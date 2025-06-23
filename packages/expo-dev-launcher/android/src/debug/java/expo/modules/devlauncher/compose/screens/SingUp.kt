@@ -24,21 +24,21 @@ import expo.modules.devmenu.compose.theme.ButtonStyle
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
-fun ActionButton(
+private fun ActionButton(
   text: String,
   style: ButtonStyle,
-  onClick: () -> Unit = {},
+  onClick: () -> Unit = {}
 ) {
   Button(
     onClick = onClick,
     shape = RoundedCornerShape(Theme.sizing.borderRadius.small),
-    backgroundColor = style.background,
+    backgroundColor = style.background
   ) {
     Box(
       contentAlignment = Alignment.Center,
       modifier = Modifier
         .padding(vertical = Theme.spacing.small)
-        .fillMaxWidth(),
+        .fillMaxWidth()
     ) {
       Heading(text, color = style.foreground)
     }
@@ -47,11 +47,13 @@ fun ActionButton(
 
 @Composable
 fun SingUp(
-  onClose: () -> Unit = {},
+  onClose: () -> Unit = {}
 ) {
-  Column(modifier = Modifier
-    .padding(horizontal = 12.dp)
-    .padding(top = 12.dp)) {
+  Column(
+    modifier = Modifier
+      .padding(horizontal = 12.dp)
+      .padding(top = 12.dp)
+  ) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
       Heading("Account", fontSize = Theme.typography.size25)
       Button(onClick = onClose) {
@@ -66,7 +68,6 @@ fun SingUp(
     Spacer(Theme.spacing.large)
 
     RoundedSurface {
-
       Column(modifier = Modifier.padding(Theme.spacing.small)) {
         Text(
           "Log in or create an account to view local development servers and more.",
@@ -89,7 +90,6 @@ fun SingUp(
         )
       }
     }
-
   }
 }
 
