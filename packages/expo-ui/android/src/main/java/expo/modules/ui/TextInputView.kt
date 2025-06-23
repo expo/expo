@@ -78,7 +78,7 @@ class TextInputView(context: Context, appContext: AppContext) :
         placeholder = { Text(props.placeholder.value) },
         maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
         singleLine = !props.multiline.value,
-        keyboardOptions = KeyboardOptions(
+        keyboardOptions = KeyboardOptions.Default.copy(
           keyboardType = props.keyboardType.value.keyboardType(),
           autoCorrectEnabled = props.autocorrection.value,
           capitalization = props.capitalization.value.capitalization()
