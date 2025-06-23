@@ -30,6 +30,7 @@ internal enum ButtonVariant: String, Enumerable {
   case card
   case link
   case plain
+  case glass
 }
 
 final class ButtonProps: ExpoSwiftUI.ViewProps, Observable {
