@@ -24,6 +24,7 @@ const supportedManifestRequests = new Set([
   'test-update-with-older-commit-time',
   'test-update-before-rollback',
   'test-rollback',
+  'test-update-for-fingerprint',
   'test-update-for-asset-deletion',
 ]);
 
@@ -83,11 +84,6 @@ function stop() {
   multipartResponseToServe = null;
   requestedStaticFiles = [];
   logEntries = [];
-}
-
-function restart() {
-  stop();
-  start(protocolVersion, artificialDelay, serveOverriddenUrl);
 }
 
 function getRequestedStaticFilesLength() {
@@ -378,17 +374,22 @@ async function installClient(platform: string, configuration: string) {
   });
 }
 
-app.get('/restart-server', (_: Request, res: Response) => {
+app.get('/restart-server', (req: Request, res: Response) => {
   console.log('Received request to restart server');
+  let newArtificialDelay = 0;
+  if (req.query.ms) {
+    newArtificialDelay = parseInt(req.query.ms as string, 10);
+    console.log(`Setting artificial delay to ${artificialDelay} ms`);
+  }
   res.status(200).send('OK');
-  restartServer();
+  restartServer(newArtificialDelay);
 });
 
-async function restartServer() {
+async function restartServer(newArtificialDelay: number) {
   console.log('Restarting server');
   await setTimeout(100);
   Server.stop();
-  Server.start(protocolVersion, artificialDelay, serveOverriddenUrl);
+  Server.start(protocolVersion, newArtificialDelay, serveOverriddenUrl);
   console.log('Server restarted');
 }
 
@@ -455,11 +456,15 @@ app.get('/serve-manifest', async (req: Request, res: Response) => {
   );
   try {
     if (!supportedManifestRequests.has(req.query.name as string)) {
-      res.status(400).send(`Missing or unknown manifest name: ${req.query.name}`);
+      const errorMessage = `Missing or unknown manifest name: ${req.query.name}`;
+      console.log(errorMessage);
+      res.status(400).send(errorMessage);
       return;
     }
     if (!supportedPlatforms.has(req.query.platform as string)) {
-      res.status(400).send(`Missing or unknown platform: ${req.query.platform}`);
+      const errorMessage = `Missing or unknown platform: ${req.query.platform}`;
+      console.log(errorMessage);
+      res.status(400).send(errorMessage);
       return;
     }
     const manifestId = await respondToServeManifestRequest(
@@ -497,9 +502,35 @@ async function respondToServeManifestRequest(
       return await serveRollback();
     case 'test-update-for-asset-deletion':
       return await serveTestUpdateForAssetDeletion(platform);
+    case 'test-update-for-fingerprint':
+      return await serveTestUpdateWithFingerprint(platform);
     default:
       throw new Error('Unknown manifest name: ' + name);
   }
+}
+
+async function serveTestUpdateWithFingerprint(platform: string): Promise<string> {
+  const bundleFilename = 'bundle1.js';
+  const newNotifyString = 'test-update-1';
+  const hash = await Update.copyBundleToStaticFolder(
+    projectRoot,
+    bundleFilename,
+    newNotifyString,
+    platform
+  );
+  const manifest =
+    await Update.getUpdateManifestForBundleFilenameWithFingerprintRuntimeVersionAsync(
+      new Date(),
+      hash,
+      'test-update-1-key',
+      bundleFilename,
+      [],
+      projectRoot,
+      platform
+    );
+  console.log(`Serving fingerprint manifest: ${JSON.stringify(manifest, null, 2)}`);
+  await serveSignedManifest(manifest, projectRoot);
+  return manifest.id;
 }
 
 async function serveTestUpdate1(platform: string): Promise<string> {
@@ -735,7 +766,6 @@ async function serveTestUpdateForAssetDeletion(platform: string): Promise<string
 const Server = {
   start,
   stop,
-  restart,
   isStarted,
   waitForUpdateRequest,
   serveManifest,
