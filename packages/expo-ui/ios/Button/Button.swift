@@ -58,9 +58,11 @@ struct Button: ExpoSwiftUI.View {
     #endif
 
     if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
       button.if(props.variant == .glass, {
         $0.buttonStyle(.glass)
       })
+      #endif
     } else {
       button
     }
