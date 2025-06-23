@@ -1152,3 +1152,116 @@ jobs:
 ```
 
 </Collapsible>
+
+## Repack
+
+Repackages an app from an existing build. This job repackages the app's metadata and JavaScript bundle without performing a full native rebuild, which is useful for creating a faster build compatible with a specific fingerprint.
+
+### Syntax
+
+```yaml
+jobs:
+  repack:
+    type: repack
+    params:
+      build_id: string # required
+      profile: string # optional
+      embed_bundle_assets: boolean # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter           | Type    | Description                                                                                                                                 |
+| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
+| profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
+| embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
+
+### Examples
+
+Here are some practical examples of using the Fingerprint with Repack jobs:
+
+<Collapsible summary="Continuous Deployment with Fingerprint and Repack">
+
+This workflow first generates a fingerprint and then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
+
+```yaml .eas/workflows/cd-fingerprint-repack.yml
+name: continuous-deploy-fingerprint
+
+jobs:
+  fingerprint:
+    id: fingerprint
+    type: fingerprint
+
+  android_get_build:
+    needs: [fingerprint]
+    id: android_get_build
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      platform: android
+
+  android_repack:
+    needs: [android_get_build]
+    id: android_repack
+    if: ${{ needs.android_get_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.android_get_build.outputs.build_id }}
+
+  android_build:
+    needs: [android_get_build]
+    id: android_build
+    if: ${{ !needs.android_get_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: preview-simulator
+
+  android_maestro:
+    after: [android_repack, android_build]
+    id: android_maestro
+    type: maestro
+    image: latest
+    params:
+      build_id: ${{ needs.android_repack.outputs.build_id || needs.android_build.outputs.build_id }}
+      flow_path: ['maestro.yaml']
+
+  ios_get_build:
+    needs: [fingerprint]
+    id: ios_get_build
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      platform: ios
+
+  ios_repack:
+    needs: [ios_get_build]
+    id: ios_repack
+    if: ${{ needs.ios_get_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.ios_get_build.outputs.build_id }}
+
+  ios_build:
+    needs: [ios_get_build]
+    id: ios_build
+    if: ${{ !needs.ios_get_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: preview-simulator
+
+  ios_maestro:
+    after: [ios_repack, ios_build]
+    id: ios_maestro
+    type: maestro
+    image: latest
+    params:
+      build_id: ${{ needs.ios_repack.outputs.build_id || needs.ios_build.outputs.build_id }}
+      flow_path: ['maestro.yaml']
+```
+
+</Collapsible>

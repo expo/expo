@@ -22,6 +22,11 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (rate, pitchCorrect
         return setPlaybackRate.call(this, rate, pitchCorrectionQuality);
     }
 };
+const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options) {
+    const processedOptions = options ? createRecordingOptions(options) : undefined;
+    return prepareToRecordAsync.call(this, processedOptions);
+};
 // @docsMissing
 export function useAudioPlayer(source = null, updateInterval = 500) {
     const parsedSource = resolveSource(source);
