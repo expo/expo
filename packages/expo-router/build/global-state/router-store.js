@@ -134,6 +134,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         ...config,
         ignoreEntryPoints: true,
         platform: react_native_1.Platform.OS,
+        preserveRedirectAndRewrites: true,
     });
     const redirects = [config?.redirects, config?.rewrites]
         .filter(Boolean)
