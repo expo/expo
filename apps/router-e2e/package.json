@@ -18,6 +18,7 @@
     "start:dom": "E2E_ROUTER_SRC=dom-components expo start -d",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
+    "start:vaul-modal": "E2E_ROUTER_SRC=vaul-modal E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "lint": "expo lint __e2e__"

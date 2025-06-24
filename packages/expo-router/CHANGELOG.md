@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [web] Use Vaul for modals and sheets on web with a custom stack ([#37596](https://github.com/expo/expo/pull/37596) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 - Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))

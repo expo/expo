@@ -5,6 +5,8 @@ exports.StackRouter = exports.stackRouterOverride = void 0;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const non_secure_1 = require("nanoid/non-secure");
+const react_native_1 = require("react-native");
+const ModalStack_1 = require("./ModalStack");
 const withLayoutContext_1 = require("./withLayoutContext");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
@@ -253,7 +255,13 @@ function filterSingular(state, getId) {
     };
 }
 const Stack = Object.assign((props) => {
-    return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
+    const isWeb = react_native_1.Platform.OS === 'web';
+    if (isWeb) {
+        return <ModalStack_1.RouterModal {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
+    }
+    else {
+        return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
+    }
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,
