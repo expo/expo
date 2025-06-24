@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Change the `global.expo` polyfill to work with package exports and be more explicit. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 53.0.7 - 2025-06-06
 
 _This version does not introduce any user-facing changes._

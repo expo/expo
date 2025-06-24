@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "types": "build/index.d.ts",
   "sideEffects": [
-    "*.fx.ts"
+    "*.fx.ts",
+    "./src/polyfill/*.ts"
   ],
   "scripts": {
     "build": "expo-module build",
