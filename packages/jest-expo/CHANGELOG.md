@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - add experimental link preview ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
+- Added `async-require/index` to mock. ([#37627](https://github.com/expo/expo/pull/37627) by [@kudo](https://github.com/kudo))
 
 ## 53.0.7 - 2025-06-06
 

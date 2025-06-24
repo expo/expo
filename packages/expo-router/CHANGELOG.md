@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
+- Fix unit test errors from `react-native-gesture-handler` mocks. ([#37627](https://github.com/expo/expo/pull/37627) by [@kudo](https://github.com/kudo))
 
 ## 5.1.0 - 2025-06-11
 
