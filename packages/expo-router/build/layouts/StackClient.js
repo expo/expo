@@ -5,7 +5,9 @@ exports.StackRouter = exports.stackRouterOverride = void 0;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const non_secure_1 = require("nanoid/non-secure");
+const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
+const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
@@ -17,6 +19,7 @@ function isStackAction(action) {
         action.type === 'POP_TO_TOP' ||
         action.type === 'REPLACE');
 }
+const isPreviewAction = (action) => !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -81,6 +84,11 @@ const stackRouterOverride = (original) => {
                             route = state.routes.findLast((route) => route.name === action.payload.name);
                         }
                     }
+                    // START FORK
+                    if (isPreviewAction(action)) {
+                        route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
+                    }
+                    // END FORK
                     if (!route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
@@ -145,7 +153,7 @@ const stackRouterOverride = (original) => {
                             }
                             // If the routes length is the same as the state routes length, then we are navigating to a new route.
                             // Otherwise we are replacing an existing route.
-                            const key = routes.length === state.routes.length
+                            const key = routes.length === state.routes.length && !isPreviewAction(action)
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
                             routes.push({
@@ -253,11 +261,40 @@ function filterSingular(state, getId) {
     };
 }
 const Stack = Object.assign((props) => {
-    return <RNStack {...props} UNSTABLE_router={exports.stackRouterOverride}/>;
+    const { isPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const screenOptions = (0, react_1.useMemo)(() => {
+        if (isPreviewOpen) {
+            return disableAnimationInScreenOptions(props.screenOptions);
+        }
+        return props.screenOptions;
+    }, [props.screenOptions, isPreviewOpen]);
+    return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,
 });
+function disableAnimationInScreenOptions(options) {
+    const animationNone = 'none';
+    if (options) {
+        if (typeof options === 'function') {
+            const newOptions = (...args) => {
+                const oldResult = options(...args);
+                return {
+                    ...oldResult,
+                    animation: animationNone,
+                };
+            };
+            return newOptions;
+        }
+        return {
+            ...options,
+            animation: animationNone,
+        };
+    }
+    return {
+        animation: animationNone,
+    };
+}
 exports.default = Stack;
 const StackRouter = (options) => {
     const router = (0, native_1.StackRouter)(options);

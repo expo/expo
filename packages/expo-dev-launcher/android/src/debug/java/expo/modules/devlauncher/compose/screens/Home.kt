@@ -21,7 +21,7 @@ import com.composeunstyled.TextField
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
-import expo.modules.devlauncher.compose.ui.AppHeaderContainer
+import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -31,14 +31,15 @@ import expo.modules.devmenu.compose.theme.Theme
 import expo.modules.devmenu.compose.ui.MenuButton
 
 data class HomeScreenState(
-  val appName: String
+  val appName: String,
+  val onProfileClick: () -> Unit = {}
 )
 
 @Composable
 fun HomeScreen(state: HomeScreenState) {
   Column {
-    AppHeaderContainer {
-      AppHeader(state.appName)
+    ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
+      AppHeader(state.appName, onProfileClick = state.onProfileClick)
     }
 
     Column(
