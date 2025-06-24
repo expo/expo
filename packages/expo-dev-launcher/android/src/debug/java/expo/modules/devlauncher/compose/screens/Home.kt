@@ -21,7 +21,7 @@ import com.composeunstyled.TextField
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
-import expo.modules.devlauncher.compose.ui.AppHeaderContainer
+import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -38,7 +38,7 @@ data class HomeScreenState(
 @Composable
 fun HomeScreen(state: HomeScreenState) {
   Column {
-    AppHeaderContainer {
+    ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
       AppHeader(state.appName, onProfileClick = state.onProfileClick)
     }
 

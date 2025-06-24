@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.composables.core.SheetDetent.Companion.Hidden
-import expo.modules.devlauncher.compose.primitives.Scaffold
+import expo.modules.devlauncher.compose.primitives.DefaultScaffold
 import expo.modules.devlauncher.compose.screens.HomeScreen
 import expo.modules.devlauncher.compose.screens.HomeScreenState
 import expo.modules.devlauncher.compose.screens.SettingsScreen
@@ -62,7 +62,7 @@ fun DevLauncherBottomTabsNavigator() {
 
   val bottomSheetState = rememberBottomSheetState()
 
-  Scaffold(bottomTab = {
+  DefaultScaffold(bottomTab = {
     BottomTabBar(navController)
   }) {
     NavHost(
