@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- revert "remove `expo-notifications` from auto plugins"
+- revert "remove `expo-notifications` from auto plugins" ([#37613](https://github.com/expo/expo/pull/37613) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
