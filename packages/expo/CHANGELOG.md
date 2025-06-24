@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Aligned `expo/fetch` cancelation error message as iOS. ([#37517](https://github.com/expo/expo/pull/37517) by [@kudo](https://github.com/kudo))
+
 ## 53.0.13 — 2025-06-26
 
 _This version does not introduce any user-facing changes._
