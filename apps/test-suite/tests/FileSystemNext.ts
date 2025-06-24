@@ -633,9 +633,10 @@ export async function test({ describe, expect, it, ...t }) {
           const result = src.info({ md5: true });
           expect(result.exists).toBe(true);
           if (result.exists) {
-            const { uri, size, isDirectory, modificationTime, md5 } = result;
+            const { uri, size, isDirectory, modificationTime, creationTime, md5 } = result;
             expect(isDirectory).toBe(false);
             expect(modificationTime).not.toBeNull();
+            expect(creationTime).not.toBeNull();
             expect(md5).not.toBeNull();
             expect(uri).toBe(url);
             expect(size).toBe(11);

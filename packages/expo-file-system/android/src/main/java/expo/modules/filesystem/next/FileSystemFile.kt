@@ -149,7 +149,8 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
           uri = slashifyFilePath(file.toURI().toString()),
           isDirectory = false,
           size = size,
-          modificationTime = modificationTime
+          modificationTime = modificationTime,
+          creationTime = creationTime
         )
         if (options != null && options.md5 == true) {
           fileInfo.md5 = md5

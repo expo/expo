@@ -21,5 +21,6 @@ data class FileInfo(
   @Field var isDirectory: Boolean?,
   @Field var md5: String? = null,
   @Field var size: Long?,
-  @Field var modificationTime: Long? = null
+  @Field var modificationTime: Long? = null,
+  @Field var creationTime: Long? = null
 ) : Record

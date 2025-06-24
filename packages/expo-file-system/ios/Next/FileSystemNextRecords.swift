@@ -18,4 +18,5 @@ struct FileInfo: Record {
   @Field var md5: String?
   @Field var size: Int64?
   @Field var modificationTime: Int64?
+  @Field var creationTime: Int64?
 }

@@ -142,6 +142,7 @@ internal final class FileSystemFile: FileSystemPath {
         result.uri = url.absoluteString
         result.size = try size
         result.modificationTime = try modificationTime
+        result.creationTime = try creationTime
       }
       if options.md5 {
         result.md5 = try md5

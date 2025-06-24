@@ -127,7 +127,7 @@ export declare class File {
      */
     delete(): void;
     /**
-     *  Retrieves a file info.
+     *  Retrieves an object containing properties of a file
      */
     info(options?: InfoOptions): FileInfo;
     /**
@@ -174,6 +174,14 @@ export declare class File {
      */
     md5: string | null;
     /**
+     * A last modification time of the file expressed in seconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     */
+    modificationTime: number | null;
+    /**
+     * A creation time of the file expressed in seconds since epoch. Returns a Null if the file does not exist, cannot be read or the Android version is earlier than API 26.
+     */
+    creationTime: number | null;
+    /**
      * A mime type of the file. Null if the file does not exist, or it cannot be read.
      */
     type: string | null;
@@ -211,9 +219,9 @@ export type FileInfo =
      */
     modificationTime: number;
     /**
-     * The last modification time of the file expressed in seconds since epoch.
+     * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
      */
-    creationTime: number;
+    creationTime?: number;
     /**
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */

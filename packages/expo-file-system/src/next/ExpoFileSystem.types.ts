@@ -274,6 +274,10 @@ export type FileInfo =
        */
       modificationTime: number;
       /**
+       * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
+       */
+      creationTime?: number;
+      /**
        * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
        */
       md5?: string;
