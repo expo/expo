@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `expo/fetch` requests cancellation error message on Android. ([#37509](https://github.com/expo/expo/pull/37509) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 53.0.13 — 2025-06-26
