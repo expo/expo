@@ -31,14 +31,15 @@ import expo.modules.devmenu.compose.theme.Theme
 import expo.modules.devmenu.compose.ui.MenuButton
 
 data class HomeScreenState(
-  val appName: String
+  val appName: String,
+  val onProfileClick: () -> Unit = {}
 )
 
 @Composable
 fun HomeScreen(state: HomeScreenState) {
   Column {
     AppHeaderContainer {
-      AppHeader(state.appName)
+      AppHeader(state.appName, onProfileClick = state.onProfileClick)
     }
 
     Column(
