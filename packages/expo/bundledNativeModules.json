@@ -8,7 +8,7 @@
   "@dev-plugins/tinybase": "~0.2.0",
   "@dev-plugins/vanilla-log-viewer": "~0.2.0",
   "@expo/metro-runtime": "~4.0.1",
-  "@expo/vector-icons": "^14.0.2",
+  "@expo/vector-icons": "~14.0.4",
   "@react-native-async-storage/async-storage": "1.23.1",
   "@react-native-community/datetimepicker": "8.2.0",
   "@react-native-masked-view/masked-view": "0.3.2",
