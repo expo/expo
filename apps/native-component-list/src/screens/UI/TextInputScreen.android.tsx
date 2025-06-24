@@ -16,7 +16,7 @@ export default function TextInputScreen() {
           autocorrection={false}
           defaultValue="hey there"
           onChangeText={setValue}
-          textStyle={{
+          style={{
             color: '#ea00ff',
             fontSize: 43,
             fontWeight: 'bold',
