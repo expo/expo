@@ -6,6 +6,14 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarBackground: () => <></>,
+        tabBarButton: () => <></>,
+
+        tabBarStyle: {
+          display: 'none',
+          // Use a transparent background on iOS to show the blur effect
+          position: 'absolute',
+        },
       }}>
       <Tabs.Screen
         name="home"

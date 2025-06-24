@@ -17,7 +17,7 @@ export function ExpoLink(props: LinkProps) {
 }
 
 function isLinkWithPreview(props: LinkProps): boolean {
-  return Children.toArray(props.children).some(
+  return Children.toArray(props.children)?.some(
     (child) => isValidElement(child) && child.type === LinkPreview
   );
 }
