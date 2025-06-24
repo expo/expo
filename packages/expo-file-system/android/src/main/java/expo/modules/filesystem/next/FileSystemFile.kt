@@ -1,6 +1,7 @@
 package expo.modules.filesystem.next
 
 import android.net.Uri
+import android.os.Build
 import android.util.Base64
 import android.webkit.MimeTypeMap
 import expo.modules.filesystem.InfoOptions
@@ -10,7 +11,11 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.attribute.BasicFileAttributes
 import java.security.MessageDigest
+import kotlin.io.path.Path
+import kotlin.io.path.readAttributes
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(EitherType::class)
 class FileSystemFile(file: File) : FileSystemPath(file) {
@@ -120,6 +125,16 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   val modificationTime: Long get() {
     validateType()
     return file.lastModified()
+  }
+
+  val creationTime: Long? get() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      validateType()
+      val attributes = Path(file.path).readAttributes<BasicFileAttributes>()
+      return attributes.creationTime().toMillis().milliseconds.inWholeSeconds
+    } else {
+      return null
+    }
   }
 
   fun info(options: InfoOptions?): FileInfo {

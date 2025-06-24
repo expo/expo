@@ -142,6 +142,14 @@ public final class FileSystemNextModule: Module {
         try? file.md5
       }
 
+      Property("modificationTime") { file in
+        try? file.modificationTime
+      }
+
+      Property("creationTime") { file in
+        try? file.creationTime
+      }
+
       Property("type") { file in
         file.type
       }

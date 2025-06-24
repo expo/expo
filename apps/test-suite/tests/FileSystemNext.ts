@@ -514,6 +514,17 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.size).toBe(11);
         });
 
+        it('creationTime is earlier than modificationTime or equal', async () => {
+          const file = new File(
+            testDirectory,
+            'creationTime_is_earlier_than_modificationTime_or_equal.txt'
+          );
+          file.write('Hello world');
+          expect(file.creationTime).not.toBeNull();
+          expect(file.modificationTime).not.toBeNull();
+          expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
+        });
+
         it('computes md5', async () => {
           const file = new File(testDirectory, 'file.txt');
           file.write('Hello world');
@@ -612,6 +623,7 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.uri).toBe(FS.documentDirectory + 'file.txt');
         });
       });
+
       describe('When getting file info', () => {
         it('executes correctly', () => {
           const url = `${testDirectory}execute_correctly.txt`;

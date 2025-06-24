@@ -72,6 +72,13 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
+  var creationTime: Int64 {
+    get throws {
+      let creationDate: Date = try getAttribute(.creationDate, atPath: url.path)
+      return Int64(creationDate.timeIntervalSince1970)
+    }
+  }
+
   private func getAttribute<T>(_ key: FileAttributeKey, atPath path: String) throws -> T {
     try validatePermission(.read)
     let attributes = try FileManager.default.attributesOfItem(atPath: path)

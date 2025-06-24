@@ -129,6 +129,14 @@ class FileSystemNextModule : Module() {
         file.exists
       }
 
+      Property("modificationTime") { file: FileSystemFile ->
+        file.modificationTime
+      }
+
+      Property("creationTime") { file: FileSystemFile ->
+        file.creationTime
+      }
+
       Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
         file.copy(destination)
       }
