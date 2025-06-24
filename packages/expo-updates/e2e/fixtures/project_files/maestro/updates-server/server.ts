@@ -17,6 +17,7 @@ import type { Request, Response } from 'express';
 const supportedPlatforms = new Set(['android', 'ios']);
 const supportedConfigurations = new Set(['debug', 'release']);
 const supportedManifestRequests = new Set([
+  'no-update-available',
   'test-update-basic',
   'test-update-invalid-hash',
   'test-update-with-invalid-asset-hash',
@@ -26,6 +27,7 @@ const supportedManifestRequests = new Set([
   'test-rollback',
   'test-update-for-fingerprint',
   'test-update-for-asset-deletion',
+  'test-update-crashing',
 ]);
 
 const app = express();
@@ -486,6 +488,8 @@ async function respondToServeManifestRequest(
   platform: string = 'android'
 ): Promise<string> {
   switch (name) {
+    case 'no-update-available':
+      return await serveNoUpdateAvailable();
     case 'test-update-basic':
       return await serveTestUpdate1(platform);
     case 'test-update-invalid-hash':
@@ -504,9 +508,38 @@ async function respondToServeManifestRequest(
       return await serveTestUpdateForAssetDeletion(platform);
     case 'test-update-for-fingerprint':
       return await serveTestUpdateWithFingerprint(platform);
+    case 'test-update-crashing':
+      return await serveTestUpdateCrashing(platform);
     default:
       throw new Error('Unknown manifest name: ' + name);
   }
+}
+
+async function serveNoUpdateAvailable(): Promise<string> {
+  await serveSignedDirective(Update.getNoUpdateAvailableDirective(), projectRoot);
+  return '';
+}
+
+async function serveTestUpdateCrashing(platform: string): Promise<string> {
+  const bundleFilename = 'bundle1.js';
+  const newNotifyString = 'test-update-crashing';
+  const hash = await Update.copyBundleToStaticFolder(
+    projectRoot,
+    bundleFilename,
+    newNotifyString,
+    platform
+  );
+  const manifest = Update.getUpdateManifestForBundleFilename(
+    new Date(),
+    hash,
+    'test-update-crashing-key',
+    bundleFilename,
+    [],
+    projectRoot
+  );
+
+  await serveSignedManifest(manifest, projectRoot);
+  return manifest.id;
 }
 
 async function serveTestUpdateWithFingerprint(platform: string): Promise<string> {
