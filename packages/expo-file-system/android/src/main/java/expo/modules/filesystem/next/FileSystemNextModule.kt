@@ -32,6 +32,14 @@ class FileSystemNextModule : Module() {
       "bundleDirectory" to "asset:///"
     )
 
+    Property("totalDiskSpace") {
+      File(context.filesDir.path).totalSpace
+    }
+
+    Property("availableDiskSpace") {
+     File(context.filesDir.path).freeSpace;
+    }
+
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptionsNext? ->
       to.validatePermission(Permission.WRITE)
       val requestBuilder = Request.Builder().url(url.toURL())
@@ -207,6 +215,10 @@ class FileSystemNextModule : Module() {
 
       Property("uri") { directory ->
         directory.asString()
+      }
+
+      Property("size") { directory ->
+        directory.size
       }
 
       // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
