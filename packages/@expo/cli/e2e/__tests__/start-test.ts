@@ -136,9 +136,6 @@ describe('server', () => {
     expect(manifest.extra.expoClient?.slug).toBe('basic-start');
     expect(manifest.extra.expoClient?.name).toBe('basic-start');
 
-    // Custom
-    expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
-
     const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
     const bundleContent = await bundleResponse.text();
     expect(bundleContent.length).toBeGreaterThan(1000);

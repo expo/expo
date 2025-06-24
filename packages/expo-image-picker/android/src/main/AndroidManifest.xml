@@ -22,8 +22,8 @@
     </service>
 
     <activity
-      android:name="com.canhub.cropper.CropImageActivity"
-      android:theme="@style/Base.Theme.AppCompat"
+      android:name="expo.modules.imagepicker.ExpoCropImageActivity"
+      android:theme="@style/Theme.MaterialComponents.DayNight"
       android:exported="false"
       tools:replace="android:exported" />
     <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
