@@ -46,7 +46,7 @@ private fun ActionButton(
 }
 
 @Composable
-fun SingUp(
+fun SignUp(
   onClose: () -> Unit = {}
 ) {
   Column(
@@ -85,7 +85,7 @@ fun SingUp(
         Spacer(Theme.spacing.small)
 
         ActionButton(
-          "Sing Up",
+          "Sign Up",
           style = Theme.colors.button.secondary
         )
       }
@@ -95,6 +95,6 @@ fun SingUp(
 
 @Preview(showBackground = true)
 @Composable
-fun SingUpPreview() {
-  SingUp()
+fun SignUpPreview() {
+  SignUp()
 }

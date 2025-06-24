@@ -19,7 +19,7 @@ import expo.modules.devlauncher.compose.primitives.Scaffold
 import expo.modules.devlauncher.compose.screens.HomeScreen
 import expo.modules.devlauncher.compose.screens.HomeScreenState
 import expo.modules.devlauncher.compose.screens.SettingsScreen
-import expo.modules.devlauncher.compose.screens.SingUp
+import expo.modules.devlauncher.compose.screens.SignUp
 import expo.modules.devlauncher.compose.ui.BottomSheet
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
@@ -81,7 +81,7 @@ fun DevLauncherBottomTabsNavigator() {
   }
 
   BottomSheet(bottomSheetState) {
-    SingUp(onClose = {
+    SignUp(onClose = {
       bottomSheetState.targetDetent = Hidden
     })
   }
