@@ -250,7 +250,7 @@ function addIconFileToProject(project: any, projectName: string, iconName: strin
   const iconPath = `${iconName}.icon`;
 
   const fileRef = project.generateUuid();
-  const buildFileId = project.generateUuid();
+  const buildFileRef = project.generateUuid();
 
   const fileReferences = project.pbxFileReferenceSection();
   fileReferences[fileRef] = {
@@ -263,12 +263,12 @@ function addIconFileToProject(project: any, projectName: string, iconName: strin
   fileReferences[`${fileRef}_comment`] = iconPath;
 
   const buildFiles = project.pbxBuildFileSection();
-  buildFiles[buildFileId] = {
+  buildFiles[buildFileRef] = {
     isa: 'PBXBuildFile',
     fileRef,
     fileRef_comment: iconPath,
   };
-  buildFiles[`${buildFileId}_comment`] = `${iconPath} in Resources`;
+  buildFiles[`${buildFileRef}_comment`] = `${iconPath} in Resources`;
 
   const { firstProject } = project.getFirstProject();
   const mainGroup = project.getPBXGroupByKey(firstProject.mainGroup);
@@ -283,7 +283,7 @@ function addIconFileToProject(project: any, projectName: string, iconName: strin
   }
 
   project.addToPbxResourcesBuildPhase({
-    uuid: buildFileId,
+    uuid: buildFileRef,
     basename: iconPath,
     group: projectName,
   });
