@@ -334,7 +334,7 @@ async function preparePackageJson(
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build',
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }

@@ -19,10 +19,15 @@ function stopUpdatesServer() {
   http.get(`${serverBaseUrl}/stop-server`);
 }
 
-function restartUpdatesServer() {
-  http.get(`${serverBaseUrl}/restart-server`);
-  // Delay 0.5 second to allow server restart to complete
-  http.get(`${serverBaseUrl}/delay?ms=500`);
+function restartUpdatesServer(artificialDelay) {
+  const delay = artificialDelay || 0;
+  if (delay > 0) {
+    http.get(`${serverBaseUrl}/restart-server?ms=${delay}`);
+  } else {
+    http.get(`${serverBaseUrl}/restart-server`);
+    // Wait 0.5 second to allow server restart to complete
+    http.get(`${serverBaseUrl}/delay?ms=500`);
+  }
 }
 
 function installClient(platform, configuration) {
