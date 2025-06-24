@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,18 +18,6 @@ import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Surface
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
-
-@Composable
-fun AppHeaderContainer(content: @Composable () -> Unit) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-      .background(color = Theme.colors.background.default)
-      .padding(Theme.spacing.medium)
-  ) {
-    content()
-  }
-}
 
 @Composable
 fun AppHeader(
@@ -73,7 +60,7 @@ fun AppHeader(
 @Composable
 @Preview(showBackground = true, widthDp = 300)
 fun AppHeaderPreview() {
-  AppHeaderContainer {
+  ScreenHeaderContainer {
     AppHeader(
       appName = "BareExpo"
     )

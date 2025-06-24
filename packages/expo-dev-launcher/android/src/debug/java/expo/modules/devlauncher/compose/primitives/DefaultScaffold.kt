@@ -5,7 +5,7 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.util.fastMaxBy
 
 @Composable
-fun Scaffold(
+fun DefaultScaffold(
   bottomTab: @Composable () -> Unit = {},
   content: @Composable () -> Unit
 ) {
