@@ -6,6 +6,10 @@
 
 ### 🎉 New features
 
+- [Web] Added audio sampling support ([#37598](https://github.com/expo/expo/pull/37598) by [@hirbod](https://github.com/hirbod))
+- [Web] Added panning support ([#37598](https://github.com/expo/expo/pull/37598) by [@hirbod](https://github.com/hirbod))
+- [Web] Implemented missing updateInterval ([#37598](https://github.com/expo/expo/pull/37598) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed status property bug when track finishes ([#37389](https://github.com/expo/expo/pull/37389) by [@adiktiv](https://github.com/adiktiv))

@@ -14,12 +14,13 @@ import {
 } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
+import {
+  PLAYBACK_STATUS_UPDATE,
+  AUDIO_SAMPLE_UPDATE,
+  RECORDING_STATUS_UPDATE,
+} from './ExpoAudioEvents';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
-
-export const PLAYBACK_STATUS_UPDATE = 'playbackStatusUpdate';
-export const AUDIO_SAMPLE_UPDATE = 'audioSampleUpdate';
-export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = AudioModule.AudioPlayer.prototype.replace;
@@ -155,3 +156,5 @@ export async function getRecordingPermissionsAsync(): Promise<PermissionResponse
 }
 
 export { AudioModule };
+
+export { PLAYBACK_STATUS_UPDATE, AUDIO_SAMPLE_UPDATE, RECORDING_STATUS_UPDATE };
