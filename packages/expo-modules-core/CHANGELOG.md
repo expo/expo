@@ -22,7 +22,7 @@
 - [Android] Changed how nullable types are converted. ([#37055](https://github.com/expo/expo/pull/37055) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Reduce the number of conversions needed to call a function from the native module. ([#37099](https://github.com/expo/expo/pull/37099) by [@lukmccall](https://github.com/lukmccall))
 - Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
-- [iOS] Support throwing errors in shared object constructor.
+- [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 2.4.0 - 2025-06-04
 
