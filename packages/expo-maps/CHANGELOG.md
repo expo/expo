@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
-
 ### 🐛 Bug fixes
 
 - Fix onMapClick and onMapLongClick nesting. ([#37059](https://github.com/expo/expo/pull/37059) by [@jakex7](https://github.com/jakex7))
@@ -15,6 +13,12 @@
 ### 💡 Others
 
 - Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 - 2025-06-18
+
+### 🎉 New features
+
+- Add `isMyLocationEnabled` prop on iOS. ([#36741](https://github.com/expo/expo/pull/36741) by [@fobos531](https://github.com/fobos531))
 
 ## 0.10.0 — 2025-05-08
 

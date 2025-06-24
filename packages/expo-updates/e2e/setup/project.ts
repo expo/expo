@@ -311,22 +311,30 @@ async function preparePackageJson(
       'npx ts-node ./scripts/reset-app.ts App.tsx.update2; eas update --branch=main --message=Update2',
   };
 
-  // Additional scripts and dependencies for Detox testing
+  // Additional scripts and dependencies for Maestro testing
   const extraScripts = configureE2E
     ? {
-        'detox:android:debug:build': 'detox build -c android.debug',
-        'detox:android:debug:test': 'detox test -c android.debug',
-        'detox:android:release:build': 'detox build -c android.release',
-        'detox:android:release:test': 'detox test -c android.release',
-        'detox:ios:debug:build': 'detox build -c ios.debug',
-        'detox:ios:debug:test': 'detox test -c ios.debug',
-        'detox:ios:release:build': 'detox build -c ios.release',
-        'detox:ios:release:test': 'detox test -c ios.release',
+        'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
+        'maestro:android:debug:install':
+          'adb install android/app/build/outputs/apk/debug/app-debug.apk',
+        'maestro:android:release:build': 'cd android; ./gradlew :app:assembleRelease; cd ..',
+        'maestro:android:release:install':
+          'adb install android/app/build/outputs/apk/release/app-release.apk',
+        'maestro:android:uninstall': 'adb uninstall dev.expo.updatese2e',
+        'maestro:ios:debug:build':
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+        'maestro:ios:debug:install':
+          'xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app',
+        'maestro:ios:release:build':
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+        'maestro:ios:release:install':
+          'xcrun simctl install booted ios/build/Build/Products/Release-iphonesimulator/updatese2e.app',
+        'maestro:ios:uninstall': 'xcrun simctl uninstall booted dev.expo.updatese2e',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build',
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
@@ -938,7 +946,17 @@ export async function setupE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    [
+      'tsconfig.json',
+      '.detoxrc.json',
+      '.env',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'maestro',
+      'includedAssets',
+      'scripts',
+    ],
     { appJsFileName: 'App.tsx', repoRoot, isTV }
   );
 
@@ -989,7 +1007,17 @@ export async function setupUpdatesDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    [
+      'tsconfig.json',
+      '.detoxrc.json',
+      '.env',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'maestro',
+      'includedAssets',
+      'scripts',
+    ],
     {
       appJsFileName: 'App-updates-disabled.tsx',
       repoRoot,
@@ -1016,7 +1044,17 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    [
+      'tsconfig.json',
+      '.detoxrc.json',
+      '.env',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'maestro',
+      'includedAssets',
+      'scripts',
+    ],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1043,9 +1081,11 @@ export async function setupUpdatesFingerprintE2EAppAsync(
       'tsconfig.json',
       '.fingerprintignore',
       '.detoxrc.json',
+      '.env',
       'eas.json',
       'eas-hooks',
       'e2e',
+      'maestro',
       'includedAssets',
       'scripts',
     ],
@@ -1071,7 +1111,17 @@ export async function setupUpdatesStartupE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    [
+      'tsconfig.json',
+      '.detoxrc.json',
+      '.env',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'maestro',
+      'includedAssets',
+      'scripts',
+    ],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1094,7 +1144,17 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    [
+      'tsconfig.json',
+      '.detoxrc.json',
+      '.env',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'maestro',
+      'includedAssets',
+      'scripts',
+    ],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 
@@ -1117,7 +1177,17 @@ export async function setupUpdatesDevClientE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e', 'includedAssets', 'scripts'],
+    [
+      'tsconfig.json',
+      '.detoxrc.json',
+      '.env',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+      'maestro',
+      'includedAssets',
+      'scripts',
+    ],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
 

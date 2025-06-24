@@ -71,6 +71,12 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
         )}
       />
       {children}
+      {info.hasVideoLink && !isSelected && (
+        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" />
+      )}
+      {info.hasVideoLink && isSelected && (
+        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" />
+      )}
       {info.isDeprecated && !isSelected && (
         <AlertTriangleIcon className="icon-xs ml-1.5 !text-icon-warning" />
       )}
@@ -98,12 +104,6 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
           )}>
           ALPHA
         </div>
-      )}
-      {info.hasVideoLink && !isSelected && (
-        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" />
-      )}
-      {info.hasVideoLink && isSelected && (
-        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" />
       )}
       {isExternal && (
         <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary group-hover:text-icon-info" />

@@ -121,10 +121,11 @@ describe('server', () => {
     // URLs
     expect(manifest.launchAsset.url).toBe(
       new URL(
-        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
         expo.url
       ).href
     );
+
     expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
     expect(manifest.extra.expoGo?.mainModuleName).toMatchPath('node_modules/expo/AppEntry');
     expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
@@ -134,9 +135,6 @@ describe('server', () => {
     expect(manifest.extra.expoClient?.sdkVersion).toBe('52.0.0');
     expect(manifest.extra.expoClient?.slug).toBe('basic-start');
     expect(manifest.extra.expoClient?.name).toBe('basic-start');
-
-    // Custom
-    expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
     const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
     const bundleContent = await bundleResponse.text();

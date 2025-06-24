@@ -61,6 +61,23 @@ The `TextEncoder` API is included in the Hermes engine. See the [source code in 
 
 The `TextDecoder` API is not [spec-compliant](https://encoding.spec.whatwg.org/#textdecoder) on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
 
+The stream equivalents of these APIs, `TextEncoderStream` and `TextDecoderStream`, are also available on all platforms. They allow you to encode and decode text in a streaming manner, which is useful for processing large amounts of data without loading it all into memory at once.
+
+```ts TextEncoderStream
+const encoder = new TextEncoderStream();
+const stream = new ReadableStream({
+  start(controller) {
+    controller.enqueue('Hello');
+    controller.enqueue('World');
+    controller.close();
+  },
+});
+const reader = stream.pipeThrough(encoder).getReader();
+reader.read().then(({ done, value }) => {
+  console.log(value); // Uint8Array [72, 101, 108, 108, 111]
+});
+```
+
 ### Streams API
 
 Global support for standard web streams is available on native platforms to match the behavior of web and server platforms. Refer to the [browser and server runtime support](https://caniuse.com/streams) for specific web and Node.js support. EAS Hosting server runtime also includes support for the standard web streams API.

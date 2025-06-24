@@ -2,6 +2,7 @@ import ExpoModulesCore
 
 public class AudioModule: Module {
   private var sessionIsActive = true
+  private let registry = AudioComponentRegistry()
 
   // MARK: Properties
   private var recordingSettings = [String: Any]()
@@ -56,7 +57,7 @@ public class AudioModule: Module {
     }
 
     OnDestroy {
-      AudioComponentRegistry.shared.removeAll()
+      registry.removeAll()
       NotificationCenter.default.removeObserver(self)
     }
 
@@ -77,7 +78,8 @@ public class AudioModule: Module {
       Constructor { (source: AudioSource?, updateInterval: Double) -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
-        AudioComponentRegistry.shared.add(player)
+        player.owningRegistry = self.registry
+        self.registry.add(player)
         return player
       }
 
@@ -172,7 +174,7 @@ public class AudioModule: Module {
       }
 
       Function("remove") { player in
-        AudioComponentRegistry.shared.remove(player)
+        self.registry.remove(player)
       }
 
       Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
@@ -198,7 +200,8 @@ public class AudioModule: Module {
         let recordingDir = try recordingDirectory()
         let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
         let recorder = AudioRecorder(avRecorder)
-        AudioComponentRegistry.shared.add(recorder)
+        recorder.owningRegistry = self.registry
+        self.registry.add(recorder)
 
         return recorder
       }
@@ -312,7 +315,7 @@ public class AudioModule: Module {
     interruptedPlayers.removeAll()
     playerVolumes.removeAll()
 
-    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
+    registry.allPlayers.values.forEach { player in
       if player.isPlaying {
         interruptedPlayers.insert(player.id)
         switch interruptionMode {
@@ -326,7 +329,7 @@ public class AudioModule: Module {
     }
 
 #if os(iOS)
-    AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
+    registry.allRecorders.values.forEach { recorder in
       if recorder.isRecording {
         recorder.pauseRecording()
       }
@@ -361,7 +364,7 @@ public class AudioModule: Module {
   }
 
   private func resumeInterruptedPlayers() {
-    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
+    registry.allPlayers.values.forEach { player in
       if interruptedPlayers.contains(player.id) {
         switch interruptionMode {
         case .duckOthers:
@@ -375,7 +378,7 @@ public class AudioModule: Module {
     }
 
 #if os(iOS)
-    AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
+    registry.allRecorders.values.forEach { recorder in
       if recorder.allowsRecording && !recorder.isRecording {
         _ = recorder.startRecording()
       }
@@ -387,7 +390,7 @@ public class AudioModule: Module {
   }
 
   private func pauseAllPlayers() {
-    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
+    registry.allPlayers.values.forEach { player in
       if player.isPlaying {
         player.wasPlaying = true
         player.ref.pause()
@@ -396,7 +399,7 @@ public class AudioModule: Module {
   }
 
   private func resumeAllPlayers() {
-    AudioComponentRegistry.shared.allPlayers.values.forEach { player in
+    registry.allPlayers.values.forEach { player in
       if player.wasPlaying {
         player.ref.play()
         player.wasPlaying = false
@@ -435,14 +438,14 @@ public class AudioModule: Module {
 
     #if os(iOS)
     if !mode.allowsRecording {
-      AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
+      registry.allRecorders.values.forEach { recorder in
         if recorder.isRecording {
           recorder.ref.stop()
           recorder.allowsRecording = false
         }
       }
     } else {
-      AudioComponentRegistry.shared.allRecorders.values.forEach { recorder in
+      registry.allRecorders.values.forEach { recorder in
         recorder.allowsRecording = true
       }
     }

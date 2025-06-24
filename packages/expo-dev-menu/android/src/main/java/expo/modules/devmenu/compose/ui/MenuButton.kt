@@ -1,5 +1,6 @@
 package expo.modules.devmenu.compose.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -11,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.core.Icon
 import com.composeunstyled.Button
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.primitives.Text
@@ -22,6 +22,7 @@ fun MenuButton(
   label: String,
   labelTextColor: Color? = null,
   icon: Painter? = null,
+  rightIcon: Painter? = null,
   onClick: () -> Unit = {}
 ) {
   Button(
@@ -34,10 +35,9 @@ fun MenuButton(
         .padding(Theme.spacing.small)
     ) {
       if (icon != null) {
-        Icon(
+        Image(
           painter = icon,
           contentDescription = label,
-          tint = Theme.colors.icon.default,
           modifier = Modifier.size(Theme.sizing.icon.small)
         )
 
@@ -50,6 +50,14 @@ fun MenuButton(
       )
 
       Spacer(Modifier.weight(1f))
+
+      if (rightIcon != null) {
+        Image(
+          painter = rightIcon,
+          contentDescription = null,
+          modifier = Modifier.size(Theme.sizing.icon.small)
+        )
+      }
     }
   }
 }

@@ -1,1 +1,1 @@
-{"version":3,"file":"DevClient.js","sourceRoot":"","sources":["../src/DevClient.ts"],"names":[],"mappings":"AAAA,cAAc,mBAAmB,CAAC;AAClC,cAAc,eAAe,CAAC","sourcesContent":["export * from 'expo-dev-launcher';\nexport * from 'expo-dev-menu';\n"]}
+{"version":3,"file":"DevClient.js","sourceRoot":"","sources":["../src/DevClient.ts"],"names":[],"mappings":"AAAA,cAAc,eAAe,CAAC","sourcesContent":["export * from 'expo-dev-menu';\n"]}

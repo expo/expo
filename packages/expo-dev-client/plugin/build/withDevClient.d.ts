@@ -1,5 +1,4 @@
-import type { PluginConfigType } from 'expo-dev-launcher/plugin/build/pluginConfig';
-type DevClientPluginConfigType = PluginConfigType & {
+type DevClientPluginConfigType = {
     addGeneratedScheme?: boolean;
 };
 declare const _default: import("expo/config-plugins").ConfigPlugin<DevClientPluginConfigType>;

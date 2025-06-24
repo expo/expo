@@ -1930,6 +1930,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
@@ -1999,6 +2000,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",

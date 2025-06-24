@@ -6,6 +6,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))
+- Fix inconsistent global param decoding ([#36973](https://github.com/expo/expo/pull/36973) by [@marklawlor](https://github.com/marklawlor))
+- Prevent error when using `<Screen options />` with prefetching ([#36866](https://github.com/expo/expo/pull/36866) by [@marklawlor](https://github.com/marklawlor))
+- Fix static redirects ([#36962](https://github.com/expo/expo/pull/36962) by [@marklawlor](https://github.com/marklawlor))
+
+### 💡 Others
+
+- Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
+
+## 5.1.0 - 2025-06-11
+
+### 🎉 New features
+
 - Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
 - Add Tabs.Protected ([#37085](https://github.com/expo/expo/pull/37085) by [@marklawlor](https://github.com/marklawlor))
 
@@ -15,8 +30,6 @@
 - Prioritize static routes over dynamic routes within same group ([#36765](https://github.com/expo/expo/pull/36765) by [@marklawlor](https://github.com/marklawlor))
 - Fix deep linking showing incorrect screen ([#36864](https://github.com/expo/expo/pull/36864) by [@marklawlor](https://github.com/marklawlor))
 - Fix useRootNavigationState() error when used in root layout ([#37023](https://github.com/expo/expo/pull/37023) by [@marklawlor](https://github.com/marklawlor))
-- Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))
-- Fix inconsistent global param decoding ([#36973](https://github.com/expo/expo/pull/36973) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
