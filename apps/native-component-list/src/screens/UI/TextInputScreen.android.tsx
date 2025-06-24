@@ -12,7 +12,17 @@ export default function TextInputScreen() {
         <Text>{JSON.stringify(value)}</Text>
       </Section>
       <Section title="Text Input">
-        <TextInput autocorrection={false} defaultValue="hey there" onChangeText={setValue} />
+        <TextInput
+          autocorrection={false}
+          defaultValue="hey there"
+          onChangeText={setValue}
+          textStyle={{
+            color: '#ea00ff',
+            fontSize: 43,
+            fontWeight: 'bold',
+            fontFamily: 'cursive',
+          }}
+        />
       </Section>
       <Section title="Multiline Text Input">
         <TextInput

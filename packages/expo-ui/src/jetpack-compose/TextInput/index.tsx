@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
 
@@ -61,6 +61,10 @@ export type TextInputProps = {
    * @default true
    */
   autocorrection?: boolean;
+  /**
+   * The style of the text in the TextInput.
+   */
+  textStyle?: Pick<TextStyle, 'color' | 'fontSize' | 'fontWeight' | 'fontFamily'>;
 };
 
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<
