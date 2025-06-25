@@ -514,11 +514,7 @@ function transformAppJsonForE2E(
       runtimeVersion,
       plugins,
       newArchEnabled: true,
-      android: {
-        ...appJson.expo.android,
-        package: 'dev.expo.updatese2e',
-        edgeToEdgeEnabled: false,
-      },
+      android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
         ...appJson.expo.updates,
