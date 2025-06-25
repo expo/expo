@@ -202,7 +202,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
           "id": action.id
         ])
       }
-        action.
+        
         return action
     }
 
