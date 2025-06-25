@@ -10,9 +10,6 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -27,9 +24,6 @@ onFlowStart:
     label: Assert that exactly 4 static files were requested
 - stopApp
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

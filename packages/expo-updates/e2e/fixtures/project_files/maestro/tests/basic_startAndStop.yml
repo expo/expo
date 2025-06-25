@@ -5,9 +5,6 @@ onFlowStart:
 ---
 # starts app, stops, and starts again
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -16,9 +13,6 @@ onFlowStart:
     label: Assert update string is from embedded bundle
 - stopApp
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
