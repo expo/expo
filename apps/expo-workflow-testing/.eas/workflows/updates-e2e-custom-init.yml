@@ -36,7 +36,7 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E old arch project
+      - name: Set up Updates E2E custom init project
         id: setup
         working_directory: ../..        
         env:
