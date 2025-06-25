@@ -18,8 +18,11 @@ const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
 const Try_1 = require("./views/Try");
-function getSortedChildren(children, order = [], initialRouteName) {
+function getSortedChildren(children, order = [], initialRouteName, preserveOnlyUserDefined = false) {
     if (!order?.length) {
+        if (preserveOnlyUserDefined) {
+            return [];
+        }
         return children
             .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
             .map((route) => ({ route, props: {} }));
@@ -73,16 +76,20 @@ function getSortedChildren(children, order = [], initialRouteName) {
     })
         .filter(Boolean);
     // Add any remaining children
-    ordered.push(...entries.sort((0, Route_1.sortRoutesWithInitial)(initialRouteName)).map((route) => ({ route, props: {} })));
+    if (!preserveOnlyUserDefined) {
+        ordered.push(...entries
+            .sort((0, Route_1.sortRoutesWithInitial)(initialRouteName))
+            .map((route) => ({ route, props: {} })));
+    }
     return ordered;
 }
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-function useSortedScreens(order, protectedScreens) {
+function useSortedScreens(order, protectedScreens, preserveOnlyUserDefined = false) {
     const node = (0, Route_1.useRouteNode)();
     const sorted = node?.children?.length
-        ? getSortedChildren(node.children, order, node.initialRouteName)
+        ? getSortedChildren(node.children, order, node.initialRouteName, preserveOnlyUserDefined)
         : [];
     return react_1.default.useMemo(() => sorted
         .filter((item) => !protectedScreens.has(item.route.route))
