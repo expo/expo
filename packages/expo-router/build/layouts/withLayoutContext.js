@@ -37,6 +37,7 @@ exports.useFilterScreenChildren = useFilterScreenChildren;
 exports.withLayoutContext = withLayoutContext;
 const react_1 = __importStar(require("react"));
 const Route_1 = require("../Route");
+const TabOptions_1 = require("../ui/NativeBottomTabs/TabOptions");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
@@ -51,7 +52,27 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                     protectedScreens.add(child.props.name);
                 }
                 else {
-                    screens.push(child.props);
+                    if (child.type === TabOptions_1.Tab) {
+                        screens.push({
+                            ...child.props,
+                            options: (0, TabOptions_1.convertTabPropsToOptions)(child.props),
+                        });
+                    }
+                    else {
+                        screens.push(child.props);
+                    }
+                }
+                return;
+            }
+            if ((0, TabOptions_1.isTab)(child, contextKey)) {
+                if (exclude) {
+                    protectedScreens.add(child.props.name);
+                }
+                else {
+                    screens.push({
+                        ...child.props,
+                        options: (0, TabOptions_1.convertTabPropsToOptions)(child.props),
+                    });
                 }
                 return;
             }
@@ -119,14 +140,14 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
  * }
  * ```
  */
-function withLayoutContext(Nav, processor) {
+function withLayoutContext(Nav, processor, preserveOnlyUserDefined = false) {
     return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();
         const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
         });
         const processed = processor ? processor(screens ?? []) : screens;
-        const sorted = (0, useScreens_1.useSortedScreens)(processed ?? [], protectedScreens);
+        const sorted = (0, useScreens_1.useSortedScreens)(processed ?? [], protectedScreens, preserveOnlyUserDefined);
         // Prevent throwing an error when there are no screens.
         if (!sorted.length) {
             return null;

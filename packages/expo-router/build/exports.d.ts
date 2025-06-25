@@ -3,6 +3,8 @@ export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRe
 export { router, Router } from './imperative-api';
 export { Link, Redirect, RedirectProps, LinkProps, WebAnchorProps } from './link/Link';
 export { useIsPreview } from './link/preview/PreviewRouteContext';
+export { BottomAccessory } from './ui/NativeBottomTabs/BottomAccessory';
+export { Title, Icon, Badge } from './ui/NativeBottomTabs/NavigatorElements';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
