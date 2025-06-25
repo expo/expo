@@ -372,7 +372,7 @@ Before deploying to these providers, it may be good to be familiar with the basi
 
 Install the required dependencies:
 
-<Terminal cmd={['$ npm i -D express@4.20.0 compression morgan']} />
+<Terminal cmd={['$ npm i -D express compression morgan']} />
 
 </Step>
 
@@ -420,7 +420,7 @@ app.use(
 app.use(morgan('tiny'));
 
 app.all(
-  '*',
+  '/{*all}',
   createRequestHandler({
     build: SERVER_BUILD_DIR,
   })
