@@ -14,6 +14,7 @@
 - [CI] convert E2E (enabled) tests to Maestro. ([#37492](https://github.com/expo/expo/pull/37492) by [@douglowder](https://github.com/douglowder))
 - [CI] convert E2E (disabled) tests to Maestro. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
 - [CI] convert E2E (fingerprint and startup) tests to Maestro. ([#37592](https://github.com/expo/expo/pull/37592) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (old arch, custom init, error recovery, bricking measures disabled) tests to Maestro. ([#37600](https://github.com/expo/expo/pull/37600) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.15 - 2025-06-18
 
