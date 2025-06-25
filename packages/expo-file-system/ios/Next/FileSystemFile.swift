@@ -149,7 +149,7 @@ internal final class FileSystemFile: FileSystemPath {
       }
       return result
     default:
-      throw UnableToGetAsyncInfoException("url scheme is not supported")
+      throw UnableToGetAsyncInfoException("url scheme \(url.scheme) is not supported")
     }
   }
 }
