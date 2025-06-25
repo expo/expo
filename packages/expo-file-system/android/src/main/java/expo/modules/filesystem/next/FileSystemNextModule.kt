@@ -37,7 +37,7 @@ class FileSystemNextModule : Module() {
     }
 
     Property("availableDiskSpace") {
-     File(context.filesDir.path).freeSpace
+      File(context.filesDir.path).freeSpace
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptionsNext? ->
