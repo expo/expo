@@ -132,9 +132,11 @@ function LinkMenu({ children }) {
     if ((0, PreviewRouteContext_1.useIsPreview)() || !(0, react_1.use)(InternalLinkPreviewContext)) {
         return null;
     }
-    return convertChildrenArrayToActions(react_1.default.Children.toArray(children)).map((action) => {
-        return (<native_1.NativeLinkPreviewAction key={action.id} title={action.title} id={action.id} image={action.image} subtitle={action.subtitle} persistent={action.persistent} disabled={action.disabled} hidden={action.hidden} destructive={action.destructive}/>);
-    });
+    return (<>
+      {convertChildrenArrayToActions(react_1.default.Children.toArray(children)).map((action) => {
+            return (<native_1.NativeLinkPreviewAction key={action.id} title={action.title} id={action.id} image={action.image} subtitle={action.subtitle} persistent={action.persistent} disabled={action.disabled} hidden={action.hidden} destructive={action.destructive}/>);
+        })}
+    </>);
 }
 function LinkPreview({ children, width, height }) {
     const internalPreviewContext = (0, react_1.use)(InternalLinkPreviewContext);

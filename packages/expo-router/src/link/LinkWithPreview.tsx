@@ -156,6 +156,20 @@ interface LinkMenuAction {
   hidden?: boolean;
   destructive?: boolean;
 
+  /** Show children inline in parent, instead of hierarchically */
+  displayInline?: boolean;
+
+  /**
+   * Indicates whether the menu (and any submenus) should only allow a single "on" menu item.
+   */
+  singleSelection?: boolean;
+
+  /**
+   * Indicates that this menu should be rendered as a palette.
+   * iOS +17
+   */
+  displayAsPalette?: boolean;
+
   image?: string;
   onPress: () => void;
 }
@@ -171,21 +185,25 @@ export function LinkMenu({ children }: LinkMenuProps) {
   if (useIsPreview() || !use(InternalLinkPreviewContext)) {
     return null;
   }
-  return convertChildrenArrayToActions(React.Children.toArray(children)).map((action) => {
-    return (
-      <NativeLinkPreviewAction
-        key={action.id}
-        title={action.title}
-        id={action.id}
-        image={action.image}
-        subtitle={action.subtitle}
-        persistent={action.persistent}
-        disabled={action.disabled}
-        hidden={action.hidden}
-        destructive={action.destructive}
-      />
-    );
-  });
+  return (
+    <>
+      {convertChildrenArrayToActions(React.Children.toArray(children)).map((action) => {
+        return (
+          <NativeLinkPreviewAction
+            key={action.id}
+            title={action.title}
+            id={action.id}
+            image={action.image}
+            subtitle={action.subtitle}
+            persistent={action.persistent}
+            disabled={action.disabled}
+            hidden={action.hidden}
+            destructive={action.destructive}
+          />
+        );
+      })}
+    </>
+  );
 }
 
 interface LinkPreviewProps {

@@ -6,30 +6,30 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   private var interaction: UIContextMenuInteraction?
   private var nextScreenId: String?
   private var actions: [LinkPreviewNativeActionView] = []
-
+  
   private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
-
+  
   let onPreviewTapped = EventDispatcher()
   let onWillPreviewOpen = EventDispatcher()
   let onDidPreviewOpen = EventDispatcher()
   let onPreviewWillClose = EventDispatcher()
   let onPreviewDidClose = EventDispatcher()
   let onActionSelected = EventDispatcher()
-
+  
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     self.interaction = UIContextMenuInteraction(delegate: self)
   }
-
+  
   // MARK: - Props
-
+  
   func setNextScreenId(_ screenId: String) {
     self.nextScreenId = screenId
-      linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
+    linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
   }
-
+  
   // MARK: - Children
-
+  
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let triggerView = childComponentView as? NativeLinkPreviewTrigger {
       trigger = triggerView
@@ -50,7 +50,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
       )
     }
   }
-
+  
   override func unmountChildComponentView(_ child: UIView, index: Int) {
     if child is NativeLinkPreviewTrigger {
       if let interaction = self.interaction {
@@ -72,9 +72,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
         "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewView")
     }
   }
-
+  
   // MARK: - UIContextMenuInteractionDelegate
-
+  
   func contextMenuInteraction(
     _ interaction: UIContextMenuInteraction,
     configurationForMenuAtLocation location: CGPoint
@@ -89,7 +89,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
         self?.createContextMenu()
       })
   }
-
+  
   func contextMenuInteraction(
     _ interaction: UIContextMenuInteraction,
     configuration: UIContextMenuConfiguration,
@@ -97,16 +97,16 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   ) -> UITargetedPreview? {
     if let trigger = self.trigger {
       let target = UIPreviewTarget(container: self, center: trigger.center)
-
+      
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = .clear
       parameters.shadowPath = UIBezierPath(roundedRect: trigger.bounds, cornerRadius: 10)
-
+      
       return UITargetedPreview(view: trigger, parameters: parameters, target: target)
     }
     return nil
   }
-
+  
   func contextMenuInteraction(
     _ interaction: UIContextMenuInteraction,
     willDisplayMenuFor configuration: UIContextMenuConfiguration,
@@ -120,7 +120,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
       // User could have already interacted with preview beforehand
     }
   }
-
+  
   func contextMenuInteraction(
     _ interaction: UIContextMenuInteraction,
     willEndFor configuration: UIContextMenuConfiguration,
@@ -131,7 +131,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
       self.onPreviewDidClose()
     }
   }
-
+  
   func contextMenuInteraction(
     _ interaction: UIContextMenuInteraction,
     willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
@@ -142,14 +142,14 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
       self?.onPreviewTapped()
     }
   }
-
+  
   // MARK: - Context Menu Helpers
-
+  
   private func createPreviewViewController() -> UIViewController {
     guard let preview = preview else {
       return UIViewController()
     }
-
+    
     let vc = PreviewViewController(linkPreviewNativePreview: preview)
     vc.view.addSubview(preview)
     let preferredSize = preview.preferredContentSize
@@ -157,56 +157,89 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
     vc.preferredContentSize.height = preferredSize.height
     return vc
   }
-
-  private func createContextMenu() -> UIMenu {
-    let uiActions = actions.map { action in
-        
-        var parsedImage: UIImage? = nil
-        
-        if action.image != "" {
-            if let img = UIImage(named: action.image) {
-                parsedImage = img
-            } else if let systemImage = UIImage(systemName: action.image) {
-                parsedImage = systemImage
-            } else {
-                parsedImage = UIImage(systemName: "questionmark") ?? UIImage()
-            }
+  
+  private func createImg(source: String) -> UIImage? {
+    var parsedImage: UIImage? = nil
+    
+    if source != "" {
+      if let img = UIImage(named: source) {
+        parsedImage = img
+      } else if let systemImage = UIImage(systemName: source) {
+        parsedImage = systemImage
+      } else {
+        parsedImage = UIImage(systemName: "questionmark") ?? UIImage()
+      }
+    }
+    
+    return parsedImage
+  }
+  
+  private func createSubContextMenu(action: LinkPreviewNativeActionView) -> UIMenuElement {
+    let parsedImage = createImg(source: action.image)
+    
+    if action.children.count > 0 {
+      var options: UIMenu.Options = []
+      
+      if action.destructive {
+        options = options.union(.destructive)
+      }
+      if action.displayInline {
+        options = options.union(.displayInline)
+      }
+      if action.singleSelection {
+        options = options.union(.singleSelection)
+      }
+      if #available(iOS 17.0, *) {
+        if action.displayAsPalette {
+          options = options.union(.displayAsPalette)
         }
-        
-        var attributes: UIMenuElement.Attributes = []
-        
-        if action.destructive {
-            attributes = [.destructive]
-        }
-        
-        if action.disabled {
-            attributes = attributes.union(.disabled)
-        }
-        
-        if #available(iOS 16.0, *) {
-          if action.persistent {
-                attributes = attributes.union(.keepsMenuPresented)
-            }
-        }
-        if action.isHidden {
-            attributes = attributes.union(.hidden)
-        }
-        
-      let action = UIAction(
+      }
+      
+      return UIMenu(
         title: action.title,
         subtitle: action.subtitle,
         image: parsedImage,
-        attributes: attributes
-      ) { _ in
-        self.onActionSelected([
-          "id": action.id
-        ])
-      }
-        
-        return action
+        identifier: UIMenu.Identifier(rawValue: action.id),
+        options: options,
+        children: action.children.map {
+          createSubContextMenu(action: $0)
+        }
+      )
     }
-
-    return UIMenu(title: "", children: uiActions)
+    
+    var attributes: UIMenuElement.Attributes = []
+    
+    if action.destructive {
+      attributes = [.destructive]
+    }
+    if action.disabled {
+      attributes = attributes.union(.disabled)
+    }
+    if action.isHidden {
+      attributes = attributes.union(.hidden)
+    }
+    if #available(iOS 16.0, *) {
+      if action.persistent {
+        attributes = attributes.union(.keepsMenuPresented)
+      }
+    }
+   
+    return UIAction(
+      title: action.title,
+      subtitle: action.subtitle,
+      image: parsedImage,
+      attributes: attributes
+    ) { _ in
+      self.onActionSelected([
+        "id": action.id
+      ])
+    }
+  }
+  
+  private func createContextMenu() -> UIMenu {
+    return UIMenu(title: "", children: actions.map { action in
+      createSubContextMenu(action: action)
+    })
   }
 }
 
@@ -216,12 +249,12 @@ class PreviewViewController: UIViewController {
     self.linkPreviewNativePreview = linkPreviewNativePreview
     super.init(nibName: nil, bundle: nil)
   }
-
+  
   @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
+  
   // TODO: Consider using setViewSize from ExpoFabricView
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)

@@ -11,6 +11,17 @@ interface LinkMenuAction {
     disabled?: boolean;
     hidden?: boolean;
     destructive?: boolean;
+    /** Show children inline in parent, instead of hierarchically */
+    displayInline?: boolean;
+    /**
+     * Indicates whether the menu (and any submenus) should only allow a single "on" menu item.
+     */
+    singleSelection?: boolean;
+    /**
+     * Indicates that this menu should be rendered as a palette.
+     * iOS +17
+     */
+    displayAsPalette?: boolean;
     image?: string;
     onPress: () => void;
 }
@@ -18,7 +29,7 @@ export declare function LinkMenuAction(_: LinkMenuAction): null;
 interface LinkMenuProps {
     children: ReactElement<LinkMenuAction> | ReactElement<LinkMenuAction>[];
 }
-export declare function LinkMenu({ children }: LinkMenuProps): React.JSX.Element[] | null;
+export declare function LinkMenu({ children }: LinkMenuProps): React.JSX.Element | null;
 interface LinkPreviewProps {
     /**
      * Sets the preferred width of the preview.
