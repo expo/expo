@@ -246,17 +246,17 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1, 2]
-    env:
-      # Change bun, npm, and yarn caches to the much faster D:\ drive
-      # See: https://github.com/twpayne/chezmoi/pull/4064
-      BUN_INSTALL_CACHE_DIR: D:\_temp\bun
-      NPM_CACHE_LOCATION: D:\_temp\npm
-      YARN_CACHE_FOLDER: D:\_temp\yarn
-      # Change playwright browser cache to the much faster D:\ drive
-      PLAYWRIGHT_BROWSERS_PATH: D:\_temp\playwright-browsers
-      # Change the Expo E2E project directory to the same drive as the repository,
-      # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
-      EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
+    # env:
+    #   # Change bun, npm, and yarn caches to the much faster D:\ drive
+    #   # See: https://github.com/twpayne/chezmoi/pull/4064
+    #   BUN_INSTALL_CACHE_DIR: D:\_temp\bun
+    #   NPM_CACHE_LOCATION: D:\_temp\npm
+    #   YARN_CACHE_FOLDER: D:\_temp\yarn
+    #   # Change playwright browser cache to the much faster D:\ drive
+    #   PLAYWRIGHT_BROWSERS_PATH: D:\_temp\playwright-browsers
+    #   # Change the Expo E2E project directory to the same drive as the repository,
+    #   # allowing to run Expo from source (avoiding Metro's multi-drive limitation)
+    #   EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
