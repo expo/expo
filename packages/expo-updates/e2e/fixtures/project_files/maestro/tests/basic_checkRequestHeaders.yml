@@ -5,6 +5,9 @@ onFlowStart:
 ---
 # initial request includes correct update-id headers
 - launchApp
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
 - copyTextFrom:
     label: Copy text from update string
     id: updatestring
