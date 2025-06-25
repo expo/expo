@@ -17,6 +17,7 @@ on:
 defaults:
   tools:
     node: 22.14.0
+    yarn: 1.22.22
 
 jobs:
   cli:
