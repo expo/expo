@@ -40,6 +40,7 @@
     "diff": "^5.1.0",
     "folder-hash": "^4.0.4",
     "fs-extra": "^11.2.0",
+    "getenv": "^2.0.0",
     "glob": "^10.4.1",
     "inquirer": "^8.2.2",
     "jsondiffpatch": "^0.4.1",

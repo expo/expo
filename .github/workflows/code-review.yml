@@ -32,7 +32,7 @@ jobs:
       - name: 🧶 Yarn install
         working-directory: tools
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --immutable
+        run: yarn --frozen-lockfile
 
       ### This job is run on Ubuntu which doesn't have SwiftLint installed, so we need to build it from sources.
       ### Building it on each run may take too much time, so we bundle the binary in `@expo/swiftlint` package.
@@ -49,6 +49,12 @@ jobs:
       #     name: swiftlint
       #     path: SwiftLint/.build
       #     include-hidden-files: true
+
+      - name: DEBUG EXPO TOOLS
+        working-directory: tools
+        run: |
+          yarn run build
+          expotools --help
 
       - name: 🔬 Reviewing a pull request
         run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
