@@ -46,6 +46,11 @@ on:
   schedule:
     - cron: '0 20 * * SUN' # 22:00 UTC every Sunday
 
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
 jobs:
   ios:
     runs_on: macos-large
