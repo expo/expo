@@ -9,7 +9,6 @@ import crypto from 'crypto';
 import { lanNetwork } from 'lan-network';
 import os from 'os';
 import path from 'path';
-import { fetch, type Response } from 'undici';
 
 import { EXPO_GO_DIR, EXPO_GO_DEV_SERVER_PORT } from '../Constants';
 import { getExpoRepositoryRootDir } from '../Directories';

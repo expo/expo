@@ -10,9 +10,7 @@ import fs from 'fs/promises';
 import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
-import { Readable } from 'stream';
-import { pipeline } from 'stream/promises';
-import { fetch, type Response } from 'undici';
+import { Writable } from 'stream';
 
 import { EXPO_GO_ANDROID_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import { deepCloneObject } from '../Utils';
@@ -171,10 +169,8 @@ async function fetchManifestAndBundleAsync(
   await fs.writeFile(path.resolve(manifestPath), JSON.stringify(manifest));
 
   const bundlePath = platform === 'ios' ? iosPublishBundlePath : androidPublishBundlePath;
-  await pipeline(
-    Readable.fromWeb(bundleResponse.body),
-    createWriteStream(path.resolve(bundlePath))
-  );
+  const stream = createWriteStream(path.resolve(bundlePath));
+  await bundleResponse.body.pipeTo(Writable.toWeb(stream));
 }
 
 /**

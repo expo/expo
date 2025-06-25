@@ -3,10 +3,8 @@ import chalk from 'chalk';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+import { Writable } from 'node:stream';
 import { extract as tarExtract } from 'tar';
-import { fetch } from 'undici';
 
 import * as AndroidDevice from '../AndroidDevice';
 import * as Simulator from '../IOSSimulator';
@@ -124,7 +122,7 @@ async function downloadExpoGoAsync({
   if (!resp.ok || !resp.body) {
     throw new Error(`Failed to download Expo Go from ${downloadUrl}`);
   }
-  await pipeline(Readable.fromWeb(resp.body), stream);
+  await resp.body.pipeTo(Writable.toWeb(stream));
   return downloadFilePath;
 }
 

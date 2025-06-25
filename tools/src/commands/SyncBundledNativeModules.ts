@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
-import { fetch } from 'undici';
 
 import { EXPO_DIR, LOCAL_API_HOST } from '../Constants';
 import logger from '../Logger';
