@@ -379,19 +379,23 @@ async function installClient(platform: string, configuration: string) {
 app.get('/restart-server', (req: Request, res: Response) => {
   console.log('Received request to restart server');
   let newArtificialDelay = 0;
+  let newServeOverriddenUrl = false;
   if (req.query.ms) {
     newArtificialDelay = parseInt(req.query.ms as string, 10);
     console.log(`Setting artificial delay to ${artificialDelay} ms`);
   }
+  if (req.query.serveOverriddenUrl) {
+    newServeOverriddenUrl = true;
+  }
   res.status(200).send('OK');
-  restartServer(newArtificialDelay);
+  restartServer(newArtificialDelay, newServeOverriddenUrl);
 });
 
-async function restartServer(newArtificialDelay: number) {
+async function restartServer(newArtificialDelay: number, newServeOverriddenUrl: boolean) {
   console.log('Restarting server');
   await setTimeout(100);
   Server.stop();
-  Server.start(protocolVersion, newArtificialDelay, serveOverriddenUrl);
+  Server.start(protocolVersion, newArtificialDelay, newServeOverriddenUrl);
   console.log('Server restarted');
 }
 
