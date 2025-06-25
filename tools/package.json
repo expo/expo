@@ -62,7 +62,6 @@
     "tar": "^7.4.3",
     "terminal-link": "^2.1.1",
     "typedoc": "0.27.6",
-    "undici": "^7.10.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
