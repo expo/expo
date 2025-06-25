@@ -150,6 +150,13 @@ interface LinkMenuAction {
    * The title of the menu item.
    */
   title: string;
+  subtitle?: string;
+  persistent?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+  destructive?: boolean;
+
+  image?: string;
   onPress: () => void;
 }
 
@@ -165,7 +172,19 @@ export function LinkMenu({ children }: LinkMenuProps) {
     return null;
   }
   return convertChildrenArrayToActions(React.Children.toArray(children)).map((action) => {
-    return <NativeLinkPreviewAction key={action.id} title={action.title} id={action.id} />;
+    return (
+      <NativeLinkPreviewAction
+        key={action.id}
+        title={action.title}
+        id={action.id}
+        image={action.image}
+        subtitle={action.subtitle}
+        persistent={action.persistent}
+        disabled={action.disabled}
+        hidden={action.hidden}
+        destructive={action.destructive}
+      />
+    );
   });
 }
 
@@ -254,6 +273,12 @@ function convertChildrenArrayToActions(children: ReturnType<typeof React.Childre
     .map((child, index) => ({
       id: `${child.props.title}-${index}`,
       title: child.props.title,
+      subtitle: child.props.subtitle,
+      persistent: child.props.persistent,
+      disabled: child.props.disabled,
+      hidden: child.props.hidden,
+      destructive: child.props.destructive,
+      image: child.props.image,
       onPress: child.props.onPress,
     }));
 }

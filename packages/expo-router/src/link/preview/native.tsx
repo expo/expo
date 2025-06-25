@@ -7,6 +7,12 @@ import { Platform, StyleSheet, type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
   title: string;
   id: string;
+  image?: string;
+  subtitle?: string;
+  persistent?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+  destructive?: boolean;
 }
 const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =
   Platform.OS === 'ios'

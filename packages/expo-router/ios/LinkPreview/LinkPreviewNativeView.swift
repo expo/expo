@@ -160,13 +160,50 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
 
   private func createContextMenu() -> UIMenu {
     let uiActions = actions.map { action in
-      return UIAction(
-        title: action.title
+        
+        var parsedImage: UIImage? = nil
+        
+        if action.image != "" {
+            if let img = UIImage(named: action.image) {
+                parsedImage = img
+            } else if let systemImage = UIImage(systemName: action.image) {
+                parsedImage = systemImage
+            } else {
+                parsedImage = UIImage(systemName: "questionmark") ?? UIImage()
+            }
+        }
+        
+        var attributes: UIMenuElement.Attributes = []
+        
+        if action.destructive {
+            attributes = [.destructive]
+        }
+        
+        if action.disabled {
+            attributes = attributes.union(.disabled)
+        }
+        
+        if #available(iOS 16.0, *) {
+          if action.persistent {
+                attributes = attributes.union(.keepsMenuPresented)
+            }
+        }
+        if action.isHidden {
+            attributes = attributes.union(.hidden)
+        }
+        
+      let action = UIAction(
+        title: action.title,
+        subtitle: action.subtitle,
+        image: parsedImage,
+        attributes: attributes
       ) { _ in
         self.onActionSelected([
           "id": action.id
         ])
       }
+        action.
+        return action
     }
 
     return UIMenu(title: "", children: uiActions)

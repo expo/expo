@@ -161,13 +161,32 @@ function Post({
         <Link.Preview />
 
         <Link.Menu>
-          <Link.MenuAction title="Not Interested" onPress={() => {}} />
-          <Link.MenuAction title="View Interactions" image="sf:polls" onPress={() => {}} />
-          <Link.MenuAction title="Report Post" image="sf:flag" onPress={() => {}} />
-          <Link.Menu title="Community Notes">
-            <Link.MenuAction title="Write a Community Note" image="sf:people" onPress={() => {}} />
+          <Link.MenuAction
+            title="Not Interested"
+            destructive
+            image="figure.fencing"
+            onPress={() => {}}
+          />
+          <Link.MenuAction title="Disabled" disabled image="star" onPress={() => {}} />
+          <Link.MenuAction
+            title="Disabled Destructive"
+            destructive
+            disabled
+            image="star"
+            onPress={() => {}}
+          />
+          <Link.MenuAction title="Hidden" hidden image="star" onPress={() => {}} />
+          <Link.MenuAction title="Persistent" persistent image="star" onPress={() => {}} />
+          <Link.MenuAction
+            title="Report Post"
+            subtitle="To the authorities"
+            image="flag"
+            onPress={() => {}}
+          />
+          {/* <Link.Menu title="Community Notes">
+            <Link.MenuAction title="Write a Community Note" image="star" onPress={() => {}} />
             <Link.MenuAction title="Request Community Note" image="sf:mega" onPress={() => {}} />
-          </Link.Menu>
+          </Link.Menu> */}
         </Link.Menu>
       </Link>
     </View>

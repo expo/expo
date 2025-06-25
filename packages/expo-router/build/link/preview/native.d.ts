@@ -2,6 +2,12 @@ import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
     title: string;
     id: string;
+    image?: string;
+    subtitle?: string;
+    persistent?: boolean;
+    disabled?: boolean;
+    hidden?: boolean;
+    destructive?: boolean;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export type NativeLinkPreviewTriggerProps = ViewProps;

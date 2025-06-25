@@ -43,6 +43,24 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
+      Prop("subtitle") { (view: LinkPreviewNativeActionView, subtitle: String) in
+        view.subtitle = subtitle
+      }
+      Prop("image") { (view: LinkPreviewNativeActionView, image: String) in
+        view.image = image
+      }
+      Prop("hidden") { (view: LinkPreviewNativeActionView, hidden: Bool) in
+        view.isHidden = hidden
+      }
+      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool) in
+        view.destructive = destructive
+      }
+      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool) in
+        view.disabled = disabled
+      }
+      Prop("persistent") { (view: LinkPreviewNativeActionView, persistent: Bool) in
+        view.persistent = persistent
+      }
     }
 
     View(NativeLinkPreviewTrigger.self) {}
