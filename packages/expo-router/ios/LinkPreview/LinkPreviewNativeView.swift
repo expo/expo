@@ -195,7 +195,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
         }
       }
       
-      return UIMenu(
+      let menu = UIMenu(
         title: action.title,
         subtitle: action.subtitle,
         image: parsedImage,
@@ -205,6 +205,22 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
           createSubContextMenu(action: $0)
         }
       )
+      
+      if #available(iOS 16.0, *) {
+        if action.elementSize == "small" {
+          menu.preferredElementSize = .small
+        } else if action.elementSize == "medium" {
+          menu.preferredElementSize = .medium
+        } else if action.elementSize == "large" {
+          menu.preferredElementSize = .large
+        } else if action.elementSize == "auto" {
+          if #available(iOS 17.0, *) {
+            menu.preferredElementSize = .automatic
+          }
+        }
+      }
+      
+      return menu
     }
     
     var attributes: UIMenuElement.Attributes = []
@@ -223,8 +239,8 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
         attributes = attributes.union(.keepsMenuPresented)
       }
     }
-   
-    return UIAction(
+    
+    let action = UIAction(
       title: action.title,
       subtitle: action.subtitle,
       image: parsedImage,
@@ -234,9 +250,11 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
         "id": action.id
       ])
     }
+    return action
   }
   
   private func createContextMenu() -> UIMenu {
+    // TODO: Reuse createSubContextMenu for top-level menu
     return UIMenu(title: "", children: actions.map { action in
       createSubContextMenu(action: action)
     })

@@ -10,7 +10,6 @@ class LinkPreviewNativeActionView: ExpoView {
     var disabled: Bool = false
 //    var hidden: Bool = false
     var persistent: Bool = false
-    
 //    Menu-only
     var children: [LinkPreviewNativeActionView] = []
     
@@ -26,6 +25,9 @@ class LinkPreviewNativeActionView: ExpoView {
     /// @available(iOS 17.0, *)
     var displayAsPalette: Bool = false
     
+  var elementSize: String = ""
+
+  
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     clipsToBounds = true
