@@ -77,7 +77,9 @@ export async function transform(
         ...t.file(
           t.program([
             buildClientReferenceRequire({
-              FILE_PATH: JSON.stringify(`./${filename}`),
+              FILE_PATH: JSON.stringify(
+                `./${toPosixPath(path.relative(options.projectRoot, absolutePath))}`
+              ),
             }),
           ])
         ),

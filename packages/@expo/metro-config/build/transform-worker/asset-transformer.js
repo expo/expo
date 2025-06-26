@@ -53,6 +53,7 @@ const util_1 = require("metro/src/Bundler/util");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
+const filePath_1 = require("../utils/filePath");
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template_1.default.statement(`module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`);
 const buildStringRef = template_1.default.statement(`module.exports = FILE_PATH;`);
@@ -82,7 +83,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
             ast: {
                 ...t.file(t.program([
                     buildClientReferenceRequire({
-                        FILE_PATH: JSON.stringify(`./${filename}`),
+                        FILE_PATH: JSON.stringify(`./${(0, filePath_1.toPosixPath)(node_path_1.default.relative(options.projectRoot, absolutePath))}`),
                     }),
                 ])),
                 errors: [],
