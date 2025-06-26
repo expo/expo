@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix cold booting iOS apps from a universal link.
+
 ### 💡 Others
 
 - Deprecate `useURL` in favor of `useLinkingURL`. ([#37005](https://github.com/expo/expo/pull/37005) by [@aleqsio](https://github.com/aleqsio))
