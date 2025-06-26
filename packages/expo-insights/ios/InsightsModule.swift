@@ -32,11 +32,11 @@ public final class InsightsModule: Module {
   }
 
   private func subscribeToReactMarkers() {
-    NotificationCenter.default.addObserver(self, selector: #selector(contentAppeared), name: NSNotification.Name("RCTContentDidAppearNotification"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(contentAppeared), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
   }
 
   @objc
-  private func contentAppeared(_ notification: NSNotification) {
+  private func contentAppeared(_ notification: Notification) {
     let date = Date()
     Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_START", at: ReactMarker.getRunJSBundleStartTime())
     Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_END", at: ReactMarker.getRunJSBundleEndTime())
