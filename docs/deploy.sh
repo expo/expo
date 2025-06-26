@@ -357,7 +357,7 @@ redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 # After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
 redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-privacy-protection
 
-echo "::group::[5/5] Add custom redirects"
+echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
@@ -380,4 +380,10 @@ do
       "s3://${bucket}/${i}/index.html"
   fi
 done
+echo "::endgroup::"
+
+echo "::group::[6/6] Setting bucket properties"
+aws s3 website s3://${bucket}/ \
+  --index-document index.html \
+  --error-document 404.html
 echo "::endgroup::"

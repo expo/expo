@@ -165,13 +165,16 @@ export function parseValue(value: string) {
   };
 }
 
-export function findNodeByPropInChildren<T>(element: ReactElement, propToFind: string): T | null {
+export function findNodeByPropInChildren<T>(
+  element: ReactElement,
+  propToFind: string
+): PropsWithChildren<{ [propToFind]: T }> | T | null {
   if (!element || typeof element !== 'object') {
     return null;
   }
 
   if (isValidElement<PropsWithChildren<{ [propToFind]: T }>>(element)) {
-    return element.props[propToFind];
+    return element.props;
   }
 
   if (isValidElement<PropsWithChildren>(element)) {
@@ -204,7 +207,8 @@ export function getCodeBlockDataFromChildren(children?: ReactNode, className?: s
     'className'
   );
   const code = parseValue(codeNode?.children?.toString() ?? '');
-  const codeLanguage = codeNode?.className ? codeNode.className.split('-')[1] : 'jsx';
+  const codeLanguage =
+    typeof codeNode?.className === 'string' ? codeNode.className.split('-')[1] : 'jsx';
 
   return { ...code, language: codeLanguage };
 }
