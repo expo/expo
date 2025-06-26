@@ -73,8 +73,13 @@ export default [
   {
     name: 'metadataPath',
     type: 'string',
+    description: ['The path to your [store configuration file](/eas/metadata/).'],
+  },
+  {
+    name: 'groups',
+    type: 'array',
     description: [
-      'The path to your [store configuration file](/eas/metadata/).'
+      "Optional. Array of TestFlight internal group names to add the build to. The build will be automatically added to internal testers' groups that have the App Store Connect setting to receive new builds automatically enabled. Only internal group names are supported right now; external groups are not supported.",
     ],
-  }
+  },
 ];
