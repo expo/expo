@@ -78,17 +78,16 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
         // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
         isReactServer) {
-        const clientReference = getClientReference();
         return {
             ast: {
                 ...t.file(t.program([
                     buildClientReferenceRequire({
-                        FILE_PATH: JSON.stringify(clientReference),
+                        FILE_PATH: JSON.stringify(`./${filename}`),
                     }),
                 ])),
                 errors: [],
             },
-            reactClientReference: clientReference,
+            reactClientReference: getClientReference(),
         };
     }
     const data = await (0, getAssets_1.getUniversalAssetData)(absolutePath, filename, assetDataPlugins, options.platform, isDomComponent && isExport

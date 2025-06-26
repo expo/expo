@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix require path of assets with RSC client references
+
 ### 💡 Others
 
 ## 0.20.15 - 2025-06-18
