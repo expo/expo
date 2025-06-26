@@ -25,16 +25,16 @@ public final class InsightsModule: Module {
         }
       }
     }
-    
+
     OnDestroy {
       NotificationCenter.default.removeObserver(self)
     }
   }
-  
+
   private func subscribeToReactMarkers() {
     NotificationCenter.default.addObserver(self, selector: #selector(contentAppeared), name: NSNotification.Name("RCTContentDidAppearNotification"), object: nil)
   }
-  
+
   @objc
   private func contentAppeared(_ notification: NSNotification) {
     let date = Date()

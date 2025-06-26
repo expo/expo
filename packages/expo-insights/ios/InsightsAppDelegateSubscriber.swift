@@ -8,7 +8,7 @@ public class InsightsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     sysctl(&mib, u_int(mib.count), &kinfo, &size, nil, 0)
     let startTime = kinfo.kp_proc.p_starttime
     let startTimeSeconds = (TimeInterval(startTime.tv_sec) + TimeInterval(startTime.tv_usec) / 1_000_000)
-    
+
     Insights.shared.send(event: "PROCESS_START", at: Date(timeIntervalSince1970: startTimeSeconds))
     return true
   }

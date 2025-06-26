@@ -3,9 +3,9 @@ import ExpoModulesCore
 class Insights {
   static let shared = Insights()
   private var sentEvents: Set<String> = []
-    
+
   private init() {}
-    
+
   func send(event: String, at timestamp: Date) {
     log.info("Insights: \(event) at \(timestamp.timeIntervalSince1970)")
   }
