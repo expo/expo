@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 5.1.14 — 2025-06-26
+
+### 🐛 Bug fixes
+
 - [Android] Fix missing launch args from pending intent extras. ([#37172](https://github.com/expo/expo/pull/37172) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
 - [Android] Fix missing intent extras when handling external intents. ([#37307](https://github.com/expo/expo/pull/37307) by [@coolsoftwaretyler](https://github.com/coolsoftwaretyler))
-
-### 💡 Others
 
 ## 5.1.13 — 2025-06-18
 
