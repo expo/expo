@@ -79,7 +79,7 @@ export default [
     name: 'groups',
     type: 'array',
     description: [
-      "Array of TestFlight internal group names to add the build to. Note: on top of the groups you provide here, the build will be automatically added to the groups that have been created with 'Enable automatic distribution' App Store Connect setting.",
+      'Array of TestFlight internal group names to add the build to. Note: on top of the groups you provide here, the build will be automatically added to the groups that have been created with "Enable automatic distribution" App Store Connect setting.',
     ],
   },
 ];
