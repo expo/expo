@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '16.1.8'
+version = '16.1.9'
 
 android {
   namespace "expo.modules.camera"
   defaultConfig {
     versionCode 32
-    versionName "16.1.8"
+    versionName "16.1.9"
   }
 }
 

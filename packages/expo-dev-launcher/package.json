@@ -46,7 +46,7 @@
     "babel-preset-expo": "~13.2.1",
     "date-fns": "^2.28.0",
     "expo-dev-client-components": "2.1.4",
-    "expo-module-scripts": "^4.1.7",
+    "expo-module-scripts": "^4.1.8",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "19.0.0",

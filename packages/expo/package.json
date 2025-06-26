@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "53.0.12",
+  "version": "53.0.13",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -94,7 +94,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.0.10",
     "@types/react-test-renderer": "^19.0.0",
-    "expo-module-scripts": "^4.1.7",
+    "expo-module-scripts": "^4.1.8",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.4",

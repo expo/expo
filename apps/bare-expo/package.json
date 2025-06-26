@@ -51,9 +51,9 @@
     "@react-native-picker/picker": "2.11.1",
     "@react-native-segmented-control/segmented-control": "2.5.7",
     "@shopify/flash-list": "1.7.6",
-    "expo": "~53.0.12",
+    "expo": "~53.0.13",
     "expo-build-properties": "~0.14.6",
-    "expo-camera": "~16.1.8",
+    "expo-camera": "~16.1.9",
     "expo-dev-client": "~5.2.1",
     "expo-image": "~2.3.0",
     "expo-insights": "~0.9.3",
@@ -80,7 +80,7 @@
     "@types/react": "~19.0.10",
     "babel-plugin-module-resolver": "^5.0.2",
     "babel-preset-expo": "~13.2.1",
-    "expo-module-scripts": "^4.1.7",
+    "expo-module-scripts": "^4.1.8",
     "jest": "^29.3.1"
   },
   "codegenConfig": {
