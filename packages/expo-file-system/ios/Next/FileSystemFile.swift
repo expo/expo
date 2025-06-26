@@ -33,15 +33,14 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   override var exists: Bool {
-    get throws {
-      try validatePermission(.read)
-
-      var isDirectory: ObjCBool = false
-      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-        return !isDirectory.boolValue
-      }
+    guard checkPermission(.read) else {
       return false
     }
+    var isDirectory: ObjCBool = false
+    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+      return !isDirectory.boolValue
+    }
+    return false
   }
 
   // TODO: Move to the constructor once error is rethrowed

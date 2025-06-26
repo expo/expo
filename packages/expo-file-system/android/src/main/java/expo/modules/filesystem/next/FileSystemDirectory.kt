@@ -16,8 +16,11 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
   }
 
   val exists: Boolean get() {
-    validatePermission(Permission.READ)
-    return file.isDirectory
+    return if (checkPermission(Permission.READ)) {
+      file.isDirectory
+    } else {
+      false
+    }
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
