@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix cold booting iOS apps from a universal link. ([#37647](https://github.com/expo/expo/pull/37647) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 7.1.6 — 2025-07-01
