@@ -107,13 +107,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
 
-  func seekTo(seconds: Double) async {
-    await ref.currentItem?.seek(
-      to: CMTime(
-        seconds: seconds,
-        preferredTimescale: CMTimeScale(NSEC_PER_SEC)
-      )
-    )
+  func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) async {
+    let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    let toleranceBefore = toleranceMillisBefore.map {
+      CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    } ?? CMTime.positiveInfinity
+    let toleranceAfter = toleranceMillisAfter.map {
+      CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    } ?? CMTime.positiveInfinity
+
+    await ref.currentItem?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter	)
     updateStatus(with: [
       "currentTime": currentTime
     ])

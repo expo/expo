@@ -120,8 +120,14 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   /**
    * Seeks the playback by the given number of seconds.
    * @param seconds The number of seconds to seek by.
+   * @param toleranceMillisBefore The tolerance allowed before the requested seek time, in milliseconds. iOS only.
+   * @param toleranceMillisAfter The tolerance allowed after the requested seek time, in milliseconds. iOS only.
    */
-  seekTo(seconds: number): Promise<void>;
+  seekTo(
+    seconds: number,
+    toleranceMillisBefore?: number,
+    toleranceMillisAfter?: number
+  ): Promise<void>;
 
   /**
    * Sets the current playback rate of the audio.
