@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
+
 ### 💡 Others
 
 ## 2.2.2 - 2025-06-18
