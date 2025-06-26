@@ -1,0 +1,6 @@
+appId: dev.expo.updatese2e
+---
+- runFlow:
+    file: devClient_verifyState.yml
+- runFlow:
+    file: devClient_runUpdate.yml
