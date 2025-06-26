@@ -115,7 +115,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     let toleranceAfter = toleranceMillisAfter.map {
       CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     } ?? CMTime.positiveInfinity
-    
+
     await ref.currentItem?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter	)
     updateStatus(with: [
       "currentTime": currentTime
