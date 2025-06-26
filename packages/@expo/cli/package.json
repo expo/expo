@@ -113,7 +113,7 @@
     "@graphql-codegen/cli": "^2.16.3",
     "@graphql-codegen/typescript": "^2.8.7",
     "@graphql-codegen/typescript-operations": "^2.5.12",
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.53.1",
     "@swc/core": "^1.11.11",
     "@taskr/clear": "^1.1.0",
     "@taskr/esnext": "^1.1.0",
@@ -147,7 +147,7 @@
     "nock": "14.0.0-beta.7",
     "node-html-parser": "^6.1.5",
     "nullthrows": "^1.1.1",
-    "playwright": "^1.40.1",
+    "playwright": "^1.53.1",
     "taskr": "^1.1.0",
     "tree-kill": "^1.2.2",
     "tsd": "^0.28.1"
