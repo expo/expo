@@ -18,7 +18,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var totalRecordedDuration = 0
   private var currentState: RecordingState = .idle
   private var recordingSession = AVAudioSession.sharedInstance()
-  var allowsRecording = true
+  var allowsRecording = false
   weak var owningRegistry: AudioComponentRegistry?
 
   private var isPrepared: Bool {
@@ -65,15 +65,15 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
   }
 
-  func prepare(options: RecordingOptions?) throws {
+  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
     if currentState == .recording {
       ref.stop()
     }
     resetDurationTracking()
-
+    let session = AVAudioSession.sharedInstance()
     do {
-      try recordingSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
-      try recordingSession.setActive(true)
+      try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
+      try session.setActive(true)
     } catch {
       currentState = .error
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
@@ -178,10 +178,10 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   private var recordingDirectory: URL? {
-    guard let cachesDir = appContext?.fileSystem?.cachesDirectory, let directory = URL(string: cachesDir) else {
+    guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
       return nil
     }
-    return directory
+    return URL(fileURLWithPath: cachesDir)
   }
 
   override func sharedObjectWillRelease() {
@@ -193,10 +193,5 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
     ref.delegate = nil
     recordingDelegate = nil
-
-    do {
-      try recordingSession.setActive(false, options: [.notifyOthersOnDeactivation])
-    } catch {
-    }
   }
 }
