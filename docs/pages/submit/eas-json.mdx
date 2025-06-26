@@ -38,34 +38,6 @@ The `production` profile shown below is required to run Android and iOS submissi
 
 Learn more about the values you can set with the [Android specific options](/eas/json/#android-specific-options) and the [iOS specific options](/eas/json/#ios-specific-options). You can also learn how to submit to the [Apple App Store](/submit/ios) and the [Google Play Store](/submit/android).
 
-## TestFlight internal groups (`groups`)
-
-You can use the `groups` property in the iOS submit profile to specify which [TestFlight internal groups](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers) the build should be added to after submission. This is useful for distributing your app to specific testers within your team.
-
-The value should be an array of group names (as strings) that match the internal groups configured in App Store Connect.
-
-**Example:**
-
-```json eas.json
-{
-  "submit": {
-    "production": {
-      "ios": {
-        "ascAppId": "your-app-store-connect-app-id",
-        "groups": ["QA Team", "Product Managers"]
-      }
-    }
-  }
-}
-```
-
-> **Note:** If you do not specify `groups`, the build will not be automatically added to any internal TestFlight groups. You can still add it manually in App Store Connect.
-
-> **Additional details:**
->
-> - The submitted build will be automatically added to internal testers' groups that have the App Store Connect setting to receive new builds automatically enabled.
-> - Only internal group names are supported right now; external groups are not supported.
-
 ## Multiple profiles
 
 The JSON object under `submit` can contain multiple submit profiles. Each profile under `submit` can have an arbitrary name as shown in the example below:
