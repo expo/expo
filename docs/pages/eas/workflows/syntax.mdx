@@ -618,7 +618,7 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional, default: production
-      groups: string[] # (iOS only) optional, array of TestFlight internal group names to add the build to
+      groups: string[] # optional
 ```
 
 This job outputs the following properties:
@@ -631,7 +631,7 @@ This job outputs the following properties:
 }
 ```
 
-> **Note:** The `groups` parameter is only used for iOS submissions. It allows you to specify which [TestFlight internal groups](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers) the build should be added to after submission. The group names must match those configured in App Store Connect. If omitted, the build will not be automatically added to any internal groups.
+> **Note:** The `groups` parameter is only used for iOS submissions. It allows you to specify which [TestFlight internal groups](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers) the build should be added to after submission. On top of the groups you provide as `groups` parameter, the build will be automatically added to the groups that have been created with "Enable automatic distribution" App Store Connect setting.
 
 #### `update`
 
