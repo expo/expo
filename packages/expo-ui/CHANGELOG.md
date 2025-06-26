@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Make `DateTimePicker` label hidden if empty.
 - Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))
 
 ## 0.1.1-alpha.9 - 2025-06-08
