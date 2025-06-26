@@ -37,6 +37,28 @@ Add plugin to `app.json`. For example:
 }
 ```
 
+## iOS Build Properties
+
+### Experimental Features
+
+#### `experimental.usePrebuiltReactNativeDependencies` (boolean, iOS only, experimental)
+
+If set to `true`, this enables experimental support for prebuilt React Native iOS dependencies (ReactNativeDependencies.xcframework) by setting `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile. This can speed up iOS builds and reduce dependency-related build issues. See the [React Native 0.80 release blog post](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more details.
+
+**Example:**
+
+```json
+{
+  "ios": {
+    "experimental": {
+      "usePrebuiltReactNativeDependencies": true
+    }
+  }
+}
+```
+
+> **Warning:** This feature is experimental and may change or be removed in future releases.
+
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide][https://github.com/expo/expo#contributing].

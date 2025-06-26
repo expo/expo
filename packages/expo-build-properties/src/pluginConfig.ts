@@ -338,6 +338,19 @@ export interface PluginConfigTypeIos {
    * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
    */
   privacyManifestAggregationEnabled?: boolean;
+
+  /**
+   * Experimental features for iOS build properties.
+   * @experimental
+   */
+  experimental?: {
+    /**
+     * Enable experimental support for prebuilt React Native iOS dependencies (ReactNativeDependencies.xcframework).
+     * This feature is only available from React Native 0.80.
+     * @see [RN documentation on prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt)
+     */
+    usePrebuiltReactNativeDependencies?: boolean;
+  };
 }
 
 /**
@@ -680,6 +693,13 @@ const schema: JSONSchemaType<PluginConfigType> = {
               tag: { type: 'string', nullable: true },
               commit: { type: 'string', nullable: true },
             },
+          },
+          nullable: true,
+        },
+        experimental: {
+          type: 'object',
+          properties: {
+            usePrebuiltReactNativeDependencies: { type: 'boolean', nullable: true },
           },
           nullable: true,
         },

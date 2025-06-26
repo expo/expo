@@ -213,4 +213,19 @@ describe(withBuildProperties, () => {
       'apple.privacyManifestAggregationEnabled': 'true',
     });
   });
+
+  it('generates the ios.experimental.usePrebuiltReactNativeDependencies property', async () => {
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { experimental: { usePrebuiltReactNativeDependencies: true } } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'ios.experimental.usePrebuiltReactNativeDependencies': 'true',
+    });
+  });
 });
