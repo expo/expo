@@ -20,7 +20,6 @@ class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
   @Published var devServers: [DevServer] = []
-  @Published var isDiscoveringServers = false
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingError = false
   @Published var shakeDevice = true {
@@ -98,9 +97,7 @@ class DevLauncherViewModel: ObservableObject {
     self.recentlyOpenedApps = []
   }
 
-  private func discoverDevServers() {
-    isDiscoveringServers = true
-
+  func discoverDevServers() {
     Task {
       var discoveredServers: [DevServer] = []
 
@@ -125,7 +122,6 @@ class DevLauncherViewModel: ObservableObject {
 
       await MainActor.run {
         self.devServers = discoveredServers.sorted { $0.url < $1.url }
-        self.isDiscoveringServers = false
       }
     }
   }
@@ -154,10 +150,6 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     return nil
-  }
-
-  func refreshDevServers() {
-    discoverDevServers()
   }
 
   func showError(_ error: EXDevLauncherAppError) {

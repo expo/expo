@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import Combine
 
 private func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -21,13 +22,14 @@ struct DevServersView: View {
   @Binding var showingInfoDialog: Bool
   @State private var showingURLInput = false
   @State private var urlText = ""
+  @State private var cancellables = Set<AnyCancellable>()
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       header
 
       LazyVStack(alignment: .leading, spacing: 0) {
-        if viewModel.devServers.isEmpty && !viewModel.isDiscoveringServers {
+        if viewModel.devServers.isEmpty {
           Text("No development servers found")
             .foregroundColor(.primary)
             .multilineTextAlignment(.leading)
@@ -42,16 +44,16 @@ struct DevServersView: View {
           }
         }
 
-        FetchDevServers {
-          viewModel.refreshDevServers()
-        }
-
-        Divider()
-
         enterUrl
       }
       .background(Color(.systemBackground))
       .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+    .onAppear {
+      startServerDiscovery()
+    }
+    .onDisappear {
+      cancellables.removeAll()
     }
   }
 
@@ -100,17 +102,14 @@ struct DevServersView: View {
 
       Text("Development servers")
         .font(.headline)
+
       Spacer()
-      if viewModel.isDiscoveringServers {
-        ProgressView()
-          .scaleEffect(0.8)
-      } else {
-        Button {
-          showingInfoDialog = true
-        } label: {
-          Image(systemName: "info.circle")
-            .font(.title3)
-        }
+
+      Button {
+        showingInfoDialog = true
+      } label: {
+        Image(systemName: "info.circle")
+          .font(.title3)
       }
     }
   }
@@ -138,6 +137,16 @@ struct DevServersView: View {
     }
     .disabled(urlText.isEmpty)
     .buttonStyle(PlainButtonStyle())
+  }
+
+  private func startServerDiscovery() {
+    Timer.publish(every: 2.0, on: .main, in: .common)
+      .autoconnect()
+      .receive(on: DispatchQueue.global(qos: .background))
+      .sink { [weak viewModel] _ in
+        viewModel?.discoverDevServers()
+      }
+      .store(in: &cancellables)
   }
 }
 
