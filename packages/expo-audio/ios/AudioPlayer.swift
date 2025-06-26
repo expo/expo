@@ -106,6 +106,18 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
+  
+  func seekTo(seconds: Double) async {
+    await ref.currentItem?.seek(
+      to: CMTime(
+        seconds: seconds,
+        preferredTimescale: CMTimeScale(NSEC_PER_SEC)
+      )
+    )
+    updateStatus(with: [
+      "currentTime": currentTime
+    ])
+  }
 
   private func setupPublisher() {
     ref.publisher(for: \.currentItem?.status)
