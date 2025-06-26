@@ -2,7 +2,12 @@
 
 import path from 'path';
 
-import { initAsync, repoRoot, setupUpdatesDevClientE2EAppAsync } from './project';
+import {
+  initAsync,
+  repoRoot,
+  setupUpdatesDevClientE2EAppAsync,
+  transformAppJsonForE2EWithDevClient,
+} from './project';
 
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
@@ -30,9 +35,10 @@ const runtimeVersion = '1.0.0';
     runtimeVersion,
     localCliBin,
     configureE2E: true,
-    shouldGenerateTestUpdateBundles: false,
-    shouldConfigureCodeSigning: false,
+    shouldGenerateTestUpdateBundles: true,
+    shouldConfigureCodeSigning: true,
     includeDevClient: true,
+    transformAppJson: transformAppJsonForE2EWithDevClient,
   });
 
   await setupUpdatesDevClientE2EAppAsync(projectRoot, { localCliBin, repoRoot });

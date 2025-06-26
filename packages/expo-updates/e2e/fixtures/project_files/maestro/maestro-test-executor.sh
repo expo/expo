@@ -51,6 +51,7 @@ function beforeAll() {
   startUpdatesServerIfNeeded
   if [[ "$MAESTRO_PLATFORM" == "android" ]]; then
     adb reverse tcp:$MAESTRO_UPDATES_SERVER_PORT tcp:$MAESTRO_UPDATES_SERVER_PORT
+    adb reverse tcp:8081 tcp:8081
   fi
 }
 
