@@ -11,6 +11,8 @@ export EXPO_REPO_ROOT=/Users/me/myCode/expo
 export WORKING_DIR_ROOT=/Users/me/myCode/e2eworking
 # Other environment variables needed for the test setup
 export TEST_PROJECT_ROOT=$WORKING_DIR_ROOT/updates-e2e
+export UPDATES_HOST=localhost
+export UPDATES_PORT=4747
 export EXPO_PUBLIC_UPDATES_SERVER_PORT=4747
 
 # Remove and recreate the working directory before executing the setup
