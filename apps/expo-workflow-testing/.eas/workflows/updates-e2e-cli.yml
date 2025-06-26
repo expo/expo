@@ -14,6 +14,11 @@ on:
   schedule:
     - cron: '0 18 * * SUN' # 18:00 UTC every Sunday
 
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
 jobs:
   cli:
     runs_on: linux-medium

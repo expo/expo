@@ -1,0 +1,67 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# error recovery tests
+- evalScript:
+    script:  ${output.api.serveManifest('no-update-available', MAESTRO_PLATFORM)}
+    label: Setup updates server to report no update available
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- evalScript:
+    script: ${output.api.delay(10000)}
+    label: Delay for 10 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- assertTrue:
+    condition:  ${output.headers1 = output.api.lastRequestHeaders()}
+    label: Save the headers from the last request
+- assertTrue:
+    condition: ${output.headers1['expo-recent-failed-update-ids'] == undefined}
+    label: Assert there are no recent failed update ids in the headers
+- assertTrue:
+    condition: ${output.headers1['expo-current-update-id'] == output.headers1['expo-embedded-update-id']}
+    label: Assert the current update id is the embedded update id
+- assertTrue:
+    condition: ${output.headers1['expo-embedded-update-id'].length > 0}
+    label: Assert the embedded update id is defined
+- stopApp
+- evalScript:
+    script:  ${output.failedUpdateId = output.api.serveManifest('test-update-crashing', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve the crashing update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- evalScript:
+    script: ${output.api.delay(10000)}
+    label: Delay for 10 seconds
+- assertTrue:
+    condition:  ${output.headers2 = output.api.lastRequestHeaders()}
+    label: Save the headers from the last request
+- assertTrue:
+    condition: ${output.headers2['expo-recent-failed-update-ids'] == undefined}
+    label: Assert there are no recent failed update ids in the headers
+- assertTrue:
+    condition: ${output.headers2['expo-current-update-id'] == output.headers2['expo-embedded-update-id']}
+    label: Assert the current update id is the embedded update id
+- stopApp
+- launchApp
+- evalScript:
+    script: ${output.api.delay(10000)}
+    label: Delay for 10 seconds
+- assertTrue:
+    condition:  ${output.headers3 = output.api.lastRequestHeaders()}
+    label: Save the headers from the last request
+- assertTrue:
+    condition: ${output.headers3['expo-recent-failed-update-ids'].includes(output.failedUpdateId)}
+    label: Assert the recent failed update ids contains the failed update id
+- assertTrue:
+    condition: ${output.headers3['expo-current-update-id'] == output.headers3['expo-embedded-update-id']}
+    label: Assert the current update id is the embedded update id
+- stopApp

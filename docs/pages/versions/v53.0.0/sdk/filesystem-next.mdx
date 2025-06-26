@@ -42,7 +42,7 @@ try {
 Using `downloadFileAsync`:
 
 ```ts example.ts
-import { File, Paths } from 'expo-file-system/next';
+import { Directory, File, Paths } from 'expo-file-system/next';
 
 const url = 'https://pdfobject.com/pdf/sample.pdf';
 const destination = new Directory(Paths.cache, 'pdfs');
@@ -70,7 +70,7 @@ src.write(await response.bytes());
 
 ### Uploading files using `expo/fetch`
 
-You can upload files as blobs directly with fetch built into the Expo package:
+You can upload files as blobs directly with `fetch` built into the Expo package:
 
 ```ts example.ts
 import { fetch } from 'expo/fetch';
@@ -107,7 +107,7 @@ const response = await fetch('https://example.com', {
 ### Moving and copying files
 
 ```ts example.ts
-import { File, Paths } from 'expo-file-system/next';
+import { Directory, File, Paths } from 'expo-file-system/next';
 
 try {
   const file = new File(Paths.document, 'example.txt');

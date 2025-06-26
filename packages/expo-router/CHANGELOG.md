@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Fork StackRouter getStateFromAction to fix freezing screens ([#37086](https://github.com/expo/expo/pull/37086) by [@marklawlor](https://github.com/marklawlor))

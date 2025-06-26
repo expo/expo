@@ -59,7 +59,7 @@ const renderComponent = (
   { name, comment, type, extendedTypes, children, signatures }: GeneratedData,
   sdkVersion: string,
   componentsProps?: PropsDefinitionData[]
-): JSX.Element => {
+) => {
   const resolvedType = getComponentType({ signatures });
   const resolvedTypeParameters = getComponentTypeParameters({ type, extendedTypes, signatures });
   const resolvedName = getComponentName(name, children);

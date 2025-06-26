@@ -14,10 +14,20 @@ export MAESTRO_CONFIGURATION=$3
 export MAESTRO_UPDATES_SERVER_PORT=$EXPO_PUBLIC_UPDATES_SERVER_PORT
 
 function killUpdatesServerIfNeeded() {
-  UPDATES_SERVER_PID=$(lsof -t -i:$MAESTRO_UPDATES_SERVER_PORT)
+  UPDATES_SERVER_PID=$(lsof -t -i:$MAESTRO_UPDATES_SERVER_PORT || true)
   if [[ -n "$UPDATES_SERVER_PID" ]]; then
     echo "Killing updates server with PID $UPDATES_SERVER_PID"
     kill -9 $UPDATES_SERVER_PID
+  fi
+}
+
+function startUpdatesServerIfNeeded() {
+  UPDATES_SERVER_PID=$(lsof -t -i:$MAESTRO_UPDATES_SERVER_PORT || true)
+  if [[ -n "$UPDATES_SERVER_PID" ]]; then
+    echo "Updates server already running with PID $UPDATES_SERVER_PID"
+  else
+    echo "Starting updates server"
+    npx ts-node ./maestro/updates-server/start.ts >/dev/null 2>&1 &
   fi
 }
 
@@ -38,7 +48,7 @@ function beforeAll() {
     echo "MAESTRO_UPDATES_SERVER_PORT is not set"
     exit 1
   fi
-  npx ts-node ./maestro/updates-server/start.ts >/dev/null 2>&1 &
+  startUpdatesServerIfNeeded
   if [[ "$MAESTRO_PLATFORM" == "android" ]]; then
     adb reverse tcp:$MAESTRO_UPDATES_SERVER_PORT tcp:$MAESTRO_UPDATES_SERVER_PORT
   fi

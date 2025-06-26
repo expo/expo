@@ -27,6 +27,20 @@ export class Paths extends PathUtilities {
     }
     return result;
   }
+
+  /**
+   * A property that represents the total space on device's internal storage, represented in bytes.
+   */
+  static get totalDiskSpace() {
+    return ExpoFileSystem.totalDiskSpace;
+  }
+
+  /**
+   * A property that represents the available space on device's internal storage, represented in bytes.
+   */
+  static get availableDiskSpace() {
+    return ExpoFileSystem.availableDiskSpace;
+  }
 }
 
 /**
