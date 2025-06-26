@@ -53,6 +53,7 @@ const util_1 = require("metro/src/Bundler/util");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
+const filePath_1 = require("../utils/filePath");
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template_1.default.statement(`module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`);
 const buildStringRef = template_1.default.statement(`module.exports = FILE_PATH;`);
@@ -78,17 +79,16 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
         // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
         isReactServer) {
-        const clientReference = getClientReference();
         return {
             ast: {
                 ...t.file(t.program([
                     buildClientReferenceRequire({
-                        FILE_PATH: JSON.stringify(clientReference),
+                        FILE_PATH: JSON.stringify(`./${(0, filePath_1.toPosixPath)(node_path_1.default.relative(options.projectRoot, absolutePath))}`),
                     }),
                 ])),
                 errors: [],
             },
-            reactClientReference: clientReference,
+            reactClientReference: getClientReference(),
         };
     }
     const data = await (0, getAssets_1.getUniversalAssetData)(absolutePath, filename, assetDataPlugins, options.platform, isDomComponent && isExport

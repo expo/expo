@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix require path of assets with RSC client references ([#37663](https://github.com/expo/expo/pull/37663) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.20.15 — 2025-06-18
