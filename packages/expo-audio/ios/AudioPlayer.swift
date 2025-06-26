@@ -106,7 +106,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
-  
+
   func seekTo(seconds: Double) async {
     await ref.currentItem?.seek(
       to: CMTime(
