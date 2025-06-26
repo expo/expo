@@ -27,6 +27,24 @@ internal final class FileSystemDirectory: FileSystemPath {
     }
   }
 
+  var size: Int64 {
+    get throws {
+      try validatePermission(.read)
+      var size: Int64 = 0
+      guard let subpaths = try? FileManager.default.subpathsOfDirectory(atPath: url.path) else {
+        throw UnableToGetSizeException("attributes do not contain size")
+      }
+      for subpath in subpaths {
+        let strSubpath = url.appendingPathComponent(subpath).path
+        guard let attributes: [FileAttributeKey: Any] = try? FileManager.default.attributesOfItem(atPath: strSubpath), let subpathSize = attributes[.size] as? Int64 else {
+          continue
+        }
+        size += subpathSize
+      }
+      return size
+    }
+  }
+
   override var exists: Bool {
     do {
       try validatePermission(.read)

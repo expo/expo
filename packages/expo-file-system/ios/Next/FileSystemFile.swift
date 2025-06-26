@@ -56,10 +56,10 @@ internal final class FileSystemFile: FileSystemPath {
       try validatePermission(.read)
       let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
       guard let size = attributes[.size] else {
-        throw UnableToGetFileSizeException("attributes do not contain size")
+        throw UnableToGetSizeException("attributes do not contain size")
       }
       guard let size = size as? NSNumber else {
-        throw UnableToGetFileSizeException("size is not a number")
+        throw UnableToGetSizeException("size is not a number")
       }
       return size.int64Value
     }

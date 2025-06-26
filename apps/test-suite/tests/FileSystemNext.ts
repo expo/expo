@@ -3,8 +3,7 @@ import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import * as FS from 'expo-file-system';
-import { File, Directory } from 'expo-file-system/next';
-import { Paths } from 'expo-file-system/src/next';
+import { File, Directory, Paths } from 'expo-file-system/next';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
@@ -526,11 +525,15 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.size).toBe(null);
           expect(file.md5).toBe(null);
         });
+      });
 
-        it('computes md5', async () => {
-          const file = new File(testDirectory, 'file.txt');
+      describe('Computes directory properties', () => {
+        it('computes size', async () => {
+          const dir = new Directory(testDirectory, 'directory');
+          const file = new File(testDirectory, 'directory', 'file.txt');
+          file.create({ intermediates: true });
           file.write('Hello world');
-          expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+          expect(dir.size).toBe(11);
         });
       });
 
@@ -612,6 +615,15 @@ export async function test({ describe, expect, it, ...t }) {
 
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
+  });
+
+  describe('Exposes total filesystem sizes', () => {
+    it('Returns total filesystem space', () => {
+      expect(Paths.totalDiskSpace > 100000).toBe(true);
+    });
+    it('Returns available filesystem space', () => {
+      expect(Paths.availableDiskSpace > 100000).toBe(true);
+    });
   });
 
   describe('Exposes file handles', () => {
