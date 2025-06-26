@@ -7,7 +7,6 @@ import {
   Children,
   HTMLAttributes,
   isValidElement,
-  ReactElement,
   type ComponentType,
   type PropsWithChildren,
   type ReactNode,
@@ -25,7 +24,7 @@ type Props = PropsWithChildren<{
 const extractType = (childrenArray: ReactNode[]) => {
   const firstChild = Children.toArray(childrenArray[0])[0];
 
-  if (isValidElement<PropsWithChildren>(firstChild)) {
+  if (isValidElement(firstChild)) {
     if (typeof firstChild.props.children === 'string') {
       return firstChild.props.children.toLowerCase();
     }
@@ -39,9 +38,7 @@ const extractType = (childrenArray: ReactNode[]) => {
 
 export const InlineHelp = ({ type = 'default', size = 'md', icon, children, className }: Props) => {
   const content = Children.toArray(children).filter(child => isValidElement(child))[0];
-  const contentChildren = Children.toArray(
-    isValidElement<PropsWithChildren>(content) && content?.props?.children
-  );
+  const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
   const extractedType = extractType(contentChildren);
   const finalType = ['warning', 'error', 'info', 'important'].includes(extractedType)
@@ -116,7 +113,7 @@ function getCalloutColor(type: CalloutType) {
   }
 }
 
-function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement>) => ReactElement {
+function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement>) => JSX.Element {
   switch (type) {
     case 'warning':
       return AlertTriangleDuotoneIcon;

@@ -1,12 +1,12 @@
 import GithubSlugger from 'github-slugger';
-import { ReactNode, isValidElement, PropsWithChildren } from 'react';
+import { ReactNode, ReactElement } from 'react';
 
 import versions from '~/public/static/constants/versions.json';
 
 const { BETA_VERSION, LATEST_VERSION } = versions;
 
-function hasChildren(node: ReactNode) {
-  return isValidElement<PropsWithChildren>(node);
+function hasChildren(node: ReactNode): node is ReactElement {
+  return (node as ReactElement)?.props?.children !== undefined;
 }
 
 /**

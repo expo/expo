@@ -19,7 +19,7 @@ type Props = PropsWithChildren<TabsProps> & {
 
 const generateTabLabels = (children: ReactNode) => {
   return Children.map(children, child =>
-    isValidElement<{ label: string }>(child) ? child?.props?.label : (child ?? '[untitled]')
+    isValidElement(child) ? child?.props?.label : (child ?? '[untitled]')
   );
 };
 

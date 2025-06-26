@@ -45,6 +45,7 @@ const nextConfig: NextConfig = {
     'framer-motion',
     'prismjs',
   ],
+  trailingSlash: true,
   devIndicators: {
     position: 'bottom-right',
   },

@@ -5,7 +5,7 @@ export function Trigger({ children, asChild, ...rest }: TooltipPrimitive.Tooltip
   if (process.env.NODE_ENV === 'development' && !asChild) {
     Children.forEach(children, child => {
       if (
-        isValidElement<{ href: string }>(child) &&
+        isValidElement(child) &&
         !child.props?.href &&
         typeof child.type === 'object' &&
         (child.type as NamedExoticComponent)?.displayName === 'Button'

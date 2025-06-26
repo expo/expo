@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
-import { cloneElement, PropsWithChildren, ReactElement } from 'react';
+import { cloneElement, PropsWithChildren } from 'react';
 
 type Props = PropsWithChildren<{
-  component: ReactElement<{ className?: string }>;
+  component: JSX.Element;
   className?: string;
 }>;
 

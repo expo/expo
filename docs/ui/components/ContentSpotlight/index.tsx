@@ -1,7 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
-import { useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import VisibilitySensor from 'react-visibility-sensor';
 
 import { LightboxImage } from './LightboxImage';
 
@@ -33,8 +33,6 @@ export function ContentSpotlight({
 }: ContentSpotlightProps) {
   const [forceShowControls, setForceShowControls] = useState<boolean>();
   const isVideo = !!file;
-  const playerRef = useRef(null);
-  const isInView = useInView(playerRef);
 
   return (
     <figure
@@ -58,27 +56,29 @@ export function ContentSpotlight({
           )}
         />
       ) : isVideo ? (
-        <div
-          className="relative aspect-video overflow-hidden rounded-lg bg-palette-black"
-          ref={playerRef}>
-          <ReactPlayer
-            url={`/static/videos/${file}`}
-            className="react-player"
-            width={PLAYER_WIDTH}
-            height={PLAYER_HEIGHT}
-            muted
-            playing={isInView && !!file}
-            controls={typeof controls === 'undefined' ? forceShowControls : controls}
-            playsinline
-            loop={loop}
-          />
-          <div
-            className={mergeClasses(
-              'pointer-events-none absolute inset-0 transition-opacity duration-500 max-md-gutters:hidden',
-              isInView ? 'opacity-0' : 'opacity-70'
-            )}
-          />
-        </div>
+        <VisibilitySensor partialVisibility>
+          {({ isVisible }: { isVisible: boolean }) => (
+            <div className="relative aspect-video overflow-hidden rounded-lg bg-palette-black">
+              <ReactPlayer
+                url={`/static/videos/${file}`}
+                className="react-player"
+                width={PLAYER_WIDTH}
+                height={PLAYER_HEIGHT}
+                muted
+                playing={isVisible && !!file}
+                controls={typeof controls === 'undefined' ? forceShowControls : controls}
+                playsinline
+                loop={loop}
+              />
+              <div
+                className={mergeClasses(
+                  'pointer-events-none absolute inset-0 transition-opacity duration-500 max-md-gutters:hidden',
+                  isVisible ? 'opacity-0' : 'opacity-70'
+                )}
+              />
+            </div>
+          )}
+        </VisibilitySensor>
       ) : null}
       {caption && (
         <figcaption

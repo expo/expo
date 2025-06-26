@@ -42,7 +42,7 @@ export function getTextFromChildren(children: ReactNode): string {
       if (typeof child === 'string') {
         return child;
       }
-      if (isValidElement<PropsWithChildren>(child)) {
+      if (isValidElement(child)) {
         return getTextFromChildren(child.props.children);
       }
       return '';

@@ -30,8 +30,8 @@ const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 export type TableOfContentsProps = PropsWithChildren<{
   maxNestingDepth?: number;
-  selfRef?: RefObject<ScrollContainer | null>;
-  contentRef?: RefObject<ScrollContainer | null>;
+  selfRef?: RefObject<ScrollContainer>;
+  contentRef?: RefObject<ScrollContainer>;
 }>;
 
 export type TableOfContentsHandles = {
