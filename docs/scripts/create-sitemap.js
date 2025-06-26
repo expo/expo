@@ -29,7 +29,7 @@ export default function createSitemap({ pathMap, domain, output, pathsPriority, 
   // Get a list of URLs from the pathMap that we can use in the sitemap
   const urls = Object.keys(pathMap)
     .filter(url => !IGNORED_PAGES.has(url) && !pathsHidden.some(hidden => url.startsWith(hidden)))
-    .map(pathWithTrailingSlash)
+    .map(pathWithoutTrailingSlash)
     .sort((a, b) => pathSortedByPriority(a, b, pathsPriority));
 
   const target = fs.createWriteStream(output);
@@ -50,8 +50,9 @@ export default function createSitemap({ pathMap, domain, output, pathsPriority, 
   return urls;
 }
 
-function pathWithTrailingSlash(url) {
-  return !path.extname(url) && !url.endsWith('/') ? `${url}/` : url;
+function pathWithoutTrailingSlash(url) {
+  // Remove trailing slash except for the root path
+  return url === '/' ? url : url.replace(/\/$/, '');
 }
 
 function pathWithStartingSlash(url) {
