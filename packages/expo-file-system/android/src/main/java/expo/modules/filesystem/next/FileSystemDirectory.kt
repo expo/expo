@@ -20,6 +20,12 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     return file.isDirectory
   }
 
+  val size: Long get() {
+    validatePermission(Permission.READ)
+    validateType()
+    return file.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
+  }
+
   fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
