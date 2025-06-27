@@ -4,7 +4,6 @@ import ExpoModulesCore
 
 struct InfoOptions: Record {
   @Field var md5: Bool = false
-  @Field var size: Bool = false
 }
 
 struct ReadingOptions: Record {

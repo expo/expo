@@ -1,3 +1,4 @@
+import { InfoOptions } from '../FileSystem.types';
 export type CreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -122,6 +123,10 @@ export declare class File {
      */
     delete(): void;
     /**
+     *  Retrieves an object containing properties of a file
+     */
+    info(options?: InfoOptions): FileInfo;
+    /**
      * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
      * Also, `false` if the application does not have read access to the file.
      */
@@ -165,6 +170,14 @@ export declare class File {
      */
     md5: string | null;
     /**
+     * A last modification time of the file expressed in seconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     */
+    modificationTime: number | null;
+    /**
+     * A creation time of the file expressed in seconds since epoch. Returns a Null if the file does not exist, cannot be read or the Android version is earlier than API 26.
+     */
+    creationTime: number | null;
+    /**
      * A mime type of the file. Null if the file does not exist, or it cannot be read.
      */
     type: string | null;
@@ -176,4 +189,46 @@ export declare class FileHandle {
     offset: number | null;
     size: number | null;
 }
+export type FileInfo = 
+/**
+ * Object returned when file exist.
+ */
+{
+    /**
+     * Signifies whether the requested file exists.
+     */
+    exists: true;
+    /**
+     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     */
+    uri: string;
+    /**
+     * The size of the file in bytes.
+     */
+    size: number;
+    /**
+     * Boolean set to `true` if this is a directory and `false` if it is a file.
+     */
+    isDirectory: boolean;
+    /**
+     * The last modification time of the file expressed in seconds since epoch.
+     */
+    modificationTime: number;
+    /**
+     * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
+     */
+    creationTime?: number;
+    /**
+     * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+     */
+    md5?: string;
+}
+/**
+ * Object returned when file do not exist.
+ */
+ | {
+    exists: false;
+    uri: string;
+    isDirectory: false;
+};
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

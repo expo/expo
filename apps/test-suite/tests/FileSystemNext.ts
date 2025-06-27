@@ -515,6 +515,17 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.size).toBe(11);
         });
 
+        it('creationTime is earlier than modificationTime or equal', async () => {
+          const file = new File(
+            testDirectory,
+            'creationTime_is_earlier_than_modificationTime_or_equal.txt'
+          );
+          file.write('Hello world');
+          expect(file.creationTime).not.toBeNull();
+          expect(file.modificationTime).not.toBeNull();
+          expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
+        });
+
         it('computes md5', async () => {
           const file = new File(testDirectory, 'file.txt');
           file.write('Hello world');
@@ -610,6 +621,49 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
+      describe('When getting file info', () => {
+        it('executes correctly', () => {
+          const url = `${testDirectory}execute_correctly.txt`;
+          const src = new File(url);
+          src.create();
+          src.write('Hello World');
+          const result = src.info({ md5: true });
+          expect(result.exists).toBe(true);
+          if (result.exists) {
+            const { uri, size, isDirectory, modificationTime, creationTime, md5 } = result;
+            expect(isDirectory).toBe(false);
+            expect(modificationTime).not.toBeNull();
+            expect(creationTime).not.toBeNull();
+            expect(md5).not.toBeNull();
+            expect(uri).toBe(url);
+            expect(size).toBe(11);
+          }
+        });
+        it('executes correctly if options are undefined', () => {
+          const url = `${testDirectory}executes_correctly_if_options_are_undefined.txt`;
+          const src = new File(url);
+          src.write('Hello World');
+          const result = src.info();
+          expect(result.exists).toBe(true);
+          if (result.exists) {
+            expect(result.md5).toBeNull();
+          }
+        });
+        it('throws an error if file not exists', async () => {
+          const url = `${testDirectory}throws_an_error_if_file_not_exists.txt`;
+          const src = new File(url);
+          src.write('Hello world');
+          src.delete();
+
+          expect(src.exists).toBe(false);
+          try {
+            src.info();
+            fail('Promise should have rejected');
+          } catch (err) {
+            expect(err).not.toBeNull();
+          }
+        });
+      });
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
   });

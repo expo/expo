@@ -89,6 +89,10 @@ public final class FileSystemNextModule: Module {
         return try FileSystemFileHandle(file: file)
       }
 
+      Function("info") { (file: FileSystemFile, options: InfoOptions?) in
+        return try file.info(options: options ?? InfoOptions())
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -104,6 +108,14 @@ public final class FileSystemNextModule: Module {
 
       Property("md5") { file in
         try? file.md5
+      }
+
+      Property("modificationTime") { file in
+        try? file.modificationTime
+      }
+
+      Property("creationTime") { file in
+        try? file.creationTime
       }
 
       Property("type") { file in

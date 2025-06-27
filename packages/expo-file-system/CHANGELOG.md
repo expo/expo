@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add info method, modificationTime and creationTime properties to FileSystem/Next ([#37505](https://github.com/expo/expo/pull/37505) by [@Wenszel](https://github.com/Wenszel))
 - Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
 
 ### 🐛 Bug fixes

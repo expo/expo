@@ -3,6 +3,7 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
+import expo.modules.filesystem.InfoOptions
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
@@ -112,8 +113,20 @@ class FileSystemNextModule : Module() {
         file.bytes()
       }
 
+      Function("info") { file: FileSystemFile, options: InfoOptions? ->
+        file.info(options)
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
+      }
+
+      Property("modificationTime") { file: FileSystemFile ->
+        file.modificationTime
+      }
+
+      Property("creationTime") { file: FileSystemFile ->
+        file.creationTime
       }
 
       Function("copy") { file: FileSystemFile, destination: FileSystemPath ->

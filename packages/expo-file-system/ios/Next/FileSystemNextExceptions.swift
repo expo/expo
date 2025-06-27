@@ -25,9 +25,9 @@ internal final class InvalidTypeDirectoryException: Exception {
   }
 }
 
-internal final class UnableToGetFileSizeException: GenericException<String> {
+internal final class UnableToGetFileAttribute: GenericException<String> {
   override var reason: String {
-    "Unable to get file size: \(param)"
+    "Unable to get file attribute: \(param)"
   }
 }
 
@@ -46,6 +46,12 @@ internal final class UnableToCreateException: GenericException<String> {
 internal final class UnableToReadHandleException: GenericException<String> {
   override var reason: String {
     "Unable to read from a file handle: \(param)"
+  }
+}
+
+internal final class UnableToGetAsyncInfoException: GenericException<String> {
+  override var reason: String {
+    "Unable to getAsyncInfo from a file: \(param)"
   }
 }
 
