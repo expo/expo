@@ -56,7 +56,7 @@
   "expo-local-authentication": "~16.0.4",
   "expo-localization": "~16.1.5",
   "expo-location": "~18.1.5",
-  "expo-mail-composer": "~14.1.4",
+  "expo-mail-composer": "~14.1.5",
   "expo-manifests": "~0.16.5",
   "expo-maps": "~0.11.0",
   "expo-media-library": "~17.1.7",
