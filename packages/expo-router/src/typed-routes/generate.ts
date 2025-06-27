@@ -86,7 +86,7 @@ export function getTypedRoutesDeclarationFile(
       contextKeyToType(
         dynamicRouteTemplate
           .replaceAll(CATCH_ALL, '${string}')
-          .replaceAll(SLUG, '${Router.SingleRoutePart<T>}'),
+          .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + urlParams,
         partialTypedGroups
       )
     );
