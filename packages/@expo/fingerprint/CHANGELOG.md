@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added support for ignoring the patches directory
+
 ### 💡 Others
 
 ## 0.13.1 - 2025-06-18
