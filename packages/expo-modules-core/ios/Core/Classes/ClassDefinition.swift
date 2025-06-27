@@ -68,14 +68,14 @@ public final class ClassDefinition: ObjectDefinition {
       } catch let error as Exception {
         let exception = NSException(
           name: NSExceptionName("ExpoClassConstructorException"),
-          reason: "Call to function '\(self.name).constructor' has been rejected.\n→ Caused by: \(error.description)",
+          reason: error.description,
           userInfo: ["code": error.code]
         )
         exception.raise()
       } catch {
         let exception = NSException(
           name: NSExceptionName("ExpoClassConstructorException"),
-          reason: "Call to function '\(self.name).constructor' has been rejected.\n→ Caused by: \(error.localizedDescription)",
+          reason: error.localizedDescription,
           userInfo: nil
         )
         exception.raise()
