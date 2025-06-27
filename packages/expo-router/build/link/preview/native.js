@@ -2,7 +2,6 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
-exports.NativeLinkPreviewTrigger = NativeLinkPreviewTrigger;
 exports.NativeLinkPreview = NativeLinkPreview;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
 const expo_1 = require("expo");
@@ -15,15 +14,6 @@ function NativeLinkPreviewAction(props) {
         return null;
     }
     return <LinkPreviewNativeActionView {...props}/>;
-}
-const NativeLinkPreviewTriggerView = react_native_1.Platform.OS === 'ios'
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewTrigger')
-    : null;
-function NativeLinkPreviewTrigger(props) {
-    if (!NativeLinkPreviewTriggerView) {
-        return null;
-    }
-    return <NativeLinkPreviewTriggerView {...props}/>;
 }
 const NativeLinkPreviewView = react_native_1.Platform.OS === 'ios'
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')

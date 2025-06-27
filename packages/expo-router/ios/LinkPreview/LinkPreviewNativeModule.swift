@@ -47,7 +47,5 @@ public class LinkPreviewNativeModule: Module {
         view.icon = icon
       }
     }
-
-    View(NativeLinkPreviewTrigger.self) {}
   }
 }

@@ -40,6 +40,7 @@ exports.LinkMenuAction = LinkMenuAction;
 exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
 const react_1 = __importStar(require("react"));
+const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const HrefPreview_1 = require("./preview/HrefPreview");
@@ -51,10 +52,25 @@ const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
 const Slot_1 = require("../ui/Slot");
 const InternalLinkPreviewContext = (0, react_1.createContext)(undefined);
 function LinkWithPreview({ children, ...rest }) {
+    (0, react_1.useEffect)(() => {
+        if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
+            throw new Error('External links previews are not supported');
+        }
+        if (rest.replace) {
+            throw new Error('Using replace links with preview is not supported');
+        }
+    }, [rest.href, rest.replace]);
+    return (<BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} asChild>
+      <InnerLinkWithPreview href={rest.href} asChild={rest.asChild}>
+        {children}
+      </InnerLinkWithPreview>
+    </BaseExpoRouterLink_1.BaseExpoRouterLink>);
+}
+function InnerLinkWithPreview({ children, asChild, href, style, onPress, onClick, }) {
     const router = (0, hooks_1.useRouter)();
     const { setIsPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
-    const hrefWithoutQuery = String(rest.href).split('?')[0];
+    const hrefWithoutQuery = String(href).split('?')[0];
     const prevHrefWithoutQuery = (0, react_1.useRef)(hrefWithoutQuery);
     (0, react_1.useEffect)(() => {
         if (isCurrentPreviewOpen) {
@@ -67,62 +83,69 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }, [hrefWithoutQuery]);
     const [nextScreenId, updateNextScreenId] = (0, useNextScreenId_1.useNextScreenId)();
-    (0, react_1.useEffect)(() => {
-        if ((0, url_1.shouldLinkExternally)(String(rest.href))) {
-            if (process.env.NODE_ENV !== 'production') {
-                throw new Error('External links previews are not supported');
-            }
-            else {
-                console.warn('External links previews are not supported');
-            }
-        }
-        if (rest.replace) {
-            if (process.env.NODE_ENV !== 'production') {
-                throw new Error('Using replace links with preview is not supported');
-            }
-            else {
-                console.warn('Using replace links with preview is not supported');
-            }
-        }
-    }, [rest.href, rest.replace]);
     const triggerElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkTrigger), [children]);
     const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, exports.LinkMenu), [children]);
-    const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkPreview), [children]);
-    if (previewElement && !triggerElement) {
-        if (process.env.NODE_ENV !== 'production') {
-            throw new Error('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
-        }
-        else {
-            console.warn('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
-        }
-    }
-    const trigger = react_1.default.useMemo(() => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>, [triggerElement, children]);
     const actionsHandlers = react_1.default.useMemo(() => menuElement
         ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
         : {}, [menuElement]);
-    const preview = react_1.default.useMemo(() => previewElement ?? <LinkPreview />, [previewElement, rest.href]);
-    if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
-        return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
+    const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkPreview), [children]);
+    if (!previewElement) {
+        throw new Error('No <Link.Preview> found. This is likely a bug in expo-router.');
     }
-    return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} onActionSelected={({ nativeEvent: { id } }) => {
+    if (!triggerElement) {
+        throw new Error('When you use <Link.Preview>, you must use <Link.Trigger> to specify the trigger element.');
+    }
+    const componentStyle = (0, react_1.useMemo)(
+    // `style` will be passed through the slot in BaseExpoRouterLink, because asChild is used
+    () => react_native_1.StyleSheet.flatten([style, triggerElement.props.style]), [style, triggerElement.props.style]);
+    const triggerComponentStyle = (0, react_1.useMemo)(() => {
+        // If asChild is used, then the style should be applied directly to the child element
+        // Component styles will be applied to native element
+        if (asChild) {
+            return {};
+        }
+        // When flex is set on Link.Trigger or Link then the trigger should fill the available space
+        if (componentStyle.flex !== undefined) {
+            return react_native_1.StyleSheet.flatten([componentStyle, { flex: 1 }]);
+        }
+        return componentStyle;
+    }, [componentStyle]);
+    const nativeLinkPreviewStyle = (0, react_1.useMemo)(() => {
+        // Is asChild is used, then the style should be applied to the native element
+        if (asChild) {
+            return componentStyle;
+        }
+        // When flex is set on Link.Trigger or Link then the native element should have the flex,
+        // because it is the outer container
+        if (componentStyle && componentStyle.flex !== undefined) {
+            return {
+                flex: componentStyle.flex,
+            };
+        }
+        // Otherwise, styles will be applied to the Text element
+        return {};
+    }, [asChild, componentStyle]);
+    // Copying the behavior of BaseExpoRouterLink
+    const Component = asChild ? Slot_1.Slot : react_native_1.Text;
+    return (<native_1.NativeLinkPreview style={nativeLinkPreviewStyle} nextScreenId={nextScreenId} onActionSelected={({ nativeEvent: { id } }) => {
             actionsHandlers[id]?.();
         }} onWillPreviewOpen={() => {
-            router.prefetch(rest.href);
+            router.prefetch(href);
             setIsPreviewOpen(true);
             setIsCurrenPreviewOpen(true);
         }} onDidPreviewOpen={() => {
-            updateNextScreenId(rest.href);
+            updateNextScreenId(href);
         }} onPreviewDidClose={() => {
             setIsPreviewOpen(false);
             setIsCurrenPreviewOpen(false);
         }} onPreviewTapped={() => {
-            router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+            router.navigate(href, { __internal__PreviewKey: nextScreenId });
         }}>
-      <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <native_1.NativeLinkPreviewTrigger>
-          <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
-        </native_1.NativeLinkPreviewTrigger>
-        {preview}
+      <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href }}>
+        <Component {...triggerElement.props} 
+    // @ts-expect-error
+    style={triggerComponentStyle ?? undefined} onPress={onPress} onClick={onClick}/>
+        {previewElement}
         {menuElement}
       </InternalLinkPreviewContext>
     </native_1.NativeLinkPreview>);
@@ -173,6 +196,7 @@ function LinkTrigger(props) {
         }
         return props.children;
     }
+    // @ts-expect-error
     return <Slot_1.Slot {...props}/>;
 }
 function getFirstChildOfType(children, type) {
