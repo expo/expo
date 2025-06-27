@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 0.4.7 - 2025-06-26
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed status property bug when track finishes ([#37389](https://github.com/expo/expo/pull/37389) by [@adiktiv](https://github.com/adiktiv))
 - [iOS] Fix inconsistent audio sampling. ([#37154](https://github.com/expo/expo/pull/37154) by [@alanjhughes](https://github.com/alanjhughes))
 - Add automatic interruption handling. ([#37153](https://github.com/expo/expo/pull/37153) by [@alanjhughes](https://github.com/alanjhughes))
@@ -17,7 +25,6 @@
 - [Android] Prevent status updates when the player is paused. ([#37475](https://github.com/expo/expo/pull/37475) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Change component registry to be per module to prevent interference. ([#37534](https://github.com/expo/expo/pull/37534) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix metering issues when recording. ([#37556](https://github.com/expo/expo/pull/37556) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
