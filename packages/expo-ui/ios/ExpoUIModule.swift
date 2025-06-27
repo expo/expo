@@ -22,6 +22,7 @@ public final class ExpoUIModule: Module {
     View(GaugeView.self)
     View(ListView.self)
     View(LabelView.self)
+    View(ShareLinkView.self)
     View(HostView.self)
 
     // Preview components in the "primitives" exports
