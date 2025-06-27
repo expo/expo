@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Prevent duplicate values in LSApplicationQueriesSchemes
+- [ios] Prevent duplicate values in LSApplicationQueriesSchemes ([#37697](https://github.com/expo/expo/pull/37697) by [@huextrat](https://github.com/huextrat))
 
 ### 💡 Others
 
