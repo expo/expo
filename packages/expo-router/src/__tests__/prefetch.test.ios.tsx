@@ -4,8 +4,8 @@ import { Text } from 'react-native';
 import { Link } from '../exports';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
-import { screen, renderRouter, act } from '../testing-library';
 import Tabs from '../layouts/Tabs';
+import { screen, renderRouter, act } from '../testing-library';
 
 it('prefetch a sibling route', () => {
   renderRouter({

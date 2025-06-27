@@ -9,12 +9,12 @@ import { useMemo } from 'react';
 
 import { PreviewRouteContext } from './PreviewRouteContext';
 import { RouteNode } from '../../Route';
+import { INTERNAL_SLOT_NAME } from '../../constants';
 import { store } from '../../global-state/router-store';
 import { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { getPathFromState } from '../linking';
-import { INTERNAL_SLOT_NAME } from '../../constants';
 
 export function HrefPreview({ href }: { href: Href }) {
   const navigation = useNavigation();

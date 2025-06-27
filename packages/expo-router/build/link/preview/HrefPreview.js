@@ -5,11 +5,11 @@ exports.HrefPreview = HrefPreview;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const PreviewRouteContext_1 = require("./PreviewRouteContext");
+const constants_1 = require("../../constants");
 const router_store_1 = require("../../global-state/router-store");
 const useNavigation_1 = require("../../useNavigation");
 const useScreens_1 = require("../../useScreens");
 const linking_1 = require("../linking");
-const constants_1 = require("../../constants");
 function HrefPreview({ href }) {
     const navigation = (0, useNavigation_1.useNavigation)();
     const { routeNode, params, state } = getParamsAndNodeFromHref(href);

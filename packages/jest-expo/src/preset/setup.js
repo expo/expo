@@ -129,6 +129,7 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
 
 // Mock Expo's default async require messaging sockets when running tests
 jest.mock('expo/src/async-require/messageSocket', () => undefined);
+jest.mock('expo/src/async-require/index', () => undefined);
 
 try {
   jest.mock('expo-file-system', () => ({
