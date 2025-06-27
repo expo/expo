@@ -16,16 +16,13 @@ export interface DisclosureGroupProps extends CommonViewModifierProps {
   onStateChange?: (isExpanded: boolean) => void;
 }
 
-
 type StateChangeEvent = ViewEvent<'onStateChange', { isExpanded: boolean }>;
 
-export type NativeDisclosureGroupProps = Omit<DisclosureGroupProps, 'onStateChange'> & StateChangeEvent
+export type NativeDisclosureGroupProps = Omit<DisclosureGroupProps, 'onStateChange'> &
+  StateChangeEvent;
 
-
-const DisclosureGroupNativeView: React.ComponentType<NativeDisclosureGroupProps> = requireNativeView(
-  'ExpoUI',
-  'DisclosureGroupView'
-);
+const DisclosureGroupNativeView: React.ComponentType<NativeDisclosureGroupProps> =
+  requireNativeView('ExpoUI', 'DisclosureGroupView');
 
 export function DisclosureGroup(props: DisclosureGroupProps) {
   const { onStateChange, ...rest } = props;
@@ -34,10 +31,5 @@ export function DisclosureGroup(props: DisclosureGroupProps) {
     onStateChange?.(event.nativeEvent.isExpanded);
   }
 
-  return (
-    <DisclosureGroupNativeView
-      {...rest}
-      onStateChange={handleStateChange}
-    />
-  );
+  return <DisclosureGroupNativeView {...rest} onStateChange={handleStateChange} />;
 }
