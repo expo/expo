@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Prevent duplicate values in LSApplicationQueriesSchemes
+
 ### 💡 Others
 
 ## 14.1.5 - 2025-06-27
