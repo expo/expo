@@ -39,6 +39,7 @@ const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI
 export function Host(props: HostProps) {
   const { matchContents, onLayoutContent, style, ...restProps } = props;
   const [containerStyle, setContainerStyle] = useState<ViewStyle | null>(null);
+
   return (
     <HostNativeView
       style={[style, containerStyle]}

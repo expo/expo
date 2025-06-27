@@ -12,4 +12,5 @@ export * from './Progress';
 export * from './Section';
 export * from './Slider';
 export * from './Switch';
-export * from './TextInput';
+export * from './TextField';
+export * from './SecureField';
