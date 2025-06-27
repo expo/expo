@@ -130,19 +130,19 @@ final class ExceptionsSpec: ExpoSpec {
   }
 }
 
-class TestException: Exception {
+final class TestException: Exception {
   override var reason: String {
     "This is the test exception"
   }
 }
 
-class TestExceptionCause: Exception {
+final class TestExceptionCause: Exception {
   override var reason: String {
     "This is the cause of the test exception"
   }
 }
 
-class TestCodedException: Exception {
+final class TestCodedException: Exception {
   init() {
     super.init(name: "TestException",
                description: "This is a test Exception with a code",
