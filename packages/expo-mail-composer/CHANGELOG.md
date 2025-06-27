@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios] Remove `appcenter` from `LSApplicationQueriesSchemes` as it's now retired
+
 ## 14.1.5 - 2025-06-27
 
 ### 🐛 Bug fixes
