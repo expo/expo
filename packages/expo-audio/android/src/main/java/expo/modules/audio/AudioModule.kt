@@ -226,7 +226,7 @@ class AudioModule : Module() {
         if (hasPlayersToResume) {
           requestAudioFocus()
         }
-        
+
         players.values.forEach { player ->
           if (player.isPaused) {
             player.isPaused = false
@@ -387,10 +387,6 @@ class AudioModule : Module() {
       Function("pause") { player: AudioPlayer ->
         runOnMain {
           player.ref.pause()
-
-          if (shouldReleaseFocus()) {
-            releaseAudioFocus()
-          }
         }
       }
 
@@ -432,10 +428,6 @@ class AudioModule : Module() {
 
       Function("remove") { player: AudioPlayer ->
         players.remove(player.id)
-
-        if (shouldReleaseFocus()) {
-          releaseAudioFocus()
-        }
       }
     }
 
