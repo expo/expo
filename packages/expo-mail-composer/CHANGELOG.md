@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Replace LabeledIntent with Intent in composeAsync ([#37624](https://github.com/expo/expo/pull/37624) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 14.1.4 — 2025-04-30

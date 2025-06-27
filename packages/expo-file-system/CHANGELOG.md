@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add total and available sizes, directory sizes. ([#37594](https://github.com/expo/expo/pull/37594) by [@aleqsio](https://github.com/aleqsio))
 - Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
 
 ### 🐛 Bug fixes

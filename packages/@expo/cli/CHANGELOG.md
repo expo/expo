@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
@@ -15,6 +17,9 @@
 - Allow anonymous sessions even when `projectId` is set ([#36874](https://github.com/expo/expo/pull/36874) by [@kadikraman](https://github.com/kadikraman))
 
 ### 💡 Others
+
+- add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
+- Bumped `playwright` version to 1.53.1. ([#37631](https://github.com/expo/expo/pull/37631) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

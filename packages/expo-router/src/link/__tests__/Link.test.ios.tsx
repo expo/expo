@@ -1,14 +1,56 @@
 import { act, fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Button, Platform, Text, View } from 'react-native';
 
+import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
 import { renderRouter, screen } from '../../testing-library';
+import { useNavigation } from '../../useNavigation';
+import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
+import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
+import type {
+  NativeLinkPreviewActionProps,
+  NativeLinkPreviewContentProps,
+  NativeLinkPreviewTriggerProps,
+  NativeLinkPreviewProps,
+} from '../preview/native';
 
 // Render and observe the props of the Link component.
+
+jest.mock('../preview/native', () => {
+  const { View } = require('react-native');
+  const handlerMap: Record<string, Function | undefined> = {};
+  return {
+    NativeLinkPreview: jest.fn(
+      ({
+        children,
+        onWillPreviewOpen,
+        onPreviewTapped,
+        onDidPreviewOpen,
+        onActionSelected,
+      }: NativeLinkPreviewProps) => {
+        handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen();
+        handlerMap['link-onPreviewTapped'] = onPreviewTapped;
+        handlerMap['link-onDidPreviewOpen'] = onDidPreviewOpen;
+        handlerMap['link-onActionSelected'] = onActionSelected;
+        return <View testID="link-preview-native-view">{children}</View>;
+      }
+    ),
+    NativeLinkPreviewContent: jest.fn(({ children }: NativeLinkPreviewContentProps) => (
+      <View testID="link-preview-native-preview-view" children={children} />
+    )),
+    NativeLinkPreviewTrigger: jest.fn(({ children }: NativeLinkPreviewTriggerProps) => (
+      <View testID="link-preview-native-trigger-view" children={children} />
+    )),
+    NativeLinkPreviewAction: jest.fn(({}: NativeLinkPreviewActionProps) => (
+      <View testID="link-preview-native-action-view" />
+    )),
+    __EVENTS__: handlerMap,
+  };
+});
 
 it('renders a Link', () => {
   const { getByText } = render(<Link href="/foo">Foo</Link>);
@@ -535,6 +577,492 @@ describe('prefetch', () => {
       ],
       stale: false,
       type: 'stack',
+    });
+  });
+});
+
+describe('Preview', () => {
+  it('when Link.Preview is not used, then does not render LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+    });
+    expect(screen.queryByTestId('link-preview-native-view')).toBeNull();
+    expect(screen.queryByTestId('link-preview-native-preview-view')).toBeNull();
+    expect(screen.queryByTestId('link-preview-native-trigger-view')).toBeNull();
+  });
+  it('when Link.Preview is used, renders LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
+    renderRouter({
+      index: () => {
+        return (
+          <Link prefetch href="/test">
+            <Link.Preview />
+            <Link.Trigger />
+          </Link>
+        );
+      },
+      test: () => null,
+    });
+    expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+    expect(screen.getByTestId('link-preview-native-trigger-view')).toBeVisible();
+  });
+  it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
+    expect(() => {
+      render(
+        <LinkPreviewContextProvider>
+          <Link href="/foo">
+            <Link.Preview />
+          </Link>
+        </LinkPreviewContextProvider>
+      );
+    }).toThrow(
+      'When you use Link.Preview, you must use Link.Trigger to specify the trigger element'
+    );
+  });
+  describe('lazy loading', () => {
+    it('when using default preview, it is not visible on initial load', () => {
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Preview />
+              <Link.Trigger />
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+      expect(screen.queryByTestId('test-view')).toBeNull();
+    });
+    it('when using custom preview, it is not visible on initial load', () => {
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Trigger />
+              <Link.Preview>
+                <View testID="preview" />
+              </Link.Preview>
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+      expect(screen.queryByTestId('preview')).toBeNull();
+    });
+    it('when LinkNativeView emits onWillPreviewOpen, it loads the preview', () => {
+      const emitters = require('../preview/native').__EVENTS__;
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Trigger />
+              <Link.Preview>
+                <View testID="preview" />
+              </Link.Preview>
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      act(() => emitters['link-onWillPreviewOpen']());
+      expect(screen.getByTestId('preview')).toBeVisible();
+    });
+    it('when LinkNativeView emits onWillPreviewOpen, it loads the default preview', () => {
+      const emitters = require('../preview/native').__EVENTS__;
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Preview />
+              <Link.Trigger />
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      act(() => emitters['link-onWillPreviewOpen']());
+      expect(screen.getByTestId('test-view')).toBeVisible();
+    });
+  });
+  describe('Link.Menu', () => {
+    it('when Link.Menu items are passed, correct actions are passed to native', () => {
+      const NativeLinkPreviewAction = require('../preview/native').NativeLinkPreviewAction;
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Preview />
+              <Link.Trigger>Trigger</Link.Trigger>
+              <Link.Menu>
+                <Link.MenuAction title="Test Item" onPress={() => {}} />
+                <Text>Text child</Text>
+                <Link.MenuAction title="Second actions" onPress={() => {}} />
+              </Link.Menu>
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+      expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
+        id: 'Test Item-0',
+        title: 'Test Item',
+      });
+      expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
+        id: 'Second actions-1',
+        title: 'Second actions',
+      });
+    });
+    it('when onActionSelected is called, correct press handler is called', () => {
+      const indexIos = require('../preview/native');
+      const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
+      const emitters = indexIos.__EVENTS__;
+      const action1OnPress = jest.fn();
+      const action2OnPress = jest.fn();
+      const emitOnActionSelected = (id: string) =>
+        (emitters['link-onActionSelected'] as NativeLinkPreviewProps['onActionSelected'])({
+          nativeEvent: { id },
+        });
+
+      renderRouter({
+        index: () => {
+          return (
+            <Link prefetch href="/test">
+              <Link.Preview />
+              <Link.Trigger>Trigger</Link.Trigger>
+              <Link.Menu>
+                <Link.MenuAction title="Action 1" onPress={action1OnPress} />
+                <Text>Text child</Text>
+                <Link.MenuAction title="Action 2" onPress={action2OnPress} />
+              </Link.Menu>
+            </Link>
+          );
+        },
+        test: () => <View testID="test-view" />,
+      });
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+      expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
+        id: 'Action 1-0',
+        title: 'Action 1',
+      });
+      expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
+        id: 'Action 2-1',
+        title: 'Action 2',
+      });
+      act(() => emitOnActionSelected('Action 1-0'));
+      expect(action1OnPress).toHaveBeenCalledTimes(1);
+      expect(action2OnPress).not.toHaveBeenCalled();
+      act(() => emitOnActionSelected('Action 2-1'));
+      expect(action1OnPress).toHaveBeenCalledTimes(1);
+      expect(action2OnPress).toHaveBeenCalledTimes(1);
+    });
+    describe('multiple Link.Menus in single Link', () => {
+      it('when there are multiple Link.Menus, only the first one is rendered', () => {
+        const NativeLinkPreviewAction = require('../preview/native').NativeLinkPreviewAction;
+        renderRouter({
+          index: () => {
+            return (
+              <Link prefetch href="/test">
+                <Link.Preview />
+                <Link.Trigger>Trigger</Link.Trigger>
+                <Link.Menu>
+                  <Link.MenuAction title="Menu-1-1" onPress={() => {}} />
+                  <Link.MenuAction title="Menu-1-2" onPress={() => {}} />
+                </Link.Menu>
+                <Link.Menu>
+                  <Link.MenuAction title="Menu-2-1" onPress={() => {}} />
+                  <Link.MenuAction title="Menu-2-2" onPress={() => {}} />
+                </Link.Menu>
+              </Link>
+            );
+          },
+          test: () => <View testID="test-view" />,
+        });
+        expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+        expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
+          id: 'Menu-1-1-0',
+          title: 'Menu-1-1',
+        });
+        expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
+          id: 'Menu-1-2-1',
+          title: 'Menu-1-2',
+        });
+      });
+      it('when onActionSelected is called, correct press handler is called', () => {
+        const indexIos = require('../preview/native');
+        const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
+        const emitters = indexIos.__EVENTS__;
+        const action1OnPress = jest.fn();
+        const action2OnPress = jest.fn();
+        const emitOnActionSelected = (id: string) =>
+          (emitters['link-onActionSelected'] as NativeLinkPreviewProps['onActionSelected'])({
+            nativeEvent: { id },
+          });
+
+        renderRouter({
+          index: () => {
+            return (
+              <Link prefetch href="/test">
+                <Link.Preview />
+                <Link.Trigger>Trigger</Link.Trigger>
+                <Link.Menu>
+                  <Link.MenuAction title="Action 1" onPress={action1OnPress} />
+                  <Link.MenuAction title="Action 2" onPress={action2OnPress} />
+                </Link.Menu>
+                <Link.Menu>
+                  <Link.MenuAction title="Action 3" onPress={action1OnPress} />
+                  <Link.MenuAction title="Action 4" onPress={action2OnPress} />
+                </Link.Menu>
+              </Link>
+            );
+          },
+          test: () => <View testID="test-view" />,
+        });
+        expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+        expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
+          id: 'Action 1-0',
+          title: 'Action 1',
+        });
+        expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
+          id: 'Action 2-1',
+          title: 'Action 2',
+        });
+        act(() => emitOnActionSelected('Action 1-0'));
+        expect(action1OnPress).toHaveBeenCalledTimes(1);
+        expect(action2OnPress).not.toHaveBeenCalled();
+        act(() => emitOnActionSelected('Action 2-1'));
+        expect(action1OnPress).toHaveBeenCalledTimes(1);
+        expect(action2OnPress).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
+  it('correctly passes props to child component with asChild, Preview and trigger', () => {
+    const { getByText, getByTestId } = render(
+      <LinkPreviewContextProvider>
+        <Link asChild href="/foo">
+          <Link.Preview />
+          <Link.Trigger>
+            <View testID="pressable">
+              <Text testID="inner-text">Button</Text>
+            </View>
+          </Link.Trigger>
+        </Link>
+      </LinkPreviewContextProvider>
+    );
+    const node = getByText('Button');
+    expect(node.props).toEqual({
+      children: 'Button',
+      testID: 'inner-text',
+    });
+
+    const pressable = getByTestId('pressable');
+    if (Platform.OS === 'web') {
+      expect(pressable.props).toEqual(
+        expect.objectContaining({
+          children: expect.anything(),
+          href: '/foo',
+          role: 'link',
+          testID: 'pressable',
+          onClick: expect.any(Function),
+        })
+      );
+    } else {
+      expect(pressable.props).toEqual(
+        expect.objectContaining({
+          children: expect.anything(),
+          href: '/foo',
+          role: 'link',
+          testID: 'pressable',
+          onPress: expect.any(Function),
+        })
+      );
+    }
+  });
+  describe('changing href', () => {
+    it('when preview is closed, href can change', () => {
+      renderRouter({
+        index: () => <ComponentWithButtonAndPreview href={(counter) => `/test/${counter}`} />,
+        '/test/[counter]': ComponentWithCounter,
+      });
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      act(() => fireEvent.press(button));
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+    });
+
+    it('when preview is closed, query params in href can change', () => {
+      renderRouter({
+        index: () => (
+          <ComponentWithButtonAndPreview href={(counter) => `/foo?counter=${counter}`} />
+        ),
+        foo: ComponentWithCounter,
+      });
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      act(() => fireEvent.press(button));
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+    });
+
+    it('when preview is open, href cannot change', () => {
+      const emitters = require('../preview/native').__EVENTS__;
+      renderRouter({
+        index: () => <ComponentWithButtonAndPreview href={(counter) => `/test/${counter}`} />,
+        '/test/[counter]': ComponentWithCounter,
+      });
+      act(() => emitters['link-onWillPreviewOpen']());
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toBeVisible();
+      expect(() => act(() => fireEvent.press(button))).toThrow(
+        'Link does not support changing the href prop after the preview has been opened. Please ensure that the href prop is stable and does not change between renders.'
+      );
+    });
+
+    it('when preview is open, query params in href can change', () => {
+      const emitters = require('../preview/native').__EVENTS__;
+      renderRouter({
+        index: () => (
+          <ComponentWithButtonAndPreview href={(counter) => `/foo?counter=${counter}`} />
+        ),
+        foo: ComponentWithCounter,
+      });
+      act(() => emitters['link-onWillPreviewOpen']());
+      const button = screen.getByTestId('change-counter-button');
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toHaveTextContent('Counter: 0');
+      act(() => fireEvent.press(button));
+      expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
+      expect(screen.getByTestId('counter-text')).toHaveTextContent('Counter: 1');
+    });
+
+    const ComponentWithCounter = () => {
+      const { counter } = useLocalSearchParams();
+      return <Text testID="counter-text">Counter: {counter}</Text>;
+    };
+
+    const ComponentWithButtonAndPreview = ({ href }: { href: (counter) => string }) => {
+      const [counter, setCounter] = React.useState(0);
+      return (
+        <View testID="component-with-button-and-preview">
+          <Button
+            title="Change counter"
+            onPress={() => setCounter((c) => c + 1)}
+            testID="change-counter-button"
+          />
+          <Link href={href(counter)} testID="link" onPress={() => setCounter((c) => c + 1)}>
+            <Link.Preview />
+            <Link.Trigger>
+              <Text>Counter: {counter}</Text>
+            </Link.Trigger>
+            <Link.Preview />
+          </Link>
+        </View>
+      );
+    };
+  });
+  describe('multiple preloaded paths with the same name', () => {
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+      const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
+      const emitters = require('../preview/native').__EVENTS__;
+      function Index() {
+        const router = useRouter();
+        const navigation = useNavigation();
+        const preloadAandC = () => {
+          router.prefetch('/slotA/test');
+          router.prefetch('/slotC/test');
+        };
+        return (
+          <View testID="index">
+            <Button title="Preload A and C" onPress={preloadAandC} testID="preload-button" />
+            <Link prefetch href="/slotB/test">
+              <Link.Preview />
+              <Link.Trigger>/slotB/test</Link.Trigger>
+            </Link>
+          </View>
+        );
+      }
+      renderRouter({
+        index: Index,
+        'slotA/_layout': () => <Slot />,
+        'slotB/_layout': () => <Slot />,
+        'slotC/_layout': () => <Slot />,
+        'slotA/test': () => <View testID="slotA-test" />,
+        'slotB/test': () => <View testID="slotB-test" />,
+        'slotC/test': () => <View testID="slotC-test" />,
+      });
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      act(() => fireEvent.press(screen.getByTestId('index')));
+      act(() => fireEvent.press(screen.getByText('Preload A and C')));
+      act(() => emitters['link-onWillPreviewOpen']());
+      act(() => emitters['link-onDidPreviewOpen']());
+      expect(screen.getByTestId('slotB-test')).toBeVisible();
+      // Initial render, onWillPreviewOpen and onDidPreviewOpen
+      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
+      expect(
+        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
+      ).toMatch(/slotB-\w+/);
+    });
+    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', () => {
+      const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
+      const emitters = require('../preview/native').__EVENTS__;
+      function Index() {
+        const router = useRouter();
+        const navigation = useNavigation();
+        const preloadOtherRoutes = () => {
+          router.prefetch('/slotA/test0/test');
+          router.prefetch('/slotC/test0/test');
+        };
+        return (
+          <View testID="index">
+            <Button
+              title="Preload Other Routes"
+              onPress={preloadOtherRoutes}
+              testID="preload-button"
+            />
+            <Link prefetch href="/slotB/test0/test">
+              <Link.Preview />
+              <Link.Trigger>/slotB/test0/test</Link.Trigger>
+            </Link>
+          </View>
+        );
+      }
+      renderRouter({
+        index: Index,
+        'slotA/[xyz]/_layout': () => <Slot />,
+        'slotB/[xyz]/_layout': () => <Slot />,
+        'slotC/[xyz]/_layout': () => <Slot />,
+        'slotA/[xyz]/test': () => <View testID="slotA-test" />,
+        'slotB/[xyz]/test': () => <View testID="slotB-test" />,
+        'slotC/[xyz]/test': () => <View testID="slotC-test" />,
+      });
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+      act(() => fireEvent.press(screen.getByTestId('index')));
+      act(() => fireEvent.press(screen.getByText('Preload Other Routes')));
+      act(() => emitters['link-onWillPreviewOpen']());
+      act(() => emitters['link-onDidPreviewOpen']());
+
+      expect(screen.getByTestId('slotB-test')).toBeVisible();
+      // Initial render, onWillPreviewOpen and onDidPreviewOpen
+      expect(NativeLinkPreview).toHaveBeenCalledTimes(3);
+      expect(
+        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
+      ).toMatch(/slotB\/\[xyz\]-\w+/);
     });
   });
 });

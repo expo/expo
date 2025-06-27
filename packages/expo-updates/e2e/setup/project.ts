@@ -334,8 +334,9 @@ async function preparePackageJson(
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build',
+          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
+        'start:dev-client': 'npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -571,6 +572,25 @@ export function transformAppJsonForE2EWithFingerprint(
       },
     },
   };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, and turns off updates native debug
+ */
+export function transformAppJsonForE2EWithDevClient(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  delete transformedForE2E.expo.updates.useNativeDebug;
+  return transformedForE2E;
 }
 
 export function transformAppJsonForE2EWithBrickingMeasuresDisabled(
