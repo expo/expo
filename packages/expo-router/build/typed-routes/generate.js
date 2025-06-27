@@ -61,7 +61,7 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
             .join('');
         dynamicRouteStrings.push(contextKeyToType(dynamicRouteTemplate
             .replaceAll(CATCH_ALL, '${string}')
-            .replaceAll(SLUG, '${Router.SingleRoutePart<T>}'), partialTypedGroups));
+            .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + urlParams, partialTypedGroups));
         dynamicRouteInputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownInputParams & { ${inputParams} } }`);
         dynamicRouteOutputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownOutputParams & { ${outputParams} } }`);
     }
