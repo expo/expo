@@ -47,7 +47,9 @@ private fun ActionButton(
 
 @Composable
 fun SignUp(
-  onClose: () -> Unit = {}
+  onClose: () -> Unit = {},
+  onLogIn: () -> Unit = {},
+  onSignUp: () -> Unit = {}
 ) {
   Column(
     modifier = Modifier
@@ -79,14 +81,16 @@ fun SignUp(
 
         ActionButton(
           "Log In",
-          style = Theme.colors.button.tertiary
+          style = Theme.colors.button.tertiary,
+          onClick = onLogIn
         )
 
         Spacer(Theme.spacing.small)
 
         ActionButton(
           "Sign Up",
-          style = Theme.colors.button.secondary
+          style = Theme.colors.button.secondary,
+          onClick = onSignUp
         )
       }
     }

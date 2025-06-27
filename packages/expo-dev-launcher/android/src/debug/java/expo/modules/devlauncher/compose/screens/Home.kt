@@ -19,8 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.composeunstyled.Button
 import com.composeunstyled.TextField
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.DevLauncherAction
+import expo.modules.devlauncher.compose.DevLauncherState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
+import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.primitives.Divider
@@ -28,18 +31,12 @@ import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
-import expo.modules.devmenu.compose.ui.MenuButton
-
-data class HomeScreenState(
-  val appName: String,
-  val onProfileClick: () -> Unit = {}
-)
 
 @Composable
-fun HomeScreen(state: HomeScreenState) {
+fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
-      AppHeader(state.appName, onProfileClick = state.onProfileClick)
+      AppHeader(state.appName, onProfileClick = onProfileClick)
     }
 
     Column(
@@ -72,10 +69,15 @@ fun HomeScreen(state: HomeScreenState) {
 
       RoundedSurface {
         Column {
-          MenuButton("http://10.0.2.2:8081")
-          Divider()
-          MenuButton("Fetch development")
-          Divider()
+          for (packager in state.runningPackagers) {
+            RunningAppCard(
+              appIp = packager.url
+            ) {
+              state.onAction(DevLauncherAction.OpenApp(packager.url))
+            }
+            Divider()
+          }
+
           Accordion("Enter URL", initialState = false) {
             val url = remember { mutableStateOf("") }
 
@@ -106,7 +108,9 @@ fun HomeScreen(state: HomeScreenState) {
 
               Spacer(Theme.spacing.tiny)
 
-              Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+              Button(onClick = {
+                state.onAction(DevLauncherAction.OpenApp(url.value))
+              }, modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.padding(vertical = Theme.spacing.small)) {
                   Text("Connect")
                 }
@@ -126,5 +130,5 @@ fun HomeScreen(state: HomeScreenState) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(state = HomeScreenState("BareExpo"))
+  HomeScreen(state = DevLauncherState(), onProfileClick = {})
 }
