@@ -17,23 +17,23 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
   @State private var isExpanded: Bool = false
   
   var body: some View {
-    #if os(tvOS)
+#if os(tvOS)
     Text("DisclosureGroupView is not supported on tvOS")
-    #else
+#else
     DisclosureGroup(props.label, isExpanded: $isExpanded) {
       Children()
     }
-     .onAppear {
-        isExpanded = props.isExpanded
-      }
-      .onChange(of: isExpanded) { newValue in
-        let payload = ["isExpanded": newValue]
-        props.onStateChange(payload)
-      }
-      .onChange(of: props.isExpanded) { newValue in
-        isExpanded = newValue
-      }
+    .onAppear {
+      isExpanded = props.isExpanded
+    }
+    .onChange(of: isExpanded) { newValue in
+      let payload = ["isExpanded": newValue]
+      props.onStateChange(payload)
+    }
+    .onChange(of: props.isExpanded) { newValue in
+      isExpanded = newValue
+    }
     .modifier(CommonViewModifiers(props: props))
-    #endif
+#endif
   }
 }
