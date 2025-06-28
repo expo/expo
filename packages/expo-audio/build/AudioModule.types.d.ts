@@ -70,6 +70,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
      */
     shouldCorrectPitch: boolean;
     /**
+     * The current audio pan of the audio.
+     * @platform web
+     */
+    audioPan: number;
+    /**
      * The current status of the audio player.
      * @hidden
      */

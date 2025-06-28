@@ -3,10 +3,10 @@ import { Platform, Text, StyleSheet, View } from 'react-native';
 import Reanimated, {
   Extrapolate,
   interpolate,
-  runOnUI,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  runOnUI,
 } from 'react-native-reanimated';
 
 import Colors from '../../../constants/Colors';
@@ -17,9 +17,9 @@ import { AudioPlayer, useAudioSampleListener } from 'expo-audio';
 
 // for some reason, iOS returns much smaller sample values
 // TODO (barthap): Fix the root cause and normalize them between platforms
-const inputRange = Platform.OS === 'ios' ? [0, 0.3] : [0, 1];
+const inputRange = Platform.OS === 'ios' || Platform.OS === 'web' ? [0, 0.3] : [0, 1];
 
-export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlaying: boolean }) {
+function JsiAudioBarComponent({ player, isPlaying }: { player: AudioPlayer; isPlaying: boolean }) {
   const audioRmsValue = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
     const barWidth = interpolate(audioRmsValue.value, inputRange, [1, 500], Extrapolate.CLAMP);
@@ -33,12 +33,20 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
   }, [audioRmsValue]);
 
   useAudioSampleListener(player, (sample) => {
-    const frames = sample.channels[0].frames;
-    const frameSum = frames.slice(0, 200).reduce((prev, curr) => prev + curr ** 2, 0);
-    const rmsValue = Math.sqrt(frameSum / 200);
-    runOnUI(() => {
-      audioRmsValue.value = rmsValue;
-    })();
+    if (sample.channels) {
+      let sum = 0;
+      // only first N samples
+      const N = Math.min(200, sample.channels[0].frames.length);
+      for (let i = 0; i < N; i++) {
+        const v = sample.channels[0].frames[i];
+        sum += v * v;
+      }
+      const rmsValue = Math.sqrt(sum / N);
+      runOnUI(() => {
+        'worklet';
+        audioRmsValue.set(rmsValue);
+      })();
+    }
   });
 
   if (!player.isAudioSamplingSupported) {
@@ -55,6 +63,8 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
     </View>
   );
 }
+
+export const JsiAudioBar = React.memo(JsiAudioBarComponent);
 
 const styles = StyleSheet.create({
   barContainer: {

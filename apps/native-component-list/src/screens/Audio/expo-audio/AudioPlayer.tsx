@@ -2,7 +2,6 @@ import { useAudioPlayer, AudioSource, useAudioPlayerStatus } from 'expo-audio';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
 type AudioPlayerProps = {
@@ -20,6 +19,10 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
   const status = useAudioPlayerStatus(player);
   const setVolume = (volume: number) => {
     player.volume = volume;
+  };
+
+  const setAudioPan = (audioPan: number) => {
+    player.audioPan = audioPan;
   };
 
   const setIsMuted = (isMuted: boolean) => {
@@ -45,6 +48,7 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
     <Player
       {...status}
       audioPan={0}
+      player={player}
       volume={player.volume}
       style={style}
       play={() => player.play()}
@@ -60,7 +64,8 @@ export default function AudioPlayer({ source, style }: AudioPlayerProps) {
       setRate={setRate}
       setIsMuted={setIsMuted}
       setVolume={setVolume}
-      extraIndicator={<JsiAudioBar isPlaying={status.playing} player={player} />}
+      setAudioPan={setAudioPan}
+      showJsiAudioBar
     />
   );
 }

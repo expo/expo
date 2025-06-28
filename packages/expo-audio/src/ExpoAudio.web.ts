@@ -12,7 +12,11 @@ import {
 } from './Audio.types';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
-import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
+import {
+  AUDIO_SAMPLE_UPDATE,
+  PLAYBACK_STATUS_UPDATE,
+  RECORDING_STATUS_UPDATE,
+} from './ExpoAudioEvents';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 
