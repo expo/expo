@@ -62,7 +62,7 @@ export type TextInputProps = {
      * @default none
      * @platform android
      */
-    capitalization?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
+    autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;

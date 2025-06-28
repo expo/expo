@@ -41,7 +41,7 @@ export default function TextInputScreen() {
           autocorrection={false}
           defaultValue="CHARACTERS"
           onChangeText={setValue}
-          capitalization="characters"
+          autoCapitalize="characters"
         />
 
         <TextInput
@@ -50,7 +50,7 @@ export default function TextInputScreen() {
           autocorrection={false}
           defaultValue="Capitalizing Words"
           onChangeText={setValue}
-          capitalization="words"
+          autoCapitalize="words"
         />
 
         <TextInput
@@ -59,7 +59,7 @@ export default function TextInputScreen() {
           autocorrection={false}
           defaultValue="Capitalizing sentences. This is a test."
           onChangeText={setValue}
-          capitalization="sentences"
+          autoCapitalize="sentences"
         />
       </Section>
     </ScrollPage>
