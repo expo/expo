@@ -1,6 +1,6 @@
 package expo.modules.devlauncher.compose.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -20,20 +20,9 @@ import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
-fun AppHeaderContainer(content: @Composable () -> Unit) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-      .background(color = Theme.colors.background.default)
-      .padding(Theme.spacing.medium)
-  ) {
-    content()
-  }
-}
-
-@Composable
 fun AppHeader(
-  appName: String
+  appName: String,
+  onProfileClick: () -> Unit = {}
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically
@@ -57,7 +46,7 @@ fun AppHeader(
 
     Spacer(modifier = Modifier.weight(1f))
 
-    Surface(shape = RoundedCornerShape(Theme.sizing.borderRadius.full)) {
+    Surface(shape = RoundedCornerShape(Theme.sizing.borderRadius.full), modifier = Modifier.clickable(onClick = onProfileClick)) {
       Icon(
         painter = painterResource(R.drawable._expodevclientcomponents_assets_usericonlight),
         contentDescription = "Expo Logo",
@@ -71,7 +60,7 @@ fun AppHeader(
 @Composable
 @Preview(showBackground = true, widthDp = 300)
 fun AppHeaderPreview() {
-  AppHeaderContainer {
+  ScreenHeaderContainer {
     AppHeader(
       appName = "BareExpo"
     )

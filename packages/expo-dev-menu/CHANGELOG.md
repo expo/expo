@@ -15,9 +15,15 @@
 
 ### 💡 Others
 
+- Fixed release build error on Android. ([#37579](https://github.com/expo/expo/pull/37579) by [@kudo](https://github.com/kudo))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.1.12 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
 
 ## 6.1.11 - 2025-06-04
 

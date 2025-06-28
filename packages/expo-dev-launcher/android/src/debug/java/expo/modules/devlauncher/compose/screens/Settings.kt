@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
@@ -22,7 +23,10 @@ import expo.modules.devmenu.compose.ui.MenuSwitch
 @Composable
 fun SettingsScreen() {
   Column(modifier = Modifier.padding(Theme.spacing.medium)) {
-    Heading("Settings")
+    ScreenHeaderContainer(backgroundColor = Theme.colors.background.secondary) {
+      Heading("Settings")
+    }
+
     Spacer(Theme.spacing.large)
 
     RoundedSurface {

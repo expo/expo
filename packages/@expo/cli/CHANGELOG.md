@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
@@ -19,6 +21,10 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.24.15 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
 
 ## 0.24.14 - 2025-06-04
 
