@@ -31,7 +31,7 @@ data class TextInputProps(
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
-  val capitalization: MutableState<String> = mutableStateOf("none")
+  val autoCapitalize: MutableState<String> = mutableStateOf("none")
 ) : ComposeProps
 
 fun String.keyboardType(): KeyboardType {
@@ -49,7 +49,7 @@ fun String.keyboardType(): KeyboardType {
   }
 }
 
-fun String.capitalization(): KeyboardCapitalization {
+fun String.autoCapitalize(): KeyboardCapitalization {
   return when (this) {
     "characters" -> KeyboardCapitalization.Characters
     "none" -> KeyboardCapitalization.None
@@ -81,7 +81,7 @@ class TextInputView(context: Context, appContext: AppContext) :
         keyboardOptions = KeyboardOptions.Default.copy(
           keyboardType = props.keyboardType.value.keyboardType(),
           autoCorrectEnabled = props.autocorrection.value,
-          capitalization = props.capitalization.value.capitalization()
+          capitalization = props.autoCapitalize.value.autoCapitalize()
         )
       )
     }
