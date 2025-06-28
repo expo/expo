@@ -1,0 +1,68 @@
+{
+  "testRunner": {
+    "$0": "jest",
+    "args": {
+      "config": "e2e/jest.config.js",
+      "_": ["e2e"]
+    },
+    "jest": {
+      "preset": "ts-jest"
+    }
+  },
+  "apps": {
+    "ios.debug": {
+      "type": "ios.app",
+      "build": "xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build",
+      "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app"
+    },
+    "ios.release": {
+      "type": "ios.app",
+      "build": "xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build",
+      "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/updatese2e.app"
+    },
+    "android.debug": {
+      "type": "android.apk",
+      "build": "cd android && ./gradlew :app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug && cd ..",
+      "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk"
+    },
+    "android.release": {
+      "type": "android.apk",
+      "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
+      "binaryPath": "android/app/build/outputs/apk/release/app-release.apk"
+    }
+  },
+  "devices": {
+    "simulator": {
+      "type": "ios.simulator",
+      "headless": true,
+      "device": {
+        "type": "iPhone 16"
+      }
+    },
+    "emulator": {
+      "type": "android.emulator",
+      "headless": true,
+      "device": {
+        "avdName": "pixel_4"
+      }
+    }
+  },
+  "configurations": {
+    "ios.debug": {
+      "device": "simulator",
+      "app": "ios.debug"
+    },
+    "ios.release": {
+      "device": "simulator",
+      "app": "ios.release"
+    },
+    "android.debug": {
+      "device": "emulator",
+      "app": "android.debug"
+    },
+    "android.release": {
+      "device": "emulator",
+      "app": "android.release"
+    }
+  }
+}
