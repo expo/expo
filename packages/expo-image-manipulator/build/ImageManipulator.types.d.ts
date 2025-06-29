@@ -114,7 +114,9 @@ export declare class ImageManipulator extends NativeModule {
     Image: typeof ImageRef;
     /**
      * Loads an image from the given URI and creates a new image manipulation context.
+     * @param source The URI or shared reference of the image to manipulate.
+     * @param headers Optional headers to include when loading the image.
      */
-    manipulate(source: string | SharedRef<'image'>): ImageManipulatorContext;
+    manipulate(source: string | SharedRef<'image'>, headers?: Record<string, string>): ImageManipulatorContext;
 }
 //# sourceMappingURL=ImageManipulator.types.d.ts.map
