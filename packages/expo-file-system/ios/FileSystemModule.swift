@@ -53,28 +53,61 @@ public final class FileSystemModule: Module {
     AsyncFunction("readAsStringAsync") { (url: URL, options: ReadingOptions) -> String in
       try ensurePathPermission(appContext, path: url.path, flag: .read)
 
-      if options.encoding == .base64 {
-        return try readFileAsBase64(path: url.path, options: options)
+      // Validate position and length parameters
+      if let position = options.position, position < 0 {
+        throw Exception(name: "InvalidArgumentException", description: "Position cannot be negative")
       }
-      do {
-        return try String(contentsOfFile: url.path, encoding: options.encoding.toStringEncoding() ?? .utf8)
-      } catch {
-        throw FileNotReadableException(url.path)
+      
+      if let length = options.length, length < 0 {
+        throw Exception(name: "InvalidArgumentException", description: "Length cannot be negative")
+      }
+
+      let fileHandle = try FileHandle(forReadingFrom: url)
+      defer { try? fileHandle.close() }
+
+      // Handle offset (position) and length in bytes
+      if let position = options.position {
+        try fileHandle.seek(toOffset: UInt64(position))
+      }
+
+      let length = options.length ?? Int.max
+      let data = try fileHandle.read(upToCount: length) ?? Data()
+
+      if options.encoding == .base64 {
+        return data.base64EncodedString()
+      } else {
+        let encoding = options.encoding.toStringEncoding() ?? .utf8
+        guard let string = String(data: data, encoding: encoding) else {
+          throw FileNotReadableException(url.path)
+        }
+        return string
       }
     }
 
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
       try ensurePathPermission(appContext, path: url.path, flag: .write)
 
+      // Validate position parameter
+      if let position = options.position, position < 0 {
+        throw Exception(name: "InvalidArgumentException", description: "Position cannot be negative")
+      }
+
       if options.encoding == .base64 {
-        try writeFileAsBase64(path: url.path, string: string)
+        try writeFileAsBase64(path: url.path, string: string, position: options.position)
         return
       }
-      do {
-        try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
-      } catch {
-        throw FileNotWritableException(url.path)
-          .causedBy(error)
+      
+      // Handle position-based writing
+      if let position = options.position {
+        try writeStringAtPosition(path: url.path, string: string, position: position, encoding: options.encoding.toStringEncoding() ?? .utf8)
+      } else {
+        // Original behavior - write entire file
+        do {
+          try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
+        } catch {
+          throw FileNotWritableException(url.path)
+            .causedBy(error)
+        }
       }
     }
 

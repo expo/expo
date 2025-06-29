@@ -18,7 +18,7 @@ data class DeletingOptions(
 
 data class ReadingOptions(
   @Field
-  val encoding: EncodingType = EncodingType.UTF8,
+  val encoding: EncodingType?,
   @Field
   val position: Int?,
   @Field
@@ -65,7 +65,9 @@ data class DownloadOptions(
 
 data class WritingOptions(
   @Field
-  val encoding: EncodingType = EncodingType.UTF8
+  val encoding: EncodingType?,
+  @Field
+  val position: Int?
 ) : Record
 
 data class FileSystemUploadOptions(

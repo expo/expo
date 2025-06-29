@@ -72,10 +72,23 @@ export async function getInfoAsync(fileUri: string, options: InfoOptions = {}): 
 }
 
 /**
- * Read the entire contents of a file as a string. Binary will be returned in raw format, you will need to append `data:image/png;base64,` to use it as Base64.
+ * Read the contents of a file as a string. Can read the entire file or a specific portion using position and length parameters.
+ * Binary will be returned in raw format, you will need to append `data:image/png;base64,` to use it as Base64.
  * @param fileUri `file://` or [SAF](#saf-uri) URI to the file or directory.
  * @param options A map of read options represented by [`ReadingOptions`](#readingoptions) type.
- * @return A Promise that resolves to a string containing the entire contents of the file.
+ * When both `position` and `length` are specified, reads only the specified portion of the file.
+ * @example
+ * ```js
+ * // Read entire file
+ * const content = await FileSystem.readAsStringAsync(fileUri);
+ *
+ * // Read 5 bytes starting from position 2
+ * const partialContent = await FileSystem.readAsStringAsync(fileUri, {
+ *   position: 2,
+ *   length: 5
+ * });
+ * ```
+ * @return A Promise that resolves to a string containing the contents of the file or the specified portion.
  */
 export async function readAsStringAsync(
   fileUri: string,
@@ -84,9 +97,11 @@ export async function readAsStringAsync(
   if (!ExponentFileSystem.readAsStringAsync) {
     throw new UnavailabilityError('expo-file-system', 'readAsStringAsync');
   }
-  return await ExponentFileSystem.readAsStringAsync(fileUri, options);
-}
 
+  const asd = await ExponentFileSystem.readAsStringAsync(fileUri, options);
+
+  return asd;
+}
 /**
  * Takes a `file://` URI and converts it into content URI (`content://`) so that it can be accessed by other applications outside of Expo.
  * @param fileUri The local URI of the file. If there is no file at this URI, an exception will be thrown.

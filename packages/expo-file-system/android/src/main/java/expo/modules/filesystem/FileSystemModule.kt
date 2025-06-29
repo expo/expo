@@ -173,8 +173,17 @@ open class FileSystemModule : Module() {
       val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
 
+      // Validate position and length parameters
+      if (options.position != null && options.position < 0) {
+        throw IllegalArgumentException("Position cannot be negative")
+      }
+      
+      if (options.length != null && options.length < 0) {
+        throw IllegalArgumentException("Length cannot be negative")
+      }
+
       // TODO:Bacon: Add more encoding types to match iOS
-      val encoding = options.encoding
+      val encoding = options.encoding ?: EncodingType.UTF8
       var contents: String?
       if (encoding == EncodingType.BASE64) {
         getInputStream(uri).use { inputStream ->
@@ -189,12 +198,33 @@ open class FileSystemModule : Module() {
           }
         }
       } else {
-        contents = when {
-          uri.scheme == "file" -> IOUtils.toString(FileInputStream(uri.toFile()))
-          uri.scheme == "asset" -> IOUtils.toString(openAssetInputStream(uri))
-          uri.scheme == null -> IOUtils.toString(openResourceInputStream(uriStr))
-          uri.isSAFUri -> IOUtils.toString(context.contentResolver.openInputStream(uri))
-          else -> throw IOException("Unsupported scheme for location '$uri'.")
+        val position = options.position ?: 0
+        getInputStream(uri).use { inputStream ->
+          inputStream.skip(position.toLong())
+          
+          val actualBytes = if (options.length != null) {
+            // When length is specified, use a bounded buffer approach
+            val requestedLength = options.length
+            val buffer = ByteArray(requestedLength)
+            val bytesRead = inputStream.read(buffer, 0, requestedLength)
+            if (bytesRead > 0) buffer.copyOf(bytesRead) else ByteArray(0)
+          } else {
+            // When no length specified, read remaining bytes in chunks to avoid massive allocation
+            val byteBuffer = ByteArrayOutputStream()
+            val bufferSize = 8192 // 8KB chunks
+            val buffer = ByteArray(bufferSize)
+            var len: Int
+            while (inputStream.read(buffer).also { len = it } != -1) {
+              byteBuffer.write(buffer, 0, len)
+            }
+            byteBuffer.toByteArray()
+          }
+          
+          val charset = when (encoding) {
+            EncodingType.UTF8 -> Charsets.UTF_8
+            else -> Charsets.UTF_8
+          }
+          contents = String(actualBytes, charset)
         }
       }
       return@AsyncFunction contents
@@ -203,13 +233,41 @@ open class FileSystemModule : Module() {
     AsyncFunction("writeAsStringAsync") { uriStr: String, contents: String, options: WritingOptions ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
-      val encoding = options.encoding
-      getOutputStream(uri).use { out ->
-        if (encoding == EncodingType.BASE64) {
-          val bytes = Base64.decode(contents, Base64.DEFAULT)
-          out.write(bytes)
+      
+      // Validate position parameter
+      if (options.position != null && options.position < 0) {
+        throw IllegalArgumentException("Position cannot be negative")
+      }
+      
+      val encoding = options.encoding ?: EncodingType.UTF8
+      
+      // Handle position-based writing
+      if (options.position != null) {
+        if (uri.scheme == "file") {
+          val file = uri.toFile()
+          val randomAccessFile = java.io.RandomAccessFile(file, "rw")
+          randomAccessFile.use { raf ->
+            raf.seek(options.position.toLong())
+            if (encoding == EncodingType.BASE64) {
+              val bytes = Base64.decode(contents, Base64.DEFAULT)
+              raf.write(bytes)
+            } else {
+              val bytes = contents.toByteArray(Charsets.UTF_8)
+              raf.write(bytes)
+            }
+          }
         } else {
-          OutputStreamWriter(out).use { writer -> writer.write(contents) }
+          throw IOException("Position-based writing is only supported for file:// URIs")
+        }
+      } else {
+        // Original behavior - write entire file
+        getOutputStream(uri).use { out ->
+          if (encoding == EncodingType.BASE64) {
+            val bytes = Base64.decode(contents, Base64.DEFAULT)
+            out.write(bytes)
+          } else {
+            OutputStreamWriter(out).use { writer -> writer.write(contents) }
+          }
         }
       }
     }

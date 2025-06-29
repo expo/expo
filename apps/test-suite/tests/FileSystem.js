@@ -47,6 +47,301 @@ export async function test({ describe, expect, it, ...t }) {
       return;
     }
 
+    it('Can read partial content with UTF8 encoding', async () => {
+      const fileUri = FS.documentDirectory + 'random-text.txt';
+      const randomText = `Hello, World! This is a test file`;
+
+      // First ensure the file doesn't exist
+      await FS.deleteAsync(fileUri, { idempotent: true });
+
+      // Write test file
+      await FS.writeAsStringAsync(fileUri, randomText);
+
+      // Test partial reading with different positions and lengths
+      const tests = [
+        { expected: 'Hello, World! This is a test file' },
+        {
+          position: 10,
+          expected: 'ld! This is a test file',
+        },
+        {
+          position: 15,
+          length: 5,
+          expected: 'his i',
+        },
+        {
+          position: 20,
+          expected: 's a test file',
+        },
+      ];
+
+      for (const test of tests) {
+        const result = await FS.readAsStringAsync(fileUri, {
+          position: test.position,
+          length: test.length,
+          encoding: FS.EncodingType.UTF8,
+        });
+
+        expect(result).toBe(test.expected);
+      }
+
+      // Clean up
+      await FS.deleteAsync(fileUri);
+    });
+
+    it('Should throw error for negative position and length', async () => {
+      const fileUri = FS.documentDirectory + 'error-test.txt';
+      await FS.writeAsStringAsync(fileUri, 'Hello World! This is a test file.');
+
+      // Test 1: Using existing throws helper for negative position
+      await throws(() =>
+        FS.readAsStringAsync(fileUri, {
+          position: -1,
+          length: 10,
+        })
+      );
+
+      // Test 2: Using existing throws helper for negative length
+      await throws(() =>
+        FS.readAsStringAsync(fileUri, {
+          position: 5,
+          length: -10,
+        })
+      );
+
+      // Test 3: Negative position in writeAsStringAsync
+      await throws(() =>
+        FS.writeAsStringAsync(fileUri, 'test', {
+          position: -5,
+        })
+      );
+
+      // Test 4: Both negative position and length
+      await throws(() =>
+        FS.readAsStringAsync(fileUri, {
+          position: -1,
+          length: -5,
+        })
+      );
+
+      // Test 5: More detailed error check with try/catch
+      try {
+        await FS.readAsStringAsync(fileUri, {
+          position: -5,
+          length: -5,
+        });
+        // If we get here, the test should fail
+        expect(true).toBe(false); // Force failure
+      } catch (error) {
+        // Error should be thrown - this is expected
+        expect(error).toBeTruthy();
+        expect(error.message).toMatch(/Position cannot be negative|negative|Position/i);
+      }
+
+      // Clean up
+      await FS.deleteAsync(fileUri, { idempotent: true });
+    });
+
+    it('Can read string by position in Base64', async () => {
+      const fileUri = FS.documentDirectory + 'random-text.txt';
+
+      // Clean up any existing file
+      await FS.deleteAsync(fileUri, { idempotent: true });
+
+      // Create test content with known pattern
+      const originalText = 'Hello World! 12345678';
+
+      // Write original text as UTF8
+      await FS.writeAsStringAsync(fileUri, originalText, {
+        encoding: FS.EncodingType.UTF8,
+      });
+
+      // Test reading different positions in Base64
+      const tests = [
+        {
+          description: 'Read first 4 bytes as Base64',
+          position: 0,
+          length: 4,
+          expectedText: 'Hell', // What we expect when decoded back
+        },
+        {
+          description: 'Read middle 4 bytes as Base64',
+          position: 6,
+          length: 4,
+          expectedText: 'Worl', // What we expect when decoded back
+        },
+        {
+          description: 'Read last 4 bytes as Base64',
+          position: 16,
+          length: 4,
+          expectedText: '4567', // What we expect when decoded back
+        },
+      ];
+
+      for (const test of tests) {
+        // Read specific position in Base64
+        const base64Result = await FS.readAsStringAsync(fileUri, {
+          encoding: FS.EncodingType.Base64,
+          position: test.position,
+          length: test.length,
+        });
+
+        // Verify Base64 format (length must be multiple of 4)
+        expect(base64Result.length % 4).toBe(0);
+        expect(typeof base64Result).toBe('string');
+        expect(base64Result.length).toBeGreaterThan(0);
+
+        // Verify we can decode it back to expected text using atob
+        const decoded = atob(base64Result);
+
+        expect(decoded).toBe(test.expectedText);
+      }
+
+      // Additional test: read the same data as UTF8 and compare
+      for (const test of tests) {
+        // Read same position as UTF8
+        const utf8Result = await FS.readAsStringAsync(fileUri, {
+          encoding: FS.EncodingType.UTF8,
+          position: test.position,
+          length: test.length,
+        });
+
+        // Read same position as Base64
+        const base64Result = await FS.readAsStringAsync(fileUri, {
+          encoding: FS.EncodingType.Base64,
+          position: test.position,
+          length: test.length,
+        });
+
+        // Decode Base64 and compare with UTF8 result
+        const decodedBase64 = atob(base64Result);
+        expect(decodedBase64).toBe(utf8Result);
+        expect(utf8Result).toBe(test.expectedText);
+      }
+
+      // Clean up
+      await FS.deleteAsync(fileUri, { idempotent: true });
+    });
+
+    it('Can write at specific position with UTF8 encoding', async () => {
+      const fileUri = FS.documentDirectory + 'random-text.txt';
+      const originalText = 'Hello World! This is a test file';
+
+      // Clean up any existing file
+      await FS.deleteAsync(fileUri, { idempotent: true });
+
+      // Write initial content
+      await FS.writeAsStringAsync(fileUri, originalText);
+
+      // Verify initial content
+      const initialContent = await FS.readAsStringAsync(fileUri, {
+        encoding: FS.EncodingType.UTF8,
+      });
+      expect(initialContent).toBe(originalText);
+
+      // Test different position-based writes
+      const tests = [
+        {
+          description: 'Write at beginning',
+          position: 0,
+          text: 'Hi',
+          // Position-based writing overwrites characters starting at position
+          expected: 'Hillo World! This is a test file',
+        },
+        {
+          description: 'Write at position 6',
+          position: 6,
+          text: 'Users! ',
+          // "World!" gets overwritten with "Users!"
+          expected: 'Hello Users! This is a test file',
+        },
+        {
+          description: 'Write beyond end (append)',
+          position: originalText.length,
+          text: ' Random text.',
+          expected: originalText + ' Random text.',
+        },
+      ];
+
+      for (const test of tests) {
+        // Reset file to original content for each test
+        await FS.writeAsStringAsync(fileUri, originalText);
+
+        // Write at specific position
+        await FS.writeAsStringAsync(fileUri, test.text, {
+          encoding: FS.EncodingType.UTF8,
+          position: test.position,
+        });
+
+        // Read and verify result
+        const result = await FS.readAsStringAsync(fileUri, {
+          encoding: FS.EncodingType.UTF8,
+        });
+
+        expect(result).toBe(test.expected);
+      }
+
+      // Clean up
+      await FS.deleteAsync(fileUri, { idempotent: true });
+    });
+
+    it('Can write at specific position with Base64 encoding', async () => {
+      const fileUri = FS.documentDirectory + 'random-text.txt';
+
+      // Clean up any existing file
+      await FS.deleteAsync(fileUri, { idempotent: true });
+
+      // Create initial content using base64
+      const originalText = 'Hello World!';
+      // Convert to base64 manually since Buffer is not available
+      const originalBase64 = btoa(originalText);
+
+      await FS.writeAsStringAsync(fileUri, originalBase64, {
+        encoding: FS.EncodingType.Base64,
+      });
+
+      // Verify initial content
+      const initialContent = await FS.readAsStringAsync(fileUri, {
+        encoding: FS.EncodingType.UTF8,
+      });
+      expect(initialContent).toBe(originalText);
+
+      const insertText = 'test';
+
+      // Test position-based write with base64
+      const insertBase64 = btoa(insertText);
+
+      await FS.writeAsStringAsync(fileUri, insertBase64, {
+        encoding: FS.EncodingType.Base64,
+        position: 0, // Write from beginning
+      });
+
+      // Read result as UTF8
+      const result = await FS.readAsStringAsync(fileUri, {
+        encoding: FS.EncodingType.UTF8,
+      });
+
+      // "test" should overwrite "Hello World!" at the beginning
+      expect(result).toBe('testo World!');
+
+      // Clean up
+      await FS.deleteAsync(fileUri, { idempotent: true });
+    });
+
+    it('delete(idempotent) -> delete[error]', async () => {
+      const localUri = FS.documentDirectory + 'willDelete.png';
+
+      await FS.deleteAsync(localUri, { idempotent: true });
+
+      let error;
+      try {
+        await FS.deleteAsync(localUri);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toMatch(/could not be deleted/);
+    });
+
     it('delete(idempotent) -> !exists -> download(md5, uri) -> exists -> delete -> !exists', async () => {
       const localUri = FS.documentDirectory + 'download1.png';
 

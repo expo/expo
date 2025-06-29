@@ -29,11 +29,49 @@ internal func readFileAsBase64(path: String, options: ReadingOptions) throws -> 
   return file.readDataToEndOfFile().base64EncodedString(options: .endLineWithLineFeed)
 }
 
-internal func writeFileAsBase64(path: String, string: String) throws {
+internal func writeFileAsBase64(path: String, string: String, position: Int? = nil) throws {
   let data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
-
-  if !FileManager.default.createFile(atPath: path, contents: data) {
+  
+  guard let data else {
     throw FileWriteFailedException(path)
+  }
+  
+  if let position = position {
+    try writeDataAtPosition(path: path, data: data, position: position)
+  } else {
+    if !FileManager.default.createFile(atPath: path, contents: data) {
+      throw FileWriteFailedException(path)
+    }
+  }
+}
+
+internal func writeStringAtPosition(path: String, string: String, position: Int, encoding: String.Encoding) throws {
+  guard let data = string.data(using: encoding) else {
+    throw FileNotWritableException(path)
+  }
+  
+  try writeDataAtPosition(path: path, data: data, position: position)
+}
+
+internal func writeDataAtPosition(path: String, data: Data, position: Int) throws {
+  // Ensure file exists - create if doesn't exist
+  if !FileManager.default.fileExists(atPath: path) {
+    FileManager.default.createFile(atPath: path, contents: nil)
+  }
+  
+  guard let fileHandle = FileHandle(forWritingAtPath: path) else {
+    throw FileNotWritableException(path)
+  }
+  
+  defer {
+    try? fileHandle.close()
+  }
+  
+  do {
+    try fileHandle.seek(toOffset: UInt64(position))
+    try fileHandle.write(contentsOf: data)
+  } catch {
+    throw FileNotWritableException(path).causedBy(error)
   }
 }
 

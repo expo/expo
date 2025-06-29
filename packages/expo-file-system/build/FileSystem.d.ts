@@ -24,10 +24,23 @@ export declare const bundleDirectory: string | null;
  */
 export declare function getInfoAsync(fileUri: string, options?: InfoOptions): Promise<FileInfo>;
 /**
- * Read the entire contents of a file as a string. Binary will be returned in raw format, you will need to append `data:image/png;base64,` to use it as Base64.
+ * Read the contents of a file as a string. Can read the entire file or a specific portion using position and length parameters.
+ * Binary will be returned in raw format, you will need to append `data:image/png;base64,` to use it as Base64.
  * @param fileUri `file://` or [SAF](#saf-uri) URI to the file or directory.
  * @param options A map of read options represented by [`ReadingOptions`](#readingoptions) type.
- * @return A Promise that resolves to a string containing the entire contents of the file.
+ * When both `position` and `length` are specified, reads only the specified portion of the file.
+ * @example
+ * ```js
+ * // Read entire file
+ * const content = await FileSystem.readAsStringAsync(fileUri);
+ *
+ * // Read 5 bytes starting from position 2
+ * const partialContent = await FileSystem.readAsStringAsync(fileUri, {
+ *   position: 2,
+ *   length: 5
+ * });
+ * ```
+ * @return A Promise that resolves to a string containing the contents of the file or the specified portion.
  */
 export declare function readAsStringAsync(fileUri: string, options?: ReadingOptions): Promise<string>;
 /**

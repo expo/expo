@@ -253,11 +253,11 @@ export type ReadingOptions = {
    */
   encoding?: EncodingType | 'utf8' | 'base64';
   /**
-   * Optional number of bytes to skip. This option is only used when `encoding: FileSystem.EncodingType.Base64` and `length` is defined.
-   * */
+   * Optional number of bytes to skip. When used with position and length parameters, allows reading a specific portion of the file.
+   */
   position?: number;
   /**
-   * Optional number of bytes to read. This option is only used when `encoding: FileSystem.EncodingType.Base64` and `position` is defined.
+   * Optional number of bytes to read. When used with position parameter, allows reading a specific portion of the file.
    */
   length?: number;
 };
@@ -268,6 +268,10 @@ export type WritingOptions = {
    * @default FileSystem.EncodingType.UTF8
    */
   encoding?: EncodingType | 'utf8' | 'base64';
+  /**
+   * Optional number of bytes to skip. When used with position and length parameters, allows reading a specific portion of the file.
+   */
+  position?: number;
 };
 
 export type DeletingOptions = {
