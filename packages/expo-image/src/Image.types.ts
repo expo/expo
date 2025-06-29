@@ -308,13 +308,13 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   accessible?: boolean;
 
   /**
-   * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
+   * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
    */
   accessibilityLabel?: string;
 
   /**
-   * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
+   * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
    *
    * @alias accessibilityLabel
    * @default undefined
