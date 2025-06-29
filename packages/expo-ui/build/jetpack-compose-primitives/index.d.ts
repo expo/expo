@@ -1,4 +1,4 @@
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
 export type HorizontalArrangement = 'start' | 'end' | 'center' | 'spaceBetween' | 'spaceAround' | 'spaceEvenly';
 export type VerticalArrangement = 'top' | 'bottom' | 'center' | 'spaceBetween' | 'spaceAround' | 'spaceEvenly';
 export type HorizontalAlignment = 'start' | 'end' | 'center';
@@ -25,6 +25,7 @@ export type TextProps = {
     color?: ColorValue;
     fontSize?: number;
     fontWeight?: TextFontWeight;
+    style?: StyleProp<Pick<TextStyle, 'color' | 'fontSize' | 'fontWeight' | 'fontFamily'>>;
 };
 export declare function Text(props: TextProps): import("react").JSX.Element | null;
 export {};

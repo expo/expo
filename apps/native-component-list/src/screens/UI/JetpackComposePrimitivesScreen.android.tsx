@@ -16,9 +16,7 @@ export default function JetpackComposePrimitivesScreen() {
 
         {/* Example 2: Column with different Text styles */}
         <Column verticalArrangement="spaceEvenly" horizontalAlignment="center">
-          <Text fontSize={24} fontWeight="bold" color="#ff0000">
-            Large Bold Text
-          </Text>
+          <Text style={styles.largeCursiveItalicBoldText}>Large Cursive Italic Bold Text</Text>
           <Text fontSize={16} fontWeight="normal" color="#00ff00">
             Medium Normal Text
           </Text>
@@ -59,6 +57,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F2F2F7',
+  },
+  largeCursiveItalicBoldText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FF0000',
+    fontStyle: 'italic',
+    fontFamily: 'cursive',
   },
 });
 

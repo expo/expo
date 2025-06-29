@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue, Platform, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 export type HorizontalArrangement =
   | 'start'
@@ -85,6 +85,7 @@ export type TextProps = {
   color?: ColorValue;
   fontSize?: number;
   fontWeight?: TextFontWeight;
+  style?: StyleProp<Pick<TextStyle, 'color' | 'fontSize' | 'fontWeight' | 'fontFamily'>>;
 };
 
 const TextNativeView: React.ComponentType<Omit<TextProps, 'children'> & { text: string }> | null =
@@ -97,6 +98,12 @@ function transformTextProps(props: TextProps): NativeTextProps {
   return {
     ...restProps,
     text: children ?? '',
+    style: {
+      color: props.color,
+      fontSize: props.fontSize,
+      fontWeight: props.fontWeight,
+      ...(props?.style && typeof props.style === 'object' ? props.style : {}),
+    },
   };
 }
 export function Text(props: TextProps) {
