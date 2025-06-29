@@ -36,6 +36,7 @@ export default function DatePickerScreen() {
               displayedComponents={
                 typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
               }
+              title="Select date"
               initialDate={selectedDate.toISOString()}
               variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
               style={{ height: Platform.select({ android: 520, ios: undefined }) }}
