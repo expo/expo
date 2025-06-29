@@ -3,9 +3,11 @@
 /**
  * This script is used to reset the project to a blank state.
  * It deletes or moves the /app, /components, /hooks, /scripts, and /constants directories to /app-example based on user input and creates a new /app directory with an index.tsx and _layout.tsx file.
+ * If the /app-example directory is deleted, the script also removes related dependencies.
  * You can remove the `reset-project` script from package.json and safely delete this file after running it.
  */
 
+const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
@@ -39,6 +41,21 @@ export default function RootLayout() {
   return <Stack />;
 }
 `;
+
+const dependenciesToRemove = [
+  "@expo/vector-icons",
+  "@react-navigation/bottom-tabs",
+  "@react-navigation/native",
+  "expo-blur",
+  "expo-font",
+  "expo-haptics",
+  "expo-status-bar",
+  "expo-symbols",
+  "expo-web-browser",
+  "@babel/core",
+  "@types/react-test-renderer",
+  "react-test-renderer",
+];
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -84,6 +101,23 @@ const moveDirectories = async (userInput) => {
     const layoutPath = path.join(newAppDirPath, "_layout.tsx");
     await fs.promises.writeFile(layoutPath, layoutContent);
     console.log("📄 app/_layout.tsx created.");
+
+    // Remove example-related dependencies if /app-example is deleted
+    if (userInput === "n") {
+      const packageManager = process.env.npm_execpath?.includes("yarn")
+      ? "yarn"
+      : process.env.npm_execpath?.includes("pnpm")
+      ? "pnpm"
+      : process.env.npm_execpath?.includes("bun")
+      ? "bun"
+      : "npm";
+
+      console.log(`\n🗑 Removing example-related dependencies with ${packageManager}...`);
+      execSync(
+        `${packageManager} ${packageManager === "npm" ? "uninstall" : "remove"} ${dependenciesToRemove.join(" ")}`,
+        { stdio: "inherit" }
+      );
+    }
 
     console.log("\n✅ Project reset complete. Next steps:");
     console.log(
