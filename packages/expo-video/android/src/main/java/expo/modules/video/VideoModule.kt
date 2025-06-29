@@ -253,6 +253,12 @@ class VideoModule : Module() {
           ref.bufferOptions = bufferOptions
         }
 
+      Property("isExternalPlaybackActive")
+        .get {ref: VideoPlayer ->
+          // isExternalPlaybackActive is not supported on Android as of now. Return false.
+          false
+        }
+
       Function("play") { ref: VideoPlayer ->
         appContext.mainQueue.launch {
           ref.player.play()
