@@ -26,7 +26,6 @@ const mailClientURLs: string[] = [
   'x-webdemail-netid-v1',
   'ymail',
   'yandexmail',
-  'appcenter-f45b4c0b-75c9-2d01-7ab6-41f6a6015be2',
   'mymail-mailto',
 ];
 

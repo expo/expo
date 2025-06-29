@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios] Remove `appcenter` from `LSApplicationQueriesSchemes` as it's now retired ([#37699](https://github.com/expo/expo/pull/37699) by [@huextrat](https://github.com/huextrat))
+
 ## 14.1.5 - 2025-06-27
 
 ### 🐛 Bug fixes
