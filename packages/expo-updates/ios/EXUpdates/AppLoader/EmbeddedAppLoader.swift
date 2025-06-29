@@ -40,16 +40,11 @@ public final class EmbeddedAppLoader: AppLoader {
 
     let frameworkBundle = Bundle(for: EmbeddedAppLoader.self)
     if let resourceUrl = frameworkBundle.resourceURL,
-      let bundle = Bundle(url: resourceUrl.appendingPathComponent("EXUpdates.bundle")) {
-#if os(iOS) || os(tvOS)
+      let bundle = Bundle(url: resourceUrl.appendingPathComponent("EXUpdates.bundle")),
       let path = bundle.path(
         forResource: EmbeddedAppLoader.EXUpdatesEmbeddedManifestName,
         ofType: EmbeddedAppLoader.EXUpdatesEmbeddedManifestType
-      )
-#else
-      let manifestURL = bundle.bundleURL.appendingPathComponent("app.manifest")
-      let path = manifestURL.path
-#endif
+      ) {
       manifestNSData = NSData(contentsOfFile: path)
     }
 
