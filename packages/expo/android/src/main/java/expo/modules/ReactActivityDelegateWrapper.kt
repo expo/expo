@@ -204,7 +204,19 @@ class ReactActivityDelegateWrapper(
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
     }
-    return invokeDelegateMethod("onPause")
+
+    // Prevent crashes when React instance is not available,
+    // as this seems to happen in some edge cases
+    val reactInstanceManager = try {
+      delegate.reactInstanceManager
+    } catch (e: Exception) {
+      null
+    }
+    if (reactInstanceManager != null) {
+      return invokeDelegateMethod("onPause")
+    } else {
+      return
+    }
   }
 
   override fun onUserLeaveHint() {
