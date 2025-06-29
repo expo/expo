@@ -2,13 +2,17 @@ package expo.modules.devmenu
 
 import android.content.Context
 import android.content.pm.PackageManager
-import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.manifests.core.ExpoUpdatesManifest
 
-object DevMenuAppInfo {
-  fun getAppInfo(reactHost: ReactHostWrapper, context: Context): DevMenuState.AppInfo {
+object AppInfo {
+  data class Native (
+    val appName: String,
+    val appVersion: String? = null
+  )
+
+  fun getNativeAppInfo(context: Context): Native {
     val packageManager = context.packageManager
     val packageName = context.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -16,6 +20,20 @@ object DevMenuAppInfo {
     var appVersion = packageInfo.versionName
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     var appName = packageManager.getApplicationLabel(applicationInfo).toString()
+
+    return Native(
+      appName = appName,
+      appVersion = appVersion
+    )
+  }
+
+  fun getAppInfo(reactHost: ReactHostWrapper, context: Context): DevMenuState.AppInfo {
+    val native = getNativeAppInfo(context)
+
+    // We want to override the native app name and version with the manifest values if available.
+    var appName = native.appName
+    var appVersion = native.appVersion
+
     var hostUrl = reactHost.currentReactContext?.sourceURL
     var runtimeVersion = ""
     val manifest = DevMenuManager.currentManifest
@@ -54,14 +72,5 @@ object DevMenuAppInfo {
       hostUrl = hostUrl ?: "Unknown",
       engine = engine
     )
-  }
-
-  private fun getApplicationIconUri(reactContext: ReactContext): String {
-    val packageManager = reactContext.packageManager
-    val packageName = reactContext.packageName
-    val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-
-    //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return applicationInfo.icon.toString()
   }
 }
