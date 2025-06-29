@@ -29,7 +29,7 @@ function getValidMethods(children: PropData[]) {
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
 }
 
-const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string): JSX.Element => {
+const renderNamespace = (namespace: ClassDefinitionData, sdkVersion: string) => {
   const { name, comment, children } = namespace;
 
   const methods = getValidMethods(children);
