@@ -1,0 +1,34 @@
+query getUpdates($appId: String!) {
+  app {
+    byId(appId: $appId) {
+      updateChannels(offset: 0, limit: 10) {
+        name
+        updateBranches(offset: 0, limit: 10) {
+          name
+        }
+      }
+    }
+  }
+}
+
+query getUpdatesWithFilters(
+  $appId: String!
+  $branchName: String!
+  $offset: Int!
+  $limit: Int!
+  $platform: AppPlatform!
+) {
+  app {
+    byId(appId: $appId) {
+      updateBranchByName(name: $branchName) {
+        updates(offset: $offset, limit: $limit, filter: { platform: $platform }) {
+          id
+          message
+          runtimeVersion
+          createdAt
+          manifestPermalink
+        }
+      }
+    }
+  }
+}
