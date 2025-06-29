@@ -46,12 +46,9 @@ internal final class FileSystemDirectory: FileSystemPath {
   }
 
   override var exists: Bool {
-    do {
-      try validatePermission(.read)
-    } catch {
+    guard checkPermission(.read) else {
       return false
     }
-
     var isDirectory: ObjCBool = false
     if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
       return isDirectory.boolValue
