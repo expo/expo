@@ -25,6 +25,7 @@
 - [Android] Prevent status updates when the player is paused. ([#37475](https://github.com/expo/expo/pull/37475) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Change component registry to be per module to prevent interference. ([#37534](https://github.com/expo/expo/pull/37534) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix metering issues when recording. ([#37556](https://github.com/expo/expo/pull/37556) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix issues with audio focus management. ([#37698](https://github.com/expo/expo/pull/37698) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
