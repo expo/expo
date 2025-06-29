@@ -49,6 +49,10 @@ export type TextInputProps = {
      * @default true
      */
     autocorrection?: boolean;
+    /**
+     * The placeholder property specifies a short hint that describes the expected value of an input field (e.g. a sample value or a short description of the expected format).
+     */
+    placeholder?: string;
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
