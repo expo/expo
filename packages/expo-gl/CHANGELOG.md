@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods. ([#35022](https://github.com/expo/expo/pull/35022) by [@hmallen99](https://github.com/hmallen99))
+
 ### 🐛 Bug fixes
 
 - Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
