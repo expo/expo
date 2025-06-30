@@ -26,8 +26,11 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   }
 
   val exists: Boolean get() {
-    validatePermission(Permission.READ)
-    return file.isFile
+    return if (checkPermission(Permission.READ)) {
+      file.isFile
+    } else {
+      false
+    }
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
