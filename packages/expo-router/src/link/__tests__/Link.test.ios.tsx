@@ -1066,3 +1066,110 @@ describe('Preview', () => {
     });
   });
 });
+
+describe('Link.Trigger', () => {
+  it('renders a Link.Trigger with single text child', () => {
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger>Test</Link.Trigger>
+        </Link>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByText('Test')).toBeVisible();
+    const linkTrigger = screen.getByText('Test');
+    act(() => fireEvent.press(linkTrigger));
+    expect(screen.getByTestId('test-page')).toBeVisible();
+  });
+  it('renders a Link.Trigger with single child', () => {
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger>
+            <View>
+              <Text>Test</Text>
+            </View>
+          </Link.Trigger>
+        </Link>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByText('Test')).toBeVisible();
+    const linkTrigger = screen.getByText('Test');
+    act(() => fireEvent.press(linkTrigger));
+    expect(screen.getByTestId('test-page')).toBeVisible();
+  });
+  it('renders a Link.Trigger with multiple children', () => {
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger>
+            <View>
+              <Text>Test</Text>
+            </View>
+            <View>
+              <Text>Another child</Text>
+            </View>
+          </Link.Trigger>
+        </Link>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByText('Test')).toBeVisible();
+    const linkTrigger = screen.getByText('Test');
+    act(() => fireEvent.press(linkTrigger));
+    expect(screen.getByTestId('test-page')).toBeVisible();
+  });
+  it('renders a Link.Trigger with single child in asChild', () => {
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger>
+            <Pressable testID="pressable">
+              <Text>Test</Text>
+            </Pressable>
+          </Link.Trigger>
+        </Link>
+      ),
+      test: () => <View testID="test-page" />,
+    });
+    expect(screen.getByText('Test')).toBeVisible();
+    const linkTrigger = screen.getByText('Test');
+    act(() => fireEvent.press(linkTrigger));
+    expect(screen.getByTestId('test-page')).toBeVisible();
+  });
+  it('throws an error when a Link.Trigger with multiple children is used in asChild', () => {
+    expect(() =>
+      renderRouter({
+        index: () => (
+          <Link href="/test" asChild>
+            <Link.Trigger>
+              <Pressable testID="pressable">
+                <Text>Test</Text>
+              </Pressable>
+              <Text>Another child</Text>
+            </Link.Trigger>
+          </Link>
+        ),
+        test: () => <View testID="test-page" />,
+      })
+    ).toThrow(
+      'When using Link.Trigger in an asChild Link, you must pass a single child element that will emit onPress event.'
+    );
+  });
+  it('throws an error when a Link.Trigger with text is used in asChild', () => {
+    expect(() =>
+      renderRouter({
+        index: () => (
+          <Link href="/test" asChild>
+            <Link.Trigger>Test</Link.Trigger>
+          </Link>
+        ),
+        test: () => <View testID="test-page" />,
+      })
+    ).toThrow(
+      'When using Link.Trigger in an asChild Link, you must pass a single child element that will emit onPress event.'
+    );
+  });
+});
