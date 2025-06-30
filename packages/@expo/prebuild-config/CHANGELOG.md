@@ -21,6 +21,7 @@
 ### 🐛 Bug fixes
 
 - remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
+- fixed race condition when generating ios splashscreen assets ([#37559](https://github.com/expo/expo/pull/37559) by [@alfonsocj](https://github.com/alfonsocj))
 
 ### 💡 Others
 
