@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Added support for ignoring the patches directory ([#37702](https://github.com/expo/expo/pull/37702) by [@huextrat](https://github.com/huextrat))
+- Fixed unstable fingerprint from packages with native binaries like `sharp`. ([#37733](https://github.com/expo/expo/pull/37733) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
