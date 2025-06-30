@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

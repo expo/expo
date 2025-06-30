@@ -39,5 +39,15 @@ cd "$PROJECT_ROOT" || exit
 # We should get the physical path (/var/folders -> /private/var/folders) for metro to resolve correct files
 PROJECT_ROOT="$(pwd -P)"
 
-"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE"
+if [ "$BUNDLE_FORMAT" == "shallow" ]; then
+  RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME"
+elif [ "$BUNDLE_FORMAT" == "deep" ]; then
+  RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME/Contents/Resources"
+  mkdir -p "$RESOURCE_DEST"
+else
+  echo "Unsupported bundle format: $BUNDLE_FORMAT"
+  exit 1
+fi
+
+"${EXPO_UPDATES_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_UPDATES_PACKAGE_DIR}/utils/build/createUpdatesResources.js" ios "$PROJECT_ROOT" "$RESOURCE_DEST" "$CREATE_UPDATES_RESOURCES_MODE" "$ENTRY_FILE"
 
