@@ -33,6 +33,8 @@
   <string name="perm_read_media_audio">reading audio files from external storage</string>
   <string name="perm_notifications">posting notifications</string>
   <string name="perm_system_brightness">system brightness</string>
+  <string name="perm_hzos_use_avatar_camera">accessing the avatar camera</string>
+  <string name="perm_hzos_use_headset_camera">accessing the headset camera</string>
   <string name="default_notification_channel_group">Default</string>
   <string name="persistent_notification_channel_group">Expo</string>
   <string name="persistent_notification_channel_name">Experience notifications</string>
