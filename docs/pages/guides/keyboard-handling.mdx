@@ -154,20 +154,11 @@ export default function RootLayout() {
 
 ### Handling multiple inputs
 
-The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for
-prototyping, but it requires platform-specific configuration and is not very
-customizable.
+The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping, but it requires platform-specific configuration and is not very customizable.
 
-As a more powerful alternative, you can use the
-[`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view)
-component. It automatically scrolls to a focused `TextInput` and provides
-native-like performance. For simple screens with only a few elements, using
-`KeyboardAwareScrollView` is a great approach.
+As a more powerful alternative, you can use the [`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view) component. It automatically scrolls to a focused `TextInput` and provides native-like performance. For simple screens with only a few elements, using `KeyboardAwareScrollView` is a great approach.
 
-For screens with multiple inputs, the Keyboard Controller library also provides a
-`KeyboardToolbar` component to use alongside `KeyboardAwareScrollView`.
-Together, these components handle input navigation and prevent the keyboard from
-covering the screen without custom configuration:
+For screens with multiple inputs, the Keyboard Controller library also provides a `KeyboardToolbar` component to use alongside `KeyboardAwareScrollView`. Together, these components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
 
 ```tsx FormScreen.tsx
 import { TextInput, View, StyleSheet } from 'react-native';
