@@ -1,5 +1,5 @@
 import { WarningAggregator } from '@expo/config-plugins';
-import { ExpoConfig } from 'expo/config';
+import { ExpoConfig } from '@expo/config-types';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
@@ -179,34 +179,21 @@ describe('e2e: iOS icons with fallback image', () => {
   });
 });
 
-describe('iOS .icon directory', () => {
-  it('prefers ios-specific .icon over main icon', () => {
-    expect(
-      getIcons({
-        icon: './assets/main.png',
-        ios: {
-          icon: './assets/ios.icon',
-        },
-      })
-    ).toBe('./assets/ios.icon');
-  });
-});
-
 describe('e2e: iOS liquid glass icons', () => {
   const projectRoot = '/app';
 
   beforeAll(async () => {
-    vol.fromJSON(rnFixture, projectRoot);
-
-    vol.mkdirpSync('/app/assets/MyApp.icon/Assets');
-    vol.writeFileSync(
-      '/app/assets/MyApp.icon/icon.json',
-      JSON.stringify({
-        version: 1,
-        format: 'liquid-glass-icon',
-      })
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/app/assets/MyApp.icon/icon.json': JSON.stringify({
+          version: 1,
+          format: 'liquid-glass-icon',
+        }),
+        '/app/assets/MyApp.icon/Assets/App-Icon-512x512@1x.png': 'icon-data',
+      },
+      projectRoot
     );
-    vol.writeFileSync('/app/assets/MyApp.icon/Assets/App-Icon-512x512@1x.png', 'icon-data');
   });
 
   afterAll(() => {

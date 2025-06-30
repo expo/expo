@@ -29,7 +29,7 @@ function _fs() {
   return data;
 }
 function _path() {
-  const data = require("path");
+  const data = _interopRequireDefault(require("path"));
   _path = function () {
     return data;
   };
@@ -49,19 +49,21 @@ const {
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
 const withIosIcons = config => {
-  return (0, _configPlugins().withXcodeProject)((0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
+  config = (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
     await setIconsAsync(config, config.modRequest.projectRoot);
     return config;
-  }]), config => {
+  }]);
+  config = (0, _configPlugins().withXcodeProject)(config, config => {
     const icon = getIcons(config);
     const projectName = config.modRequest.projectName;
-    if (icon && typeof icon === 'string' && (0, _path().extname)(icon) === '.icon' && projectName) {
-      const iconName = (0, _path().basename)(icon, '.icon');
+    if (icon && typeof icon === 'string' && _path().default.extname(icon) === '.icon' && projectName) {
+      const iconName = _path().default.basename(icon, '.icon');
       setIconName(config.modResults, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
     }
     return config;
   });
+  return config;
 };
 exports.withIosIcons = withIosIcons;
 function getIcons(config) {
@@ -91,12 +93,12 @@ async function setIconsAsync(config, projectRoot) {
 
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
-  if (typeof icon === 'string' && (0, _path().extname)(icon) === '.icon') {
+  if (typeof icon === 'string' && _path().default.extname(icon) === '.icon') {
     return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
   }
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
-  await _fs().default.promises.mkdir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
+  await _fs().default.promises.mkdir(_path().default.join(iosNamedProjectRoot, IMAGESET_PATH), {
     recursive: true
   });
   const imagesJson = [];
@@ -134,7 +136,7 @@ async function setIconsAsync(config, projectRoot) {
   }
 
   // Finally, write the Contents.json
-  await (0, _AssetContents().writeContentsJsonAsync)((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
+  await (0, _AssetContents().writeContentsJsonAsync)(_path().default.join(iosNamedProjectRoot, IMAGESET_PATH), {
     images: imagesJson
   });
 }
@@ -146,7 +148,7 @@ async function setIconsAsync(config, projectRoot) {
  */
 function getIosNamedProjectPath(projectRoot) {
   const projectName = getProjectName(projectRoot);
-  return (0, _path().join)(projectRoot, 'ios', projectName);
+  return _path().default.join(projectRoot, 'ios', projectName);
 }
 function getAppleIconName(size, scale, appearance) {
   let name = 'App-Icon';
@@ -192,7 +194,7 @@ async function generateUniversalIconAsync(projectRoot, {
     });
   }
   // Write image buffer to the file system.
-  const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
+  const assetPath = _path().default.join(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await _fs().default.promises.writeFile(assetPath, source);
   return {
     filename,
@@ -208,9 +210,9 @@ async function generateUniversalIconAsync(projectRoot, {
   };
 }
 async function addLiquidGlassIcon(iconPath, projectRoot, iosNamedProjectRoot) {
-  const iconName = (0, _path().basename)(iconPath, '.icon');
-  const sourceIconPath = (0, _path().join)(projectRoot, iconPath);
-  const targetIconPath = (0, _path().join)(iosNamedProjectRoot, `${iconName}.icon`);
+  const iconName = _path().default.basename(iconPath, '.icon');
+  const sourceIconPath = _path().default.join(projectRoot, iconPath);
+  const targetIconPath = _path().default.join(iosNamedProjectRoot, `${iconName}.icon`);
   if (!_fs().default.existsSync(sourceIconPath)) {
     _configPlugins().WarningAggregator.addWarningIOS('icon', `Liquid glass icon file not found at path: ${iconPath}`);
     return;
@@ -235,40 +237,12 @@ function setIconName(project, iconName) {
  */
 function addIconFileToProject(project, projectName, iconName) {
   const iconPath = `${iconName}.icon`;
-  const fileRef = project.generateUuid();
-  const buildFileRef = project.generateUuid();
-  const fileReferences = project.pbxFileReferenceSection();
-  fileReferences[fileRef] = {
-    isa: 'PBXFileReference',
-    lastKnownFileType: 'folder.iconcomposer.icon',
-    name: iconPath,
-    path: `${projectName}/${iconPath}`,
-    sourceTree: '"<group>"'
-  };
-  fileReferences[`${fileRef}_comment`] = iconPath;
-  const buildFiles = project.pbxBuildFileSection();
-  buildFiles[buildFileRef] = {
-    isa: 'PBXBuildFile',
-    fileRef,
-    fileRef_comment: iconPath
-  };
-  buildFiles[`${buildFileRef}_comment`] = `${iconPath} in Resources`;
-  const {
-    firstProject
-  } = project.getFirstProject();
-  const mainGroup = project.getPBXGroupByKey(firstProject.mainGroup);
-  const projectGroup = mainGroup?.children.find(child => child.comment === projectName);
-  if (projectGroup) {
-    const namedGroup = project.getPBXGroupByKey(projectGroup.value);
-    namedGroup?.children.push({
-      value: fileRef,
-      comment: iconPath
-    });
-  }
-  project.addToPbxResourcesBuildPhase({
-    uuid: buildFileRef,
-    basename: iconPath,
-    group: projectName
+  _configPlugins().IOSConfig.XcodeUtils.addResourceFileToGroup({
+    filepath: `${projectName}/${iconPath}`,
+    groupName: projectName,
+    project,
+    isBuildFile: true,
+    verbose: true
   });
 }
 async function copyIconDirectory(src, dest) {
@@ -282,8 +256,8 @@ async function copyIconDirectory(src, dest) {
     const {
       name
     } = entry;
-    const srcPath = (0, _path().join)(src, name);
-    const destPath = (0, _path().join)(dest, name);
+    const srcPath = _path().default.join(src, name);
+    const destPath = _path().default.join(dest, name);
     if (entry.isDirectory()) {
       await copyIconDirectory(srcPath, destPath);
     } else {

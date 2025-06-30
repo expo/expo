@@ -8,7 +8,7 @@ import {
 import { ExpoConfig, IOSIcons } from '@expo/config-types';
 import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
-import { join, extname, basename } from 'path';
+import path from 'path';
 
 import { ContentsJson, ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
 
@@ -18,26 +18,27 @@ const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
 
 export const withIosIcons: ConfigPlugin = (config) => {
-  return withXcodeProject(
-    withDangerousMod(config, [
-      'ios',
-      async (config) => {
-        await setIconsAsync(config, config.modRequest.projectRoot);
-        return config;
-      },
-    ]),
-    (config) => {
-      const icon = getIcons(config);
-      const projectName = config.modRequest.projectName;
-
-      if (icon && typeof icon === 'string' && extname(icon) === '.icon' && projectName) {
-        const iconName = basename(icon, '.icon');
-        setIconName(config.modResults, iconName);
-        addIconFileToProject(config.modResults, projectName, iconName);
-      }
+  config = withDangerousMod(config, [
+    'ios',
+    async (config) => {
+      await setIconsAsync(config, config.modRequest.projectRoot);
       return config;
+    },
+  ]);
+
+  config = withXcodeProject(config, (config) => {
+    const icon = getIcons(config);
+    const projectName = config.modRequest.projectName;
+
+    if (icon && typeof icon === 'string' && path.extname(icon) === '.icon' && projectName) {
+      const iconName = path.basename(icon, '.icon');
+      setIconName(config.modResults, iconName);
+      addIconFileToProject(config.modResults, projectName, iconName);
     }
-  );
+    return config;
+  });
+
+  return config;
 };
 
 export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | string | null {
@@ -78,12 +79,12 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
-  if (typeof icon === 'string' && extname(icon) === '.icon') {
+  if (typeof icon === 'string' && path.extname(icon) === '.icon') {
     return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
   }
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
-  await fs.promises.mkdir(join(iosNamedProjectRoot, IMAGESET_PATH), { recursive: true });
+  await fs.promises.mkdir(path.join(iosNamedProjectRoot, IMAGESET_PATH), { recursive: true });
 
   const imagesJson: ContentsJson['images'] = [];
 
@@ -126,7 +127,9 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   }
 
   // Finally, write the Contents.json
-  await writeContentsJsonAsync(join(iosNamedProjectRoot, IMAGESET_PATH), { images: imagesJson });
+  await writeContentsJsonAsync(path.join(iosNamedProjectRoot, IMAGESET_PATH), {
+    images: imagesJson,
+  });
 }
 
 /**
@@ -136,7 +139,7 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
  */
 function getIosNamedProjectPath(projectRoot: string): string {
   const projectName = getProjectName(projectRoot);
-  return join(projectRoot, 'ios', projectName);
+  return path.join(projectRoot, 'ios', projectName);
 }
 
 function getAppleIconName(size: number, scale: number, appearance?: 'dark' | 'tinted'): string {
@@ -198,7 +201,7 @@ export async function generateUniversalIconAsync(
     source = await createSquareAsync({ size });
   }
   // Write image buffer to the file system.
-  const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
+  const assetPath = path.join(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await fs.promises.writeFile(assetPath, source);
 
   return {
@@ -215,9 +218,9 @@ async function addLiquidGlassIcon(
   projectRoot: string,
   iosNamedProjectRoot: string
 ): Promise<void> {
-  const iconName = basename(iconPath, '.icon');
-  const sourceIconPath = join(projectRoot, iconPath);
-  const targetIconPath = join(iosNamedProjectRoot, `${iconName}.icon`);
+  const iconName = path.basename(iconPath, '.icon');
+  const sourceIconPath = path.join(projectRoot, iconPath);
+  const targetIconPath = path.join(iosNamedProjectRoot, `${iconName}.icon`);
 
   if (!fs.existsSync(sourceIconPath)) {
     WarningAggregator.addWarningIOS(
@@ -249,43 +252,12 @@ function setIconName(project: any, iconName: string): void {
 function addIconFileToProject(project: any, projectName: string, iconName: string): void {
   const iconPath = `${iconName}.icon`;
 
-  const fileRef = project.generateUuid();
-  const buildFileRef = project.generateUuid();
-
-  const fileReferences = project.pbxFileReferenceSection();
-  fileReferences[fileRef] = {
-    isa: 'PBXFileReference',
-    lastKnownFileType: 'folder.iconcomposer.icon',
-    name: iconPath,
-    path: `${projectName}/${iconPath}`,
-    sourceTree: '"<group>"',
-  };
-  fileReferences[`${fileRef}_comment`] = iconPath;
-
-  const buildFiles = project.pbxBuildFileSection();
-  buildFiles[buildFileRef] = {
-    isa: 'PBXBuildFile',
-    fileRef,
-    fileRef_comment: iconPath,
-  };
-  buildFiles[`${buildFileRef}_comment`] = `${iconPath} in Resources`;
-
-  const { firstProject } = project.getFirstProject();
-  const mainGroup = project.getPBXGroupByKey(firstProject.mainGroup);
-  const projectGroup = mainGroup?.children.find((child: any) => child.comment === projectName);
-
-  if (projectGroup) {
-    const namedGroup = project.getPBXGroupByKey(projectGroup.value);
-    namedGroup?.children.push({
-      value: fileRef,
-      comment: iconPath,
-    });
-  }
-
-  project.addToPbxResourcesBuildPhase({
-    uuid: buildFileRef,
-    basename: iconPath,
-    group: projectName,
+  IOSConfig.XcodeUtils.addResourceFileToGroup({
+    filepath: `${projectName}/${iconPath}`,
+    groupName: projectName,
+    project,
+    isBuildFile: true,
+    verbose: true,
   });
 }
 
@@ -295,8 +267,8 @@ async function copyIconDirectory(src: string, dest: string): Promise<void> {
 
   for (const entry of entries) {
     const { name } = entry;
-    const srcPath = join(src, name);
-    const destPath = join(dest, name);
+    const srcPath = path.join(src, name);
+    const destPath = path.join(dest, name);
 
     if (entry.isDirectory()) {
       await copyIconDirectory(srcPath, destPath);
