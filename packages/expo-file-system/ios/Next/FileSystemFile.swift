@@ -33,15 +33,14 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   override var exists: Bool {
-    get throws {
-      try validatePermission(.read)
-
-      var isDirectory: ObjCBool = false
-      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-        return !isDirectory.boolValue
-      }
+    guard checkPermission(.read) else {
       return false
     }
+    var isDirectory: ObjCBool = false
+    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+      return !isDirectory.boolValue
+    }
+    return false
   }
 
   // TODO: Move to the constructor once error is rethrowed
@@ -56,10 +55,10 @@ internal final class FileSystemFile: FileSystemPath {
       try validatePermission(.read)
       let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
       guard let size = attributes[.size] else {
-        throw UnableToGetFileSizeException("attributes do not contain size")
+        throw UnableToGetSizeException("attributes do not contain size")
       }
       guard let size = size as? NSNumber else {
-        throw UnableToGetFileSizeException("size is not a number")
+        throw UnableToGetSizeException("size is not a number")
       }
       return size.int64Value
     }

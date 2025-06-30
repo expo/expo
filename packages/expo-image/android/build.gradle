@@ -31,12 +31,10 @@ dependencies {
   implementation 'com.facebook.react:react-android'
 
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
-  if (!expoModule.safeExtGet("excludeAppGlideModule", false)) {
-      kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
-  }
+  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
 
-  implementation "com.github.penfeizhou.android.animation:glide-plugin:3.0.3"
+  implementation "com.github.penfeizhou.android.animation:glide-plugin:3.0.5"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'

@@ -1,4 +1,5 @@
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useHrefAttrs = void 0;
 exports.useInteropClassName = useInteropClassName;

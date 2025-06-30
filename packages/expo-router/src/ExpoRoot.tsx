@@ -18,6 +18,8 @@ import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { ImperativeApiEmitter } from './imperative-api';
+import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { ModalContextProvider } from './modal/ModalContext';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
@@ -63,13 +65,15 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   const wrapper = ({ children }: PropsWithChildren) => {
     return (
       <ParentWrapper>
-        <SafeAreaProvider
-          // SSR support
-          initialMetrics={INITIAL_METRICS}>
-          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {canOverrideStatusBarBehavior && <AutoStatusBar />}
-          {children}
-        </SafeAreaProvider>
+        <LinkPreviewContextProvider>
+          <SafeAreaProvider
+            // SSR support
+            initialMetrics={INITIAL_METRICS}>
+            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+            {canOverrideStatusBarBehavior && <AutoStatusBar />}
+            {children}
+          </SafeAreaProvider>
+        </LinkPreviewContextProvider>
       </ParentWrapper>
     );
   };
@@ -157,8 +161,10 @@ function ContextNavigator({
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ImperativeApiEmitter />
-            <Content />
+            <ModalContextProvider>
+              <ImperativeApiEmitter />
+              <Content />
+            </ModalContextProvider>
           </WrapperComponent>
         </ServerContext.Provider>
       </UpstreamNavigationContainer>

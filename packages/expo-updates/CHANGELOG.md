@@ -8,11 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
 
 - [Android] Cleanup state machine resources when the module is destroyed. ([#37193](https://github.com/expo/expo/pull/37193) by [@alanjhughes](https://github.com/alanjhughes))
+- [CI] convert E2E (enabled) tests to Maestro. ([#37492](https://github.com/expo/expo/pull/37492) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (disabled) tests to Maestro. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (fingerprint and startup) tests to Maestro. ([#37592](https://github.com/expo/expo/pull/37592) by [@douglowder](https://github.com/douglowder))
+- [CI] convert E2E (old arch, custom init, error recovery, bricking measures disabled) tests to Maestro. ([#37600](https://github.com/expo/expo/pull/37600) by [@douglowder](https://github.com/douglowder))
+- Bump Express and types to `express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
+- Removed Detox testing workaround code on Android. ([#37707](https://github.com/expo/expo/pull/37707) by [@kudo](https://github.com/kudo))
+
+## 0.28.15 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
 
 ## 0.28.14 - 2025-06-04
 

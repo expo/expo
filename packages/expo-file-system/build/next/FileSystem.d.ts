@@ -10,6 +10,14 @@ export declare class Paths extends PathUtilities {
      */
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
+    /**
+     * A property that represents the total space on device's internal storage, represented in bytes.
+     */
+    static get totalDiskSpace(): number;
+    /**
+     * A property that represents the available space on device's internal storage, represented in bytes.
+     */
+    static get availableDiskSpace(): number;
 }
 /**
  * @hidden

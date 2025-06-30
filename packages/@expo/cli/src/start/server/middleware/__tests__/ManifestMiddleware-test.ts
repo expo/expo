@@ -108,7 +108,7 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        '/index.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
       ],
     });
     expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html');
@@ -161,7 +161,9 @@ describe('_getBundleUrl', () => {
         mainModuleName: 'index',
         platform: 'android',
       })
-    ).toEqual('http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false');
+    ).toEqual(
+      'http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false&lazy=true'
+    );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: 'evanbacon.dev', scheme: 'http' });
   });
@@ -178,7 +180,7 @@ describe('_getBundleUrl', () => {
         platform: 'ios',
       })
     ).toEqual(
-      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&minify=true'
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
@@ -229,7 +231,6 @@ describe('_resolveProjectSettingsAsync', () => {
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       expoGoConfig: {
-        __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
         mainModuleName: 'index',
@@ -260,7 +261,6 @@ describe('_resolveProjectSettingsAsync', () => {
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       expoGoConfig: {
-        __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
         mainModuleName: 'index',

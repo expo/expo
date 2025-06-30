@@ -16,7 +16,7 @@ jobs:
   docs-pr-destroy:
     if: (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
         (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: 🪣 Delete docs preview bucket
         env:

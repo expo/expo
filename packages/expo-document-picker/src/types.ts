@@ -12,6 +12,8 @@ export type DocumentPickerOptions = {
    * which allows other Expo APIs to read the file immediately. This may impact performance for
    * large files, so you should consider setting this to `false` if you expect users to pick
    * particularly large files and your app does not need immediate read access.
+   * @platform ios
+   * @platform android
    * @default true
    */
   copyToCacheDirectory?: boolean;
@@ -59,6 +61,11 @@ export type DocumentPickerAsset = {
    * @platform web
    */
   file?: File;
+  /**
+   * Base64 string of the file.
+   * @platform web
+   */
+  base64?: string;
 };
 
 /**

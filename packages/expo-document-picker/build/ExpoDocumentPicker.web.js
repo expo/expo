@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 export default {
-    async getDocumentAsync({ type = '*/*', multiple = false, base64 = true, }) {
+    async getDocumentAsync({ type = '*/*', multiple = false, base64 = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
             return { canceled: true, assets: null };
@@ -47,7 +47,7 @@ function readFileAsync(targetFile, base64 = true) {
         const mimeType = targetFile.type;
         if (!base64) {
             resolve({
-                uri: targetFile.webkitRelativePath,
+                uri: URL.createObjectURL(targetFile),
                 mimeType,
                 name: targetFile.name,
                 lastModified: targetFile.lastModified,
@@ -61,9 +61,10 @@ function readFileAsync(targetFile, base64 = true) {
             reject(new Error(`Failed to read the selected media because the operation failed.`));
         };
         reader.onload = ({ target }) => {
-            const uri = target.result;
+            const base64 = target.result;
             resolve({
-                uri,
+                uri: URL.createObjectURL(targetFile),
+                base64,
                 mimeType,
                 name: targetFile.name,
                 lastModified: targetFile.lastModified,

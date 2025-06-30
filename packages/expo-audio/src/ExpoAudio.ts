@@ -7,6 +7,7 @@ import {
   AudioMode,
   AudioSource,
   AudioStatus,
+  PitchCorrectionQuality,
   RecorderState,
   RecordingOptions,
   RecordingStatus,
@@ -24,6 +25,24 @@ export const RECORDING_STATUS_UPDATE = 'recordingStatusUpdate';
 const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source: AudioSource) {
   return replace.call(this, resolveSource(source));
+};
+
+const setPlaybackRate = AudioModule.AudioPlayer.prototype.setPlaybackRate;
+AudioModule.AudioPlayer.prototype.setPlaybackRate = function (
+  rate: number,
+  pitchCorrectionQuality?: PitchCorrectionQuality
+) {
+  if (Platform.OS === 'android') {
+    return setPlaybackRate.call(this, rate);
+  } else {
+    return setPlaybackRate.call(this, rate, pitchCorrectionQuality);
+  }
+};
+
+const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
+AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
+  const processedOptions = options ? createRecordingOptions(options) : undefined;
+  return prepareToRecordAsync.call(this, processedOptions);
 };
 
 // @docsMissing

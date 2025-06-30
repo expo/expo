@@ -25,9 +25,9 @@ internal final class InvalidTypeDirectoryException: Exception {
   }
 }
 
-internal final class UnableToGetFileSizeException: GenericException<String> {
+internal final class UnableToGetSizeException: GenericException<String> {
   override var reason: String {
-    "Unable to get file size: \(param)"
+    "Unable to get file or directory size: \(param)"
   }
 }
 

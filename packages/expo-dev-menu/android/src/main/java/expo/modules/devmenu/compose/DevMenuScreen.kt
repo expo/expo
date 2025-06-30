@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
@@ -22,9 +23,8 @@ import expo.modules.devmenu.compose.ui.AppInfo
 import expo.modules.devmenu.compose.ui.BundlerInfo
 import expo.modules.devmenu.compose.ui.BundlerInfoState
 import expo.modules.devmenu.compose.ui.MenuButton
-import expo.modules.devmenu.compose.ui.MenuButtonContainer
+import expo.modules.devmenu.compose.ui.MenuContainer
 import expo.modules.devmenu.compose.ui.MenuInfo
-import expo.modules.devmenu.compose.ui.MenuSectionContainer
 import expo.modules.devmenu.compose.ui.MenuSwitch
 import expo.modules.devmenu.compose.ui.Warning
 
@@ -40,77 +40,77 @@ fun DevMenuContent(
       )
     )
 
-    Spacer(Modifier.size(Theme.spacing.small))
+    Column(modifier = Modifier.padding(Theme.spacing.small)) {
+      Spacer(Modifier.size(Theme.spacing.small))
 
-    MenuButtonContainer {
-      MenuButton(
-        "Reload",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_refreshicon),
-        onClick = { onAction(DevMenuAction.Reload) }
-      )
-      Divider()
-      MenuButton(
-        "Go home",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_homefilledactiveiconlight),
-        onClick = { onAction(DevMenuAction.GoHome) }
-      )
-    }
+      MenuContainer {
+        MenuButton(
+          "Reload",
+          icon = painterResource(R.drawable._expodevclientcomponents_assets_refreshicon),
+          onClick = { onAction(DevMenuAction.Reload) }
+        )
+        Divider()
+        MenuButton(
+          "Go home",
+          icon = painterResource(R.drawable._expodevclientcomponents_assets_homefilledinactiveicon),
+          onClick = { onAction(DevMenuAction.GoHome) }
+        )
+      }
 
-    Spacer(Modifier.size(Theme.spacing.small))
+      Spacer(Modifier.size(Theme.spacing.small))
 
-    MenuButtonContainer {
-      MenuButton(
-        "Toggle performance monitor",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_performanceicon),
-        onClick = { onAction(DevMenuAction.TogglePerformanceMonitor) }
-      )
-      Divider()
-      MenuButton(
-        "Toggle element inspector",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_inspectelementicon),
-        onClick = { onAction(DevMenuAction.ToggleElementInspector) }
-      )
-      Divider()
-      MenuButton(
-        "Open JS debugger",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_debugicon),
-        onClick = { onAction(DevMenuAction.OpenJSDebugger) }
-      )
-      Divider()
-      MenuSwitch(
-        "Fast Refresh",
-        icon = painterResource(R.drawable._expodevclientcomponents_assets_runicon),
-        onToggled = { newValue -> onAction(DevMenuAction.ToggleFastRefresh(newValue)) }
-      )
-    }
+      MenuContainer {
+        MenuButton(
+          "Toggle performance monitor",
+          icon = painterResource(R.drawable._expodevclientcomponents_assets_performanceicon),
+          onClick = { onAction(DevMenuAction.TogglePerformanceMonitor) }
+        )
+        Divider()
+        MenuButton(
+          "Toggle element inspector",
+          icon = painterResource(R.drawable._expodevclientcomponents_assets_inspectelementicon),
+          onClick = { onAction(DevMenuAction.ToggleElementInspector) }
+        )
+        Divider()
+        MenuButton(
+          "Open JS debugger",
+          icon = painterResource(R.drawable._expodevclientcomponents_assets_debugicon),
+          onClick = { onAction(DevMenuAction.OpenJSDebugger) }
+        )
+        Divider()
+        MenuSwitch(
+          "Fast Refresh",
+          icon = painterResource(R.drawable._expodevclientcomponents_assets_runicon),
+          onToggled = { newValue -> onAction(DevMenuAction.ToggleFastRefresh(newValue)) }
+        )
+      }
 
-    Spacer(Modifier.size(Theme.spacing.large))
+      Spacer(Modifier.size(Theme.spacing.large))
 
-    MenuSectionContainer {
       Warning("Debugging not working? Try manually reloading first")
+
+      Spacer(Modifier.size(Theme.spacing.large))
+
+      MenuContainer {
+        MenuInfo("Version", appInfo.appVersion ?: "N/A")
+        Divider()
+        MenuInfo("Runtime version", appInfo.runtimeVersion ?: "N/A")
+        Divider()
+        MenuButton("Tap to Copy All", icon = null, labelTextColor = Theme.colors.text.link)
+      }
+
+      Spacer(Modifier.size(Theme.spacing.large))
+
+      MenuContainer {
+        MenuButton(
+          "Open React Native dev menu",
+          icon = null,
+          onClick = { onAction(DevMenuAction.OpenReactNativeDevMenu) }
+        )
+      }
+
+      Spacer(Modifier.windowInsetsPadding(WindowInsets.navigationBars))
     }
-
-    Spacer(Modifier.size(Theme.spacing.large))
-
-    MenuButtonContainer {
-      MenuInfo("Version", appInfo.appVersion ?: "N/A")
-      Divider()
-      MenuInfo("Runtime version", appInfo.runtimeVersion ?: "N/A")
-      Divider()
-      MenuButton("Tap to Copy All", icon = null, labelTextColor = Theme.colors.text.link)
-    }
-
-    Spacer(Modifier.size(Theme.spacing.large))
-
-    MenuButtonContainer {
-      MenuButton(
-        "Open React Native dev menu",
-        icon = null,
-        onClick = { onAction(DevMenuAction.OpenReactNativeDevMenu) }
-      )
-    }
-
-    Spacer(Modifier.windowInsetsPadding(WindowInsets.navigationBars))
   }
 }
 

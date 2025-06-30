@@ -1,0 +1,33 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# downloads and runs update with multiple assets, verifies number of assets requested
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-with-multiple-assets', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve an update with multiple assets
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- assertTrue:
+    condition:  ${output.api.staticFileCount() == 4}
+    label: Assert that exactly 4 static files were requested
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-2"}
+    label: Assert update string is from downloaded update
+- stopApp

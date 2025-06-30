@@ -10,9 +10,13 @@
 
 - [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fixed contentPosition is not correct after switching theme. ([#37374](https://github.com/expo/expo/pull/37374) by [@kudo](https://github.com/kudo))
-- [Android] Make Glide compiler (`kapt "com.github.bumptech.glide:compiler"`) in the `expo-image` module conditional on the `excludeAppGlideModule` Gradle property. When `excludeAppGlideModule=true`, expo-image now omits its own annotation processing and stub `ExpoImageAppGlideModule.kt`, preventing duplicate `GeneratedAppGlideModuleImpl` conflicts in release builds. ([#37432](https://github.com/expo/expo/pull/37432) by [@antonhudz](https://github.com/antonhudz))
+- [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
 
 ### 💡 Others
+
+### 📚 3rd party library updates
+
+- [Android] Bumped GIF Glide plugin to 3.0.5 for Android 16KB page size support. ([#37454](https://github.com/expo/expo/pull/37454) by [@kudo](https://github.com/kudo))
 
 ## 2.3.0 - 2025-06-11
 
@@ -39,6 +43,7 @@ _This version does not introduce any user-facing changes._
 - Fix React Server Components support. ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Fix PhotoLibrary assets being scaled twice. ([#36776](https://github.com/expo/expo/pull/36776) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Don't add transformers when unnecessary. ([#36884](https://github.com/expo/expo/pull/36884) by [@jakex7](https://github.com/jakex7))
+- [Web] Fix `tintColor` in React 19. ([#37133](https://github.com/expo/expo/pull/37133) by [@bradleyayers](https://github.com/bradleyayers))
 
 ## 2.1.7 — 2025-05-06
 

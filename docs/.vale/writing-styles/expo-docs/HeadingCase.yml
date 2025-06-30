@@ -265,3 +265,4 @@ exceptions:
   - architecture?
   - index.tsx files
   - registerRootComponent
+  - browserslist

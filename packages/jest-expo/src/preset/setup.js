@@ -4,9 +4,8 @@
  */
 'use strict';
 
-const merge = require('lodash/merge');
-
 const findUp = require('find-up');
+const merge = require('lodash/merge');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
@@ -127,6 +126,9 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
     });
   }
 );
+
+// Mock Expo's default async require messaging sockets when running tests
+jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 try {
   jest.mock('expo-file-system', () => ({
