@@ -18,6 +18,7 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
+import java.util.EnumSet
 
 class FileSystemNextModule : Module() {
   private val context: Context
@@ -78,6 +79,17 @@ class FileSystemNextModule : Module() {
         }
       }
       return@Coroutine destination.path
+    }
+
+    Function("isDirectory") { url: URI ->
+      val file = File(url)
+      val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
+        ?: EnumSet.noneOf(Permission::class.java)
+      if (permissions.contains(Permission.READ) && file.exists()) {
+        IsDirectory(exists = file.exists(), isDirectory = file.isDirectory)
+      } else {
+        IsDirectory(exists = false, isDirectory = null)
+      }
     }
 
     Class(FileSystemFile::class) {

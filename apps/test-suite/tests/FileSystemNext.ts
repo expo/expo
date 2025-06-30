@@ -566,6 +566,36 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
+      describe('Returns whether a path is a directory', () => {
+        it('correctly if exists and is directory', () => {
+          const uri = testDirectory + 'returns_true_if_path_is_directory';
+          const src = new Directory(uri);
+          src.create();
+          expect(Paths.isDirectory(uri)).toEqual({
+            exists: true,
+            isDirectory: true,
+          });
+        });
+
+        it('correctly if exists and not directory', () => {
+          const uri = testDirectory + 'returns_false_if_path_is_file.txt';
+          const src = new File(uri);
+          src.create();
+          expect(Paths.isDirectory(uri)).toEqual({
+            exists: true,
+            isDirectory: false,
+          });
+        });
+
+        it('correctly if not exists', () => {
+          let uri = testDirectory + 'correctly_if_no_exists.txt';
+          expect(Paths.isDirectory(uri)).toEqual({
+            exists: false,
+            isDirectory: null,
+          });
+        });
+      });
+
       describe('Lists directory contents', () => {
         it('for newly created directories', () => {
           new File(testDirectory, 'file.txt').create();

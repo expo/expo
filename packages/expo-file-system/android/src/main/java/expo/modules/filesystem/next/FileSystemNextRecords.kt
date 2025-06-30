@@ -24,3 +24,10 @@ data class FileInfo(
   @Field var modificationTime: Long? = null,
   @Field var creationTime: Long? = null
 ) : Record
+
+data class IsDirectory(
+  @Field
+  var exists: Boolean,
+  @Field
+  var isDirectory: Boolean?,
+) : Record

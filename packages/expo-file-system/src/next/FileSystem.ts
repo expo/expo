@@ -41,6 +41,15 @@ export class Paths extends PathUtilities {
   static get availableDiskSpace() {
     return ExpoFileSystem.availableDiskSpace;
   }
+
+  /*
+   * Returns an object containing two values:
+   * - exists: is true if and only if the file specified by the abstract pathname exists and can be read by the application, false otherwise
+   * - isDirectory: if exists is true, this indicates whether the file is a directory; otherwise, the value is null
+   */
+  static isDirectory(...uris: string[]): { isDirectory: boolean | null; exists: boolean } {
+    return ExpoFileSystem.isDirectory(uris.join('/'));
+  }
 }
 
 /**
