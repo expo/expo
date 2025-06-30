@@ -259,13 +259,6 @@ module.exports = {
           { name: 'evalJsForWebViewAsync', argumentsCount: 2, key: 'evalJsForWebViewAsync' },
         ],
         ExpoFetchModule: [],
-        ExpoFontLoader: [
-          { name: 'getLoadedFonts', argumentsCount: 0, key: 'getLoadedFonts' },
-          { name: 'loadAsync', argumentsCount: 2, key: 'loadAsync' },
-        ],
-        ExpoFontUtils: [
-          { name: 'renderToImageAsync', argumentsCount: 2, key: 'renderToImageAsync' },
-        ],
         ExpoGo: [{ name: 'getModulesSchema', argumentsCount: 0, key: 'getModulesSchema' }],
         ExpoHaptics: [
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
@@ -906,17 +899,6 @@ module.exports = {
         ExpoFetchModule: {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
-        },
-        ExpoFontLoader: {
-          addListener: { type: 'function' },
-          getLoadedFonts: { type: 'function' },
-          loadAsync: { type: 'function' },
-          removeListeners: { type: 'function' },
-        },
-        ExpoFontUtils: {
-          addListener: { type: 'function' },
-          removeListeners: { type: 'function' },
-          renderToImageAsync: { type: 'function' },
         },
         ExpoGo: {
           addListener: { type: 'function' },
