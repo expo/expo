@@ -337,6 +337,7 @@ async function preparePackageJson(
 
   const extraDevDependencies = configureE2E
     ? {
+        '@config-plugins/detox': '^9.0.0',
         '@types/express': '^5.0.3',
         express: '^5.1.0',
         'form-data': '^4.0.0',
@@ -476,7 +477,16 @@ function transformAppJsonForE2E(
   runtimeVersion: string,
   isTV: boolean
 ) {
-  const plugins: any[] = ['expo-updates'];
+  const plugins: any[] = [
+    'expo-updates',
+    [
+      '@config-plugins/detox',
+      {
+        skipProguard: true,
+        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
+      },
+    ],
+  ];
   if (isTV) {
     plugins.push([
       '@react-native-tvos/config-tv',
@@ -627,7 +637,16 @@ export function transformAppJsonForUpdatesDisabledE2E(
   projectName: string,
   runtimeVersion: string
 ) {
-  const plugins: any[] = ['expo-updates'];
+  const plugins: any[] = [
+    'expo-updates',
+    [
+      '@config-plugins/detox',
+      {
+        skipProguard: true,
+        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
+      },
+    ],
+  ];
   return {
     ...appJson,
     expo: {
