@@ -33,11 +33,7 @@ const mailClientURLs: string[] = [
 const withMailComposer: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {
     const existingSchemes = config.modResults.LSApplicationQueriesSchemes ?? [];
-    const existingSet = new Set(existingSchemes);
-    const newSchemes = [
-      ...existingSchemes,
-      ...mailClientURLs.filter((scheme) => !existingSet.has(scheme)),
-    ];
+    const newSchemes = [...new Set([...existingSchemes, ...mailClientURLs])];
     config.modResults.LSApplicationQueriesSchemes = newSchemes;
     return config;
   });
