@@ -1,4 +1,5 @@
 import { WarningAggregator } from '@expo/config-plugins';
+import { ExpoConfig } from 'expo/config';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
@@ -175,5 +176,99 @@ describe('e2e: iOS icons with fallback image', () => {
 
     // Ensure all icons are assigned as expected.
     expect(contents.images.length).toBe(1);
+  });
+});
+
+describe('iOS .icon directory', () => {
+  it('prefers ios-specific .icon over main icon', () => {
+    expect(
+      getIcons({
+        icon: './assets/main.png',
+        ios: {
+          icon: './assets/ios.icon',
+        },
+      })
+    ).toBe('./assets/ios.icon');
+  });
+});
+
+describe('e2e: iOS liquid glass icons', () => {
+  const projectRoot = '/app';
+
+  beforeAll(async () => {
+    vol.fromJSON(rnFixture, projectRoot);
+
+    vol.mkdirpSync('/app/assets/MyApp.icon/Assets');
+    vol.writeFileSync(
+      '/app/assets/MyApp.icon/icon.json',
+      JSON.stringify({
+        version: 1,
+        format: 'liquid-glass-icon',
+      })
+    );
+    vol.writeFileSync('/app/assets/MyApp.icon/Assets/App-Icon-512x512@1x.png', 'icon-data');
+  });
+
+  afterAll(() => {
+    vol.reset();
+  });
+
+  it('detects .icon directories correctly', () => {
+    const config = {
+      ios: { icon: 'assets/MyApp.icon' },
+    };
+
+    const icon = getIcons(config);
+    expect(icon).toBe('assets/MyApp.icon');
+
+    if (typeof icon === 'string') {
+      expect(path.extname(icon)).toBe('.icon');
+    }
+  });
+
+  it('processes .icon directories without warnings', async () => {
+    const config: ExpoConfig = {
+      slug: 'HelloWorld',
+      version: '1',
+      name: 'HelloWorld',
+      platforms: ['ios', 'android'],
+      ios: {
+        icon: 'assets/MyApp.icon',
+      },
+    };
+
+    const icon = getIcons(config);
+    expect(icon).toBe('assets/MyApp.icon');
+    if (typeof icon === 'string') {
+      expect(path.extname(icon)).toBe('.icon');
+    }
+
+    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
+
+    await setIconsAsync(config, projectRoot);
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(0);
+  });
+
+  it('warns when .icon file does not exist', async () => {
+    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
+
+    await setIconsAsync(
+      {
+        slug: 'HelloWorld',
+        version: '1',
+        name: 'HelloWorld',
+        platforms: ['ios', 'android'],
+        ios: {
+          icon: 'assets/DoesNotExist.icon',
+        },
+      },
+      projectRoot
+    );
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'icon',
+      'Liquid glass icon file not found at path: assets/DoesNotExist.icon'
+    );
   });
 });
