@@ -172,6 +172,13 @@ export interface PluginConfigTypeAndroid {
    * @default false
    */
   enableBundleCompression?: boolean;
+
+  /**
+   * Enable building React Native from source. Turning this on will significantly increase the build times.
+   *
+   * @default false
+   */
+  buildFromSource?: boolean;
 }
 
 // @docsMissing
@@ -639,6 +646,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
+        buildFromSource: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
