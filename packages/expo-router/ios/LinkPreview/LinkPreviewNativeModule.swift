@@ -44,7 +44,5 @@ public class LinkPreviewNativeModule: Module {
         view.title = title
       }
     }
-
-    View(NativeLinkPreviewTrigger.self) {}
   }
 }
