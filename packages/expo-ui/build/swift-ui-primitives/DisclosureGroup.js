@@ -5,6 +5,6 @@ export function DisclosureGroup(props) {
     function handleStateChange(event) {
         onStateChange?.(event.nativeEvent.isExpanded);
     }
-    return (<DisclosureGroupNativeView {...rest} onStateChange={handleStateChange}/>);
+    return <DisclosureGroupNativeView {...rest} onStateChange={handleStateChange}/>;
 }
 //# sourceMappingURL=DisclosureGroup.js.map
