@@ -32,6 +32,10 @@ export function resolvePlatformFromUserAgentHeader(req: ServerRequest): string |
   if (userAgent?.match(/Android/i)) {
     platform = 'android';
   }
+  // For now we match the quest headsets as Android. We can add a separate platform when needed.
+  if (userAgent?.match(/OculusBrowser|Quest/i)) {
+    platform = 'android';
+  }
   if (userAgent?.match(/iPhone|iPad/i)) {
     platform = 'ios';
   }
