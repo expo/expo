@@ -18,6 +18,7 @@ export const expoRun: Command = async (argv) => {
       argv,
       // Allow additional flags for both android and ios commands
       permissive: true,
+      stopAtPositional: true,
     }
   );
 
