@@ -65,7 +65,7 @@ data class ButtonProps(
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, testID: String?, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, testID: String?, content: @Composable (RowScope.() -> Unit)) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
@@ -158,8 +158,8 @@ class Button(context: Context, appContext: AppContext) :
         variant ?: ButtonVariant.DEFAULT,
         colors,
         disabled,
-        testID,
         { onButtonPressed.invoke(ButtonPressedEvent()) },
+        testID
       ) {
         if (systemImage != null) {
           Row(verticalAlignment = Alignment.CenterVertically) {

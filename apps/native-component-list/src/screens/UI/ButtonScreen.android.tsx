@@ -9,7 +9,7 @@ export default function UIScreen() {
     <Page>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Section title="Default">
-          <Button style={styles.button} testID="test-button-melani">
+          <Button style={styles.button} testID="default-button">
             Test
           </Button>
         </Section>
