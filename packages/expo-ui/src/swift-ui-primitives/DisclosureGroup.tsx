@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type CommonViewModifierProps } from './types';
-import { ViewEvent } from '../types';
+import { type ViewEvent } from '../types';
 
 export interface DisclosureGroupProps extends CommonViewModifierProps {
   label: string;
