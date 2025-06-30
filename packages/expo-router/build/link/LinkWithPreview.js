@@ -161,7 +161,12 @@ function LinkPreview({ children, width, height }) {
     </native_1.NativeLinkPreviewContent>);
 }
 function LinkTrigger(props) {
-    if (react_1.default.Children.toArray(props.children).every((child) => !(0, react_1.isValidElement)(child))) {
+    if (react_1.default.Children.count(props.children) > 1 || !(0, react_1.isValidElement)(props.children)) {
+        // If onPress is passed, this means that Link passed props to this component.
+        // We can assume that asChild is used, so we throw an error, because link will not work in this case.
+        if (props && typeof props === 'object' && 'onPress' in props) {
+            throw new Error('When using Link.Trigger in an asChild Link, you must pass a single child element that will emit onPress event.');
+        }
         return props.children;
     }
     return <Slot_1.Slot {...props}/>;

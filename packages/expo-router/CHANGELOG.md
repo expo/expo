@@ -7,6 +7,9 @@
 ### 🎉 New features
 
 - Add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
+- Add experimental link preview (iOS only) ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
+- Allow for multiple children in Link.Trigger ([#37700](https://github.com/expo/expo/pull/37700) by [@Ubax](https://github.com/Ubax))
+
 
 ### 🐛 Bug fixes
 
@@ -30,7 +33,6 @@
 
 - Headless useSitemap() hook. ([#36895](https://github.com/expo/expo/pull/36895) by [@douglowder](https://github.com/douglowder))
 - Add Tabs.Protected ([#37085](https://github.com/expo/expo/pull/37085) by [@marklawlor](https://github.com/marklawlor))
-- Add experimental link preview (iOS only) ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

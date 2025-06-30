@@ -1,6 +1,6 @@
 import { Link, usePathname } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const HomeIndex = () => {
@@ -27,6 +27,33 @@ const HomeIndex = () => {
         <Link.Preview />
       </Link>
       <Link href="/(tabs)/home/one">Normal link: /(tabs)/home/one</Link>
+      <Link href="/(tabs)/home/one">
+        <Link.Trigger>Normal link with trigger: /(tabs)/home/one</Link.Trigger>
+      </Link>
+      <Link href="/(tabs)/home/one" asChild>
+        <Link.Trigger>
+          <TouchableOpacity>
+            <Text>Normal link with trigger asChild: /(tabs)/home/one</Text>
+          </TouchableOpacity>
+        </Link.Trigger>
+      </Link>
+      <Link href="/(tabs)/home/one">
+        <Link.Trigger>
+          <Text>Normal link with trigger: /(tabs)/home/one</Text>
+          <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
+          <Text>Multiple children</Text>
+        </Link.Trigger>
+      </Link>
+      <Link href="/(tabs)/home/one" asChild>
+        <Link.Trigger>
+          <TouchableOpacity style={{ backgroundColor: '#fff' }}>
+            <Text>Normal link with trigger: /(tabs)/home/one</Text>
+            <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
+            <Text>Multiple children</Text>
+          </TouchableOpacity>
+          <Text>with asChild</Text>
+        </Link.Trigger>
+      </Link>
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Link.Preview: /(tabs)/home/one</Link.Trigger>
         <Link.Preview />
