@@ -83,6 +83,43 @@ describe('iOS Icons', () => {
       })
     ).toMatch('icon');
   });
+
+  it(`warns when .icon files are used when an object is provided`, () => {
+    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
+
+    getIcons({
+      ios: {
+        icon: {
+          light: 'assets/MyApp.icon',
+          dark: 'assets/MyAppDark.icon',
+        },
+      },
+    });
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(2);
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'icon',
+      'Liquid glass icons (.icon) should be provided as a string to the "ios.icon" property, not as an object. Found: "assets/MyApp.icon"'
+    );
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'icon',
+      'Liquid glass icons (.icon) should be provided as a string to the "ios.icon" property, not as an object. Found: "assets/MyAppDark.icon"'
+    );
+  });
+
+  it(`warns when .icon files are used in root icon property`, () => {
+    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
+
+    getIcons({
+      icon: 'assets/MyApp.icon',
+    });
+
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(1);
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'icon',
+      'Liquid glass icons (.icon) should be provided via the "ios.icon" property, not the root "icon" property. Found: "assets/MyApp.icon"'
+    );
+  });
 });
 
 describe('e2e: iOS icons', () => {

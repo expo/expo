@@ -50,12 +50,34 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
       return iosSpecificIcons || config.icon || null;
     }
 
+    if (typeof iosSpecificIcons === 'object') {
+      const paths = [iosSpecificIcons.light, iosSpecificIcons.dark, iosSpecificIcons.tinted].filter(
+        Boolean
+      );
+      for (const iconPath of paths) {
+        if (typeof iconPath === 'string' && path.extname(iconPath) === '.icon') {
+          WarningAggregator.addWarningIOS(
+            'icon',
+            `Liquid glass icons (.icon) should be provided as a string to the "ios.icon" property, not as an object. Found: "${iconPath}"`
+          );
+        }
+      }
+    }
+
     // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
     if (!iosSpecificIcons.light && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
       return config.icon || null;
     }
 
     return iosSpecificIcons;
+  }
+
+  // Top level icon property should not be used to specify a `.icon` folder
+  if (config.icon && typeof config.icon === 'string' && path.extname(config.icon) === '.icon') {
+    WarningAggregator.addWarningIOS(
+      'icon',
+      `Liquid glass icons (.icon) should be provided via the "ios.icon" property, not the root "icon" property. Found: "${config.icon}"`
+    );
   }
 
   if (config.icon) {
