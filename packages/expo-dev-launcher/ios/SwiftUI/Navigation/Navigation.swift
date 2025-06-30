@@ -54,13 +54,68 @@ struct DevLauncherNavigationHeader: View {
       Button {
         navigation.showUserProfile()
       } label: {
-        Image("user-icon", bundle: getDevLauncherBundle())
-          .font(.title2)
-          .foregroundColor(.black)
+        if viewModel.isAuthenticated, let selectedAccount = viewModel.selectedAccount {
+          createAccountAvatar(account: selectedAccount)
+        } else {
+          Image("user-icon", bundle: getDevLauncherBundle())
+            .font(.title2)
+            .foregroundColor(.black)
+        }
       }
     }
     .padding(.horizontal)
     .padding(.vertical, 8)
     .background(Color(.systemBackground))
+  }
+
+  @ViewBuilder
+  private func createAccountAvatar(account: UserAccount) -> some View {
+    let isOrganization = account.ownerUserActor == nil
+    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let name = account.ownerUserActor?.fullName ?? account.name
+
+    if isOrganization {
+      let color = getAvatarColor(for: String(name.first ?? "o"))
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 32, height: 32)
+        .overlay(
+          Image(systemName: "building.2")
+            .font(.system(size: 14))
+            .foregroundColor(color.foreground)
+        )
+    } else if let profilePhoto = profilePhoto,
+      !profilePhoto.isEmpty,
+      let url = URL(string: profilePhoto) {
+      Avatar(url: url) { image in
+        image
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+      } placeholder: {
+        Circle()
+          .fill(Color(.systemGray5))
+          .overlay(
+            Image(systemName: "person")
+              .font(.system(size: 16))
+              .foregroundColor(.secondary)
+          )
+      }
+      .frame(width: 32, height: 32)
+      .clipShape(Circle())
+      .id("\(account.id)-\(profilePhoto)")
+    } else {
+      let firstLetter = (account.ownerUserActor?.username ?? account.name).prefix(1).uppercased()
+      let color = getAvatarColor(for: String(firstLetter))
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 32, height: 32)
+        .overlay(
+          Text(firstLetter)
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(color.foreground)
+        )
+    }
   }
 }
