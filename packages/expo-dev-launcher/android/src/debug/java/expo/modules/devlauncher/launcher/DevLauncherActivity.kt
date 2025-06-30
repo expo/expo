@@ -6,24 +6,24 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import com.facebook.react.ReactActivity
-import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactRootView
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
-import com.facebook.react.defaults.DefaultReactActivityDelegate
 import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.compose.BindingView
+import expo.modules.devlauncher.compose.DevLauncherViewModel
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
+import expo.modules.devlauncher.services.DependencyInjection
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreen
-import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 import expo.modules.devmenu.DevMenuManager
 import org.koin.core.component.inject
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
-class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLauncherKoinComponent {
+class DevLauncherActivity : AppCompatActivity(), DevLauncherKoinComponent {
+
   private val controller: DevLauncherControllerInterface by inject()
   private var devMenuManager: DevMenuManager = DevMenuManager
   private var splashScreen: DevLauncherSplashScreen? = null
@@ -31,20 +31,26 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLaun
   private lateinit var contentView: ViewGroup
   private val handler = Handler()
 
-  override fun getMainComponentName() = "main"
-
-  override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
-
-      override fun getReactNativeHost() = controller.devClientHost.reactNativeHost
-
-      override fun getReactHost() = controller.devClientHost.reactHost
-
-      override fun getLaunchOptions() = Bundle().apply {
-        putBoolean("isSimulator", isSimulator)
-      }
-    }
+  val devMenuViewModel by viewModels<DevLauncherViewModel> {
+    DevLauncherViewModel.Companion.Factory(
+      controller as DevLauncherController
+    )
   }
+
+//  override fun getMainComponentName() = "main"
+//
+//  override fun createReactActivityDelegate(): ReactActivityDelegate {
+//    return object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
+//
+//      override fun getReactNativeHost() = controller.devClientHost.reactNativeHost
+//
+//      override fun getReactHost() = controller.devClientHost.reactHost
+//
+//      override fun getLaunchOptions() = Bundle().apply {
+//        putBoolean("isSimulator", isSimulator)
+//      }
+//    }
+//  }
 
   override fun onStart() {
     overridePendingTransition(0, 0)
@@ -56,20 +62,29 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLaun
     WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
 
-    contentView = findViewById(android.R.id.content) ?: return
-    splashScreen = DevLauncherSplashScreenProvider()
-      .attachSplashScreenViewAsync(this)
-    searchForRootView()
+    DependencyInjection.init(this)
+
+    setContentView(
+      BindingView(this, viewModel = devMenuViewModel)
+    )
+//    contentView = findViewById(android.R.id.content) ?: return
+//    splashScreen = DevLauncherSplashScreenProvider()
+//      .attachSplashScreenViewAsync(this)
+//    searchForRootView()
   }
 
-  override fun onPostCreate(savedInstanceState: Bundle?) {
-    super.onPostCreate(savedInstanceState)
-    controller.devClientHost.currentReactContext?.let {
-      onReactContextInitialized(it)
-      return
-    }
+//  override fun onPostCreate(savedInstanceState: Bundle?) {
+//    super.onPostCreate(savedInstanceState)
+//    controller.devClientHost.currentReactContext?.let {
+//      onReactContextInitialized(it)
+//      return
+//    }
+//
+//    controller.devClientHost.addReactInstanceEventListener(this)
+//  }
 
-    controller.devClientHost.addReactInstanceEventListener(this)
+  override fun onDestroy() {
+    super.onDestroy()
   }
 
   override fun onPause() {
@@ -86,9 +101,9 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLaun
     return devMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
   }
 
-  override fun onReactContextInitialized(context: ReactContext) {
-    controller.devClientHost.removeReactInstanceEventListener(this)
-  }
+//  override fun onReactContextInitialized(context: ReactContext) {
+//    controller.devClientHost.removeReactInstanceEventListener(this)
+//  }
 
   private val isSimulator
     get() = EmulatorUtilities.isRunningOnEmulator()

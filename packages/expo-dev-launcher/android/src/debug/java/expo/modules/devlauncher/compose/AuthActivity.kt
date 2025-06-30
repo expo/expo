@@ -34,7 +34,7 @@ sealed interface AuthResult {
 }
 
 class AuthActivity : AppCompatActivity() {
-  class Contact : ActivityResultContract<AuthRequestType, AuthResult>() {
+  class Contract : ActivityResultContract<AuthRequestType, AuthResult>() {
     override fun createIntent(context: Context, type: AuthRequestType): Intent {
       return Intent(context, AuthActivity::class.java).apply {
         action = ACTION_VIEW

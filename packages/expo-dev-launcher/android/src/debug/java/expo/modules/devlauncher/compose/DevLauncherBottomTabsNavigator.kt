@@ -10,21 +10,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.composables.core.SheetDetent.Companion.Hidden
 import expo.modules.devlauncher.compose.primitives.DefaultScaffold
 import expo.modules.devlauncher.compose.screens.HomeScreen
+import expo.modules.devlauncher.compose.screens.Profile
 import expo.modules.devlauncher.compose.screens.SettingsScreen
-import expo.modules.devlauncher.compose.screens.SignUp
-import expo.modules.devlauncher.compose.ui.BottomSheet
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
 import expo.modules.devlauncher.compose.ui.rememberBottomSheetState
 import expo.modules.devlauncher.services.PackagerInfo
-import expo.modules.devmenu.compose.theme.AppTheme
 import expo.modules.devmenu.compose.theme.Theme
 import kotlinx.serialization.Serializable
 
@@ -87,25 +83,5 @@ fun DevLauncherBottomTabsNavigator(
     }
   }
 
-  BottomSheet(bottomSheetState) {
-    SignUp(
-      onLogIn = {
-        state.onAction(DevLauncherAction.LogIn)
-      },
-      onSignUp = {
-        state.onAction(DevLauncherAction.SignUp)
-      },
-      onClose = {
-        bottomSheetState.targetDetent = Hidden
-      }
-    )
-  }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun DevLauncherBottomTabsNavigatorPreview() {
-  AppTheme {
-    DevLauncherBottomTabsNavigator(DevLauncherState())
-  }
+  Profile(bottomSheetState)
 }
