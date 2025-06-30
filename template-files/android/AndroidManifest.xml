@@ -144,7 +144,6 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.Exponent.HomeActivity">
             <!-- START HOME INTENT FILTERS -->
             <intent-filter>
@@ -205,7 +204,6 @@
 
         <activity
             android:name=".experience.ErrorActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.Exponent.Dark" />
 
         <service
