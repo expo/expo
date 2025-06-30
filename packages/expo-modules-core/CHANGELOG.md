@@ -11,6 +11,7 @@
 - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))
 - [Android] Add `testID` support to `ExpoComposeView`. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
 - [iOS] Return proper dynamic type for AnyEither. ([#38072](https://github.com/expo/expo/pull/38072) by [@jakex7](https://github.com/jakex7))
+- [Android] Add VRUtilities for VR-related values and utils ([#37744](https://github.com/expo/expo/pull/37744) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
