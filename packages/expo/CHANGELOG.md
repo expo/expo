@@ -13,6 +13,7 @@
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed `expo/fetch` requests cancellation error message on Android. ([#37509](https://github.com/expo/expo/pull/37509) by [@kudo](https://github.com/kudo))
+- [Android] Fixed delay load app handler on new architecture mode. ([#37706](https://github.com/expo/expo/pull/37706) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

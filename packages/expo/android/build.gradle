@@ -77,6 +77,8 @@ dependencies { dependencyHandler ->
   testImplementation 'androidx.test:core:1.5.0'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'io.mockk:mockk:1.13.5'
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+  testImplementation 'org.robolectric:robolectric:4.15.1'
 
   if (useLegacyAutolinking) {
     // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
