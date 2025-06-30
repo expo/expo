@@ -37,8 +37,8 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propValueGetter: (config) => (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
     },
     {
-        propName: 'ios.experimental.usePrebuiltReactNativeDependencies',
-        propValueGetter: (config) => config.ios?.experimental?.usePrebuiltReactNativeDependencies?.toString(),
+        propName: 'ios.usePrebuiltReactNativeDependencies',
+        propValueGetter: (config) => config.ios?.usePrebuiltReactNativeDependencies?.toString(),
     },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {

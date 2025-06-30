@@ -291,21 +291,11 @@ export interface PluginConfigTypeIos {
      */
     privacyManifestAggregationEnabled?: boolean;
     /**
-     * Experimental features for iOS build properties.
-     * @experimental
-     */
-    experimental?: PluginConfigTypeIosExperimental;
-}
-/**
- * Interface representing experimental configuration for iOS native build properties.
- * @platform ios
- */
-export interface PluginConfigTypeIosExperimental {
-    /**
-     * Enable experimental support for prebuilt React Native iOS dependencies (ReactNativeDependencies.xcframework).
+     * Enable support for prebuilt React Native iOS dependencies (ReactNativeDependencies.xcframework).
      * This feature is only available from React Native 0.80.
      *
      * @see [RN documentation on prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt)
+     * @experimental
      */
     usePrebuiltReactNativeDependencies?: boolean;
 }

@@ -214,18 +214,18 @@ describe(withBuildProperties, () => {
     });
   });
 
-  it('generates the ios.experimental.usePrebuiltReactNativeDependencies property', async () => {
+  it('generates the ios.usePrebuiltReactNativeDependencies property', async () => {
     const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
       {},
       {
         plugin: withBuildProperties,
-        pluginProps: { ios: { experimental: { usePrebuiltReactNativeDependencies: true } } },
+        pluginProps: { ios: { usePrebuiltReactNativeDependencies: true } },
         mod: withPodfileProperties,
         modResults: {},
       }
     );
     expect(iosModResultsEnabled).toMatchObject({
-      'ios.experimental.usePrebuiltReactNativeDependencies': 'true',
+      'ios.usePrebuiltReactNativeDependencies': 'true',
     });
   });
 });

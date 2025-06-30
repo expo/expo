@@ -50,9 +50,8 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
         (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
     },
     {
-      propName: 'ios.experimental.usePrebuiltReactNativeDependencies',
-      propValueGetter: (config) =>
-        config.ios?.experimental?.usePrebuiltReactNativeDependencies?.toString(),
+      propName: 'ios.usePrebuiltReactNativeDependencies',
+      propValueGetter: (config) => config.ios?.usePrebuiltReactNativeDependencies?.toString(),
     },
   ],
   'withIosBuildProperties'

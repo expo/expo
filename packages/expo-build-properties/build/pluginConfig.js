@@ -172,13 +172,7 @@ const schema = {
                     },
                     nullable: true,
                 },
-                experimental: {
-                    type: 'object',
-                    properties: {
-                        usePrebuiltReactNativeDependencies: { type: 'boolean', nullable: true },
-                    },
-                    nullable: true,
-                },
+                usePrebuiltReactNativeDependencies: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },

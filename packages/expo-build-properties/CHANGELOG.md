@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add `android.buildFromSource` option ([#37745](https://github.com/expo/expo/pull/37745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added experimental support for prebuilt React Native iOS dependencies via `experimental.usePrebuiltReactNativeDependencies` in the iOS build properties. When enabled, this sets `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies, as described in the [React Native 0.80 release blog post](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt). ([#37678](https://github.com/expo/expo/pull/37678) by [@huextrat](https://github.com/huextrat))
+- Added support for prebuilt React Native iOS dependencies via `usePrebuiltReactNativeDependencies` in the iOS build properties. When enabled, this sets `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies, as described in the [React Native 0.80 release blog post](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt). ([#37678](https://github.com/expo/expo/pull/37678) by [@huextrat](https://github.com/huextrat))
 
 ### 🐛 Bug fixes
 
