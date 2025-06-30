@@ -227,7 +227,7 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
         `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-canaries.yml`
       );
     }
-    if (options.packageNames) {
+    if (options.packageNames.length > 0) {
       logger.error(
         '⚠️  Do not pass package names with the --canary flag - canary tags do not support semver ranges, so this would likely cause duplicate expo package versions.'
       );
