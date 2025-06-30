@@ -51,6 +51,10 @@ export type ButtonProps = {
      * Disabled state of the button.
      */
     disabled?: boolean;
+    /**
+     * Used to locate this view in end-to-end tests.
+     */
+    testID?: string;
 };
 /**
  * @hidden

@@ -56,6 +56,10 @@ export type ButtonProps = {
    * Disabled state of the button.
    */
   disabled?: boolean;
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: string;
 };
 
 /**
@@ -79,11 +83,10 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  * @hidden
  */
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { children, onPress, systemImage, ...restProps } = props;
+  const { children, onPress, ...restProps } = props;
   return {
     ...restProps,
     text: children ?? '',
-    systemImage,
     onButtonPressed: onPress,
     elementColors: props.elementColors
       ? props.elementColors

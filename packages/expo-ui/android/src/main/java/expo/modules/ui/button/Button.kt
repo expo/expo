@@ -27,6 +27,7 @@ import expo.modules.kotlin.views.ComposeProps
 import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.ui.DynamicTheme
+import expo.modules.ui.applyTestTag
 import expo.modules.ui.compose
 import expo.modules.ui.getImageVector
 
@@ -59,11 +60,12 @@ data class ButtonProps(
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
   val systemImage: MutableState<String?> = mutableStateOf(null),
-  val disabled: MutableState<Boolean> = mutableStateOf(false)
+  val disabled: MutableState<Boolean> = mutableStateOf(false),
+  val testID: MutableState<String?> = mutableStateOf(null)
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, testID: String?, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
@@ -74,7 +76,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      modifier = Modifier.applyTestTag(testID),
     )
 
     ButtonVariant.BORDERLESS -> TextButton(
@@ -86,7 +89,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      modifier = Modifier.applyTestTag(testID),
     )
 
     ButtonVariant.OUTLINED -> OutlinedButton(
@@ -98,7 +102,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      modifier = Modifier.applyTestTag(testID),
     )
 
     ButtonVariant.ELEVATED -> ElevatedButton(
@@ -110,7 +115,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      modifier = Modifier.applyTestTag(testID),
     )
 
     else -> androidx.compose.material3.Button(
@@ -122,7 +128,8 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      modifier = Modifier.applyTestTag(testID),
     )
   }
 }
@@ -144,12 +151,15 @@ class Button(context: Context, appContext: AppContext) :
     val (colors) = props.elementColors
     val (systemImage) = props.systemImage
     val (disabled) = props.disabled
+    val (testID) = props.testID
+
     DynamicTheme {
       StyledButton(
         variant ?: ButtonVariant.DEFAULT,
         colors,
         disabled,
-        { onButtonPressed.invoke(ButtonPressedEvent()) }
+        testID,
+        { onButtonPressed.invoke(ButtonPressedEvent()) },
       ) {
         if (systemImage != null) {
           Row(verticalAlignment = Alignment.CenterVertically) {
