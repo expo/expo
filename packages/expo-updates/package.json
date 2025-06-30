@@ -60,7 +60,7 @@
     "@types/picomatch": "^4.0.0",
     "@vercel/ncc": "^0.38.1",
     "expo-module-scripts": "^4.1.7",
-    "express": "^4.21.1",
+    "express": "^5.1.0",
     "form-data": "^4.0.0",
     "js-yaml": "^4.1.0",
     "memfs": "^3.2.0",
