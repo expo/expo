@@ -44,6 +44,7 @@ const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
 const React = __importStar(require("react"));
 const createMemoryHistory_1 = require("./createMemoryHistory");
 const getPathFromState_1 = require("./getPathFromState");
+const constants_1 = require("../constants");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
 const storeContext_1 = require("../global-state/storeContext");
 /**
@@ -135,14 +136,17 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
     });
     const validateRoutesNotExistInRootState = React.useCallback((state) => {
         // START FORK
-        // Instead of using the rootState (which might be stale) we should use the focused state
+        // Instead of using the rootState, we use INTERNAL_SLOT_NAME, which is the only route in the root navigator in Expo Router
         // const navigation = ref.current;
         // const rootState = navigation?.getRootState();
-        const rootState = store.state;
+        const routeNames = [constants_1.INTERNAL_SLOT_NAME];
         // END FORK
         // Make sure that the routes in the state exist in the root navigator
         // Otherwise there's an error in the linking configuration
-        return state?.routes.some((r) => !rootState?.routeNames.includes(r.name));
+        // START FORK
+        // return state?.routes.some((r) => !rootState?.routeNames?.includes(r.name));
+        return state?.routes.some((r) => !routeNames.includes(r.name));
+        // END FORK
     }, [ref]);
     const server = React.use(serverLocationContext_1.ServerContext);
     const getInitialState = React.useCallback(() => {
