@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `android.buildFromSource` option ([#37745](https://github.com/expo/expo/pull/37745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

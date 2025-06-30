@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidSettingsGradle = exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 exports.updateAndroidProguardRules = updateAndroidProguardRules;
+exports.updateAndroidSettingsGradle = updateAndroidSettingsGradle;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -247,3 +248,32 @@ const withAndroidDayNightTheme = (config, props) => {
     });
 };
 exports.withAndroidDayNightTheme = withAndroidDayNightTheme;
+const withAndroidSettingsGradle = (config, props) => {
+    return (0, config_plugins_1.withSettingsGradle)(config, (config) => {
+        config.modResults.contents = updateAndroidSettingsGradle({
+            contents: config.modResults.contents,
+            buildFromSource: props.android?.buildFromSource,
+        });
+        return config;
+    });
+};
+exports.withAndroidSettingsGradle = withAndroidSettingsGradle;
+function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
+    let newContents = contents;
+    if (buildFromSource === true) {
+        const addCodeBlock = [
+            '', // new line
+            'includeBuild(expoAutolinking.reactNative) {',
+            '  dependencySubstitution {',
+            '    substitute(module("com.facebook.react:react-android")).using(project(":packages:react-native:ReactAndroid"))',
+            '    substitute(module("com.facebook.react:react-native")).using(project(":packages:react-native:ReactAndroid"))',
+            '    substitute(module("com.facebook.react:hermes-android")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
+            '    substitute(module("com.facebook.react:hermes-engine")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
+            '  }',
+            '}',
+            '', // new line
+        ];
+        newContents += addCodeBlock.join('\n');
+    }
+    return newContents;
+}
