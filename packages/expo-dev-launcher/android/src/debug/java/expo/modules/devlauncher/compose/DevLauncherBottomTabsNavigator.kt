@@ -17,13 +17,13 @@ import androidx.navigation.compose.rememberNavController
 import com.composables.core.SheetDetent.Companion.Hidden
 import expo.modules.devlauncher.compose.primitives.DefaultScaffold
 import expo.modules.devlauncher.compose.screens.HomeScreen
-import expo.modules.devlauncher.compose.screens.HomeScreenState
 import expo.modules.devlauncher.compose.screens.SettingsScreen
 import expo.modules.devlauncher.compose.screens.SignUp
 import expo.modules.devlauncher.compose.ui.BottomSheet
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
 import expo.modules.devlauncher.compose.ui.rememberBottomSheetState
+import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devmenu.compose.theme.AppTheme
 import expo.modules.devmenu.compose.theme.Theme
 import kotlinx.serialization.Serializable
@@ -56,10 +56,17 @@ data class Tab(
   val screen: Any
 )
 
-@Composable
-fun DevLauncherBottomTabsNavigator() {
-  val navController = rememberNavController()
+data class DevLauncherState(
+  val appName: String = "BareExpo",
+  val runningPackagers: Set<PackagerInfo> = emptySet<PackagerInfo>(),
+  val onAction: DevLauncherActionHandler = {}
+)
 
+@Composable
+fun DevLauncherBottomTabsNavigator(
+  state: DevLauncherState
+) {
+  val navController = rememberNavController()
   val bottomSheetState = rememberBottomSheetState()
 
   DefaultScaffold(bottomTab = {
@@ -75,15 +82,23 @@ fun DevLauncherBottomTabsNavigator() {
         ExitTransition.None
       }
     ) {
-      composable<Home> { DefaultScreenContainer { HomeScreen(HomeScreenState(appName = "BareExpo", onProfileClick = { bottomSheetState.jumpTo(Full) })) } }
+      composable<Home> { DefaultScreenContainer { HomeScreen(state, onProfileClick = { bottomSheetState.jumpTo(Full) }) } }
       composable<Settings> { DefaultScreenContainer { SettingsScreen() } }
     }
   }
 
   BottomSheet(bottomSheetState) {
-    SignUp(onClose = {
-      bottomSheetState.targetDetent = Hidden
-    })
+    SignUp(
+      onLogIn = {
+        state.onAction(DevLauncherAction.LogIn)
+      },
+      onSignUp = {
+        state.onAction(DevLauncherAction.SignUp)
+      },
+      onClose = {
+        bottomSheetState.targetDetent = Hidden
+      }
+    )
   }
 }
 
@@ -91,6 +106,6 @@ fun DevLauncherBottomTabsNavigator() {
 @Preview(showBackground = true)
 fun DevLauncherBottomTabsNavigatorPreview() {
   AppTheme {
-    DevLauncherBottomTabsNavigator()
+    DevLauncherBottomTabsNavigator(DevLauncherState())
   }
 }
