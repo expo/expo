@@ -100,16 +100,17 @@ export function Modal(props: ModalProps) {
     animationType,
     presentationStyle,
     transparent,
+    detents,
     ...viewProps
   } = props;
   const { openModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
-    if (!areDetentsValid(props.detents)) {
-      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(props.detents)}`);
+    if (!areDetentsValid(detents)) {
+      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
     }
-  }, [props.detents]);
+  }, [detents]);
   useEffect(() => {
     if (!currentModalId && visible) {
       const newId = nanoid();
@@ -119,7 +120,7 @@ export function Modal(props: ModalProps) {
         transparent,
         viewProps,
         component: children,
-        detents: props.detents,
+        detents,
         uniqueId: newId,
         parentNavigationProp: navigation,
       });
