@@ -15,7 +15,7 @@ internal final class DisclosureGroupViewProps: ExpoSwiftUI.ViewProps, CommonView
 internal struct DisclosureGroupView: ExpoSwiftUI.View {
   @ObservedObject var props: DisclosureGroupViewProps
   @State private var isExpanded: Bool = false
-  
+
   var body: some View {
 #if os(tvOS)
     Text("DisclosureGroupView is not supported on tvOS")
