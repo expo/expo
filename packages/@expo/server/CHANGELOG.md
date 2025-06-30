@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump Express types to `@types/express@5`. ([#37635](https://github.com/expo/expo/pull/37635) by [@byCedric](https://github.com/byCedric))
+
 ## 0.6.3 - 2025-06-18
 
 ### 💡 Others

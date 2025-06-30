@@ -50,7 +50,7 @@ fun Accordion(
         Row(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier
-            .padding(Theme.spacing.small)
+            .padding(Theme.spacing.medium)
         ) {
           Icon(
             painter = painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_chevronrighticon),

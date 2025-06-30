@@ -63,12 +63,15 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
     return destination.file
   }
 
-  fun validatePermission(permission: Permission): Boolean {
-    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
-    if (permissions.contains(permission)) {
-      return true
+  fun validatePermission(permission: Permission) {
+    if (!checkPermission(permission)) {
+      throw InvalidPermissionException(permission)
     }
-    throw InvalidPermissionException(permission)
+  }
+
+  fun checkPermission(permission: Permission): Boolean {
+    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
+    return permissions.contains(permission)
   }
 
   fun validateCanCreate(options: CreateOptions) {

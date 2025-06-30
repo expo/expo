@@ -59,7 +59,7 @@ export class FileBlob extends Blob {
     this.file = file;
   }
 
-  get size(): number {
+  override get size(): number {
     return this.file.size ?? 0;
   }
 
@@ -70,27 +70,27 @@ export class FileBlob extends Blob {
     return this.file.name;
   }
 
-  get type(): string {
+  override get type(): string {
     return this.file.type ?? '';
   }
 
-  async arrayBuffer(): Promise<ArrayBuffer> {
+  override async arrayBuffer(): Promise<ArrayBuffer> {
     return this.file.bytes().buffer as ArrayBuffer;
   }
 
-  async text(): Promise<string> {
+  override async text(): Promise<string> {
     return this.file.text();
   }
 
-  async bytes(): Promise<Uint8Array> {
+  override async bytes(): Promise<Uint8Array> {
     return this.file.bytes();
   }
 
-  stream(): ReadableStream<Uint8Array> {
+  override stream(): ReadableStream<Uint8Array> {
     return this.file.readableStream();
   }
 
-  slice(start?: number, end?: number, contentType?: string): Blob {
+  override slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.file.bytes().slice(start, end)], { type: contentType });
   }
 }
@@ -188,7 +188,7 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
    * Calling this method if the parent directory does not exist will throw an error.
    * @returns An array of `Directory` and `File` instances.
    */
-  list(): (Directory | File)[] {
+  override list(): (Directory | File)[] {
     // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()

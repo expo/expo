@@ -10,7 +10,7 @@
 
 - [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fixed contentPosition is not correct after switching theme. ([#37374](https://github.com/expo/expo/pull/37374) by [@kudo](https://github.com/kudo))
-- [Android] Make Glide compiler (`kapt "com.github.bumptech.glide:compiler"`) in the `expo-image` module conditional on the `excludeAppGlideModule` Gradle property. When `excludeAppGlideModule=true`, expo-image now omits its own annotation processing and stub `ExpoImageAppGlideModule.kt`, preventing duplicate `GeneratedAppGlideModuleImpl` conflicts in release builds. ([#37432](https://github.com/expo/expo/pull/37432) by [@antonhudz](https://github.com/antonhudz))
+- [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
 
 ### 💡 Others
 

@@ -5,43 +5,40 @@ struct DevMenuMainView: View {
 
   var body: some View {
     ScrollView {
-      LazyVStack(spacing: 0, pinnedViews: []) {
-        if let hostUrl = viewModel.appInfo?.hostUrl {
-          HostUrl(
-            hostUrl: hostUrl,
-            onCopy: viewModel.copyToClipboard,
-            copiedMessage: viewModel.hostUrlCopiedMessage
-          )
-        }
-
-        if !viewModel.registeredCallbacks.isEmpty {
-          CustomItems(
-            callbacks: viewModel.registeredCallbacks,
-            onFireCallback: viewModel.fireCallback
-          )
-        }
-
-        DevMenuActions(
-          isDevLauncherInstalled: viewModel.isDevLauncherInstalled,
-          onReload: viewModel.reload,
-          onGoHome: viewModel.goHome
+      if let hostUrl = viewModel.appInfo?.hostUrl {
+        HostUrl(
+          hostUrl: hostUrl,
+          onCopy: viewModel.copyToClipboard,
+          copiedMessage: viewModel.hostUrlCopiedMessage
         )
-
-        DevMenuDeveloperTools()
-          .environmentObject(viewModel)
-
-        if viewModel.appInfo?.engine == "Hermes" {
-          HermesWarning()
-        }
-
-        DevMenuAppInfo()
-          .environmentObject(viewModel)
-
-        DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
-
-        Spacer(minLength: 32)
       }
+
+      if !viewModel.registeredCallbacks.isEmpty {
+        CustomItems(
+          callbacks: viewModel.registeredCallbacks,
+          onFireCallback: viewModel.fireCallback
+        )
+      }
+
+      DevMenuActions(
+        isDevLauncherInstalled: viewModel.isDevLauncherInstalled,
+        onReload: viewModel.reload,
+        onGoHome: viewModel.goHome
+      )
+
+      DevMenuDeveloperTools()
+
+      if viewModel.appInfo?.engine == "Hermes" {
+        HermesWarning()
+      }
+
+      DevMenuAppInfo()
+
+      DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+
+      Spacer(minLength: 32)
     }
+    .environmentObject(viewModel)
   }
 }
 
