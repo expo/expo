@@ -137,6 +137,7 @@ const schema = {
                     nullable: true,
                 },
                 enableBundleCompression: { type: 'boolean', nullable: true },
+                buildFromSource: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },
