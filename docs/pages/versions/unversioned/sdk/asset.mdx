@@ -1,71 +1,93 @@
----
-title: Asset
-description: A universal library that allows downloading assets and using them with other libraries.
-sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-asset'
-packageName: 'expo-asset'
-platforms: ['android', 'ios', 'tvos', 'web']
----
 
-import APISection from '~/components/plugins/APISection';
-import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
-`expo-asset` provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts, and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://reactnative.dev/docs/images#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
+// 1. Like Button function toggleLike(postId, userId) { fetch(/api/posts/${postId}/like, { method: 'POST', body: JSON.stringify({ userId }) }); }
 
-## Installation
+// 2. Comment System function addComment(postId, userId, text) { fetch(/api/posts/${postId}/comment, { method: 'POST', body: JSON.stringify({ userId, text }) }); }
 
-<APIInstallSection />
+// 3. View Counter (10 toea) function registerView(postId, creatorId, viewerId) { fetch(/api/posts/${postId}/view, { method: 'POST', body: JSON.stringify({ creatorId, viewerId }) }); }
 
-## Configuration in app config
+// 4. Viewer Bonus (5 toea) function rewardViewer(viewerId) { fetch(/api/users/${viewerId}/bonus, { method: 'POST', body: JSON.stringify({ amount: 0.05 }) }); }
 
-You can configure `expo-asset` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+// 5. Wallet Balance async function getWalletBalance(userId) { const res = await fetch(/api/users/${userId}/wallet); return await res.json(); }
 
-<ConfigPluginExample>
+// 6. Withdraw Request function requestWithdrawal(userId) { fetch(/api/users/${userId}/withdraw, { method: 'POST' }); }
 
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-asset",
-        {
-          "assets": ["path/to/file.png", "path/to/directory"]
-        }
-      ]
-    ]
-  }
-}
-```
+// 7. Profile View Notification function notifyProfileView(profileOwnerId, viewerId) { fetch(/api/users/${profileOwnerId}/profile-view, { method: 'POST', body: JSON.stringify({ viewerId }) }); }
 
-</ConfigPluginExample>
+// 8. Ghost Mode Toggle function setGhostMode(userId, enabled) { fetch(/api/users/${userId}/ghost-mode, { method: 'POST', body: JSON.stringify({ enabled }) }); }
 
-<ConfigPluginProperties
-  properties={[
-    {
-      name: 'assets',
-      description: [
-        'An array of asset files or directories to link to the native project. The paths should be relative to the project root so that the file names, whether specified directly or using a directory, will become the resource names.',
-        '',
-        'Supported file types:',
-        '* Images: `.png`, `.jpg`, `.gif`',
-        '* Media: `.mp4`, `.mp3`, `.lottie`, `.riv`',
-        '* SQLite database files: `.db`',
-        '',
-        '> **Note**: To import an existing database file (`.db`), see instructions in [SQLite API reference](./sqlite/#import-an-existing-database). For other file types (such as `.lottie` or `.riv`), see [how to add a file extension to `assetExts` in metro config](/guides/customizing-metro/#adding-more-file-extensions-to-assetexts).',
-      ].join('\n'),
-      default: '[]',
-    },
-  ]}
-/>
+// 9. AI Suggested Content async function getSuggestedContent(userId) { const res = await fetch(/api/users/${userId}/suggested-content); return await res.json(); }
 
-### Usage
+// 10. Block/Report User function blockUser(userId) { fetch(/api/admin/block-user, { method: 'POST', body: JSON.stringify({ userId }) }); }
 
-Learn more about how to use the `expo-asset` config plugin to embed an asset file in your project in [Load an asset at build time](/develop/user-interface/assets/#load-an-asset-at-build-time).
+// 11. Share Button Logic function sharePost(postId) { navigator.share({ url: /posts/${postId} }); }
 
-## API
+// 12. Follow/Unfollow Logic function toggleFollow(targetUserId) { fetch(/api/users/${targetUserId}/follow, { method: 'POST' }); }
 
-```js
-import { Asset } from 'expo-asset';
-```
+// 13. Hashtag System function getPostsByHashtag(tag) { return fetch(/api/hashtags/${tag}).then(res => res.json()); }
 
-<APISection packageName="expo-asset" apiName="Asset" />
+// 14. Location Explore function getPostsByProvince(province) { return fetch(/api/explore/${province}).then(res => res.json()); }
+
+// 15. Auto Share to TikTok/YouTube function autoShare(postId) { fetch(/api/posts/${postId}/autoshare, { method: 'POST' }); }
+
+// 16. Music & Sound Library async function getSoundLibrary() { const res = await fetch(/api/sounds); return await res.json(); }
+
+// 17. Gifts & Tips System function sendGift(postId, amount) { fetch(/api/posts/${postId}/gift, { method: 'POST', body: JSON.stringify({ amount }) }); }
+
+// 18. Trending Tab Fetch async function getTrendingPosts() { const res = await fetch(/api/trending); return await res.json(); }
+
+// 19. Filters & Video Effects function applyFilter(videoId, filter) { fetch(/api/videos/${videoId}/filter, { method: 'POST', body: JSON.stringify({ filter }) }); }
+
+// 20. Duet & Stitch function createDuet(targetPostId) { fetch(/api/duet, { method: 'POST', body: JSON.stringify({ targetPostId }) }); }
+
+// 21. Sponsored Content Tags function tagSponsored(postId) { fetch(/api/posts/${postId}/sponsored, { method: 'POST' }); }
+
+
+// 23. Marketplace Listing function listProduct(userId, product) { fetch(/api/marketplace, { method: 'POST', body: JSON.stringify({ userId, product }) }); }
+
+// 24. Admin Analytics Fetch async function getAdminStats() { const res = await fetch(/api/admin/stats); return await res.json(); }
+
+// 25. Content Moderation (Manual Trigger) function flagInappropriate(postId) { fetch(/api/moderation/flag, { method: 'POST', body: JSON.stringify({ postId }) }); }
+
+// 26. Comment Filters Example function filterComment(text) { const badWords = ['badword1', 'badword2']; return badWords.some(word => text.includes(word)); }
+
+// 27. Creator Levels Update function updateCreatorLevel(userId, level) { fetch(/api/users/${userId}/level, { method: 'POST', body: JSON.stringify({ level }) }); }
+
+// 28. Top Creators Leaderboard async function getLeaderboard() { const res = await fetch(/api/leaderboard); return await res.json(); }
+
+// 29. Daily Challenges Fetch async function getDailyChallenges() { const res = await fetch(/api/challenges/daily); return await res.json(); }
+
+// 30. Video Playlist Creation function createPlaylist(userId, title) { fetch(/api/playlists, { method: 'POST', body: JSON.stringify({ userId, title }) }); }
+
+// 31. View Count Anti-Fake (Backend Validates IP/User) // Logic assumed on backend, not shown here
+
+// 32. 2FA Toggle function setTwoFactor(userId, enabled) { fetch(/api/users/${userId}/2fa, { method: 'POST', body: JSON.stringify({ enabled }) }); }
+
+// 33. Livestream Event Start function startLivestream(userId, title) { fetch(/api/livestreams, { method: 'POST', body: JSON.stringify({ userId, title }) }); }
+
+// 34. Livestream Join function joinLivestream(streamId) { fetch(/api/livestreams/${streamId}/join, { method: 'POST' }); }
+
+// 35. Customizable Profile Themes function setProfileTheme(userId, theme) { fetch(/api/users/${userId}/theme, { method: 'POST', body: JSON.stringify({ theme }) }); }
+
+// 36. Profile Bio Update function updateBio(userId, bio) { fetch(/api/users/${userId}/bio, { method: 'POST', body: JSON.stringify({ bio }) }); }
+
+// 37. Notification Settings Toggle function setNotifications(userId, enabled) { fetch(/api/users/${userId}/notifications, { method: 'POST', body: JSON.stringify({ enabled }) }); }
+
+// 38. Comment Like System function likeComment(commentId, userId) { fetch(/api/comments/${commentId}/like, { method: 'POST', body: JSON.stringify({ userId }) }); }
+
+// 39. Video Privacy Toggle function setVideoPrivacy(videoId, privateStatus) { fetch(/api/videos/${videoId}/privacy, { method: 'POST', body: JSON.stringify({ privateStatus }) }); }
+
+// 40. User Search async function searchUsers(query) { const res = await fetch(/api/search/users?q=${query}); return await res.json(); }
+
+// 41. Hashtag Search async function searchHashtags(query) { const res = await fetch(/api/search/hashtags?q=${query}); return await res.json(); }
+
+// 42. Video Report System function reportVideo(videoId, reason) { fetch(/api/videos/${videoId}/report, { method: 'POST', body: JSON.stringify({ reason }) }); }
+
+// 43. Follower Count Fetch async function getFollowerCount(userId) { const res = await fetch(/api/users/${userId}/followers); return await res.json(); }
+
+// 44. Inbox Message Send function sendMessage(toUserId, text) { fetch(/api/messages, { method: 'POST', body: JSON.stringify({ toUserId, text }) }); }
+
+// 45. AI Discovery Feed by Interest async function getDiscoveryFeed(userId, interest) { const res = await fetch(/api/discovery?user=${userId}&interest=${interest}); return await res.json(); }
+
+// NOTE: These are simplified logic snippets. Actual app requires secure backend, database setup, and error handling.
+
