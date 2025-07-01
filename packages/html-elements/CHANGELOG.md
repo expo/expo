@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Use modern monospace font for web and iOS.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
