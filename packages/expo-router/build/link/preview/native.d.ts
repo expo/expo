@@ -1,6 +1,7 @@
 import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
     title: string;
+    icon?: string;
     id: string;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;

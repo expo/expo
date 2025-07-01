@@ -51,7 +51,6 @@ const HomeIndex = () => {
             <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
             <Text>Multiple children</Text>
           </TouchableOpacity>
-          <Text>with asChild</Text>
         </Link.Trigger>
       </Link>
       <Link href="/(tabs)/home/one">
@@ -74,9 +73,27 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Menu: /(tabs)/home/one</Link.Trigger>
         <Link.Preview />
         <Link.Menu>
-          <Link.MenuAction title="Share" onPress={() => {}} />
-          <Link.MenuAction title="Copy" onPress={() => {}} />
-          <Link.MenuAction title="Delete" onPress={() => {}} />
+          <Link.MenuAction
+            title="Share"
+            icon="square.and.arrow.up"
+            onPress={() => {
+              console.log('Share Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Copy"
+            icon="doc.on.doc"
+            onPress={() => {
+              console.log('Copy Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Delete"
+            icon="trash"
+            onPress={() => {
+              console.log('Delete Pressed');
+            }}
+          />
         </Link.Menu>
       </Link>
       <Link href="/(tabs)/settings">

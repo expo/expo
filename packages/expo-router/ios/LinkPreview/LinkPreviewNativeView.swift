@@ -25,7 +25,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
 
   func setNextScreenId(_ screenId: String) {
     self.nextScreenId = screenId
-      linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
+    linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
   }
 
   // MARK: - Children
@@ -159,17 +159,23 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   }
 
   private func createContextMenu() -> UIMenu {
-    let uiActions = actions.map { action in
-      return UIAction(
-        title: action.title
-      ) { _ in
-        self.onActionSelected([
-          "id": action.id
-        ])
+    return UIMenu(
+      title: "",
+      children: actions.map { action in
+        self.convertActionViewToUiAction(action)
       }
-    }
+    )
+  }
 
-    return UIMenu(title: "", children: uiActions)
+  private func convertActionViewToUiAction(_ action: LinkPreviewNativeActionView) -> UIAction {
+    return UIAction(
+      title: action.title,
+      image: action.icon.flatMap { UIImage(systemName: $0) }
+    ) { _ in
+      self.onActionSelected([
+        "id": action.id
+      ])
+    }
   }
 }
 
