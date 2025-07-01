@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
+- Add position options to `writeAsStringAsync` and `readAsStringAsync` methods for granular binary writes and reads. This enables writing to and reading from specific positions in files, allowing for more advanced use cases like database storage implementations and OPFS-like functionality.
 
 ### 🐛 Bug fixes
 
