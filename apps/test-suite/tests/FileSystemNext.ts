@@ -588,7 +588,7 @@ export async function test({ describe, expect, it, ...t }) {
         });
 
         it('correctly if not exists', () => {
-          let uri = testDirectory + 'correctly_if_no_exists.txt';
+          const uri = testDirectory + 'correctly_if_no_exists.txt';
           expect(Paths.isDirectory(uri)).toEqual({
             exists: false,
             isDirectory: null,
