@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+## 2.1.13 - 2025-07-01
+
+### 💡 Others
+
 - Added `System.getenv()` syntax support to credentials for extraMavenRepos. ([#37343](https://github.com/expo/expo/pull/37343) by [@kudo](https://github.com/kudo))
 
 ## 2.1.12 - 2025-06-18
