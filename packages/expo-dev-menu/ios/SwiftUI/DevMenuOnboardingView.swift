@@ -6,7 +6,8 @@ struct DevMenuOnboardingView: View {
 
   var body: some View {
     if isVisible {
-      Color.white
+      Rectangle()
+        .fill(.ultraThinMaterial)
         .ignoresSafeArea()
         .overlay(onboardingOverlay)
         .opacity(isVisible ? 1.0 : 0.0)
@@ -18,28 +19,31 @@ struct DevMenuOnboardingView: View {
     VStack(spacing: 24) {
       VStack(spacing: 16) {
         Text("This is the developer menu. It gives you access to useful tools in your development builds.")
-          .font(.body)
-          .multilineTextAlignment(.leading)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .font(.callout)
 
 #if targetEnvironment(simulator)
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(spacing: 4) {
           Text("You can open it at any time with the **⌃ + d** keyboard shortcut.")
-            .font(.body)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.callout)
 
           Text("(Connect Hardware Keyboard must be enabled on your simulator to use this shortcut, you can toggle it with **⌘ + shift + K**.)")
-            .font(.caption)
             .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.footnote)
         }
 #else
         Text("You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.")
-          .font(.body)
+          .foregroundColor(.primary)
+          .frame(maxWidth: .infinity, alignment: .leading)
 #endif
       }
-      .foregroundColor(.white)
 
       continueButton
+      Spacer()
     }
-    .padding(32)
+    .padding()
   }
 
   private var continueButton: some View {
@@ -53,12 +57,10 @@ struct DevMenuOnboardingView: View {
     }
     label: {
       Text("Continue")
-        .font(.headline)
-        .foregroundColor(.white)
+        .font(.system(size: 16, weight: .semibold))
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.blue)
-        .cornerRadius(12)
+        .frame(height: 32)
     }
+    .buttonStyle(.borderedProminent)
   }
 }
