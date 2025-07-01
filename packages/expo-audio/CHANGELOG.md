@@ -6,6 +6,10 @@
 
 ### 🎉 New features
 
+- [Web] Added audio sampling support ([#37598](https://github.com/expo/expo/pull/37598) by [@hirbod](https://github.com/hirbod))
+- [Web] Added panning support ([#37598](https://github.com/expo/expo/pull/37598) by [@hirbod](https://github.com/hirbod))
+- [Web] Implemented missing updateInterval ([#37598](https://github.com/expo/expo/pull/37598) by [@hirbod](https://github.com/hirbod))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))

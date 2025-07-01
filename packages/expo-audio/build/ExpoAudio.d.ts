@@ -2,9 +2,7 @@ import { PermissionResponse } from 'expo-modules-core';
 import { AudioMode, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
-export declare const PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate";
-export declare const AUDIO_SAMPLE_UPDATE = "audioSampleUpdate";
-export declare const RECORDING_STATUS_UPDATE = "recordingStatusUpdate";
+import { PLAYBACK_STATUS_UPDATE, AUDIO_SAMPLE_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudioEvents';
 export declare function useAudioPlayer(source?: AudioSource, updateInterval?: number): AudioPlayer;
 export declare function useAudioPlayerStatus(player: AudioPlayer): AudioStatus;
 export declare function useAudioSampleListener(player: AudioPlayer, listener: (data: AudioSample) => void): void;
@@ -24,4 +22,5 @@ export declare function setAudioModeAsync(mode: Partial<AudioMode>): Promise<voi
 export declare function requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getRecordingPermissionsAsync(): Promise<PermissionResponse>;
 export { AudioModule };
+export { PLAYBACK_STATUS_UPDATE, AUDIO_SAMPLE_UPDATE, RECORDING_STATUS_UPDATE };
 //# sourceMappingURL=ExpoAudio.d.ts.map
