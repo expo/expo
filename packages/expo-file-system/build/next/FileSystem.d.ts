@@ -11,7 +11,6 @@ export declare class Paths extends PathUtilities {
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
     /**
-<<<<<<< HEAD
      * A property that represents the total space on device's internal storage, represented in bytes.
      */
     static get totalDiskSpace(): number;
@@ -19,16 +18,10 @@ export declare class Paths extends PathUtilities {
      * A property that represents the available space on device's internal storage, represented in bytes.
      */
     static get availableDiskSpace(): number;
-=======
-     * Returns an object containing two values:
-     * - exists: is true if and only if the file specified by the abstract pathname exists and can be read by the application, false otherwise
-     * - isDirectory: if exists is true, this indicates whether the file is a directory; otherwise, the value is null
-     */
     static isDirectory(...uris: string[]): {
         isDirectory: boolean | null;
         exists: boolean;
     };
->>>>>>> 494d320f94 (Add)
 }
 /**
  * @hidden

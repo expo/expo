@@ -91,7 +91,7 @@ export class FileBlob extends Blob {
     return this.file.text();
   }
 
-  override async bytes(): Promise<Uint8Array> {
+  async bytes(): Promise<Uint8Array> {
     return this.file.bytes();
   }
 
