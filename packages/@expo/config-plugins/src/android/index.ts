@@ -5,6 +5,7 @@ import * as EasBuild from './EasBuild';
 import * as GoogleMapsApiKey from './GoogleMapsApiKey';
 import * as GoogleServices from './GoogleServices';
 import * as IntentFilters from './IntentFilters';
+import * as Locales from './Locales';
 import * as Manifest from './Manifest';
 import * as Name from './Name';
 import * as Orientation from './Orientation';
@@ -32,6 +33,7 @@ export {
   GoogleServices,
   IntentFilters,
   Name,
+  Locales,
   Orientation,
   Package,
   PrimaryColor,
