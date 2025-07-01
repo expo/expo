@@ -9,10 +9,17 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
-- [iOS] Fixed contentPosition is not correct after switching theme. ([#37374](https://github.com/expo/expo/pull/37374) by [@kudo](https://github.com/kudo))
 - [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
 
 ### 💡 Others
+
+### 📚 3rd party library updates
+
+## 2.3.1 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed contentPosition is not correct after switching theme. ([#37374](https://github.com/expo/expo/pull/37374) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

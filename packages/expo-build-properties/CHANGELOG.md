@@ -6,13 +6,21 @@
 
 ### 🎉 New features
 
-- Add `android.buildFromSource` option ([#37745](https://github.com/expo/expo/pull/37745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 0.14.8 - 2025-07-01
+
+### 💡 Others
+
 - Added `System.getenv()` syntax support to the tsdoc for `AndroidMavenRepositoryCredentials`. ([#37344](https://github.com/expo/expo/pull/37344) by [@kudo](https://github.com/kudo))
+
+## 0.14.7 - 2025-06-30
+
+### 🎉 New features
+
+- Add `android.buildFromSource` option ([#37745](https://github.com/expo/expo/pull/37745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.14.6 — 2025-04-30
 

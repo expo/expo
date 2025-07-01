@@ -9,9 +9,16 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
-- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+### 📚 3rd party library updates
+
+## 15.2.13 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

@@ -13,7 +13,6 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
-- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -23,6 +22,12 @@
 - [Android] Reduce the number of conversions needed to call a function from the native module. ([#37099](https://github.com/expo/expo/pull/37099) by [@lukmccall](https://github.com/lukmccall))
 - Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
 - [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.4.1 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
 
 ## 2.4.0 - 2025-06-04
 
