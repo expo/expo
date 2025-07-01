@@ -155,7 +155,9 @@ public final class ImageView: ExpoView {
     // Cancel currently running load requests.
     cancelPendingOperation()
 
-    context[.imageTransformer] = createTransformPipeline()
+    if blurRadius > 0 {
+      context[.imageTransformer] = createTransformPipeline()
+    }
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
@@ -357,9 +359,6 @@ public final class ImageView: ExpoView {
   // MARK: - Processing
 
   private func createTransformPipeline() -> SDImagePipelineTransformer? {
-    if blurRadius <= 0 {
-      return nil
-    }
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius)
     ]

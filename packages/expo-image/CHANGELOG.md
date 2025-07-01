@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Use specified cache type when no transformation is applied ([#37777](https://github.com/expo/expo/pull/37777) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 2.3.1 — 2025-07-01
