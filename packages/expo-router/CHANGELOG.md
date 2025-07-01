@@ -12,6 +12,8 @@
 - Add icon prop to Link.MenuAction ([#37783](https://github.com/expo/expo/pull/37783) by [@Ubax](https://github.com/Ubax))
 - Add submenus to link preview context menu ([#37784](https://github.com/expo/expo/pull/37784) by [@Ubax](https://github.com/Ubax))
 - [web] Add styled modals and sheets on web with a custom modal stack using vaul ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
+- Change modal API to use onRequestClose instead of onClose ([#37762](https://github.com/expo/expo/pull/37762) by [@Ubax](https://github.com/Ubax))
+
 
 ### 🐛 Bug fixes
 
