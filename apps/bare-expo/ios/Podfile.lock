@@ -53,7 +53,7 @@ PODS:
   - EXNotifications/Tests (0.31.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.14):
+  - Expo (53.0.15):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -3607,7 +3607,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 75cba7539b60676be1911d024252a11b846085ed
   EXNotifications: 2c4bcb5efff0874d8553db6ba0fbfec64c0e7481
-  Expo: 950062a8d78ff69ad6e507c6f381823ccd58b3b1
+  Expo: 4c78ecf42a9908cba65381c4039c24684c845c87
   expo-dev-client: 55bea45c41b9125a94dc15062af63412ceb7b2ea
   expo-dev-launcher: c70d5730935b4d7d6b827d12890177533b8e45f1
   expo-dev-menu: 9593e98d9ce6de04121cd9c38b9be29d4d128773

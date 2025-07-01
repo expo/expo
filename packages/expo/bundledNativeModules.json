@@ -1,5 +1,5 @@
 {
-  "@expo/fingerprint": "~0.13.2",
+  "@expo/fingerprint": "~0.13.3",
   "@expo/metro-runtime": "~5.0.4",
   "@expo/vector-icons": "^14.1.0",
   "@expo/ui": "~0.1.1-alpha.10",

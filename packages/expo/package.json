@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "53.0.14",
+  "version": "53.0.15",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -76,7 +76,7 @@
     "@expo/cli": "0.24.16",
     "@expo/config": "~11.0.11",
     "@expo/config-plugins": "~10.0.3",
-    "@expo/fingerprint": "0.13.2",
+    "@expo/fingerprint": "0.13.3",
     "@expo/metro-config": "0.20.15",
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~13.2.1",
