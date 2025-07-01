@@ -430,7 +430,6 @@ export type ImageContentPosition =
   | ImageContentPositionString;
 
 /**
- *
  * It allows you to use an image as a background while rendering other content on top of it.
  * It extends all `Image` props but provides separate styling controls for the container and the background image itself.
  */
