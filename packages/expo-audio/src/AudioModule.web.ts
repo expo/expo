@@ -192,7 +192,11 @@ export class AudioPlayerWeb
     this.media = this._createMediaElement();
   }
 
-  async seekTo(seconds: number): Promise<void> {
+  async seekTo(
+    seconds: number,
+    toleranceMillisBefore?: number,
+    toleranceMillisAfter?: number
+  ): Promise<void> {
     this.media.currentTime = seconds;
   }
 
