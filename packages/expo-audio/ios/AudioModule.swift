@@ -488,11 +488,13 @@ public class AudioModule: Module {
   private func activateSession() throws {
     try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
   }
-  
+
   private func deactivateSession() {
     // We need to give isPlaying time to update before running this
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-      guard let self = self else { return }
+      guard let self else {
+        return
+      }
       let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
       if !hasActivePlayers {
         do {
