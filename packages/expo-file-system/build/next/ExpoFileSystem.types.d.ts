@@ -1,4 +1,3 @@
-import { InfoOptions } from '../FileSystem.types';
 export type CreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -220,5 +219,12 @@ export type FileInfo = {
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */
     md5?: string;
+};
+export type InfoOptions = {
+    /**
+     * Whether to return the MD5 hash of the file.
+     * @default false
+     */
+    md5?: boolean;
 };
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
