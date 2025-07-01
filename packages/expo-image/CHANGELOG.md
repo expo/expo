@@ -10,7 +10,7 @@
 
 - [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
 - [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
-- [iOS] Use specified cache type when no transformation is applied
+- [iOS] Use specified cache type when no transformation is applied ([#37777](https://github.com/expo/expo/pull/37777) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
