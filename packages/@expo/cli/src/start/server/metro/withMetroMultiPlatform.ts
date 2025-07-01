@@ -191,7 +191,7 @@ export function withExtendedResolver(
   };
 
   // The vendored canary modules live inside /static/canary-full/node_modules
-  // Adding the `index.js` allows us to add this path as `originModulePath` to 
+  // Adding the `index.js` allows us to add this path as `originModulePath` to
   // resolve the nested `node_modules` folder properly.
   const canaryModulesPath = path.join(
     require.resolve('@expo/cli/package.json'),
