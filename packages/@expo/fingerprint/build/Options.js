@@ -53,6 +53,7 @@ exports.DEFAULT_IGNORE_PATHS = [
     // Ignore node binaries that might be platform dependent
     '**/node_modules/**/*.node',
     '**/node_modules/@img/sharp-*/**/*',
+    '**/node_modules/sharp/{build,vendor}/**/*',
 ];
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
