@@ -74,13 +74,12 @@ public final class FileSystemModule: Module {
 
       if options.encoding == .base64 {
         return data.base64EncodedString()
-      } else {
-        let encoding = options.encoding.toStringEncoding() ?? .utf8
-        guard let string = String(data: data, encoding: encoding) else {
-          throw FileNotReadableException(url.path)
-        }
-        return string
       }
+      let encoding = options.encoding.toStringEncoding() ?? .utf8
+      guard let string = String(data: data, encoding: encoding) else {
+        throw FileNotReadableException(url.path)
+      }
+      return string
     }
 
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
