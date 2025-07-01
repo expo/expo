@@ -21,10 +21,14 @@ export interface ModalProps extends ViewProps {
    */
   visible: boolean;
   /**
-   * Callback that is called after modal is closed.
-   * This is called when the modal is dismissed by the user or programmatically.
+   * Callback that is called after modal is closed with native dismissal (e.g. drag down or back button press).
    */
   onRequestClose?: () => void;
+  /**
+   * Callback that is called after modal is closed.
+   * This is called when the modal is closed programmatically or when the user dismisses it.
+   */
+  onDidClose?: () => void;
   /**
    * Callback that is called after modal is shown.
    */
@@ -93,13 +97,14 @@ export function Modal(props: ModalProps) {
     children,
     visible,
     onRequestClose,
+    onDidClose,
     onShow,
     animationType,
     presentationStyle,
     transparent,
     ...viewProps
   } = props;
-  const { openModal, closeModal, addEventListener } = useModalContext();
+  const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
@@ -119,11 +124,18 @@ export function Modal(props: ModalProps) {
         closeModal(newId);
       };
     } else if (currentModalId && !visible) {
-      closeModal(currentModalId);
       setCurrentModalId(undefined);
     }
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    if (currentModalId && visible) {
+      updateModal(currentModalId, {
+        component: children,
+      });
+    }
+  }, [children]);
 
   useEffect(() => {
     if (currentModalId) {
@@ -138,9 +150,16 @@ export function Modal(props: ModalProps) {
           setCurrentModalId(undefined);
         }
       });
+      const unsubscribeDidClose = addEventListener('didClose', (id) => {
+        if (id === currentModalId) {
+          onDidClose?.();
+          setCurrentModalId(undefined);
+        }
+      });
       return () => {
         unsubscribeShow();
         unsubscribeClose();
+        unsubscribeDidClose();
       };
     }
     return () => {};

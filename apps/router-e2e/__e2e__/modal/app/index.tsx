@@ -1,4 +1,4 @@
-import { Link, Modal, Stack } from 'expo-router';
+import { Link, Modal, Redirect, Stack } from 'expo-router';
 import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
@@ -65,12 +65,14 @@ export default function Index() {
       />
     </View>
   );
-
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Index</Text>
       <Link href="/modal" style={{ marginVertical: 12, fontSize: 16 }}>
         Link to Modal
+      </Link>
+      <Link href="/withcontext" style={{ marginVertical: 12, fontSize: 16 }}>
+        Link to with Context
       </Link>
       {openButtons}
 
