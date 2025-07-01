@@ -30,11 +30,11 @@ export default function ExpoCheckbox({
       accessibilityState={{ disabled, checked: value }}
       style={[
         styles.root,
-        style,
         value && styles.checked,
         !!color && { backgroundColor: value ? color : undefined, borderColor: color },
         disabled && styles.disabled,
         value && disabled && styles.checkedAndDisabled,
+        style,
       ]}
       onPress={handleChange}>
       {value && (
