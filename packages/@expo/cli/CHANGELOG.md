@@ -20,6 +20,7 @@
 
 - add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
 - Bumped `playwright` version to 1.53.1. ([#37631](https://github.com/expo/expo/pull/37631) by [@kudo](https://github.com/kudo))
+- Skip pod installation when running with a pre-built binary to speed up launch time
 
 ### ⚠️ Notices
 
