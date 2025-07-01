@@ -9,16 +9,12 @@ private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 
-struct DevServer {
-  let url: String
-  let description: String
-  let source: String
-}
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
+  @Published var updatesConfig: [AnyHashable: Any] = [:]
   @Published var devServers: [DevServer] = []
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingError = false
@@ -38,11 +34,27 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
   @Published var isAuthenticated = false
-  @Published var user: User?
   @Published var isAuthenticating = false
+  @Published var user: User?
   @Published var selectedAccountId: String?
 
   private let presentationContext = DevLauncherAuthPresentationContext()
+  
+  var selectedAccount: UserAccount? {
+    guard let userData = user,
+      let selectedAccountId = selectedAccountId else {
+      return nil
+    }
+    return userData.accounts.first { $0.id == selectedAccountId }
+  }
+  
+  var structuredBuildInfo: BuildInfo {
+    return BuildInfo(buildInfo: buildInfo, updatesConfig: updatesConfig)
+  }
+  
+  var isLoggedIn: Bool {
+    return isAuthenticated && user != nil
+  }
 
   init() {
     loadData()
@@ -53,6 +65,7 @@ class DevLauncherViewModel: ObservableObject {
   private func loadData() {
     let controller = EXDevLauncherController.sharedInstance()
     self.buildInfo = controller.getBuildInfo()
+    self.updatesConfig = controller.getUpdatesConfig()
     loadRecentlyOpenedApps()
     loadMenuPreferences()
   }
@@ -303,14 +316,6 @@ class DevLauncherViewModel: ObservableObject {
   func selectAccount(accountId: String) {
     selectedAccountId = accountId
     UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
-  }
-
-  var selectedAccount: UserAccount? {
-    guard let userData = user,
-      let selectedAccountId = selectedAccountId else {
-      return nil
-    }
-    return userData.accounts.first { $0.id == selectedAccountId }
   }
 
   private func performAuthentication(isSignUp: Bool) async throws -> Bool {

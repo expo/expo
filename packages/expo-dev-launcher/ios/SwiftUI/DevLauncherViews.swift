@@ -20,10 +20,10 @@ public struct DevLauncherRootView: View {
             Text("Home")
           }
 
-        ExtensionsTabView()
+        UpdatesTabView()
           .tabItem {
-            Image("extensions-icon", bundle: getDevLauncherBundle())
-            Text("Extensions")
+            Image(systemName: "arrow.2.circlepath")
+            Text("Updates")
           }
 
         SettingsTabView()
