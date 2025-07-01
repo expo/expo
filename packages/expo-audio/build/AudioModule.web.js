@@ -145,7 +145,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
         this.media = this._createMediaElement();
     }
-    async seekTo(seconds) {
+    async seekTo(seconds, toleranceMillisBefore, toleranceMillisAfter) {
         this.media.currentTime = seconds;
     }
     // Not supported on web

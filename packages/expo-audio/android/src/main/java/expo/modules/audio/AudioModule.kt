@@ -408,7 +408,7 @@ class AudioModule : Module() {
         }
       }
 
-      AsyncFunction("seekTo") { player: AudioPlayer, seekTime: Double ->
+      AsyncFunction("seekTo") { player: AudioPlayer, seekTime: Double, _: Double?, _: Double? ->
         player.seekTo(seekTime)
       }.runOnQueue(Queues.MAIN)
 

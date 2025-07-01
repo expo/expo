@@ -185,8 +185,12 @@ public class AudioModule: Module {
         }
       }
 
-      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
-        await player.seekTo(seconds: seconds)
+      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
+        await player.seekTo(
+          seconds: seconds,
+          toleranceMillisBefore: toleranceMillisBefore,
+          toleranceMillisAfter: toleranceMillisAfter
+        )
       }
     }
 
