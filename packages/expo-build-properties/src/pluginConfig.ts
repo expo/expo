@@ -342,11 +342,13 @@ export interface PluginConfigTypeIos {
   /**
    * Enable support for prebuilt React Native iOS dependencies (ReactNativeDependencies.xcframework).
    * This feature is only available from React Native 0.80.
+   * `false` will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
    *
+   * @default true
    * @see [RN documentation on prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt)
    * @experimental
    */
-  usePrebuiltReactNativeDependencies?: boolean;
+  buildFromSource?: boolean;
 }
 
 /**
@@ -692,7 +694,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
-        usePrebuiltReactNativeDependencies: { type: 'boolean', nullable: true },
+        buildFromSource: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
