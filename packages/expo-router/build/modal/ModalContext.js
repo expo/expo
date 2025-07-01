@@ -7,28 +7,48 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const ModalComponent_1 = require("./ModalComponent");
+const ALLOWED_EVENT_TYPE_LISTENERS = ['didClose', 'close', 'show'];
 const ModalContext = (0, react_1.createContext)(undefined);
 const ModalContextProvider = ({ children }) => {
     const [modalConfigs, setModalConfigs] = (0, react_1.useState)([]);
-    const closeEventListeners = (0, react_1.useRef)(new Set());
-    const showEventListeners = (0, react_1.useRef)(new Set());
+    const eventListeners = (0, react_1.useRef)({
+        didClose: new Set(),
+        close: new Set(),
+        show: new Set(),
+    });
     const prevModalConfigs = (0, react_1.useRef)([]);
     (0, react_1.useEffect)(() => {
         if (prevModalConfigs.current !== modalConfigs) {
             prevModalConfigs.current.forEach((config) => {
                 if (!modalConfigs.find((c) => c.uniqueId === config.uniqueId)) {
-                    closeEventListeners.current.forEach((callback) => callback(config.uniqueId));
+                    emitCloseEvent(config.uniqueId);
                 }
             });
             prevModalConfigs.current = modalConfigs;
         }
     }, [modalConfigs]);
-    const openModal = (0, react_1.useCallback)((config) => setModalConfigs((prev) => [...prev, config]), []);
+    const openModal = (0, react_1.useCallback)((config) => {
+        setModalConfigs((prev) => [...prev, config]);
+    }, []);
+    const updateModal = (0, react_1.useCallback)((id, config) => {
+        setModalConfigs((prev) => {
+            const index = prev.findIndex((c) => c.uniqueId === id);
+            if (index >= 0) {
+                const updatedConfigs = [...prev];
+                updatedConfigs[index] = { ...updatedConfigs[index], ...config };
+                return updatedConfigs;
+            }
+            return prev;
+        });
+    }, []);
     const emitCloseEvent = (0, react_1.useCallback)((id) => {
-        closeEventListeners.current.forEach((callback) => callback(id));
+        eventListeners.current.close.forEach((callback) => callback(id));
+    }, []);
+    const emitDidCloseEvent = (0, react_1.useCallback)((id) => {
+        eventListeners.current.didClose.forEach((callback) => callback(id));
     }, []);
     const emitShowEvent = (0, react_1.useCallback)((id) => {
-        showEventListeners.current.forEach((callback) => callback(id));
+        eventListeners.current.show.forEach((callback) => callback(id));
     }, []);
     const closeModal = (0, react_1.useCallback)((id) => {
         setModalConfigs((prev) => {
@@ -38,35 +58,35 @@ const ModalContextProvider = ({ children }) => {
             }
             return prev;
         });
+        emitDidCloseEvent(id);
     }, []);
     const addEventListener = (0, react_1.useCallback)((type, callback) => {
-        if (type !== 'close' && type !== 'show')
+        if (!ALLOWED_EVENT_TYPE_LISTENERS.includes(type))
             return () => { };
         if (!callback) {
             console.warn('Passing undefined as a callback to addEventListener is forbidden');
             return () => { };
         }
-        const eventListeners = type === 'close' ? closeEventListeners : showEventListeners;
-        eventListeners.current.add(callback);
+        eventListeners.current[type].add(callback);
         return () => {
-            eventListeners.current.delete(callback);
+            eventListeners.current[type].delete(callback);
         };
     }, []);
     const rootId = (0, react_1.useMemo)(() => (0, non_secure_1.nanoid)(), []);
-    return (<react_native_screens_1.ScreenStack style={styles.stackContainer}>
-      <react_native_screens_1.ScreenStackItem screenId={rootId} activityState={2} style={react_native_1.StyleSheet.absoluteFill} headerConfig={{
-            hidden: true,
-        }}>
-        <ModalContext.Provider value={{
+    return (<ModalContext.Provider value={{
             modalConfigs,
             openModal,
             closeModal,
+            updateModal,
             addEventListener,
         }}>
+      <react_native_screens_1.ScreenStack style={styles.stackContainer}>
+        <react_native_screens_1.ScreenStackItem screenId={rootId} activityState={2} style={react_native_1.StyleSheet.absoluteFill} headerConfig={{
+            hidden: true,
+        }}>
           {children}
-        </ModalContext.Provider>
-      </react_native_screens_1.ScreenStackItem>
-      {modalConfigs.map((config) => (<react_native_screens_1.ScreenStackItem key={config.uniqueId} {...config.viewProps} screenId={`${rootId}${config.uniqueId}`} activityState={2} stackPresentation={getStackPresentationType(config)} stackAnimation={getStackAnimationType(config)} nativeBackButtonDismissalEnabled headerConfig={{
+        </react_native_screens_1.ScreenStackItem>
+        {modalConfigs.map((config) => (<react_native_screens_1.ScreenStackItem key={config.uniqueId} {...config.viewProps} screenId={`${rootId}${config.uniqueId}`} activityState={2} stackPresentation={getStackPresentationType(config)} stackAnimation={getStackAnimationType(config)} nativeBackButtonDismissalEnabled headerConfig={{
                 hidden: true,
             }} contentStyle={[
                 {
@@ -85,9 +105,10 @@ const ModalContextProvider = ({ children }) => {
             }} onAppear={() => {
                 emitShowEvent(config.uniqueId);
             }}>
-          <ModalComponent_1.ModalComponent modalConfig={config}/>
-        </react_native_screens_1.ScreenStackItem>))}
-    </react_native_screens_1.ScreenStack>);
+            <ModalComponent_1.ModalComponent modalConfig={config}/>
+          </react_native_screens_1.ScreenStackItem>))}
+      </react_native_screens_1.ScreenStack>
+    </ModalContext.Provider>);
 };
 exports.ModalContextProvider = ModalContextProvider;
 const useModalContext = () => {

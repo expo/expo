@@ -12,10 +12,14 @@ export interface ModalProps extends ViewProps {
      */
     visible: boolean;
     /**
-     * Callback that is called after modal is closed.
-     * This is called when the modal is dismissed by the user or programmatically.
+     * Callback that is called after modal is closed with native dismissal (e.g. drag down or back button press).
      */
     onRequestClose?: () => void;
+    /**
+     * Callback that is called after modal is closed.
+     * This is called when the modal is closed programmatically or when the user dismisses it.
+     */
+    onDidClose?: () => void;
     /**
      * Callback that is called after modal is shown.
      */
