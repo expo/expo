@@ -57,7 +57,6 @@ public final class FileSystemModule: Module {
       if let position = options.position, position < 0 {
         throw Exception(name: "InvalidArgumentException", description: "Position cannot be negative")
       }
-      
       if let length = options.length, length < 0 {
         throw Exception(name: "InvalidArgumentException", description: "Length cannot be negative")
       }
@@ -91,12 +90,10 @@ public final class FileSystemModule: Module {
       if let position = options.position, position < 0 {
         throw Exception(name: "InvalidArgumentException", description: "Position cannot be negative")
       }
-
       if options.encoding == .base64 {
         try writeFileAsBase64(path: url.path, string: string, position: options.position)
         return
       }
-      
       // Handle position-based writing
       if let position = options.position {
         try writeStringAtPosition(path: url.path, string: string, position: position, encoding: options.encoding.toStringEncoding() ?? .utf8)
