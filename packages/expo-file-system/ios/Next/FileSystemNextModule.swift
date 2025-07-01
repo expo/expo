@@ -93,16 +93,16 @@ public final class FileSystemNextModule: Module {
       }
       downloadTask.resume()
     }
-    
+
     Function("isDirectory") { (url: URL) in
       let output = IsDirectory()
       output.exists = false
       output.isDirectory = nil
-      
+
       guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
         return output
       }
-      
+
       if permissionsManager.getPathPermissions(url.path).contains(.read) {
         var isDirectory: ObjCBool = false
         if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {

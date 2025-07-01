@@ -147,6 +147,8 @@ export declare class File {
 
   /**
    *  Retrieves an object containing properties of a file
+   * @throws Error If the application does not have read access to the file, or if the path does not point to a file (e.g., it points to a directory).
+   * @returns An object with file metadata (e.g., size, creation date, etc.).
    */
   info(options?: InfoOptions): FileInfo;
 
@@ -248,45 +250,29 @@ export declare class FileHandle {
   size: number | null;
 }
 
-export type FileInfo =
+export type FileInfo = {
   /**
-   * Object returned when file exist.
+   * Signifies whether the requested file exists.
    */
-  | {
-      /**
-       * Signifies whether the requested file exists.
-       */
-      exists: true;
-      /**
-       * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
-       */
-      uri: string;
-      /**
-       * The size of the file in bytes.
-       */
-      size: number;
-      /**
-       * Boolean set to `true` if this is a directory and `false` if it is a file.
-       */
-      isDirectory: boolean;
-      /**
-       * The last modification time of the file expressed in seconds since epoch.
-       */
-      modificationTime: number;
-      /**
-       * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
-       */
-      creationTime?: number;
-      /**
-       * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
-       */
-      md5?: string;
-    }
+  exists: boolean;
   /**
-   * Object returned when file do not exist.
+   * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
    */
-  | {
-      exists: false;
-      uri: string;
-      isDirectory: false;
-    };
+  uri?: string;
+  /**
+   * The size of the file in bytes.
+   */
+  size?: number;
+  /**
+   * The last modification time of the file expressed in seconds since epoch.
+   */
+  modificationTime?: number;
+  /**
+   * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
+   */
+  creationTime?: number;
+  /**
+   * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+   */
+  md5?: string;
+};

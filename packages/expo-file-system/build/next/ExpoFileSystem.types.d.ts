@@ -128,6 +128,8 @@ export declare class File {
     delete(): void;
     /**
      *  Retrieves an object containing properties of a file
+     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (e.g., it points to a directory).
+     * @returns An object with file metadata (e.g., size, creation date, etc.).
      */
     info(options?: InfoOptions): FileInfo;
     /**
@@ -193,31 +195,23 @@ export declare class FileHandle {
     offset: number | null;
     size: number | null;
 }
-export type FileInfo = 
-/**
- * Object returned when file exist.
- */
-{
+export type FileInfo = {
     /**
      * Signifies whether the requested file exists.
      */
-    exists: true;
+    exists: boolean;
     /**
      * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
      */
-    uri: string;
+    uri?: string;
     /**
      * The size of the file in bytes.
      */
-    size: number;
-    /**
-     * Boolean set to `true` if this is a directory and `false` if it is a file.
-     */
-    isDirectory: boolean;
+    size?: number;
     /**
      * The last modification time of the file expressed in seconds since epoch.
      */
-    modificationTime: number;
+    modificationTime?: number;
     /**
      * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
      */
@@ -226,13 +220,5 @@ export type FileInfo =
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */
     md5?: string;
-}
-/**
- * Object returned when file do not exist.
- */
- | {
-    exists: false;
-    uri: string;
-    isDirectory: false;
 };
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

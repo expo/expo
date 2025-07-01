@@ -139,15 +139,19 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
 
   fun info(options: InfoOptions?): FileInfo {
     validateType()
+    validatePermission(Permission.READ)
     if (!file.exists()) {
-      throw UnableToGetInfoAsyncException("file does not exists.")
+      val fileInfo = FileInfo(
+        exists = false,
+        uri = slashifyFilePath(file.toURI().toString())
+      )
+      return fileInfo
     }
     when {
       file.toURI().scheme == "file" -> {
         val fileInfo = FileInfo(
           exists = true,
           uri = slashifyFilePath(file.toURI().toString()),
-          isDirectory = false,
           size = size,
           modificationTime = modificationTime,
           creationTime = creationTime
@@ -157,7 +161,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
         }
         return fileInfo
       }
-      else -> throw UnableToGetInfoAsyncException("file schema ${file.toURI().scheme} is not supported")
+      else -> throw UnableToGetInfoException("file schema ${file.toURI().scheme} is not supported")
     }
   }
 }

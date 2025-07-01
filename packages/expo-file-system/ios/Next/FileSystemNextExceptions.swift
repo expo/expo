@@ -55,9 +55,9 @@ internal final class UnableToReadHandleException: GenericException<String> {
   }
 }
 
-internal final class UnableToGetAsyncInfoException: GenericException<String> {
+internal final class UnableToGetInfoException: GenericException<String> {
   override var reason: String {
-    "Unable to getAsyncInfo from a file: \(param)"
+    "Unable to get info from a file: \(param)"
   }
 }
 

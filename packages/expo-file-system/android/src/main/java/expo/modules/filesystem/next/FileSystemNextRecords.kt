@@ -16,11 +16,10 @@ data class DownloadOptionsNext(
 ) : Record
 
 data class FileInfo(
-  @Field var exists: Boolean?,
+  @Field var exists: Boolean,
   @Field var uri: String?,
-  @Field var isDirectory: Boolean?,
   @Field var md5: String? = null,
-  @Field var size: Long?,
+  @Field var size: Long? = null,
   @Field var modificationTime: Long? = null,
   @Field var creationTime: Long? = null
 ) : Record
@@ -29,5 +28,5 @@ data class IsDirectory(
   @Field
   var exists: Boolean,
   @Field
-  var isDirectory: Boolean?,
+  var isDirectory: Boolean?
 ) : Record

@@ -132,24 +132,28 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func info(options: InfoOptions) throws -> FileInfo {
+    try validateType()
     try validatePermission(.read)
+    if !exists {
+      let result = FileInfo()
+      result.exists = false
+      result.uri = url.absoluteString
+      return result
+    }
     switch url.scheme {
     case "file":
       let result = FileInfo()
-      if try exists {
-        result.exists = true
-        result.isDirectory = false
-        result.uri = url.absoluteString
-        result.size = try size
-        result.modificationTime = try modificationTime
-        result.creationTime = try creationTime
-      }
+      result.exists = true
+      result.uri = url.absoluteString
+      result.size = try size
+      result.modificationTime = try modificationTime
+      result.creationTime = try creationTime
       if options.md5 {
         result.md5 = try md5
       }
       return result
     default:
-      throw UnableToGetAsyncInfoException("url scheme \(url.scheme) is not supported")
+      throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
     }
   }
 }

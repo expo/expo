@@ -663,8 +663,7 @@ export async function test({ describe, expect, it, ...t }) {
           const result = src.info({ md5: true });
           expect(result.exists).toBe(true);
           if (result.exists) {
-            const { uri, size, isDirectory, modificationTime, creationTime, md5 } = result;
-            expect(isDirectory).toBe(false);
+            const { uri, size, modificationTime, creationTime, md5 } = result;
             expect(modificationTime).not.toBeNull();
             expect(creationTime).not.toBeNull();
             expect(md5).not.toBeNull();
@@ -682,19 +681,13 @@ export async function test({ describe, expect, it, ...t }) {
             expect(result.md5).toBeNull();
           }
         });
-        it('throws an error if file not exists', async () => {
-          const url = `${testDirectory}throws_an_error_if_file_not_exists.txt`;
+        it('returns exists false if file not exists', () => {
+          const url = `${testDirectory}returns_exists_false_if_file_not_exists.txt`;
           const src = new File(url);
           src.write('Hello world');
           src.delete();
-
-          expect(src.exists).toBe(false);
-          try {
-            src.info();
-            fail('Promise should have rejected');
-          } catch (err) {
-            expect(err).not.toBeNull();
-          }
+          const result = src.info();
+          expect(result.exists).toBe(false);
         });
       });
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
