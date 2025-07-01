@@ -8,74 +8,9 @@ export default function Page() {
         style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
         Full Screen Modal
       </Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
-      <Text>This modal should occupy the full screen (no detents).</Text>
+      {Array.from({ length: 60 }).map((_, idx) => (
+        <Text key={idx}>This modal should occupy the full screen (no detents).</Text>
+      ))}
     </ScrollView>
   );
 }
