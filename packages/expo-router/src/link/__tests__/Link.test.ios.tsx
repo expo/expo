@@ -45,7 +45,7 @@ jest.mock('../preview/native', () => {
     NativeLinkPreviewTrigger: jest.fn(({ children }: NativeLinkPreviewTriggerProps) => (
       <View testID="link-preview-native-trigger-view" children={children} />
     )),
-    NativeLinkPreviewAction: jest.fn(({}: NativeLinkPreviewActionProps) => (
+    NativeLinkPreviewAction: jest.fn((props: NativeLinkPreviewActionProps) => (
       <View testID="link-preview-native-action-view" />
     )),
     __EVENTS__: handlerMap,
