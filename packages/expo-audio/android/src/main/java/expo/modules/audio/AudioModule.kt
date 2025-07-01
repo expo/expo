@@ -409,7 +409,7 @@ class AudioModule : Module() {
       }
 
       AsyncFunction("seekTo") { player: AudioPlayer, seekTime: Double ->
-        player.ref.seekTo((seekTime * 1000L).toLong())
+        player.seekTo(seekTime)
       }.runOnQueue(Queues.MAIN)
 
       Function("setPlaybackRate") { player: AudioPlayer, rate: Float ->
