@@ -76,7 +76,7 @@ export default function Index() {
 
       <Modal
         visible={isOpenA}
-        onClose={() => {
+        onRequestClose={() => {
           setIsOpenA(false);
         }}
         animationType="slide"
@@ -93,7 +93,7 @@ export default function Index() {
       </Modal>
       <Modal
         visible={isOpenB}
-        onClose={() => {
+        onRequestClose={() => {
           setIsOpenB(false);
         }}
         animationType="slide"
@@ -111,7 +111,7 @@ export default function Index() {
       {isOpenC && (
         <Modal
           visible={isOpenC}
-          onClose={() => {
+          onRequestClose={() => {
             setIsOpenC(false);
           }}
           animationType="fade"
@@ -130,7 +130,7 @@ export default function Index() {
       {isOpenD && (
         <Modal
           visible={isOpenD}
-          onClose={() => {
+          onRequestClose={() => {
             setIsOpenD(false);
           }}
           animationType="slide"
