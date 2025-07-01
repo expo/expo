@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.services.ApolloClientService
@@ -59,7 +58,6 @@ class ProfileViewModel : ViewModel() {
   private fun fetchMe() {
     viewModelScope.launch(Dispatchers.IO) {
       val me = apolloClientService.fetchMe()
-      Log.e("dupa", "Fetched user: $me")
       _state.update { prevState ->
         // User logged out in the meantime, we can ignore the result
         if (prevState is ProfileState.LoggedOut) {
