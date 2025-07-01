@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix typed routes generation for dynamic routes with query params ([#37340](https://github.com/expo/expo/pull/37340) by [@titozzz](https://github.com/titozzz))
-
 ### 💡 Others
+
+## 5.1.2 — 2025-07-01
+
+### 🐛 Bug fixes
+
+- Fix typed routes generation for dynamic routes with query params ([#37340](https://github.com/expo/expo/pull/37340) by [@titozzz](https://github.com/titozzz))
 
 ## 5.1.1 — 2025-06-26
 

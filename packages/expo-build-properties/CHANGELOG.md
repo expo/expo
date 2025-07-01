@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.14.8 — 2025-07-01
+
+### 💡 Others
+
 - Added `System.getenv()` syntax support to the tsdoc for `AndroidMavenRepositoryCredentials`. ([#37344](https://github.com/expo/expo/pull/37344) by [@kudo](https://github.com/kudo))
 
 ## 0.14.7 — 2025-06-30

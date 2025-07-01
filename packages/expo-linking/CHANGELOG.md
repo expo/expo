@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.1.6 — 2025-07-01
+
+### 💡 Others
+
 - Deprecate `useURL` in favor of `useLinkingURL`. ([#37005](https://github.com/expo/expo/pull/37005) by [@aleqsio](https://github.com/aleqsio))
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 

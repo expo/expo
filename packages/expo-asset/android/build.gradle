@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.asset'
-version = '11.1.5'
+version = '11.1.6'
 
 android {
   namespace "expo.modules.asset"
   defaultConfig {
     versionCode 1
-    versionName "11.1.5"
+    versionName "11.1.6"
   }
 }
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 15.2.13 — 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
 
 ### 📚 3rd party library updates
 

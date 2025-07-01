@@ -1,6 +1,6 @@
 {
   "name": "uri-scheme",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "Interact with native URI schemes",
   "main": "build/index.js",
   "keywords": [
