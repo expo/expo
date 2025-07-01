@@ -72,7 +72,7 @@ const HomeIndex = () => {
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Link.Menu: /(tabs)/home/one</Link.Trigger>
         <Link.Preview />
-        <Link.Menu>
+        <Link.Menu title="Actions" icon="ellipsis">
           <Link.MenuAction
             title="Share"
             icon="square.and.arrow.up"
@@ -94,6 +94,20 @@ const HomeIndex = () => {
               console.log('Delete Pressed');
             }}
           />
+          <Link.Menu title="More" icon="ellipsis">
+            <Link.MenuAction
+              title="Submenu Item 1"
+              onPress={() => {
+                console.log('Submenu Item 1 Pressed');
+              }}
+            />
+            <Link.MenuAction
+              title="Submenu Item 2"
+              onPress={() => {
+                console.log('Submenu Item 2 Pressed');
+              }}
+            />
+          </Link.Menu>
         </Link.Menu>
       </Link>
       <Link href="/(tabs)/settings">

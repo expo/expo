@@ -2,11 +2,13 @@
 
 import React, {
   createContext,
+  createElement,
   isValidElement,
   use,
   useEffect,
   useRef,
   useState,
+  type FC,
   type PropsWithChildren,
   type ReactElement,
 } from 'react';
@@ -101,9 +103,9 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
 
   const actionsHandlers = React.useMemo(
     () =>
-      convertActionsToActionsHandlers(
-        convertChildrenArrayToActions(React.Children.toArray(menuElement?.props.children))
-      ),
+      menuElement
+        ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
+        : {},
     [menuElement]
   );
   const preview = React.useMemo(
@@ -147,7 +149,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   );
 }
 
-interface LinkMenuAction {
+interface LinkMenuActionProps {
   /**
    * The title of the menu item.
    */
@@ -159,22 +161,39 @@ interface LinkMenuAction {
   onPress: () => void;
 }
 
-export function LinkMenuAction(_: LinkMenuAction) {
+export function LinkMenuAction(_: LinkMenuActionProps) {
   return null;
 }
-interface LinkMenuProps {
-  children: ReactElement<LinkMenuAction> | ReactElement<LinkMenuAction>[];
+
+export interface LinkMenuProps {
+  /**
+   * The title of the menu item
+   */
+  title?: string;
+  /**
+   * Optional SF Symbol displayed alongside the menu item.
+   */
+  icon?: string;
+  children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
 }
 
-export function LinkMenu({ children }: LinkMenuProps) {
+export const LinkMenu: FC<LinkMenuProps> = (props) => {
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
-  return convertChildrenArrayToActions(React.Children.toArray(children)).map(
-    ({ onPress, ...props }) => {
-      return <NativeLinkPreviewAction key={props.id} {...props} />;
-    }
+  return convertActionsToNativeElements(
+    convertChildrenArrayToActions([createElement(LinkMenu, props, props.children)])
   );
+};
+
+function convertActionsToNativeElements(actions: ConvertChildrenArrayToActionsReturnType) {
+  return actions.map(({ children, onPress, ...props }) => (
+    <NativeLinkPreviewAction
+      {...props}
+      key={props.id}
+      children={convertActionsToNativeElements(children)}
+    />
+  ));
 }
 
 interface LinkPreviewProps {
@@ -249,9 +268,9 @@ function getFirstChildOfType<PropsT>(
 }
 
 function convertActionsToActionsHandlers(
-  items: { id: string; title: string; onPress: () => void }[] | undefined
+  items: ConvertChildrenArrayToActionsReturnType | undefined
 ) {
-  return (items ?? []).reduce(
+  return flattenActions(items ?? []).reduce(
     (acc, item) => ({
       ...acc,
       [item.id]: item.onPress,
@@ -260,18 +279,42 @@ function convertActionsToActionsHandlers(
   );
 }
 
+function flattenActions(
+  actions: ConvertChildrenArrayToActionsReturnType
+): ConvertChildrenArrayToActionsReturnType {
+  return actions.reduce((acc, action) => {
+    if (action.children.length > 0) {
+      return [...acc, action, ...flattenActions(action.children)];
+    }
+    return [...acc, action];
+  }, [] as ConvertChildrenArrayToActionsReturnType);
+}
+
+type ConvertChildrenArrayToActionsReturnType = (Omit<NativeLinkPreviewActionProps, 'children'> & {
+  onPress: () => void;
+  children: ConvertChildrenArrayToActionsReturnType;
+})[];
+
 function convertChildrenArrayToActions(
-  children: ReturnType<typeof React.Children.toArray>
-): (NativeLinkPreviewActionProps & { onPress: () => void })[] {
+  children: ReturnType<typeof React.Children.toArray>,
+  parentId: string = ''
+): ConvertChildrenArrayToActionsReturnType {
   return children
     .filter(
-      (item): item is ReactElement<LinkMenuAction> =>
-        isValidElement(item) && item.type === LinkMenuAction
+      (item): item is ReactElement<LinkMenuActionProps | LinkMenuProps> =>
+        isValidElement(item) && (item.type === LinkMenuAction || item.type === LinkMenu)
     )
     .map((child, index) => ({
-      id: `${child.props.title}-${index}`,
-      title: child.props.title,
-      onPress: child.props.onPress,
+      id: `${parentId}${child.props.title}-${index}`,
+      title: child.props.title ?? '',
+      onPress: 'onPress' in child.props ? child.props.onPress : () => {},
       icon: child.props.icon,
+      children:
+        'children' in child.props
+          ? convertChildrenArrayToActions(
+              React.Children.toArray(child.props.children),
+              `${parentId}${child.props.title}-${index}`
+            )
+          : [],
     }));
 }

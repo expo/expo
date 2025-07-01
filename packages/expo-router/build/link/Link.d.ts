@@ -1,5 +1,5 @@
-import { LinkMenu, LinkMenuAction, LinkPreview, LinkTrigger } from './LinkWithPreview';
-import { LinkProps, WebAnchorProps } from './useLinkHooks';
+import { LinkMenuAction, LinkPreview, LinkTrigger } from './LinkWithPreview';
+import type { LinkProps, WebAnchorProps } from './useLinkHooks';
 export declare const Link: ((props: LinkProps) => import("react").JSX.Element) & {
     resolveHref: (href: import("..").Href) => string;
     /**
@@ -18,7 +18,7 @@ export declare const Link: ((props: LinkProps) => import("react").JSX.Element) &
      *
      * @platform ios
      */
-    Menu: typeof LinkMenu;
+    Menu: import("react").FC<import("./LinkWithPreview").LinkMenuProps>;
     /**
      * A component used as a link trigger. The content of this component will be rendered in the base link.
      *

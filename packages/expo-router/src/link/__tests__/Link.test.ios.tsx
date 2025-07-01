@@ -45,8 +45,8 @@ jest.mock('../preview/native', () => {
     NativeLinkPreviewTrigger: jest.fn(({ children }: NativeLinkPreviewTriggerProps) => (
       <View testID="link-preview-native-trigger-view" children={children} />
     )),
-    NativeLinkPreviewAction: jest.fn((props: NativeLinkPreviewActionProps) => (
-      <View testID="link-preview-native-action-view" />
+    NativeLinkPreviewAction: jest.fn(({ children }: NativeLinkPreviewActionProps) => (
+      <View testID="link-preview-native-action-view">{children}</View>
     )),
     __EVENTS__: handlerMap,
   };
@@ -726,14 +726,21 @@ describe('Preview', () => {
         test: () => <View testID="test-view" />,
       });
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
-      expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-        id: 'Test Item-0',
-        title: 'Test Item',
+      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
+      expect(NativeLinkPreviewAction.mock.calls[0][0]).toMatchObject({
+        id: 'undefined-0',
+        title: '',
+        children: [expect.any(Object), expect.any(Object)],
       });
-      expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
-        id: 'Second actions-1',
+      expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
+        id: 'undefined-0Test Item-0',
+        title: 'Test Item',
+        children: [],
+      });
+      expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
+        id: 'undefined-0Second actions-1',
         title: 'Second actions',
+        children: [],
       });
     });
     it('when onActionSelected is called, correct press handler is called', () => {
@@ -764,19 +771,27 @@ describe('Preview', () => {
         test: () => <View testID="test-view" />,
       });
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+      expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
+      expect(NativeLinkPreviewAction).toHaveBeenCalledTimes(3);
       expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-        id: 'Action 1-0',
+        id: 'undefined-0',
+        title: '',
+        children: [expect.any(Object), expect.any(Object)],
+      });
+      expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
+        id: 'undefined-0Action 1-0',
         title: 'Action 1',
+        children: [],
       });
-      expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
-        id: 'Action 2-1',
+      expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
+        id: 'undefined-0Action 2-1',
         title: 'Action 2',
+        children: [],
       });
-      act(() => emitOnActionSelected('Action 1-0'));
+      act(() => emitOnActionSelected('undefined-0Action 1-0'));
       expect(action1OnPress).toHaveBeenCalledTimes(1);
       expect(action2OnPress).not.toHaveBeenCalled();
-      act(() => emitOnActionSelected('Action 2-1'));
+      act(() => emitOnActionSelected('undefined-0Action 2-1'));
       expect(action1OnPress).toHaveBeenCalledTimes(1);
       expect(action2OnPress).toHaveBeenCalledTimes(1);
     });
@@ -803,14 +818,22 @@ describe('Preview', () => {
           test: () => <View testID="test-view" />,
         });
         expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
+        expect(NativeLinkPreviewAction).toHaveBeenCalledTimes(3);
         expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-          id: 'Menu-1-1-0',
-          title: 'Menu-1-1',
+          id: 'undefined-0',
+          title: '',
+          children: [expect.any(Object), expect.any(Object)],
         });
-        expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
-          id: 'Menu-1-2-1',
+        expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
+          id: 'undefined-0Menu-1-1-0',
+          title: 'Menu-1-1',
+          children: [],
+        });
+        expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
+          id: 'undefined-0Menu-1-2-1',
           title: 'Menu-1-2',
+          children: [],
         });
       });
       it('when onActionSelected is called, correct press handler is called', () => {
@@ -827,36 +850,113 @@ describe('Preview', () => {
         renderRouter({
           index: () => {
             return (
-              <Link prefetch href="/test">
-                <Link.Preview />
-                <Link.Trigger>Trigger</Link.Trigger>
-                <Link.Menu>
-                  <Link.MenuAction title="Action 1" onPress={action1OnPress} />
-                  <Link.MenuAction title="Action 2" onPress={action2OnPress} />
-                </Link.Menu>
-                <Link.Menu>
-                  <Link.MenuAction title="Action 3" onPress={action1OnPress} />
-                  <Link.MenuAction title="Action 4" onPress={action2OnPress} />
-                </Link.Menu>
-              </Link>
+              <View>
+                <Link prefetch href="/test">
+                  <Link.Preview />
+                  <Link.Trigger>Trigger</Link.Trigger>
+                  <Link.Menu>
+                    <Link.MenuAction title="Action 1" onPress={action1OnPress} />
+                    <Link.MenuAction title="Action 2" onPress={action2OnPress} />
+                  </Link.Menu>
+                  <Link.Menu>
+                    <Link.MenuAction title="Action 3" onPress={action1OnPress} />
+                    <Link.MenuAction title="Action 4" onPress={action2OnPress} />
+                  </Link.Menu>
+                </Link>
+              </View>
             );
           },
           test: () => <View testID="test-view" />,
         });
         expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(2);
+        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(3);
+        expect(NativeLinkPreviewAction).toHaveBeenCalledTimes(3);
         expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
-          id: 'Action 1-0',
+          id: 'undefined-0',
+          title: '',
+          children: [expect.any(Object), expect.any(Object)],
+        });
+        expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
+          id: 'undefined-0Action 1-0',
           title: 'Action 1',
+          children: [],
         });
-        expect(NativeLinkPreviewAction.mock.calls[1][0]).toEqual({
-          id: 'Action 2-1',
+        expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
+          id: 'undefined-0Action 2-1',
           title: 'Action 2',
+          children: [],
         });
-        act(() => emitOnActionSelected('Action 1-0'));
+        act(() => emitOnActionSelected('undefined-0Action 1-0'));
         expect(action1OnPress).toHaveBeenCalledTimes(1);
         expect(action2OnPress).not.toHaveBeenCalled();
-        act(() => emitOnActionSelected('Action 2-1'));
+        act(() => emitOnActionSelected('undefined-0Action 2-1'));
+        expect(action1OnPress).toHaveBeenCalledTimes(1);
+        expect(action2OnPress).toHaveBeenCalledTimes(1);
+      });
+    });
+    describe('nested Link.Menus', () => {
+      it('correctly creates nested menu actions', () => {
+        const indexIos = require('../preview/native');
+        const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
+        const emitters = indexIos.__EVENTS__;
+        const action1OnPress = jest.fn();
+        const action2OnPress = jest.fn();
+        const emitOnActionSelected = (id: string) =>
+          (emitters['link-onActionSelected'] as NativeLinkPreviewProps['onActionSelected'])({
+            nativeEvent: { id },
+          });
+        renderRouter({
+          index: () => {
+            return (
+              <View>
+                <Link prefetch href="/test">
+                  <Link.Preview />
+                  <Link.Trigger>Trigger</Link.Trigger>
+                  <Link.Menu title="base menu">
+                    <Link.MenuAction title="Action 1" onPress={action1OnPress} />
+                    <Link.Menu title="Nested Menu">
+                      <Link.MenuAction title="Action 2" onPress={action2OnPress} />
+                    </Link.Menu>
+                  </Link.Menu>
+                </Link>
+              </View>
+            );
+          },
+          test: () => <View testID="test-view" />,
+        });
+
+        expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
+        expect(screen.getAllByTestId('link-preview-native-action-view')).toHaveLength(4);
+
+        expect(NativeLinkPreviewAction.mock.calls[0][0]).toEqual({
+          id: 'base menu-0',
+          title: 'base menu',
+          children: [expect.any(Object), expect.any(Object)],
+        });
+        expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
+          id: 'base menu-0Action 1-0',
+          title: 'Action 1',
+          children: [],
+        });
+        expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
+          id: 'base menu-0Nested Menu-1',
+          title: 'Nested Menu',
+          children: [expect.any(Object)],
+        });
+        expect(NativeLinkPreviewAction.mock.calls[3][0]).toMatchObject({
+          id: 'base menu-0Nested Menu-1Action 2-0',
+          title: 'Action 2',
+          children: [],
+        });
+
+        act(() => emitOnActionSelected('base menu-0Action 1-0'));
+        expect(action1OnPress).toHaveBeenCalledTimes(1);
+        expect(action2OnPress).not.toHaveBeenCalled();
+        act(() => emitOnActionSelected('base menu-0Nested Menu-1Action 2-0'));
+        expect(action1OnPress).toHaveBeenCalledTimes(1);
+        expect(action2OnPress).toHaveBeenCalledTimes(1);
+        act(() => emitOnActionSelected('base menu-0'));
+        act(() => emitOnActionSelected('base menu-0Nested Menu-1'));
         expect(action1OnPress).toHaveBeenCalledTimes(1);
         expect(action2OnPress).toHaveBeenCalledTimes(1);
       });

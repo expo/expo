@@ -34,9 +34,9 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.LinkMenu = void 0;
 exports.LinkWithPreview = LinkWithPreview;
 exports.LinkMenuAction = LinkMenuAction;
-exports.LinkMenu = LinkMenu;
 exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
 const react_1 = __importStar(require("react"));
@@ -86,7 +86,7 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }, [rest.href, rest.replace]);
     const triggerElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkTrigger), [children]);
-    const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkMenu), [children]);
+    const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, exports.LinkMenu), [children]);
     const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkPreview), [children]);
     if (previewElement && !triggerElement) {
         if (process.env.NODE_ENV !== 'production') {
@@ -97,7 +97,9 @@ function LinkWithPreview({ children, ...rest }) {
         }
     }
     const trigger = react_1.default.useMemo(() => triggerElement ?? <LinkTrigger>{children}</LinkTrigger>, [triggerElement, children]);
-    const actionsHandlers = react_1.default.useMemo(() => convertActionsToActionsHandlers(convertChildrenArrayToActions(react_1.default.Children.toArray(menuElement?.props.children))), [menuElement]);
+    const actionsHandlers = react_1.default.useMemo(() => menuElement
+        ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
+        : {}, [menuElement]);
     const preview = react_1.default.useMemo(() => previewElement ?? <LinkPreview />, [previewElement, rest.href]);
     if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
@@ -128,13 +130,15 @@ function LinkWithPreview({ children, ...rest }) {
 function LinkMenuAction(_) {
     return null;
 }
-function LinkMenu({ children }) {
+const LinkMenu = (props) => {
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext)) {
         return null;
     }
-    return convertChildrenArrayToActions(react_1.default.Children.toArray(children)).map(({ onPress, ...props }) => {
-        return <native_1.NativeLinkPreviewAction key={props.id} {...props}/>;
-    });
+    return convertActionsToNativeElements(convertChildrenArrayToActions([(0, react_1.createElement)(exports.LinkMenu, props, props.children)]));
+};
+exports.LinkMenu = LinkMenu;
+function convertActionsToNativeElements(actions) {
+    return actions.map(({ children, onPress, ...props }) => (<native_1.NativeLinkPreviewAction {...props} key={props.id} children={convertActionsToNativeElements(children)}/>));
 }
 function LinkPreview({ children, width, height }) {
     const internalPreviewContext = (0, react_1.use)(InternalLinkPreviewContext);
@@ -175,19 +179,30 @@ function getFirstChildOfType(children, type) {
     return react_1.default.Children.toArray(children).find((child) => (0, react_1.isValidElement)(child) && child.type === type);
 }
 function convertActionsToActionsHandlers(items) {
-    return (items ?? []).reduce((acc, item) => ({
+    return flattenActions(items ?? []).reduce((acc, item) => ({
         ...acc,
         [item.id]: item.onPress,
     }), {});
 }
-function convertChildrenArrayToActions(children) {
+function flattenActions(actions) {
+    return actions.reduce((acc, action) => {
+        if (action.children.length > 0) {
+            return [...acc, action, ...flattenActions(action.children)];
+        }
+        return [...acc, action];
+    }, []);
+}
+function convertChildrenArrayToActions(children, parentId = '') {
     return children
-        .filter((item) => (0, react_1.isValidElement)(item) && item.type === LinkMenuAction)
+        .filter((item) => (0, react_1.isValidElement)(item) && (item.type === LinkMenuAction || item.type === exports.LinkMenu))
         .map((child, index) => ({
-        id: `${child.props.title}-${index}`,
-        title: child.props.title,
-        onPress: child.props.onPress,
+        id: `${parentId}${child.props.title}-${index}`,
+        title: child.props.title ?? '',
+        onPress: 'onPress' in child.props ? child.props.onPress : () => { },
         icon: child.props.icon,
+        children: 'children' in child.props
+            ? convertChildrenArrayToActions(react_1.default.Children.toArray(child.props.children), `${parentId}${child.props.title}-${index}`)
+            : [],
     }));
 }
 //# sourceMappingURL=LinkWithPreview.js.map

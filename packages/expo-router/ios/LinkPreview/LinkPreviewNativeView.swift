@@ -159,6 +159,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   }
 
   private func createContextMenu() -> UIMenu {
+    if actions.count == 1, let menu = convertActionViewToUiAction(actions[0]) as? UIMenu {
+      return menu
+    }
     return UIMenu(
       title: "",
       children: actions.map { action in
@@ -167,7 +170,17 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
     )
   }
 
-  private func convertActionViewToUiAction(_ action: LinkPreviewNativeActionView) -> UIAction {
+  private func convertActionViewToUiAction(_ action: LinkPreviewNativeActionView) -> UIMenuElement {
+    if !action.subActions.isEmpty {
+      let subActions = action.subActions.map { subAction in
+        self.convertActionViewToUiAction(subAction)
+      }
+      return UIMenu(
+        title: action.title,
+        image: action.icon.flatMap { UIImage(systemName: $0) },
+        children: subActions
+      )
+    }
     return UIAction(
       title: action.title,
       image: action.icon.flatMap { UIImage(systemName: $0) }
