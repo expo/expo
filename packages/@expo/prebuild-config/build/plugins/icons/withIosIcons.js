@@ -230,7 +230,9 @@ async function addLiquidGlassIcon(iconPath, projectRoot, iosNamedProjectRoot) {
     _configPlugins().WarningAggregator.addWarningIOS('icon', `Liquid glass icon file not found at path: ${iconPath}`);
     return;
   }
-  await copyIconDirectory(sourceIconPath, targetIconPath);
+  await _fs().default.promises.cp(sourceIconPath, targetIconPath, {
+    recursive: true
+  });
 }
 
 /**
@@ -257,25 +259,5 @@ function addIconFileToProject(project, projectName, iconName) {
     isBuildFile: true,
     verbose: true
   });
-}
-async function copyIconDirectory(src, dest) {
-  await _fs().default.promises.mkdir(dest, {
-    recursive: true
-  });
-  const entries = await _fs().default.promises.readdir(src, {
-    withFileTypes: true
-  });
-  for (const entry of entries) {
-    const {
-      name
-    } = entry;
-    const srcPath = _path().default.join(src, name);
-    const destPath = _path().default.join(dest, name);
-    if (entry.isDirectory()) {
-      await copyIconDirectory(srcPath, destPath);
-    } else {
-      await _fs().default.promises.copyFile(srcPath, destPath);
-    }
-  }
 }
 //# sourceMappingURL=withIosIcons.js.map

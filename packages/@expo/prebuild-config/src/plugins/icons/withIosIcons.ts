@@ -252,7 +252,7 @@ async function addLiquidGlassIcon(
     return;
   }
 
-  await copyIconDirectory(sourceIconPath, targetIconPath);
+  await fs.promises.cp(sourceIconPath, targetIconPath, { recursive: true });
 }
 
 /**
@@ -281,21 +281,4 @@ function addIconFileToProject(project: any, projectName: string, iconName: strin
     isBuildFile: true,
     verbose: true,
   });
-}
-
-async function copyIconDirectory(src: string, dest: string): Promise<void> {
-  await fs.promises.mkdir(dest, { recursive: true });
-  const entries = await fs.promises.readdir(src, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const { name } = entry;
-    const srcPath = path.join(src, name);
-    const destPath = path.join(dest, name);
-
-    if (entry.isDirectory()) {
-      await copyIconDirectory(srcPath, destPath);
-    } else {
-      await fs.promises.copyFile(srcPath, destPath);
-    }
-  }
 }
