@@ -33,6 +33,9 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     setAudioSamplingEnabled(enabled: boolean): void;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
+    setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void;
+    updateLockScreenMetadata(metadata: Record<string, any>): void;
+    clearLockScreenControls(): void;
     _createMediaElement(): HTMLAudioElement;
 }
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
