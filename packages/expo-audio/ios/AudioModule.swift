@@ -186,12 +186,7 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
-        await player.ref.currentItem?.seek(
-          to: CMTime(
-            seconds: seconds,
-            preferredTimescale: CMTimeScale(NSEC_PER_SEC)
-          )
-        )
+        await player.seekTo(seconds: seconds)
       }
     }
 

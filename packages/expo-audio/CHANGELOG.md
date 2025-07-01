@@ -26,6 +26,8 @@
 - [iOS] Change component registry to be per module to prevent interference. ([#37534](https://github.com/expo/expo/pull/37534) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix metering issues when recording. ([#37556](https://github.com/expo/expo/pull/37556) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix issues with audio focus management. ([#37698](https://github.com/expo/expo/pull/37698) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix issue where the currentTime is out of sync when seeking before playing. ([#37668](https://github.com/expo/expo/pull/37668) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
