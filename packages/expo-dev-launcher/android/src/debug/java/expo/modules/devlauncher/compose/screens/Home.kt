@@ -49,7 +49,7 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
         Spacer(Theme.spacing.small)
 
         SectionHeader(
-          "Development",
+          "Development servers",
           leftIcon = {
             Image(
               painter = painterResource(R.drawable._expodevclientcomponents_assets_terminalicon),
@@ -78,7 +78,7 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
             Divider()
           }
 
-          Accordion("Enter URL", initialState = false) {
+          Accordion("Enter URL manually", initialState = false) {
             val url = remember { mutableStateOf("") }
 
             Column {
@@ -89,7 +89,7 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
                 onValueChange = { newValue ->
                   url.value = newValue
                 },
-                placeholder = "http://10.0.2.2:801",
+                placeholder = "http://10.0.2.2:8081",
                 textStyle = Theme.typography.medium.font,
                 maxLines = 1,
                 modifier = Modifier

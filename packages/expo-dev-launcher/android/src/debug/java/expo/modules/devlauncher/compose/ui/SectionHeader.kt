@@ -37,7 +37,7 @@ fun SectionHeader(
 @Preview(widthDp = 300, showBackground = true)
 fun SectionHeaderPreview() {
   SectionHeader(
-    title = "Development",
+    title = "Development servers",
     leftIcon = {
       Image(
         painter = painterResource(R.drawable._expodevclientcomponents_assets_terminalicon),
