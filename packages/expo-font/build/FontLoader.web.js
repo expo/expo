@@ -23,15 +23,26 @@ function displayFromFontSource(asset) {
     }
     return FontDisplay.AUTO;
 }
+function familyFromFontSource(asset) {
+    return typeof asset === 'object' && 'family' in asset ? asset.family : undefined;
+}
+function weightFromFontSource(asset) {
+    return typeof asset === 'object' && 'weight' in asset ? asset.weight : undefined;
+}
+function styleFromFontSource(asset) {
+    return typeof asset === 'object' && 'style' in asset ? asset.style : undefined;
+}
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
-    const display = displayFromFontSource(source);
     if (!uri || typeof uri !== 'string') {
         throwInvalidSourceError(uri);
     }
     return {
         uri,
-        display,
+        family: familyFromFontSource(source),
+        weight: weightFromFontSource(source),
+        style: styleFromFontSource(source),
+        display: displayFromFontSource(source),
     };
 }
 function throwInvalidSourceError(source) {
