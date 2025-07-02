@@ -476,7 +476,7 @@ public class AudioModule: Module {
       }
 
       if category == .playAndRecord {
-        categoryOptions.insert(.allowBluetoothHFP)
+        categoryOptions.insert(.allowBluetooth)
       }
 
       sessionOptions = categoryOptions
