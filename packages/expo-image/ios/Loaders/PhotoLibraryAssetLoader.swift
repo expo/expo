@@ -113,7 +113,6 @@ private func requestAsset(
   if let scale = context?[ImageView.screenScaleKey] as? Double,
      let containerSize = context?[ImageView.frameSizeKey] as? CGSize,
      let contentFit = context?[ImageView.contentFitKey] as? ContentFit {
-
     let targetSize = idealSize(
         contentPixelSize: CGSize(width: asset.pixelWidth, height: asset.pixelHeight),
         containerSize: containerSize,
