@@ -33,10 +33,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   assertPlatform();
 
   const install = !!options.install;
-
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
-    await maybePromptToSyncPodsAsync(projectRoot);
-  }
+  const hadToPrebuild = await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install });
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
@@ -118,6 +115,10 @@ export async function runIosAsync(projectRoot: string, options: Options) {
           platform: 'ios',
         })
       );
+    }
+
+    if (hadToPrebuild && install) {
+      await maybePromptToSyncPodsAsync(projectRoot);
     }
 
     // Spawn the `xcodebuild` process to create the app binary.
