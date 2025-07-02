@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Values from the `style` prop override default styles (allowing full customisation).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
