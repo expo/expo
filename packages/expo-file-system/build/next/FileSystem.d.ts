@@ -1,4 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
+import type { IsDirectory } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -18,10 +19,10 @@ export declare class Paths extends PathUtilities {
      * A property that represents the available space on device's internal storage, represented in bytes.
      */
     static get availableDiskSpace(): number;
-    static isDirectory(...uris: string[]): {
-        isDirectory: boolean | null;
-        exists: boolean;
-    };
+    /**
+     * Returns an object that indicates if the specified path represent a directory.
+     */
+    static isDirectory(...uris: string[]): IsDirectory;
 }
 /**
  * @hidden

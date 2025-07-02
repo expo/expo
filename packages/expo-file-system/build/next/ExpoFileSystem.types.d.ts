@@ -227,4 +227,14 @@ export type InfoOptions = {
      */
     md5?: boolean;
 };
+export type IsDirectory = {
+    /**
+     * Indicates whether the requested path exists. Returns true if it exists; false if the path does not exist or if there is no read permission.
+     */
+    exists: boolean;
+    /**
+     * Indicates whether the requested path is a directory. Returns true or false if the path exists; otherwise, returns null.
+     */
+    isDirectory: boolean | null;
+};
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

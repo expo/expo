@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions } from './ExpoFileSystem.types';
+import type { DownloadOptions, IsDirectory } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -42,12 +42,10 @@ export class Paths extends PathUtilities {
     return ExpoFileSystem.availableDiskSpace;
   }
 
-  /*
-   * Returns an object containing two values:
-   * - exists: is true if and only if the file specified by the abstract pathname exists and can be read by the application, false otherwise
-   * - isDirectory: if exists is true, this indicates whether the file is a directory; otherwise, the value is null
+  /**
+   * Returns an object that indicates if the specified path represent a directory.
    */
-  static isDirectory(...uris: string[]): { isDirectory: boolean | null; exists: boolean } {
+  static isDirectory(...uris: string[]): IsDirectory {
     return ExpoFileSystem.isDirectory(uris.join('/'));
   }
 }

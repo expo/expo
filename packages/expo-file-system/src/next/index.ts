@@ -5,4 +5,5 @@ export {
   type FileHandle,
   type FileInfo,
   type InfoOptions,
+  type IsDirectory,
 } from './ExpoFileSystem.types';
