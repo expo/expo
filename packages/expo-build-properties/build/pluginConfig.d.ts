@@ -290,6 +290,16 @@ export interface PluginConfigTypeIos {
      * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
      */
     privacyManifestAggregationEnabled?: boolean;
+    /**
+     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * This feature is available from React Native 0.80.
+     * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
+     *
+     * @default true
+     * @see React Native documentation on [prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more information.
+     * @experimental
+     */
+    buildFromSource?: boolean;
 }
 /**
  * Interface representing extra CocoaPods dependency.

@@ -172,6 +172,7 @@ const schema = {
                     },
                     nullable: true,
                 },
+                buildFromSource: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },

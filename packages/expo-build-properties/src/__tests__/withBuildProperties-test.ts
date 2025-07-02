@@ -213,4 +213,19 @@ describe(withBuildProperties, () => {
       'apple.privacyManifestAggregationEnabled': 'true',
     });
   });
+
+  it('generates the ios.buildFromSource property', async () => {
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { buildFromSource: true } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'ios.buildFromSource': 'true',
+    });
+  });
 });
