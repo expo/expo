@@ -158,6 +158,20 @@ it('ignores className with slot on native', () => {
     })
   );
 });
+
+it('throws an error when using asChild with multiple children', () => {
+  expect(() =>
+    render(
+      <Link asChild href="/foo">
+        <Text>Foo</Text>
+        <Text>Bar</Text>
+      </Link>
+    )
+  ).toThrow(
+    'Link: When using `asChild`, you must pass a single child element that will emit the `onPress` event.'
+  );
+});
+
 it('strips web-only href attributes', () => {
   const { getByTestId } = render(
     <Link

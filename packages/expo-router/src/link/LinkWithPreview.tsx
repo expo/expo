@@ -161,7 +161,7 @@ interface LinkMenuProps {
 }
 
 export function LinkMenu({ children }: LinkMenuProps) {
-  if (useIsPreview() || !use(InternalLinkPreviewContext)) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
   return convertChildrenArrayToActions(React.Children.toArray(children)).map((action) => {
@@ -190,7 +190,7 @@ interface LinkPreviewProps {
 
 export function LinkPreview({ children, width, height }: LinkPreviewProps) {
   const internalPreviewContext = use(InternalLinkPreviewContext);
-  if (useIsPreview() || !internalPreviewContext) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !internalPreviewContext) {
     return null;
   }
   const { isVisible, href } = internalPreviewContext;

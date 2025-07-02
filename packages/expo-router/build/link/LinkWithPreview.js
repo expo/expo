@@ -129,7 +129,7 @@ function LinkMenuAction(_) {
     return null;
 }
 function LinkMenu({ children }) {
-    if ((0, PreviewRouteContext_1.useIsPreview)() || !(0, react_1.use)(InternalLinkPreviewContext)) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext)) {
         return null;
     }
     return convertChildrenArrayToActions(react_1.default.Children.toArray(children)).map((action) => {
@@ -138,7 +138,7 @@ function LinkMenu({ children }) {
 }
 function LinkPreview({ children, width, height }) {
     const internalPreviewContext = (0, react_1.use)(InternalLinkPreviewContext);
-    if ((0, PreviewRouteContext_1.useIsPreview)() || !internalPreviewContext) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !internalPreviewContext) {
         return null;
     }
     const { isVisible, href } = internalPreviewContext;
