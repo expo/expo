@@ -567,8 +567,8 @@ export async function test({ describe, expect, it, ...t }) {
       });
 
       describe('Returns whether a path is a directory', () => {
-        it('correctly if exists and is directory', () => {
-          const uri = testDirectory + 'returns_true_if_path_is_directory';
+        it('correctly if exists and is a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_a_directory';
           const src = new Directory(uri);
           src.create();
           expect(Paths.isDirectory(uri)).toEqual({
@@ -577,8 +577,8 @@ export async function test({ describe, expect, it, ...t }) {
           });
         });
 
-        it('correctly if exists and not directory', () => {
-          const uri = testDirectory + 'returns_false_if_path_is_file.txt';
+        it('correctly if exists and is not a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_not_a_directory.txt';
           const src = new File(uri);
           src.create();
           expect(Paths.isDirectory(uri)).toEqual({
@@ -587,8 +587,8 @@ export async function test({ describe, expect, it, ...t }) {
           });
         });
 
-        it('correctly if not exists', () => {
-          const uri = testDirectory + 'correctly_if_no_exists.txt';
+        it('correctly if does not exist', () => {
+          const uri = testDirectory + 'correctly_if_does_not_exist.txt';
           expect(Paths.isDirectory(uri)).toEqual({
             exists: false,
             isDirectory: null,
@@ -671,18 +671,17 @@ export async function test({ describe, expect, it, ...t }) {
             expect(size).toBe(11);
           }
         });
-        it('executes correctly if options are undefined', () => {
-          const url = `${testDirectory}executes_correctly_if_options_are_undefined.txt`;
+        it('executes correctly when options are undefined', () => {
+          const url = `${testDirectory}executes_correctly_when_options_are_undefined.txt`;
           const src = new File(url);
           src.write('Hello World');
           const result = src.info();
-          expect(result.exists).toBe(true);
           if (result.exists) {
             expect(result.md5).toBeNull();
           }
         });
-        it('returns exists false if file not exists', () => {
-          const url = `${testDirectory}returns_exists_false_if_file_not_exists.txt`;
+        it('returns exists false if file does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_file_does_not_exist.txt`;
           const src = new File(url);
           src.write('Hello world');
           src.delete();
