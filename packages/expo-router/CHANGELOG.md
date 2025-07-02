@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 5.1.2 — 2025-07-01
