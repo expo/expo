@@ -28,6 +28,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
   weak var owningRegistry: AudioComponentRegistry?
+  var onPlaybackComplete: (() -> Void)?
 
   var duration: Double {
     ref.currentItem?.duration.seconds ?? 0.0
@@ -262,6 +263,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           "currentTime": self.duration,
           "didJustFinish": true
         ])
+        self.onPlaybackComplete?()
       }
     }
   }
