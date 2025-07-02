@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.24.17 — 2025-07-02
+
+### 💡 Others
+
 - Bumped `playwright` version to 1.53.1. ([#37631](https://github.com/expo/expo/pull/37631) by [@kudo](https://github.com/kudo))
 
 ## 0.24.16 — 2025-07-01

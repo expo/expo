@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.1.15 — 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
 ## 5.1.14 — 2025-06-26
 
 ### 🐛 Bug fixes

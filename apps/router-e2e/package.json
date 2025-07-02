@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@expo/dom-webview": "0.1.5",
-    "expo": "~53.0.15",
+    "expo": "~53.0.16",
     "expo-haptics": "~14.1.4",
     "expo-linking": "~7.1.6",
     "expo-router": "^5.1.2",
