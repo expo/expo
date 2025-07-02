@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
