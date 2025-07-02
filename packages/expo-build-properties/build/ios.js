@@ -38,7 +38,7 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     },
     {
         propName: 'ios.buildFromSource',
-        propValueGetter: (config) => (config.ios?.buildFromSource ?? true)?.toString(),
+        propValueGetter: (config) => config.ios?.buildFromSource?.toString(),
     },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {

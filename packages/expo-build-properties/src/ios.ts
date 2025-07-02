@@ -51,7 +51,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'ios.buildFromSource',
-      propValueGetter: (config) => (config.ios?.buildFromSource ?? true)?.toString(),
+      propValueGetter: (config) => config.ios?.buildFromSource?.toString(),
     },
   ],
   'withIosBuildProperties'
