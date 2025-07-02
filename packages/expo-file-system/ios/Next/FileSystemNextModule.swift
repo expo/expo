@@ -94,8 +94,8 @@ public final class FileSystemNextModule: Module {
       downloadTask.resume()
     }
 
-    Function("isDirectory") { (url: URL) in
-      let output = IsDirectory()
+    Function("info") { (url: URL) in
+      let output = PathInfo()
       output.exists = false
       output.isDirectory = nil
 

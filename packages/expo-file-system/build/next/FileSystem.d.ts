@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { IsDirectory } from './ExpoFileSystem.types';
+import type { PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -22,7 +22,7 @@ export declare class Paths extends PathUtilities {
     /**
      * Returns an object that indicates if the specified path represent a directory.
      */
-    static isDirectory(...uris: string[]): IsDirectory;
+    static info(...uris: string[]): PathInfo;
 }
 /**
  * @hidden

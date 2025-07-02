@@ -24,9 +24,7 @@ data class FileInfo(
   @Field var creationTime: Long? = null
 ) : Record
 
-data class IsDirectory(
-  @Field
-  var exists: Boolean,
-  @Field
-  var isDirectory: Boolean?
+data class PathInfo(
+  @Field var exists: Boolean,
+  @Field var isDirectory: Boolean?
 ) : Record

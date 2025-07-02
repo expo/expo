@@ -566,12 +566,12 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
-      describe('Returns whether a path is a directory', () => {
+      describe('Returns path info', () => {
         it('correctly if exists and is a directory', () => {
           const uri = testDirectory + 'correctly_if_exists_and_is_a_directory';
           const src = new Directory(uri);
           src.create();
-          expect(Paths.isDirectory(uri)).toEqual({
+          expect(Paths.info(uri)).toEqual({
             exists: true,
             isDirectory: true,
           });
@@ -581,7 +581,7 @@ export async function test({ describe, expect, it, ...t }) {
           const uri = testDirectory + 'correctly_if_exists_and_is_not_a_directory.txt';
           const src = new File(uri);
           src.create();
-          expect(Paths.isDirectory(uri)).toEqual({
+          expect(Paths.info(uri)).toEqual({
             exists: true,
             isDirectory: false,
           });
@@ -589,7 +589,7 @@ export async function test({ describe, expect, it, ...t }) {
 
         it('correctly if does not exist', () => {
           const uri = testDirectory + 'correctly_if_does_not_exist.txt';
-          expect(Paths.isDirectory(uri)).toEqual({
+          expect(Paths.info(uri)).toEqual({
             exists: false,
             isDirectory: null,
           });

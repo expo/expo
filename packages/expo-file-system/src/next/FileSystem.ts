@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions, IsDirectory } from './ExpoFileSystem.types';
+import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -45,8 +45,8 @@ export class Paths extends PathUtilities {
   /**
    * Returns an object that indicates if the specified path represent a directory.
    */
-  static isDirectory(...uris: string[]): IsDirectory {
-    return ExpoFileSystem.isDirectory(uris.join('/'));
+  static info(...uris: string[]): PathInfo {
+    return ExpoFileSystem.info(uris.join('/'));
   }
 }
 

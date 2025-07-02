@@ -131,7 +131,7 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       validateType()
       val attributes = Path(file.path).readAttributes<BasicFileAttributes>()
-      return attributes.creationTime().toMillis().milliseconds.inWholeSeconds
+      return attributes.creationTime().toMillis().milliseconds.inWholeMilliseconds
     } else {
       return null
     }

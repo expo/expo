@@ -20,7 +20,7 @@ struct FileInfo: Record {
   @Field var creationTime: Int64?
 }
 
-struct IsDirectory: Record {
+struct PathInfo: Record {
   @Field var exists: Bool
   @Field var isDirectory: Bool?
 }

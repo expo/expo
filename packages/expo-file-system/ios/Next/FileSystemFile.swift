@@ -68,14 +68,14 @@ internal final class FileSystemFile: FileSystemPath {
   var modificationTime: Int64 {
     get throws {
       let modificationDate: Date = try getAttribute(.modificationDate, atPath: url.path)
-      return Int64(modificationDate.timeIntervalSince1970)
+      return Int64(modificationDate.timeIntervalSince1970 * 1000)
     }
   }
 
   var creationTime: Int64 {
     get throws {
       let creationDate: Date = try getAttribute(.creationDate, atPath: url.path)
-      return Int64(creationDate.timeIntervalSince1970)
+      return Int64(creationDate.timeIntervalSince1970 * 1000)
     }
   }
 

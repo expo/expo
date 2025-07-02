@@ -81,14 +81,14 @@ class FileSystemNextModule : Module() {
       return@Coroutine destination.path
     }
 
-    Function("isDirectory") { url: URI ->
+    Function("info") { url: URI ->
       val file = File(url)
       val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
         ?: EnumSet.noneOf(Permission::class.java)
       if (permissions.contains(Permission.READ) && file.exists()) {
-        IsDirectory(exists = file.exists(), isDirectory = file.isDirectory)
+        PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {
-        IsDirectory(exists = false, isDirectory = null)
+        PathInfo(exists = false, isDirectory = null)
       }
     }
 

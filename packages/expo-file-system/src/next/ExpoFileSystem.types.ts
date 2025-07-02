@@ -206,12 +206,12 @@ export declare class File {
   md5: string | null;
 
   /**
-   * A last modification time of the file expressed in seconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+   * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
    */
   modificationTime: number | null;
 
   /**
-   * A creation time of the file expressed in seconds since epoch. Returns a Null if the file does not exist, cannot be read or the Android version is earlier than API 26.
+   * A creation time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, cannot be read or the Android version is earlier than API 26.
    */
   creationTime: number | null;
 
@@ -262,11 +262,11 @@ export type FileInfo = {
    */
   size?: number;
   /**
-   * The last modification time of the file expressed in seconds since epoch.
+   * The last modification time of the file expressed in milliseconds since epoch.
    */
   modificationTime?: number;
   /**
-   * A creation time of the file expressed in seconds since epoch. Returns a Null if the Android version is earlier than API 26.
+   * A creation time of the file expressed in milliseconds since epoch. Returns a Null if the Android version is earlier than API 26.
    */
   creationTime?: number;
   /**
@@ -283,13 +283,13 @@ export type InfoOptions = {
   md5?: boolean;
 };
 
-export type IsDirectory = {
+export type PathInfo = {
   /**
-   * Indicates whether the requested path exists. Returns true if it exists; false if the path does not exist or if there is no read permission.
+   * Indicates whether the path exists. Returns true if it exists; false if the path does not exist or if there is no read permission.
    */
   exists: boolean;
   /**
-   * Indicates whether the requested path is a directory. Returns true or false if the path exists; otherwise, returns null.
+   * Indicates whether the path is a directory. Returns true or false if the path exists; otherwise, returns null.
    */
   isDirectory: boolean | null;
 };
