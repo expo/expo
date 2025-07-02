@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Values from the `style` prop override default styles (allowing full customisation).
+- Values from the `style` prop override default styles (allowing full customisation). ([#37790](https://github.com/expo/expo/pull/37790) by [@makenosound](https://github.com/makenosound))
 
 ### 🎉 New features
 
