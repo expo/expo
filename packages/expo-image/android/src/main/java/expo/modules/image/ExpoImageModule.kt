@@ -19,6 +19,7 @@ import com.bumptech.glide.request.target.Target
 import com.github.penfeizhou.animation.apng.APNGDrawable
 import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
+import expo.modules.image.blurhash.BlurhashEncoder
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
@@ -110,6 +111,13 @@ class ExpoImageModule : Module() {
 
     AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
       ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
+    }
+
+    AsyncFunction("generateBlurhashAsync") { url: String, numberOfComponents: Pair<Int, Int> ->
+      val context = appContext.reactContext ?: throw Exception()
+      val bitmap = Glide.with(context).asBitmap().load(url).submit()
+      val blurHash = BlurhashEncoder.encode(bitmap.get(), numberOfComponents)
+      blurHash
     }
 
     Class(Image::class) {
