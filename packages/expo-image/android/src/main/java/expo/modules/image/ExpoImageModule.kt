@@ -19,6 +19,7 @@ import com.bumptech.glide.request.target.Target
 import com.github.penfeizhou.animation.apng.APNGDrawable
 import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
+import expo.modules.image.blurhash.BlurhashEncoder
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
@@ -38,6 +39,8 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -110,6 +113,22 @@ class ExpoImageModule : Module() {
 
     AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
       ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
+    }
+
+    AsyncFunction("generateBlurhashAsync") Coroutine { url: String, numberOfComponents: Pair<Int, Int> ->
+      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+      val bitmap = withContext(Dispatchers.IO) {
+        Glide.with(context)
+          .asBitmap()
+          .load(url)
+          .submit()
+          .get()
+      }
+
+      val blurHash = withContext(Dispatchers.Default) {
+        BlurhashEncoder.encode(bitmap, numberOfComponents)
+      }
+      blurHash
     }
 
     Class(Image::class) {
