@@ -16,7 +16,7 @@ struct UpdateRow: View {
           .frame(width: 16, height: 16)
 
         UpdateInfo(update: update)
-        
+
         Spacer()
 
         openButton
@@ -24,7 +24,7 @@ struct UpdateRow: View {
     }
     .padding(.vertical, 4)
   }
-  
+
   private var openButton: some View {
     Button {
       launchUpdate(update)
@@ -44,7 +44,7 @@ struct UpdateRow: View {
 
 struct UpdateInfo: View {
   let update: Update
-  
+
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
       Text("Update \"\(update.message.isEmpty ? update.id : update.message)\"")
@@ -60,7 +60,7 @@ struct UpdateInfo: View {
 
 struct BranchIcon: View {
   let branchName: String
-  
+
   var body: some View {
     HStack(spacing: 2) {
       Image("branch-icon", bundle: getDevLauncherBundle())

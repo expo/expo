@@ -133,7 +133,7 @@ struct UpdatesListView: View {
 
     filteredUpdates = filtered
   }
-  
+
   private var loading: some View {
     Section {
       HStack {
@@ -145,7 +145,7 @@ struct UpdatesListView: View {
       .padding()
     }
   }
-  
+
   @ViewBuilder
   func createError(message: String) -> some View {
     Section {
@@ -170,7 +170,7 @@ struct UpdatesListView: View {
       .padding()
     }
   }
-  
+
   private var emptyUpdates: some View {
     Section {
       VStack(spacing: 16) {
