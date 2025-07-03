@@ -1,5 +1,4 @@
 import { ThemeProvider } from 'ThemeProvider';
-import { useBackgroundTaskPluginClient } from 'expo-background-task';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
@@ -38,7 +37,6 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
 }
 
 export default function App() {
-  useBackgroundTaskPluginClient();
   const isLoadingCompleted = useSplashScreen(async () => {
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('dark-content', false);
