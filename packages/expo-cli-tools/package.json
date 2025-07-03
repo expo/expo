@@ -1,0 +1,14 @@
+{
+  "name": "expo-cli-tools",
+  "version": "0.1.0",
+  "description": "Expo CLI tools package.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "expo"
+  ],
+  "author": "",
+  "license": "ISC"
+}

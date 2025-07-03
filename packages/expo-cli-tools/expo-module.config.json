@@ -1,0 +1,16 @@
+{
+  "platforms": [ "cli" ],
+  "cli": {
+    "description": "Expo: tools for Expo App development",
+    "commands": [
+      { "name": "outdated", "caption": "List outdated Expo packages" },
+      { "name": "upgrade", "caption": "Upgrade to the latest Expo SDK" },
+      { "name": "take_screenshot", "caption": "Take screenshot of Expo app" },
+      { "name": "doctor", "caption": "Run the Expo Doctor diagnostics tool" },
+      { "name": "clear_watchman", "caption": "Run the clear watchman command to clear warning" },
+      { "name": "list_apps", "caption": "Show connected apps (DEBUG)" }
+    ],
+    "mcpEnabled": true,
+    "main": "cli/build/index.js"
+  }
+}
