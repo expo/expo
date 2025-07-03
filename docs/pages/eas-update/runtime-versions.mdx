@@ -85,11 +85,11 @@ The `"appVersion"` policy will increment the runtime version whenever the app ve
 
 ### Manually increment the runtime version
 
-Whenever installing or updating native code, [manually increment the `"runtimeVersion"` property](/eas-update/runtime-versions/#custom-runtime-version) in the project's app config (**app.json**/**app.config.js**).
+Whenever installing or updating native code, [manually increment the `"runtimeVersion"` property](/eas-update/runtime-versions/#custom-runtime-version) in the project's [app config](/workflow/configuration/).
 
 ### Roll out the update gradually
 
-If you're not sure about the impact of a new update, you can roll it out to a small group of users first. Use [rollouts](/eas-update/rollouts/) to publish the update to a small percentage of users and monitor the error rate for the update on the EAS dashboard. If you are noticing high error rates, then cancel the rollout. If you already rolled it out fully, then [roll it back](eas-update/rollbacks/).
+If you're not sure about the impact of a new update, you can roll it out to a small group of users first. Use [rollouts](/eas-update/rollouts/) to publish the update to a small percentage of users and monitor the error rate for the update on the EAS dashboard. If you are noticing high error rates, then cancel the rollout. If you already rolled it out fully, then [roll it back](/eas-update/rollbacks/).
 
 ### Manually verify updates with a smaller group of users
 
