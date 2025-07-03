@@ -27,54 +27,11 @@ struct UpdatesListView: View {
       }
 
       if isLoading {
-        Section {
-          HStack {
-            Spacer()
-            ProgressView()
-              .scaleEffect(1.2)
-            Spacer()
-          }
-          .padding()
-        }
-      } else if let error = errorMessage {
-        Section {
-          VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle")
-              .foregroundColor(.red)
-              .font(.title2)
-
-            Text("Error loading updates")
-              .font(.headline)
-
-            Text(error)
-              .font(.caption)
-              .foregroundStyle(.secondary)
-              .multilineTextAlignment(.center)
-
-            Button("Retry") {
-              loadBranches()
-            }
-            .buttonStyle(.borderedProminent)
-          }
-          .padding()
-        }
+        loading
+      } else if let message = errorMessage {
+        createError(message: message)
       } else if filteredUpdates.isEmpty {
-        Section {
-          VStack(spacing: 16) {
-            Image(systemName: "tray")
-              .font(.largeTitle)
-              .foregroundColor(.gray)
-
-            Text("No updates available")
-              .font(.headline)
-
-            Text(filterByCompatibility ? "No compatible updates found for this runtime version." : "No updates found.")
-              .font(.caption)
-              .foregroundStyle(.secondary)
-              .multilineTextAlignment(.center)
-          }
-          .padding()
-        }
+        emptyUpdates
       } else {
         Section("Updates (\(filteredUpdates.count))") {
           ForEach(filteredUpdates, id: \.update.id) { tuple in
@@ -176,8 +133,64 @@ struct UpdatesListView: View {
 
     filteredUpdates = filtered
   }
+  
+  private var loading: some View {
+    Section {
+      HStack {
+        Spacer()
+        ProgressView()
+          .scaleEffect(1.2)
+        Spacer()
+      }
+      .padding()
+    }
+  }
+  
+  @ViewBuilder
+  func createError(message: String) -> some View {
+    Section {
+      VStack(spacing: 12) {
+        Image(systemName: "exclamationmark.triangle")
+          .foregroundColor(.red)
+          .font(.title2)
+
+        Text("Error loading updates")
+          .font(.headline)
+
+        Text(message)
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .multilineTextAlignment(.center)
+
+        Button("Retry") {
+          loadBranches()
+        }
+        .buttonStyle(.borderedProminent)
+      }
+      .padding()
+    }
+  }
+  
+  private var emptyUpdates: some View {
+    Section {
+      VStack(spacing: 16) {
+        Image(systemName: "tray")
+          .font(.largeTitle)
+          .foregroundColor(.gray)
+
+        Text("No updates available")
+          .font(.headline)
+
+        Text(filterByCompatibility ? "No compatible updates found for this runtime version." : "No updates found.")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .multilineTextAlignment(.center)
+      }
+      .padding()
+    }
+  }
 }
 
 #Preview {
-    UpdatesListView()
+  UpdatesListView()
 }
