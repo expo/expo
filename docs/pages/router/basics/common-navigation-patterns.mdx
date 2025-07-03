@@ -139,7 +139,7 @@ When you're already focused on a tab and navigating to a user, you will stay in 
 
 For mobile apps requiring authentication, you will likely have a set of routes that should only be accessible to authenticated users.
 
-Say we want to have a bottom tabs layout, a sign in page, a create account page, and a modal that should only be visible to authenticated users:
+For example, consider the following navigation tree in which you have a bottom tabs layout, a sign-in page, a create account page, and a modal that should only be visible to authenticated users:
 
 <FileTree
   files={[
@@ -168,7 +168,7 @@ Say we want to have a bottom tabs layout, a sign in page, a create account page,
   ]}
 />
 
-When your app is first launched, router will try to open the root index, **app/(tabs)/index.tsx**. If we wrap this screen in a `Stack.Protected` with the `guard={false}`, the screen will become inaccessible and the next available screen will be opened instead. In our example, the `sign-in` screen will be opened, since it is the next available route.
+When your app is first launched, the router will try to open the root index, **app/(tabs)/index.tsx**. If you wrap this screen in a `Stack.Protected` with the `guard={false}`, the screen will become inaccessible and the next available screen will be opened instead. In this example, the `sign-in` screen will be opened, since it is the next available route.
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -193,9 +193,9 @@ export default function RootLayout() {
 }
 ```
 
-This way you can fetch your auth state from a store and show the appropriate screens. If the auth state changes, the layout will re-render, so if `isLoggedIn` changes from `false` to `true`, the app will automatically navigate to the root of the `(tabs)` group.
+This way, you can fetch your auth state from a store and show the appropriate screens. If the auth state changes, the layout will re-render, so if `isLoggedIn` changes from `false` to `true`, the app will automatically navigate to the root of the `(tabs)` group.
 
-Another benefit of protected routes is that they are checked even if you deep link into a page directly. For example if an unautenticated user deep links into the modal screen above, they will be redirected to the sign-in page.
+Another benefit of protected routes is that they are checked even if you deep link into a page directly. For example, if an unauthenticated user deep links into the modal screen above, they will be redirected to the sign-in page.
 
 Protected routes can also be used to conditionally show bottom tabs. In this example, the `vip` tab will only be shown to authenticated users who are VIP members:
 
