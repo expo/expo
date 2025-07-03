@@ -1,97 +1,168 @@
----
-title: Start developing
-description: Make your first change to an Expo project and see it live on your device.
-hideTOC: true
----
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, ActivityIndicator, Linking } from "react-native";
 
-import { ProjectStructure } from '~/scenes/get-started/start-developing/ProjectStructure';
-import { TemplateFeatures } from '~/scenes/get-started/start-developing/TemplateFeatures';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
-import { Step } from '~/ui/components/Step';
+const USERNAME = "ZAK-KING";
+const PASSWORD = "Bonjour2019";
 
-<Step label="1">
-## Start a development server
-To start the development server, run the following command:
+function getNextPredictionTime() {
+  const now = new Date();
+  now.setSeconds(0, 0);
+  now.setMinutes(now.getMinutes() + 2);
+  return now.toLocaleTimeString();
+}
 
-<Terminal cmd={['$ npx expo start']} />
+async function fetchCote() {
+  // Remplacer par appel API réel pour production
+  const cotes = Array.from({ length: 271 }, (_, i) => (2 + i * 0.01).toFixed(2));
+  const cote = cotes[Math.floor(Math.random() * cotes.length)];
+  return {
+    cote,
+    heure: getNextPredictionTime(),
+    assurance: (Math.min(3, (parseFloat(cote) - 0.02)).toFixed(2)),
+  };
+}
 
-</Step>
+export default function App() {
+  const [page, setPage] = useState(1);
+  const [user, setUser] = useState("");
+  const [pwd, setPwd] = useState("");
+  const [error, setError] = useState("");
+  const [signal, setSignal] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [nextSignalTime, setNextSignalTime] = useState(null);
 
-<Step label="2">
-## Open the app on your device
+  useEffect(() => {
+    if (!nextSignalTime) return;
+    const timer = setTimeout(() => setNextSignalTime(null), 2 * 60 * 1000);
+    return () => clearTimeout(timer);
+  }, [nextSignalTime]);
 
-After running the command above, you will see a QR code in your terminal. Scan this QR code to open the app on your device.
+  // Page 1 : Bienvenue
+  if (page === 1) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Bienvenue sur ZAK PREDICTOR</Text>
+        <Text style={styles.subtitle}>Le meilleur bot Lucky Jet 1Win</Text>
+        <TouchableOpacity style={styles.button} onPress={() => setPage(2)}>
+          <Text style={styles.buttonText}>COMMENCER</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
-If you're using an Android Emulator or iOS Simulator, you can press <kbd>a</kbd> or <kbd>i</kbd> respectively to open the app.
+  // Page 2 : Connexion
+  if (page === 2) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Connexion</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nom d'utilisateur"
+          placeholderTextColor="#ccc"
+          value={user}
+          onChangeText={setUser}
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Mot de passe"
+          placeholderTextColor="#ccc"
+          value={pwd}
+          onChangeText={setPwd}
+          secureTextEntry
+        />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            if (user !== USERNAME) {
+              setError("Veuillez contacter le propriétaire du bot @ZAK");
+              return;
+            }
+            if (pwd !== PASSWORD) {
+              setError("Mot de passe incorrect !");
+              return;
+            }
+            setError("");
+            setPage(3);
+          }}
+        >
+          <Text style={styles.buttonText}>SE CONNECTER</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
-<Collapsible summary="Having problems?">
+  // Page 3 : Prédictions
+  return (
+    <View style={[styles.container, { justifyContent: "flex-start", paddingTop: 60 }]}>
+      <Text style={styles.title}>Salle de Prédictions</Text>
+      <TouchableOpacity
+        onPress={() => Linking.openURL("https://1wbstq.top/casino/play/1play_1play_luckyjet")}
+      >
+        <Text style={styles.link}>Accéder à Lucky Jet 1Win</Text>
+      </TouchableOpacity>
 
-Make sure you are on the same Wi-Fi network on your computer and your device.
+      {signal && (
+        <View style={styles.signalBox}>
+          <Text style={styles.signalHeader}>⚡️SIGNAL LUCKY JET ⚡️</Text>
+          <Text style={styles.signalText}>⚡️CÔTE : <Text style={styles.bold}>{signal.cote}x</Text></Text>
+          <Text style={styles.signalText}>⏰ HEURE : <Text style={styles.bold}>{signal.heure}</Text></Text>
+          <Text style={styles.signalText}>✅ ASSURANCE : <Text style={styles.bold}>{signal.assurance}x</Text></Text>
+        </View>
+      )}
+      <TouchableOpacity
+        style={[styles.button, (!!nextSignalTime || loading) && styles.buttonDisabled]}
+        disabled={!!nextSignalTime || loading}
+        onPress={async () => {
+          setLoading(true);
+          const newSignal = await fetchCote();
+          setSignal(newSignal);
+          setLoading(false);
+          setNextSignalTime(Date.now());
+        }}
+      >
+        {loading
+          ? <ActivityIndicator color="#151a24" />
+          : <Text style={styles.buttonText}>
+              {nextSignalTime ? "⏳ Attendez 2 minutes..." : "NOUVEAU SIGNAL"}
+            </Text>}
+      </TouchableOpacity>
+      <Text style={styles.info}>
+        Un signal fiable toutes les 2 minutes.
+        {"\n"}Les prédictions sont générées selon les dernières côtes 1Win.
+      </Text>
+    </View>
+  );
+}
 
-If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
-
-<Terminal cmd={['$ npx expo start --tunnel']} />
-
-> Using the **Tunnel** connection type will make the app reloads considerably slower than on **LAN** or **Local**, so it's best to avoid tunnel when possible. You may want to install and use an emulator or simulator to speed up development if **Tunnel** is required to access your machine from another device on your network.
-
-</Collapsible>
-
-</Step>
-
-<Step label="3">
-
-## Make your first change
-
-Open the **app/(tabs)/index.tsx** file in your code editor and make a change.
-
-<DiffBlock
-  raw={`diff --git a/app/(tabs)/index.tsx b/app/(tabs)/index.tsx
-index 45cfa0e..4d1b384 100644
---- a/app/(tabs)/index.tsx
-+++ b/app/(tabs)/index.tsx
-@@ -17,7 +17,7 @@ export default function HomeScreen() {
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
--       <ThemedText type="title">Welcome!</ThemedText>
-+       <ThemedText type="title">Hello World!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-  `}
-/>
-
-<Collapsible summary="Changes not showing up on your device?">
-
-Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
-
-- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
-- Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
-- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
-
-  <ContentSpotlight
-    alt="Developer menu in Expo Go app."
-    src="/static/images/get-started/developer-menu.png"
-    className="max-w-[540px]"
-  />
-
-</Collapsible>
-
-</Step>
-
----
-
-## File structure
-
-Below, you can get familiar with the default project's file structure:
-
-<ProjectStructure />
-
-## Features
-
-The default project template has the following features:
-
-<TemplateFeatures />
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, backgroundColor: "#151a24", alignItems: "center", justifyContent: "center"
+  },
+  title: {
+    color: "#fff", fontSize: 28, fontWeight: "bold", marginBottom: 16, textAlign: "center"
+  },
+  subtitle: {
+    color: "#aaa", fontSize: 18, marginBottom: 40, textAlign: "center"
+  },
+  input: {
+    backgroundColor: "#232c3d", color: "#fff", borderRadius: 8, padding: 14, marginVertical: 7, width: 260, fontSize: 16
+  },
+  button: {
+    backgroundColor: "#00FF99", paddingVertical: 14, paddingHorizontal: 40, borderRadius: 10, marginTop: 25
+  },
+  buttonText: {
+    color: "#151a24", fontWeight: "bold", fontSize: 18, textAlign: "center"
+  },
+  buttonDisabled: { backgroundColor: "#aaa" },
+  error: { color: "#FF3333", fontWeight: "bold", fontSize: 15, marginTop: 8 },
+  link: { color: "#00FF99", fontWeight: "bold", marginBottom: 30, fontSize: 17, textAlign: "center" },
+  signalBox: {
+    backgroundColor: "#232c3d", borderRadius: 14, padding: 20, marginBottom: 30, width: 300, alignItems: "center"
+  },
+  signalHeader: { fontWeight: "bold", fontSize: 18, marginBottom: 8, color: "#fff" },
+  signalText: { color: "#fff", fontSize: 15, marginBottom: 3 },
+  bold: { fontWeight: "bold", color: "#00FF99" },
+  info: { color: "#ccc", fontSize: 14, marginTop: 25, textAlign: "center" }
+});
