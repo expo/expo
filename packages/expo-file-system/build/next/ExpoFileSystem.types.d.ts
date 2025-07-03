@@ -125,7 +125,7 @@ export declare class File {
      */
     delete(): void;
     /**
-     *  Retrieves an object containing properties of a file
+     * Retrieves an object containing properties of a file
      * @throws Error If the application does not have read access to the file, or if the path does not point to a file (e.g., it points to a directory).
      * @returns An object with file metadata (e.g., size, creation date, etc.).
      */
