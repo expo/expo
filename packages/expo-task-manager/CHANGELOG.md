@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] add missing proguard-rules for `expo-task-manager`
+
 ### 💡 Others
 
 ## 13.1.6 - 2025-07-01
