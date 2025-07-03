@@ -111,7 +111,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'reactNativeArchitectures',
-      propValueGetter: (config) => config.android?.reactNativeArchitectures?.join(','),
+      propValueGetter: (config) => config.android?.buildArchs?.join(','),
     },
   ],
   'withAndroidBuildProperties'

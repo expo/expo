@@ -229,9 +229,9 @@ describe(withBuildProperties, () => {
     });
   });
 
-  it('generates the reactNativeArchitectures property', async () => {
+  it('generates the android.buildArchs property', async () => {
     const pluginProps: PluginConfigType = {
-      android: { reactNativeArchitectures: ['armeabi-v7a', 'arm64-v8a'] },
+      android: { buildArchs: ['armeabi-v7a', 'arm64-v8a'] },
     };
 
     const { modResults: androidModResults } = await compileMockModWithResultsAsync<

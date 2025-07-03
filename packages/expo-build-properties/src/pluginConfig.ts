@@ -180,7 +180,7 @@ export interface PluginConfigTypeAndroid {
    */
   buildFromSource?: boolean;
   /**
-   * Override the default `reactNativeArchitectures` value in **gradle.properties**. A list of ABIs to build.
+   * Override the default `reactNativeArchitectures` list of ABIs to build in **gradle.properties**.
    *
    * @see [Android documentation](https://developer.android.com/ndk/guides/abis) for more information.
    *
@@ -191,7 +191,7 @@ export interface PluginConfigTypeAndroid {
    *
    * @default ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
    */
-  reactNativeArchitectures?: string[];
+  buildArchs?: string[];
 }
 
 // @docsMissing
@@ -671,7 +671,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
-        reactNativeArchitectures: { type: 'array', items: { type: 'string' }, nullable: true },
+        buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
       },
       nullable: true,
     },
