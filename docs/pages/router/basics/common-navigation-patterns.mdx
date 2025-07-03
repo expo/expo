@@ -5,6 +5,7 @@ sidebar_title: Common patterns
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
@@ -144,11 +145,26 @@ Say we want to have a bottom tabs layout, a sign in page, a create account page,
   files={[
     ['app/_layout.tsx', 'Root layout'],
     ['app/(tabs)/_layout.tsx'],
-    ['app/(tabs)/index.tsx', '🔒 protected'],
-    ['app/(tabs)/settings.tsx', '🔒 protected'],
+    [
+      'app/(tabs)/index.tsx',
+      <span>
+        Protected <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
+    [
+      'app/(tabs)/settings.tsx',
+      <span>
+        Protected <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
     ['app/sign-in.tsx'],
     ['app/create-account.tsx'],
-    ['app/modal.tsx', '🔒 protected'],
+    [
+      'app/modal.tsx',
+      <span>
+        Protected <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
   ]}
 />
 
