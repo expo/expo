@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`.
+
 ### 💡 Others
 
 ## 10.0.3 - 2025-06-18
