@@ -10,6 +10,7 @@ import React, {
   type PropsWithChildren,
   type ReactElement,
 } from 'react';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
@@ -20,6 +21,7 @@ import {
   NativeLinkPreviewAction,
   NativeLinkPreviewContent,
   NativeLinkPreviewTrigger,
+  type NativeLinkPreviewActionProps,
 } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
@@ -150,6 +152,10 @@ interface LinkMenuAction {
    * The title of the menu item.
    */
   title: string;
+  /**
+   * Optional SF Symbol displayed alongside the menu item.
+   */
+  icon?: SFSymbol;
   onPress: () => void;
 }
 
@@ -164,9 +170,11 @@ export function LinkMenu({ children }: LinkMenuProps) {
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
-  return convertChildrenArrayToActions(React.Children.toArray(children)).map((action) => {
-    return <NativeLinkPreviewAction key={action.id} title={action.title} id={action.id} />;
-  });
+  return convertChildrenArrayToActions(React.Children.toArray(children)).map(
+    ({ onPress, ...props }) => {
+      return <NativeLinkPreviewAction key={props.id} {...props} />;
+    }
+  );
 }
 
 interface LinkPreviewProps {
@@ -252,7 +260,9 @@ function convertActionsToActionsHandlers(
   );
 }
 
-function convertChildrenArrayToActions(children: ReturnType<typeof React.Children.toArray>) {
+function convertChildrenArrayToActions(
+  children: ReturnType<typeof React.Children.toArray>
+): (NativeLinkPreviewActionProps & { onPress: () => void })[] {
   return children
     .filter(
       (item): item is ReactElement<LinkMenuAction> =>
@@ -262,5 +272,6 @@ function convertChildrenArrayToActions(children: ReturnType<typeof React.Childre
       id: `${child.props.title}-${index}`,
       title: child.props.title,
       onPress: child.props.onPress,
+      icon: child.props.icon,
     }));
 }

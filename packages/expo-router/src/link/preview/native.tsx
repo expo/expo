@@ -6,6 +6,7 @@ import { Platform, StyleSheet, type ViewProps } from 'react-native';
 // #region Action View
 export interface NativeLinkPreviewActionProps {
   title: string;
+  icon?: string;
   id: string;
 }
 const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =

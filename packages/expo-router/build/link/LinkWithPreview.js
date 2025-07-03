@@ -132,8 +132,8 @@ function LinkMenu({ children }) {
     if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext)) {
         return null;
     }
-    return convertChildrenArrayToActions(react_1.default.Children.toArray(children)).map((action) => {
-        return <native_1.NativeLinkPreviewAction key={action.id} title={action.title} id={action.id}/>;
+    return convertChildrenArrayToActions(react_1.default.Children.toArray(children)).map(({ onPress, ...props }) => {
+        return <native_1.NativeLinkPreviewAction key={props.id} {...props}/>;
     });
 }
 function LinkPreview({ children, width, height }) {
@@ -187,6 +187,7 @@ function convertChildrenArrayToActions(children) {
         id: `${child.props.title}-${index}`,
         title: child.props.title,
         onPress: child.props.onPress,
+        icon: child.props.icon,
     }));
 }
 //# sourceMappingURL=LinkWithPreview.js.map

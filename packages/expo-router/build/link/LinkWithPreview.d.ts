@@ -1,4 +1,5 @@
 import React, { type PropsWithChildren, type ReactElement } from 'react';
+import type { SFSymbol } from 'sf-symbols-typescript';
 import { LinkProps } from './useLinkHooks';
 export declare function LinkWithPreview({ children, ...rest }: LinkProps): React.JSX.Element;
 interface LinkMenuAction {
@@ -6,6 +7,10 @@ interface LinkMenuAction {
      * The title of the menu item.
      */
     title: string;
+    /**
+     * Optional SF Symbol displayed alongside the menu item.
+     */
+    icon?: SFSymbol;
     onPress: () => void;
 }
 export declare function LinkMenuAction(_: LinkMenuAction): null;
