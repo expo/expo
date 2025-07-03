@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Improved erorr message when we don't support Kotlin version provided by the user.
+- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
