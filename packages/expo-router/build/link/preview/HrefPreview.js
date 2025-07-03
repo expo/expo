@@ -91,7 +91,7 @@ const navigationPropWithWarnings = {
             index: 0,
             routeNames: [],
             routes: [],
-            type: 'stack',
+            type: '',
             stale: false,
         };
     },
