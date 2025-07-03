@@ -49,3 +49,4 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
  */
 export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
 export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
+//# sourceMappingURL=BackgroundTask.d.ts.map

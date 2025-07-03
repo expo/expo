@@ -1,5 +1,5 @@
 {
-  "platforms": [ "apple", "android", "cli" ],
+  "platforms": [ "apple", "android", "cli", "devtools" ],
   "apple": {
     "appDelegateSubscribers": [ "BackgroundTaskAppDelegateSubscriber" ],
     "modules": [ "BackgroundTaskModule" ]
@@ -8,12 +8,13 @@
     "modules": [ "expo.modules.backgroundtask.BackgroundTaskModule" ]
   },
   "cli": {
-    "description": "Tool for managing background tasks in Expo apps",
+    "description": "Expo: manage background tasks",
     "commands": [
-      { "cmd": "list", "caption": "List registered background tasks" },
-      { "cmd": "test", "caption": "Trigger background tasks for testing in connected apps" }
+      { "name": "list", "caption": "List registered background tasks" },
+      { "name": "test", "caption": "Trigger background tasks for testing in connected apps" }
     ],
     "mcpEnabled": true,
+    "communicatesWithApps": true,
     "main": "cli/build/index.js"
   }
 }

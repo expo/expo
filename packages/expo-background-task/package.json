@@ -32,7 +32,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/background-task/",
   "dependencies": {
-    "expo-task-manager": "~13.1.5"
+    "expo-task-manager": "~13.1.5",
+    "expo-cli-extensions": "*"
   },
   "devDependencies": {
     "expo-module-scripts": "^4.1.7"

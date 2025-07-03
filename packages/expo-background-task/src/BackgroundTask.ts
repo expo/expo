@@ -1,7 +1,5 @@
 import { isRunningInExpoGo } from 'expo';
-import { getDevToolsPluginClientAsync } from 'expo/devtools';
-import * as Application from 'expo-application';
-import * as DeviceInfo from 'expo-device';
+import { startDevToolsPluginListenerAsync } from 'expo-cli-extensions';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 
@@ -11,93 +9,6 @@ import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 // Flag to warn about running on Apple simulator
 let warnAboutRunningOniOSSimulator = false;
 let warnedAboutExpoGo = false;
-
-if (__DEV__) {
-  let clientRef: Awaited<ReturnType<typeof getDevToolsPluginClientAsync>> | null = null;
-  const cleanUps: (() => void)[] = [];
-
-  const getDeviceName = () => {
-    return Platform.OS === 'android'
-      ? DeviceInfo.deviceName +
-          ' - ' +
-          DeviceInfo.osVersion +
-          ' - API ' +
-          DeviceInfo.platformApiLevel
-      : DeviceInfo.deviceName;
-  };
-
-  getDevToolsPluginClientAsync('expo-backgroundtask-devtools-plugin')
-    .then((client) => {
-      if (clientRef != null) {
-        // Clean up the previous client if it exists
-        cleanUps.forEach((cleanup) => cleanup());
-        cleanUps.length = 0;
-      }
-      clientRef = client;
-
-      // Add message listeners
-      cleanUps.push(
-        client.addMessageListener('triggerBackgroundTasks', async (params) => {
-          //console.log("Received 'triggerBackgroundTasks' message", Platform.OS);
-          const tasks = await TaskManager.getRegisteredTasksAsync();
-          if (tasks.length === 0) {
-            //console.log("client.sendMessage('triggerBackgroundTasks_response')", Platform.OS);
-            await client.sendMessage('triggerBackgroundTasks_response', {
-              message: 'No background tasks registered to trigger.',
-              deviceName: getDeviceName(),
-              applicationId: Application.applicationId,
-            });
-            return;
-          }
-          // Trigger the background tasks
-          //console.log('Triggering background tasks for testing...', Platform.OS);
-          await triggerTaskWorkerForTestingAsync();
-          //console.log("client.sendMessage('triggerBackgroundTasks_response')", Platform.OS);
-          await client.sendMessage('triggerBackgroundTasks_response', {
-            message: `${tasks.length} tasks triggered successfully.`,
-            deviceName: getDeviceName(),
-            applicationId: Application.applicationId,
-          });
-        }).remove
-      );
-
-      cleanUps.push(
-        client.addMessageListener('getRegisteredBackgroundTasks', async (params) => {
-          //console.log("Received 'getRegisteredBackgroundTasks' message", Platform.OS, params);
-          const tasks = await TaskManager.getRegisteredTasksAsync();
-          const message =
-            tasks.length === 0
-              ? 'No background tasks registered.'
-              : `${tasks.length} task(s): ${tasks.map((task) => `"${task.taskName}"`).join(', ')}.`;
-          // console.log("client.sendMessage('getRegisteredBackgroundTasks_response')", {
-          //   OS: Platform.OS,
-          //   deviceName: getDeviceName(),
-          //   applicationId: Application.applicationId,
-          // });
-          await client.sendMessage('getRegisteredBackgroundTasks_response', {
-            message,
-            deviceName: getDeviceName(),
-            applicationId: Application.applicationId,
-          });
-        }).remove
-      );
-    })
-    .catch((error) => {
-      console.error('Failed to get dev tools plugin client:', error);
-    });
-
-  // Some type tricks to ensure the module is properly cleaned up
-  if ('hot' in module && module.hot) {
-    const hot = module.hot as object;
-    if ('dispose' in hot && hot.dispose && hot.dispose instanceof Function) {
-      hot.dispose(() => {
-        // Clean up here
-        cleanUps.forEach((cleanup) => cleanup());
-        cleanUps.length = 0;
-      });
-    }
-  }
-}
 
 function _validate(taskName: unknown) {
   if (isRunningInExpoGo()) {
@@ -226,6 +137,38 @@ export async function triggerTaskWorkerForTestingAsync(): Promise<boolean> {
     return Promise.resolve(false);
   }
 }
+
+const PLUGIN_NAME = 'expo-backgroundtask-devtools-plugin';
+const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
+const TRIGGER_TASKS = 'triggerBackgroundTasks';
+
+startDevToolsPluginListenerAsync(PLUGIN_NAME)
+  .then(({ addMessageListener }) => {
+    // Handle the trigger background tasks request
+    addMessageListener(TRIGGER_TASKS, async ({ sendResponseAsync }) => {
+      const tasks = await TaskManager.getRegisteredTasksAsync();
+      if (tasks.length === 0) {
+        await sendResponseAsync('No background tasks registered to trigger.');
+        return;
+      }
+      // Trigger the background tasks
+      await triggerTaskWorkerForTestingAsync();
+      await sendResponseAsync(`${tasks.length} tasks triggered successfully.`);
+    });
+
+    // Handle the get registered tasks request
+    addMessageListener(GET_REGISTERED_TASKS, async ({ sendResponseAsync }) => {
+      const tasks = await TaskManager.getRegisteredTasksAsync();
+      const message =
+        tasks.length === 0
+          ? 'No background tasks registered.'
+          : `${tasks.length} task(s): ${tasks.map((task) => `"${task.taskName}"`).join(', ')}.`;
+      await sendResponseAsync(message);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to start app listeners for expo-backgroundtask-devtools-plugin:', error);
+  });
 
 // Export types
 export {

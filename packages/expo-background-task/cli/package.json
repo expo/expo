@@ -2,20 +2,44 @@
     "name": "expo-background-task-cli",
     "version": "1.0.0",
     "description": "CLI for managing background tasks in Expo apps",
-    "main": "src/index.ts",
-    "files": [
-        "src"
+    "main": "build/index.js",
+    "module": "src/index.ts",
+    "types": "build/index.d.ts",
+    "scripts": {
+        "build": "expo-module build",
+        "clean": "expo-module clean",
+        "lint": "expo-module lint",
+        "test": "expo-module test",
+        "prepare": "expo-module prepare",
+        "prepublishOnly": "expo-module prepublishOnly",
+        "expo-module": "expo-module",
+        "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+        "typecheck": "expo-module typecheck",
+        "watch": "expo-module tsc --watch"
+    },
+    "files": [ "build" ],
+    "keywords": [
+        "expo",
+        "react-native",
+        "documentation",
+        "search",
+        "node"
     ],
-    "author": "Expo",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/expo/expo.git",
+        "directory": "packages/expo-doc-tools/cli"
+    },
+    "bugs": {
+        "url": "https://github.com/expo/expo/issues"
+    },
+    "author": "650 Industries, Inc.",
     "license": "MIT",
     "dependencies": {
-        "chalk": "^4.1.2",
-        "expo": "*",
-        "typescript": "^5.8.3",
-        "ws": "^8.18.2"
+        "expo-cli-extensions": "*"
     },
     "devDependencies": {
-        "@types/node": "^24.0.1"
+        "expo-module-scripts": "^4.1.7"
     },
     "private": true
 }

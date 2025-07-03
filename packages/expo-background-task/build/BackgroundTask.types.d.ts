@@ -40,3 +40,4 @@ export type BackgroundTaskOptions = {
      */
     minimumInterval?: number;
 };
+//# sourceMappingURL=BackgroundTask.types.d.ts.map
