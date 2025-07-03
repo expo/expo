@@ -20,7 +20,7 @@ export declare class Paths extends PathUtilities {
      */
     static get availableDiskSpace(): number;
     /**
-     * Returns an object that indicates if the specified path represent a directory.
+     * Returns an object that indicates if the specified path represents a directory.
      */
     static info(...uris: string[]): PathInfo;
 }

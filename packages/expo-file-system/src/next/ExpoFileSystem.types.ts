@@ -41,8 +41,7 @@ export declare class Directory {
   delete(): void;
 
   /**
-   * A boolean representing if a directory exists. `true` if the directory exists, `false` otherwise.
-   * Also, `false` if the application does not have read access to the file.
+   * A boolean representing if a directory exists and can be accessed.
    */
   exists: boolean;
 
@@ -211,7 +210,7 @@ export declare class File {
   modificationTime: number | null;
 
   /**
-   * A creation time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, cannot be read or the Android version is earlier than API 26.
+   * A creation time of the file expressed in milliseconds since epoch. Returns null if the file does not exist, cannot be read or the Android version is earlier than API 26.
    */
   creationTime: number | null;
 
@@ -250,7 +249,7 @@ export declare class FileHandle {
 
 export type FileInfo = {
   /**
-   * Signifies whether the requested file exists.
+   * Indicates whether the file exists.
    */
   exists: boolean;
   /**
@@ -266,7 +265,7 @@ export type FileInfo = {
    */
   modificationTime?: number;
   /**
-   * A creation time of the file expressed in milliseconds since epoch. Returns a Null if the Android version is earlier than API 26.
+   * A creation time of the file expressed in milliseconds since epoch. Returns null if the Android version is earlier than API 26.
    */
   creationTime?: number;
   /**
