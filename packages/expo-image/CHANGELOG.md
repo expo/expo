@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Speed up displaying local assets. ([#37795](https://github.com/expo/expo/pull/37795) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 2.3.2 — 2025-07-01
