@@ -1,6 +1,6 @@
-import { StyleSheet, View, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { useState } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
 export default function ImageBlurhash() {
   const uri = 'https://picsum.photos/seed/175/300/200';
@@ -17,7 +17,7 @@ export default function ImageBlurhash() {
             const blurhash = await Image.generateBlurhashAsync(uri ?? '', [9, 9]);
             if (blurhash) {
               setGeneratedSource({
-                blurhash: blurhash,
+                blurhash,
               });
             }
           }}
