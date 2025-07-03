@@ -81,7 +81,7 @@
     "@expo/vector-icons": "^14.0.0",
     "babel-preset-expo": "~13.2.3",
     "expo-asset": "~11.1.6",
-    "expo-constants": "~17.1.6",
+    "expo-constants": "~17.1.7",
     "expo-file-system": "~18.1.11",
     "expo-font": "~13.3.2",
     "expo-keep-awake": "~14.1.4",

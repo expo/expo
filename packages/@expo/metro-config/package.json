@@ -39,7 +39,7 @@
     "@babel/parser": "^7.20.0",
     "@babel/types": "^7.20.0",
     "@expo/config": "~11.0.12",
-    "@expo/env": "~1.0.6",
+    "@expo/env": "~1.0.7",
     "@expo/json-file": "~9.1.5",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
