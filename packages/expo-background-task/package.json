@@ -35,7 +35,7 @@
     "expo-task-manager": "~13.1.6"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.8"
+    "expo-module-scripts": "^4.1.9"
   },
   "peerDependencies": {
     "expo": "*"

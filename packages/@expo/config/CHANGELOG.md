@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.0.12 — 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.11 — 2025-07-01
 
 ### 🐛 Bug fixes

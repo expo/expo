@@ -1,6 +1,6 @@
 {
   "name": "expo-module-scripts",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "description": "A private package for various tasks for Expo module packages like compiling and testing",
   "main": "index.js",
   "bin": {
