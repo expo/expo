@@ -26,6 +26,11 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview: /home</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Link href="/(tabs)/home/modal">Normal link: /(tabs)/home/modal</Link>
+      <Link href="/(tabs)/home/modal">
+        <Link.Trigger>Link.Preview: /(tabs)/home/modal</Link.Trigger>
+        <Link.Preview />
+      </Link>
       <Link href="/(tabs)/home/one">Normal link: /(tabs)/home/one</Link>
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Normal link with trigger: /(tabs)/home/one</Link.Trigger>

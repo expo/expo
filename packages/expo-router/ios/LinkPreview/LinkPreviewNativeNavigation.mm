@@ -12,11 +12,18 @@
 
 - (void)pushPreloadedView {
   if (preloadedScreenView != nil && stackView != nil) {
-    // Instead of pushing the preloaded screen view, we set its activity state
-    // React native screens will then handle the rest.
-    [preloadedScreenView setActivityState:2];
-    [stackView markChildUpdated];
-    NSLog(@"ExpoRouter: Preloaded screen view pushed.");
+    // When we will try to push modal from native side, react-native-screens
+    // will dismiss the preview Therefore we don't push the view on native side
+    // and settle for junky animation
+    if (!preloadedScreenView.isModal) {
+      // Instead of pushing the preloaded screen view, we set its activity state
+      // React native screens will then handle the rest.
+      [preloadedScreenView setActivityState:2];
+      [stackView markChildUpdated];
+      NSLog(@"ExpoRouter: Preloaded screen view pushed.");
+    } else {
+      NSLog(@"ExpoRouter: Cannot present modal natively from context menu");
+    }
   } else {
     NSLog(@"ExpoRouter: No preloaded screen view found. Relying on JS "
           @"navigation.");
@@ -38,8 +45,8 @@
   }
 }
 
-- (nonnull NSArray<RNSScreenStackView *> *)findAllScreenStackViewsInResponderChain:
-    (nonnull UIResponder *)responder {
+- (nonnull NSArray<RNSScreenStackView *> *)
+    findAllScreenStackViewsInResponderChain:(nonnull UIResponder *)responder {
   NSMutableArray<RNSScreenStackView *> *stackViews = [NSMutableArray array];
 
   while (responder) {
@@ -93,9 +100,9 @@
   return NO;
 }
 
-- (nullable RNSScreenView *)findPreloadedScreenView:
-                       (nonnull NSArray<RNSScreenView *> *)screenViews
-                              withScreenId:(nonnull NSString *)screenId {
+- (nullable RNSScreenView *)
+    findPreloadedScreenView:(nonnull NSArray<RNSScreenView *> *)screenViews
+               withScreenId:(nonnull NSString *)screenId {
   for (RNSScreenView *screenView in screenViews) {
     if (screenView.activityState == 0 &&
         [screenView.screenId isEqualToString:screenId]) {
