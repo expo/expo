@@ -1,4 +1,6 @@
 {
+  "expo-cli-tools": "*",
+  "expo-doc-tools": "*",
   "@expo/fingerprint": "~0.13.0",
   "@expo/metro-runtime": "~5.0.4",
   "@expo/vector-icons": "^14.1.0",
