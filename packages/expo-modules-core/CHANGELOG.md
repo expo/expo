@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Mark either converters as non-trivial.
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `Value is undefined, expected an Object` in the `JNIUtils::emitEventOnJSIObject`. ([#37778](https://github.com/expo/expo/pull/37778) by [@lukmccall](https://github.com/lukmccall))
 
