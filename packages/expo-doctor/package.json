@@ -1,6 +1,6 @@
 {
   "name": "expo-doctor",
-  "version": "1.13.4",
+  "version": "1.13.5",
   "main": "build/index.js",
   "description": "Check your Expo project for known issues",
   "keywords": [
@@ -36,7 +36,7 @@
     "@expo/config": "~11.0.12",
     "@expo/env": "~1.0.7",
     "@expo/json-file": "~9.1.5",
-    "@expo/schemer": "1.6.4",
+    "@expo/schemer": "1.6.5",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
     "@vercel/ncc": "0.38.1",

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.24.18 — 2025-07-03
+
+### 💡 Others
+
 - Add e2e tests for browser back/forward buttons  ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
 
 ## 0.24.17 — 2025-07-02

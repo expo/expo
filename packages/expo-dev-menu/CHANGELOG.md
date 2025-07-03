@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.1.14 — 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
 ## 6.1.13 — 2025-07-02
 
 _This version does not introduce any user-facing changes._
