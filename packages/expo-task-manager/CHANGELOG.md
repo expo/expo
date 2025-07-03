@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] add missing proguard-rules for `expo-task-manager`
+- [android] add missing proguard-rules for `expo-task-manager` ([#37833](https://github.com/expo/expo/pull/37833) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
