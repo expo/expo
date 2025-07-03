@@ -47,7 +47,7 @@ export async function setLocalesAsync(
             $: {
               name: k,
             },
-            _: v,
+            _: `"${v}"`,
           },
         })),
       },
