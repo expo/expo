@@ -153,6 +153,19 @@ export interface PluginConfigTypeAndroid {
      * @default false
      */
     buildFromSource?: boolean;
+    /**
+     * Override the default `reactNativeArchitectures` value in **gradle.properties**. A list of ABIs to build.
+     *
+     * @see [Android documentation](https://developer.android.com/ndk/guides/abis) for more information.
+     *
+     * @example
+     * ```json
+     * ["arm64-v8a", "x86_64"]
+     * ```
+     *
+     * @default ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+     */
+    reactNativeArchitectures?: string[];
 }
 /**
  * @platform android
