@@ -15,7 +15,11 @@ import {
   transformDomEntryForMd5Filename,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
+import {
+  exportApiRoutesStandaloneAsync,
+  exportFromServerAsync,
+  injectScriptTags,
+} from './exportStaticAsync';
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { copyPublicFolderAsync } from './publicFolder';
@@ -54,6 +58,7 @@ export async function exportAppAsync(
     bytecode,
     maxWorkers,
     skipSSG,
+    hostedNative,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -66,6 +71,7 @@ export async function exportAppAsync(
     | 'bytecode'
     | 'maxWorkers'
     | 'skipSSG'
+    | 'hostedNative'
   >
 ): Promise<void> {
   // Force the environment during export and do not allow overriding it.
@@ -134,7 +140,10 @@ export async function exportAppAsync(
 
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
   const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
-
+  let scriptTags: {
+    platform: string;
+    src: string;
+  }[] = [];
   const spaPlatforms =
     // TODO: Support server and static rendering for server component exports.
     useServerRendering && !devServer.isReactServerComponentsEnabled
@@ -193,6 +202,7 @@ export async function exportAppAsync(
                 serializerIncludeMaps: sourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
+                hosted: hostedNative,
               },
               files
             );
@@ -213,6 +223,18 @@ export async function exportAppAsync(
             includeSourceMaps: sourceMaps,
             files,
             isServerHosted: devServer.isReactServerComponentsEnabled,
+          });
+
+          bundle.artifacts.forEach((artifact) => {
+            if (artifact.type === 'js') {
+              // Add the script tag for the JS bundle.
+              scriptTags.push({
+                platform,
+                src: devServer.isReactServerComponentsEnabled
+                  ? `/client/${artifact.filename}`
+                  : `/${artifact.filename}`,
+              });
+            }
           });
 
           // TODO: Remove duplicates...
@@ -297,6 +319,30 @@ export async function exportAppAsync(
         })
       );
 
+      // Clear the script tags if we are not using hosted native.
+      if (!hostedNative) {
+        scriptTags = [];
+      } else if (!files.has('index.html')) {
+        // If we already have an index.html file, we can inject the script tags into it.
+
+        files.set('index.html', {
+          targetDomain: devServer.isReactServerComponentsEnabled ? 'server' : 'client',
+          contents: injectScriptTags(`<html><head></head><body></body></html>`, scriptTags),
+        });
+      }
+
+      if (scriptTags.length > 0 && templateHtml) {
+        templateHtml = injectScriptTags(templateHtml, scriptTags);
+        if (files.has('index.html')) {
+          // If we already have an index.html file, we can inject the script tags into it.
+          const existingHtml = files.get('index.html')!;
+          files.set('index.html', {
+            ...existingHtml,
+            contents: injectScriptTags(existingHtml.contents as string, scriptTags),
+          });
+        }
+      }
+
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');
 
@@ -315,6 +361,7 @@ export async function exportAppAsync(
         outputDir: outputPath,
         bundles,
         baseUrl,
+        hostedNative,
       });
 
       if (dumpAssetmap) {
@@ -365,7 +412,15 @@ export async function exportAppAsync(
         const placeholderIndex = path.resolve(outputPath, 'client/index.html');
         if (!fs.existsSync(placeholderIndex)) {
           files.set('index.html', {
-            contents: `<html><body></body></html>`,
+            contents: injectScriptTags(`<html><head></head><body></body></html>`, scriptTags),
+            targetDomain: 'client',
+          });
+        } else {
+          // If the index.html file exists, we assume it is a valid HTML file.
+          // We can inject the script tags into it.
+          const html = fs.readFileSync(placeholderIndex, 'utf8');
+          files.set('index.html', {
+            contents: injectScriptTags(html, scriptTags),
             targetDomain: 'client',
           });
         }
@@ -387,6 +442,7 @@ export async function exportAppAsync(
           maxWorkers,
           isExporting: true,
           exp: projectConfig.exp,
+          scriptTags,
         });
       }
     }

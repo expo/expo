@@ -28,6 +28,11 @@ import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
+type ExtraScriptTag = {
+  platform: string;
+  src: string;
+};
+
 type Options = {
   mode: 'production' | 'development';
   files?: ExportAssetMap;
@@ -43,6 +48,8 @@ type Options = {
   maxWorkers?: number;
   isExporting: boolean;
   exp?: ExpoConfig;
+  // <script type="type/expo" data-platform="ios" src="..." />
+  scriptTags?: ExtraScriptTag[];
 };
 
 type HtmlRequestLocation = {
@@ -53,6 +60,18 @@ type HtmlRequestLocation = {
   /** The runtime route node object, used to associate async modules with the static HTML. */
   route: RouteNode;
 };
+
+export function injectScriptTags(html: string, scriptTags: ExtraScriptTag[]): string {
+  const scriptTagsHtml = scriptTags
+    .map((tag) =>
+      tag.platform === 'web'
+        ? `<script src="${tag.src}"></script>`
+        : `<script type="type/expo" src="${tag.src}" data-platform="${tag.platform}"></script>`
+    )
+    .join('\n');
+  html = html.replace('</head>', `${scriptTagsHtml}\n</head>`);
+  return html;
+}
 
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
@@ -144,6 +163,7 @@ export async function exportFromServerAsync(
     routerRoot,
     files = new Map(),
     exp,
+    scriptTags,
   }: Options
 ): Promise<ExportAssetMap> {
   Log.log(
@@ -189,6 +209,12 @@ export async function exportFromServerAsync(
 
       if (injectFaviconTag) {
         html = injectFaviconTag(html);
+      }
+
+      if (scriptTags) {
+        // Inject script tags into the HTML.
+        // <script type="type/expo" data-platform="ios" src="..." />
+        html = injectScriptTags(html, scriptTags);
       }
 
       return html;

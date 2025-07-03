@@ -26,6 +26,7 @@ type Options = {
   platform?: string | null;
   projectRoot: string;
   publicPath: string;
+  isHosted?: boolean;
 };
 
 function getMD5ForData(data: string[]) {
@@ -97,7 +98,8 @@ export async function getUniversalAssetData(
   localPath: string,
   assetDataPlugins: readonly string[],
   platform: string | null | undefined,
-  publicPath: string
+  publicPath: string,
+  isHosted: boolean = false
 ): Promise<HashedAssetData> {
   const metroAssetData = await getAssetData(
     assetPath,
@@ -109,7 +111,7 @@ export async function getUniversalAssetData(
   const data = await ensureOtaAssetHashesAsync(metroAssetData);
 
   // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
-  if (platform === 'web' && publicPath.includes('?export_path=')) {
+  if ((isHosted || platform === 'web') && publicPath.includes('?export_path=')) {
     // `local-image.[contenthash]`. Using `.` but this won't work if we ever apply to Android because Android res files cannot contain `.`.
     // TODO: Prevent one multi-res image from updating the hash in all images.
     // @ts-expect-error: name is typed as readonly.
@@ -141,7 +143,8 @@ export default async function getAssets(
           path.relative(options.projectRoot, module.path),
           options.assetPlugins,
           options.platform,
-          options.publicPath
+          options.publicPath,
+          options.isHosted
         )
       );
     }
