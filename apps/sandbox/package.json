@@ -20,7 +20,7 @@
     "react-native-screens": "~4.11.1"
   },
   "devDependencies": {
-    "babel-preset-expo": "~13.2.2"
+    "babel-preset-expo": "~13.2.3"
   },
   "private": true
 }

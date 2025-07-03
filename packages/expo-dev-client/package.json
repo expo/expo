@@ -35,7 +35,7 @@
     "expo-dev-launcher": "5.1.15",
     "expo-dev-menu": "6.1.13",
     "expo-dev-menu-interface": "1.10.0",
-    "expo-manifests": "~0.16.5",
+    "expo-manifests": "~0.16.6",
     "expo-updates-interface": "~1.1.0"
   },
   "devDependencies": {

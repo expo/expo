@@ -28,7 +28,7 @@
     "expo-contacts": "~14.2.5",
     "expo-crypto": "~14.1.5",
     "expo-device": "~7.1.4",
-    "expo-eas-client": "~0.14.3",
+    "expo-eas-client": "~0.14.4",
     "expo-file-system": "~18.1.11",
     "expo-gl": "~15.1.7",
     "expo-haptics": "~14.1.4",
