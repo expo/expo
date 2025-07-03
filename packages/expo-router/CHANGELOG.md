@@ -19,6 +19,7 @@
 ### 💡 Others
 
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
+- add d.ts files generated during running tests ([#37818](https://github.com/expo/expo/pull/37818) by [@Ubax](https://github.com/Ubax))
 
 ## 5.1.1 - 2025-06-26
 
