@@ -71,17 +71,26 @@ Or:
 
 When both a top level runtime and a platform specific runtime are set, the platform specific one takes precedence.
 
-## Avoiding crashes with incompatible updates
+## Avoiding incompatible updates
 
 The main issue that can arise when publishing updates is that the update could rely on native code that the build it's running on does not support. For instance, imagine we made a build with a runtime version of `"1.0.0"`. Then, we submitted that build to the app stores and released it to the public.
 
-Later on, imagine that we developed an update that relied on a newly installed native library, like the `expo-in-app-purchases` library, and we did not update the `"runtimeVersion"` property, so that it is still `"1.0.0"`. If we published an update, the builds with the `"runtimeVersion"` of `"1.0.0"` would think the incoming update with the same runtime version was compatible and it would attempt to load the update. Since the update would make calls to code that does not exist inside the build, the app would crash.
+Later on, imagine that we developed an update that relied on a newly installed native library, like the `expo-camera` library, and we did not update the `"runtimeVersion"` property, so that it is still `"1.0.0"`. If we published an update, the builds with the `"runtimeVersion"` of `"1.0.0"` would think the incoming update with the same runtime version was compatible and it would attempt to load the update. Since the update would make calls to code that does not exist inside the build, `expo-updates` may detect an error and attempt to roll back to the previously working update ([learn more about error recovery behavior](/eas-update/error-recovery/)).
 
-There are a few ways to avoid crashes like this:
+The following are some strategies to avoid deploying updates that are incompatible with a build's native code.
 
-- Whenever we install or update native code, iterate the `"runtimeVersion"` property in the project's app config (**app.json**/**app.config.js**).
-- Create a preview build of your app and load it on a test device. Then, publish the update to the "preview" branch to make sure it works as expected before publishing it to the project's production branch.
+### Use a runtime version policy that automatically updates the runtime version when native code is updated
 
-If this error does occur, then you can republish a previous known-good update, then ask users to delete the app and reinstall it.
+The `"appVersion"` policy will increment the runtime version whenever the app version is incremented, but if you forget to bump the app version when changing the native runtime, then you'll have a runtime version mismatch. If you want to make incompatible updates extremely unlikely, at the cost of making it necessary to create builds more often, then you can use the `"fingerprint"` policy. This will increment the runtime version whenever anything that may impact the native runtime changes ([learn more about fingerprinting](/versions/latest/sdk/fingerprint/)).
 
-In the future, the `expo-updates` library will prevent many instances of this from crashing the app. If we can detect this particular issue, we'll automatically roll back to a previous update instead of loading the bad update.
+### Manually increment the runtime version
+
+Whenever installing or updating native code, [manually increment the `"runtimeVersion"` property](/eas-update/runtime-versions/#custom-runtime-version) in the project's [app config](/workflow/configuration/).
+
+### Roll out the update gradually
+
+If you're not sure about the impact of a new update, you can roll it out to a small group of users first. Use [rollouts](/eas-update/rollouts/) to publish the update to a small percentage of users and monitor the error rate for the update on the EAS dashboard. If you are noticing high error rates, then cancel the rollout. If you already rolled it out fully, then [roll it back](/eas-update/rollbacks/).
+
+### Manually verify updates with a smaller group of users
+
+When you deploy to production, create a preview build that uses the same runtime but points to a different channel. Test your updates on those builds before promoting them to production (learn more about this in the [deployment guide](/eas-update/deployment/#deploying-previews)). Alternatively, you can opt-in certain users of your app to receive the update by overriding update parameters at runtime ([learn more](/eas-update/override/)).
