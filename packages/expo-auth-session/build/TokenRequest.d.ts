@@ -15,11 +15,11 @@ export declare class TokenResponse implements TokenResponseConfig {
      * Determines whether a token refresh request must be made to refresh the tokens
      *
      * @param token
-     * @param secondsMargin
+     * @param secondsMargin Minimum token validity in seconds, only absolute value is used.
      */
     static isTokenFresh(token: Pick<TokenResponse, 'expiresIn' | 'issuedAt'>, 
     /**
-     * -10 minutes in seconds
+     * 10 minutes in seconds
      */
     secondsMargin?: number): boolean;
     /**

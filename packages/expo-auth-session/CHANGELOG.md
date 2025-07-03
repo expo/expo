@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use only absolute value of `secondsMargin` in `TokenResponse.isTokenFresh`
+
 ## 6.2.0 - 2025-06-04
 
 ### 🎉 New features
