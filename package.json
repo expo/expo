@@ -16,7 +16,8 @@
     "packages": [
       "apps/*",
       "packages/*",
-      "packages/@expo/*"
+      "packages/@expo/*",
+      "packages/*/cli"
     ]
   },
   "resolutions": {
