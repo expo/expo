@@ -1,0 +1,43 @@
+{
+  "name": "expo-cli-extensions",
+  "version": "0.1.0",
+  "description": "Extensions and utilities for developing CLI extensions for the Expo CLI",
+  "main": "build/index.js",
+  "module": "src/index.ts",
+  "types": "build/index.d.ts",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "cli",
+    "extension"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-cli-extensions"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^4.1.7"
+  }
+}
