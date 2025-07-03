@@ -9,7 +9,6 @@ private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 
-
 @MainActor
 class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
@@ -39,7 +38,7 @@ class DevLauncherViewModel: ObservableObject {
   @Published var selectedAccountId: String?
 
   private let presentationContext = DevLauncherAuthPresentationContext()
-  
+
   var selectedAccount: UserAccount? {
     guard let userData = user,
       let selectedAccountId = selectedAccountId else {
@@ -47,11 +46,11 @@ class DevLauncherViewModel: ObservableObject {
     }
     return userData.accounts.first { $0.id == selectedAccountId }
   }
-  
+
   var structuredBuildInfo: BuildInfo {
     return BuildInfo(buildInfo: buildInfo, updatesConfig: updatesConfig)
   }
-  
+
   var isLoggedIn: Bool {
     return isAuthenticated && user != nil
   }
@@ -65,7 +64,8 @@ class DevLauncherViewModel: ObservableObject {
   private func loadData() {
     let controller = EXDevLauncherController.sharedInstance()
     self.buildInfo = controller.getBuildInfo()
-    self.updatesConfig = controller.getUpdatesConfig()
+    self.updatesConfig = controller.getUpdatesConfig(nil)
+
     loadRecentlyOpenedApps()
     loadMenuPreferences()
   }
@@ -108,6 +108,10 @@ class DevLauncherViewModel: ObservableObject {
   func clearRecentlyOpenedApps() {
     EXDevLauncherController.sharedInstance().clearRecentlyOpenedApps()
     self.recentlyOpenedApps = []
+  }
+
+  func isCompatibleRuntime(_ runtimeVersion: String) -> Bool {
+    return runtimeVersion == structuredBuildInfo.runtimeVersion
   }
 
   func discoverDevServers() {

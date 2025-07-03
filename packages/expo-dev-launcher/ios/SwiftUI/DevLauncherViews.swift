@@ -94,15 +94,7 @@ struct RecentlyOpenedAppRow: View {
       }
       .padding()
       .background(Color(.systemBackground))
-      .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .buttonStyle(PlainButtonStyle())
   }
-}
-
-struct RecentlyOpenedApp {
-  let name: String
-  let url: String
-  let timestamp: Date
-  let isEasUpdate: Bool?
 }
