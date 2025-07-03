@@ -1,7 +1,7 @@
 import { ExpoLink } from './ExpoLink';
 import { LinkMenu, LinkMenuAction, LinkPreview, LinkTrigger } from './LinkWithPreview';
 import { resolveHref } from './href';
-import { LinkProps, WebAnchorProps } from './useLinkHooks';
+import type { LinkProps, WebAnchorProps } from './useLinkHooks';
 
 export const Link = Object.assign(
   /**
