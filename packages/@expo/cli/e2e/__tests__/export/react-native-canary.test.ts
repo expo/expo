@@ -69,5 +69,8 @@ describe('exports with react native canary', () => {
     expect(bundle).not.toMatch('__d((function(g,r,');
     // Canary comment. This needs to be updated with each canary.
     expect(bundle).toMatchPath(/\/canary-full\/node_modules\/react\/cjs\/react\.production\.js/);
+    // Also test for non-canary React being imported (the `"` is ensuring the root)
+    expect(bundle).toMatchPath(/\"node_modules\/react-native\//); // smoke testing of the assertion
+    expect(bundle).not.toMatchPath(/\"node_modules\/react\//); // actual non-canary React test
   });
 });
