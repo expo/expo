@@ -34,17 +34,24 @@ If you wish to use `@expo/fingerprint` as a standalone package, you can install 
 
 ### .fingerprintignore
 
-Placed in your project root, **.fingerprintignore** is a [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format)-like ignore mechanism used to exclude files from hash calculation. It behaves similarly but instead uses `minimatch` for pattern matching which has some [limitations](#options) (see documentation for `ignorePaths` under [Options](#options)).
+Placed in your project root, **.fingerprintignore** is a [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format)-like ignore mechanism used to exclude files from hash calculation. All pattern paths are relative to the project root. It behaves similarly but instead uses `minimatch` for pattern matching which has some [limitations](#options) (see documentation for `ignorePaths` under [Options](#options)).
 
-For example, to skip a folder but keep some files:
+Here is an example **.fingerprintignore** configuration:
 
-```ignore
-# Ignore the entire /app/ios folder
-/app/ios/**/*
+```ignore .fingerprintignore
+# Ignore the entire android directory
+android/**/*
 
-# But still keep /app/ios/Podfile and /app/ios/Podfile.lock
-!/app/ios/Podfile
-!/app/ios/Podfile.lock
+# Ignore the entire ios directory but still keep ios/Podfile and ios/Podfile.lock
+ios/**/*
+!ios/Podfile
+!ios/Podfile.lock
+
+# Ignore specific package in node_modules
+node_modules/some-package/**/*
+
+# Same as above but having broader scope because packages may be nested
+**/node_modules/some-package/**/*
 ```
 
 ### fingerprint.config.js
