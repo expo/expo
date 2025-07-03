@@ -1,0 +1,15 @@
+{
+  "name": "expo-doc-tools",
+  "version": "0.1.0",
+  "description": "Expo doc tools package.",
+  "main": "index.js",
+  "scripts": {
+
+  },
+  "keywords": [
+    "expo",
+    "documentation cli tools"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT"
+}

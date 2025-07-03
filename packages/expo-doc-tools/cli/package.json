@@ -1,0 +1,54 @@
+{
+    "name": "expo-doc-tools-cli",
+    "version": "0.1.0",
+    "description": "CLI extension for Expo documentation",
+    "main": "build/index.js",
+    "module": "src/index.ts",
+    "types": "build/index.d.ts",
+    "scripts": {
+        "build": "expo-module build",
+        "clean": "expo-module clean",
+        "lint": "expo-module lint",
+        "test": "expo-module test",
+        "prepare": "expo-module prepare",
+        "prepublishOnly": "expo-module prepublishOnly",
+        "expo-module": "expo-module",
+        "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+        "typecheck": "expo-module typecheck",
+        "watch": "expo-module tsc --watch",
+        "index": "node build/mdx/index.js ../../../docs/pages/versions/latest/sdk ./db.json"
+    },
+    "files": [ "build" ],
+    "keywords": [
+        "expo",
+        "react-native",
+        "documentation",
+        "search",
+        "node"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/expo/expo.git",
+        "directory": "packages/expo-doc-tools/cli"
+    },
+    "bugs": {
+        "url": "https://github.com/expo/expo/issues"
+    },
+    "author": "650 Industries, Inc.",
+    "license": "MIT",
+    "dependencies": {
+        "@xenova/transformers": "^2.17.2",
+        "chalk": "^4.1.2",
+        "ws": "^8.18.2",
+        "gray-matter": "^4.0.3",
+        "remark-parse": "^11.0.0",
+        "remark-stringify": "^11.0.0",
+        "unified": "^11.0.5",
+        "vfile": "^6.0.3",
+        "expo-cli-extensions": "*"
+    },
+    "devDependencies": {
+        "expo-module-scripts": "^4.1.7"
+    },
+    "private": true
+}

@@ -1,0 +1,21 @@
+{
+  "platforms": [ "cli" ],
+  "cli": {
+    "description": "Expo: documentation tools for Expo App development",
+    "commands": [
+      {
+        "name": "search_docs",
+        "caption": "Search the Expo documentation",
+        "parameters": [
+          {
+            "name": "query",
+            "type": "text",
+            "description": "Search query"
+          }
+        ]
+      }
+    ],
+    "mcpEnabled": true,
+    "main": "cli/build/index.js"
+  }
+}
