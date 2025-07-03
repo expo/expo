@@ -11,6 +11,8 @@ internal protocol AnyAsyncFunctionDefinition: AnyFunctionDefinition {
    */
   @discardableResult
   func runOnQueue(_ queue: DispatchQueue?) -> Self
+  
+  func requires(_ permission: String) -> Self
 }
 
 /**
@@ -21,13 +23,20 @@ private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue
 /**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
-public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition {
+public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFunctionDefinition {
+  public func requires(_ permission: String) -> Self {
+    requiredPermissions.append(permission)
+    return self
+  }
+  
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
    The underlying closure to run when the function is called.
    */
   let body: ClosureType
+  
+  var requiredPermissions: [String] = []
 
   /**
    Bool value indicating whether the function takes promise as the last argument.
@@ -64,6 +73,16 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
   var takesOwner: Bool = false
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+    let hasPermissions = requiredPermissions.reduce(true) { result, permissionName in
+      let status = try? appContext.permissionRegistry.getPermission(name: permissionName)?.checker?.call(by: self, withArguments: [], appContext: appContext) as? PermissionStatus
+      return result && (status?.granted ?? false)
+   } == true
+
+     guard hasPermissions else {
+       callback(.failure(Exceptions.PermissionsNotGranted()))
+       return
+    }
+
     let promise = Promise(appContext: appContext) { value in
       callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))
     } rejecter: { exception in
@@ -175,6 +194,7 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
     self.queue = queue
     return self
   }
+
 }
 
 // MARK: - Exceptions
