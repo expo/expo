@@ -112,9 +112,16 @@ export interface ModuleDescriptorCliCommandPlugin {
     commands: {
         cmd: string;
         caption: string;
+        params?: {
+            name: string;
+            type: 'text' | 'number' | 'confirm';
+            description?: string;
+            required?: boolean;
+        }[];
     }[];
     mcpEnabled: boolean;
     cliEnabled?: boolean;
+    communicatesWithApps?: boolean;
     main: string;
 }
 export interface AndroidGradlePluginDescriptor {
@@ -292,6 +299,12 @@ export interface RawExpoModuleConfig {
          * @default true
          */
         cliEnabled?: boolean;
+        /**
+         * Whether the CLI extension communicates with apps connected to the dev server. If true the extension will only
+         * run when there are apps connected to the dev server.
+         * @default false
+         */
+        communicatesWithApps?: boolean;
         /**
          * Main entry point of the CLI extension.
          */

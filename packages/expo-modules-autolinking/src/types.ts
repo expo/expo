@@ -146,8 +146,14 @@ export interface ModuleDescriptorCliCommandPlugin {
   packageRoot: string;
   description: string;
   commands: {
-    cmd: string;
+    name: string;
     caption: string;
+    params?: {
+      name: string;
+      type: 'text' | 'number' | 'confirm';
+      description?: string; // Optional description of the parameter
+      required?: boolean; // Optional flag to indicate if the parameter is required
+    }[];
   }[];
   mcpEnabled: boolean;
   cliEnabled?: boolean;
@@ -349,9 +355,22 @@ export interface RawExpoModuleConfig {
      */
     commands: {
       /* Command name as it should be used in the CLI. */
-      cmd: string;
+      name: string;
       /* A short description of the command used in the CLI help. */
       caption: string;
+      /**
+       * Optional parameters for the command.
+       * Each parameter has a name, type, and an optional description.
+       * The type can be 'text', 'number', or 'confirm'.
+       */
+      parameters?: {
+        /* Parameter name */
+        name: string;
+        /* Parameter type */
+        type: 'text' | 'number' | 'confirm';
+        /* Optional description of the parameter */
+        description?: string;
+      };
     }[];
     /* Set to true to expose as MCP server */
     mcpEnabled: boolean;
