@@ -22,6 +22,7 @@ import { StackAnimationTypes } from 'react-native-screens';
 
 import { withLayoutContext } from './withLayoutContext';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
+import { RouterModal } from '../modal/web/ModalStack.web';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
 
@@ -29,8 +30,47 @@ type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
 
+/**
+ * We extend NativeStackNavigationOptions with our custom props
+ * to allow for several extra props to be used on web, like modalWidth
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+  webModalStyle?: {
+    /**
+     * Override the width of the modal (px or percentage). Only applies on web platform.
+     * @platform web
+     */
+    width?: number | string;
+    /**
+     * Override the height of the modal (px or percentage). Applies on web desktop.
+     * @platform web
+     */
+    height?: number | string;
+    /**
+     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+     * @platform web
+     */
+    minHeight?: number | string;
+    /**
+     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+     * @platform web
+     */
+    minWidth?: number | string;
+    /**
+     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+     * @platform web
+     */
+    border?: string;
+    /**
+     * Override the overlay background color (any valid CSS color or rgba/hsla value).
+     * @platform web
+     */
+    overlayBackground?: string;
+  };
+};
+
 const RNStack = withLayoutContext<
-  NativeStackNavigationOptions,
+  ExtendedStackNavigationOptions,
   typeof NativeStackNavigator,
   StackNavigationState<ParamListBase>,
   NativeStackNavigationEventMap
@@ -352,6 +392,7 @@ function filterSingular<
 
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
+    const isWeb = process.env.EXPO_OS === 'web';
     const { isPreviewOpen } = useLinkPreviewContext();
     const screenOptions = useMemo(() => {
       if (isPreviewOpen) {
@@ -359,9 +400,20 @@ const Stack = Object.assign(
       }
       return props.screenOptions;
     }, [props.screenOptions, isPreviewOpen]);
-    return (
-      <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
-    );
+
+    if (isWeb) {
+      return (
+        <RouterModal
+          {...props}
+          screenOptions={screenOptions}
+          UNSTABLE_router={stackRouterOverride}
+        />
+      );
+    } else {
+      return (
+        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+      );
+    }
   },
   {
     Screen: RNStack.Screen as (
