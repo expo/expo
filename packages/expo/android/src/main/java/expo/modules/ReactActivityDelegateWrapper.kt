@@ -29,6 +29,7 @@ import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
 import expo.modules.rncompatibility.ReactNativeFeatureFlags
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.launch
 import java.lang.reflect.Field
@@ -61,12 +62,7 @@ class ReactActivityDelegateWrapper(
       .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
       .firstOrNull()
   }
-
-  /**
-   * When the app delay for `loadApp`, the React Native lifecycle will be disrupted.
-   * This flag indicates we should emit `onResume` after `loadApp`.
-   */
-  private var shouldEmitPendingResume = false
+  private val loadAppReady = CompletableDeferred<Unit>()
 
   //region ReactActivityDelegate
 
@@ -129,6 +125,7 @@ class ReactActivityDelegateWrapper(
 
       activity.lifecycleScope.launch(start = CoroutineStart.UNDISPATCHED) {
         awaitDelayLoadAppWhenReady(delayLoadAppHandler)
+        loadAppReady.complete(Unit)
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled) {
           activity.window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
@@ -172,69 +169,66 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
-    if (shouldEmitPendingResume) {
-      return
-    }
-    delegate.onResume()
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onResume(activity)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      delegate.onResume()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onResume(activity)
+      }
     }
   }
 
   override fun onPause() {
-    // If app is stopped before the delayed `loadApp`, we should cancel the pending resume
-    // and avoid propagating the pause event because the state was never resumed.
-    if (shouldEmitPendingResume) {
-      shouldEmitPendingResume = false
-      return
-    }
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onPause(activity)
-    }
-    if (delayLoadAppHandler != null) {
-      try {
-        // For the delay load case, we may enter a different call flow than react-native.
-        // For example, Activity stopped before delay load finished.
-        // We stop before the ReactActivityDelegate gets a chance to set up.
-        // In this case, we should catch the exceptions.
-        delegate.onPause()
-      } catch (e: Exception) {
-        Log.e(TAG, "Exception occurred during onPause with delayed app loading", e)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onPause(activity)
       }
-    } else {
-      delegate.onPause()
+      if (delayLoadAppHandler != null) {
+        try {
+          // For the delay load case, we may enter a different call flow than react-native.
+          // For example, Activity stopped before delay load finished.
+          // We stop before the ReactActivityDelegate gets a chance to set up.
+          // In this case, we should catch the exceptions.
+          delegate.onPause()
+        } catch (e: Exception) {
+          Log.e(TAG, "Exception occurred during onPause with delayed app loading", e)
+        }
+      } else {
+        delegate.onPause()
+      }
     }
   }
 
   override fun onUserLeaveHint() {
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onUserLeaveHint(activity)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onUserLeaveHint(activity)
+      }
+      delegate.onUserLeaveHint()
     }
-    delegate.onUserLeaveHint()
   }
 
   override fun onDestroy() {
-    // If app is stopped before the delayed `loadApp`, we should cancel the pending resume
-    // and avoid propagating the destroy event because the state was never resumed.
-    if (shouldEmitPendingResume) {
-      shouldEmitPendingResume = false
-      return
-    }
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onDestroy(activity)
-    }
-    if (delayLoadAppHandler != null) {
-      try {
-        // For the delay load case, we may enter a different call flow than react-native.
-        // For example, Activity stopped before delay load finished.
-        // We stop before the ReactActivityDelegate gets a chance to set up.
-        // In this case, we should catch the exceptions.
-        delegate.onDestroy()
-      } catch (e: Exception) {
-        Log.e(TAG, "Exception occurred during onDestroy with delayed app loading", e)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onDestroy(activity)
       }
-    } else {
-      delegate.onDestroy()
+      if (delayLoadAppHandler != null) {
+        try {
+          // For the delay load case, we may enter a different call flow than react-native.
+          // For example, Activity stopped before delay load finished.
+          // We stop before the ReactActivityDelegate gets a chance to set up.
+          // In this case, we should catch the exceptions.
+          delegate.onDestroy()
+        } catch (e: Exception) {
+          Log.e(TAG, "Exception occurred during onDestroy with delayed app loading", e)
+        }
+      } else {
+        delegate.onDestroy()
+      }
     }
   }
 
@@ -252,20 +246,26 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
-      val reactContextListener = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext) {
-          delegate.reactInstanceManager.removeReactInstanceEventListener(this)
-          delegate.onActivityResult(requestCode, resultCode, data)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
+        val reactContextListener = object : ReactInstanceEventListener {
+          override fun onReactContextInitialized(context: ReactContext) {
+            delegate.reactInstanceManager.removeReactInstanceEventListener(this)
+            delegate.onActivityResult(requestCode, resultCode, data)
+          }
         }
+        return@launch delegate.reactInstanceManager.addReactInstanceEventListener(reactContextListener)
       }
-      return delegate.reactInstanceManager.addReactInstanceEventListener(reactContextListener)
-    }
 
-    delegate.onActivityResult(requestCode, resultCode, data)
+      delegate.onActivityResult(requestCode, resultCode, data)
+    }
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     // if any of the handlers return true, intentionally consume the event instead of passing it
     // through to the delegate
     return reactActivityHandlers
@@ -274,6 +274,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     // if any of the handlers return true, intentionally consume the event instead of passing it
     // through to the delegate
     return reactActivityHandlers
@@ -282,6 +285,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     // if any of the handlers return true, intentionally consume the event instead of passing it
     // through to the delegate
     return reactActivityHandlers
@@ -290,6 +296,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onBackPressed(): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     val listenerResult = reactActivityLifecycleListeners
       .map(ReactActivityLifecycleListener::onBackPressed)
       .fold(false) { accu, current -> accu || current }
@@ -298,6 +307,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onNewIntent(intent: Intent?): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     val listenerResult = reactActivityLifecycleListeners
       .map { it.onNewIntent(intent) }
       .fold(false) { accu, current -> accu || current }
@@ -306,15 +318,24 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
-    delegate.onWindowFocusChanged(hasFocus)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      delegate.onWindowFocusChanged(hasFocus)
+    }
   }
 
   override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
-    delegate.requestPermissions(permissions, requestCode, listener)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      delegate.requestPermissions(permissions, requestCode, listener)
+    }
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-    delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
   }
 
   override fun getContext(): Context {
@@ -338,7 +359,10 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onConfigurationChanged(newConfig: Configuration?) {
-    delegate.onConfigurationChanged(newConfig)
+    activity.lifecycleScope.launch {
+      loadAppReady.await()
+      delegate.onConfigurationChanged(newConfig)
+    }
   }
 
   //endregion
@@ -401,10 +425,6 @@ class ReactActivityDelegateWrapper(
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onContentChanged(activity)
       }
-      if (shouldEmitPendingResume) {
-        shouldEmitPendingResume = false
-        onResume()
-      }
       return
     }
 
@@ -412,17 +432,12 @@ class ReactActivityDelegateWrapper(
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onContentChanged(activity)
     }
-    if (shouldEmitPendingResume) {
-      shouldEmitPendingResume = false
-      onResume()
-    }
   }
 
   private suspend fun awaitDelayLoadAppWhenReady(delayLoadAppHandler: DelayLoadAppHandler?) {
     if (delayLoadAppHandler == null) {
       return
     }
-    shouldEmitPendingResume = true
     suspendCoroutine { continuation ->
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
