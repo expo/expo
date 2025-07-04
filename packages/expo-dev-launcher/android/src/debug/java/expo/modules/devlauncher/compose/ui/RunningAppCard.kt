@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.Icon
 import com.composeunstyled.Button
+import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
@@ -34,37 +34,36 @@ fun RunningAppCard(
     backgroundColor = Theme.colors.background.default
   ) {
     Column {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
+      RowLayout(
         modifier = Modifier
-          .padding(Theme.spacing.medium)
-      ) {
-        val iconColor = Theme.colors.status.success
+          .padding(Theme.spacing.medium),
+        leftComponent = {
+          val iconColor = Theme.colors.status.success
 
-        Canvas(
-          modifier = Modifier
-            .size(Theme.sizing.icon.extraSmall)
-            .padding(Theme.spacing.micro)
-        ) {
-          drawCircle(
-            color = iconColor,
-            radius = size.minDimension / 2f
+          Canvas(
+            modifier = Modifier
+              .size(Theme.sizing.icon.extraSmall)
+              .padding(Theme.spacing.micro)
+          ) {
+            drawCircle(
+              color = iconColor,
+              radius = size.minDimension / 2f
+            )
+          }
+        },
+        rightComponent = {
+          Icon(
+            painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_chevronrighticon),
+            contentDescription = "Open app",
+            tint = Theme.colors.icon.default,
+            modifier = Modifier
+              .size(Theme.sizing.icon.extraSmall)
           )
         }
-        Spacer(Theme.spacing.small)
-
+      ) {
         Text(label)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Icon(
-          painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_chevronrighticon),
-          contentDescription = "Open app",
-          tint = Theme.colors.icon.default,
-          modifier = Modifier
-            .size(Theme.sizing.icon.extraSmall)
-        )
       }
+
       if (description != null) {
         Row {
           Spacer(Theme.spacing.small + Theme.sizing.icon.extraSmall)
