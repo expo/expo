@@ -138,8 +138,8 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
     animator: UIContextMenuInteractionCommitAnimating
   ) {
     linkPreviewNativeNavigation.pushPreloadedView()
+    onPreviewTapped()
     animator.addCompletion { [weak self] in
-      self?.onPreviewTapped()
     }
   }
 

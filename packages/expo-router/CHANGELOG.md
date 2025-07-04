@@ -17,6 +17,7 @@
 
 - fix link with preview on web and Android ([#37800](https://github.com/expo/expo/pull/37800) by [@Ubax](https://github.com/Ubax))
 - fix <Stack.Screen> in HrefPreview ([#37830](https://github.com/expo/expo/pull/37830) by [@Ubax](https://github.com/Ubax))
+- fix white screen when opening preview too fast ([#37858](https://github.com/expo/expo/pull/37858) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
