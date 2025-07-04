@@ -1,3 +1,11 @@
+/**
+ * Append contents to the end of code declaration block, support class or method declarations.
+ *
+ * @param srcContents source contents
+ * @param declaration class declaration or method declaration
+ * @param insertion code to append
+ * @returns updated contents
+ */
 export function appendContentsInsideDeclarationBlock(
   srcContents: string,
   declaration: string,
