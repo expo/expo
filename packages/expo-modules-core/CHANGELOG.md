@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 2.4.2 — 2025-07-02
