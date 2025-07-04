@@ -138,6 +138,7 @@ const schema = {
                 },
                 enableBundleCompression: { type: 'boolean', nullable: true },
                 buildFromSource: { type: 'boolean', nullable: true },
+                buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
             },
             nullable: true,
         },

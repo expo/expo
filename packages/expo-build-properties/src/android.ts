@@ -109,6 +109,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'android.enableBundleCompression',
       propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
     },
+    {
+      propName: 'reactNativeArchitectures',
+      propValueGetter: (config) => config.android?.buildArchs?.join(','),
+    },
   ],
   'withAndroidBuildProperties'
 );

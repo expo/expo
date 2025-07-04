@@ -228,4 +228,28 @@ describe(withBuildProperties, () => {
       'ios.buildFromSource': 'true',
     });
   });
+
+  it('generates the android.buildArchs property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { buildArchs: ['armeabi-v7a', 'arm64-v8a'] },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeArchitectures',
+      value: 'armeabi-v7a,arm64-v8a',
+    });
+  });
 });
