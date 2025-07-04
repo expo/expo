@@ -55,6 +55,19 @@ export default function Page() {
             style={[styles.button, { backgroundColor: '#FF2D55' }]}>
             <Text style={styles.buttonText}>Modal (fit content)</Text>
           </Pressable>
+
+          <Pressable
+            testID="open-modal-transparent"
+            onPress={() => router.push('/modal-transparent')}
+            style={[styles.button, { backgroundColor: '#000000' }]}>
+            <Text style={styles.buttonText}>Modal (transparent)</Text>
+          </Pressable>
+          <Pressable
+            testID="open-modal-multi"
+            onPress={() => router.push('/[test]/modal-regular')}
+            style={[styles.button, { backgroundColor: '#FF9500' }]}>
+            <Text style={styles.buttonText}>Page</Text>
+          </Pressable>
         </View>
       </View>
     </View>

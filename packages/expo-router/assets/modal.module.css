@@ -49,6 +49,19 @@
   outline: none;
 }
 
+body>.transparentDrawerContent {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  outline: none;
+  animation: none;
+  animation-name: none;
+}
+
 @media (min-width: 768px) {
   .drawerContent {
     max-height: 100%;
