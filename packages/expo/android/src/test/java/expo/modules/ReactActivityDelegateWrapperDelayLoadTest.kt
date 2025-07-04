@@ -135,7 +135,7 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
     verify(exactly = 0) { spyDelegate.onResume() }
 
     callbackSlot.captured.run()
-    verify(exactly = 2) { spyDelegateWrapper.onResume() }
+    verify(exactly = 1) { spyDelegateWrapper.onResume() }
     verify(exactly = 1) { spyDelegate.onResume() }
     verify(exactly = 0) { spyDelegateWrapper.onPause() }
     verify(exactly = 0) { spyDelegateWrapper.onDestroy() }

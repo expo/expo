@@ -29,8 +29,11 @@ import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
 import expo.modules.rncompatibility.ReactNativeFeatureFlags
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -62,7 +65,19 @@ class ReactActivityDelegateWrapper(
       .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
       .firstOrNull()
   }
+
+  /**
+   * A deferred that indicates when the app loading is ready
+   */
   private val loadAppReady = CompletableDeferred<Unit>()
+
+  /**
+   * A [CoroutineScope] that binds its lifecycle as [ReactActivityDelegateWrapper].
+   * This is used for [onDestroy] because we need a longer lifecycle scope to call [onDestroy]
+   */
+  private val applicationCoroutineScope: CoroutineScope by lazy {
+    CoroutineScope(Dispatchers.Main)
+  }
 
   //region ReactActivityDelegate
 
@@ -180,6 +195,9 @@ class ReactActivityDelegateWrapper(
 
   override fun onPause() {
     activity.lifecycleScope.launch {
+      if (!loadAppReady.isCompleted) {
+        loadAppReady.completeExceptionally(CancellationException("Activity paused before app loaded"))
+      }
       loadAppReady.await()
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onPause(activity)
@@ -211,7 +229,13 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
-    activity.lifecycleScope.launch {
+    // Note: use our `coroutineScope` for onDestroy here
+    // because the lifecycleScope destroyed before the executions.
+    applicationCoroutineScope.launch {
+      if (!loadAppReady.isCompleted) {
+        // Cancel loadAppReady so any waiting coroutines are notified
+        loadAppReady.completeExceptionally(CancellationException("Activity destroyed before app loaded"))
+      }
       loadAppReady.await()
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onDestroy(activity)
