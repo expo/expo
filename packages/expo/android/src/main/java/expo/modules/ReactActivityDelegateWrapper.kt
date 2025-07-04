@@ -309,12 +309,13 @@ class ReactActivityDelegateWrapper(
     if (delayLoadAppHandler != null) {
         try {
             delegate.onWindowFocusChanged(hasFocus)
+            return
         } catch (e: Exception) {
             Log.e(TAG, "Exception occurred during onWindowFocusChanged with delayed app loading", e)
+            return
         }
-    } else {
-        delegate.onWindowFocusChanged(hasFocus)
     }
+    delegate.onWindowFocusChanged(hasFocus)
   }
 
   override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
