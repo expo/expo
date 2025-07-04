@@ -83,6 +83,7 @@ export default function Index() {
         }}
         animationType="slide"
         presentationStyle="pageSheet"
+        detents={[0.25, 0.5, 0.75]}
         style={{
           backgroundColor: '#C2FBEF',
           justifyContent: 'center',

@@ -102,6 +102,7 @@ export function Modal(props: ModalProps) {
     animationType,
     presentationStyle,
     transparent,
+    detents,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -115,6 +116,7 @@ export function Modal(props: ModalProps) {
         presentationStyle,
         transparent,
         viewProps,
+        detents,
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,

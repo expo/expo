@@ -1,16 +1,6 @@
-import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { type PropsWithChildren } from 'react';
-import { type ViewProps } from 'react-native';
-export interface ModalConfig {
-    component: React.ReactNode;
-    parentNavigationProp: NavigationProp<ParamListBase>;
-    uniqueId: string;
-    animationType?: 'slide' | 'fade' | 'none';
-    presentationStyle?: 'fullScreen' | 'overFullScreen' | 'pageSheet' | 'formSheet';
-    transparent?: boolean;
-    viewProps?: ViewProps;
-    detents?: number[] | 'fitToContents';
-}
+import { type ModalConfig } from './types';
+export { type ModalConfig };
 declare const ALLOWED_EVENT_TYPE_LISTENERS: readonly ["didClose", "close", "show"];
 type AllowedEventTypeListeners = (typeof ALLOWED_EVENT_TYPE_LISTENERS)[number];
 export interface ModalContextType {
@@ -22,5 +12,4 @@ export interface ModalContextType {
 }
 export declare const ModalContextProvider: ({ children }: PropsWithChildren) => import("react").JSX.Element;
 export declare const useModalContext: () => ModalContextType;
-export {};
 //# sourceMappingURL=ModalContext.d.ts.map

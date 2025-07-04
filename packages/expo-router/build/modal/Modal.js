@@ -30,7 +30,7 @@ const useNavigation_1 = require("../useNavigation");
  * }
  */
 function Modal(props) {
-    const { children, visible, onRequestClose, onDidClose, onShow, animationType, presentationStyle, transparent, ...viewProps } = props;
+    const { children, visible, onRequestClose, onDidClose, onShow, animationType, presentationStyle, transparent, detents, ...viewProps } = props;
     const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
@@ -42,6 +42,7 @@ function Modal(props) {
                 presentationStyle,
                 transparent,
                 viewProps,
+                detents,
                 component: children,
                 uniqueId: newId,
                 parentNavigationProp: navigation,

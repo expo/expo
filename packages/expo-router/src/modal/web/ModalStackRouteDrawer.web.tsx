@@ -21,6 +21,7 @@ const ModalStackRouteDrawer = React.memo(
     themeColors: { card: string; background: string };
   }) => {
     const [open, setOpen] = React.useState(true);
+
     // Determine sheet vs. modal with an SSR-safe hook. The first render (during
     // hydration) always assumes mobile/sheet to match the server markup; an
     // effect then updates the state after mount if the viewport is desktop.

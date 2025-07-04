@@ -1,37 +1,19 @@
 'use client';
 
-import type { NavigationProp, ParamListBase } from '@react-navigation/native';
-import { nanoid } from 'nanoid/non-secure';
 import {
   createContext,
   use,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
   type PropsWithChildren,
 } from 'react';
-import { StyleSheet, type ViewProps } from 'react-native';
-import {
-  ScreenStack,
-  ScreenStackItem,
-  type StackAnimationTypes,
-  type StackPresentationTypes,
-} from 'react-native-screens';
 
-import { ModalComponent } from './ModalComponent';
+import { ModalsRenderer } from './ModalsRenderer';
+import { type ModalConfig } from './types';
 
-export interface ModalConfig {
-  component: React.ReactNode;
-  parentNavigationProp: NavigationProp<ParamListBase>;
-  uniqueId: string;
-  animationType?: 'slide' | 'fade' | 'none';
-  presentationStyle?: 'fullScreen' | 'overFullScreen' | 'pageSheet' | 'formSheet';
-  transparent?: boolean;
-  viewProps?: ViewProps;
-  detents?: number[] | 'fitToContents';
-}
+export { type ModalConfig };
 
 const ALLOWED_EVENT_TYPE_LISTENERS = ['didClose', 'close', 'show'] as const;
 type AllowedEventTypeListeners = (typeof ALLOWED_EVENT_TYPE_LISTENERS)[number];
@@ -123,8 +105,6 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
     []
   );
 
-  const rootId = useMemo(() => nanoid(), []);
-
   return (
     <ModalContext.Provider
       value={{
@@ -134,53 +114,12 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
         updateModal,
         addEventListener,
       }}>
-      <ScreenStack style={styles.stackContainer}>
-        <ScreenStackItem
-          screenId={rootId}
-          activityState={2}
-          style={StyleSheet.absoluteFill}
-          headerConfig={{
-            hidden: true,
-          }}>
-          {children}
-        </ScreenStackItem>
-        {modalConfigs.map((config) => (
-          <ScreenStackItem
-            key={config.uniqueId}
-            {...config.viewProps}
-            screenId={`${rootId}${config.uniqueId}`}
-            activityState={2}
-            stackPresentation={getStackPresentationType(config)}
-            stackAnimation={getStackAnimationType(config)}
-            nativeBackButtonDismissalEnabled
-            headerConfig={{
-              hidden: true,
-            }}
-            contentStyle={[
-              {
-                flex: 1,
-                backgroundColor: config.transparent ? 'transparent' : 'white',
-              },
-              config.viewProps?.style,
-            ]}
-            sheetAllowedDetents={config.detents}
-            style={[
-              StyleSheet.absoluteFill,
-              {
-                backgroundColor: config.transparent ? 'transparent' : 'white',
-              },
-            ]}
-            onDismissed={() => {
-              closeModal(config.uniqueId);
-              emitCloseEvent(config.uniqueId);
-            }}
-            onAppear={() => {
-              emitShowEvent(config.uniqueId);
-            }}>
-            <ModalComponent modalConfig={config} />
-          </ScreenStackItem>
-        ))}
-      </ScreenStack>
+      <ModalsRenderer
+        modalConfigs={modalConfigs}
+        onDismissed={emitCloseEvent}
+        onShow={emitShowEvent}>
+        {children}
+      </ModalsRenderer>
     </ModalContext.Provider>
   );
 };
@@ -192,55 +131,3 @@ export const useModalContext = () => {
   }
   return context;
 };
-
-function getStackAnimationType(config: ModalConfig): StackAnimationTypes | undefined {
-  switch (config.animationType) {
-    case 'fade':
-      return 'fade';
-    case 'none':
-      return 'none';
-    case 'slide':
-    default:
-      return 'slide_from_bottom';
-  }
-}
-
-function getStackPresentationType(config: ModalConfig): StackPresentationTypes {
-  if (process.env.EXPO_OS === 'android') {
-    if (config.transparent) {
-      return 'transparentModal';
-    }
-    switch (config.presentationStyle) {
-      case 'fullScreen':
-        return 'fullScreenModal';
-      case 'overFullScreen':
-        return 'transparentModal';
-      case 'pageSheet':
-        return 'pageSheet';
-      case 'formSheet':
-        return 'formSheet';
-      default:
-        return 'fullScreenModal';
-    }
-  }
-  switch (config.presentationStyle) {
-    case 'overFullScreen':
-      return 'transparentModal';
-    case 'pageSheet':
-      return 'pageSheet';
-    case 'formSheet':
-      return 'formSheet';
-    case 'fullScreen':
-    default:
-      if (config.transparent) {
-        return 'transparentModal';
-      }
-      return 'fullScreenModal';
-  }
-}
-
-const styles = StyleSheet.create({
-  stackContainer: {
-    flex: 1,
-  },
-});
