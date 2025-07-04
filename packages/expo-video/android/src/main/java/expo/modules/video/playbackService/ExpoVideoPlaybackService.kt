@@ -2,6 +2,7 @@ package expo.modules.video.playbackService
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
@@ -54,6 +55,8 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       it.sessionExtras = sessionExtras
       onUpdateNotification(it, showNotification)
     }
+    
+    updateForegroundServiceState()
   }
 
   fun registerPlayer(videoPlayer: VideoPlayer) {
@@ -80,6 +83,8 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     if (mediaSessions.isEmpty()) {
       cleanup()
       stopSelf()
+    } else {
+      updateForegroundServiceState()
     }
   }
 
@@ -90,7 +95,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
   override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
     if (session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false)) {
-      createNotification(session)
+      createNotification(session, startInForegroundRequired)
     } else {
       (session.player as? ExoPlayer)?.let {
         hidePlayerNotification(it)
@@ -112,7 +117,7 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     super.onDestroy()
   }
 
-  private fun createNotification(session: MediaSession) {
+  private fun createNotification(session: MediaSession, startInForegroundRequired: Boolean = false) {
     if (session.player.currentMediaItem == null) {
       return
     }
@@ -130,11 +135,27 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       .setStyle(MediaStyleNotificationHelper.MediaStyle(session))
       .build()
 
-    // Each of the players has it's own notification when playing.
-    notificationManager.notify(session.player.hashCode(), notificationCompat)
+    val notificationId = session.player.hashCode()
+    
+    if (startInForegroundRequired || shouldRunInForeground()) {
+      try {
+        startForeground(notificationId, notificationCompat)
+      } catch (e: Exception) {
+        notificationManager.notify(notificationId, notificationCompat)
+      }
+    } else {
+      notificationManager.notify(notificationId, notificationCompat)
+    }
   }
 
   private fun cleanup() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      stopForeground(Service.STOP_FOREGROUND_REMOVE)
+    } else {
+      @Suppress("DEPRECATION")
+      stopForeground(true)
+    }
+    
     hideAllNotifications()
 
     val sessionsToRelease = mediaSessions.values.toList()
@@ -142,18 +163,49 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     for (session in sessionsToRelease) {
       session.release()
     }
+    
+    val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      notificationManager.deleteNotificationChannel(CHANNEL_ID)
+    }
   }
 
   private fun hidePlayerNotification(player: ExoPlayer) {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(player.hashCode())
+    
+    updateForegroundServiceState()
   }
 
   private fun hideAllNotifications() {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancelAll()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      notificationManager.deleteNotificationChannel(CHANNEL_ID)
+  }
+  
+  private fun shouldRunInForeground(): Boolean {
+    return mediaSessions.values.any { session ->
+      session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false)
+    }
+  }
+  
+  private fun updateForegroundServiceState() {
+    val shouldRun = shouldRunInForeground()
+    
+    if (shouldRun) {
+      val sessionWithMedia = mediaSessions.values.find { session ->
+        session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false) && 
+        session.player.currentMediaItem != null
+      }
+      sessionWithMedia?.let { session ->
+        createNotification(session, true)
+      }
+    } else {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        stopForeground(Service.STOP_FOREGROUND_REMOVE)
+      } else {
+        @Suppress("DEPRECATION")
+        stopForeground(true)
+      }
     }
   }
 
