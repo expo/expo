@@ -470,6 +470,15 @@ class ReactActivityDelegateWrapper(
     }
   }
 
+  /**
+   * Set the [loadAppReady] to completed state.
+   * This is only for unit tests when a test setups mocks and skips the [Activity] lifecycle.
+   */
+  @VisibleForTesting
+  internal fun setLoadAppReadyForTesting() {
+    loadAppReady.complete(Unit)
+  }
+
   //endregion
 
   companion object {
