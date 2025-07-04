@@ -19,6 +19,7 @@
 
 - fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
 - fix link with preview on web and Android ([#37800](https://github.com/expo/expo/pull/37800) by [@Ubax](https://github.com/Ubax))
+- Fix children updates and nested modals ([#37763](https://github.com/expo/expo/pull/37763) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

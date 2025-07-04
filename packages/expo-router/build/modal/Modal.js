@@ -30,8 +30,8 @@ const useNavigation_1 = require("../useNavigation");
  * }
  */
 function Modal(props) {
-    const { children, visible, onRequestClose, onShow, animationType, presentationStyle, transparent, ...viewProps } = props;
-    const { openModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
+    const { children, visible, onRequestClose, onDidClose, onShow, animationType, presentationStyle, transparent, ...viewProps } = props;
+    const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
     (0, react_1.useEffect)(() => {
@@ -52,11 +52,17 @@ function Modal(props) {
             };
         }
         else if (currentModalId && !visible) {
-            closeModal(currentModalId);
             setCurrentModalId(undefined);
         }
         return () => { };
     }, [visible]);
+    (0, react_1.useEffect)(() => {
+        if (currentModalId && visible) {
+            updateModal(currentModalId, {
+                component: children,
+            });
+        }
+    }, [children]);
     (0, react_1.useEffect)(() => {
         if (currentModalId) {
             const unsubscribeShow = addEventListener('show', (id) => {
@@ -70,9 +76,16 @@ function Modal(props) {
                     setCurrentModalId(undefined);
                 }
             });
+            const unsubscribeDidClose = addEventListener('didClose', (id) => {
+                if (id === currentModalId) {
+                    onDidClose?.();
+                    setCurrentModalId(undefined);
+                }
+            });
             return () => {
                 unsubscribeShow();
                 unsubscribeClose();
+                unsubscribeDidClose();
             };
         }
         return () => { };
