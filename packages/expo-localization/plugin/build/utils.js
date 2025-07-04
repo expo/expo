@@ -2,6 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appendContentsInsideDeclarationBlock = appendContentsInsideDeclarationBlock;
 exports.findMatchingBracketPosition = findMatchingBracketPosition;
+/**
+ * Append contents to the end of code declaration block, support class or method declarations.
+ *
+ * @param srcContents source contents
+ * @param declaration class declaration or method declaration
+ * @param insertion code to append
+ * @returns updated contents
+ */
 function appendContentsInsideDeclarationBlock(srcContents, declaration, insertion) {
     const start = srcContents.search(new RegExp(`\\s*${declaration}.*?[\\(\\{]`));
     if (start < 0) {
