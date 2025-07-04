@@ -112,9 +112,7 @@ internal class MediaHandler(
       // reporting them, so to keep the behaviour consistent across platforms we swap the width
       // and height when the rotation indicates the video should be displayed in portrait.
       if (rotation % 180 != 0) {
-        val tmp = width
-        width = height
-        height = tmp
+        width = height.also { height = width }
       }
 
       return ImagePickerAsset(
