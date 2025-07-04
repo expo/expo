@@ -8,18 +8,42 @@ import UniformTypeIdentifiers
 
 internal struct ImageUtils {
   static func readImageFrom(mediaInfo: MediaInfo, shouldReadCroppedImage: Bool) -> UIImage? {
-    guard let image = (mediaInfo[.originalImage] as? UIImage)?.fixOrientation() else {
+    // ---------------------------------------------------------------------------
+    // 1. Fast-path  (allowsEditing == true)
+    // ---------------------------------------------------------------------------
+    // When the user confirms a crop in the system UI, UIKit puts the final bitmap
+    // – with the crop *and* the correct visual orientation already baked in –
+    // under `UIImagePickerController.InfoKey.editedImage`.
+    // Re-using that image means we don't have to:
+    //   • translate `cropRect` into the sensor's coordinate space, nor
+    //   • worry about EXIF orientation flags that differ across formats.
+    // This single line therefore handles the vast majority of cases safely.
+    if shouldReadCroppedImage, let systemCropped = mediaInfo[.editedImage] as? UIImage {
+      return systemCropped.fixOrientation()
+    }
+
+    // ---------------------------------------------------------------------------
+    // 2. Manual path  (no .editedImage available)
+    // ---------------------------------------------------------------------------
+    // Some edge-cases (older iOS versions, multi-selection via PHPicker, or
+    // editing disabled) don't supply `.editedImage`.  In those cases we:
+    //   a) pull `.originalImage`,
+    //   b) apply `cropRect` *before* touching orientation, and
+    //   c) call `fixOrientation()` once at the end to normalize the bitmap.
+    guard let originalImage = mediaInfo[.originalImage] as? UIImage else {
       return nil
     }
-    if !shouldReadCroppedImage {
-      return image
+
+    if shouldReadCroppedImage,
+      let cropRect = mediaInfo[.cropRect] as? CGRect,
+      let cropped = ImageUtils.crop(image: originalImage, to: cropRect) {
+      // Crop first (rect is defined in the original pixel space), then rotate.
+      return cropped.fixOrientation()
     }
-    guard let cropRect = mediaInfo[.cropRect] as? CGRect,
-      let croppedImage = ImageUtils.crop(image: image, to: cropRect)
-    else {
-      return nil
-    }
-    return croppedImage
+
+    // No editing – only remove any EXIF orientation so JavaScript consumers see
+    // an upright image.
+    return originalImage.fixOrientation()
   }
 
   static func crop(image: UIImage, to: CGRect) -> UIImage? {
