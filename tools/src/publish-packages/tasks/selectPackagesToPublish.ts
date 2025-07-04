@@ -97,7 +97,7 @@ async function promptToPublishParcel(
 ): Promise<boolean | 'back' | 'skip'> {
   const customVersionId = 'custom-version';
   const packageName = parcel.pkg.packageName;
-  const releaseVersion = resolveReleaseTypeAndVersion(parcel, options);
+  const releaseVersion = await resolveReleaseTypeAndVersion(parcel, options);
 
   if (process.env.CI) {
     parcel.state.releaseVersion = releaseVersion;
