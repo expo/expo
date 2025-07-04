@@ -4,17 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModalStackRouteDrawer = void 0;
-exports.useIsDesktop = useIsDesktop;
+exports.ModalStackRouteDrawer = ModalStackRouteDrawer;
 const react_1 = __importDefault(require("react"));
 const vaul_1 = require("vaul");
 const modalStyles_1 = __importDefault(require("./modalStyles"));
-const ModalStackRouteDrawer = react_1.default.memo(({ routeKey, options, renderScreen, onDismiss, themeColors, }) => {
+const utils_1 = require("./utils");
+function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, themeColors, }) {
     const [open, setOpen] = react_1.default.useState(true);
     // Determine sheet vs. modal with an SSR-safe hook. The first render (during
     // hydration) always assumes mobile/sheet to match the server markup; an
     // effect then updates the state after mount if the viewport is desktop.
-    const isDesktop = useIsDesktop();
+    const isDesktop = (0, utils_1.useIsDesktop)();
     const isSheet = !isDesktop;
     // Resolve snap points logic.
     const allowed = options.sheetAllowedDetents;
@@ -136,50 +136,26 @@ const ModalStackRouteDrawer = react_1.default.memo(({ routeKey, options, renderS
             fadeFromIndex,
         }
         : {};
-    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} onOpenChange={setOpen} {...sheetProps}>
-        <vaul_1.Drawer.Portal>
-          <vaul_1.Drawer.Overlay className={modalStyles_1.default.overlay} style={options.webModalStyle?.overlayBackground
+    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground onOpenChange={setOpen} {...sheetProps}>
+      <vaul_1.Drawer.Portal>
+        <vaul_1.Drawer.Overlay className={modalStyles_1.default.overlay} style={options.webModalStyle?.overlayBackground
             ? {
                 '--expo-router-modal-overlay-background': options.webModalStyle.overlayBackground,
             }
             : undefined}/>
-          <vaul_1.Drawer.Content aria-describedby="modal-description" className={modalStyles_1.default.drawerContent} style={{
+        <vaul_1.Drawer.Content aria-describedby="modal-description" className={modalStyles_1.default.drawerContent} style={{
             pointerEvents: 'none',
             ...(fitToContents ? { height: 'auto' } : null),
         }}>
-            <div className={modalStyles_1.default.modal} data-presentation={isSheet ? 'formSheet' : 'modal'} style={modalStyleVars}>
-              {/* Figure out how to add title and description to the modal for screen readers */}
-              <vaul_1.Drawer.Title about="" aria-describedby="" className={modalStyles_1.default.srOnly}/>
-              <vaul_1.Drawer.Description about="" className={modalStyles_1.default.srOnly}/>
-              {/* Render the screen content */}
-              <div className={modalStyles_1.default.modalBody}>{renderScreen()}</div>
-            </div>
-          </vaul_1.Drawer.Content>
-        </vaul_1.Drawer.Portal>
-      </vaul_1.Drawer.Root>);
-});
-exports.ModalStackRouteDrawer = ModalStackRouteDrawer;
-/**
- * SSR-safe viewport detection: initial render always returns `false` so that
- * server and client markup match. The actual media query evaluation happens
- * after mount.
- *
- * @internal
- */
-function useIsDesktop(breakpoint = 768) {
-    const isWeb = process.env.EXPO_OS === 'web';
-    // Ensure server-side and initial client render agree (mobile first).
-    const [isDesktop, setIsDesktop] = react_1.default.useState(false);
-    react_1.default.useEffect(() => {
-        if (!isWeb || typeof window === 'undefined')
-            return;
-        const mql = window.matchMedia(`(min-width: ${breakpoint}px)`);
-        const listener = (e) => setIsDesktop(e.matches);
-        // Update immediately after mount
-        setIsDesktop(mql.matches);
-        mql.addEventListener('change', listener);
-        return () => mql.removeEventListener('change', listener);
-    }, [breakpoint, isWeb]);
-    return isDesktop;
+          <div className={modalStyles_1.default.modal} data-presentation={isSheet ? 'formSheet' : 'modal'} style={modalStyleVars}>
+            {/* TODO:(@Hirbod) Figure out how to add title and description to the modal for screen readers in a meaningful way */}
+            <vaul_1.Drawer.Title about="" aria-describedby="" className={modalStyles_1.default.srOnly}/>
+            <vaul_1.Drawer.Description about="" className={modalStyles_1.default.srOnly}/>
+            {/* Render the screen content */}
+            <div className={modalStyles_1.default.modalBody}>{renderScreen()}</div>
+          </div>
+        </vaul_1.Drawer.Content>
+      </vaul_1.Drawer.Portal>
+    </vaul_1.Drawer.Root>);
 }
 //# sourceMappingURL=ModalStackRouteDrawer.web.js.map

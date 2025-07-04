@@ -69,6 +69,12 @@ export default function Layout() {
           sheetGrabberVisible: true,
         }}
       />
+      <Stack.Screen
+        name="modal-transparent"
+        options={{
+          presentation: 'transparentModal',
+        }}
+      />
     </Stack>
   );
 }

@@ -34,3 +34,5 @@ export type ModalStackViewProps = Omit<
 export type CSSWithVars = React.CSSProperties & {
   [key: `--${string}`]: string | number;
 };
+
+export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
