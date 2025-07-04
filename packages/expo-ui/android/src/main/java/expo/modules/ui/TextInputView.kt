@@ -21,7 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.views.AutoSizingComposable
 import expo.modules.kotlin.views.Direction
+import expo.modules.ui.text.TextStyleRecord
 import java.util.EnumSet
+import expo.modules.ui.text.toComposeTextStyle
 
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
@@ -29,7 +31,8 @@ data class TextInputProps(
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
-  val autocorrection: MutableState<Boolean> = mutableStateOf(true)
+  val autocorrection: MutableState<Boolean> = mutableStateOf(true),
+  val style: MutableState<TextStyleRecord> = mutableStateOf(TextStyleRecord())
 ) : ComposeProps
 
 fun String.keyboardType(): KeyboardType {
@@ -68,7 +71,8 @@ class TextInputView(context: Context, appContext: AppContext) :
         keyboardOptions = KeyboardOptions.Default.copy(
           keyboardType = props.keyboardType.value.keyboardType(),
           autoCorrectEnabled = props.autocorrection.value
-        )
+        ),
+        textStyle = props.style.value.toComposeTextStyle(),
       )
     }
   }

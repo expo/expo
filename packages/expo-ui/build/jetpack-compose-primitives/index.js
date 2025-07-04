@@ -27,6 +27,12 @@ function transformTextProps(props) {
     return {
         ...restProps,
         text: children ?? '',
+        style: {
+            color: props.color,
+            fontSize: props.fontSize,
+            fontWeight: props.fontWeight,
+            ...(props?.style && typeof props.style === 'object' ? props.style : {}),
+        },
     };
 }
 export function Text(props) {
