@@ -10,8 +10,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 
 @Composable
 fun DynamicTheme(content: @Composable (() -> Unit)) {
@@ -67,3 +72,14 @@ fun getImageVector(icon: String?): ImageVector? {
     return null
   }
 }
+
+/**
+ * Applies a test tag to a modifier if a testID is provided.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.applyTestTag(testID: String?): Modifier =
+  if (!testID.isNullOrEmpty()) {
+    this.semantics { testTagsAsResourceId = true }.testTag(testID)
+  } else {
+    this
+  }

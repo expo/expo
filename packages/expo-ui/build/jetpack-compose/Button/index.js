@@ -6,11 +6,10 @@ const ButtonNativeView = requireNativeView('ExpoUI', 'Button');
  * @hidden
  */
 export function transformButtonProps(props) {
-    const { children, onPress, systemImage, ...restProps } = props;
+    const { children, onPress, ...restProps } = props;
     return {
         ...restProps,
         text: children ?? '',
-        systemImage,
         onButtonPressed: onPress,
         elementColors: props.elementColors
             ? props.elementColors
