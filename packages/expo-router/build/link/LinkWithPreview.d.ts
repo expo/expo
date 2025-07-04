@@ -44,6 +44,6 @@ interface LinkPreviewProps {
     children?: React.ReactNode;
 }
 export declare function LinkPreview({ children, width, height }: LinkPreviewProps): React.JSX.Element | null;
-export declare function LinkTrigger(props: PropsWithChildren): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
+export declare function LinkTrigger(props: PropsWithChildren): string | number | bigint | boolean | React.JSX.Element | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined;
 export {};
 //# sourceMappingURL=LinkWithPreview.d.ts.map

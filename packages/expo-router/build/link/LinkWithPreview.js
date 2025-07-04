@@ -101,21 +101,36 @@ function LinkWithPreview({ children, ...rest }) {
         ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
         : {}, [menuElement]);
     const preview = react_1.default.useMemo(() => previewElement ?? <LinkPreview />, [previewElement, rest.href]);
+    const isPreviewTapped = (0, react_1.useRef)(false);
     if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
     return (<native_1.NativeLinkPreview nextScreenId={nextScreenId} onActionSelected={({ nativeEvent: { id } }) => {
             actionsHandlers[id]?.();
         }} onWillPreviewOpen={() => {
+            isPreviewTapped.current = false;
             router.prefetch(rest.href);
             setIsPreviewOpen(true);
             setIsCurrenPreviewOpen(true);
         }} onDidPreviewOpen={() => {
             updateNextScreenId(rest.href);
-        }} onPreviewDidClose={() => {
-            setIsPreviewOpen(false);
+        }} onPreviewWillClose={() => {
             setIsCurrenPreviewOpen(false);
+            // When preview was not tapped, then we need to enable the screen stack animation
+            // Otherwise a quick user could tap another link before onDidPreviewClose is called
+            if (!isPreviewTapped.current) {
+                setIsPreviewOpen(false);
+            }
+        }} 
+    // Due to UIKit behavior, this is called 1-2s after preview is dismissed
+    onPreviewDidClose={() => {
+            // If preview was tapped we need to enable the screen stack animation
+            // For other cases we did it in onPreviewWillClose
+            if (isPreviewTapped.current) {
+                setIsPreviewOpen(false);
+            }
         }} onPreviewTapped={() => {
+            isPreviewTapped.current = true;
             router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
         }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
