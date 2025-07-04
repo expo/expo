@@ -11,7 +11,6 @@ final class SecureFieldProps: ExpoSwiftUI.ViewProps {
 struct SecureFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SecureFieldProps
   @State private var value: String = ""
-  @FocusState private var isFocused: Bool
 
   init(props: SecureFieldProps) {
     self.props = props
