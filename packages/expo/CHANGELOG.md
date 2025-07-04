@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed NPE of `onWindowFocusChanged` on Android 10. ([#37819](https://github.com/expo/expo/pull/37819) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
