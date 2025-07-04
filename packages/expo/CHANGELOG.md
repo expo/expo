@@ -12,6 +12,8 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Handle exceptions in onWindowFocusChanged for delayed app loading ([#37844](https://github.com/expo/expo/pull/37844) by [@isthaison](https://github.com/isthaison))
+
 
 ### 💡 Others
 
