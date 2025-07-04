@@ -35,6 +35,65 @@ Below is an example of a custom `Modal` component that overlays the current scre
 
 For most use cases, you can use the `Modal` component and customize it according to your app's user interface requirements. For details on how to use the `Modal` component and its props, see the [React Native documentation](https://reactnative.dev/docs/modal).
 
+## Expo Router's Modal component
+
+Expo Router provides a Modal component that can be used as a replacement for the React Native Modal. You can use this component similarly to the React Native Modal, by placing it anywhere in your app. For example:
+
+```tsx
+import { Modal } from 'expo-router';
+
+export default function SomeScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+  return (
+    <View>
+      <Button title="Open Modal" onPress={() => setModalVisible(true)} />
+      <Modal visible={modalVisible} onDidClose={() => setModalVisible(false)}>
+        <View>
+          <Text>This is a modal!</Text>
+          <Button title="Close Modal" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+```
+
+With Expo Router's Modal, you can also open multiple modals on top of each other:
+
+```tsx
+import { Modal } from 'expo-router';
+
+export default function SomeScreen() {
+  const [isFirstModalVisible, setIsFirstModalVisible] = useState(false);
+  const [isSecondModalVisible, setIsSecondModalVisible] = useState(false);
+  return (
+    <View>
+      <Button title="Open Modal" onPress={() => setIsFirstModalVisible(true)} />
+      <Modal visible={isFirstModalVisible} onDidClose={() => setIsFirstModalVisible(false)}>
+        <View>
+          <Text>This is first modal!</Text>
+          <Button title="Close Modal" onPress={() => setIsFirstModalVisible(false)} />
+          <Button title="Open Inner Modal" onPress={() => setIsSecondModalVisible(true)} />
+        </View>
+      </Modal>
+      <Modal visible={isSecondModalVisible} onDidClose={() => setIsSecondModalVisible(false)}>
+        <View>
+          <Text>This is second modal!</Text>
+          <Button title="Close Modal" onPress={() => setIsFirstModalVisible(false)} />
+          <Button title="Close Inner Modal" onPress={() => setIsSecondModalVisible(false)} />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+```
+
+**Note:** When you close a modal that is not the topmost one, it will close the modals above it (i.e., in the example above, when both modals are open and the first modal is closed, the second modal will also close).
+
+The full API reference for Expo Router's `Modal` component can be found in the [API reference](...).
+
+**Note:** Similarly to [Modal screen](#modal-screen-using-expo-router) there is currently no way to prevent native dismissal of the modal.
+
 ## Modal screen using Expo Router
 
 A modal screen is a file created inside the **app** directory and is used as a route within the existing stack. It is used for complex interactions that need to be part of the navigation system, such as multi-step forms where you can link to a specific screen after the process completes.
