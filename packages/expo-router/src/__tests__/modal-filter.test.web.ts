@@ -7,7 +7,7 @@
 
 import { StackNavigationState } from '@react-navigation/native';
 
-import { convertStackStateToNonModalState } from '../modal/web/ModalStack.web';
+import { convertStackStateToNonModalState } from '../modal/web/utils';
 
 describe('modal route filtering on web', () => {
   const ORIGINAL_OS = process.env.EXPO_OS;
