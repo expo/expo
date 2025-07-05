@@ -103,6 +103,7 @@ export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {
   // Loop over arguments in reverse order so we can resolve if a value belongs to a flag.
   for (let i = args.length - 1; i > -1; i--) {
     const value = args[i];
+    if (value === '--') continue;
     // At this point we should have converted all aliases to fully qualified arguments.
     if (value.startsWith('--')) {
       // If we ever find an argument then it must be a boolean because we are checking in reverse
@@ -155,7 +156,7 @@ export function collapseAliases(arg: Spec, args: string[]): string[] {
 
 /** Assert that the spec has unknown arguments. */
 export function assertUnknownArgs(arg: Spec, args: string[]) {
-  const allowedArgs = Object.keys(arg);
+  const allowedArgs = ['--', ...Object.keys(arg)];
   const unknownArgs = args.filter((arg) => !allowedArgs.includes(arg) && arg.startsWith('-'));
   if (unknownArgs.length > 0) {
     throw new CommandError(`Unknown arguments: ${unknownArgs.join(', ')}`);
