@@ -8,6 +8,7 @@ const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
+const ModalStack_web_1 = require("../modal/web/ModalStack.web");
 const useScreens_1 = require("../useScreens");
 const Protected_1 = require("../views/Protected");
 const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
@@ -261,6 +262,7 @@ function filterSingular(state, getId) {
     };
 }
 const Stack = Object.assign((props) => {
+    const isWeb = process.env.EXPO_OS === 'web';
     const { isPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptions = (0, react_1.useMemo)(() => {
         if (isPreviewOpen) {
@@ -268,7 +270,12 @@ const Stack = Object.assign((props) => {
         }
         return props.screenOptions;
     }, [props.screenOptions, isPreviewOpen]);
-    return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    if (isWeb) {
+        return (<ModalStack_web_1.RouterModal {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    }
+    else {
+        return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    }
 }, {
     Screen: RNStack.Screen,
     Protected: Protected_1.Protected,

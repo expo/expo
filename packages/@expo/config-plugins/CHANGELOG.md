@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`. ([#37828](https://github.com/expo/expo/pull/37828) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
 
 ## 10.0.3 - 2025-06-18
