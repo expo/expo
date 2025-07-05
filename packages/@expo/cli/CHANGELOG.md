@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Allow fast resolver to resolve nested `node_modules` packages in monorepos. ([#37769](https://github.com/expo/expo/pull/37769) by [@byCedric](https://github.com/byCedric))
+- Rewrite React canary resolution to rely on normal Node module resolution. ([#37770](https://github.com/expo/expo/pull/37770) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
