@@ -479,6 +479,16 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
   '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
 
+  // After moving eas/workflows/examples to eas/workflows/examples/*
+  '/eas/workflows/examples/': '/eas/workflows/examples/introduction/',
+  '/eas/workflows/examples/#development-builds-workflow/':
+    '/eas/workflows/examples/create-development-builds/',
+  '/eas/workflows/examples/#preview-updates-workflow/':
+    '/eas/workflows/examples/publish-preview-update/',
+  '/eas/workflows/examples/#deploy-to-production-workflow/':
+    '/eas/workflows/examples/deploy-to-production/',
+  '/eas/workflows/reference/e2e-tests/': '/eas/workflows/examples/e2e-tests/',
+
   // After moving e2e-tests to eas/workflows/reference
   '/build-reference/e2e-tests/': '/eas/workflows/reference/e2e-tests/',
 
