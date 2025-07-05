@@ -1,5 +1,5 @@
-import { ExpoConfig, modifyConfigAsync } from '@expo/config';
 import chalk from 'chalk';
+import { ExpoConfig, modifyConfigAsync } from 'expo/config';
 
 import * as Log from './log';
 
