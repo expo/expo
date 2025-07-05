@@ -10,9 +10,11 @@ export declare const LOADED_ENV_NAME = "__EXPO_ENV_LOADED";
  *
  * @see https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
  */
-export declare function getEnvFiles({ mode, silent, }?: {
+export declare function getEnvFiles({ mode, local, silent, }?: {
     /** The mode to use when creating the list of `.env*` files, defaults to `NODE_ENV` */
     mode?: string;
+    /** Whether to include local-only `.env*.local` files in the load order */
+    local?: boolean;
     /** If possible misconfiguration warnings should be logged, or only logged as debug log */
     silent?: boolean;
 }): string[];
