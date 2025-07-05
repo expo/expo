@@ -134,12 +134,14 @@ export async function exportAssetsAsync(
     bundles: { web, ...bundles },
     baseUrl,
     files = new Map(),
+    hostedNative,
   }: {
     exp: ExpoConfig;
     bundles: Partial<Record<string, BundleOutput>>;
     outputDir: string;
     baseUrl: string;
     files?: ExportAssetMap;
+    hostedNative?: boolean;
   }
 ) {
   // NOTE: We use a different system for static web
@@ -152,6 +154,17 @@ export async function exportAssetsAsync(
       outputDirectory: outputDir,
       baseUrl,
     });
+  } else if (hostedNative) {
+    // Do assets like export embed to support dev client + EAS Hosting.
+    await Promise.all(
+      Object.values(bundles).map((bundle) => {
+        return persistMetroAssetsAsync(projectRoot, bundle!.assets, {
+          platform: 'web',
+          outputDirectory: outputDir,
+          baseUrl,
+        });
+      })
+    );
   }
 
   const assets: BundleAssetWithFileHashes[] = uniqBy(
