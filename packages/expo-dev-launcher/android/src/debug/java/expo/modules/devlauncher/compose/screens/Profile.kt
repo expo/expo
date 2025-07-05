@@ -44,6 +44,9 @@ fun Profile(
             accounts = state.accounts,
             onSignOut = {
               viewModel.onAction(ProfileViewModel.Action.SignOut)
+            },
+            onClick = { account ->
+              viewModel.onAction(ProfileViewModel.Action.SwitchAccount(account))
             }
           )
         }
@@ -57,6 +60,9 @@ fun Profile(
               authLauncher.launch(AuthRequestType.SIGNUP)
             }
           )
+        }
+
+        ProfileState.Fetching -> {
         }
       }
     }

@@ -9,7 +9,8 @@ import androidx.compose.ui.platform.ComposeView
 import expo.modules.devmenu.AppInfo
 import expo.modules.devmenu.compose.theme.AppTheme
 
-class BindingView(context: Context, val viewModel: DevLauncherViewModel) : LinearLayout(context) {
+class BindingView(context: Context, lazyViewModel: Lazy<DevLauncherViewModel>) : LinearLayout(context) {
+  val viewModel by lazyViewModel
   init {
     addView(
       ComposeView(context).apply {
