@@ -763,7 +763,6 @@
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
 
-  
   NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: [self.manifest easProjectId];
   BOOL hasAppId = appId.length > 0;
 
@@ -780,7 +779,6 @@
 
   return updatesConfig;
 }
-
 
 - (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
   NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
