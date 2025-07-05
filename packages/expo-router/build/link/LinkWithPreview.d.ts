@@ -1,4 +1,4 @@
-import React, { type FC, type PropsWithChildren, type ReactElement } from 'react';
+import React, { type FC, type ReactElement } from 'react';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { LinkProps } from './useLinkHooks';
 export declare function LinkWithPreview({ children, ...rest }: LinkProps): React.JSX.Element;
@@ -44,6 +44,11 @@ interface LinkPreviewProps {
     children?: React.ReactNode;
 }
 export declare function LinkPreview({ children, width, height }: LinkPreviewProps): React.JSX.Element | null;
-export declare function LinkTrigger(props: PropsWithChildren): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
+interface LinkTriggerProps {
+    children?: React.ReactNode;
+    style?: LinkProps['style'];
+    className?: LinkProps['className'];
+}
+export declare function LinkTrigger(props: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
 export {};
 //# sourceMappingURL=LinkWithPreview.d.ts.map
