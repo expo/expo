@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.services
 
 import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 
 /**
@@ -9,6 +10,12 @@ import androidx.lifecycle.ViewModel
  */
 object DependencyInjection {
   var wasInitialized: Boolean = false
+    private set
+
+  var httpClientService: HttpClientService? = null
+    private set
+
+  var imageLoaderService: ImageLoaderService? = null
     private set
 
   var sessionService: SessionService? = null
@@ -24,6 +31,15 @@ object DependencyInjection {
 
     wasInitialized = true
 
+    val httpClient = HttpClientService()
+
+    httpClientService = httpClient
+
+    imageLoaderService = ImageLoaderService(
+      context = context.applicationContext,
+      httpClientService = httpClient
+    )
+
     val apolloClient = ApolloClientService()
 
     apolloClientService = apolloClient
@@ -35,11 +51,22 @@ object DependencyInjection {
   }
 }
 
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T> ViewModel.inject(): T {
+@PublishedApi
+internal inline fun <reified T> injectService(): T {
   return when (T::class) {
     SessionService::class -> DependencyInjection.sessionService
     ApolloClientService::class -> DependencyInjection.apolloClientService
+    ImageLoaderService::class -> DependencyInjection.imageLoaderService
+    HttpClientService::class -> DependencyInjection.httpClientService
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
+}
+
+inline fun <reified T> ViewModel.inject(): T {
+  return injectService<T>()
+}
+
+@Composable
+inline fun <reified T> inject(): T {
+  return injectService<T>()
 }
