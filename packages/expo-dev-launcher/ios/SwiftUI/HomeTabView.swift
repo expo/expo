@@ -27,15 +27,17 @@ struct HomeTabView: View {
                 .font(.system(size: 12, weight: .semibold))
               }
 
-              LazyVStack(spacing: 8) {
-                ForEach(viewModel.recentlyOpenedApps, id: \.url) { app in
+              LazyVStack(spacing: 0) {
+                ForEach(viewModel.recentlyOpenedApps) { app in
                   RecentlyOpenedAppRow(app: app) {
                     viewModel.openApp(url: app.url)
                   }
+                  Divider()
                 }
               }
+              .clipShape(RoundedRectangle(cornerRadius: 8))
+              .padding(.top)
             }
-            .padding(.top)
           }
         }
         .padding()

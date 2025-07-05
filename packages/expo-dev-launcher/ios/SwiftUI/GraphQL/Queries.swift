@@ -61,7 +61,7 @@ class Queries {
     ]
 
     let response: BranchesResponse = try await APIClient.shared.request(query, variables: variables)
-    return response.app.byId.updateBranches
+    return response.data.app.byId.updateBranches
   }
 
   static func getChannels(appId: String) async throws -> [Channel] {
@@ -86,7 +86,7 @@ class Queries {
 
     let response: ChannelResponse = try await APIClient.shared.request(query, variables: variables)
 
-    return response.app.byId.updateChannels.map { updateChannel in
+    return response.data.app.byId.updateChannels.map { updateChannel in
       Channel(
         name: updateChannel.name,
         branches: updateChannel.updateBranches.map { $0.name }
@@ -143,19 +143,7 @@ class Queries {
     let outputFormatter = DateFormatter()
     outputFormatter.dateFormat = "MMMM d, yyyy, h:mma"
 
-    let updates: [Update] = response.app.byId.updateBranchByName.updates.map { update in
-      var formattedUpdate = update
-      if let date = dateFormatter.date(from: update.createdAt) {
-        formattedUpdate = Update(
-          id: update.id,
-          message: update.message,
-          runtimeVersion: update.runtimeVersion,
-          createdAt: outputFormatter.string(from: date),
-          manifestPermalink: update.manifestPermalink
-        )
-      }
-      return formattedUpdate
-    }
+    let updates = response.data.app.byId.updateBranchByName.updates
 
     return (updates: updates, page: page)
   }

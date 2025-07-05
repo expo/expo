@@ -20,10 +20,10 @@ public struct DevLauncherRootView: View {
             Text("Home")
           }
 
-        ExtensionsTabView()
+        UpdatesTabView()
           .tabItem {
-            Image("extensions-icon", bundle: getDevLauncherBundle())
-            Text("Extensions")
+            Image(systemName: "arrow.2.circlepath")
+            Text("Updates")
           }
 
         SettingsTabView()
@@ -94,15 +94,7 @@ struct RecentlyOpenedAppRow: View {
       }
       .padding()
       .background(Color(.systemBackground))
-      .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .buttonStyle(PlainButtonStyle())
   }
-}
-
-struct RecentlyOpenedApp {
-  let name: String
-  let url: String
-  let timestamp: Date
-  let isEasUpdate: Bool?
 }

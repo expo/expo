@@ -13,6 +13,17 @@ class APIClient {
 #endif
   }
 
+  private var session: URLSession {
+    let config = URLSessionConfiguration.default
+    config.urlCache = URLCache(
+      memoryCapacity: 10 * 1024 * 1024,
+      diskCapacity: 50 * 1024 * 1024,
+      diskPath: "expo_dev_launcher_cache"
+    )
+    config.requestCachePolicy = .returnCacheDataElseLoad
+    return URLSession(configuration: config)
+  }
+
   private var apiEndpoint: String {
     return useStaging
       ? "https://staging.exp.host/--/graphql"
@@ -42,16 +53,10 @@ class APIClient {
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     request.setValue(sessionSecret, forHTTPHeaderField: "expo-session")
-    request.assumesHTTP3Capable = false
     request.httpBody = try JSONSerialization.data(withJSONObject: [
       "query": query,
       "variables": variables ?? [:]
     ])
-
-    // We need to disable http/3 or the requests will fail
-    let config = URLSessionConfiguration.ephemeral
-    config.protocolClasses = []
-    let session = URLSession(configuration: config)
 
     do {
       let (data, response) = try await session.data(for: request)

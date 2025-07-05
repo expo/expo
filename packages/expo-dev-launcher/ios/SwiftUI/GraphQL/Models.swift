@@ -42,6 +42,10 @@ struct CompatibleUpdate: Codable {
 }
 
 struct BranchesResponse: Codable {
+  let data: BranchesData
+}
+
+struct BranchesData: Codable {
   let app: AppWithBranches
 }
 
@@ -59,6 +63,10 @@ struct Channel: Codable {
 }
 
 struct ChannelResponse: Codable {
+  let data: ChannelData
+}
+
+struct ChannelData: Codable {
   let app: AppWithChannels
 }
 
@@ -88,6 +96,10 @@ struct Update: Codable {
 }
 
 struct UpdatesResponse: Codable {
+  let data: UpdatesData
+}
+
+struct UpdatesData: Codable {
   let app: AppWithUpdates
 }
 

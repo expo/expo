@@ -150,10 +150,10 @@ struct SettingsTabView: View {
   }
 
   private func createEASConfigJSON() -> String {
-    let appId = viewModel.buildInfo["appId"] as? String ?? ""
-    let runtimeVersion = viewModel.buildInfo["runtimeVersion"] as? String ?? ""
-    let usesEASUpdates = viewModel.buildInfo["usesEASUpdates"] as? Bool ?? false
-    let projectUrl = viewModel.buildInfo["projectUrl"] as? String ?? ""
+    let appId = viewModel.structuredBuildInfo.appId
+    let runtimeVersion = viewModel.structuredBuildInfo.runtimeVersion
+    let usesEASUpdates = viewModel.structuredBuildInfo.usesEASUpdates
+    let projectUrl = viewModel.structuredBuildInfo.projectUrl ?? ""
 
     return """
     {
