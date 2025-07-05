@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
+- Fixed unnecessary database reopen from `SQLiteProvider` with same options. ([#37872](https://github.com/expo/expo/pull/37872) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
