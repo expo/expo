@@ -34,13 +34,15 @@ You will be guided through the process of selecting the update to edit and asked
 When ending an update-based rollout, you have two options:
 
 - **Roll out fully**: To accomplish this end state, progress the rollout as detailed above and set the percentage to 100.
-- **Revert**: To accomplish this end state, republish the previous update by using the `eas update:republish` command.
+- **Revert back to previous state**: To accomplish this, run `eas update:revert-rollout` which will guide you through reverting back to the previous state.
 
 ### Working with rollouts
 
 - Only one update can be rolled out on a branch at one time.
 - When a rollout is in progress, it must be ended using one of the options above before a new update (with the same runtime version) can be published. This prevents accidentally clobbering the rollout.
 - To see the state of the rollout, use the `eas update:list` or `eas update:view` commands.
+- Reverting a rollout that is created on a branch with an existing update will republish the control update. This ensures that all clients are reverted back to the previous state.
+- A rollout can be started on a branch with no current update, in which case the first update will be rolled out to the specified percentage of users. When reverted, a rollback-to-embedded update will be created, which will revert the clients to their previous state (embedded update).
 
 ## Branch-based rollouts
 
