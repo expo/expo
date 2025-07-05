@@ -25,7 +25,7 @@
     "expo-splash-screen": "0.30.10",
     "expo-sqlite": "15.2.13",
     "expo-status-bar": "2.2.3",
-    "expo-notifications": "0.31.3",
+    "expo-notifications": "0.31.4",
     "expo-task-manager": "13.1.6",
     "native-component-list": "*",
     "react-native-gesture-handler": "~2.24.0",

@@ -65,7 +65,7 @@
   "expo-modules-core": "~2.4.2",
   "expo-navigation-bar": "~4.2.7",
   "expo-network": "~7.1.5",
-  "expo-notifications": "~0.31.3",
+  "expo-notifications": "~0.31.4",
   "expo-print": "~14.1.4",
   "expo-live-photo": "~0.1.4",
   "expo-router": "~5.1.3",
