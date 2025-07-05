@@ -1,11 +1,12 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { ScrollViewProps, View } from 'react-native';
+import { ScrollViewProps, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import Colors, { ColorTheme } from '../constants/Colors';
 
 type ViewProps = View['props'];
+
 interface Props extends ViewProps {
   lightBackgroundColor?: string;
   darkBackgroundColor?: string;
@@ -24,6 +25,7 @@ function useThemeName(): ColorTheme {
   const theme = useTheme();
   return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
+
 function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName: ThemedColors) {
   const themeName = useThemeName();
   const colorFromProps =
@@ -84,3 +86,36 @@ export const StyledView = (props: Props) => {
     />
   );
 };
+
+/**
+ * View used to limit the content width to stay at most as wide as the screen is wide.
+ * Usually this makes the content look better in landscape mode.
+ */
+export function CappedWidthContainerView(
+  props: ViewProps & { wrapperStyle?: ViewStyle | ViewStyle[] }
+) {
+  const { height: screenHeight } = useWindowDimensions();
+  return (
+    <View
+      style={[
+        {
+          flex: 1,
+          alignItems: 'center',
+          width: '100%',
+        },
+        props.wrapperStyle,
+      ]}>
+      <View
+        {...props}
+        style={[
+          {
+            flex: 1,
+            width: '100%',
+            maxWidth: Math.max(screenHeight, 600),
+          },
+          props.style,
+        ]}
+      />
+    </View>
+  );
+}

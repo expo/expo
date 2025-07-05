@@ -6,6 +6,7 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { CappedWidthContainerView } from '../../components/Views';
 import { HomeScreenDataQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useTheme } from '../../utils/useTheme';
@@ -72,34 +73,42 @@ export function HomeScreenHeader({ currentAccount }: Props) {
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: theme.border.default,
       }}>
-      <Row align="center">
-        <View
-          align="centered"
-          rounded="medium"
-          shadow="button"
-          height="xl"
-          width="xl"
-          bg={themeType === 'dark' ? 'secondary' : 'default'}
-          style={{
-            marginRight: spacing[2],
-            elevation: themeType === 'light' ? 1 : 0,
-          }}>
-          <Image
-            size="xl"
-            source={require('../../assets/client-logo.png')}
+      <CappedWidthContainerView
+        style={{
+          flex: 0,
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Row align="center">
+          <View
+            align="centered"
+            rounded="medium"
+            shadow="button"
+            height="xl"
+            width="xl"
+            bg={themeType === 'dark' ? 'secondary' : 'default'}
             style={{
-              tintColor: theme.text.default,
-              width: 15.3,
-              height: 17.19,
-              resizeMode: 'contain',
-            }}
-          />
-        </View>
-        <Text type="InterBold" color="default">
-          Expo Go
-        </Text>
-      </Row>
-      {rightContent}
+              marginRight: spacing[2],
+              elevation: themeType === 'light' ? 1 : 0,
+            }}>
+            <Image
+              size="xl"
+              source={require('../../assets/client-logo.png')}
+              style={{
+                tintColor: theme.text.default,
+                width: 15.3,
+                height: 17.19,
+                resizeMode: 'contain',
+              }}
+            />
+          </View>
+          <Text type="InterBold" color="default">
+            Expo Go
+          </Text>
+        </Row>
+        {rightContent}
+      </CappedWidthContainerView>
     </Row>
   );
 }
