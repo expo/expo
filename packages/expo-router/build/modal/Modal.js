@@ -30,7 +30,7 @@ const useNavigation_1 = require("../useNavigation");
  * }
  */
 function Modal(props) {
-    const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, ...viewProps } = props;
+    const { children, visible, onRequestClose, onShow, animationType, presentationStyle, transparent, ...viewProps } = props;
     const { openModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
@@ -66,7 +66,7 @@ function Modal(props) {
             });
             const unsubscribeClose = addEventListener('close', (id) => {
                 if (id === currentModalId) {
-                    onClose?.();
+                    onRequestClose?.();
                     setCurrentModalId(undefined);
                 }
             });
@@ -76,7 +76,7 @@ function Modal(props) {
             };
         }
         return () => { };
-    }, [currentModalId, addEventListener, onClose]);
+    }, [currentModalId, addEventListener, onRequestClose]);
     return null;
 }
 //# sourceMappingURL=Modal.js.map

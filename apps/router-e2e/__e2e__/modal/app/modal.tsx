@@ -17,7 +17,7 @@ export default function ModalScreen() {
       {isOpen && (
         <Modal
           visible={isOpen}
-          onClose={() => {
+          onRequestClose={() => {
             setIsOpen(false);
           }}
           transparent
