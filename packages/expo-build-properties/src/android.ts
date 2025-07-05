@@ -113,6 +113,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'reactNativeArchitectures',
       propValueGetter: (config) => config.android?.buildArchs?.join(','),
     },
+    {
+      propName: 'exclusiveEnterpriseRepository',
+      propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
   ],
   'withAndroidBuildProperties'
 );

@@ -166,6 +166,13 @@ export interface PluginConfigTypeAndroid {
      * @default ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
      */
     buildArchs?: string[];
+    /**
+     * Specifies a single Maven repository to be used as an exclusive mirror for all dependency resolution.
+     * When set, all other Maven repositories will be ignored and only this repository will be used to fetch dependencies.
+     *
+     * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
+     */
+    exclusiveMavenMirror?: string;
 }
 /**
  * @platform android
