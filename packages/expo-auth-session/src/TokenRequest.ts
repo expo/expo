@@ -34,21 +34,21 @@ export class TokenResponse implements TokenResponseConfig {
    * Determines whether a token refresh request must be made to refresh the tokens
    *
    * @param token
-   * @param secondsMargin
+   * @param secondsMargin Minimum token validity in seconds, only absolute value is used.
    */
   static isTokenFresh(
     token: Pick<TokenResponse, 'expiresIn' | 'issuedAt'>,
     /**
-     * -10 minutes in seconds
+     * 10 minutes in seconds
      */
-    secondsMargin: number = 60 * 10 * -1
+    secondsMargin: number = 60 * 10
   ): boolean {
     if (!token) {
       return false;
     }
     if (token.expiresIn) {
       const now = getCurrentTimeInSeconds();
-      return now < token.issuedAt + token.expiresIn + secondsMargin;
+      return now < token.issuedAt + token.expiresIn - Math.abs(secondsMargin);
     }
     // if there is no expiration time but we have an access token, it is assumed to never expire
     return true;
