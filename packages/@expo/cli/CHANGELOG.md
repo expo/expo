@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow fast resolver to resolve nested `node_modules` packages in monorepos. ([#37769](https://github.com/expo/expo/pull/37769) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 0.24.18 — 2025-07-03
