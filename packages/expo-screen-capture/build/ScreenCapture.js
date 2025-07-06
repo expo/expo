@@ -18,7 +18,7 @@ export async function isAvailableAsync() {
  * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called or the app is restarted. If you are
  * already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
  *
- * > On iOS, this will only prevent screen recordings, and is only available on iOS 11 and newer. On older
+ * > On iOS, this prevents screen recordings and screenshots, and is only available on iOS 11+ (recordings) and iOS 13+ (screenshots). On older
  * iOS versions, this method does nothing.
  *
  * @param key Optional. If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync`
@@ -26,7 +26,7 @@ export async function isAvailableAsync() {
  * When using multiple keys, you'll have to re-allow each one in order to re-enable screen capturing.
  *
  * @platform android
- * @platform ios 11+
+ * @platform ios 11+ (screen recording prevention) / ios 13+ (screenshot protection - experimental)
  */
 export async function preventScreenCaptureAsync(key = 'default') {
     if (!ExpoScreenCapture.preventScreenCapture) {

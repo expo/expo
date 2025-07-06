@@ -6,6 +6,8 @@ public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
   private var isListening = false
   private var blockView = UIView()
+  private var protectionTextField: UITextField?
+  private var originalParent: CALayer?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")
@@ -17,6 +19,10 @@ public final class ScreenCaptureModule: Module {
       blockView.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
       blockView.backgroundColor = .black
     }
+      
+    OnDestroy {
+      allowScreenshots()
+    }
 
     OnStartObserving {
       self.setIsBeing(observed: true)
@@ -27,15 +33,23 @@ public final class ScreenCaptureModule: Module {
     }
 
     AsyncFunction("preventScreenCapture") {
-      // If already recording, block it
-      self.preventScreenRecording()
-
+      DispatchQueue.main.async {
+        self.preventScreenRecording()
+        self.preventScreenshots()
+      }
+      
       NotificationCenter.default.addObserver(self, selector: #selector(self.preventScreenRecording), name: UIScreen.capturedDidChangeNotification, object: nil)
-    }.runOnQueue(.main)
+    }
 
     AsyncFunction("allowScreenCapture") {
+      DispatchQueue.main.async {
+        self.allowScreenshots()
+      }
+      
       NotificationCenter.default.removeObserver(self, name: UIScreen.capturedDidChangeNotification, object: nil)
     }
+
+
   }
 
   private func setIsBeing(observed: Bool) {
@@ -68,5 +82,49 @@ public final class ScreenCaptureModule: Module {
     sendEvent(onScreenshotEventName, [
       "body": nil
     ])
+  }
+
+  private func preventScreenshots() {
+    guard #available(iOS 13.0, *) else {
+      return
+    }
+    
+    guard let keyWindow = UIApplication.shared.keyWindow,
+          let visibleView = keyWindow.subviews.first else { return }
+    
+    let textField = UITextField()
+    textField.isSecureTextEntry = true
+    textField.isUserInteractionEnabled = false
+    textField.backgroundColor = UIColor.black
+
+    originalParent = visibleView.layer.superlayer
+    
+    if let viewSuperlayer = visibleView.layer.superlayer {
+      viewSuperlayer.addSublayer(textField.layer)
+      
+      if let firstTextFieldSublayer = textField.layer.sublayers?.first {
+        visibleView.layer.removeFromSuperlayer()
+        visibleView.layer.position = CGPoint(x: visibleView.bounds.width / 2, y: visibleView.bounds.height / 2)
+        firstTextFieldSublayer.addSublayer(visibleView.layer)
+      }
+    }
+    
+    protectionTextField = textField
+  }
+
+  private func allowScreenshots() {
+    guard let textField = protectionTextField else { return }
+    
+    if let protectedLayer = textField.layer.sublayers?.first?.sublayers?.first {
+      protectedLayer.removeFromSuperlayer()
+      if let parent = originalParent {
+        parent.addSublayer(protectedLayer)
+      }
+    }
+    
+    textField.layer.removeFromSuperlayer()
+    
+    protectionTextField = nil
+    originalParent = nil
   }
 }
