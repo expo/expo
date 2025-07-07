@@ -39,7 +39,9 @@ class DevMenuPackagerConnectionHandler {
     // [@alan] HACK: We are only doing this to prevent the RN dev menu from showing except when called from
     // our dev menu. Without this, it will still respond to commands coming from the packager. I could not
     // find an easier way to do this until we have a proper api.
-    guard let devMenuClass = NSClassFromString("RCTDevMenu") else { return }
+    guard let devMenuClass = NSClassFromString("RCTDevMenu") else {
+      return
+    }
     let originalSelector = NSSelectorFromString("show")
     guard let originalMethod = class_getInstanceMethod(devMenuClass, originalSelector) else {
       return
