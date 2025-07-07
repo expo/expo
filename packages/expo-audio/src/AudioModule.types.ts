@@ -1,6 +1,7 @@
 import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-core';
 
 import {
+  AudioMetadata,
   AudioMode,
   AudioSource,
   AudioStatus,
@@ -141,6 +142,27 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * @hidden
    */
   setAudioSamplingEnabled(enabled: boolean): void;
+
+  /**
+   * Sets or removes this audio player as the active player for lock screen controls.
+   * Only one player can control the lock screen at a time.
+   * @param active Whether this player should be active for lock screen controls.
+   * @param metadata Optional metadata to display on the lock screen (title, artist, album, artwork).
+   */
+  setActiveForLockScreen(active: boolean, metadata?: AudioMetadata): void;
+
+  /**
+   * Updates the metadata displayed on the lock screen for this player.
+   * This method only has an effect if this player is currently active for lock screen controls.
+   * @param metadata The metadata to display (title, artist, album, artwork).
+   */
+  updateLockScreenMetadata(metadata: AudioMetadata): void;
+
+  /**
+   * Removes this player from lock screen controls if it's currently active.
+   * This will clear the lock screen's now playing info.
+   */
+  clearLockScreenControls(): void;
 
   /**
    * Remove the player from memory to free up resources.
