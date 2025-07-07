@@ -9,11 +9,16 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix nullability of binding params. ([#37200](https://github.com/expo/expo/pull/37200) by [@lukmccall](https://github.com/lukmccall))
-- Fixed unnecessary database reopen from `SQLiteProvider` with same options. ([#37872](https://github.com/expo/expo/pull/37872) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 ### 📚 3rd party library updates
+
+## 15.2.14 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed unnecessary database reopen from `SQLiteProvider` with same options. ([#37872](https://github.com/expo/expo/pull/37872) by [@kudo](https://github.com/kudo))
 
 ## 15.2.13 - 2025-07-01
 

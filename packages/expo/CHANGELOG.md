@@ -12,13 +12,26 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
-- Fixed NPE of `onWindowFocusChanged` on Android 10. ([#37819](https://github.com/expo/expo/pull/37819) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 53.0.18 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed NPE of `onWindowFocusChanged` on Android 10. ([#37847](https://github.com/expo/expo/pull/37847) by [@kudo](https://github.com/kudo))
+
+## 53.0.17 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.16 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
 
 ## 53.0.15 - 2025-07-01
 
