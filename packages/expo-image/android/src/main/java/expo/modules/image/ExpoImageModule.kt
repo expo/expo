@@ -5,6 +5,7 @@ package expo.modules.image
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
@@ -116,17 +117,9 @@ class ExpoImageModule : Module() {
     }
 
     AsyncFunction("generateBlurhashAsync") Coroutine { url: String, numberOfComponents: Pair<Int, Int> ->
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-      val bitmap = withContext(Dispatchers.IO) {
-        Glide.with(context)
-          .asBitmap()
-          .load(url)
-          .submit()
-          .get()
-      }
-
+      val image = ImageLoadTask(appContext, SourceMap(uri = url), ImageLoadOptions()).load()
       val blurHash = withContext(Dispatchers.Default) {
-        BlurhashEncoder.encode(bitmap, numberOfComponents)
+        BlurhashEncoder.encode(image.ref.toBitmap(), numberOfComponents)
       }
       blurHash
     }
