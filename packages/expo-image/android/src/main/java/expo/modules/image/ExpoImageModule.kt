@@ -38,10 +38,12 @@ import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.net.URL
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -116,8 +118,14 @@ class ExpoImageModule : Module() {
       ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
     }
 
-    AsyncFunction("generateBlurhashAsync") Coroutine { url: String, numberOfComponents: Pair<Int, Int> ->
-      val image = ImageLoadTask(appContext, SourceMap(uri = url), ImageLoadOptions()).load()
+    AsyncFunction("generateBlurhashAsync") Coroutine { source: Either<URL, Image>, numberOfComponents: Pair<Int, Int> ->
+      val image = source.let {
+        if (it.`is`(Image::class)) {
+          it.get(Image::class)
+        } else {
+          ImageLoadTask(appContext, SourceMap(uri = it.get(URL::class).toString()), ImageLoadOptions()).load()
+        }
+      }
       val blurHash = withContext(Dispatchers.Default) {
         BlurhashEncoder.encode(image.ref.toBitmap(), numberOfComponents)
       }

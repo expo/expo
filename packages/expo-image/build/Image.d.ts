@@ -66,14 +66,14 @@ export declare class Image extends React.PureComponent<ImageProps> {
     static getCachePathAsync(cacheKey: string): Promise<string | null>;
     /**
      * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
-     * @param url - The URL of the image to generate a blurhash from.
+     * @param source - The image source, either a URL (string) or an ImageRef
      * @param numberOfComponents - The number of components to encode the blurhash with.
      * Must be between 1 and 9. Defaults to `[4, 3]`.
      * @platform android
      * @platform ios
      * @return A promise resolving to the blurhash string.
      */
-    static generateBlurhashAsync(url: string, numberOfComponents: [number, number] | {
+    static generateBlurhashAsync(source: string | ImageRef, numberOfComponents: [number, number] | {
         width: number;
         height: number;
     }): Promise<string | null>;

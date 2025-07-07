@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add support for `ImageRef` source in `generateBlurhashAsync`
 - [Android] Add generateBlurhashAsync ([#37817](https://github.com/expo/expo/pull/37817) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
