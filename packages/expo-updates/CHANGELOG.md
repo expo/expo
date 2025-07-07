@@ -21,6 +21,10 @@
 - [CI] Removed Detox testing workaround code on Android. ([#37707](https://github.com/expo/expo/pull/37707) by [@kudo](https://github.com/kudo))
 - [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
 
+## 0.28.16 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
 ## 0.28.15 - 2025-06-18
 
 ### 🐛 Bug fixes

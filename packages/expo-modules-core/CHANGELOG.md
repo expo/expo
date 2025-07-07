@@ -14,7 +14,6 @@
 
 - [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix `Value is undefined, expected an Object` in the `JNIUtils::emitEventOnJSIObject`. ([#37778](https://github.com/expo/expo/pull/37778) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -24,6 +23,13 @@
 - [Android] Reduce the number of conversions needed to call a function from the native module. ([#37099](https://github.com/expo/expo/pull/37099) by [@lukmccall](https://github.com/lukmccall))
 - Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
 - [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Remove boilerplate from function factories. ([#37884](https://github.com/expo/expo/pull/37884) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.4.2 - 2025-07-02
+
+### 🐛 Bug fixes
+
+- [Android] Fix `Value is undefined, expected an Object` in the `JNIUtils::emitEventOnJSIObject`. ([#37778](https://github.com/expo/expo/pull/37778) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.4.1 - 2025-07-01
 

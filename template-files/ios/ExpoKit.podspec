@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.author = "650 Industries, Inc."
   s.requires_arc = true
   s.platform = :ios, "13.0"
-  s.swift_version  = '5.4'
+  s.swift_version  = '5.9'
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
