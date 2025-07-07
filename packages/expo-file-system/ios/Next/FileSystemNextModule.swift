@@ -48,20 +48,6 @@ public final class FileSystemNextModule: Module {
       return availableDiskSpace
     }
 
-    Class(TestSO.self) {
-      Constructor { (testParts: [TestSO]?) in
-        if let testParts = testParts {
-          return TestSO(testParts: testParts)
-        } else {
-          return TestSO()
-        }
-      }
-      
-      Property("size") { (test: TestSO) in
-        test.size
-      }
-    }
-
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptionsNext?, promise: Promise) in
       try to.validatePermission(.write)
 

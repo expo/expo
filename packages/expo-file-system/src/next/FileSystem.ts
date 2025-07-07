@@ -209,5 +209,3 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return Paths.basename(this.uri);
   }
 }
-
-export class TestSO extends ExpoFileSystem.TestSO {}
