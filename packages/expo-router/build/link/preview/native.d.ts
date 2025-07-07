@@ -6,8 +6,6 @@ export interface NativeLinkPreviewActionProps {
     children?: React.ReactNode;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
-export type NativeLinkPreviewTriggerProps = ViewProps;
-export declare function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps): import("react").JSX.Element | null;
 export interface NativeLinkPreviewProps extends ViewProps {
     nextScreenId: string | undefined;
     onActionSelected?: (event: {

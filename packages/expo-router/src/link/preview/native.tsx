@@ -22,20 +22,6 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
 }
 // #endregion
 
-// #region Trigger View
-export type NativeLinkPreviewTriggerProps = ViewProps;
-const NativeLinkPreviewTriggerView: React.ComponentType<NativeLinkPreviewTriggerProps> | null =
-  Platform.OS === 'ios'
-    ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewTrigger')
-    : null;
-export function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps) {
-  if (!NativeLinkPreviewTriggerView) {
-    return null;
-  }
-  return <NativeLinkPreviewTriggerView {...props} />;
-}
-// #endregion
-
 // #region Preview View
 export interface NativeLinkPreviewProps extends ViewProps {
   nextScreenId: string | undefined;
