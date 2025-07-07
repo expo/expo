@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed breaking change for local AAR autolinking. ([#37882](https://github.com/expo/expo/pull/37882) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 2.1.13 — 2025-07-01
