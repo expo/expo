@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export types using the `export type` syntax. ([#37396](https://github.com/expo/expo/pull/37396) by [@behenate](https://github.com/behenate))
+
 ## 2.2.2 - 2025-06-18
 
 ### 🐛 Bug fixes
