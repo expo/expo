@@ -7,18 +7,18 @@ exports.createManifestForBuildAsync = createManifestForBuildAsync;
 const exportEmbedAsync_1 = require("@expo/cli/build/src/export/embed/exportEmbedAsync");
 const metroAssetLocalPath_1 = require("@expo/cli/build/src/export/metroAssetLocalPath");
 const crypto_1 = __importDefault(require("crypto"));
-const config_1 = require("expo/config");
+const paths_1 = require("expo/config/paths");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const filterPlatformAssetScales_1 = require("./filterPlatformAssetScales");
 async function createManifestForBuildAsync(platform, projectRoot, destinationDir, entryFileArg) {
     let entryFile = entryFileArg ||
         process.env.ENTRY_FILE ||
-        (0, config_1.resolveRelativeEntryPoint)(projectRoot, { platform }) ||
+        (0, paths_1.resolveRelativeEntryPoint)(projectRoot, { platform }) ||
         'index.js';
     // Android uses absolute paths for the entry file, so we need to convert that to a relative path.
     if (path_1.default.isAbsolute(entryFile)) {
-        entryFile = (0, config_1.convertEntryPointToRelative)(projectRoot, entryFile);
+        entryFile = (0, paths_1.convertEntryPointToRelative)(projectRoot, entryFile);
     }
     process.chdir(projectRoot);
     const options = {
