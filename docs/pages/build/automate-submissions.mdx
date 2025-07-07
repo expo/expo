@@ -54,25 +54,36 @@ The `APP_ENV` variable from the `production` profile will be used when evaluatin
 
 ## Default submission behavior for app stores
 
-Understanding the default behavior of `--auto-submit` is important for planning your release process. Sections below describe the default submission behavior for Android and iOS.
+By default, the `--auto-submit` flag will make your build available for internal testing, but will not automatically submit your app to review for public distribution. Sections below describe the default submission behavior for Android and iOS.
 
 ### Android submissions
 
-For Android, the default submission behavior is to submit a release (production build) by choosing one of the available submission tracks. This is done by setting the [`track`](/eas/json/#track) field in your **eas.json** submission profile:
+For Android, if sufficient metadata is not provided, the default behavior is to create a draft release (by setting the default [`releaseStatus`](/eas/json/#releasestatus) to `draft`) for new apps. To control where and how your build is submitted, you can specify these fields in your **eas.json** submission profile:
+
+**Release status options:**
+
+- `draft`: Creates a draft release that requires manual promotion in the Google Play Console (default)
+- `completed`: Immediately releases to users on the specified track
+- `inProgress`: Staged rollout release (use with `rollout` percentage)
+- `halted`: Halted release
+
+When you explicitly set a track to your submission profile in **eas.json**, the `--auto-submit` flag will submit the build to the chosen track. This also requires the `releaseStatus` to be set to `completed`:
+
+**Track options:**
 
 - `internal`: Internal testing track (up to 100 testers)
 - `alpha`: Closed testing track
 - `beta`: Open testing track
 - `production`: Production track (public release)
 
-Once the track is defined in **eas.json**, the `--auto-submit` flag will submit the build to the chosen track.
-
 ### iOS submissions
 
-For iOS, the default submission behavior is to submit a release (production build) to TestFlight. This means:
+For iOS, the default submission behavior is to submit the build to TestFlight, but not for App Store review. This means:
 
+- The build is submitted to TestFlight and becomes available for internal testing.
+- If you have "Enable automatic distribution" turned on in App Store Connect, TestFlight will automatically create a group and invite all your internal TestFlight users to test the build.
+- You can also specify additional TestFlight groups using the [`groups`](/eas/json/#groups) field in your **eas.json** submission profile.
 - Using TestFlight, you can release a version of your app available for internal and external testing. TestFlight allows sharing with up to 100 testers internally and provides a public link to share with up to 10,000 external testers.
-- Your release will not be submitted to App Store review automatically.
 - The release to Apple App Store review is a manual process. Once you have made a submission to TestFlight, you'll have to manually promote the build to the App Store.
 
 This behavior ensures that all iOS releases go through TestFlight when using `--auto-submit`, allowing you to test the release before deciding to make it available to the public.
