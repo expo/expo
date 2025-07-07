@@ -9,6 +9,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import androidx.annotation.MainThread
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.media3.common.util.UnstableApi
@@ -20,15 +21,26 @@ import androidx.media3.session.MediaStyleNotificationHelper
 import androidx.media3.session.SessionCommand
 import com.google.common.collect.ImmutableList
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.video.R
 import expo.modules.video.player.VideoPlayer
+import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 class PlaybackServiceBinder(val service: ExpoVideoPlaybackService) : Binder()
 
 @OptIn(UnstableApi::class)
 class ExpoVideoPlaybackService : MediaSessionService() {
+  private lateinit var weakContext: WeakReference<AppContext>
+  var appContext: AppContext
+    get() = weakContext.get() ?: throw Exceptions.AppContextLost()
+    set(value) {
+      weakContext = WeakReference(value)
+    }
   private val mediaSessions = mutableMapOf<ExoPlayer, MediaSession>()
   private val binder = PlaybackServiceBinder(this)
+  private var mostRecentInteractionSession: MediaSession? = null
+  private var isForeground: Boolean = false
 
   private val commandSeekForward = SessionCommand(SEEK_FORWARD_COMMAND, Bundle.EMPTY)
   private val commandSeekBackward = SessionCommand(SEEK_BACKWARD_COMMAND, Bundle.EMPTY)
@@ -45,46 +57,50 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     .build()
 
   fun setShowNotification(showNotification: Boolean, player: ExoPlayer) {
-    val sessionExtras = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      mediaSessions[player]?.sessionExtras?.deepCopy() ?: Bundle()
-    } else {
-      Bundle()
+    appContext.mainQueue.launch {
+      val sessionExtras = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        mediaSessions[player]?.sessionExtras?.deepCopy() ?: Bundle()
+      } else {
+        Bundle()
+      }
+      sessionExtras.putBoolean(SESSION_SHOW_NOTIFICATION, showNotification)
+      mediaSessions[player]?.let {
+        it.sessionExtras = sessionExtras
+        onUpdateNotification(it, showNotification && player.playWhenReady)
+      }
     }
-    sessionExtras.putBoolean(SESSION_SHOW_NOTIFICATION, showNotification)
-    mediaSessions[player]?.let {
-      it.sessionExtras = sessionExtras
-      onUpdateNotification(it, showNotification)
-    }
-    
-    updateForegroundServiceState()
   }
 
   fun registerPlayer(videoPlayer: VideoPlayer) {
-    val player = videoPlayer.player
-    if (mediaSessions[player] != null) {
-      return
+    appContext.mainQueue.launch {
+      val player = videoPlayer.player
+      if (mediaSessions[player] != null) {
+        return@launch
+      }
+
+      val mediaSession = MediaSession.Builder(this@ExpoVideoPlaybackService, player)
+        .setId("ExpoVideoPlaybackService_${player.hashCode()}")
+        .setCallback(VideoMediaSessionCallback())
+        .setCustomLayout(ImmutableList.of(seekBackwardButton, seekForwardButton))
+        .build()
+
+      mediaSessions[player] = mediaSession
+      addSession(mediaSession)
+      setShowNotification(videoPlayer.showNowPlayingNotification, player)
     }
-
-    val mediaSession = MediaSession.Builder(this, player)
-      .setId("ExpoVideoPlaybackService_${player.hashCode()}")
-      .setCallback(VideoMediaSessionCallback())
-      .setCustomLayout(ImmutableList.of(seekBackwardButton, seekForwardButton))
-      .build()
-
-    mediaSessions[player] = mediaSession
-    addSession(mediaSession)
-    setShowNotification(videoPlayer.showNowPlayingNotification, player)
   }
 
   fun unregisterPlayer(player: ExoPlayer) {
-    hidePlayerNotification(player)
-    val session = mediaSessions.remove(player)
-    session?.release()
-    if (mediaSessions.isEmpty()) {
-      cleanup()
-      stopSelf()
-    } else {
-      updateForegroundServiceState()
+    appContext.mainQueue.launch {
+      hidePlayerNotification(player)
+      val session = mediaSessions.remove(player)
+      session?.release()
+      if (mediaSessions.isEmpty()) {
+        cleanup()
+        stopSelf()
+      } else {
+        setMostRecentInteractionSession(findMostRecentInteractionSession())
+      }
     }
   }
 
@@ -94,13 +110,50 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
-    if (session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false)) {
-      createNotification(session, startInForegroundRequired)
-    } else {
-      (session.player as? ExoPlayer)?.let {
-        hidePlayerNotification(it)
+    appContext.mainQueue.launch {
+      if (startInForegroundRequired && session.wantsToShowNotification()) {
+        setMostRecentInteractionSession(session)
+      } else {
+        setMostRecentInteractionSession(findMostRecentInteractionSession())
       }
     }
+  }
+
+  @MainThread
+  private fun setMostRecentInteractionSession(session: MediaSession?) {
+    if (isStateUnchanged(session)) {
+      return
+    }
+
+    if (session?.player?.playWhenReady == false) {
+      stopForeground(STOP_FOREGROUND_DETACH)
+      isForeground = false
+    }
+
+    if (mostRecentInteractionSession != session) {
+      hideAllNotifications()
+    }
+
+    mostRecentInteractionSession = session
+    session?.let {
+      createNotification(it, it.player.playWhenReady)
+    } ?: run {
+      stopForeground(STOP_FOREGROUND_REMOVE)
+      isForeground = false
+    }
+  }
+
+  /**
+   * Finds a session that is playing media. And wants to show a notification
+   * If none exists, returns a session that wants to show a notification.
+   * The current mostRecentInteractionSession always has priority to reduce the number of unnecessary notification changes.
+   */
+  @MainThread
+  private fun findMostRecentInteractionSession(): MediaSession? {
+    val prioritizedSessions = (listOfNotNull(mostRecentInteractionSession) + mediaSessions.values.toList()).distinct()
+
+    return prioritizedSessions.firstOrNull { it.wantsToShowNotification() && it.player.playWhenReady }
+      ?: prioritizedSessions.firstOrNull { it.wantsToShowNotification() }
   }
 
   override fun onTaskRemoved(rootIntent: Intent?) {
@@ -117,6 +170,13 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     super.onDestroy()
   }
 
+  @MainThread
+  private fun isStateUnchanged(newSession: MediaSession?): Boolean {
+    val isPlaying = newSession?.player?.playWhenReady ?: false
+    return newSession == mostRecentInteractionSession && isPlaying == isForeground
+  }
+
+  @MainThread
   private fun createNotification(session: MediaSession, startInForegroundRequired: Boolean = false) {
     if (session.player.currentMediaItem == null) {
       return
@@ -136,11 +196,12 @@ class ExpoVideoPlaybackService : MediaSessionService() {
       .build()
 
     val notificationId = session.player.hashCode()
-    
-    if (startInForegroundRequired || shouldRunInForeground()) {
+
+    if (startInForegroundRequired) {
       try {
         startForeground(notificationId, notificationCompat)
-      } catch (e: Exception) {
+        isForeground = true
+      } catch (_: Exception) {
         notificationManager.notify(notificationId, notificationCompat)
       }
     } else {
@@ -149,65 +210,39 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   }
 
   private fun cleanup() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    appContext.mainQueue.launch {
       stopForeground(Service.STOP_FOREGROUND_REMOVE)
-    } else {
-      @Suppress("DEPRECATION")
-      stopForeground(true)
-    }
-    
-    hideAllNotifications()
+      isForeground = false
 
-    val sessionsToRelease = mediaSessions.values.toList()
-    mediaSessions.clear()
-    for (session in sessionsToRelease) {
-      session.release()
-    }
-    
-    val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      notificationManager.deleteNotificationChannel(CHANNEL_ID)
+      hideAllNotifications()
+
+      val sessionsToRelease = mediaSessions.values.toList()
+      mediaSessions.clear()
+      for (session in sessionsToRelease) {
+        session.release()
+      }
+
+      val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        notificationManager.deleteNotificationChannel(CHANNEL_ID)
+      }
     }
   }
 
+  @MainThread
   private fun hidePlayerNotification(player: ExoPlayer) {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(player.hashCode())
-    
-    updateForegroundServiceState()
   }
 
+  @MainThread
   private fun hideAllNotifications() {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancelAll()
   }
-  
-  private fun shouldRunInForeground(): Boolean {
-    return mediaSessions.values.any { session ->
-      session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false)
-    }
-  }
-  
-  private fun updateForegroundServiceState() {
-    val shouldRun = shouldRunInForeground()
-    
-    if (shouldRun) {
-      val sessionWithMedia = mediaSessions.values.find { session ->
-        session.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false) && 
-        session.player.currentMediaItem != null
-      }
-      sessionWithMedia?.let { session ->
-        createNotification(session, true)
-      }
-    } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        stopForeground(Service.STOP_FOREGROUND_REMOVE)
-      } else {
-        @Suppress("DEPRECATION")
-        stopForeground(true)
-      }
-    }
-  }
+
+  private fun MediaSession.wantsToShowNotification(): Boolean =
+    this.sessionExtras.getBoolean(SESSION_SHOW_NOTIFICATION, false)
 
   companion object {
     const val SEEK_FORWARD_COMMAND = "SEEK_FORWARD"
