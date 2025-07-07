@@ -39,7 +39,8 @@ const withExpoVideo = (config, { supportsBackgroundPlayback, supportsPictureInPi
             // Add the foreground service to the manifest
             const application = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
             // Check if the service already exists
-            const existingService = application.service?.find((service) => service.$?.['android:name'] === 'expo.modules.video.playbackService.ExpoVideoPlaybackService');
+            const existingService = application.service?.find((service) => service.$?.['android:name'] ===
+                'expo.modules.video.playbackService.ExpoVideoPlaybackService');
             if (!existingService) {
                 // Add the service if it doesn't exist
                 if (!application.service) {

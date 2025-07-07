@@ -58,10 +58,12 @@ const withExpoVideo: ConfigPlugin<WithExpoVideoOptions> = (
 
       // Add the foreground service to the manifest
       const application = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
-      
+
       // Check if the service already exists
       const existingService = application.service?.find(
-        (service: any) => service.$?.['android:name'] === 'expo.modules.video.playbackService.ExpoVideoPlaybackService'
+        (service: any) =>
+          service.$?.['android:name'] ===
+          'expo.modules.video.playbackService.ExpoVideoPlaybackService'
       );
 
       if (!existingService) {
