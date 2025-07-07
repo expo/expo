@@ -22,6 +22,7 @@ import * as Styles from './Styles';
 import * as Updates from './Updates';
 import * as Version from './Version';
 import * as WindowSoftInputMode from './WindowSoftInputMode';
+import * as CodeMod from './codeMod';
 
 export { Manifest, Colors, Paths, Permissions, Properties, Resources, Scheme, Strings, Styles };
 
@@ -41,4 +42,5 @@ export {
   Updates,
   Version,
   WindowSoftInputMode,
+  CodeMod,
 };
