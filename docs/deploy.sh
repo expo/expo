@@ -310,6 +310,13 @@ redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
 redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
 
+# After moving eas/workflows/examples to eas/workflows/examples/*
+redirects[eas/workflows/examples]=eas/workflows/examples/introduction
+redirects[eas/workflows/examples/#development-builds-workflow]=eas/workflows/examples/create-development-builds
+redirects[eas/workflows/examples/#preview-updates-workflow]=eas/workflows/examples/publish-preview-update
+redirects[eas/workflows/examples/#deploy-to-production-workflow]=eas/workflows/examples/deploy-to-production
+redirects[eas/workflows/reference/e2e-tests/]=eas/workflows/examples/e2e-tests
+
 # After moving e2e-tests to eas/workflows/reference
 redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
 
