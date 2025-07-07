@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Export `CodeMod` from `android` directory for use in package config-plugins.
+- Export `CodeMod` from `android` directory for use in package config-plugins. ([#37885](https://github.com/expo/expo/pull/37885) by [@aleqsio](https://github.com/aleqsio))
 
 ## 10.0.3 - 2025-06-18
 
