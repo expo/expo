@@ -16,7 +16,7 @@ class DevMenuPackagerConnectionHandler {
     // It shouldn't diverge, because of the definition of `RCT_DEV`.
 #if DEBUG
     self.swizzleRCTDevMenuShow()
-    
+
     RCTPackagerConnection
       .shared()
       .addNotificationHandler(
@@ -34,7 +34,7 @@ class DevMenuPackagerConnectionHandler {
       )
 #endif
   }
-  
+
   private func swizzleRCTDevMenuShow() {
     // [@alan] HACK: We are only doing this to prevent the RN dev menu from showing except when called from
     // our dev menu. Without this, it will still respond to commands coming from the packager. I could not
@@ -44,19 +44,19 @@ class DevMenuPackagerConnectionHandler {
     guard let originalMethod = class_getInstanceMethod(devMenuClass, originalSelector) else {
       return
     }
-    
+
     let originalImplementation = method_getImplementation(originalMethod)
 
     let block: @convention(block) (AnyObject) -> Void = { devMenuInstance in
       if DevMenuPackagerConnectionHandler.suppressRNDevMenu {
         return
       }
-      
+
       typealias ShowFunction = @convention(c) (AnyObject, Selector) -> Void
       let showFunc = unsafeBitCast(originalImplementation, to: ShowFunction.self)
       showFunc(devMenuInstance, originalSelector)
     }
-    
+
     let blockImpl = imp_implementationWithBlock(block)
     method_setImplementation(originalMethod, blockImpl)
   }
@@ -90,7 +90,7 @@ class DevMenuPackagerConnectionHandler {
   func devMenuNotificationHanlder(_ parames: [String: Any]) {
     self.manager?.toggleMenu()
   }
-  
+
   static func allowRNDevMenuTemporarily() {
     suppressRNDevMenu = false
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
