@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Export `CodeMod` from `android` directory for use in package config-plugins.
+
 ## 10.0.3 - 2025-06-18
 
 ### 🐛 Bug fixes
