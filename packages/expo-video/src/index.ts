@@ -8,7 +8,7 @@ export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
 export type { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.types';
-export { VideoThumbnail } from './VideoThumbnail';
+export type { VideoThumbnail } from './VideoThumbnail';
 
 export { createVideoPlayer } from './VideoPlayer';
 
