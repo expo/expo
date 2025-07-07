@@ -79,7 +79,7 @@ This behavior ensures that all iOS releases go through TestFlight when using `--
 
 ### Modifying App Store listing (iOS only)
 
-Store metadata (app description, Apple advisory information, languages, and so on) is updated only when you have a **store.config.json** file present in your project's root directory and are using EAS Metadata.
+On its own, EAS Submit does not update store metadata (app description, Apple advisory information, languages, and so on). However, once you upload a build to Testflight with EAS Submit with a new version number, you can update this information with EAS Metadata.
 
 <BoxLink
   href="/eas/metadata/getting-started/"
