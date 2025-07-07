@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed NPE of `onWindowFocusChanged` on Android 10. ([#37819](https://github.com/expo/expo/pull/37819) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 53.0.18 — 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed NPE of `onWindowFocusChanged` on Android 10. ([#37819](https://github.com/expo/expo/pull/37819) by [@kudo](https://github.com/kudo))
 
 ## 53.0.17 — 2025-07-03
 

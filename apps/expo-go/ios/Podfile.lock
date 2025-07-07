@@ -14,7 +14,7 @@ PODS:
   - EXAV (15.1.7):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXConstants (17.1.6):
+  - EXConstants (17.1.7):
     - ExpoModulesCore
   - EXImageLoader (5.1.0):
     - ExpoModulesCore
@@ -26,12 +26,12 @@ PODS:
   - EXManifests/Tests (0.16.6):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.31.3):
+  - EXNotifications (0.31.4):
     - ExpoModulesCore
-  - EXNotifications/Tests (0.31.3):
+  - EXNotifications/Tests (0.31.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.16):
+  - Expo (53.0.18):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -60,9 +60,9 @@ PODS:
     - Yoga
   - ExpoAppleAuthentication (7.2.4):
     - ExpoModulesCore
-  - ExpoAsset (11.1.6):
+  - ExpoAsset (11.1.7):
     - ExpoModulesCore
-  - ExpoAudio (0.4.7):
+  - ExpoAudio (0.4.8):
     - ExpoModulesCore
   - ExpoBackgroundFetch (13.1.6):
     - ExpoModulesCore
@@ -109,7 +109,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.1.4):
     - ExpoModulesCore
-  - ExpoHead (5.1.2):
+  - ExpoHead (5.1.3):
     - ExpoModulesCore
   - ExpoImage (2.3.2):
     - ExpoModulesCore
@@ -136,7 +136,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (14.1.5):
     - ExpoModulesCore
-  - ExpoLinking (7.1.6):
+  - ExpoLinking (7.1.7):
     - ExpoModulesCore
   - ExpoLivePhoto (0.1.4):
     - ExpoModulesCore
@@ -254,7 +254,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.1.7):
     - ExpoModulesCore
-  - ExpoSQLite (15.2.13):
+  - ExpoSQLite (15.2.14):
     - ExpoModulesCore
   - ExpoStoreReview (8.1.5):
     - ExpoModulesCore
@@ -3446,15 +3446,15 @@ SPEC CHECKSUMS:
   EASClient: 5944ca4aea2836e5ecc5158381f3d4eb43b30e56
   EXApplication: 50cc8ea58c138da6e3f25cd789634219c86b90d5
   EXAV: 28241f071fd70ea38d278d94096b61d893645946
-  EXConstants: be238322d57d084dc055dbd5d6fe6479510504ce
+  EXConstants: 9d62a46a36eae6d28cb978efcbc68aef354d1704
   EXImageLoader: ab4fcf9240cf3636a83c00e3fc5229d692899428
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: f4cc4a62ee4f1c8a9cf2bb79d325eac6cb9f5684
-  EXNotifications: 2c4bcb5efff0874d8553db6ba0fbfec64c0e7481
-  Expo: 32b8123c67a2960a0d49eeef6aecab18d5601cee
+  EXNotifications: d0a50a5490845c702f2c605e94533ae5ddf1aadb
+  Expo: 1cb9ab2aad5663205b8ad53765fccc3ac4c75fbb
   ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6
-  ExpoAsset: 489c30c501eee4f3da760690cf0166acbcb770ca
-  ExpoAudio: 23197b5998bac8d09417eb94ad01d27c4c3e928b
+  ExpoAsset: 7bdbbacf4e6752ae6e3cf70555cee076f6229e6e
+  ExpoAudio: b538eb1b6f9c0bd06494a2ec1892befbb276aaeb
   ExpoBackgroundFetch: 7410d5a499f4878b584eca183e19219ab2fc5cc4
   ExpoBackgroundTask: 9a714431a3510646bdd3317bac6d894f9b560318
   ExpoBattery: 2bdb40a8943dae1cbab23ccaaab09d0cc78de0ae
@@ -3473,13 +3473,13 @@ SPEC CHECKSUMS:
   ExpoFont: 091a47eeaa1b30b0b760aa1d0a2e7814e8bf6fe6
   ExpoGL: b4324d3a28d01d7664ed450333919ae336701146
   ExpoHaptics: 68c215e070f660e0a29c45dcda4f60eeff08aefb
-  ExpoHead: c98286b93107dd858e2197c0126a29e286526ecb
+  ExpoHead: 9929511f8f28f2b41294c39fa66760ac74742078
   ExpoImage: 3ad41dfaa6d33e72ee1b7e2cead5f678fad8dd02
   ExpoImageManipulator: 094b748056f2654d5d7813370c910e20ef3d79b4
   ExpoImagePicker: d2fff488a0738343a3cc21e98544ee9feafaa0e6
   ExpoKeepAwake: e8dedc115d9f6f24b153ccd2d1d8efcdfd68a527
   ExpoLinearGradient: ce334cff9859da4635c1d8eff6e291b11b04ccbb
-  ExpoLinking: 6397ac0df8d92fc1834b80de3be022d696ba50d4
+  ExpoLinking: 343a89ea864a851831fd4495e8aea01cf0f6a36f
   ExpoLivePhoto: b47b0598f335a979749ec76d4b3e5a4f9fa84150
   ExpoLocalAuthentication: 78f74d187ee51126e1a789d73fee32d6d7e60f1f
   ExpoLocalization: 677e45c2536bf918119962f78d7ffeeea317e07d
@@ -3498,7 +3498,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 04b346bdd7c8ea1fa87047ac7bba65c37bde4f51
   ExpoSMS: de195632beeb7ef00556750da10da667596d8967
   ExpoSpeech: fceabf6bf31aa9530ef0696e6793571edb702068
-  ExpoSQLite: 96c8d6b5935c56dc63ed240f65ee8def0f197012
+  ExpoSQLite: 9ac0f99bd48e1a3e2df64f8aecfab40b89a62372
   ExpoStoreReview: bed43bea90a5876a6a480504f95fea1521dacaa7
   ExpoSymbols: bd4e20b0b6a9dbacc31dd7c861e0d6d01b56e1f2
   ExpoSystemUI: ecb2b2e8ee9468295e7c33fa10eb4e73e581389a
@@ -3527,7 +3527,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 9c6db1722e38a33defc2d6e113d04954ff2ebe23
+  hermes-engine: cb7a604dfb79d1c001e3e5dbae3e547ae62d61ef
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
