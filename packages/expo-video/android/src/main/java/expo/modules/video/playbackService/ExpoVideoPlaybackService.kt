@@ -121,10 +121,6 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
   @MainThread
   private fun setMostRecentInteractionSession(session: MediaSession?) {
-    if (isStateUnchanged(session)) {
-      return
-    }
-
     if (session?.player?.playWhenReady == false) {
       stopForeground(STOP_FOREGROUND_DETACH)
       isForeground = false
@@ -168,12 +164,6 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   override fun onDestroy() {
     cleanup()
     super.onDestroy()
-  }
-
-  @MainThread
-  private fun isStateUnchanged(newSession: MediaSession?): Boolean {
-    val isPlaying = newSession?.player?.playWhenReady ?: false
-    return newSession == mostRecentInteractionSession && isPlaying == isForeground
   }
 
   @MainThread

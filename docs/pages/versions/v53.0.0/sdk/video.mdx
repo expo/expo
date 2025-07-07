@@ -46,7 +46,7 @@ You can configure `expo-video` using its built-in [config plugin](/config-plugin
     {
       name: 'supportsBackgroundPlayback',
       description:
-        'On iOS, if `true`, the `audio` key is added to the `UIBackgroundModes` array in the **Info.plist** file. If `false`, the key is removed. When `undefined`, the key is not modified. On Android a new Foreground service of type `mediaPlayback` is added to `AndroidManifest.xml`.',
+        'On Android, a new Foreground service of type `mediaPlayback` is added to **AndroidManifest.xml**. On iOS, if `true`, the `audio` key is added to the `UIBackgroundModes` array in the **Info.plist** file. If `false`, the key is removed. When `undefined`, the key is not modified.',
       default: 'undefined',
     },
     {
