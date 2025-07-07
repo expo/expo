@@ -9,7 +9,7 @@
 - Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
 - [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
 - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))
-- [iOS] Support SharedObjects arrays
+- [iOS] Support cast from JavaScriptValue in DynamicArrayType.
 
 ### 🐛 Bug fixes
 
