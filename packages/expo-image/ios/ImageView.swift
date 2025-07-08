@@ -59,7 +59,7 @@ public final class ImageView: ExpoView {
   var allowDownscaling: Bool = true
 
   var lockResource: Bool = false
-  
+
   var enforceEarlyResizing: Bool = false
 
   var recyclingKey: String? {
@@ -167,7 +167,11 @@ public final class ImageView: ExpoView {
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
     let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing
     if shouldEarlyResize {
-      applyEarlyResizing(context)
+      context[.imagePreserveAspectRatio] = true
+      context[.imageThumbnailPixelSize] = CGSize(
+        width: sdImageView.bounds.size.width * screenScale,
+        height: sdImageView.bounds.size.height * screenScale
+      )
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
@@ -188,14 +192,6 @@ public final class ImageView: ExpoView {
       context: context,
       progress: imageLoadProgress(_:_:_:),
       completed: imageLoadCompleted(_:_:_:_:_:_:)
-    )
-  }
-  
-  private func applyEarlyResizing(_ context: SDWebImageContext) {
-    context[.imagePreserveAspectRatio] = true
-    context[.imageThumbnailPixelSize] = CGSize(
-      width: sdImageView.bounds.size.width * screenScale,
-      height: sdImageView.bounds.size.height * screenScale
     )
   }
 

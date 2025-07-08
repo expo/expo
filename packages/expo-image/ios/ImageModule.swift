@@ -110,7 +110,7 @@ public final class ImageModule: Module {
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }
-      
+
       Prop("enforceEarlyResizing", false) { (view, enforceEarlyResizing: Bool) in
         view.enforceEarlyResizing = enforceEarlyResizing
       }
