@@ -73,7 +73,7 @@ internal struct VideoSourceLoadedEventPayload: Record {
   @Field var availableAudioTracks: [AudioTrack]? = nil
 }
 
-internal struct IsExternalPlaybackActiveChangedEventPayload: Record {
+internal struct IsExternalPlaybackActiveEventPayload: Record {
   @Field var isExternalPlaybackActive: Bool = false
   @Field var oldIsExternalPlaybackActive: Bool? = nil
 }

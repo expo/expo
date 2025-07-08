@@ -127,16 +127,16 @@ public final class VideoModule: Module {
         "onEndPresentingRoutes"
       )
 
-      Prop("tint") { (view, tint: UIColor) in
+      Prop("tint") { (view, tint: UIColor?) in
         view.tint = tint
       }
 
-      Prop("activeTint") { (view, activeTint: UIColor) in
+      Prop("activeTint") { (view, activeTint: UIColor?) in
         view.activeTintColor = activeTint
       }
 
-      Prop("prioritizeVideoDevices") { (view, prioritizeVideoDevices: Bool) in
-        view.prioritizeVideoDevices = prioritizeVideoDevices
+      Prop("prioritizeVideoDevices") { (view, prioritizeVideoDevices: Bool?) in
+        view.prioritizeVideoDevices = prioritizeVideoDevices ?? true
       }
     }
 

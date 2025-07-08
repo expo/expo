@@ -25,18 +25,12 @@ public final class VideoAirPlayButtonView: ExpoView {
 
   var activeTintColor: UIColor? {
     didSet {
-      guard let activeTintColor else {
-        return
-      }
       routePickerView.activeTintColor = activeTintColor
     }
   }
 
   var tint: UIColor? {
     didSet {
-      guard let tint else {
-        return
-      }
       routePickerView.tintColor = tint
     }
   }

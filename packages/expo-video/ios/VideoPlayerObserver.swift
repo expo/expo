@@ -148,7 +148,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   private var playerIsMutedObserver: NSKeyValueObservation?
   private var playerAudioMixingModeObserver: NSKeyValueObservation?
   private var tracksObserver: NSKeyValueObservation?
-  private var playerIsExternalPlaybackActiveObserver: NSKeyValueObservation?
+  private var playerExternalPlaybackObserver: NSKeyValueObservation?
 
   // Current player item observers
   private var playbackBufferEmptyObserver: NSKeyValueObservation?
@@ -207,7 +207,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playerCurrentItemObserver = player.observe(\.currentItem, options: [.initial, .new]) { [weak self] player, change in
       self?.onPlayerCurrentItemChanged(player, change)
     }
-    playerIsExternalPlaybackActiveObserver = player.observe(\.isExternalPlaybackActive, changeHandler: { [weak self] player, change in
+    playerExternalPlaybackObserver = player.observe(\.isExternalPlaybackActive, changeHandler: { [weak self] player, change in
       self?.onIsExternalPlaybackActiveChanged(player, change)
     })
   }
@@ -219,7 +219,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playerVolumeObserver?.invalidate()
     playerIsMutedObserver?.invalidate()
     playerCurrentItemObserver?.invalidate()
-    playerIsExternalPlaybackActiveObserver?.invalidate()
+    playerExternalPlaybackObserver?.invalidate()
   }
 
   private func initializeCurrentPlayerItemObservers(player: AVPlayer, playerItem: AVPlayerItem) {
