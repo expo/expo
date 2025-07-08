@@ -100,10 +100,6 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func preventScreenshots() {
-    guard #available(iOS 13.0, *) else {
-      return
-    }
-
     guard let keyWindow = UIApplication.shared.keyWindow,
           let visibleView = keyWindow.subviews.first else { return }
 

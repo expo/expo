@@ -18,7 +18,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * When using multiple keys, you'll have to re-allow each one in order to re-enable screen capturing.
  *
  * @platform android
- * @platform ios 11+ (screen recording prevention) / ios 13+ (screenshot protection - experimental)
+ * @platform ios
  */
 export declare function preventScreenCaptureAsync(key?: string): Promise<void>;
 /**
