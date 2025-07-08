@@ -6,8 +6,7 @@ export default function Modal() {
   return (
     <View
       style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-      {/* <Stack.Screen options={{ title: 'Test' }} /> */}
-      <Text>Modal</Text>
+      <Text>Fullscreen Modal</Text>
       <Button title="Close" onPress={() => router.back()} />
     </View>
   );

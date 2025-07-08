@@ -5,6 +5,10 @@ export default function Layout() {
     <Stack screenOptions={{ headerShown: false, animation: 'slide_from_bottom' }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: true }} />
+      <Stack.Screen
+        name="fullScreenModal"
+        options={{ presentation: 'fullScreenModal', headerShown: true }}
+      />
     </Stack>
   );
 }
