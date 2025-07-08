@@ -160,8 +160,8 @@ File.downloadFileAsync = async function downloadFileAsync(
   to: File | Directory,
   options?: DownloadOptions
 ) {
-  const outputPath = await ExpoFileSystem.downloadFileAsync(url, to, options);
-  return new File(outputPath);
+  const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options);
+  return new File(outputURI);
 };
 
 /**

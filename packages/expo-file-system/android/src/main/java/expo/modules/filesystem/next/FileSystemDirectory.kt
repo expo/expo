@@ -1,11 +1,13 @@
 package expo.modules.filesystem.next
 
+import android.content.Context
 import android.net.Uri
 import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 import java.io.File
+import java.net.URI
 
-class FileSystemDirectory(file: File) : FileSystemPath(file) {
+class FileSystemDirectory(uri: URI) : FileSystemPath(uri) {
   fun validatePath() {
 // Kept empty for now, but can be used to validate if the path is a valid directory path.
   }

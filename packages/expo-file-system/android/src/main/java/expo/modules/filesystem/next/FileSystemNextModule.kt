@@ -78,7 +78,7 @@ class FileSystemNextModule : Module() {
           input.copyTo(output)
         }
       }
-      return@Coroutine destination.path
+      return@Coroutine destination.toURI()
     }
 
     Function("info") { url: URI ->
@@ -94,7 +94,7 @@ class FileSystemNextModule : Module() {
 
     Class(FileSystemFile::class) {
       Constructor { uri: URI ->
-        FileSystemFile(File(uri.path))
+        FileSystemFile(uri)
       }
 
       Function("delete") { file: FileSystemFile ->
@@ -211,7 +211,7 @@ class FileSystemNextModule : Module() {
 
     Class(FileSystemDirectory::class) {
       Constructor { uri: URI ->
-        FileSystemDirectory(File(uri.path))
+        FileSystemDirectory(uri)
       }
 
       Function("info") { directory: FileSystemDirectory ->

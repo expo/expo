@@ -4,6 +4,7 @@ import android.os.Build
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
+import java.net.URI
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.EnumSet
 import kotlin.io.path.Path
@@ -11,11 +12,9 @@ import kotlin.io.path.moveTo
 import kotlin.io.path.readAttributes
 import kotlin.time.Duration.Companion.milliseconds
 
-// We use the `File` class to represent a file or a directory in the file system.
-// The Path class might be better, but `java.nio.file.Path` class is not available in API 23.
-// The URL, URI classes seem like a less suitable choice.
-// https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
-abstract class FileSystemPath(public var file: File) : SharedObject() {
+abstract class FileSystemPath(public var uri: URI) : SharedObject() {
+  val file get() = File(uri)
+
   fun delete(fileOrDirectory: File = file) {
     if (!fileOrDirectory.exists()) {
       throw UnableToDeleteException("path '${fileOrDirectory.path}' does not exist")
@@ -102,11 +101,11 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val destination = getMoveOrCopyPath(to)
       file.toPath().moveTo(destination.toPath())
-      file = destination
+      uri = destination.toURI()
     } else {
       file.copyTo(getMoveOrCopyPath(to))
       file.delete()
-      file = getMoveOrCopyPath(to)
+      uri = getMoveOrCopyPath(to).toURI()
     }
   }
 
