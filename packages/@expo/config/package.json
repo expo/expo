@@ -34,7 +34,7 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "@expo/config-plugins": "~10.1.1",
+    "@expo/config-plugins": "~10.1.2",
     "@expo/config-types": "^53.0.5",
     "@expo/json-file": "^9.1.5",
     "deepmerge": "^4.3.1",

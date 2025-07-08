@@ -75,7 +75,7 @@
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.24.19",
     "@expo/config": "~11.0.12",
-    "@expo/config-plugins": "~10.1.1",
+    "@expo/config-plugins": "~10.1.2",
     "@expo/fingerprint": "0.13.4",
     "@expo/metro-config": "0.20.17",
     "@expo/vector-icons": "^14.0.0",

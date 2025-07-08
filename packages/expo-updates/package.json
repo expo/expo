@@ -40,7 +40,7 @@
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~11.0.12",
-    "@expo/config-plugins": "~10.1.1",
+    "@expo/config-plugins": "~10.1.2",
     "@expo/spawn-async": "^1.7.2",
     "arg": "4.1.0",
     "chalk": "^4.1.2",
