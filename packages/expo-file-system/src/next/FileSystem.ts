@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions } from './ExpoFileSystem.types';
+import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -40,6 +40,13 @@ export class Paths extends PathUtilities {
    */
   static get availableDiskSpace() {
     return ExpoFileSystem.availableDiskSpace;
+  }
+
+  /**
+   * Returns an object that indicates if the specified path represents a directory.
+   */
+  static info(...uris: string[]): PathInfo {
+    return ExpoFileSystem.info(uris.join('/'));
   }
 }
 
@@ -82,7 +89,7 @@ export class FileBlob extends Blob {
     return this.file.text();
   }
 
-  override async bytes(): Promise<Uint8Array> {
+  async bytes(): Promise<Uint8Array> {
     return this.file.bytes();
   }
 

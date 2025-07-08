@@ -1,7 +1,7 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { useMemo, MouseEvent } from 'react';
+import React, { useMemo, MouseEvent } from 'react';
 import { Text, GestureResponderEvent, Platform } from 'react-native';
 
 import { resolveHref } from './href';
@@ -60,6 +60,12 @@ export function BaseExpoRouterLink({
   };
 
   const Component = asChild ? Slot : Text;
+
+  if (asChild && React.Children.count(rest.children) > 1) {
+    throw new Error(
+      'Link: When using `asChild`, you must pass a single child element that will emit the `onPress` event.'
+    );
+  }
 
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   const element = (

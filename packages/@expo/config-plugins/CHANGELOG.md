@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
-- Add android config plugin for app name translation. ([#37202](https://github.com/expo/expo/pull/37202) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
+- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`. ([#37828](https://github.com/expo/expo/pull/37828) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
+
+## 10.1.1 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 10.1.0 - 2025-07-01
+
+### 🎉 New features
+
+- Add android config plugin for app name translation. ([#37202](https://github.com/expo/expo/pull/37202) by [@aleqsio](https://github.com/aleqsio))
 
 ## 10.0.3 - 2025-06-18
 

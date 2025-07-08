@@ -2,14 +2,17 @@
 
 import React, {
   createContext,
+  createElement,
   isValidElement,
   use,
   useEffect,
   useRef,
   useState,
+  type FC,
   type PropsWithChildren,
   type ReactElement,
 } from 'react';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
@@ -20,6 +23,7 @@ import {
   NativeLinkPreviewAction,
   NativeLinkPreviewContent,
   NativeLinkPreviewTrigger,
+  type NativeLinkPreviewActionProps,
 } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
 import { LinkProps } from './useLinkHooks';
@@ -99,15 +103,17 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
 
   const actionsHandlers = React.useMemo(
     () =>
-      convertActionsToActionsHandlers(
-        convertChildrenArrayToActions(React.Children.toArray(menuElement?.props.children))
-      ),
+      menuElement
+        ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
+        : {},
     [menuElement]
   );
   const preview = React.useMemo(
     () => previewElement ?? <LinkPreview />,
     [previewElement, rest.href]
   );
+
+  const isPreviewTapped = useRef(false);
 
   if (shouldLinkExternally(String(rest.href)) || rest.replace) {
     return <BaseExpoRouterLink children={children} {...rest} />;
@@ -120,6 +126,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         actionsHandlers[id]?.();
       }}
       onWillPreviewOpen={() => {
+        isPreviewTapped.current = false;
         router.prefetch(rest.href);
         setIsPreviewOpen(true);
         setIsCurrenPreviewOpen(true);
@@ -127,11 +134,24 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       onDidPreviewOpen={() => {
         updateNextScreenId(rest.href);
       }}
+      onPreviewWillClose={() => {
+        // When preview was not tapped, then we need to enable the screen stack animation
+        // Otherwise a quick user could tap another link before onDidPreviewClose is called
+        if (!isPreviewTapped.current) {
+          setIsCurrenPreviewOpen(false);
+          setIsPreviewOpen(false);
+        }
+      }}
       onPreviewDidClose={() => {
-        setIsPreviewOpen(false);
-        setIsCurrenPreviewOpen(false);
+        // If preview was tapped we need to enable the screen stack animation
+        // For other cases we did it in onPreviewWillClose
+        if (isPreviewTapped.current) {
+          setIsCurrenPreviewOpen(false);
+          setIsPreviewOpen(false);
+        }
       }}
       onPreviewTapped={() => {
+        isPreviewTapped.current = true;
         router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
       }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
@@ -145,28 +165,51 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
   );
 }
 
-interface LinkMenuAction {
+interface LinkMenuActionProps {
   /**
    * The title of the menu item.
    */
   title: string;
+  /**
+   * Optional SF Symbol displayed alongside the menu item.
+   */
+  icon?: SFSymbol;
   onPress: () => void;
 }
 
-export function LinkMenuAction(_: LinkMenuAction) {
+export function LinkMenuAction(_: LinkMenuActionProps) {
   return null;
 }
-interface LinkMenuProps {
-  children: ReactElement<LinkMenuAction> | ReactElement<LinkMenuAction>[];
+
+export interface LinkMenuProps {
+  /**
+   * The title of the menu item
+   */
+  title?: string;
+  /**
+   * Optional SF Symbol displayed alongside the menu item.
+   */
+  icon?: string;
+  children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
 }
 
-export function LinkMenu({ children }: LinkMenuProps) {
-  if (useIsPreview() || !use(InternalLinkPreviewContext)) {
+export const LinkMenu: FC<LinkMenuProps> = (props) => {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
     return null;
   }
-  return convertChildrenArrayToActions(React.Children.toArray(children)).map((action) => {
-    return <NativeLinkPreviewAction key={action.id} title={action.title} id={action.id} />;
-  });
+  return convertActionsToNativeElements(
+    convertChildrenArrayToActions([createElement(LinkMenu, props, props.children)])
+  );
+};
+
+function convertActionsToNativeElements(actions: ConvertChildrenArrayToActionsReturnType) {
+  return actions.map(({ children, onPress, ...props }) => (
+    <NativeLinkPreviewAction
+      {...props}
+      key={props.id}
+      children={convertActionsToNativeElements(children)}
+    />
+  ));
 }
 
 interface LinkPreviewProps {
@@ -190,7 +233,7 @@ interface LinkPreviewProps {
 
 export function LinkPreview({ children, width, height }: LinkPreviewProps) {
   const internalPreviewContext = use(InternalLinkPreviewContext);
-  if (useIsPreview() || !internalPreviewContext) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !internalPreviewContext) {
     return null;
   }
   const { isVisible, href } = internalPreviewContext;
@@ -241,9 +284,9 @@ function getFirstChildOfType<PropsT>(
 }
 
 function convertActionsToActionsHandlers(
-  items: { id: string; title: string; onPress: () => void }[] | undefined
+  items: ConvertChildrenArrayToActionsReturnType | undefined
 ) {
-  return (items ?? []).reduce(
+  return flattenActions(items ?? []).reduce(
     (acc, item) => ({
       ...acc,
       [item.id]: item.onPress,
@@ -252,15 +295,42 @@ function convertActionsToActionsHandlers(
   );
 }
 
-function convertChildrenArrayToActions(children: ReturnType<typeof React.Children.toArray>) {
+function flattenActions(
+  actions: ConvertChildrenArrayToActionsReturnType
+): ConvertChildrenArrayToActionsReturnType {
+  return actions.reduce((acc, action) => {
+    if (action.children.length > 0) {
+      return [...acc, action, ...flattenActions(action.children)];
+    }
+    return [...acc, action];
+  }, [] as ConvertChildrenArrayToActionsReturnType);
+}
+
+type ConvertChildrenArrayToActionsReturnType = (Omit<NativeLinkPreviewActionProps, 'children'> & {
+  onPress: () => void;
+  children: ConvertChildrenArrayToActionsReturnType;
+})[];
+
+function convertChildrenArrayToActions(
+  children: ReturnType<typeof React.Children.toArray>,
+  parentId: string = ''
+): ConvertChildrenArrayToActionsReturnType {
   return children
     .filter(
-      (item): item is ReactElement<LinkMenuAction> =>
-        isValidElement(item) && item.type === LinkMenuAction
+      (item): item is ReactElement<LinkMenuActionProps | LinkMenuProps> =>
+        isValidElement(item) && (item.type === LinkMenuAction || item.type === LinkMenu)
     )
     .map((child, index) => ({
-      id: `${child.props.title}-${index}`,
-      title: child.props.title,
-      onPress: child.props.onPress,
+      id: `${parentId}${child.props.title}-${index}`,
+      title: child.props.title ?? '',
+      onPress: 'onPress' in child.props ? child.props.onPress : () => {},
+      icon: child.props.icon,
+      children:
+        'children' in child.props
+          ? convertChildrenArrayToActions(
+              React.Children.toArray(child.props.children),
+              `${parentId}${child.props.title}-${index}`
+            )
+          : [],
     }));
 }

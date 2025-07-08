@@ -94,6 +94,26 @@ public final class FileSystemNextModule: Module {
       downloadTask.resume()
     }
 
+    Function("info") { (url: URL) in
+      let output = PathInfo()
+      output.exists = false
+      output.isDirectory = nil
+
+      guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+        return output
+      }
+
+      if permissionsManager.getPathPermissions(url.path).contains(.read) {
+        var isDirectory: ObjCBool = false
+        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+          output.exists = true
+          output.isDirectory = isDirectory.boolValue
+          return output
+        }
+      }
+      return output
+    }
+
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
         return FileSystemFile(url: url.standardizedFileURL)
@@ -121,6 +141,10 @@ public final class FileSystemNextModule: Module {
         return try FileSystemFileHandle(file: file)
       }
 
+      Function("info") { (file: FileSystemFile, options: InfoOptions?) in
+        return try file.info(options: options ?? InfoOptions())
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -136,6 +160,14 @@ public final class FileSystemNextModule: Module {
 
       Property("md5") { file in
         try? file.md5
+      }
+
+      Property("modificationTime") { file in
+        try? file.modificationTime
+      }
+
+      Property("creationTime") { file in
+        try? file.creationTime
       }
 
       Property("type") { file in

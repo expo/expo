@@ -65,7 +65,7 @@ private const val EXUploadProgressEventName = "expo-file-system.uploadProgress"
 private const val MIN_EVENT_DT_MS: Long = 100
 private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
 
-private fun slashifyFilePath(path: String?): String? {
+fun slashifyFilePath(path: String?): String? {
   return if (path == null) {
     null
   } else if (path.startsWith("file:///")) {

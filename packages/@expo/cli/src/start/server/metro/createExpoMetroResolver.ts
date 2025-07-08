@@ -146,9 +146,7 @@ export function createFastResolver({
         blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        moduleDirectory: context.nodeModulesPaths.length
-          ? (context.nodeModulesPaths as string[])
-          : undefined,
+        paths: context.nodeModulesPaths.length ? (context.nodeModulesPaths as string[]) : undefined,
         extensions,
         conditions,
         realpathSync(file: string): string {

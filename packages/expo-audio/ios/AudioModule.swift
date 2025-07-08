@@ -81,6 +81,9 @@ public class AudioModule: Module {
         let avPlayer = AudioUtils.createAVPlayer(from: source)
         let player = AudioPlayer(avPlayer, interval: updateInterval)
         player.owningRegistry = self.registry
+        player.onPlaybackComplete = { [weak self] in
+          self?.deactivateSession()
+        }
         self.registry.add(player)
         return player
       }
@@ -150,9 +153,7 @@ public class AudioModule: Module {
       }
 
       Function("play") { player in
-        guard sessionIsActive else {
-          return
-        }
+        try activateSession()
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
         player.play(at: rate)
       }
@@ -173,6 +174,7 @@ public class AudioModule: Module {
 
       Function("pause") { player in
         player.ref.pause()
+        deactivateSession()
       }
 
       Function("remove") { player in
@@ -185,12 +187,11 @@ public class AudioModule: Module {
         }
       }
 
-      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double) in
-        await player.ref.currentItem?.seek(
-          to: CMTime(
-            seconds: seconds,
-            preferredTimescale: CMTimeScale(NSEC_PER_SEC)
-          )
+      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
+        await player.seekTo(
+          seconds: seconds,
+          toleranceMillisBefore: toleranceMillisBefore,
+          toleranceMillisAfter: toleranceMillisAfter
         )
       }
     }
@@ -482,7 +483,27 @@ public class AudioModule: Module {
     }
 
     try session.setCategory(category, options: sessionOptions)
-    try session.setActive(true, options: [.notifyOthersOnDeactivation])
+  }
+
+  private func activateSession() throws {
+    try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
+  }
+
+  private func deactivateSession() {
+    // We need to give isPlaying time to update before running this
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+      guard let self else {
+        return
+      }
+      let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
+      if !hasActivePlayers {
+        do {
+          try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+        } catch {
+          print("Failed to deactivate audio session: \(error)")
+        }
+      }
+    }
   }
 
   private func checkPermissions() throws {

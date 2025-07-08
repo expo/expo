@@ -91,7 +91,7 @@ fun Accordion(
 @Composable
 @Preview(showBackground = true, heightDp = 200)
 fun AccordionVariantPreview() {
-  Accordion(text = "Enter URL") {
+  Accordion(text = "Enter URL manually") {
     Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac nisl interdum, mattis purus a, consequat ipsum. Aliquam sem mauris, egestas a elit a, lacinia efficitur nisi. Maecenas scelerisque erat nisi, ac interdum mauris volutpat vel. Proin sed lectus at purus interdum porta. Ut mollis feugiat dignissim.")
   }
 }

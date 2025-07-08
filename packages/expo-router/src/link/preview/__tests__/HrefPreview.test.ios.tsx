@@ -297,3 +297,40 @@ it('Renders not found for not existing href', async () => {
 
   expect(screen.getByTestId('not-found')).toBeVisible();
 });
+
+describe('Setting Stack.Screen options in preview', () => {
+  let consoleWarnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('can use Stack.Screen inside screen presented in HrefPreview', () => {
+    const headerTitle = jest.fn(() => null);
+    renderRouter({
+      _layout: () => <Stack screenOptions={{ headerTitle }} />,
+      index: () => (
+        <View testID="index">
+          <HrefPreview href="/preview" />
+        </View>
+      ),
+      preview: () => (
+        <View testID="preview">
+          <Stack.Screen options={{ title: 'preview', headerShown: true }} />
+        </View>
+      ),
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId('preview')).toBeVisible();
+    expect(headerTitle.mock.calls).toStrictEqual([
+      [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+      [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    ]);
+    expect(consoleWarnSpy).toHaveBeenCalled();
+  });
+});

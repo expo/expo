@@ -30,8 +30,7 @@
     "metro-config.js",
     "metro-config.d.ts",
     "dom",
-    "config.js",
-    "config.d.ts",
+    "config",
     "config-plugins.js",
     "config-plugins.d.ts",
     "devtools.js",
@@ -99,7 +98,7 @@
     "expo-module-scripts": "^4.1.7",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.0",
+    "react-native": "0.80.1",
     "web-streams-polyfill": "^3.3.2",
     "ws": "^8.18.0"
   },

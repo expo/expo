@@ -43,6 +43,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
+      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String) in
+        view.icon = icon
+      }
     }
 
     View(NativeLinkPreviewTrigger.self) {}

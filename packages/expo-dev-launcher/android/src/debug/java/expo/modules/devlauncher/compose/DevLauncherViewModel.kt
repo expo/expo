@@ -7,40 +7,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.services.PackagerService
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-
-sealed interface DevLauncherEvent {
-  object LogIn : DevLauncherEvent
-  object SignUp : DevLauncherEvent
-}
-
-fun interface DevLauncherEventListener {
-  fun onEvent(event: DevLauncherEvent)
-}
 
 class DevLauncherViewModel(
   val devLauncherController: DevLauncherController
 ) : ViewModel() {
   val httpClient = OkHttpClient()
+
   val packagerService = PackagerService(httpClient, viewModelScope)
-
-  private val eventListeners: MutableList<DevLauncherEventListener> = mutableListOf()
-
-  fun addEventListener(listener: DevLauncherEventListener) {
-    eventListeners.add(listener)
-  }
-
-  fun removeEventListener(listener: DevLauncherEventListener) {
-    eventListeners.remove(listener)
-  }
-
-  fun emitEvent(event: DevLauncherEvent) {
-    eventListeners.forEach { it.onEvent(event) }
-  }
-
-  val events = Channel<DevLauncherEvent>()
 
   fun onAction(action: DevLauncherAction) {
     when (action) {
@@ -52,8 +27,6 @@ class DevLauncherViewModel(
             Log.e("DevLauncher", "Failed to open app: ${action.url}", e)
           }
         }
-      DevLauncherAction.LogIn -> emitEvent(DevLauncherEvent.LogIn)
-      DevLauncherAction.SignUp -> emitEvent(DevLauncherEvent.SignUp)
     }
   }
 

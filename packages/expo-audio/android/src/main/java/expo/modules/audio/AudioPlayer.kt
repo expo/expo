@@ -145,6 +145,13 @@ class AudioPlayer(
     }
   }
 
+  fun seekTo(seekTime: Double) {
+    ref.seekTo((seekTime * 1000L).toLong())
+    playerScope.launch {
+      sendPlayerUpdate()
+    }
+  }
+
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
     val unsignedByte = byte.toInt() and 0xFF
     ((unsignedByte - 128).toDouble() / 128.0).toFloat()

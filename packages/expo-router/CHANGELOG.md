@@ -9,13 +9,27 @@
 - Add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
 - Add experimental link preview (iOS only) ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
 - Allow for multiple children in Link.Trigger ([#37700](https://github.com/expo/expo/pull/37700) by [@Ubax](https://github.com/Ubax))
-
+- Add icon prop to Link.MenuAction ([#37783](https://github.com/expo/expo/pull/37783) by [@Ubax](https://github.com/Ubax))
+- Add submenus to link preview context menu ([#37784](https://github.com/expo/expo/pull/37784) by [@Ubax](https://github.com/Ubax))
+- [web] Add styled modals and sheets on web with a custom modal stack using vaul ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
+- [web] Add transparent modal support and allow modal stacking ([#37856](https://github.com/expo/expo/pull/37856) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
+
+- fix link with preview on web and Android ([#37800](https://github.com/expo/expo/pull/37800) by [@Ubax](https://github.com/Ubax))
+- fix <Stack.Screen> in HrefPreview ([#37830](https://github.com/expo/expo/pull/37830) by [@Ubax](https://github.com/Ubax))
+- fix white screen when opening preview too fast ([#37858](https://github.com/expo/expo/pull/37858) by [@Ubax](https://github.com/Ubax))
+- fix screen freeze after preview navigation ([#37881](https://github.com/expo/expo/pull/37881) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
+
+## 5.1.3 - 2025-07-03
+
+### 🐛 Bug fixes
+
+- fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
 
 ## 5.1.1 - 2025-06-26
 

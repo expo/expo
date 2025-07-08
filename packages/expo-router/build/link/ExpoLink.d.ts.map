@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoLink.d.ts","sourceRoot":"","sources":["../../src/link/ExpoLink.tsx"],"names":[],"mappings":"AAQA,OAAO,EAAE,SAAS,EAAE,MAAM,gBAAgB,CAAC;AAE3C,wBAAgB,QAAQ,CAAC,KAAK,EAAE,SAAS,+BAMxC"}
+{"version":3,"file":"ExpoLink.d.ts","sourceRoot":"","sources":["../../src/link/ExpoLink.tsx"],"names":[],"mappings":"AAGA,OAAO,KAAmC,MAAM,OAAO,CAAC;AAKxD,OAAO,EAAE,SAAS,EAAE,MAAM,gBAAgB,CAAC;AAE3C,wBAAgB,QAAQ,CAAC,KAAK,EAAE,SAAS,qBAmBxC"}

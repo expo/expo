@@ -23,6 +23,9 @@
     "open:universal-linking": "xcrun simctl terminate booted com.expo.routere2e && npx uri-scheme open https://expo-e2e-universal-linking.ngrok.io/post/123 --ios",
     "dom:run:ios": "E2E_ROUTER_SRC=dom-components expo run:ios",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
+    "export:vaul": "E2E_ROUTER_SRC=vaul-modal E2E_ROUTER_JS_ENGINE=hermes EXPO_WEB_DEV_HYDRATE=1 expo export --platform web",
+    "start:vaul-modal": "E2E_ROUTER_SRC=vaul-modal E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
+    "start:fast-refresh": "E2E_ROUTER_SRC=fast-refresh E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "lint": "expo lint __e2e__"
@@ -36,7 +39,7 @@
     "expo-speech": "~13.1.7",
     "expo-sqlite": "~15.2.10",
     "react": "19.1.0",
-    "react-native": "0.80.0",
+    "react-native": "0.80.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "4.11.1-nightly-20250611-8b82e081e",
     "react-native-webview": "13.13.5"

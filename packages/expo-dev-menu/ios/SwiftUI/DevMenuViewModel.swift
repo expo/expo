@@ -101,9 +101,8 @@ class DevMenuViewModel: ObservableObject {
     }
 
     devMenuManager.closeMenu {
-      DispatchQueue.main.async {
-        rctDevMenu.show()
-      }
+      DevMenuPackagerConnectionHandler.allowRNDevMenuTemporarily()
+      rctDevMenu.show()
     }
   }
 

@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [android] add missing proguard-rules for `expo-notifications` ([#37833](https://github.com/expo/expo/pull/37833) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 0.31.4 - 2025-07-05
+
+_This version does not introduce any user-facing changes._
 
 ## 0.31.3 - 2025-06-04
 
