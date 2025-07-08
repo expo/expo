@@ -34,7 +34,7 @@ data class TextInputProps(
   val autoCapitalize: MutableState<String> = mutableStateOf("none")
 ) : ComposeProps
 
-fun String.keyboardType(): KeyboardType {
+private fun String.keyboardType(): KeyboardType {
   return when (this) {
     "default" -> KeyboardType.Text
     "numeric" -> KeyboardType.Number

@@ -54,11 +54,11 @@ export type TextInputProps = {
      * Options to request software keyboard to capitalize the text. Applies to languages which has upper-case and lower-case letters.
      *
      * Available options:
-     * - characters
-     * - none
-     * - sentences
-     * - unspecified
-     * - words
+     * - `characters`: Capitalize all characters.
+     * - `none`: Do not auto-capitalize text.
+     * - `sentences`: Capitalize the first character of each sentence.
+     * - `unspecified`: Capitalization behavior is not specified.
+     * - `words`: Capitalize the first character of every word.
      * @default none
      * @platform android
      */
