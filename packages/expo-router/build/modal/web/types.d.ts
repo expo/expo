@@ -10,4 +10,5 @@ export type ModalStackViewProps = Omit<ReturnType<typeof useNavigationBuilder<St
 export type CSSWithVars = React.CSSProperties & {
     [key: `--${string}`]: string | number;
 };
+export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
 //# sourceMappingURL=types.d.ts.map
