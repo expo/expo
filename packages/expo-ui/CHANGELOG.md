@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `SecureField` component. ([#37642](https://github.com/expo/expo/pull/37642) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Added `ShareLink` component. ([#37125](https://github.com/expo/expo/pull/37125)) by [@pchalupa](https://github.com/pchalupa)
 - Add ios `glass` button variant. ([#37373](https://github.com/expo/expo/pull/37373) by [@aleqsio](https://github.com/aleqsio))
 - Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
