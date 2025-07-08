@@ -1,5 +1,7 @@
 package expo.modules.devlauncher.compose.ui
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import com.composables.core.ModalBottomSheet
 import com.composables.core.ModalBottomSheetState
@@ -30,7 +32,9 @@ fun BottomSheet(
     state = state,
     onDismiss = onDismiss
   ) {
-    Scrim()
+    Scrim(
+      enter = fadeIn(animationSpec = tween(durationMillis = 300))
+    )
     Sheet {
       DefaultScreenContainer {
         content()

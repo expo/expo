@@ -4,7 +4,12 @@
       android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
       android:exported="true"
       android:launchMode="singleTask"
-      android:theme="@style/Theme.DevLauncher.LauncherActivity">
+      android:theme="@style/Theme.DevLauncher.LauncherActivity" />
+
+    <activity
+      android:name="expo.modules.devlauncher.compose.AuthActivity"
+      android:exported="true"
+      android:launchMode="singleTask">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
 

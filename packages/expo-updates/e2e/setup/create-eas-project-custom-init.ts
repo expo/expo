@@ -12,7 +12,7 @@ const runtimeVersion = '1.0.0';
  *
  * This generates a project at the location TEST_PROJECT_ROOT,
  * that is configured to build a test app and run both suites
- * of updates E2E tests in the Detox environment.
+ * of updates E2E tests with Maestro.
  *
  * This test project will use the custom init flow for updates, using
  * the expo-template-custom-init native files.

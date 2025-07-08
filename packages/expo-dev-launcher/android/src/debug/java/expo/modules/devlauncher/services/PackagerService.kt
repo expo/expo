@@ -31,6 +31,9 @@ data class PackagerInfo(
       .url(url)
       .build()
   }
+
+  val url: String
+    get() = "http://$host:$port"
 }
 
 private val defaultDelay = 3.seconds

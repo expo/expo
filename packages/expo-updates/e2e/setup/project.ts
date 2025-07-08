@@ -336,6 +336,7 @@ async function preparePackageJson(
         'tvos:build':
           'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
+        'start:dev-client': 'npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;
@@ -343,10 +344,10 @@ async function preparePackageJson(
   const extraDevDependencies = configureE2E
     ? {
         '@config-plugins/detox': '^9.0.0',
-        '@types/express': '^4.17.17',
+        '@types/express': '^5.0.3',
         '@types/jest': '^29.4.0',
         detox: '^20.33.0',
-        express: '^4.18.2',
+        express: '^5.1.0',
         'form-data': '^4.0.0',
         jest: '^29.3.1',
         'jest-circus': '^29.3.1',
@@ -571,6 +572,25 @@ export function transformAppJsonForE2EWithFingerprint(
       },
     },
   };
+}
+
+/**
+ * Modifies app.json in the E2E test app to add the properties we need, and turns off updates native debug
+ */
+export function transformAppJsonForE2EWithDevClient(
+  appJson: any,
+  projectName: string,
+  runtimeVersion: string,
+  isTV: boolean
+) {
+  const transformedForE2E = transformAppJsonForE2EWithFallbackToCacheTimeout(
+    appJson,
+    projectName,
+    runtimeVersion,
+    isTV
+  );
+  delete transformedForE2E.expo.updates.useNativeDebug;
+  return transformedForE2E;
 }
 
 export function transformAppJsonForE2EWithBrickingMeasuresDisabled(

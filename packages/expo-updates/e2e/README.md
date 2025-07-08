@@ -1,6 +1,6 @@
 ## E2E test setup
 
-To run the updates e2e tests locally, do the following:
+These instructions are for the E2E (enabled) tests.
 
 - Create a script to set up the environment and remove any previous build, as in the example below.
 
@@ -13,15 +13,16 @@ export WORKING_DIR_ROOT=/Users/me/myCode/e2eworking
 export TEST_PROJECT_ROOT=$WORKING_DIR_ROOT/updates-e2e
 export UPDATES_HOST=localhost
 export UPDATES_PORT=4747
-export EX_UPDATES_NATIVE_DEBUG=1
+export EXPO_PUBLIC_UPDATES_SERVER_PORT=4747
 
 # Remove and recreate the working directory before executing the setup
 rm -rf $WORKING_DIR_ROOT
 mkdir $WORKING_DIR_ROOT
 ```
+
 - Run `source <scriptname>` to run it and set up the environment variables
 
-- From the Expo repo root directory, execute one of the `create-*` scripts to set up the test project. For example:
+- From the Expo repo root directory, execute:
 
 ```bash
 ./packages/expo-updates/e2e/setup/create-eas-project.ts
@@ -29,7 +30,7 @@ mkdir $WORKING_DIR_ROOT
 
 - Change directory to the `TEST_PROJECT_ROOT` location with `cd $TEST_PROJECT_ROOT`.
 
-- Execute
+- Execute this command to generate the bundles used by the test server:
 
 ```
 yarn generate-test-update-bundles
@@ -37,75 +38,31 @@ yarn generate-test-update-bundles
 
 - To run iOS tests:
 
-  - Start an iPhone 16 simulator
+  - Have an iOS simulator already running, and ensure no Android emulators are running
   - Execute these commands:
 
 ```bash
 npx pod-install
-yarn detox:ios:debug:build
-yarn detox:ios:debug:test
+yarn maestro:ios:debug:build
+./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
 ```
 
 - To run Android tests:
 
-  - Ensure you have an emulator running named `pixel_4` (or change `.detoxrc.json` to use the name of your own running emulator)
-  - Execute `adb reverse tcp:4747 tcp:4747` to ensure that the test server is accessible
-  - Then run
+  - Have an Android emulator already running, and ensure no iOS simulators are running
+  - Execute these commands:
 
 ```bash
-yarn detox:android:debug:build
-yarn detox:android:debug:test
+yarn maestro:android:debug:build
+./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
 ```
 
-- Running in your own EAS space:
+- For either the iOS or Android tests, you can optionally run the test updates server separately for debugging purposes.
 
-Edit `app.json` and remove the `extra` section with the EAS project ID, then execute
+  - Before running the Maestro tests above, run this command in a separate terminal window:
 
 ```bash
-eas init
-eas build --profile=updates_testing_debug --platform=<android|ios>
-```
-
-- Testing the EAS build locally:
-
-  - Ensure you have an emulator running named `pixel_4`
-  - Make the change below in `eas.json`:
-
-```diff
---- a/packages/expo-updates/e2e/fixtures/project_files/eas.json
-+++ b/packages/expo-updates/e2e/fixtures/project_files/eas.json
-@@ -15,7 +15,8 @@
-     "updates_testing_debug": {
-       "env": {
--        "EX_UPDATES_NATIVE_DEBUG": "1"
-+        "EX_UPDATES_NATIVE_DEBUG": "1",
-+        "LOCAL_TESTING": "1"
-       },
-       "android": {
-         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
-```
-
-  - Clone the `eas-build` repo, and build it (`yarn`, `yarn build`)
-  - Set up the local EAS build environment as in this example:
-
-```
-#!/usr/bin/env bash
-
-export EAS_LOCAL_BUILD_HOME=<the eas-build directory that you just cloned above>
-
-export EAS_LOCAL_BUILD_PLUGIN_PATH=$EAS_LOCAL_BUILD_HOME/bin/eas-cli-local-build-plugin
-export EAS_LOCAL_BUILD_WORKINGDIR=$TMPDIR/eas-build-workingdir
-export EAS_LOCAL_BUILD_SKIP_CLEANUP=1
-export EAS_LOCAL_BUILD_ARTIFACTS_DIR=$TMPDIR/eas-build-workingdir/results
-
-rm -rf $EAS_LOCAL_BUILD_WORKINGDIR
-```
-
-- Execute
-
-```bash
-eas init
-eas build --profile=updates_testing_debug --platform=<android|ios> --local
+./maestro/updates-server/start.ts
 ```
 
 ## Updates API test project:

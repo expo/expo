@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added support for ignoring the patches directory ([#37702](https://github.com/expo/expo/pull/37702) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
 
 ## 0.13.1 - 2025-06-18

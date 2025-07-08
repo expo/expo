@@ -4,16 +4,48 @@ import ExpoModulesCore
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemNextModule: Module {
+  var documentDirectory: URL? {
+    return appContext?.config.documentDirectory
+  }
+
+  var cacheDirectory: URL? {
+    return appContext?.config.cacheDirectory
+  }
+
+  var totalDiskSpace: Int64? {
+    guard let path = documentDirectory?.path,
+      let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
+      return nil
+    }
+    return attributes[.systemFreeSize] as? Int64
+  }
+
+  var availableDiskSpace: Int64? {
+    guard let path = documentDirectory?.path,
+      let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
+      return nil
+    }
+    return attributes[.systemFreeSize] as? Int64
+  }
+
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
     Constants {
       return [
-        "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
-        "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
+        "documentDirectory": documentDirectory?.absoluteString,
+        "cacheDirectory": cacheDirectory?.absoluteString,
         "bundleDirectory": Bundle.main.bundlePath,
         "appleSharedContainers": getAppleSharedContainers()
       ]
+    }
+
+    Property("totalDiskSpace") {
+      return totalDiskSpace
+    }
+
+    Property("availableDiskSpace") {
+      return availableDiskSpace
     }
 
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptionsNext?, promise: Promise) in
@@ -196,6 +228,10 @@ public final class FileSystemNextModule: Module {
 
       Property("uri") { directory in
         return directory.url.absoluteString
+      }
+
+      Property("size") { directory in
+        return try? directory.size
       }
     }
   }
