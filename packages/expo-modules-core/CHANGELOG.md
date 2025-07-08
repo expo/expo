@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Support cast from JavaScriptValue in DynamicArrayType. ([#37891](https://github.com/expo/expo/pull/37891) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
