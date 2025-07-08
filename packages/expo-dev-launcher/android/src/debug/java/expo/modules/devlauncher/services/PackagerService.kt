@@ -59,6 +59,7 @@ class PackagerService(
           launch {
             val data = runCatching { statusPageRequest.await(httpClient) }.getOrNull()
             val isSuccessful = data?.isSuccessful == true
+            data?.close()
             if (isSuccessful) {
               _runningPackagers.update {
                 if (!it.contains(packager)) {

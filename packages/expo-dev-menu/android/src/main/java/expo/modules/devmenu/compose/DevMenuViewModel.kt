@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import expo.modules.devmenu.DevMenuManager
 
 class DevMenuViewModel : ViewModel() {
-  private val _state = mutableStateOf<DevMenuState>(DevMenuState())
+  private val _state = mutableStateOf(DevMenuState())
 
   val state
     get() = _state.value
