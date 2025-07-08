@@ -715,6 +715,9 @@ function processRequireCall(path: NodePath<CallExpression>, state: State): void 
   transformer.transformSyncRequire(path, dep, state);
 }
 
+/**
+ * Get the nearest source location from the given path, can be both from the node itself, parent (preferred) or child.
+ */
 function getNearestLocFromPath(path: NodePath<any>): t.SourceLocation | null {
   let current: NodePath<any> | NodePath<t.Node> | null = path;
   while (current && !current.node.loc && !current.node.METRO_INLINE_REQUIRES_INIT_LOC) {
@@ -725,7 +728,22 @@ function getNearestLocFromPath(path: NodePath<any>): t.SourceLocation | null {
   if (current && t.isProgram(current.node)) {
     current = null;
   }
-  return current?.node.METRO_INLINE_REQUIRES_INIT_LOC ?? current?.node.loc;
+
+  // TODO: This is more of a patch, I think the missing `loc` is a bug
+  // If near parent location exist, prefer it.
+  const nearestParentLoc = current?.node.METRO_INLINE_REQUIRES_INIT_LOC ?? current?.node.loc;
+  if (nearestParentLoc) {
+    return nearestParentLoc;
+  }
+  // Else try heuristic to locate known types location.
+
+  // If the path is an ImportDeclaration, we can use its source location.
+  if (path.node.type === 'ImportDeclaration' && path.node.source.loc) {
+    return path.node.source.loc;
+  }
+
+  // Fallback if no location is found.
+  return null;
 }
 
 function registerDependency(
@@ -737,6 +755,7 @@ function registerDependency(
 
   const loc = getNearestLocFromPath(path);
   if (loc != null) {
+    // Locations are used as dependant counter during tree shaking.
     dependency.locs.push(loc);
   }
 
