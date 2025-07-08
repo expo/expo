@@ -3,7 +3,7 @@ import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
 import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import tippy, { roundArrow } from 'tippy.js';
+import tippy, { roundArrow, type Instance } from 'tippy.js';
 
 import {
   cleanCopyValue,
@@ -55,14 +55,16 @@ export function Code({ className, children, title }: CodeProps) {
 
   useEffect(() => {
     const tippyFunc = testTippy ?? tippy;
-    let codeAnnotationInstances: any = null;
-    let tutorialAnnotationInstances: any = null;
+    let codeAnnotationInstances: Instance | Instance[] | null = null;
+    let tutorialAnnotationInstances: Instance | Instance[] | null = null;
     let observer: MutationObserver | null = null;
 
     function initializeTippy() {
       if (codeAnnotationInstances) {
         if (Array.isArray(codeAnnotationInstances)) {
-          codeAnnotationInstances.forEach((instance: any) => instance.destroy());
+          codeAnnotationInstances.forEach((instance: Instance) => {
+            instance.destroy();
+          });
         } else {
           codeAnnotationInstances.destroy();
         }
@@ -70,7 +72,9 @@ export function Code({ className, children, title }: CodeProps) {
 
       if (tutorialAnnotationInstances) {
         if (Array.isArray(tutorialAnnotationInstances)) {
-          tutorialAnnotationInstances.forEach((instance: any) => instance.destroy());
+          tutorialAnnotationInstances.forEach((instance: Instance) => {
+            instance.destroy();
+          });
         } else {
           tutorialAnnotationInstances.destroy();
         }
@@ -143,13 +147,17 @@ export function Code({ className, children, title }: CodeProps) {
       }
 
       if (Array.isArray(codeAnnotationInstances)) {
-        codeAnnotationInstances.forEach((instance: any) => instance.destroy());
+        codeAnnotationInstances.forEach((instance: Instance) => {
+          instance.destroy();
+        });
       } else if (codeAnnotationInstances) {
         codeAnnotationInstances.destroy();
       }
 
       if (Array.isArray(tutorialAnnotationInstances)) {
-        tutorialAnnotationInstances.forEach((instance: any) => instance.destroy());
+        tutorialAnnotationInstances.forEach((instance: Instance) => {
+          instance.destroy();
+        });
       } else if (tutorialAnnotationInstances) {
         tutorialAnnotationInstances.destroy();
       }
