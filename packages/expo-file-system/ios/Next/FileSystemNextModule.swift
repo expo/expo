@@ -231,7 +231,7 @@ public final class FileSystemNextModule: Module {
       Function("info") { directory in
         try directory.info()
       }
-     
+
       // we can't throw in a constructor, so this is a workaround
       Function("validatePath") { directory in
         try directory.validatePath()

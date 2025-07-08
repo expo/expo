@@ -76,7 +76,7 @@ internal class FileSystemPath: SharedObject {
     try FileManager.default.moveItem(at: url, to: destinationUrl)
     url = destinationUrl
   }
- 
+
   var modificationTime: Int64 {
     get throws {
       let modificationDate: Date = try getAttribute(.modificationDate, atPath: url.path)

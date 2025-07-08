@@ -73,7 +73,7 @@ internal final class FileSystemDirectory: FileSystemPath {
       throw Exception(name: "wrong type", description: "tried to create a directory with a file path")
     }
   }
- 
+
   func info() throws -> DirectoryInfo {
     try validateType()
     try validatePermission(.read)
