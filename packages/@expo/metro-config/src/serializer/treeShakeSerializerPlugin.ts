@@ -513,7 +513,32 @@ export async function treeShakeSerializer(
       // @ts-expect-error: typed as readonly
       importInstance.data.data.locs.pop();
 
-      if (importInstance.data.data.locs.length === 0) {
+      // TODO: Can we run this when locs is empty only?
+      const exportSources = [];
+      // // data.data.locs doesn't seem to contain named re-exports e.g. `export {} from 'a'`
+      graphModule.output.forEach(({ data }) => {
+        // TODO: only check JS modules
+        traverse(data.ast, {
+          ExportNamedDeclaration(path) {
+            const importModuleId = path.node.source?.value;
+            if (importModuleId) {
+              exportSources.push(importModuleId);
+            }
+          },
+        });
+      });
+
+      // TMP: For testing purposes.
+      if (
+        importInstance.data.data.locs.length === 0 &&
+        graphEntryForTargetImport.inverseDependencies.size === 1
+      ) {
+        debug(
+          `Module ${importInstance.absolutePath} would be deleted, but it's used in re-exports in ${graphModule.path}`
+        );
+      }
+
+      if (importInstance.data.data.locs.length === 0 && exportSources.length === 0) {
         // Remove dependency from this module so it doesn't appear in the dependency map.
         graphModule.dependencies.delete(targetHashId);
 
