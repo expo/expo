@@ -21,11 +21,17 @@ export function transformButtonProps(props, text) {
  */
 export function ButtonPrimitive(props) {
     const { children, ...restProps } = props;
-    const text = typeof children === 'string' ? children : undefined;
-    if (text !== undefined) {
-        return <ButtonNativeView {...transformButtonProps(restProps, text)}/>;
+    if (!children && !restProps.systemImage) {
+        console.warn('Button: A button should have either children or a systemImage. ');
     }
-    return <ButtonNativeView {...transformButtonProps(restProps, text)}>{children}</ButtonNativeView>;
+    const text = typeof children === 'string' ? children : undefined;
+    const transformedProps = transformButtonProps(restProps, text);
+    // Render without children wrapper if text-only or icon-only
+    const shouldRenderDirectly = text !== undefined || (!children && !restProps.systemImage);
+    if (shouldRenderDirectly) {
+        return <ButtonNativeView {...transformedProps}/>;
+    }
+    return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
 }
 /**
  * Displays a native button component.
