@@ -49,7 +49,7 @@ fun String.keyboardType(): KeyboardType {
   }
 }
 
-fun String.autoCapitalize(): KeyboardCapitalization {
+private fun String.autoCapitalize(): KeyboardCapitalization {
   return when (this) {
     "characters" -> KeyboardCapitalization.Characters
     "none" -> KeyboardCapitalization.None
