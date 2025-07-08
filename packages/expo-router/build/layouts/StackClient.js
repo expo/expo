@@ -18,7 +18,8 @@ function isStackAction(action) {
         action.type === 'NAVIGATE' ||
         action.type === 'POP' ||
         action.type === 'POP_TO_TOP' ||
-        action.type === 'REPLACE');
+        action.type === 'REPLACE' ||
+        action.type === 'PRELOAD');
 }
 const isPreviewAction = (action) => !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
 /**
@@ -209,6 +210,75 @@ const stackRouterOverride = (original) => {
                     //   routes,
                     // };
                     // END FORK
+                }
+                case 'PRELOAD': {
+                    const getId = options.routeGetIdList[action.payload.name];
+                    const id = getId?.({ params: action.payload.params });
+                    let route;
+                    if (id !== undefined) {
+                        route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                    }
+                    if (route) {
+                        return {
+                            ...state,
+                            routes: state.routes.map((r) => {
+                                if (r.key !== route?.key) {
+                                    return r;
+                                }
+                                return {
+                                    ...r,
+                                    params: routeParamList[action.payload.name] !== undefined
+                                        ? {
+                                            ...routeParamList[action.payload.name],
+                                            ...action.payload.params,
+                                        }
+                                        : action.payload.params,
+                                };
+                            }),
+                        };
+                    }
+                    else {
+                        // START FORK
+                        const currentPreloadedRoute = {
+                            key: `${action.payload.name}-${(0, non_secure_1.nanoid)()}`,
+                            name: action.payload.name,
+                            params: routeParamList[action.payload.name] !== undefined
+                                ? {
+                                    ...routeParamList[action.payload.name],
+                                    ...action.payload.params,
+                                }
+                                : action.payload.params,
+                        };
+                        // END FORK
+                        return {
+                            ...state,
+                            // START FORK
+                            // Adding the current preloaded route to the beginning of the preloadedRoutes array
+                            // This ensures that the preloaded route will be the next one after the visible route
+                            // and when navigation will happen, there will be no reshuffling
+                            // This is a workaround for the link preview navigation issue, when screen would freeze after navigation from native side
+                            // and reshuffling from react-navigation
+                            preloadedRoutes: [currentPreloadedRoute].concat(state.preloadedRoutes.filter((r) => r.name !== action.payload.name || id !== getId?.({ params: r.params }))),
+                            // preloadedRoutes: state.preloadedRoutes
+                            //   .filter(
+                            //     (r) =>
+                            //       r.name !== action.payload.name ||
+                            //       id !== getId?.({ params: r.params })
+                            //   )
+                            //   .concat({
+                            //     key: `${action.payload.name}-${nanoid()}`,
+                            //     name: action.payload.name,
+                            //     params:
+                            //       routeParamList[action.payload.name] !== undefined
+                            //         ? {
+                            //             ...routeParamList[action.payload.name],
+                            //             ...action.payload.params,
+                            //           }
+                            //         : action.payload.params,
+                            //   }),
+                            // END FORK
+                        };
+                    }
                 }
                 default: {
                     return original.getStateForAction(state, action, options);
