@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add a new prop - `enforceEarlyResizing` to reduce the memory usage of the image view.
+
 ### 🐛 Bug fixes
 
 - [iOS] Speed up displaying local assets. ([#37795](https://github.com/expo/expo/pull/37795) by [@aleqsio](https://github.com/aleqsio))
