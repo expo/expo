@@ -6,10 +6,12 @@
 
 ### 🎉 New features
 
+- Add support for icon only button. ([#37899](https://github.com/expo/expo/pull/37899) by [@betomoedano](https://github.com/betomoedano))
 - [iOS] Added `ShareLink` component. ([#37125](https://github.com/expo/expo/pull/37125)) by [@pchalupa](https://github.com/pchalupa)
 - Add ios `glass` button variant. ([#37373](https://github.com/expo/expo/pull/37373) by [@aleqsio](https://github.com/aleqsio))
 - Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
 - Add support for controlling the state of the DisclosureGroup. ([#37704](https://github.com/expo/expo/pull/37704) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
