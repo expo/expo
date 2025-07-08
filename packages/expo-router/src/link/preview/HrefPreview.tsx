@@ -115,7 +115,7 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
       index: 0,
       routeNames: [],
       routes: [],
-      type: 'stack',
+      type: '',
       stale: false,
     };
   },
