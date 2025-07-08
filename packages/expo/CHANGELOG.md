@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `ReactActivityDelegateWrapper` lifecycle atomic issue. ([#37895](https://github.com/expo/expo/pull/37895) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 53.0.19 — 2025-07-08
+
+### 🐛 Bug fixes
+
+- Fixed `ReactActivityDelegateWrapper` lifecycle atomic issue. ([#37895](https://github.com/expo/expo/pull/37895) by [@kudo](https://github.com/kudo))
 
 ## 53.0.18 — 2025-07-07
 

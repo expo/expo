@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.31.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.18):
+  - Expo (53.0.19):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -3451,7 +3451,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: f4cc4a62ee4f1c8a9cf2bb79d325eac6cb9f5684
   EXNotifications: d0a50a5490845c702f2c605e94533ae5ddf1aadb
-  Expo: 1cb9ab2aad5663205b8ad53765fccc3ac4c75fbb
+  Expo: 6e2b482fa24909b52b80ba00271e6d7742c1ef9f
   ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6
   ExpoAsset: 7bdbbacf4e6752ae6e3cf70555cee076f6229e6e
   ExpoAudio: b538eb1b6f9c0bd06494a2ec1892befbb276aaeb
