@@ -204,26 +204,28 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
-    launchLifecycleScopeWithLock {
+    activity.lifecycleScope.launch {
       if (!loadAppReady.isCompleted) {
         loadAppReady.completeExceptionally(CancellationException("Activity paused before app loaded"))
       }
-      loadAppReady.await()
-      reactActivityLifecycleListeners.forEach { listener ->
-        listener.onPause(activity)
-      }
-      if (delayLoadAppHandler != null) {
-        try {
-          // For the delay load case, we may enter a different call flow than react-native.
-          // For example, Activity stopped before delay load finished.
-          // We stop before the ReactActivityDelegate gets a chance to set up.
-          // In this case, we should catch the exceptions.
-          delegate.onPause()
-        } catch (e: Exception) {
-          Log.e(TAG, "Exception occurred during onPause with delayed app loading", e)
+      mutex.withLock {
+        loadAppReady.await()
+        reactActivityLifecycleListeners.forEach { listener ->
+          listener.onPause(activity)
         }
-      } else {
-        delegate.onPause()
+        if (delayLoadAppHandler != null) {
+          try {
+            // For the delay load case, we may enter a different call flow than react-native.
+            // For example, Activity stopped before delay load finished.
+            // We stop before the ReactActivityDelegate gets a chance to set up.
+            // In this case, we should catch the exceptions.
+            delegate.onPause()
+          } catch (e: Exception) {
+            Log.e(TAG, "Exception occurred during onPause with delayed app loading", e)
+          }
+        } else {
+          delegate.onPause()
+        }
       }
     }
   }
@@ -242,11 +244,11 @@ class ReactActivityDelegateWrapper(
     // Note: use our `coroutineScope` for onDestroy here
     // because the lifecycleScope destroyed before the executions.
     applicationCoroutineScope.launch {
+      if (!loadAppReady.isCompleted) {
+        // Cancel loadAppReady so any waiting coroutines are notified
+        loadAppReady.completeExceptionally(CancellationException("Activity destroyed before app loaded"))
+      }
       mutex.withLock {
-        if (!loadAppReady.isCompleted) {
-          // Cancel loadAppReady so any waiting coroutines are notified
-          loadAppReady.completeExceptionally(CancellationException("Activity destroyed before app loaded"))
-        }
         loadAppReady.await()
         reactActivityLifecycleListeners.forEach { listener ->
           listener.onDestroy(activity)
