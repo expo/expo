@@ -11,6 +11,7 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URI
 import java.nio.file.attribute.BasicFileAttributes
 import java.security.MessageDigest
 import kotlin.io.path.Path
@@ -18,7 +19,7 @@ import kotlin.io.path.readAttributes
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(EitherType::class)
-class FileSystemFile(file: File) : FileSystemPath(file) {
+class FileSystemFile(uri: URI) : FileSystemPath(uri) {
   // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
   fun validatePath() {
   }
