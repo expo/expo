@@ -67,6 +67,12 @@ export declare class Directory {
      */
     list(): (Directory | File)[];
     /**
+     * Retrieves an object containing properties of a directory
+     * @throws Error If the application does not have read access to the directory, or if the path does not point to a directory (e.g., it points to a file).
+     * @returns An object with directory metadata (e.g., size, creation date, etc.).
+     */
+    info(): DirectoryInfo;
+    /**
      * A size of the directory in bytes. Null if the directory does not exist, or it cannot be read.
      */
     size: number | null;
@@ -235,5 +241,31 @@ export type PathInfo = {
      * Indicates whether the path is a directory. Returns true or false if the path exists; otherwise, returns null.
      */
     isDirectory: boolean | null;
+};
+export type DirectoryInfo = {
+    /**
+     * Indicates whether the file exists.
+     */
+    exists: boolean;
+    /**
+     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     */
+    uri?: string;
+    /**
+     * The size of the file in bytes.
+     */
+    size?: number;
+    /**
+     * The last modification time of the file expressed in milliseconds since epoch.
+     */
+    modificationTime?: number;
+    /**
+     * A creation time of the file expressed in milliseconds since epoch. Returns null if the Android version is earlier than API 26.
+     */
+    creationTime?: number;
+    /**
+     * A list of file names contained within a directory.
+     */
+    files?: string[];
 };
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

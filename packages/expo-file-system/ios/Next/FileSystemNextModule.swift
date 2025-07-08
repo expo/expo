@@ -228,6 +228,10 @@ public final class FileSystemNextModule: Module {
         return FileSystemDirectory(url: url.standardizedFileURL)
       }
 
+      Function("info") { directory in
+        try directory.info()
+      }
+     
       // we can't throw in a constructor, so this is a workaround
       Function("validatePath") { directory in
         try directory.validatePath()
