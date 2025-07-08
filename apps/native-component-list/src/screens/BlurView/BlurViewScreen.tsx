@@ -1,5 +1,5 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { useNavigation } from '@react-navigation/native';
+import { useLinkProps } from '@react-navigation/native';
 import { ExperimentalBlurMethod } from 'expo-blur';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, Platform, Button } from 'react-native';
@@ -33,14 +33,14 @@ const blurMethods: ExperimentalBlurMethod[] = ['none', 'dimezisBlurView'];
 
 export default function BlurViewScreen() {
   const [blurMethod, setBlurMethod] = React.useState<ExperimentalBlurMethod>('none');
-  const navigation = useNavigation();
+  const { onPress } = useLinkProps({
+    screen: 'BlurViewNativeScreen',
+    params: {},
+  });
 
   return (
     <ScrollView style={styles.container}>
-      <Button
-        onPress={() => navigation.navigate('BlurViewNativeScreen')}
-        title="Go to Native BlurView Screen"
-      />
+      <Button onPress={onPress} title="Go to Native BlurView Screen" />
       {Platform.OS === 'android' && (
         <>
           <Text style={styles.text}>Blur method:</Text>
