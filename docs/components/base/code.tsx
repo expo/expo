@@ -55,25 +55,80 @@ export function Code({ className, children, title }: CodeProps) {
 
   useEffect(() => {
     const tippyFunc = testTippy ?? tippy;
-    tippyFunc('.code-annotation.with-tooltip', {
-      allowHTML: true,
-      theme: 'expo',
-      placement: 'top',
-      arrow: roundArrow,
-      interactive: true,
-      offset: [0, 20],
-      appendTo: document.body,
-    });
+    let codeAnnotationInstances: any = null;
+    let tutorialAnnotationInstances: any = null;
+    let observer: MutationObserver | null = null;
 
-    tippyFunc('.tutorial-code-annotation.with-tooltip', {
-      allowHTML: true,
-      theme: 'expo',
-      placement: 'top',
-      arrow: roundArrow,
-      interactive: true,
-      offset: [0, 20],
-      appendTo: document.body,
-    });
+    function initializeTippy() {
+      if (codeAnnotationInstances) {
+        if (Array.isArray(codeAnnotationInstances)) {
+          codeAnnotationInstances.forEach((instance: any) => instance.destroy());
+        } else {
+          codeAnnotationInstances.destroy();
+        }
+      }
+
+      if (tutorialAnnotationInstances) {
+        if (Array.isArray(tutorialAnnotationInstances)) {
+          tutorialAnnotationInstances.forEach((instance: any) => instance.destroy());
+        } else {
+          tutorialAnnotationInstances.destroy();
+        }
+      }
+
+      const codeAnnotationElements = document.querySelectorAll('.code-annotation.with-tooltip');
+      const tutorialAnnotationElements = document.querySelectorAll(
+        '.tutorial-code-annotation.with-tooltip'
+      );
+
+      if (codeAnnotationElements.length > 0) {
+        codeAnnotationInstances = tippyFunc('.code-annotation.with-tooltip', {
+          allowHTML: true,
+          theme: 'expo',
+          placement: 'top',
+          arrow: roundArrow,
+          interactive: true,
+          offset: [0, 20],
+          appendTo: document.body,
+        });
+      }
+
+      if (tutorialAnnotationElements.length > 0) {
+        tutorialAnnotationInstances = tippyFunc('.tutorial-code-annotation.with-tooltip', {
+          allowHTML: true,
+          theme: 'expo',
+          placement: 'top',
+          arrow: roundArrow,
+          interactive: true,
+          offset: [0, 20],
+          appendTo: document.body,
+        });
+      }
+    }
+
+    initializeTippy();
+
+    if (contentRef.current) {
+      observer = new MutationObserver(mutations => {
+        let shouldReinitialize = false;
+        mutations.forEach(mutation => {
+          if (mutation.type === 'childList' || mutation.type === 'attributes') {
+            shouldReinitialize = true;
+          }
+        });
+
+        if (shouldReinitialize) {
+          setTimeout(initializeTippy, 50);
+        }
+      });
+
+      observer.observe(contentRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style'],
+      });
+    }
 
     if (contentRef?.current?.clientHeight) {
       setBlockHeight(contentRef.current.clientHeight);
@@ -81,7 +136,25 @@ export function Code({ className, children, title }: CodeProps) {
         setCollapseBound(collapseHeight);
       }
     }
-  }, []);
+
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+
+      if (Array.isArray(codeAnnotationInstances)) {
+        codeAnnotationInstances.forEach((instance: any) => instance.destroy());
+      } else if (codeAnnotationInstances) {
+        codeAnnotationInstances.destroy();
+      }
+
+      if (Array.isArray(tutorialAnnotationInstances)) {
+        tutorialAnnotationInstances.forEach((instance: any) => instance.destroy());
+      } else if (tutorialAnnotationInstances) {
+        tutorialAnnotationInstances.destroy();
+      }
+    };
+  }, [highlightedHtml, collapseHeight]);
 
   function expandCodeBlock() {
     setExpanded(true);
