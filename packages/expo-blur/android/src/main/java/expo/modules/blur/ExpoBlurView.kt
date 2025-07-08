@@ -29,7 +29,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   fun setBlurRadius(radius: Float) {
     blurRadius = radius
 
-    if (!isBlurViewConfigured) return;
+    if (!isBlurViewConfigured) return
 
     when (blurMethod) {
       BlurMethod.NONE -> {
@@ -51,7 +51,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   fun setBlurMethod(method: BlurMethod) {
     blurMethod = method
 
-    if (!isBlurViewConfigured) return;
+    if (!isBlurViewConfigured) return
 
     when (method) {
       BlurMethod.NONE -> {
@@ -73,7 +73,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   }
 
   fun applyTint() {
-    if (!isBlurViewConfigured) return;
+    if (!isBlurViewConfigured) return
 
     when (blurMethod) {
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
@@ -96,7 +96,6 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       isBlurViewConfigured = true
     }
   }
-
 
   private fun configureBlurView() {
     val rootView = findOptimalBlurRoot()
