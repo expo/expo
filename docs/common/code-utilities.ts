@@ -168,12 +168,12 @@ export function parseValue(value: string) {
 export function findNodeByPropInChildren<T>(
   element: ReactElement,
   propToFind: string
-): PropsWithChildren<Record<string, T>> | T | null {
+): PropsWithChildren<{ [propToFind]: T }> | T | null {
   if (!element || typeof element !== 'object') {
     return null;
   }
 
-  if (isValidElement<PropsWithChildren<Record<string, T>>>(element)) {
+  if (isValidElement<PropsWithChildren<{ [propToFind]: T }>>(element)) {
     return element.props;
   }
 
@@ -202,7 +202,7 @@ export function getCodeBlockDataFromChildren(children?: ReactNode, className?: s
       language: className ? className.split('-')[1] : 'jsx',
     };
   }
-  const codeNode = findNodeByPropInChildren<{ className: string }>(
+  const codeNode = findNodeByPropInChildren<PropsWithChildren<{ className: string }>>(
     children as ReactElement,
     'className'
   );
