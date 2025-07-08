@@ -3,6 +3,7 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
+import expo.modules.filesystem.InfoOptions
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
@@ -17,6 +18,7 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
+import java.util.EnumSet
 
 class FileSystemNextModule : Module() {
   private val context: Context
@@ -31,6 +33,14 @@ class FileSystemNextModule : Module() {
       "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
       "bundleDirectory" to "asset:///"
     )
+
+    Property("totalDiskSpace") {
+      File(context.filesDir.path).totalSpace
+    }
+
+    Property("availableDiskSpace") {
+      File(context.filesDir.path).freeSpace
+    }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptionsNext? ->
       to.validatePermission(Permission.WRITE)
@@ -69,6 +79,17 @@ class FileSystemNextModule : Module() {
         }
       }
       return@Coroutine destination.path
+    }
+
+    Function("info") { url: URI ->
+      val file = File(url)
+      val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
+        ?: EnumSet.noneOf(Permission::class.java)
+      if (permissions.contains(Permission.READ) && file.exists()) {
+        PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
+      } else {
+        PathInfo(exists = false, isDirectory = null)
+      }
     }
 
     Class(FileSystemFile::class) {
@@ -112,8 +133,20 @@ class FileSystemNextModule : Module() {
         file.bytes()
       }
 
+      Function("info") { file: FileSystemFile, options: InfoOptions? ->
+        file.info(options)
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
+      }
+
+      Property("modificationTime") { file: FileSystemFile ->
+        file.modificationTime
+      }
+
+      Property("creationTime") { file: FileSystemFile ->
+        file.creationTime
       }
 
       Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
@@ -207,6 +240,10 @@ class FileSystemNextModule : Module() {
 
       Property("uri") { directory ->
         directory.asString()
+      }
+
+      Property("size") { directory ->
+        directory.size
       }
 
       // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)

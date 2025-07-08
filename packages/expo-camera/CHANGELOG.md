@@ -14,7 +14,15 @@
 
 ### 📚 3rd party library updates
 
+## 16.1.10 - 2025-07-01
+
+### 📚 3rd party library updates
+
 - [Android] Bumped MLKit barcode scanner to 17.3.0 for Android 16KB page size support. ([#37454](https://github.com/expo/expo/pull/37454) by [@kudo](https://github.com/kudo))
+
+## 16.1.9 - 2025-06-26
+
+_This version does not introduce any user-facing changes._
 
 ## 16.1.8 - 2025-06-10
 

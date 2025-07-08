@@ -3,6 +3,9 @@ import { setStringAsync } from 'expo-clipboard';
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
+// const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
+const blacklist = ['ExpoCrypto', 'ExpoClipboard', 'ExpoLocalization', 'ExpoLinking', 'ExpoFont'];
+
 type ModuleRegistrySchema = [
   {
     name: string;
@@ -110,8 +113,6 @@ THE TEXT WAS ALSO COPIED TO YOUR CLIPBOARD
   );
 }
 
-// const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-const blacklist = ['ExpoCrypto', 'ExpoClipboard', 'ExpoLocalization', 'ExpoLinking'];
 async function _getExpoModuleSpecsAsync() {
   const schemaString = await CoreModule.getModulesSchema();
   const schema = JSON.parse(schemaString) as ModuleRegistrySchema;

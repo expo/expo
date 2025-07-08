@@ -52,7 +52,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
 
-      ref.seek(to: timeToSeek)
+      ref.seek(to: timeToSeek, toleranceBefore: .zero, toleranceAfter: .zero)
     }
   }
 

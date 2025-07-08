@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Add local package mocks. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.3.2 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
 
 ## 13.3.1 — 2025-05-02
 

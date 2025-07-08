@@ -1,0 +1,32 @@
+query getBranches(
+  $appId: String!
+  $offset: Int!
+  $limit: Int!
+  $runtimeVersion: String!
+  $platform: AppPlatform!
+) {
+  app {
+    byId(appId: $appId) {
+      updateBranches(offset: $offset, limit: $limit) {
+        id
+        name
+
+        compatibleUpdates: updates(
+          offset: 0
+          limit: 1
+          filter: { runtimeVersions: [$runtimeVersion], platform: $platform }
+        ) {
+          id
+        }
+
+        updates: updates(offset: 0, limit: $limit, filter: { platform: $platform }) {
+          id
+          message
+          runtimeVersion
+          createdAt
+          manifestPermalink
+        }
+      }
+    }
+  }
+}

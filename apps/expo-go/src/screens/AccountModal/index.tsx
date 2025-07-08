@@ -8,6 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoggedInAccountView } from './LoggedInAccountView';
 import { LoggedOutAccountView } from './LoggedOutAccountView';
 import { ModalHeader } from './ModalHeader';
+import { CappedWidthContainerView } from '../../components/Views';
 import { useHome_CurrentUserActorQuery } from '../../graphql/types';
 
 export function AccountModal() {
@@ -32,7 +33,7 @@ export function AccountModal() {
     console.error(error);
 
     return (
-      <View flex="1" style={{ backgroundColor: theme.background.screen }}>
+      <CappedWidthContainerView wrapperStyle={{ backgroundColor: theme.background.screen }}>
         {Platform.OS === 'ios' && <ModalHeader />}
         <View padding="medium">
           <View
@@ -77,7 +78,7 @@ export function AccountModal() {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </CappedWidthContainerView>
     );
   }
 
@@ -86,15 +87,17 @@ export function AccountModal() {
   return (
     <View flex="1" style={{ backgroundColor: theme.background.screen }}>
       <ModalHeader />
-      {data?.meUserActor?.accounts ? (
-        <LoggedInAccountView accounts={data.meUserActor.accounts} />
-      ) : (
-        <LoggedOutAccountView
-          refetch={async () => {
-            await refetch();
-          }}
-        />
-      )}
+      <CappedWidthContainerView>
+        {data?.meUserActor?.accounts ? (
+          <LoggedInAccountView accounts={data.meUserActor.accounts} />
+        ) : (
+          <LoggedOutAccountView
+            refetch={async () => {
+              await refetch();
+            }}
+          />
+        )}
+      </CappedWidthContainerView>
     </View>
   );
 }

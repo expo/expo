@@ -1,7 +1,9 @@
 'use client';
+
 import { useRouter } from '../hooks';
 import type { Href } from '../types';
 import { useFocusEffect } from '../useFocusEffect';
+import { useIsPreview } from './preview/PreviewRouteContext';
 
 export type RedirectProps = {
   /**
@@ -63,14 +65,15 @@ export type RedirectProps = {
  */
 export function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProps) {
   const router = useRouter();
+  const isPreview = useIsPreview();
   useFocusEffect(() => {
-    try {
-      router.replace(href, { relativeToDirectory, withAnchor });
-    } catch (error) {
-      console.error(error);
+    if (!isPreview) {
+      try {
+        router.replace(href, { relativeToDirectory, withAnchor });
+      } catch (error) {
+        console.error(error);
+      }
     }
   });
   return null;
 }
-
-export default Redirect;

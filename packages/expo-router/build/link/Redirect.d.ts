@@ -55,5 +55,4 @@ export type RedirectProps = {
  * ```
  */
 export declare function Redirect({ href, relativeToDirectory, withAnchor }: RedirectProps): null;
-export default Redirect;
 //# sourceMappingURL=Redirect.d.ts.map

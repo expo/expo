@@ -4,20 +4,17 @@ import ExpoModulesCore
 import Foundation
 import AuthenticationServices
 
-private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
+private let selectedAccountKey = "expo-selected-account-id"
+private let sessionKey = "expo-session-secret"
 
-struct DevServer {
-  let url: String
-  let description: String
-  let source: String
-}
+private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
+  @Published var updatesConfig: [AnyHashable: Any] = [:]
   @Published var devServers: [DevServer] = []
-  @Published var isDiscoveringServers = false
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingError = false
   @Published var shakeDevice = true {
@@ -36,10 +33,27 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
   @Published var isAuthenticated = false
-  @Published var userInfo: [String: Any]?
   @Published var isAuthenticating = false
+  @Published var user: User?
+  @Published var selectedAccountId: String?
 
   private let presentationContext = DevLauncherAuthPresentationContext()
+
+  var selectedAccount: UserAccount? {
+    guard let userData = user,
+      let selectedAccountId = selectedAccountId else {
+      return nil
+    }
+    return userData.accounts.first { $0.id == selectedAccountId }
+  }
+
+  var structuredBuildInfo: BuildInfo {
+    return BuildInfo(buildInfo: buildInfo, updatesConfig: updatesConfig)
+  }
+
+  var isLoggedIn: Bool {
+    return isAuthenticated && user != nil
+  }
 
   init() {
     loadData()
@@ -50,6 +64,8 @@ class DevLauncherViewModel: ObservableObject {
   private func loadData() {
     let controller = EXDevLauncherController.sharedInstance()
     self.buildInfo = controller.getBuildInfo()
+    self.updatesConfig = controller.getUpdatesConfig(nil)
+
     loadRecentlyOpenedApps()
     loadMenuPreferences()
   }
@@ -94,9 +110,11 @@ class DevLauncherViewModel: ObservableObject {
     self.recentlyOpenedApps = []
   }
 
-  func discoverDevServers() {
-    isDiscoveringServers = true
+  func isCompatibleRuntime(_ runtimeVersion: String) -> Bool {
+    return runtimeVersion == structuredBuildInfo.runtimeVersion
+  }
 
+  func discoverDevServers() {
     Task {
       var discoveredServers: [DevServer] = []
 
@@ -121,7 +139,6 @@ class DevLauncherViewModel: ObservableObject {
 
       await MainActor.run {
         self.devServers = discoveredServers.sorted { $0.url < $1.url }
-        self.isDiscoveringServers = false
       }
     }
   }
@@ -150,10 +167,6 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     return nil
-  }
-
-  func refreshDevServers() {
-    discoverDevServers()
   }
 
   func showError(_ error: EXDevLauncherAppError) {
@@ -196,84 +209,129 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func checkAuthenticationStatus() {
-    let sessionSecret = UserDefaults.standard.string(forKey: "expo-session-secret")
-    isAuthenticated = sessionSecret != nil
+    let sessionSecret = UserDefaults.standard.string(forKey: sessionKey)
 
-    if isAuthenticated {
+    if let sessionSecret {
+      APIClient.shared.setSession(sessionSecret)
+      isAuthenticated = true
       loadUserInfo()
+    } else {
+      isAuthenticated = false
+      user = nil
     }
   }
 
-  private func loadUserInfo() {
-    if isAuthenticated {
-      userInfo = [
-        "username": "User",
-        "profilePhoto": ""
-      ]
-    }
-  }
-
-  func signIn() {
-    isAuthenticating = true
-
+  private func validateSession() {
     Task {
       do {
-        let success = try await performAuthentication(isSignUp: false)
+        let user = try await Queries.getUserProfile()
         await MainActor.run {
-          if success {
-            isAuthenticated = true
-            loadUserInfo()
-          }
-          isAuthenticating = false
+          self.isAuthenticated = true
+          self.user = user
         }
       } catch {
         await MainActor.run {
-          isAuthenticating = false
-          print("Authentication error: \(error)")
+          self.clearInvalidSession()
         }
       }
     }
   }
 
-  func signUp() {
+  private func clearInvalidSession() {
+    UserDefaults.standard.removeObject(forKey: sessionKey)
+    APIClient.shared.setSession(nil)
+    isAuthenticated = false
+    user = nil
+  }
+
+  private func loadUserInfo() {
+    if isAuthenticated {
+      Task {
+        do {
+          let user = try await Queries.getUserProfile()
+          await MainActor.run {
+            self.user = user
+            let savedAccountId = UserDefaults.standard.string(forKey: selectedAccountKey)
+            if let savedAccountId,
+            user.accounts.contains(where: { $0.id == savedAccountId }) {
+              self.selectedAccountId = savedAccountId
+            } else if let firstAccount = user.accounts.first {
+              self.selectedAccountId = firstAccount.id
+              UserDefaults.standard.set(firstAccount.id, forKey: selectedAccountKey)
+            }
+          }
+        } catch {
+          await MainActor.run {
+            self.clearInvalidSession()
+          }
+        }
+      }
+    } else {
+    }
+  }
+
+  func signIn() async {
     isAuthenticating = true
 
-    Task {
-      do {
-        let success = try await performAuthentication(isSignUp: true)
-        await MainActor.run {
-          if success {
-            isAuthenticated = true
-            loadUserInfo()
-          }
-          isAuthenticating = false
+    do {
+      let success = try await performAuthentication(isSignUp: false)
+      await MainActor.run {
+        if success {
+          self.isAuthenticated = true
+          self.loadUserInfo()
         }
-      } catch {
-        await MainActor.run {
-          isAuthenticating = false
-          print("Authentication error: \(error)")
+        isAuthenticating = false
+      }
+    } catch {
+      await MainActor.run {
+        isAuthenticating = false
+      }
+    }
+  }
+
+  func signUp() async {
+    isAuthenticating = true
+
+    do {
+      let success = try await performAuthentication(isSignUp: true)
+      await MainActor.run {
+        if success {
+          self.isAuthenticated = true
+          self.loadUserInfo()
         }
+        isAuthenticating = false
+      }
+    } catch {
+      await MainActor.run {
+        isAuthenticating = false
       }
     }
   }
 
   func signOut() {
-    UserDefaults.standard.removeObject(forKey: "expo-session-secret")
-    UserDefaults.standard.synchronize()
+    UserDefaults.standard.removeObject(forKey: sessionKey)
+    UserDefaults.standard.removeObject(forKey: selectedAccountKey)
+    APIClient.shared.setSession(nil)
     isAuthenticated = false
-    userInfo = nil
+    user = nil
+    selectedAccountId = nil
+  }
+
+  func selectAccount(accountId: String) {
+    selectedAccountId = accountId
+    UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
   }
 
   private func performAuthentication(isSignUp: Bool) async throws -> Bool {
     return try await withCheckedThrowingContinuation { continuation in
-      let websiteOrigin = "https://staging.expo.dev"
+      let websiteOrigin = APIClient.shared.websiteOrigin
       let authType = isSignUp ? "signup" : "login"
       let scheme = getURLScheme()
       let redirectBase = "\(scheme)://auth"
 
       guard let encodedRedirectURI = redirectBase.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
         let url = URL(string: "\(websiteOrigin)/\(authType)?confirm_account=1&app_redirect_uri=\(encodedRedirectURI)") else {
-        continuation.resume(throwing: NSError(domain: "AuthError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid auth URL"]))
+        continuation.resume(throwing: AuthError.invalidURL)
         return
       }
 
@@ -286,16 +344,15 @@ class DevLauncherViewModel: ObservableObject {
           return
         }
 
-        guard let callbackURL = callbackURL,
+        guard let callbackURL,
           let components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false),
           let sessionSecret = components.queryItems?.first(where: { $0.name == "session_secret" })?.value else {
-          continuation.resume(throwing: NSError(domain: "AuthError", code: 2, userInfo: [NSLocalizedDescriptionKey: "No session secret received"]))
+          continuation.resume(throwing: AuthError.noSessionSecret)
           return
         }
 
-        let decodedSessionSecret = sessionSecret.removingPercentEncoding ?? sessionSecret
-        UserDefaults.standard.set(decodedSessionSecret, forKey: "expo-session-secret")
-        UserDefaults.standard.synchronize()
+        UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+        APIClient.shared.setSession(sessionSecret)
         continuation.resume(returning: true)
       }
 

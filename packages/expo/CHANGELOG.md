@@ -16,10 +16,44 @@
 ### 💡 Others
 
 - Simplify expo-modules-core usage. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
+- Reexport `@expo/config/paths` paths as `expo/config/paths`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 53.0.18 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed NPE of `onWindowFocusChanged` on Android 10. ([#37847](https://github.com/expo/expo/pull/37847) by [@kudo](https://github.com/kudo))
+
+## 53.0.17 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.16 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.15 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.14 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Fixed `expo/fetch` requests cancellation error message on Android. ([#37509](https://github.com/expo/expo/pull/37509) by [@kudo](https://github.com/kudo))
+- [Android] Fixed delay load app handler on new architecture mode. ([#37706](https://github.com/expo/expo/pull/37706) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Aligned `expo/fetch` cancelation error message as iOS. ([#37517](https://github.com/expo/expo/pull/37517) by [@kudo](https://github.com/kudo))
+
+## 53.0.13 - 2025-06-26
+
+_This version does not introduce any user-facing changes._
 
 ## 53.0.12 - 2025-06-18
 

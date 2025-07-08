@@ -10,7 +10,19 @@
 
 ### 🐛 Bug fixes
 
+- Fix Fast Refresh on web by calling `module.hot.accept()` in the transformer. ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
+
+## 0.20.17 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.16 - 2025-07-02
+
+### 🐛 Bug fixes
+
+- Fix require path of assets with RSC client references ([#37663](https://github.com/expo/expo/pull/37663) by [@byCedric](https://github.com/byCedric))
 
 ## 0.20.15 - 2025-06-18
 

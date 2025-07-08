@@ -7,6 +7,8 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -18,6 +20,7 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.compose.BindingView
+import expo.modules.devmenu.compose.DevMenuViewModel
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
@@ -60,7 +63,7 @@ class DevMenuPackage : Package, ReactPackage {
       object : ReactActivityHandler {
         override fun createReactRootViewContainer(activity: Activity): ViewGroup {
           return FrameLayout(activity).apply {
-            addView(BindingView(activity))
+            addView(BindingView(activity, lazyViewModel = (activity as AppCompatActivity).viewModels<DevMenuViewModel>()))
           }
         }
 

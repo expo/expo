@@ -32,6 +32,20 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C02466F72E09DA4C00F9B72D /* Supporting */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		514201462437B4B30078DB4F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -81,6 +95,7 @@
 				514201572437B4B40078DB4F /* main.m */,
 				514201592437B4B40078DB4F /* BareExpo-macOS.entitlements */,
 				6E6919923BB3CB3F3071FB08 /* PrivacyInfo.xcprivacy */,
+				C02466F72E09DA4C00F9B72D /* Supporting */,
 			);
 			path = "BareExpo-macOS";
 			sourceTree = "<group>";
@@ -142,6 +157,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C02466F72E09DA4C00F9B72D /* Supporting */,
 			);
 			name = "BareExpo-macOS";
 			productName = ExpoMacOS;

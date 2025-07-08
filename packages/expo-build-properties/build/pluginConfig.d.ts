@@ -147,6 +147,32 @@ export interface PluginConfigTypeAndroid {
      * @default false
      */
     enableBundleCompression?: boolean;
+    /**
+     * Enable building React Native from source. Turning this on will significantly increase the build times.
+     *
+     * @default false
+     */
+    buildFromSource?: boolean;
+    /**
+     * Override the default `reactNativeArchitectures` list of ABIs to build in **gradle.properties**.
+     *
+     * @see [Android documentation](https://developer.android.com/ndk/guides/abis) for more information.
+     *
+     * @example
+     * ```json
+     * ["arm64-v8a", "x86_64"]
+     * ```
+     *
+     * @default ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+     */
+    buildArchs?: string[];
+    /**
+     * Specifies a single Maven repository to be used as an exclusive mirror for all dependency resolution.
+     * When set, all other Maven repositories will be ignored and only this repository will be used to fetch dependencies.
+     *
+     * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
+     */
+    exclusiveMavenMirror?: string;
 }
 /**
  * @platform android
@@ -284,6 +310,16 @@ export interface PluginConfigTypeIos {
      * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
      */
     privacyManifestAggregationEnabled?: boolean;
+    /**
+     * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * This feature is available from React Native 0.80.
+     * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
+     *
+     * @default true
+     * @see React Native documentation on [prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more information.
+     * @experimental
+     */
+    buildFromSource?: boolean;
 }
 /**
  * Interface representing extra CocoaPods dependency.

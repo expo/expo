@@ -101,16 +101,30 @@ internal class MediaHandler(
       val fileData = getAdditionalFileData(sourceUri)
       val mimeType = getType(context.contentResolver, sourceUri)
 
+      // Extract basic metadata
+      var width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+      var height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+      val rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+
+      // Android returns the encoded width/height which do not take the display rotation into
+      // account. For videos recorded in portrait mode the encoded dimensions are often landscape
+      // (e.g. 1920x1080) paired with a 90°/270° rotation flag.  iOS adjusts these values before
+      // reporting them, so to keep the behaviour consistent across platforms we swap the width
+      // and height when the rotation indicates the video should be displayed in portrait.
+      if (rotation % 180 != 0) {
+        width = height.also { height = width }
+      }
+
       return ImagePickerAsset(
         type = MediaType.VIDEO,
         uri = outputUri.toString(),
-        width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
-        height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
+        width = width,
+        height = height,
         fileName = fileData?.fileName,
         fileSize = fileData?.fileSize,
         mimeType = mimeType,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
-        rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
+        rotation = rotation,
         assetId = sourceUri.getMediaStoreAssetId()
       )
     } catch (cause: FailedToExtractVideoMetadataException) {

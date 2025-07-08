@@ -74,16 +74,7 @@ object BlurhashDecoder {
     val r = colorEnc shr 16
     val g = (colorEnc shr 8) and 255
     val b = colorEnc and 255
-    return floatArrayOf(srgbToLinear(r), srgbToLinear(g), srgbToLinear(b))
-  }
-
-  private fun srgbToLinear(colorEnc: Int): Float {
-    val v = colorEnc / 255f
-    return if (v <= 0.04045f) {
-      (v / 12.92f)
-    } else {
-      ((v + 0.055f) / 1.055f).pow(2.4f)
-    }
+    return floatArrayOf(BlurhashHelpers.srgbToLinear(r), BlurhashHelpers.srgbToLinear(g), BlurhashHelpers.srgbToLinear(b))
   }
 
   private fun decodeAc(value: Int, maxAc: Float): FloatArray {

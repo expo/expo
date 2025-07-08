@@ -21,3 +21,8 @@ export declare function updateAndroidProguardRules(contents: string, newProguard
 export declare const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType>;
 export declare const withAndroidQueries: ConfigPlugin<PluginConfigType>;
 export declare const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType>;
+export declare const withAndroidSettingsGradle: ConfigPlugin<PluginConfigType>;
+export declare function updateAndroidSettingsGradle({ contents, buildFromSource, }: {
+    contents: string;
+    buildFromSource?: boolean;
+}): string;
