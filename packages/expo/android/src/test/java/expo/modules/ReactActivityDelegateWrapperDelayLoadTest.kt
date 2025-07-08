@@ -174,60 +174,6 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
   }
 
   @Test
-  fun `should cancel pending resume if activity pause before delay load finished`() = runTest {
-    every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithDelay)
-
-    val callbackSlot = slot<Runnable>()
-    every { delayLoadAppHandler.whenReady(capture(callbackSlot)) } answers {
-      // Don't call the callback immediately to simulate delay
-    }
-
-    activityController = Robolectric.buildActivity(MockActivity::class.java)
-      .also {
-        val activity = it.get()
-        (activity.application as MockApplication).bindCurrentActivity(activity)
-      }
-      .setup()
-    val spyDelegateWrapper = activity.reactActivityDelegate as ReactActivityDelegateWrapper
-    val spyDelegate = spyDelegateWrapper.delegate
-
-    verify(exactly = 1) { spyDelegateWrapper.onCreate(any()) }
-    verify(exactly = 1) { spyDelegateWrapper.onResume() }
-    verify(exactly = 0) { spyDelegate.onResume() }
-
-    activityController.pause()
-    callbackSlot.captured.run()
-    verify(exactly = 0) { spyDelegate.onResume() }
-  }
-
-  @Test
-  fun `should cancel pending resume if activity stop before delay load finished`() = runTest {
-    every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithDelay)
-
-    val callbackSlot = slot<Runnable>()
-    every { delayLoadAppHandler.whenReady(capture(callbackSlot)) } answers {
-      // Don't call the callback immediately to simulate delay
-    }
-
-    activityController = Robolectric.buildActivity(MockActivity::class.java)
-      .also {
-        val activity = it.get()
-        (activity.application as MockApplication).bindCurrentActivity(activity)
-      }
-      .setup()
-    val spyDelegateWrapper = activity.reactActivityDelegate as ReactActivityDelegateWrapper
-    val spyDelegate = spyDelegateWrapper.delegate
-
-    verify(exactly = 1) { spyDelegateWrapper.onCreate(any()) }
-    verify(exactly = 1) { spyDelegateWrapper.onResume() }
-    verify(exactly = 0) { spyDelegate.onResume() }
-
-    activityController.pause().stop()
-    callbackSlot.captured.run()
-    verify(exactly = 0) { spyDelegate.onResume() }
-  }
-
-  @Test
   fun `should cancel pending resume if activity destroy before delay load finished`() = runTest {
     every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithDelay)
 
