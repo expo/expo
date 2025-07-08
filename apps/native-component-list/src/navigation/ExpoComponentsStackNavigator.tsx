@@ -48,7 +48,7 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
+      return optionalRequire(() => require('../screens/BlurView/BlurViewNativeNavigator'));
     },
     name: 'BlurView',
   },

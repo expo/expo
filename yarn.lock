@@ -3309,7 +3309,7 @@
   dependencies:
     color "^4.2.3"
 
-"@react-navigation/native-stack@7.3.10", "@react-navigation/native-stack@^7.3.10":
+"@react-navigation/native-stack@7.3.10", "@react-navigation/native-stack@^7.3.10", "@react-navigation/native-stack@^7.3.21":
   version "7.3.10"
   resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.3.10.tgz#80553b5ccaf27dcf1b67d3d93d7e73fdd985d29f"
   integrity sha512-bO/3bZiL/i2dbJQEeqfxIqp1CKzyx+RPdwaiLm6za8cUl877emnxFeAAOSUbN7r/AJgq+U/iCwc3K88mh+4oRQ==
