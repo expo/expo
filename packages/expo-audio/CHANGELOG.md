@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Fix resolving issues with AudioEventKeys on webpack. Export mark types export with `type`. ([#37421](https://github.com/expo/expo/pull/37421) by [@behenate](https://github.com/behenate))
+- [iOS] Throw an error when attempting to record when recording is not allowed.
 
 ## 0.4.8 - 2025-07-03
 
