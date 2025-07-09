@@ -11,8 +11,6 @@ import {
 import fs from 'fs';
 import path from 'path';
 
-import { appendContentsInsideDeclarationBlock } from './utils';
-
 type ConfigPluginProps = {
   supportsRTL?: boolean;
   forcesRTL?: boolean;
@@ -90,7 +88,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
     });
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
-        config.modResults.contents = appendContentsInsideDeclarationBlock(
+        config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
           config.modResults.contents,
           'defaultConfig',
           `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `

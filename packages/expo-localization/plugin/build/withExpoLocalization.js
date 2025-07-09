@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const utils_1 = require("./utils");
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
     if (mergedConfig?.supportsRTL == null &&
@@ -69,7 +68,7 @@ function withExpoLocalizationAndroid(config, data) {
         });
         config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
             if (config.modResults.language === 'groovy') {
-                config.modResults.contents = (0, utils_1.appendContentsInsideDeclarationBlock)(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
+                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
             }
             else {
                 config_plugins_1.WarningAggregator.addWarningAndroid('expo-localization supportedLocales', `Cannot automatically configure app build.gradle if it's not groovy`);
