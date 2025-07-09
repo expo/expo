@@ -3,6 +3,7 @@ package expo.modules.devlauncher.services
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
+import expo.modules.devlauncher.DevLauncherController
 
 /**
  * Simple dependency injection container for DevLauncher.
@@ -24,12 +25,17 @@ object DependencyInjection {
   var apolloClientService: ApolloClientService? = null
     private set
 
-  fun init(context: Context) = synchronized(this) {
+  var devLauncherController: DevLauncherController? = null
+    private set
+
+  fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
     if (wasInitialized) {
       return
     }
 
     wasInitialized = true
+
+    this.devLauncherController = devLauncherController
 
     val httpClient = HttpClientService()
 
@@ -58,6 +64,7 @@ internal inline fun <reified T> injectService(): T {
     ApolloClientService::class -> DependencyInjection.apolloClientService
     ImageLoaderService::class -> DependencyInjection.imageLoaderService
     HttpClientService::class -> DependencyInjection.httpClientService
+    DevLauncherController::class -> DependencyInjection.devLauncherController
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
 }

@@ -15,11 +15,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.Home
-import expo.modules.devlauncher.compose.Settings
 import expo.modules.devlauncher.compose.Tab
 import expo.modules.devmenu.compose.theme.Theme
 import androidx.compose.runtime.getValue
+import expo.modules.devlauncher.compose.routes.Home
+import expo.modules.devlauncher.compose.routes.Settings
 
 @Composable
 fun BottomTabBar(
@@ -40,7 +40,7 @@ fun BottomTabBar(
       val buttonModifier = Modifier.Companion
         .weight(1f)
         .fillMaxHeight()
-      val icons = listOf<Tab>(
+      val icons = listOf(
         Tab(
           label = "Home",
           icon = painterResource(id = R.drawable._expodevclientcomponents_assets_homefilledinactiveicon),
