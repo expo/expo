@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react-native';
-import { Appearance, ColorSchemeName } from 'react-native';
+import { type ColorSchemeName } from 'react-native';
+import * as ReactNative from 'react-native';
 
 export function mockProperty(obj, propertyName, mock, fn: any) {
   const originalValue = obj[propertyName];
@@ -12,13 +13,14 @@ export function mockProperty(obj, propertyName, mock, fn: any) {
 }
 
 export function mockAppearance(colorScheme: ColorSchemeName, fn: any) {
-  const originalGetColorScheme = Appearance.getColorScheme;
-  Appearance.getColorScheme = () => colorScheme;
+  const mockUseColorScheme = jest
+    .spyOn(ReactNative, 'useColorScheme')
+    .mockImplementationOnce(() => colorScheme);
   try {
     fn();
   } finally {
-    Appearance.getColorScheme = originalGetColorScheme;
   }
+  mockUseColorScheme.mockRestore();
 }
 
 export function renderedPropValue(element: any, prop: string) {
@@ -26,5 +28,5 @@ export function renderedPropValue(element: any, prop: string) {
   // @ts-ignore: brentvatne: I'm not sure how else to read the props off of a
   // component that renders null in testing-library, so I'm using this fairly
   // brittle internal API.
-  return result.container._fiber.return.child.child.pendingProps[prop];
+  return result.UNSAFE_root._fiber.return.child.child.pendingProps[prop];
 }

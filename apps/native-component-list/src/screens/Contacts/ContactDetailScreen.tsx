@@ -1,17 +1,17 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import ContactDetailList, { DetailListItem } from './ContactDetailList';
+import * as ContactUtils from './ContactUtils';
+import ContactsAvatar from './ContactsAvatar';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import usePermissions from '../../utilities/usePermissions';
-import ContactDetailList, { DetailListItem } from './ContactDetailList';
-import * as ContactUtils from './ContactUtils';
-import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 
@@ -31,13 +31,13 @@ export default function ContactDetailScreen(props: any) {
       headerRight: () => (
         <HeaderContainerRight>
           <HeaderIconButton
-            name="md-share"
+            name="share"
             onPress={async () => {
               Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
             }}
           />
           <HeaderIconButton
-            name="md-open"
+            name="open"
             onPress={async () => {
               await Contacts.presentFormAsync(props.route.params.id);
               console.log('the native contact form has been closed');
@@ -45,7 +45,7 @@ export default function ContactDetailScreen(props: any) {
           />
           {isIos && (
             <HeaderIconButton
-              name="md-copy"
+              name="copy"
               onPress={async () => {
                 await ContactUtils.cloneAsync(props.route.params.id);
                 props.navigation.goBack();
@@ -167,7 +167,7 @@ function ContactDetailView({
               transform = {
                 value: item.url,
                 onPress: () => {
-                  const webUrl = item.url.indexOf('://') === -1 ? 'http://' + item.url : item.url;
+                  const webUrl = item.url.indexOf('://') === -1 ? 'https://' + item.url : item.url;
                   console.log('open', item.url, webUrl);
                   Linking.openURL(webUrl);
                 },
@@ -193,8 +193,8 @@ function ContactDetailView({
                   onPress: () =>
                     Linking.openURL(
                       Platform.select<string>({
-                        ios: `http://maps.apple.com/maps?daddr=${targetUriAdress}`,
-                        default: `http://maps.google.com/maps?daddr=${targetUriAdress}`,
+                        ios: `https://maps.apple.com/maps?daddr=${targetUriAdress}`,
+                        default: `https://maps.google.com/maps?daddr=${targetUriAdress}`,
                       })
                     ),
                 };
@@ -223,13 +223,6 @@ function ContactDetailView({
     return items;
   }, [contact]);
 
-  const onPressImage = async () => {
-    if (!isIos) {
-      return;
-    }
-    _selectPhoto();
-  };
-
   React.useEffect(() => {
     loadAsync();
   }, []);
@@ -239,8 +232,8 @@ function ContactDetailView({
     try {
       await Contacts.updateContactAsync({
         [Contacts.Fields.ID]: id,
-        [Contacts.Fields.Image]: uri,
-      } as any);
+        [Contacts.Fields.Image]: { uri },
+      });
     } catch ({ message }) {
       console.error(message);
     }
@@ -269,7 +262,7 @@ function ContactDetailView({
         <View style={{ alignItems: 'center', marginBottom: 8 }}>
           <ContactsAvatar
             style={styles.image}
-            onPress={onPressImage}
+            onPress={_selectPhoto}
             name={contact?.name ?? ''}
             image={contact?.image?.uri}
           />
@@ -338,7 +331,7 @@ function LinkedButton({
             backgroundColor,
           },
         ]}>
-        <Ionicons name={`ios-${icon}` as any} size={20} color={color} />
+        <Ionicons name={icon as any} size={20} color={color} />
       </View>
       <Text style={[styles.linkButtonText, { color: backgroundColor }]}>{text}</Text>
     </TouchableOpacity>

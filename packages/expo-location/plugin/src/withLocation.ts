@@ -1,6 +1,7 @@
 import {
   AndroidConfig,
   ConfigPlugin,
+  IOSConfig,
   createRunOncePlugin,
   withInfoPlist,
 } from 'expo/config-plugins';
@@ -22,11 +23,12 @@ const withBackgroundLocation: ConfigPlugin = (config) => {
 
 const withLocation: ConfigPlugin<
   {
-    locationAlwaysAndWhenInUsePermission?: string;
-    locationAlwaysPermission?: string;
-    locationWhenInUsePermission?: string;
+    locationAlwaysAndWhenInUsePermission?: string | false;
+    locationAlwaysPermission?: string | false;
+    locationWhenInUsePermission?: string | false;
     isIosBackgroundLocationEnabled?: boolean;
     isAndroidBackgroundLocationEnabled?: boolean;
+    isAndroidForegroundServiceEnabled?: boolean;
   } | void
 > = (
   config,
@@ -36,37 +38,42 @@ const withLocation: ConfigPlugin<
     locationWhenInUsePermission,
     isIosBackgroundLocationEnabled,
     isAndroidBackgroundLocationEnabled,
+    isAndroidForegroundServiceEnabled,
   } = {}
 ) => {
   if (isIosBackgroundLocationEnabled) {
     config = withBackgroundLocation(config);
   }
 
-  config = withInfoPlist(config, (config) => {
-    config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription =
-      locationAlwaysAndWhenInUsePermission ||
-      config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription ||
-      LOCATION_USAGE;
-    config.modResults.NSLocationAlwaysUsageDescription =
-      locationAlwaysPermission ||
-      config.modResults.NSLocationAlwaysUsageDescription ||
-      LOCATION_USAGE;
-    config.modResults.NSLocationWhenInUseUsageDescription =
-      locationWhenInUsePermission ||
-      config.modResults.NSLocationWhenInUseUsageDescription ||
-      LOCATION_USAGE;
-
-    return config;
+  IOSConfig.Permissions.createPermissionsPlugin({
+    NSLocationAlwaysAndWhenInUseUsageDescription: LOCATION_USAGE,
+    NSLocationAlwaysUsageDescription: LOCATION_USAGE,
+    NSLocationWhenInUseUsageDescription: LOCATION_USAGE,
+  })(config, {
+    NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission,
+    NSLocationAlwaysUsageDescription: locationAlwaysPermission,
+    NSLocationWhenInUseUsageDescription: locationWhenInUsePermission,
   });
+
+  // If the user has not specified a value for isAndroidForegroundServiceEnabled,
+  // we default to the value of isAndroidBackgroundLocationEnabled because we want
+  // to enable foreground by default if background location is enabled.
+  const enableAndroidForegroundService =
+    typeof isAndroidForegroundServiceEnabled === 'undefined'
+      ? isAndroidBackgroundLocationEnabled
+      : isAndroidForegroundServiceEnabled;
 
   return AndroidConfig.Permissions.withPermissions(
     config,
     [
+      // Note: these are already added in the library AndroidManifest.xml and so
+      // are not required here, we may want to remove them in the future.
       'android.permission.ACCESS_COARSE_LOCATION',
       'android.permission.ACCESS_FINE_LOCATION',
-      'android.permission.FOREGROUND_SERVICE',
-      // Optional
+      // These permissions are optional, and not listed in the library AndroidManifest.xml
       isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
+      enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE',
+      enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
     ].filter(Boolean) as string[]
   );
 };

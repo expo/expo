@@ -30,6 +30,10 @@ function getPortArg(port: number): string {
   return `-PreactNativeDevServerPort=${port}`;
 }
 
+function getActiveArchArg(architectures: string): string {
+  return `-PreactNativeArchitectures=${architectures}`;
+}
+
 /**
  * Build the Android project using Gradle.
  *
@@ -38,6 +42,7 @@ function getPortArg(port: number): string {
  * @param props.appName - Name of the 'app' folder, this appears to always be `app`.
  * @param props.port - Dev server port to pass to the install command.
  * @param props.buildCache - Should use the `--build-cache` flag, enabling the [Gradle build cache](https://docs.gradle.org/current/userguide/build_cache.html).
+ * @param props.architectures - Architectures to build for.
  * @returns - A promise resolving to spawn results.
  */
 export async function assembleAsync(
@@ -47,11 +52,15 @@ export async function assembleAsync(
     port,
     appName,
     buildCache,
+    architectures,
+    eagerBundleOptions,
   }: {
     variant: string;
     port?: number;
     appName: string;
     buildCache?: boolean;
+    architectures?: string;
+    eagerBundleOptions?: string;
   }
 ): Promise<SpawnResult> {
   const task = formatGradleArguments('assemble', { variant, appName });
@@ -71,7 +80,16 @@ export async function assembleAsync(
   // Generate a profile under `/android/app/build/reports/profile`
   if (env.EXPO_PROFILE) args.push('--profile');
 
-  return await spawnGradleAsync(androidProjectPath, { port, args });
+  return await spawnGradleAsync(androidProjectPath, {
+    port,
+    architectures,
+    args,
+    env: eagerBundleOptions
+      ? {
+          __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
+        }
+      : {},
+  });
 }
 
 /**
@@ -101,15 +119,25 @@ export async function installAsync(
 
 export async function spawnGradleAsync(
   projectRoot: string,
-  { port, args }: { port?: number; args: string[] }
+  {
+    port,
+    architectures,
+    args,
+    env,
+  }: { port?: number; architectures?: string; args: string[]; env?: Record<string, string> }
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
   if (port != null) args.push(getPortArg(port));
+  if (architectures) args.push(getActiveArchArg(architectures));
   debug(`  ${gradlew} ${args.join(' ')}`);
   try {
     return await spawnAsync(gradlew, args, {
       cwd: projectRoot,
       stdio: 'inherit',
+      env: {
+        ...process.env,
+        ...(env ?? {}),
+      },
     });
   } catch (error: any) {
     // User aborted the command with ctrl-c

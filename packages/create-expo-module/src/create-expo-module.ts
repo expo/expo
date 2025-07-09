@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import findUp from 'find-up';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
 import prompts from 'prompts';
@@ -24,7 +24,7 @@ import {
 } from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
-import { newStep } from './utils';
+import { newStep } from './utils/ora';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -73,7 +73,7 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
- * @param command An object from `commander`.
+ * @param options An options object for `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
   if (options.local) {
@@ -95,7 +95,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!targetDir) {
     return;
   }
-  await fs.ensureDir(targetDir);
+  await fs.promises.mkdir(targetDir, { recursive: true });
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
@@ -105,12 +105,12 @@ async function main(target: string | undefined, options: CommandOptions) {
   // Make one line break between prompts and progress logs
   console.log();
 
-  const packageManager = await resolvePackageManager();
+  const packageManager = resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
-  logEventAsync(eventCreateExpoModule(packageManager, options));
+  await logEventAsync(eventCreateExpoModule(packageManager, options));
 
   await newStep('Creating the module from template files', async (step) => {
     await createModuleFromTemplate(packagePath, targetDir, data);
@@ -133,14 +133,14 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
     // We should remove it after all.
-    await fs.remove(packagePath);
+    await fs.promises.rm(packagePath, { recursive: true, force: true });
   }
   if (!options.local && data.type !== 'local') {
     if (!options.withReadme) {
-      await fs.remove(path.join(targetDir, 'README.md'));
+      await fs.promises.rm(path.join(targetDir, 'README.md'), { force: true });
     }
     if (!options.withChangelog) {
-      await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
+      await fs.promises.rm(path.join(targetDir, 'CHANGELOG.md'), { force: true });
     }
     if (options.example) {
       // Create "example" folder
@@ -159,8 +159,8 @@ async function main(target: string | undefined, options: CommandOptions) {
             'Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true'
           );
         }
-      } catch (e: any) {
-        step.fail(e.toString());
+      } catch (error: any) {
+        step.fail(error.toString());
       }
     });
   }
@@ -182,7 +182,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
   const files: string[] = [];
   const baseDir = dir ? path.join(root, dir) : root;
 
-  for (const file of await fs.readdir(baseDir)) {
+  for (const file of await fs.promises.readdir(baseDir)) {
     const relativePath = dir ? path.join(dir, file) : file;
 
     if (IGNORES_PATHS.includes(relativePath) || IGNORES_PATHS.includes(file)) {
@@ -190,8 +190,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
     }
 
     const fullPath = path.join(baseDir, file);
-    const stat = await fs.lstat(fullPath);
-
+    const stat = await fs.promises.lstat(fullPath);
     if (stat.isDirectory()) {
       files.push(...(await getFilesAsync(root, relativePath)));
     } else {
@@ -211,21 +210,68 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 }
 
 /**
+ * Gets expo SDK version major from the local package.json.
+ */
+async function getLocalSdkMajorVersion(): Promise<string | null> {
+  const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
+  if (!path) {
+    return null;
+  }
+  const { version } = require(path) ?? {};
+  return version?.split('.')[0] ?? null;
+}
+
+/**
+ * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
+ */
+async function getTemplateVersion(isLocal: boolean) {
+  if (EXPO_BETA) {
+    return 'next';
+  }
+  if (!isLocal) {
+    return 'latest';
+  }
+  try {
+    const sdkVersionMajor = await getLocalSdkMajorVersion();
+    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
+  } catch {
+    console.log();
+    console.warn(
+      chalk.yellow(
+        "Couldn't determine the SDK version from the local project, using `latest` as the template version."
+      )
+    );
+    return 'latest';
+  }
+}
+
+/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const tarballUrl = await getNpmTarballUrl(
-      isLocal ? 'expo-module-template-local' : 'expo-module-template',
-      EXPO_BETA ? 'next' : 'latest'
-    );
+    const templateVersion = await getTemplateVersion(isLocal);
+    const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
 
-    await downloadTarball({
-      url: tarballUrl,
-      dir: targetDir,
-    });
+    try {
+      await downloadTarball({
+        url: await getNpmTarballUrl(packageName, templateVersion),
+        dir: targetDir,
+      });
+    } catch {
+      console.log();
+      console.warn(
+        chalk.yellow(
+          "Couldn't download the versioned template from npm, falling back to the latest version."
+        )
+      );
+      await downloadTarball({
+        url: await getNpmTarballUrl(packageName, 'latest'),
+        dir: targetDir,
+      });
+    }
 
-    step.succeed('Downloaded module template from npm');
+    step.succeed('Downloaded module template from npm registry.');
 
     return path.join(targetDir, 'package');
   });
@@ -257,10 +303,13 @@ async function createModuleFromTemplate(
     });
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
-    const template = await fs.readFile(fromPath, { encoding: 'utf8' });
+    const template = await fs.promises.readFile(fromPath, 'utf8');
     const renderedContent = ejs.render(template, data);
 
-    await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
+    if (!fs.existsSync(path.dirname(toPath))) {
+      await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
+    }
+    await fs.promises.writeFile(toPath, renderedContent, 'utf8');
   }
 }
 
@@ -271,7 +320,7 @@ async function createGitRepositoryAsync(targetDir: string) {
       stdio: 'ignore',
       cwd: targetDir,
     });
-    debug(chalk.dim('New project is already inside of a Git repo, skipping git init.'));
+    debug(chalk.dim('New project is already inside of a Git repository, skipping `git init`.'));
     return null;
   } catch (e: any) {
     if (e.errno === 'ENOENT') {
@@ -315,9 +364,9 @@ async function askForSubstitutionDataAsync(
   slug: string,
   isLocal = false
 ): Promise<SubstitutionData | LocalSubstitutionData> {
-  const promptQueries = await (isLocal
-    ? getLocalSubstitutionDataPrompts
-    : getSubstitutionDataPrompts)(slug);
+  const promptQueries = await (
+    isLocal ? getLocalSubstitutionDataPrompts : getSubstitutionDataPrompts
+  )(slug);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
@@ -368,8 +417,7 @@ async function askForSubstitutionDataAsync(
  * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
  */
 async function confirmTargetDirAsync(targetDir: string): Promise<void> {
-  const files = await fs.readdir(targetDir);
-
+  const files = await fs.promises.readdir(targetDir);
   if (files.length === 0) {
     return;
   }
@@ -408,7 +456,7 @@ function printFurtherInstructions(
 
     console.log();
     console.log(
-      'To start developing your module, navigate to the directory and open iOS and Android projects of the example app'
+      'To start developing your module, navigate to the directory and open Android and iOS projects of the example app'
     );
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
@@ -419,13 +467,13 @@ function printFurtherInstructions(
 function printFurtherLocalInstructions(slug: string, name: string) {
   console.log();
   console.log(`You can now import this module inside your application.`);
-  console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-  console.log(`${chalk.gray.italic(`import { hello } from './modules/${slug}';`)}`);
+  console.log(`For example, you can add this line to your App.tsx or App.js file:`);
+  console.log(`${chalk.gray.italic(`import ${name} from './modules/${slug}';`)}`);
   console.log();
   console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
     chalk.yellow(
-      `Remember you need to rebuild your development client or reinstall pods to see the changes.`
+      `Remember to re-build your native app (for example, with ${chalk.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`
     )
   );
 }

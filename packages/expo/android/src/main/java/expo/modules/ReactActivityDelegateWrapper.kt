@@ -1,30 +1,51 @@
 package expo.modules
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.os.Build
+import android.os.Build.VERSION
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.collection.ArrayMap
+import androidx.lifecycle.lifecycleScope
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.PermissionListener
+import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.kotlin.Utils
+import expo.modules.rncompatibility.ReactNativeFeatureFlags
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
   private val isNewArchitectureEnabled: Boolean,
-  private var delegate: ReactActivityDelegate
+  @get:VisibleForTesting internal var delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
   constructor(activity: ReactActivity, delegate: ReactActivityDelegate) :
     this(activity, false, delegate)
@@ -34,6 +55,38 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
+  private val _reactNativeHost: ReactNativeHost by lazy {
+    invokeDelegateMethod("getReactNativeHost")
+  }
+  private val _reactHost: ReactHost? by lazy {
+    delegate.reactHost
+  }
+  private val delayLoadAppHandler: DelayLoadAppHandler? by lazy {
+    reactActivityHandlers.asSequence()
+      .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
+      .firstOrNull()
+  }
+
+  /**
+   * A deferred that indicates when the app loading is ready
+   */
+  private val loadAppReady = CompletableDeferred<Unit>()
+
+  /**
+   * A mutex to ensure all coroutines in a scope are running in atomic way.
+   *
+   * This is to act like [Activity] lifecycle,
+   * e.g. all work in [onResume] should be executed after all work in [onCreate] finished.
+   */
+  private val mutex = Mutex()
+
+  /**
+   * A [CoroutineScope] that binds its lifecycle as [ReactActivityDelegateWrapper].
+   * This is used for [onDestroy] because we need a longer lifecycle scope to call [onDestroy]
+   */
+  private val applicationCoroutineScope: CoroutineScope by lazy {
+    CoroutineScope(Dispatchers.Main)
+  }
 
   //region ReactActivityDelegate
 
@@ -41,16 +94,20 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("getLaunchOptions")
   }
 
-  override fun createRootView(): ReactRootView {
-    val rootView = reactActivityHandlers.asSequence()
-      .mapNotNull { it.createReactRootView(activity) }
-      .firstOrNull() ?: invokeDelegateMethod("createRootView")
-    rootView.setIsFabric(isNewArchitectureEnabled)
-    return rootView
+  override fun createRootView(): ReactRootView? {
+    return invokeDelegateMethod("createRootView")
+  }
+
+  override fun getReactDelegate(): ReactDelegate? {
+    return invokeDelegateMethod("getReactDelegate")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
-    return invokeDelegateMethod("getReactNativeHost")
+    return _reactNativeHost
+  }
+
+  override fun getReactHost(): ReactHost? {
+    return _reactHost
   }
 
   override fun getReactInstanceManager(): ReactInstanceManager {
@@ -62,25 +119,12 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun loadApp(appKey: String?) {
-    // Give modules a chance to wrap the ReactRootView in a container ViewGroup. If some module
-    // wants to do this, we override the functionality of `loadApp` and call `setContentView` with
-    // the new container view instead.
-    val rootViewContainer = reactActivityHandlers.asSequence()
-      .mapNotNull { it.createReactRootViewContainer(activity) }
-      .firstOrNull()
-    if (rootViewContainer != null) {
-      val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
-      mReactDelegate.isAccessible = true
-      val reactDelegate = mReactDelegate[delegate] as ReactDelegate
-
-      reactDelegate.loadApp(appKey)
-      rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
-      activity.setContentView(rootViewContainer)
-    } else {
-      return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    launchLifecycleScopeWithLock(start = CoroutineStart.UNDISPATCHED) {
+      loadAppImpl(appKey, supportsDelayLoad = true)
     }
   }
 
+  @SuppressLint("DiscouragedPrivateApi")
   override fun onCreate(savedInstanceState: Bundle?) {
     // Give handlers a chance as early as possible to replace the wrapped delegate object.
     // If they do, we call the new wrapped delegate's `onCreate` instead of overriding it here.
@@ -96,24 +140,50 @@ class ReactActivityDelegateWrapper(
       mDelegateField.set(activity, newDelegate)
       delegate = newDelegate
 
-      invokeDelegateMethod<Unit, Bundle?>("onCreate", arrayOf(Bundle::class.java), arrayOf(savedInstanceState))
+      delegate.onCreate(savedInstanceState)
     } else {
       // Since we just wrap `ReactActivityDelegate` but not inherit it, in its `onCreate`,
       // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
       // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
       // That's not ideal but works.
-      val reactDelegate = object : ReactDelegate(
-        plainActivity, reactNativeHost, mainComponentName, launchOptions
-      ) {
-        override fun createRootView(): ReactRootView {
-          return this@ReactActivityDelegateWrapper.createRootView()
+
+      launchLifecycleScopeWithLock(start = CoroutineStart.UNDISPATCHED) {
+        awaitDelayLoadAppWhenReady(delayLoadAppHandler)
+        loadAppReady.complete(Unit)
+
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled) {
+          activity.window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
-      }
-      val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
-      mReactDelegate.isAccessible = true
-      mReactDelegate.set(delegate, reactDelegate)
-      if (mainComponentName != null) {
-        loadApp(mainComponentName)
+
+        val launchOptions = composeLaunchOptions()
+        val reactDelegate: ReactDelegate
+        if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
+          reactDelegate = ReactDelegate(
+            plainActivity,
+            reactHost,
+            mainComponentName,
+            launchOptions
+          )
+        } else {
+          reactDelegate = object : ReactDelegate(
+            plainActivity,
+            reactNativeHost,
+            mainComponentName,
+            launchOptions,
+            isFabricEnabled
+          ) {
+            override fun createRootView(): ReactRootView {
+              return this@ReactActivityDelegateWrapper.createRootView() ?: super.createRootView()
+            }
+          }
+        }
+
+        val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
+        mReactDelegate.isAccessible = true
+        mReactDelegate.set(delegate, reactDelegate)
+        if (mainComponentName != null) {
+          loadAppImpl(mainComponentName, supportsDelayLoad = false)
+        }
       }
     }
 
@@ -123,24 +193,71 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
-    invokeDelegateMethod<Unit>("onResume")
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onResume(activity)
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      delegate.onResume()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onResume(activity)
+      }
     }
   }
 
   override fun onPause() {
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onPause(activity)
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onPause(activity)
+      }
+      if (delayLoadAppHandler != null) {
+        try {
+          // For the delay load case, we may enter a different call flow than react-native.
+          // For example, Activity stopped before delay load finished.
+          // We stop before the ReactActivityDelegate gets a chance to set up.
+          // In this case, we should catch the exceptions.
+          delegate.onPause()
+        } catch (e: Exception) {
+          Log.e(TAG, "Exception occurred during onPause with delayed app loading", e)
+        }
+      } else {
+        delegate.onPause()
+      }
     }
-    return invokeDelegateMethod("onPause")
+  }
+
+  override fun onUserLeaveHint() {
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onUserLeaveHint(activity)
+      }
+      delegate.onUserLeaveHint()
+    }
   }
 
   override fun onDestroy() {
-    reactActivityLifecycleListeners.forEach { listener ->
-      listener.onDestroy(activity)
+    // Note: use our `coroutineScope` for onDestroy here
+    // because the lifecycleScope destroyed before the executions.
+    applicationCoroutineScope.launch {
+      mutex.withLock {
+        loadAppReady.await()
+        reactActivityLifecycleListeners.forEach { listener ->
+          listener.onDestroy(activity)
+        }
+        if (delayLoadAppHandler != null) {
+          try {
+            // For the delay load case, we may enter a different call flow than react-native.
+            // For example, Activity stopped before delay load finished.
+            // We stop before the ReactActivityDelegate gets a chance to set up.
+            // In this case, we should catch the exceptions.
+            delegate.onDestroy()
+          } catch (e: Exception) {
+            Log.e(TAG, "Exception occurred during onDestroy with delayed app loading", e)
+          }
+        } else {
+          delegate.onDestroy()
+        }
+      }
     }
-    return invokeDelegateMethod("onDestroy")
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -157,24 +274,39 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    if (delegate.reactInstanceManager.currentReactContext == null) {
-      val reactContextListener = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext?) {
-          delegate.reactInstanceManager.removeReactInstanceEventListener(this)
-          delegate.onActivityResult(requestCode, resultCode, data)
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
+        val reactContextListener = object : ReactInstanceEventListener {
+          override fun onReactContextInitialized(context: ReactContext) {
+            delegate.reactInstanceManager.removeReactInstanceEventListener(this)
+            delegate.onActivityResult(requestCode, resultCode, data)
+          }
         }
+        return@launchLifecycleScopeWithLock delegate.reactInstanceManager.addReactInstanceEventListener(
+          reactContextListener
+        )
       }
-      return delegate.reactInstanceManager.addReactInstanceEventListener(reactContextListener)
-    }
 
-    delegate.onActivityResult(requestCode, resultCode, data)
+      delegate.onActivityResult(requestCode, resultCode, data)
+    }
   }
 
   override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyDown(keyCode, event)
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyDown(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyDown(keyCode, event)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     // if any of the handlers return true, intentionally consume the event instead of passing it
     // through to the delegate
     return reactActivityHandlers
@@ -183,10 +315,20 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
-    return delegate.onKeyLongPress(keyCode, event)
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
+    // if any of the handlers return true, intentionally consume the event instead of passing it
+    // through to the delegate
+    return reactActivityHandlers
+      .map { it.onKeyLongPress(keyCode, event) }
+      .fold(false) { accu, current -> accu || current } || delegate.onKeyLongPress(keyCode, event)
   }
 
   override fun onBackPressed(): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     val listenerResult = reactActivityLifecycleListeners
       .map(ReactActivityLifecycleListener::onBackPressed)
       .fold(false) { accu, current -> accu || current }
@@ -195,6 +337,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onNewIntent(intent: Intent?): Boolean {
+    if (!loadAppReady.isCompleted) {
+      return false
+    }
     val listenerResult = reactActivityLifecycleListeners
       .map { it.onNewIntent(intent) }
       .fold(false) { accu, current -> accu || current }
@@ -203,15 +348,24 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
-    delegate.onWindowFocusChanged(hasFocus)
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      delegate.onWindowFocusChanged(hasFocus)
+    }
   }
 
   override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
-    delegate.requestPermissions(permissions, requestCode, listener)
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      delegate.requestPermissions(permissions, requestCode, listener)
+    }
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-    delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
   }
 
   override fun getContext(): Context {
@@ -220,6 +374,25 @@ class ReactActivityDelegateWrapper(
 
   override fun getPlainActivity(): Activity {
     return invokeDelegateMethod("getPlainActivity")
+  }
+
+  override fun isFabricEnabled(): Boolean {
+    return invokeDelegateMethod("isFabricEnabled")
+  }
+
+  override fun isWideColorGamutEnabled(): Boolean {
+    return invokeDelegateMethod("isWideColorGamutEnabled")
+  }
+
+  override fun composeLaunchOptions(): Bundle? {
+    return invokeDelegateMethod("composeLaunchOptions")
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration?) {
+    launchLifecycleScopeWithLock {
+      loadAppReady.await()
+      delegate.onConfigurationChanged(newConfig)
+    }
   }
 
   //endregion
@@ -237,8 +410,9 @@ class ReactActivityDelegateWrapper(
     return method!!.invoke(delegate) as T
   }
 
+  @VisibleForTesting
   @Suppress("UNCHECKED_CAST")
-  private fun <T, A> invokeDelegateMethod(
+  internal fun <T, A> invokeDelegateMethod(
     name: String,
     argTypes: Array<Class<*>>,
     args: Array<A>
@@ -252,5 +426,79 @@ class ReactActivityDelegateWrapper(
     return method!!.invoke(delegate, *args) as T
   }
 
+  private suspend fun loadAppImpl(appKey: String?, supportsDelayLoad: Boolean) {
+    // Give modules a chance to wrap the ReactRootView in a container ViewGroup. If some module
+    // wants to do this, we override the functionality of `loadApp` and call `setContentView` with
+    // the new container view instead.
+    val rootViewContainer = reactActivityHandlers.asSequence()
+      .mapNotNull { it.createReactRootViewContainer(activity) }
+      .firstOrNull()
+    if (rootViewContainer != null) {
+      val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
+      mReactDelegate.isAccessible = true
+      val reactDelegate = mReactDelegate[delegate] as ReactDelegate
+
+      reactDelegate.loadApp(appKey)
+      val reactRootView = reactDelegate.reactRootView
+      (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
+      rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
+      activity.setContentView(rootViewContainer)
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onContentChanged(activity)
+      }
+      return
+    }
+
+    if (supportsDelayLoad) {
+      awaitDelayLoadAppWhenReady(delayLoadAppHandler)
+      invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+      reactActivityLifecycleListeners.forEach { listener ->
+        listener.onContentChanged(activity)
+      }
+      return
+    }
+
+    invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+    reactActivityLifecycleListeners.forEach { listener ->
+      listener.onContentChanged(activity)
+    }
+  }
+
+  private suspend fun awaitDelayLoadAppWhenReady(delayLoadAppHandler: DelayLoadAppHandler?) {
+    if (delayLoadAppHandler == null) {
+      return
+    }
+    suspendCoroutine { continuation ->
+      delayLoadAppHandler.whenReady {
+        Utils.assertMainThread()
+        continuation.resume(Unit)
+      }
+    }
+  }
+
+  private fun launchLifecycleScopeWithLock(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+  ) {
+    activity.lifecycleScope.launch(start = start) {
+      mutex.withLock {
+        block()
+      }
+    }
+  }
+
+  /**
+   * Set the [loadAppReady] to completed state.
+   * This is only for unit tests when a test setups mocks and skips the [Activity] lifecycle.
+   */
+  @VisibleForTesting
+  internal fun setLoadAppReadyForTesting() {
+    loadAppReady.complete(Unit)
+  }
+
   //endregion
+
+  companion object {
+    private val TAG = ReactActivityDelegate::class.simpleName
+  }
 }

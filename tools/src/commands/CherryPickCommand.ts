@@ -172,7 +172,9 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
       logger.log(chalk.bold(chalk.yellow(`git checkout ${destination}`)));
     } else {
       logger.info(`Checking out ${chalk.bold(chalk.blue(destination))} branch...`);
-      await Git.checkoutAsync(destination);
+      await Git.checkoutAsync({
+        ref: destination,
+      });
     }
   }
 

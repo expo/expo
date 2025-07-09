@@ -1,12 +1,13 @@
 import chalk from 'chalk';
-import glob from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
+import { glob } from 'glob';
 import { createRequire } from 'module';
 import path from 'path';
 
+import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
+import { getIsolatedModulesPath } from './utils';
 import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
-import { mergeLinkingOptionsAsync, projectPackageJsonPath } from './mergeLinkingOptions';
 
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
@@ -21,18 +22,22 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   const nativeModuleNames = new Set<string>();
 
   // custom native modules should be resolved first so that they can override other modules
-  const searchPaths =
+  const searchPaths = new Set(
     options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
       ? [options.nativeModulesDir, ...options.searchPaths]
-      : options.searchPaths;
+      : options.searchPaths
+  );
 
+  // `searchPaths` can be mutated to discover all "isolated modules groups", when using isolated modules
   for (const searchPath of searchPaths) {
     const isNativeModulesDir = searchPath === options.nativeModulesDir;
 
     const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
 
     for (const packageConfigPath of packageConfigPaths) {
-      const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
+      const packagePath = await fs.promises.realpath(
+        path.join(searchPath, path.dirname(packageConfigPath))
+      );
       const expoModuleConfig = requireAndResolveExpoModuleConfig(
         path.join(packagePath, path.basename(packageConfigPath))
       );
@@ -41,11 +46,12 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
         fallbackToDirName: isNativeModulesDir,
       });
 
-      // we ignore the `exclude` option for custom native modules
-      if (
-        (!isNativeModulesDir && options.exclude?.includes(name)) ||
-        !expoModuleConfig.supportsPlatform(options.platform)
-      ) {
+      const maybeIsolatedModulesPath = getIsolatedModulesPath(packagePath, name);
+      if (maybeIsolatedModulesPath) {
+        searchPaths.add(maybeIsolatedModulesPath);
+      }
+
+      if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
         continue;
       }
 
@@ -70,11 +76,11 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   // (excluding custom native modules path)
   // Workspace root usually doesn't specify all its dependencies (see Expo Go),
   // so in this case we should link everything.
-  if (options.searchPaths.length <= 1) {
+  if (options.searchPaths.length <= 1 || options.onlyProjectDeps === false) {
     return searchResults;
   }
 
-  return filterToProjectDependencies(searchResults, {
+  return await filterToProjectDependenciesAsync(searchResults, {
     ...providedOptions,
     // Custom native modules are not filtered out
     // when they're not specified in package.json dependencies.
@@ -180,10 +186,12 @@ function resolvePackageNameAndVersion(
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(
+async function filterToProjectDependenciesAsync(
   results: SearchResults,
-  options: Pick<SearchOptions, 'silent'> & { alwaysIncludedPackagesNames?: Set<string> } = {}
-) {
+  options: Pick<SearchOptions, 'projectRoot' | 'silent'> & {
+    alwaysIncludedPackagesNames?: Set<string>;
+  }
+): Promise<SearchResults> {
   const filteredResults: SearchResults = {};
   const visitedPackages = new Set<string>();
 
@@ -244,6 +252,7 @@ function filterToProjectDependencies(
   }
 
   // Visit project's package.
+  const projectPackageJsonPath = await getProjectPackageJsonPathAsync(options.projectRoot);
   visitPackage(projectPackageJsonPath);
 
   return filteredResults;

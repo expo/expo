@@ -7,10 +7,11 @@ import ExpoModulesTestCore
 import EXManifests
 
 class FileDownloaderSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
-    
+    var logger: UpdatesLogger!
+
     beforeEach {
       let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
       testDatabaseDir = applicationSupportDir!.appendingPathComponent("UpdatesDatabaseTests")
@@ -23,8 +24,10 @@ class FileDownloaderSpec : ExpoSpec {
       
       db = UpdatesDatabase()
       db.databaseQueue.sync {
-        try! db.openDatabase(inDirectory: testDatabaseDir)
+        try! db.openDatabase(inDirectory: testDatabaseDir, logger: UpdatesLogger())
       }
+
+      logger = UpdatesLogger()
     }
     
     afterEach {
@@ -37,22 +40,22 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("cache control") {
       it("works for legacy manifest") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://exp.host/@test/test")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
       }
       
       it("works for new manifest") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let actual = downloader.createManifestRequest(withURL: URL(string: "https://u.expo.dev/00000000-0000-0000-0000-000000000000")!, extraHeaders: nil)
         expect(actual.cachePolicy) == .useProtocolCachePolicy
         expect(actual.value(forHTTPHeaderField: "Cache-Control")).to(beNil())
@@ -61,11 +64,11 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("extra headers") {
       it("works for object types") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,
@@ -83,7 +86,7 @@ class FileDownloaderSpec : ExpoSpec {
       }
       
       it("override order") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: [
@@ -91,8 +94,8 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
           "expo-platform": "android"
@@ -107,8 +110,9 @@ class FileDownloaderSpec : ExpoSpec {
     
     describe("get extra headers") {
       it("works") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
         
         let launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
@@ -125,7 +129,8 @@ class FileDownloaderSpec : ExpoSpec {
           isDevelopmentMode: false,
           assetsFromManifest: []
         )
-        
+        launchedUpdate.failedLaunchCount = 1
+
         let embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
         let embeddedUpdate = Update(
           manifest: ManifestFactory.manifest(forManifestJSON: [:]),
@@ -133,47 +138,61 @@ class FileDownloaderSpec : ExpoSpec {
           database: db,
           updateId: UUID(uuidString: embeddedUpdateUUIDString)!,
           scopeKey: "test",
-          commitTime: Date(),
+          commitTime: Calendar.current.date(byAdding: .day, value: -1, to: Date())!,
           runtimeVersion: "1.0",
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
           assetsFromManifest: []
         )
-        
+        embeddedUpdate.failedLaunchCount = 1
+
         db.databaseQueue.sync {
+          try! db.addUpdate(launchedUpdate)
+          try! db.addUpdate(embeddedUpdate)
+
+          try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey)
+          try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey)
+
           let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
+            logger: logger,
             launchedUpdate: launchedUpdate,
             embeddedUpdate: embeddedUpdate
           )
           expect(extraHeaders["Expo-Current-Update-ID"] as? String) == launchedUpdateUUIDString
           expect(extraHeaders["Expo-Embedded-Update-ID"] as? String) == embeddedUpdateUUIDString
+          expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("what=\"123\""))
+          expect(extraHeaders["Expo-Extra-Params"] as? String).to(contain("hello=\"world\""))
+          expect(extraHeaders["Expo-Recent-Failed-Update-IDs"] as? String).to(contain("\"\(launchedUpdateUUIDString)\", \"\(embeddedUpdateUUIDString)\""))
         }
       }
       
       it("no launched or embedded update") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ])
         
         db.databaseQueue.sync {
           let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
+            logger: logger,
             launchedUpdate: nil,
             embeddedUpdate: nil
           )
           expect(extraHeaders["Expo-Current-Update-ID"]).to(beNil())
           expect(extraHeaders["Expo-Embedded-Update-ID"]).to(beNil())
+          expect(extraHeaders["Expo-Extra-Params"]).to(beNil())
         }
       }
     }
     
     describe("asset extra headers") {
       it("override order") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: [
@@ -181,8 +200,8 @@ class FileDownloaderSpec : ExpoSpec {
             "expo-updates-environment": "custom"
           ]
         ])
-        let downloader = FileDownloader(config: config)
-        
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
+
         // serverDefinedHeaders should not be able to override preset headers
         let extraHeaders = [
           "expo-platform": "android"
@@ -195,11 +214,11 @@ class FileDownloaderSpec : ExpoSpec {
       }
       
       it("object types") {
-        let config = UpdatesConfig.config(fromDictionary: [
+        let config = try! UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0",
         ])
-        let downloader = FileDownloader(config: config)
+        let downloader = FileDownloader(config: config, logger: UpdatesLogger())
         let extraHeaders = [
           "expo-string": "test",
           "expo-number": 47.5,

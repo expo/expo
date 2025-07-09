@@ -11,6 +11,8 @@ public interface ReactActivityLifecycleListener {
 
   default void onPause(Activity activity) {}
 
+  default void onUserLeaveHint(Activity activity) {}
+
   default void onDestroy(Activity activity) {}
 
   /**
@@ -34,4 +36,9 @@ public interface ReactActivityLifecycleListener {
   default boolean onBackPressed() {
     return false;
   }
+
+  /**
+   * This method is called when the {@link Activity#setContentView} method is invoked on an Activity.
+   */
+  default void onContentChanged(Activity activity) {}
 }

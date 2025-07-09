@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "3.0.0",
+  "version": "6.1.10",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -8,16 +8,15 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "expo-module lint ./app/*",
+    "ts:check": "expo-module tsc --project tsconfig.app.json --noEmit & expo-module tsc --noEmit",
     "test": "expo-module test",
     "prepare": "expo-module prepare && ./scripts/reset-dev-menu-packager-host.sh",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "start": "./scripts/start.sh",
-    "bundle:dev:ios": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform ios --dev true --bundle-output assets/EXDevMenuApp.ios.js",
-    "bundle:prod:ios": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform ios --dev false --bundle-output assets/EXDevMenuApp.ios.js  --assets-dest ios",
-    "bundle:dev:android": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform android --dev true --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res",
-    "bundle:prod:android": "EXPO_BUNDLE_APP=1 react-native bundle --entry-file app/index.ts --platform android --dev false --bundle-output assets/EXDevMenuApp.android.js --assets-dest android/src/main/res"
+    "bundle:dev": "NODE_ENV=development ./scripts/write_embedded_bundle.sh",
+    "bundle:prod": "NODE_ENV=production ./scripts/write_embedded_bundle.sh"
   },
   "keywords": [
     "expo",
@@ -38,9 +37,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "jest": {
-    "preset": "@testing-library/react-native",
+    "preset": "react-native",
     "setupFilesAfterEnv": [
-      "@testing-library/jest-native/extend-expect",
       "./setupTests.ts"
     ],
     "transformIgnorePatterns": [
@@ -48,25 +46,22 @@
     ]
   },
   "dependencies": {
-    "expo-dev-menu-interface": "1.2.0",
-    "semver": "^7.3.5"
+    "expo-dev-menu-interface": "1.10.0"
   },
   "devDependencies": {
     "@apollo/client": "^3.4.10",
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/jest-native": "^4.0.4",
-    "@testing-library/react-native": "^8.0.0",
-    "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~9.4.0",
-    "expo-dev-client-components": "1.4.0",
-    "expo-module-scripts": "^3.0.0",
+    "@testing-library/react-native": "^13.1.0",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "babel-preset-expo": "~13.1.11",
+    "expo-dev-client-components": "2.1.4",
+    "expo-module-scripts": "^4.1.7",
     "fuse.js": "^6.4.6",
-    "graphql": "^15.3.0",
-    "graphql-tag": "^2.10.1",
-    "react": "18.2.0",
-    "react-native": "0.71.7",
-    "use-subscription": "^1.8.0",
-    "url": "^0.11.0"
+    "react": "19.1.0",
+    "react-native": "0.80.1",
+    "url": "^0.11.0",
+    "use-subscription": "^1.8.0"
   },
   "peerDependencies": {
     "expo": "*"

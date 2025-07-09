@@ -25,7 +25,7 @@ internal struct ImagePickerResponse: Record {
 }
 
 /**
- Represents a single asset (image or video).
+ Represents a single asset (image, live photo or video).
  */
 internal struct AssetInfo: Record {
   @Field var assetId: String? = nil
@@ -35,7 +35,9 @@ internal struct AssetInfo: Record {
   @Field var height: Double = 0
   @Field var fileName: String? = nil
   @Field var fileSize: Int? = nil
+  @Field var mimeType: String? = nil
   @Field var base64: String? = nil
   @Field var exif: ExifInfo? = nil
   @Field var duration: Double? = nil
+  @Field var pairedVideoAsset: AssetInfo? = nil
 }

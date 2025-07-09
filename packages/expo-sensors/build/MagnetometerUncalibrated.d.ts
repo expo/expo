@@ -15,6 +15,10 @@ export type MagnetometerUncalibratedMeasurement = {
      * Value representing uncalibrated strength of magnetic field recorded in Z axis.
      */
     z: number;
+    /**
+     * Timestamp of the measurement in seconds.
+     */
+    timestamp: number;
 };
 /**
  * @platform android

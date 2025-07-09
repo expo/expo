@@ -1,14 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
 import TestSuite from 'test-suite/AppNavigator';
 
-import Colors from './src/constants/Colors';
-
-type NavigationRouteConfigMap = React.ReactElement;
+type NavigationRouteConfigMap = React.ComponentType;
 
 type RoutesConfig = {
   'test-suite': NavigationRouteConfigMap;
@@ -84,24 +85,25 @@ const linking: LinkingOptions<object> = {
       },
     },
   },
-  // react-navigation internally has a 150ms timeout for `Linking.getInitialURL`.
-  // https://github.com/react-navigation/react-navigation/blob/f93576624282c3d65e359cca2826749f56221e8c/packages/native/src/useLinking.native.tsx#L29-L37
-  // The timeout is too short for GitHub Actions CI with Hermes and causes test failures.
-  // For detox testing, we use the raw `Linking.getInitialURL` instead.
-  ...(global.DETOX ? { getInitialURL: Linking.getInitialURL } : null),
 };
 
 function TabNavigator() {
+  const { theme } = useTheme();
   return (
     <Tab.Navigator
+      id={undefined}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.activeTintColor,
-        tabBarInactiveTintColor: Colors.inactiveTintColor,
+        tabBarActiveTintColor: theme.text.info,
+        tabBarInactiveTintColor: theme.text.default,
+        tabBarStyle: {
+          backgroundColor: theme.background.default,
+          borderTopColor: theme.border.default,
+        },
       }}
-      safeAreaInsets={{
-        top: 5,
-      }}
+      safeAreaInsets={Platform.select({
+        default: undefined,
+      })}
       initialRouteName="test-suite">
       {Object.keys(routes).map((name) => (
         <Tab.Screen
@@ -114,13 +116,59 @@ function TabNavigator() {
     </Tab.Navigator>
   );
 }
+const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 
-export default () => (
-  <NavigationContainer linking={linking}>
-    <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
-      {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-      {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-      <Switch.Screen name="main" component={TabNavigator} />
-    </Switch.Navigator>
-  </NavigationContainer>
-);
+export default () => {
+  const { name: themeName } = useTheme();
+  const [isReady, setIsReady] = React.useState(Platform.OS === 'web');
+  const [initialState, setInitialState] = React.useState();
+
+  React.useEffect(() => {
+    if (isReady) {
+      return;
+    }
+    const restoreState = async () => {
+      const key = 'PERSIST_NAV_STATE';
+      const persistenceEnabled = !!(await AsyncStorage.getItem(key));
+
+      if (persistenceEnabled) {
+        const initialUrl = await Linking.getInitialURL();
+
+        if (initialUrl == null) {
+          // Only restore state if there's no deep link
+          const savedStateString = await AsyncStorage.getItem(PERSISTENCE_KEY);
+          const state = savedStateString ? JSON.parse(savedStateString) : undefined;
+
+          if (state !== undefined) {
+            setInitialState(state);
+          }
+        }
+      }
+    };
+    restoreState()
+      .catch(console.error)
+      .finally(() => setIsReady(true));
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+  return (
+    <NavigationContainer
+      linking={linking}
+      initialState={initialState}
+      onStateChange={(state) => {
+        AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
+      }}>
+      <Switch.Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName="main"
+        id={undefined}>
+        {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+        {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+        <Switch.Screen name="main" component={TabNavigator} />
+      </Switch.Navigator>
+      <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
+    </NavigationContainer>
+  );
+};

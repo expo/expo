@@ -9,16 +9,22 @@ export type IosProps = {
    * Available options: https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-container-environment
    */
   iCloudContainerEnvironment?: 'Development' | 'Production';
+  /**
+   * By default, the `com.apple.developer.ubiquity-kvstore-identifier` entitlement is set to a concatenation
+   * of your Apple Team ID and the bundle identifier. However, this entitlement may need to reflect a previous Team ID if your
+   * app was transferred from another team. Use this option to set this entitlement value manually.
+   */
+  kvStoreIdentifier?: string;
 };
 
 export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
   config,
-  { iCloudContainerEnvironment } = {}
+  { iCloudContainerEnvironment, kvStoreIdentifier } = {}
 ) => {
   return withEntitlementsPlist(config, (config) => {
     config.modResults = setICloudEntitlements(
       config,
-      { iCloudContainerEnvironment },
+      { iCloudContainerEnvironment, kvStoreIdentifier },
       config.modResults
     );
     return config;
@@ -27,7 +33,7 @@ export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
 
 export function setICloudEntitlements(
   config: Pick<ExpoConfig, 'ios'>,
-  { iCloudContainerEnvironment }: IosProps,
+  { iCloudContainerEnvironment, kvStoreIdentifier }: IosProps,
   { 'com.apple.developer.icloud-container-environment': _env, ...entitlements }: Record<string, any>
 ): Record<string, any> {
   if (config.ios?.usesIcloudStorage) {
@@ -41,9 +47,8 @@ export function setICloudEntitlements(
     entitlements['com.apple.developer.ubiquity-container-identifiers'] = [
       `iCloud.${config.ios.bundleIdentifier}`,
     ];
-    entitlements[
-      'com.apple.developer.ubiquity-kvstore-identifier'
-    ] = `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
+    entitlements['com.apple.developer.ubiquity-kvstore-identifier'] =
+      kvStoreIdentifier || `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
 
     entitlements['com.apple.developer.icloud-services'] = ['CloudDocuments'];
   }

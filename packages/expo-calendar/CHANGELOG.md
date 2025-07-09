@@ -8,7 +8,199 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Don't encode event URLs. ([#37243](https://github.com/expo/expo/pull/37243) by [@jakex7](https://github.com/jakex7))
+- [iOS] Don't require permissions for createEventInCalendarAsync. ([#37607](https://github.com/expo/expo/pull/37607) by [@jakex7](https://github.com/jakex7))
+- [iOS] Make location optional. ([#37612](https://github.com/expo/expo/pull/37612) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
+
+## 14.1.4 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- [iOS] Fix event recurrence rules returning `dayOfTheWeek` as `undefined`. ([#36482](https://github.com/expo/expo/pull/36482) by [@ouwargui](https://github.com/ouwargui))
+
+## 14.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Allow nullable dates for `getRemindersAsync` ([#33264](https://github.com/expo/expo/pull/33264) by [@TomAtterton](https://github.com/TomAtterton))
+
+### 🐛 Bug fixes
+
+- Updated `Event.location` type to allow a `null` value if not set. ([#33802](https://github.com/expo/expo/pull/33802) by [@rklomp](https://github.com/rklomp)
+- Allow more characters in url encoding ([#35034](https://github.com/expo/expo/pull/35034) by [@cederache](https://github.com/cederache))
+
+### 💡 Others
+
+- [android][calendar] Add `EventRecurrenceUtils` unit tests. ([#33863](https://github.com/expo/expo/pull/33863) by [@mateoguzmana](https://github.com/mateoguzmana))
+- [ios][calendar] Use EXPermissionStatus instead of CalendarPermissionsStatus in calendar permissions requesters ([#33453](https://github.com/expo/expo/pull/33453) by [@ryanduffin](https://github.com/ryanduffin)
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35428](https://github.com/expo/expo/pull/35428) by [@behenate](https://github.com/behenate))
+
+## 14.0.6 - 2025-01-10
+
+### 🐛 Bug fixes
+
+- [iOS] Correctly type `organizer` and document it. ([#34052](https://github.com/expo/expo/pull/34052) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.0.4 - 2024-11-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix expo-calendar isPrimary on Android always returns false ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva) & [@sanchaz](https://github.com/sanchaz)) ([#33285](https://github.com/expo/expo/pull/33285) by [@joaogabrieldasilva](https://github.com/joaogabrieldasilva), [@sanchaz](https://github.com/sanchaz))
+
+## 14.0.3 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing deserialization of calendarId field when calling createEventInCalendarAsync ([#33142](https://github.com/expo/expo/pull/33142) by [@chrfalch](https://github.com/chrfalch))
+
+## 14.0.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Add new methods for managing events using the system-provided calendar UI ([#30102](https://github.com/expo/expo/pull/30102) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- Standardize `getEventsAsync` to return events sorted by start date ([#28353](https://github.com/expo/expo/pull/28353) by [@demfabris](https://github.com/demfabris))
+- Add missing `react-native` peer dependencies for isolated modules. ([#30461](https://github.com/expo/expo/pull/30461) by [@byCedric](https://github.com/byCedric))
+- Initialize EKEventStore as a singleton ([#31847](https://github.com/expo/expo/pull/31847) by [@JacquesLeupin](https://github.com/JacquesLeupin))
+
+## 13.0.5 — 2024-05-14
+
+### 🐛 Bug fixes
+
+- [iOS] Fix missing event info on update. ([#28825](https://github.com/expo/expo/pull/28825) by [@robertying](https://github.com/robertying))
+
+## 13.0.4 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- On `iOS`, workaround a bug in iOS 15 where an invalid `EKCalendarType` is returned in the calendar object when siri suggestions are enabled. ([#28714](https://github.com/expo/expo/pull/28714) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.2 — 2024-04-24
+
+### 💡 Others
+
+- Use enums instead of objects for enumerable types. ([#27777](https://github.com/expo/expo/pull/27777) by [@behenate](https://github.com/behenate))
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [iOS] Don't check calendar permissions for saving reminders, and fix missing details when saving calendar events. ([#28265](https://github.com/expo/expo/pull/28265) by [@robertying](https://github.com/robertying))
+- Fix the problem that stringifyDateValues is not compatible with simple type arrays. ([#27147](https://github.com/expo/expo/pull/27147) by [@XHFkindergarten](https://github.com/XHFkindergarten))
+
+### 💡 Others
+
+- Prevent config plugin from writing permissions until prebuild, remove duplicate permissions. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- On iOS, migrate to Expo Modules API. ([#24282](https://github.com/expo/expo/pull/24282) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 12.2.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix unnecessary permission check for calendars when calling `saveCalendarAsync` with `entityType` `"reminder"` ([#24967](https://github.com/expo/expo/pull/24967) by [@robertying](https://github.com/robertying))
+
+## 12.1.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix permissions error on `iOS 17`. ([#24545](https://github.com/expo/expo/pull/24545) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix url parsing when adding url in calendar event and reminder on iOS. ([#24102](https://github.com/expo/expo/pull/24102) by [@Thomas-Mollard](https://github.com/Thomas-Mollard))
+- On `iOS`, fix check that determines if the version of Xcode supports `iOS 17`. ([#24655](https://github.com/expo/expo/pull/24655) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, validate calendars argument in `getRemindersAsync` before accessing `count`. ([#24677](https://github.com/expo/expo/pull/24677) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.2 — 2023-09-28
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix check that determines if the version of Xcode supports `iOS 17`. ([#24655](https://github.com/expo/expo/pull/24655) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.3.1 — 2023-09-25
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix permissions error on `iOS 17`. ([#24545](https://github.com/expo/expo/pull/24545) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix url parsing when adding url in calendar event and reminder on iOS. ([#24102](https://github.com/expo/expo/pull/24102) by [@Thomas-Mollard](https://github.com/Thomas-Mollard))
+
+## 12.0.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Forbid passing an id to `createEventAsync` and `updateEventAsync`. ([#23810](https://github.com/expo/expo/pull/23810) by [@pierrezimmermannbam](https://github.com/pierrezimmermannbam))
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Migrate to use Expo Modules API. ([#24103](https://github.com/expo/expo/pull/24103) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 11.2.0 — 2023-05-08
 

@@ -1,4 +1,4 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import { DevicePushToken } from './Tokens.types';
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
@@ -11,7 +11,7 @@ export type PushTokenListener = (token: DevicePushToken) => void;
  * When a token is rolled, the old one becomes invalid and sending notifications to it will fail.
  * A push token listener will let you handle this situation gracefully by registering the new token with your backend right away.
  * @param listener A function accepting a push token as an argument, it will be called whenever the push token changes.
- * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
+ * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @header fetch
  * @example Registering a push token listener using a React hook.
  * ```jsx
@@ -32,11 +32,13 @@ export type PushTokenListener = (token: DevicePushToken) => void;
  * }
  * ```
  */
-export declare function addPushTokenListener(listener: PushTokenListener): Subscription;
+export declare function addPushTokenListener(listener: PushTokenListener): EventSubscription;
 /**
+ * @deprecated call `remove()` on the subscription object instead.
+ *
  * Removes a push token subscription returned by an `addPushTokenListener` call.
  * @param subscription A subscription returned by `addPushTokenListener` method.
  * @header fetch
  */
-export declare function removePushTokenSubscription(subscription: Subscription): void;
+export declare function removePushTokenSubscription(subscription: EventSubscription): void;
 //# sourceMappingURL=TokenEmitter.d.ts.map

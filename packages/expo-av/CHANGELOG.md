@@ -10,6 +10,240 @@
 
 ### 💡 Others
 
+## 15.1.7 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+
+## 15.1.6 - 2025-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.5 - 2025-06-04
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 15.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.1 — 2025-04-09
+
+### 💡 Others
+
+- Expo AV has now been deprecated. ([#36020](https://github.com/expo/expo/pull/36020) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.0.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-10-24
+
+### 💡 Others
+
+- [android][docs] Add `AndroidOutputFormat` and `AndroidAudioEncoder` docs. ([#34022](https://github.com/expo/expo/pull/34022) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Added deprecation warning to the `Video` component. ([#32267](https://github.com/expo/expo/pull/32267) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [android] Add support for react-native 0.76 ([#31504](https://github.com/expo/expo/pull/31504) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [expo-av] Fixed black screen bug that appears when playing videos with AV1 codec ([#35053](https://github.com/expo/expo/pull/35053) by [@HezekielT](https://github.com/HezekielT))
+- [iOS] `loadAsync()` promise never settled when given an invalid file uri ([#30020](https://github.com/expo/expo/pull/30020) by [@vonovak](https://github.com/vonovak))
+- Fixed putting app to background stops non-mixable audio playback in other apps on iOS ([#20380](https://github.com/expo/expo/pull/20380) by [@de1acr0ix](https://github.com/de1acr0ix))
+- Fix unhandled promise rejection when start recording fails [#29826](https://github.com/expo/expo/pull/29826) by [@anirudhsama](https://github.com/anirudhsama)
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30456](https://github.com/expo/expo/pull/30456) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+- [Android] Fixed `NullPointerException` in the `installJSIBindings` function. ([#31464](https://github.com/expo/expo/pull/31464) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed crash when reloading an expo update with a video component mounted ([#31540](https://github.com/expo/expo/pull/31540) by [@AbijahKaj](https://github.com/AbijahKaj))
+
+### 💡 Others
+
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 14.0.6 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed broken Video view on New Architecture mode. ([#30030](https://github.com/expo/expo/pull/30030) by [@kudo](https://github.com/kudo))
+
+## 14.0.5 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Web] Fix `shouldCorrectPitch` being ignored on web. ([#28837](https://github.com/expo/expo/pull/28837) by [@behenate](https://github.com/behenate))
+
+## 14.0.4 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- [Android] Fix events being sent using a wrong event emitter. ([#28716](https://github.com/expo/expo/pull/28716) by [@behenate](https://github.com/behenate))
+
+## 14.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2024-04-19
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [Android] Fix recording audio on Android after converting to Expo Modules ([#26657](https://github.com/expo/expo/pull/26657) by [@jpudysz](https://github.com/jpudysz))
+- [Android] Fix memory leak connect with `AVManager`. ([#28159](https://github.com/expo/expo/pull/28159) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix `HashMap cannot be cast to ReadableNativeMap` error on Android. ([#28317](https://github.com/expo/expo/pull/28317) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 13.10.6 - 2024-04-18
+
+### 🐛 Bug fixes
+
+- Tried to fix unused recording permission and getting rejected by store review. ([#28236](https://github.com/expo/expo/pull/28236) by [@kudo](https://github.com/kudo))
+
+## 13.10.5 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- [iOS] Improve precision for syncing two videos and updating new video position when user sets tolerances to 0 ([#26018](https://github.com/expo/expo/pull/26018) by [@jpudysz](https://github.com/jpudysz))
+
+## 13.10.4 - 2024-01-25
+
+### 🐛 Bug fixes
+
+- [Android] Add `Events` `to AVModule` to prevent event emitter warning. ([#26434](https://github.com/expo/expo/pull/26434) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.10.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 13.10.2 - 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 13.10.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 13.10.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- [iOS] Fix base64 audio playback on iOS 17. ([#25414](https://github.com/expo/expo/pull/25414) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Bump C++ compiler setting to C++20. ([#25548](https://github.com/expo/expo/pull/25548) by [@kudo](https://github.com/kudo))
+
+## 13.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fix audio recording resetting when receiving a phone call. ([#25054](https://github.com/expo/expo/pull/25054) by [@behenate](https://github.com/behenate))
+- Fix iOS `naturalSize.orientation` in prop `onReadyForDisplay` for hls stream ([#25169](https://github.com/expo/expo/pull/25169) by [@souzaluiz](https://github.com/souzaluiz))
+
+### 💡 Others
+
+- Use `pointerEvent` style instead of prop for video component on web. ([#24931](https://github.com/expo/expo/pull/24931) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove deprecated `REACT_NATIVE_OVERRIDE_VERSION` for React Native nightly testing. ([#25151](https://github.com/expo/expo/pull/25151) by [@kudo](https://github.com/kudo))
+- Removed backward compatible code for deprecated SDKs. ([#25154](https://github.com/expo/expo/pull/25154) by [@kudo](https://github.com/kudo))
+
+## 13.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Update pitch algorithm settings for iOS >= 17. ([#24678](https://github.com/expo/expo/pull/24678) by [@hromovp](https://github.com/hromovp))
+- [iOS] fix compilation on tvOS. ([#24864](https://github.com/expo/expo/pull/24864) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.7.0 — 2023-09-15
+
+### 🐛 Bug fixes
+
+- [ios] Fixed the `LOW_QUALITY` preset producing large audio files. ([#24323](https://github.com/expo/expo/pull/24323) by [@behenate](https://github.com/behenate))
+
+## 13.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed recording status not being reset when recording is paused before being stopping. ([#21747](https://github.com/expo/expo/issues/21747)) ([#23816](https://github.com/expo/expo/pull/23816) by [@mojavad](https://github.com/mojavad))
+- Prevent audio from other apps being stopped when users app is backgrounded. ([#24198](https://github.com/expo/expo/pull/24198) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Migrated `AVModule` to use Expo modules API. ([#23902](https://github.com/expo/expo/pull/23902) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 13.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 13.3.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

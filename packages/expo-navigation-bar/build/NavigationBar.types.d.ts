@@ -30,4 +30,13 @@ export type NavigationBarVisibilityEvent = {
      */
     rawVisibility: number;
 };
+/**
+ * Navigation bar style.
+ *
+ * - `auto` will automatically adjust based on the current theme.
+ * - `light` a light navigation bar with dark content.
+ * - `dark` a dark navigation bar with light content.
+ * - `inverted` the bar colors are inverted in relation to the current theme.
+ */
+export type NavigationBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
 //# sourceMappingURL=NavigationBar.types.d.ts.map

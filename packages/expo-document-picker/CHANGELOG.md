@@ -4,11 +4,160 @@
 
 ### 🛠 Breaking changes
 
+- [Web] getDocumentAsync() no longer returns base64 by default. The uri on web now always points to a Blob created via URL.createObjectURL(), which can be used for previews or appended to FormData for uploads. Selecting large files on web is now almost instant, since there’s no base64 conversion by default. If you still need base64, you can pass base64: true in the options. A new base64 field will then be included in the result. ([#37443](https://github.com/expo/expo/pull/37443) by [@hirbod](https://github.com/hirbod))
+
 ### 🎉 New features
+
+- [iOS][Android] add lastModified for iOS and Android to align with web ([#37429](https://github.com/expo/expo/pull/37429) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.1.6 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- [Android] avoid hard crash in case of an exception ([#37110](https://github.com/expo/expo/pull/37110) by [@vonovak](https://github.com/vonovak))
+
+## 13.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.3 — 2025-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Avoid int overflow for large files ([#36245](https://github.com/expo/expo/pull/36245) by [@vonovak](https://github.com/vonovak))
+
+## 13.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [web] Add option to disable file reader to read base64 from file on successfull picking. ([#34739](https://github.com/expo/expo/pull/34739) by [@danilaplee](https://github.com/danilaplee))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+- [Android] Specified Gradle project version. ([#35751](https://github.com/expo/expo/pull/35751) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.0.3 - 2025-02-07
+
+### 🎉 New features
+
+- [iOS] Allow setting of the `com.apple.developer.ubiquity-kvstore-identifier` entitlement directly. ([#34338](https://github.com/expo/expo/pull/34338) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 13.0.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.2 - 2024-06-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `video/*` MIME Type not allowing to select videos with audio. ([#29673](https://github.com/expo/expo/pull/29673) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 12.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 11.10.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 11.10.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 11.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Added default mimetype (`application/octet-stream`) to avoid quiet failure when mimetype is null on iOS ([#24764](https://github.com/expo/expo/pull/24764) by [@OzymandiasTheGreat](https://github.com/OzymandiasTheGreat))
+
+## 11.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [web] Fix promise never resolving when user cancels the picker. ([#24838](https://github.com/expo/expo/pull/24838) by [@behenate](https://github.com/behenate))
+
+## 11.7.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 11.6.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.6.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.4 - 2023-07-19
+
+### 🐛 Bug fixes
+
+- Fix `type` on `DocumentPickerOptions` on iOS. ([#23497](https://github.com/expo/expo/pull/23497) by [@aleqsio](https://github.com/aleqsio))
+
+## 11.5.3 - 2023-07-10
+
+### 💡 Others
+
+- Remove deprecated fields and warning on `getDocumentAsync`. ([#23135](https://github.com/expo/expo/pull/23135) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.5.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.1 — 2023-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 11.5.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fix `copyToCacheDirectory` on iOS. ([#23102](https://github.com/expo/expo/pull/23102) by [@aleqsio](https://github.com/aleqsio))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 11.4.0 — 2023-05-08
 

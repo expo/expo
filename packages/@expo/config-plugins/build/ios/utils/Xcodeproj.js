@@ -21,6 +21,7 @@ exports.isBuildConfig = isBuildConfig;
 exports.isNotComment = isNotComment;
 exports.isNotTestHost = isNotTestHost;
 exports.resolvePathOrProject = resolvePathOrProject;
+exports.resolveXcodeBuildSetting = resolveXcodeBuildSetting;
 exports.sanitizedName = sanitizedName;
 exports.unquote = unquote;
 function _assert() {
@@ -58,6 +59,13 @@ function _pbxFile() {
   };
   return data;
 }
+function _string() {
+  const data = require("./string");
+  _string = function () {
+    return data;
+  };
+  return data;
+}
 function _warnings() {
   const data = require("../../utils/warnings");
   _warnings = function () {
@@ -72,16 +80,16 @@ function Paths() {
   };
   return data;
 }
-function _string() {
-  const data = require("./string");
-  _string = function () {
-    return data;
-  };
-  return data;
-}
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+/**
+ * Copyright © 2023-present 650 Industries, Inc. (aka Expo)
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 function getProjectName(projectRoot) {
   const sourceRoot = Paths().getSourceRoot(projectRoot);
   return _path().default.basename(sourceRoot);
@@ -223,7 +231,7 @@ function addFileToGroupAndLink({
     file.target = targetUuid;
   } else {
     const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
-    file.target = applicationNativeTarget === null || applicationNativeTarget === void 0 ? void 0 : applicationNativeTarget.uuid;
+    file.target = applicationNativeTarget?.uuid;
   }
   file.uuid = project.generateUuid();
   file.fileRef = project.generateUuid();
@@ -279,8 +287,7 @@ const findGroup = (group, name) => {
 function findGroupInsideGroup(project, group, name) {
   const foundGroup = findGroup(group, name);
   if (foundGroup) {
-    var _project$getPBXGroupB;
-    return (_project$getPBXGroupB = project.getPBXGroupByKey(foundGroup.value)) !== null && _project$getPBXGroupB !== void 0 ? _project$getPBXGroupB : null;
+    return project.getPBXGroupByKey(foundGroup.value) ?? null;
   }
   return null;
 }
@@ -304,7 +311,6 @@ function pbxGroupByPathOrAssert(project, path) {
   return group;
 }
 function ensureGroupRecursively(project, filepath) {
-  var _topMostGroup;
   const components = splitPath(filepath);
   const hasChild = (group, name) => group.children.find(({
     comment
@@ -322,7 +328,7 @@ function ensureGroupRecursively(project, filepath) {
     }
     topMostGroup = project.pbxGroupByName(pathComponent);
   }
-  return (_topMostGroup = topMostGroup) !== null && _topMostGroup !== void 0 ? _topMostGroup : null;
+  return topMostGroup ?? null;
 }
 
 /**
@@ -350,9 +356,8 @@ function getProductName(project) {
     productName = project.productName;
   } catch {}
   if (productName === '$(TARGET_NAME)') {
-    var _project$getFirstTarg, _project$getFirstTarg2;
-    const targetName = (_project$getFirstTarg = project.getFirstTarget()) === null || _project$getFirstTarg === void 0 ? void 0 : (_project$getFirstTarg2 = _project$getFirstTarg.firstTarget) === null || _project$getFirstTarg2 === void 0 ? void 0 : _project$getFirstTarg2.productName;
-    productName = targetName !== null && targetName !== void 0 ? targetName : productName;
+    const targetName = project.getFirstTarget()?.firstTarget?.productName;
+    productName = targetName ?? productName;
   }
   return productName;
 }
@@ -391,11 +396,89 @@ function isNotComment([key]) {
 
 // Remove surrounding double quotes if they exist.
 function unquote(value) {
-  var _value$match$, _value$match;
   // projects with numeric names will fail due to a bug in the xcode package.
   if (typeof value === 'number') {
     value = String(value);
   }
-  return (_value$match$ = (_value$match = value.match(/^"(.*)"$/)) === null || _value$match === void 0 ? void 0 : _value$match[1]) !== null && _value$match$ !== void 0 ? _value$match$ : value;
+  return value.match(/^"(.*)"$/)?.[1] ?? value;
+}
+function resolveXcodeBuildSetting(value, lookup) {
+  const parsedValue = value?.replace(/\$\(([^()]*|\([^)]*\))\)/g, match => {
+    // Remove the `$(` and `)`, then split modifier(s) from the variable name.
+    const [variable, ...transformations] = match.slice(2, -1).split(':');
+    // Resolve the variable recursively.
+    let lookedUp = lookup(variable);
+    if (lookedUp) {
+      lookedUp = resolveXcodeBuildSetting(lookedUp, lookup);
+    }
+    let resolved = lookedUp;
+
+    // Ref: http://codeworkshop.net/posts/xcode-build-setting-transformations
+    transformations.forEach(modifier => {
+      switch (modifier) {
+        case 'lower':
+          // A lowercase representation.
+          resolved = resolved?.toLowerCase();
+          break;
+        case 'upper':
+          // An uppercase representation.
+          resolved = resolved?.toUpperCase();
+          break;
+        case 'suffix':
+          if (resolved) {
+            // The extension of a path including the '.' divider.
+            resolved = _path().default.extname(resolved);
+          }
+          break;
+        case 'file':
+          if (resolved) {
+            // The file portion of a path.
+            resolved = _path().default.basename(resolved);
+          }
+          break;
+        case 'dir':
+          if (resolved) {
+            // The directory portion of a path.
+            resolved = _path().default.dirname(resolved);
+          }
+          break;
+        case 'base':
+          if (resolved) {
+            // The base name of a path - the last path component with any extension removed.
+            const b = _path().default.basename(resolved);
+            const extensionIndex = b.lastIndexOf('.');
+            resolved = extensionIndex === -1 ? b : b.slice(0, extensionIndex);
+          }
+          break;
+        case 'rfc1034identifier':
+          // A representation suitable for use in a DNS name.
+
+          // TODO: Check the spec if there is one, this is just what we had before.
+          resolved = resolved?.replace(/[^a-zA-Z0-9]/g, '-');
+          // resolved = resolved.replace(/[\/\*\s]/g, '-');
+          break;
+        case 'c99extidentifier':
+          // Like identifier, but with support for extended characters allowed by C99. Added in Xcode 6.
+          // TODO: Check the spec if there is one.
+          resolved = resolved?.replace(/[-\s]/g, '_');
+          break;
+        case 'standardizepath':
+          if (resolved) {
+            // The equivalent of calling stringByStandardizingPath on the string.
+            // https://developer.apple.com/documentation/foundation/nsstring/1407194-standardizingpath
+            resolved = _path().default.resolve(resolved);
+          }
+          break;
+        default:
+          resolved ||= modifier.match(/default=(.*)/)?.[1];
+          break;
+      }
+    });
+    return resolveXcodeBuildSetting(resolved ?? '', lookup);
+  });
+  if (parsedValue !== value) {
+    return resolveXcodeBuildSetting(parsedValue, lookup);
+  }
+  return value;
 }
 //# sourceMappingURL=Xcodeproj.js.map

@@ -2,9 +2,9 @@ import { ExpoConfig } from '@expo/config-types';
 import { XcodeProject } from 'xcode';
 
 import { ConfigPlugin } from '../Plugin.types';
+import { isNotComment } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
-import { isNotComment } from './utils/Xcodeproj';
 
 type Bitcode = NonNullable<ExpoConfig['ios']>['bitcode'];
 

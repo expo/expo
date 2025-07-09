@@ -1,5 +1,5 @@
-import { DependencyKind } from '../Packages';
 import PackagesGraphNode from './PackagesGraphNode';
+import { DependencyKind } from '../Packages';
 
 /**
  * A graph edge that refers to the relation between two packages.

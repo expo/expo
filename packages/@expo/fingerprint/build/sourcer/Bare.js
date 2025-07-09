@@ -3,12 +3,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRncliAutolinkingSourcesAsync = exports.getGitIgnoreSourcesAsync = exports.getPackageJsonScriptSourcesAsync = exports.getBareIosSourcesAsync = exports.getBareAndroidSourcesAsync = void 0;
+exports.getBareAndroidSourcesAsync = getBareAndroidSourcesAsync;
+exports.getBareIosSourcesAsync = getBareIosSourcesAsync;
+exports.getPackageJsonScriptSourcesAsync = getPackageJsonScriptSourcesAsync;
+exports.getGitIgnoreSourcesAsync = getGitIgnoreSourcesAsync;
+exports.getCoreAutolinkingSourcesFromRncCliAsync = getCoreAutolinkingSourcesFromRncCliAsync;
+exports.getCoreAutolinkingSourcesFromExpoAndroid = getCoreAutolinkingSourcesFromExpoAndroid;
+exports.getCoreAutolinkingSourcesFromExpoIos = getCoreAutolinkingSourcesFromExpoIos;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
+const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
+const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const ExpoResolver_1 = require("../ExpoResolver");
+const SourceSkips_1 = require("./SourceSkips");
 const Utils_1 = require("./Utils");
+const Path_1 = require("../utils/Path");
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 async function getBareAndroidSourcesAsync(projectRoot, options) {
     if (options.platforms.includes('android')) {
@@ -20,7 +31,6 @@ async function getBareAndroidSourcesAsync(projectRoot, options) {
     }
     return [];
 }
-exports.getBareAndroidSourcesAsync = getBareAndroidSourcesAsync;
 async function getBareIosSourcesAsync(projectRoot, options) {
     if (options.platforms.includes('ios')) {
         const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, 'ios', 'bareNativeDir');
@@ -31,8 +41,10 @@ async function getBareIosSourcesAsync(projectRoot, options) {
     }
     return [];
 }
-exports.getBareIosSourcesAsync = getBareIosSourcesAsync;
 async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.PackageJsonScriptsAll) {
+        return [];
+    }
     let packageJson;
     try {
         packageJson = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), './package.json'));
@@ -48,14 +60,16 @@ async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
         results.push({
             type: 'contents',
             id,
-            contents: JSON.stringify(packageJson.scripts),
+            contents: normalizePackageJsonScriptSources(packageJson.scripts, options),
             reasons: [id],
         });
     }
     return results;
 }
-exports.getPackageJsonScriptSourcesAsync = getPackageJsonScriptSourcesAsync;
 async function getGitIgnoreSourcesAsync(projectRoot, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.GitIgnore) {
+        return [];
+    }
     const result = await (0, Utils_1.getFileBasedHashSourceAsync)(projectRoot, '.gitignore', 'bareGitIgnore');
     if (result != null) {
         debug(`Adding file - ${chalk_1.default.dim('.gitignore')}`);
@@ -63,46 +77,143 @@ async function getGitIgnoreSourcesAsync(projectRoot, options) {
     }
     return [];
 }
-exports.getGitIgnoreSourcesAsync = getGitIgnoreSourcesAsync;
-async function getRncliAutolinkingSourcesAsync(projectRoot, options) {
+async function getCoreAutolinkingSourcesFromRncCliAsync(projectRoot, options, useRNCoreAutolinkingFromExpo) {
+    if (useRNCoreAutolinkingFromExpo === true) {
+        return [];
+    }
     try {
-        const results = [];
         const { stdout } = await (0, spawn_async_1.default)('npx', ['react-native', 'config'], { cwd: projectRoot });
         const config = JSON.parse(stdout);
-        const { root } = config;
-        const reasons = ['bareRncliAutolinking'];
-        for (const depData of Object.values(config.dependencies)) {
-            const filePath = path_1.default.relative(root, depData.root);
-            results.push({ type: 'dir', filePath, reasons });
-            debug(`Adding react-native-cli autolinking dir - ${chalk_1.default.dim(filePath)}`);
-            for (const platform of options.platforms) {
-                const platformData = getRncliPlatformData(depData, root, platform);
-                if (platformData) {
-                    results.push({
-                        type: 'contents',
-                        id: `rncliAutolinkingConfig:${depData.name}:${platform}`,
-                        contents: platformData,
-                        reasons,
-                    });
-                }
-            }
-        }
+        const results = await parseCoreAutolinkingSourcesAsync({
+            config,
+            contentsId: 'rncoreAutolinkingConfig',
+            reasons: ['rncoreAutolinking'],
+        });
         return results;
     }
-    catch {
+    catch (e) {
+        debug(chalk_1.default.red(`Error adding react-native core autolinking sources.\n${e}`));
         return [];
     }
 }
-exports.getRncliAutolinkingSourcesAsync = getRncliAutolinkingSourcesAsync;
-function getRncliPlatformData(dependency, root, platform) {
-    const platformData = dependency.platforms[platform];
-    if (!platformData) {
-        return '';
+async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, coreAutolinkingTransitiveDeps, useRNCoreAutolinkingFromExpo) {
+    if (useRNCoreAutolinkingFromExpo === false || !options.platforms.includes('android')) {
+        return [];
     }
-    const json = {};
-    for (const [key, value] of Object.entries(platformData)) {
-        json[key] = value?.startsWith?.(root) ? path_1.default.relative(root, value) : value;
+    const args = [
+        (0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot),
+        'react-native-config',
+        '--json',
+        '--platform',
+        'android',
+    ];
+    if (coreAutolinkingTransitiveDeps.length > 0) {
+        args.push('--transitive-linking-dependencies', ...coreAutolinkingTransitiveDeps);
     }
-    return JSON.stringify(json);
+    try {
+        const { stdout } = await (0, spawn_async_1.default)('node', args, { cwd: projectRoot });
+        const config = JSON.parse(stdout);
+        const results = await parseCoreAutolinkingSourcesAsync({
+            config,
+            contentsId: 'rncoreAutolinkingConfig:android',
+            reasons: ['rncoreAutolinkingAndroid'],
+            platform: 'android',
+        });
+        return results;
+    }
+    catch (e) {
+        debug(chalk_1.default.red(`Error adding react-native core autolinking sources for android.\n${e}`));
+        return [];
+    }
+}
+async function getCoreAutolinkingSourcesFromExpoIos(projectRoot, options, useRNCoreAutolinkingFromExpo) {
+    if (useRNCoreAutolinkingFromExpo === false || !options.platforms.includes('ios')) {
+        return [];
+    }
+    try {
+        const { stdout } = await (0, spawn_async_1.default)('node', [
+            (0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot),
+            'react-native-config',
+            '--json',
+            '--platform',
+            'ios',
+        ], { cwd: projectRoot });
+        const config = JSON.parse(stdout);
+        const results = await parseCoreAutolinkingSourcesAsync({
+            config,
+            contentsId: 'rncoreAutolinkingConfig:ios',
+            reasons: ['rncoreAutolinkingIos'],
+            platform: 'ios',
+        });
+        return results;
+    }
+    catch (e) {
+        debug(chalk_1.default.red(`Error adding react-native core autolinking sources for ios.\n${e}`));
+        return [];
+    }
+}
+async function parseCoreAutolinkingSourcesAsync({ config, reasons, contentsId, platform, }) {
+    const logTag = platform
+        ? `react-native core autolinking dir for ${platform}`
+        : 'react-native core autolinking dir';
+    const results = [];
+    const { root } = config;
+    const autolinkingConfig = {};
+    for (const [depName, depData] of Object.entries(config.dependencies)) {
+        try {
+            stripRncoreAutolinkingAbsolutePaths(depData, root);
+            const filePath = (0, Path_1.toPosixPath)(depData.root);
+            debug(`Adding ${logTag} - ${chalk_1.default.dim(filePath)}`);
+            results.push({ type: 'dir', filePath, reasons });
+            autolinkingConfig[depName] = depData;
+        }
+        catch (e) {
+            debug(chalk_1.default.red(`Error adding ${logTag} - ${depName}.\n${e}`));
+        }
+    }
+    results.push({
+        type: 'contents',
+        id: contentsId,
+        contents: JSON.stringify(autolinkingConfig),
+        reasons,
+    });
+    return results;
+}
+function stripRncoreAutolinkingAbsolutePaths(dependency, root) {
+    (0, assert_1.default)(dependency.root);
+    const dependencyRoot = dependency.root;
+    const cmakeDepRoot = node_process_1.default.platform === 'win32' ? dependencyRoot.replace(/\\/g, '/') : dependencyRoot;
+    dependency.root = (0, Path_1.toPosixPath)(path_1.default.relative(root, dependencyRoot));
+    for (const platformData of Object.values(dependency.platforms)) {
+        for (const [key, value] of Object.entries(platformData ?? {})) {
+            let newValue;
+            if (node_process_1.default.platform === 'win32' &&
+                ['cmakeListsPath', 'cxxModuleCMakeListsPath'].includes(key)) {
+                // CMake paths on Windows are serving in slashes,
+                // we have to check startsWith with the same slashes.
+                newValue = value?.startsWith?.(cmakeDepRoot)
+                    ? (0, Path_1.toPosixPath)(path_1.default.relative(root, value))
+                    : value;
+            }
+            else {
+                newValue = value?.startsWith?.(dependencyRoot)
+                    ? (0, Path_1.toPosixPath)(path_1.default.relative(root, value))
+                    : value;
+            }
+            platformData[key] = newValue;
+        }
+    }
+}
+function normalizePackageJsonScriptSources(scripts, options) {
+    if (options.sourceSkips & SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun) {
+        // Replicate the behavior of `expo prebuild`
+        if (!scripts.android?.includes('run') || scripts.android === 'expo run:android') {
+            delete scripts.android;
+        }
+        if (!scripts.ios?.includes('run') || scripts.ios === 'expo run:ios') {
+            delete scripts.ios;
+        }
+    }
+    return JSON.stringify(scripts);
 }
 //# sourceMappingURL=Bare.js.map

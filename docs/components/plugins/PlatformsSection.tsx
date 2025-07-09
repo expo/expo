@@ -1,8 +1,8 @@
-import { StatusWaitingIcon } from '@expo/styleguide-icons';
+import { StatusWaitingIcon } from '@expo/styleguide-icons/custom/StatusWaitingIcon';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, H4 } from '~/ui/components/Text';
 
 const platforms = [
@@ -25,7 +25,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <A className="grid gap-2 grid-cols-[20px_auto]" href={isSupported.pending}>
+        <A className="grid grid-cols-[20px_auto] gap-2" href={isSupported.pending}>
           <StatusWaitingIcon className="icon-md text-icon-info" /> Pending
         </A>
       ),
@@ -52,8 +52,8 @@ type PlatformProps = Omit<Props, 'title'>;
 
 const PlatformsSection = (props: Props) => (
   <>
-    <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
-    <Table layout={TableLayout.Fixed}>
+    <H4 className="mb-1">{props.title ?? 'Platform Compatibility'}</H4>
+    <Table className="table-fixed max-sm-gutters:table-auto">
       <TableHead>
         <Row>
           {platforms.map(({ title }) => (

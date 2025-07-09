@@ -1,14 +1,24 @@
-import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
 export type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
      * - `'all'` if the user granted your app access to the whole photo library
-     * - `'limited'` if the user granted your app access only to selected photos (only available on iOS 14.0+)
+     * - `'limited'` if the user granted your app access only to selected photos (only available on Android API 14+ and iOS 14.0+)
      * - `'none'` if user denied or hasn't yet granted the permission
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
-export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
+/**
+ * Determines the type of media that the app will ask the OS to get access to.
+ * @platform android 13+
+ */
+export type GranularPermission = 'audio' | 'photo' | 'video';
+export type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown' | 'pairedVideo';
+/**
+ * Represents the possible types of media that the app will ask the OS to get access to when calling [`presentPermissionsPickerAsync()`](#medialibrarypresentpermissionspickerasyncmediatypes).
+ * @platform android 14+
+ * */
+export type MediaTypeFilter = 'photo' | 'video';
 export type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
 export type SortByValue = [SortByKey, boolean] | SortByKey;
 export type MediaTypeObject = {
@@ -36,7 +46,7 @@ export type Asset = {
      */
     filename: string;
     /**
-     * URI that points to the asset. `assets://*` (iOS), `file://*` (Android)
+     * URI that points to the asset. `ph://*` (iOS), `file://*` (Android)
      */
     uri: string;
     /**
@@ -105,7 +115,17 @@ export type AssetInfo = Asset & {
      * @platform ios
      */
     orientation?: number;
+    /**
+     * Contains information about the video paired with the image file.
+     * This field is available if the `mediaType` is `"photo"`, and the `mediaSubtypes` includes `"livePhoto"`.
+     * @platform ios
+     */
+    pairedVideoAsset?: Asset | null;
 };
+/**
+ * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
+ * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * */
 export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
 export type MediaLibraryAssetInfoQueryOptions = {
     /**
@@ -198,7 +218,8 @@ export type AssetsOptions = {
      */
     first?: number;
     /**
-     * Asset ID of the last item returned on the previous page.
+     * Asset ID of the last item returned on the previous page. To get the ID of the next page,
+     * pass [`endCursor`](#pagedinfo) as its value.
      */
     after?: AssetRef;
     /**
@@ -211,11 +232,11 @@ export type AssetsOptions = {
      * the second item is a `boolean` value that means whether to use ascending order. Note that if
      * the `SortBy.default` key is used, then `ascending` argument will not matter. Earlier items have
      * higher priority when sorting out the results.
-     * If empty, this method will use the default sorting that is provided by the platform.
+     * If empty, this method uses the default sorting that is provided by the platform.
      */
     sortBy?: SortByValue[] | SortByValue;
     /**
-     * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
+     * An array of [MediaTypeValue](#mediatypevalue)s or a single `MediaTypeValue`.
      * @default MediaType.photo
      */
     mediaType?: MediaTypeValue[] | MediaTypeValue;
@@ -251,7 +272,7 @@ export type PagedInfo<T> = {
 };
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
-export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, Subscription, };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, EventSubscription as Subscription, };
 /**
  * Possible media types.
  */
@@ -269,15 +290,21 @@ export declare function isAvailableAsync(): Promise<boolean>;
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
+ * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
+ * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
+ * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+export declare function getPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
 /**
  * Check or request permissions to access the media library.
  * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
@@ -288,19 +315,24 @@ export declare function getPermissionsAsync(writeOnly?: boolean): Promise<Permis
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
-    writeOnly?: boolean | undefined;
+    writeOnly?: boolean;
+    granularPermissions?: GranularPermission[];
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
- * __Available only on iOS >= 14.__ Allows the user to update the assets that your app has access to.
+ * Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their
  * media library, otherwise this method is a no-op.
- * @return A promise that either rejects if the method is unavailable (meaning the device is not
- * running iOS >= 14), or resolves to `void`.
+ * @param mediaTypes Limits the type(s) of media that the user will be granting access to. By default, a list that shows both photos and videos is presented.
+ *
+ * @return A promise that either rejects if the method is unavailable, or resolves to `void`.
  * > __Note:__ This method doesn't inform you if the user changes which assets your app has access to.
- * For that information, you need to subscribe for updates to the user's media library using [addListener(listener)](#medialibraryaddlistenerlistener).
+ * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [`addListener()`](#medialibraryaddlistenerlistener).
  * If `hasIncrementalChanges` is `false`, the user changed their permissions.
+ *
+ * @platform android 14+
+ * @platform ios
  */
-export declare function presentPermissionsPickerAsync(): Promise<void>;
+export declare function presentPermissionsPickerAsync(mediaTypes?: MediaTypeFilter[]): Promise<void>;
 /**
  * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
@@ -312,9 +344,12 @@ export declare function presentPermissionsPickerAsync(): Promise<void>;
  * ```
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`
+ *
+ * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
+ * The album has exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
-export declare function createAssetAsync(localUri: string): Promise<Asset>;
+export declare function createAssetAsync(localUri: string, album?: AlbumRef): Promise<Asset>;
 /**
  * Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri),
  * This method doesn't return created asset.
@@ -328,7 +363,7 @@ export declare function saveToLibraryAsync(localUri: string): Promise<void>;
  * Adds array of assets to the album.
  *
  * On Android, by default it copies assets from the current album to provided one, however it's also
- * possible to move them by passing `false` as `copyAssets` argument.In case they're copied you
+ * possible to move them by passing `false` as `copyAssets` argument. In case they're copied you
  * should keep in mind that `getAssetsAsync` will return duplicated assets.
  * @param assets An array of [Asset](#asset) or their IDs.
  * @param album An [Album](#album) or its ID.
@@ -382,13 +417,16 @@ export declare function getAlbumAsync(title: string): Promise<Album>;
  * given asset from the current album to the new one, however it's also possible to move it by
  * passing `false` as `copyAsset` argument.
  * In case it's copied you should keep in mind that `getAssetsAsync` will return duplicated asset.
+ * > On Android, it's not possible to create an empty album. You must provide an existing asset to copy or move into the album or an uri of a local file, which will be used to create an initial asset for the album.
  * @param albumName Name of the album to create.
- * @param asset An [Asset](#asset) or its ID (required on Android).
- * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it.
+ * @param asset An [Asset](#asset) or its ID. On Android you either need to provide an asset or a localUri.
+ * @param initialAssetLocalUri A URI to the local media file, which will be used to create the initial asset inside the album. It must contain an extension. On Android it
+ * must be a local path, so it must start with `file:///`. If the `asset` was provided, this parameter will be ignored.
+ * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it. This parameter is ignored if `asset` was not provided.
  * Defaults to `true`.
  * @return Newly created [`Album`](#album).
  */
-export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;
+export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean, initialAssetLocalUri?: string): Promise<Album>;
 /**
  * Deletes given albums from the library. On Android by default it deletes assets belonging to given
  * albums from the library. On iOS it doesn't delete these assets, however it's possible to do by
@@ -409,14 +447,16 @@ export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<P
 /**
  * Subscribes for updates in user's media library.
  * @param listener A callback that is fired when any assets have been inserted or deleted from the
- * library, or when the user changes which assets they're allowing access to. On Android it's
- * invoked with an empty object. On iOS it's invoked with [`MediaLibraryAssetsChangeEvent`](#medialibraryassetschangeevent)
+ * library. On Android it's invoked with an empty object. On iOS, it's invoked with [`MediaLibraryAssetsChangeEvent`](#medialibraryassetschangeevent)
  * object.
+ *
+ * Additionally, only on iOS, the listener is also invoked when the user changes access to individual assets in the media library
+ * using `presentPermissionsPickerAsync()`.
  * @return An [`Subscription`](#subscription) object that you can call `remove()` on when you would
  * like to unsubscribe the listener.
  */
-export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): Subscription;
-export declare function removeSubscription(subscription: Subscription): void;
+export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): EventSubscription;
+export declare function removeSubscription(subscription: EventSubscription): void;
 /**
  * Removes all listeners.
  */
@@ -439,7 +479,7 @@ export declare function getMomentsAsync(): Promise<any>;
  *
  * The migration is possible when the album contains only compatible files types.
  * For instance, movies and pictures are compatible with each other, but music and pictures are not.
- * If automatic migration isn't possible, the function will be rejected.
+ * If automatic migration isn't possible, the function rejects.
  * In that case, you can use methods from the `expo-file-system` to migrate all your files manually.
  *
  * # Why do you need to migrate files?

@@ -5,13 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.os.Bundle
-import expo.modules.core.interfaces.services.EventEmitter
 
-private val BATTERY_CHARGED_EVENT_NAME = "Expo.batteryStateDidChange"
-
-class BatteryStateReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
+class BatteryStateReceiver(private val sendEvent: (name: String, body: Bundle) -> Unit) : BroadcastReceiver() {
   private fun onBatteryStateChange(batteryState: BatteryModule.BatteryState) {
-    eventEmitter?.emit(
+    sendEvent(
       BATTERY_CHARGED_EVENT_NAME,
       Bundle().apply {
         putInt("batteryState", batteryState.value)

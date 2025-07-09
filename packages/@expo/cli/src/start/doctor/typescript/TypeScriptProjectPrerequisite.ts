@@ -2,14 +2,14 @@ import { ExpoConfig } from '@expo/config';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { updateTSConfigAsync } from './updateTSConfig';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { memoize } from '../../../utils/fn';
-import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
+import { everyMatchAsync } from '../../../utils/glob';
 import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
-import { updateTSConfigAsync } from './updateTSConfig';
 
 const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
 
@@ -43,7 +43,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     await this._ensureDependenciesInstalledAsync();
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
+    await updateTSConfigAsync({ tsConfigPath });
 
     return true;
   }
@@ -56,12 +56,13 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
     // Ensure TypeScript packages are installed
     await this._ensureDependenciesInstalledAsync({
       skipPrompt: true,
+      isProjectMutable: true,
     });
 
     const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: true });
+    await updateTSConfigAsync({ tsConfigPath });
   }
 
   /** Exposed for testing. */
@@ -95,19 +96,25 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
   async _ensureDependenciesInstalledAsync({
     exp,
     skipPrompt,
-  }: { exp?: ExpoConfig; skipPrompt?: boolean } = {}): Promise<boolean> {
+    isProjectMutable,
+  }: {
+    exp?: ExpoConfig;
+    skipPrompt?: boolean;
+    isProjectMutable?: boolean;
+  } = {}): Promise<boolean> {
     try {
       return await ensureDependenciesAsync(this.projectRoot, {
         exp,
         skipPrompt,
+        isProjectMutable,
         installMessage: `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`,
         warningMessage:
           "If you're not using TypeScript, please remove the TypeScript files from your project",
         requiredPackages: [
           // use typescript/package.json to skip node module cache issues when the user installs
           // the package and attempts to resolve the module in the same process.
-          { file: 'typescript/package.json', pkg: 'typescript' },
-          { file: '@types/react/package.json', pkg: '@types/react' },
+          { file: 'typescript/package.json', pkg: 'typescript', dev: true },
+          { file: '@types/react/package.json', pkg: '@types/react', dev: true },
         ],
       });
     } catch (error) {
@@ -119,24 +126,26 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
 
   /** Return the first TypeScript file in the project. */
   async _queryFirstTypeScriptFileAsync(): Promise<null | string> {
-    const results = await wrapGlobWithTimeout(
-      () =>
-        // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
-        everyMatchAsync('**/*.@(ts|tsx)', {
-          cwd: this.projectRoot,
-          ignore: [
-            '**/@(Carthage|Pods|node_modules)/**',
-            '**/*.d.ts',
-            '@(ios|android|web|web-build|dist)/**',
-          ],
-        }),
-      5000
-    );
+    try {
+      // TODO(Bacon): Use `everyMatch` since a bug causes `anyMatch` to return inaccurate results when used multiple times.
+      const results = await everyMatchAsync('**/*.@(ts|tsx)', {
+        cwd: this.projectRoot,
+        signal: AbortSignal.timeout(5000),
+        ignore: [
+          '**/@(Carthage|Pods|node_modules)/**',
+          '**/*.d.ts',
+          '@(ios|android|web|web-build|dist)/**',
+        ],
+      });
 
-    if (results === false) {
-      return null;
+      return results[0] ?? null;
+    } catch (error: any) {
+      if (error.name === 'TimeoutError') {
+        return null;
+      }
+
+      throw error;
     }
-    return results[0] ?? null;
   }
 
   async _hasTSConfig(): Promise<string | null> {

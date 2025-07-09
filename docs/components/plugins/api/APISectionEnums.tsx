@@ -1,16 +1,13 @@
-import { css } from '@emotion/react';
+import { mergeClasses } from '@expo/styleguide';
 
-import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getTagNamesList,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
-  H3Code,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, CODE, MONOSPACE } from '~/ui/components/Text';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { H2, H4, MONOSPACE } from '~/ui/components/Text';
+
+import { EnumDefinitionData, EnumValueData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APISectionPlatformTags } from './components/APISectionPlatformTags';
+import { STYLES_APIBOX } from './styles';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -27,48 +24,53 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
   return 0;
 };
 
-const renderEnumValue = (value: any) => (typeof value === 'string' ? `"${value}"` : value);
+const renderEnumValue = (value: any, fallback?: string) =>
+  typeof value === 'string' ? `"${value}"` : (value ?? fallback);
 
-const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
-  <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
-    <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" />
-    <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium">{name}</MONOSPACE>
-    </H3Code>
-    <CommentTextBlock comment={comment} includePlatforms={false} />
-    {children.sort(sortByValue).map((enumValue: EnumValueData) => (
-      <div css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]} key={enumValue.name}>
-        <APISectionDeprecationNote comment={enumValue.comment} />
-        <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
-        <H4 css={enumValueNameStyle}>
-          <CODE>{enumValue.name}</CODE>
-        </H4>
-        <CODE theme="secondary" className="mb-4">
-          {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
-        </CODE>
-        <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
-      </div>
-    ))}
-  </div>
-);
+function APISectionEnum({ data: { name, children, comment } }: { data: EnumDefinitionData }) {
+  return (
+    <div key={`enum-definition-${name}`} className={mergeClasses(STYLES_APIBOX)}>
+      <APISectionDeprecationNote comment={comment} sticky />
+      <APIBoxHeader name={name} comment={comment} />
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
+      {children.sort(sortByValue).map((enumValue: EnumValueData) => (
+        <div
+          className="border-t border-t-palette-gray4 px-4 pb-0 pt-3 [&_h4]:mb-0.5"
+          key={enumValue.name}>
+          <APISectionDeprecationNote comment={enumValue.comment} />
+          <div className="flex flex-wrap justify-between max-md-gutters:flex-col">
+            <H4 hideInSidebar className="!font-medium">
+              <MONOSPACE className="!wrap-anywhere !text-sm !font-medium">
+                {enumValue.name}
+              </MONOSPACE>
+            </H4>
+            <APISectionPlatformTags comment={enumValue.comment} disableFallback className="mb-1" />
+          </div>
+          <MONOSPACE className="wrap-anywhere mb-2 inline-flex text-2xs text-tertiary">
+            {`${name}.${enumValue.name} ＝ ${renderEnumValue(
+              enumValue.type.value,
+              enumValue.type.name
+            )}`}
+          </MONOSPACE>
+          <APICommentTextBlock
+            comment={enumValue.comment}
+            includePlatforms={false}
+            includeSpacing={false}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const APISectionEnums = ({ data }: APISectionEnumsProps) =>
   data?.length ? (
     <>
       <H2 key="enums-header">Enums</H2>
-      {data.map(renderEnum)}
+      {data.map(enumData => (
+        <APISectionEnum key={enumData.name} data={enumData} />
+      ))}
     </>
   ) : null;
-
-const enumValueNameStyle = css({
-  h4: {
-    marginTop: 0,
-  },
-});
-
-const enumContentStyles = css({
-  paddingBottom: 0,
-});
 
 export default APISectionEnums;

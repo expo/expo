@@ -1,10 +1,12 @@
-import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
+import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { PropsWithChildren } from 'react';
 
+import { cleanCopyValue } from '~/common/code-utilities';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
+import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -23,81 +25,36 @@ type Props = PropsWithChildren<{
 
 export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: Props) {
   const childrenArray = Array.isArray(children) ? children : [children];
-  const codeBlocks = childrenArray.filter(
-    ({ props }) =>
-      props.children.props.className && props.children.props.className.startsWith('language-')
+  const codeBlocks = childrenArray.filter(({ props }) =>
+    props.children.props.className?.startsWith('language-')
   );
   const tabNames =
-    tabs ||
+    tabs ??
     codeBlocks.map(child => {
       const className = child.props.children.props.className;
       return MDX_CLASS_NAME_TO_TAB_NAME[className] || className.replace('language-', '');
     });
 
   return (
-    <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
+    <div
+      className={mergeClasses(
+        'grid grid-cols-2 gap-4',
+        connected && 'lg-gutters:mb-4 lg-gutters:gap-0',
+        connected &&
+          '[&>div:nth-child(odd)>div]:lg-gutters:!rounded-r-none [&>div:nth-child(odd)>div]:lg-gutters:border-r-0',
+        connected && '[&>div:nth-child(even)>div]:lg-gutters:!rounded-l-none',
+        '[&_pre]:m-0 [&_pre]:border-0',
+        'max-lg-gutters:grid-cols-1'
+      )}
+      {...rest}>
       {codeBlocks.map((codeBlock, index) => (
-        <Snippet key={index} css={snippetWrapperStyle}>
-          <SnippetHeader title={tabNames[index]} />
-          <SnippetContent skipPadding css={snippetContentStyle}>
-            {codeBlock}
-          </SnippetContent>
+        <Snippet key={index} className="mb-0 last:max-lg-gutters:mb-4">
+          <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
+            <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
+          </SnippetHeader>
+          <SnippetContent className="h-full p-0">{codeBlock}</SnippetContent>
         </Snippet>
       ))}
     </div>
   );
 }
-
-const codeBlocksWrapperStyle = css({
-  display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-  gap: spacing[4],
-  gridAutoRows: '1fr',
-
-  pre: {
-    border: 0,
-    margin: 0,
-    gridTemplateRows: 'minmax(100px, 1fr)',
-    height: '100%',
-  },
-
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    gridTemplateColumns: 'minmax(0, 1fr)',
-    gridAutoRows: 'auto',
-  },
-});
-
-const codeBlockConnectedWrapperStyle = css({
-  [`@media screen and (min-width: ${breakpoints.large}px)`]: {
-    gridGap: 0,
-
-    '> div:nth-of-type(odd)': {
-      '> div': {
-        borderRight: 0,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-      },
-    },
-
-    '> div:nth-of-type(even)': {
-      '> div': {
-        borderTopLeftRadius: 0,
-        borderBottomLeftRadius: 0,
-      },
-    },
-  },
-});
-
-const snippetWrapperStyle = css({
-  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
-    marginBottom: 0,
-
-    '&:last-of-type': {
-      marginBottom: spacing[4],
-    },
-  },
-});
-
-const snippetContentStyle = css({
-  height: '100%',
-});

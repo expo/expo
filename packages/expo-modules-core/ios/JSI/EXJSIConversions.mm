@@ -1,12 +1,13 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/TurboModuleUtils.h>
+#import <ReactCommon/CallbackWrapper.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/EXJavaScriptWeakObject.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
 
 namespace expo {
 
@@ -55,16 +56,31 @@ std::vector<jsi::Value> convertNSArrayToStdVector(jsi::Runtime &runtime, NSArray
   return result;
 }
 
+jsi::Value createUint8Array(jsi::Runtime &runtime, NSData *data) {
+  auto global = runtime.global();
+  auto arrayBufferCtor = global.getPropertyAsFunction(runtime, "ArrayBuffer");
+  auto arrayBufferObject = arrayBufferCtor.callAsConstructor(runtime, static_cast<int>(data.length)).getObject(runtime);
+  auto arrayBuffer = arrayBufferObject.getArrayBuffer(runtime);
+  memcpy(arrayBuffer.data(runtime), data.bytes, data.length);
+
+  auto uint8ArrayCtor = global.getPropertyAsFunction(runtime, "Uint8Array");
+  auto uint8Array = uint8ArrayCtor.callAsConstructor(runtime, arrayBufferObject).getObject(runtime);
+  return uint8Array;
+}
+
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 {
   if ([value isKindOfClass:[EXJavaScriptValue class]]) {
-    return jsi::Value(runtime, *[(EXJavaScriptValue *)value get]);
+    return [(EXJavaScriptValue *)value get];
   }
   if ([value isKindOfClass:[EXJavaScriptObject class]]) {
     return jsi::Value(runtime, *[(EXJavaScriptObject *)value get]);
   }
   if ([value isKindOfClass:[EXJavaScriptWeakObject class]]) {
     return jsi::Value(runtime, *[[(EXJavaScriptWeakObject *)value lock] get]);
+  }
+  if ([value isKindOfClass:[EXJavaScriptSharedObjectBinding class]]) {
+    return jsi::Value(runtime, *[[(EXJavaScriptSharedObjectBinding *)value get] get]);
   }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);
@@ -77,6 +93,8 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
     return convertNSDictionaryToJSIObject(runtime, (NSDictionary *)value);
   } else if ([value isKindOfClass:[NSArray class]]) {
     return convertNSArrayToJSIArray(runtime, (NSArray *)value);
+  } else if ([value isKindOfClass:[NSData class]]) {
+    return createUint8Array(runtime, (NSData *)value);
   } else if (value == (id)kCFNull) {
     return jsi::Value::null();
   }
@@ -106,8 +124,8 @@ NSArray<EXJavaScriptValue *> *convertJSIValuesToNSArray(EXJavaScriptRuntime *run
   jsi::Runtime *jsiRuntime = [runtime get];
 
   for (int i = 0; i < count; i++) {
-    std::shared_ptr<jsi::Value> value = std::make_shared<jsi::Value>(*jsiRuntime, values[i]);
-    array[i] = [[EXJavaScriptValue alloc] initWithRuntime:runtime value:value];
+    array[i] = [[EXJavaScriptValue alloc] initWithRuntime:runtime
+                                                    value:jsi::Value(*jsiRuntime, values[i])];
   }
   return array;
 }

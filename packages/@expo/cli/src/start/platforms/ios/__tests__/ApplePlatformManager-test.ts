@@ -25,7 +25,7 @@ describe('openAsync', () => {
 
   it(`opens a project in a custom development client`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => 'custom://path');
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new ApplePlatformManager('/', 8081, {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
@@ -34,7 +34,7 @@ describe('openAsync', () => {
       () =>
         ({
           getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-        } as any)
+        }) as any
     );
 
     expect(await manager.openAsync({ runtime: 'custom' })).toStrictEqual({
@@ -52,7 +52,7 @@ describe('openAsync', () => {
 
   it(`opens a project in a custom development client using app identifier`, async () => {
     const getCustomRuntimeUrl = jest.fn(() => null);
-    const manager = new ApplePlatformManager('/', 19000, {
+    const manager = new ApplePlatformManager('/', 8081, {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
@@ -62,7 +62,7 @@ describe('openAsync', () => {
       () =>
         ({
           getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-        } as any)
+        }) as any
     );
 
     Object.defineProperty(SimControl, 'openAppIdAsync', {
@@ -82,7 +82,7 @@ describe('openAsync', () => {
     expect(Log.log).toHaveBeenCalledWith(expect.stringMatching(/Opening.*on.*iPhone/));
 
     // Native invocation
-    expect(SimControl.openAppIdAsync).toBeCalledWith(
+    expect(SimControl.openAppIdAsync).toHaveBeenCalledWith(
       { name: 'iPhone 13', udid: '123' },
       { appId: 'dev.bacon.app' }
     );

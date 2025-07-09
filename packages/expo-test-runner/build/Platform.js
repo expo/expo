@@ -6,5 +6,5 @@ var Platform;
     Platform[Platform["iOS"] = 2] = "iOS";
     Platform[Platform["Android"] = 4] = "Android";
     Platform[Platform["Both"] = 6] = "Both";
-})(Platform = exports.Platform || (exports.Platform = {}));
+})(Platform || (exports.Platform = Platform = {}));
 //# sourceMappingURL=Platform.js.map

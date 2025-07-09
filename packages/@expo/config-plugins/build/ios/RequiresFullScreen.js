@@ -3,19 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getRequiresFullScreen = getRequiresFullScreen;
 exports.setRequiresFullScreen = setRequiresFullScreen;
 exports.withRequiresFullScreen = void 0;
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _versions() {
-  const data = require("../utils/versions");
-  _versions = function () {
     return data;
   };
   return data;
@@ -27,28 +19,7 @@ function _warnings() {
   };
   return data;
 }
-const withRequiresFullScreen = (0, _iosPlugins().createInfoPlistPlugin)(setRequiresFullScreen, 'withRequiresFullScreen');
-
-// NOTES: This is defaulted to `true` for now to match the behavior prior to SDK
-// 34, but will change to `false` in SDK +43.
-exports.withRequiresFullScreen = withRequiresFullScreen;
-function getRequiresFullScreen(config) {
-  var _config$ios;
-  // Yes, the property is called ios.requireFullScreen, without the s - not "requires"
-  // This is confusing indeed because the actual property name does have the s
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.hasOwnProperty('requireFullScreen')) {
-    return !!config.ios.requireFullScreen;
-  } else {
-    // In SDK 43, the `requireFullScreen` default has been changed to false.
-    if ((0, _versions().gteSdkVersion)(config, '43.0.0')
-    // TODO: Uncomment after SDK 43 is released.
-    // || !config.sdkVersion
-    ) {
-      return false;
-    }
-    return true;
-  }
-}
+const withRequiresFullScreen = exports.withRequiresFullScreen = (0, _iosPlugins().createInfoPlistPlugin)(setRequiresFullScreen, 'withRequiresFullScreen');
 const iPadInterfaceKey = 'UISupportedInterfaceOrientations~ipad';
 const requiredIPadInterface = ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationPortraitUpsideDown', 'UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight'];
 function isStringArray(value) {
@@ -84,8 +55,9 @@ function resolveExistingIpadInterfaceOrientations(interfaceOrientations) {
 
 // Whether requires full screen on iPad
 function setRequiresFullScreen(config, infoPlist) {
-  const requiresFullScreen = getRequiresFullScreen(config);
-  if (!requiresFullScreen) {
+  const requiresFullScreen = !!config.ios?.requireFullScreen;
+  const isTabletEnabled = config.ios?.supportsTablet || config.ios?.isTabletOnly;
+  if (isTabletEnabled && !requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(infoPlist[iPadInterfaceKey]);
 
     // There currently exists no mechanism to safely undo this feature besides `npx expo prebuild --clear`,

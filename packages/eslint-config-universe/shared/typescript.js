@@ -19,38 +19,11 @@ module.exports = {
       plugins: ['@typescript-eslint'],
       rules: {
         '@typescript-eslint/array-type': ['warn', { default: 'array' }],
-        '@typescript-eslint/ban-types': [
-          'error',
-          {
-            types: {
-              Number: {
-                message: 'Use `number` instead.',
-                fixWith: 'number',
-              },
-              Boolean: {
-                message: 'Use `boolean` instead.',
-                fixWith: 'boolean',
-              },
-              Symbol: {
-                message: 'Use `symbol` instead.',
-                fixWith: 'symbol',
-              },
-              Object: {
-                message: 'Use `object` instead.',
-                fixWith: 'object',
-              },
-              String: {
-                message: 'Use `string` instead.',
-                fixWith: 'string',
-              },
-              '{}': {
-                message: 'Use `object` instead.',
-                fixWith: 'object',
-              },
-            },
-            extendDefaults: false,
-          },
+        '@typescript-eslint/no-empty-object-type': [
+          'warn',
+          { allowInterfaces: 'with-single-extends' },
         ],
+        '@typescript-eslint/no-wrapper-object-types': 'warn',
         '@typescript-eslint/consistent-type-assertions': [
           'warn',
           { assertionStyle: 'as', objectLiteralTypeAssertions: 'allow' },
@@ -63,6 +36,12 @@ module.exports = {
 
         'no-redeclare': 'off',
         '@typescript-eslint/no-redeclare': 'warn',
+
+        'no-unused-expressions': 'off',
+        '@typescript-eslint/no-unused-expressions': [
+          'warn',
+          { allowShortCircuit: true, enforceForJSX: true },
+        ],
 
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': [

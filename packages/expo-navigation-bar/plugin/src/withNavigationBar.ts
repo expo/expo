@@ -1,13 +1,7 @@
 // @ts-ignore: uses flow
-import normalizeColor from '@react-native/normalize-color';
+import normalizeColor from '@react-native/normalize-colors';
 // @ts-ignore
 import Debug from 'debug';
-import {
-  NavigationBarVisibility,
-  NavigationBarBehavior,
-  NavigationBarPosition,
-  NavigationBarButtonStyle,
-} from 'expo-navigation-bar';
 import { ExpoConfig } from 'expo/config';
 import {
   ConfigPlugin,
@@ -18,6 +12,12 @@ import {
   withAndroidColors,
   withAndroidStyles,
 } from 'expo/config-plugins';
+import {
+  NavigationBarVisibility,
+  NavigationBarBehavior,
+  NavigationBarPosition,
+  NavigationBarButtonStyle,
+} from 'expo-navigation-bar';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
@@ -216,7 +216,7 @@ export function setNavigationBarStyles(
 ): AndroidConfig.Resources.ResourceXML {
   styles = AndroidConfig.Styles.assignStylesValue(styles, {
     add: !!backgroundColor,
-    parent: AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
+    parent: AndroidConfig.Styles.getAppThemeGroup(),
     name: `android:${NAVIGATION_BAR_COLOR}`,
     value: `@color/${NAVIGATION_BAR_COLOR}`,
   });
@@ -225,7 +225,7 @@ export function setNavigationBarStyles(
     // Adding means the buttons will be darker to account for a light background color.
     // `setButtonStyleAsync('dark')` should do the same thing.
     add: barStyle === 'dark',
-    parent: AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
+    parent: AndroidConfig.Styles.getAppThemeGroup(),
     name: 'android:windowLightNavigationBar',
     value: 'true',
   });

@@ -1,12 +1,12 @@
 package expo.modules.devmenu.react
 
 import android.util.Log
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.packagerconnection.RequestHandler
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
@@ -15,24 +15,20 @@ import kotlinx.coroutines.launch
 
 class DevMenuPackagerCommandHandlersSwapper {
   fun swapPackagerCommandHandlers(
-    reactInstanceManager: ReactInstanceManager,
+    reactHost: ReactHostWrapper,
     handlers: Map<String, RequestHandler>
   ) {
     try {
-      val devSupportManager: DevSupportManager =
-        ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
-          "mDevSupportManager",
-          reactInstanceManager
-        )
+      val devSupportManager: DevSupportManager = requireNotNull(reactHost.devSupportManager)
 
-      // We don't want to add handlers into `DisabledDevSupportManager` or other custom classes
+      // We don't want to add handlers into `ReleaseDevSupportManager` or other custom classes
       if (devSupportManager !is DevSupportManagerBase) {
         return
       }
 
       val currentCommandHandlers: Map<String, RequestHandler>? =
         DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
-          "mCustomPackagerCommandHandlers",
+          "customPackagerCommandHandlers",
           devSupportManager
         )
 
@@ -40,12 +36,12 @@ class DevMenuPackagerCommandHandlersSwapper {
       newCommandHandlers.putAll(handlers)
 
       DevSupportManagerBase::class.java.setPrivateDeclaredFieldValue(
-        "mCustomPackagerCommandHandlers",
+        "customPackagerCommandHandlers",
         devSupportManager,
         newCommandHandlers
       )
 
-      swapCurrentCommandHandlers(reactInstanceManager, handlers)
+      swapCurrentCommandHandlers(reactHost, handlers)
     } catch (e: Exception) {
       Log.w("DevMenu", "Couldn't add packager command handlers to current client: ${e.message}", e)
     }
@@ -64,41 +60,37 @@ class DevMenuPackagerCommandHandlersSwapper {
    * The final solution is to spin a background task that monitors if the client is present.
    */
   private fun swapCurrentCommandHandlers(
-    reactInstanceManager: ReactInstanceManager,
+    reactHost: ReactHostWrapper,
     handlers: Map<String, RequestHandler>
   ) {
     DevMenuManager.coroutineScope.launch {
       try {
         while (true) {
-          val devSupportManager: DevSupportManagerBase =
-            ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
-              "mDevSupportManager",
-              reactInstanceManager
-            )
+          val devSupportManager = requireNotNull(reactHost.devSupportManager)
 
           val devServerHelper: DevServerHelper =
             DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
-              "mDevServerHelper",
+              "devServerHelper",
               devSupportManager
             )
 
           val jsPackagerClient: JSPackagerClient? =
             DevServerHelper::class.java.getPrivateDeclaredFieldValue(
-              "mPackagerClient",
+              "packagerClient",
               devServerHelper
             )
 
           if (jsPackagerClient != null) {
             val currentCommandHandlers: Map<String, RequestHandler>? =
               JSPackagerClient::class.java.getPrivateDeclaredFieldValue(
-                "mRequestHandlers",
+                "requestHandlers",
                 jsPackagerClient
               )
 
             val newCommandHandlers = currentCommandHandlers?.toMutableMap() ?: mutableMapOf()
             newCommandHandlers.putAll(handlers)
             JSPackagerClient::class.java.setPrivateDeclaredFieldValue(
-              "mRequestHandlers",
+              "requestHandlers",
               jsPackagerClient,
               newCommandHandlers
             )

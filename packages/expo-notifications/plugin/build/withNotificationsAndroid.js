@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withNotificationsAndroid = exports.setNotificationSounds = exports.setNotificationIconAsync = exports.setNotificationIconColor = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
+exports.withNotificationsAndroid = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_LOCAL_NOTIFICATION_ICON_COLOR = exports.META_DATA_LOCAL_NOTIFICATION_ICON = exports.META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID = exports.META_DATA_FCM_NOTIFICATION_ICON_COLOR = exports.META_DATA_FCM_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
+exports.getNotificationIcon = getNotificationIcon;
+exports.getNotificationColor = getNotificationColor;
+exports.setNotificationIconColor = setNotificationIconColor;
+exports.setNotificationIconAsync = setNotificationIconAsync;
+exports.setNotificationSounds = setNotificationSounds;
 const image_utils_1 = require("@expo/image-utils");
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = require("fs");
@@ -17,8 +22,13 @@ exports.dpiValues = {
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const BASELINE_PIXEL_SIZE = 24;
 const ERROR_MSG_PREFIX = 'An error occurred while configuring Android notifications. ';
-exports.META_DATA_NOTIFICATION_ICON = 'expo.modules.notifications.default_notification_icon';
-exports.META_DATA_NOTIFICATION_ICON_COLOR = 'expo.modules.notifications.default_notification_color';
+exports.META_DATA_FCM_NOTIFICATION_ICON = 'com.google.firebase.messaging.default_notification_icon';
+exports.META_DATA_FCM_NOTIFICATION_ICON_COLOR = 'com.google.firebase.messaging.default_notification_color';
+exports.META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID = 'com.google.firebase.messaging.default_notification_channel_id';
+exports.META_DATA_LOCAL_NOTIFICATION_ICON = 'expo.modules.notifications.default_notification_icon';
+exports.META_DATA_LOCAL_NOTIFICATION_ICON_COLOR = 'expo.modules.notifications.default_notification_color';
+// TODO @vonovak add config for local notification large icon
+// expo.modules.notifications.large_notification_icon
 exports.NOTIFICATION_ICON = 'notification_icon';
 exports.NOTIFICATION_ICON_RESOURCE = `@drawable/${exports.NOTIFICATION_ICON}`;
 exports.NOTIFICATION_ICON_COLOR = 'notification_icon_color';
@@ -44,12 +54,13 @@ const withNotificationIconColor = (config, { color }) => {
     });
 };
 exports.withNotificationIconColor = withNotificationIconColor;
-const withNotificationManifest = (config, { icon, color }) => {
+const withNotificationManifest = (config, { icon, color, defaultChannel }) => {
     // If no icon or color provided in the config plugin props, fallback to value from app.json
     icon = icon || getNotificationIcon(config);
     color = color || getNotificationColor(config);
+    defaultChannel = defaultChannel || null;
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-        config.modResults = setNotificationConfig({ icon, color }, config.modResults);
+        config.modResults = setNotificationConfig({ icon, color, defaultChannel }, config.modResults);
         return config;
     });
 };
@@ -67,18 +78,15 @@ exports.withNotificationSounds = withNotificationSounds;
 function getNotificationIcon(config) {
     return config.notification?.icon || null;
 }
-exports.getNotificationIcon = getNotificationIcon;
 function getNotificationColor(config) {
     return config.notification?.color || null;
 }
-exports.getNotificationColor = getNotificationColor;
 function setNotificationIconColor(color, colors) {
     return Colors.assignColorValue(colors, {
         name: exports.NOTIFICATION_ICON_COLOR,
         value: color,
     });
 }
-exports.setNotificationIconColor = setNotificationIconColor;
 /**
  * Applies notification icon configuration for expo-notifications
  */
@@ -90,20 +98,29 @@ async function setNotificationIconAsync(projectRoot, icon) {
         removeNotificationIconImageFiles(projectRoot);
     }
 }
-exports.setNotificationIconAsync = setNotificationIconAsync;
 function setNotificationConfig(props, manifest) {
     const mainApplication = getMainApplicationOrThrow(manifest);
     if (props.icon) {
-        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_NOTIFICATION_ICON, exports.NOTIFICATION_ICON_RESOURCE, 'resource');
+        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_FCM_NOTIFICATION_ICON, exports.NOTIFICATION_ICON_RESOURCE, 'resource');
+        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_LOCAL_NOTIFICATION_ICON, exports.NOTIFICATION_ICON_RESOURCE, 'resource');
     }
     else {
-        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_NOTIFICATION_ICON);
+        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_FCM_NOTIFICATION_ICON);
+        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_LOCAL_NOTIFICATION_ICON);
     }
     if (props.color) {
-        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_NOTIFICATION_ICON_COLOR, exports.NOTIFICATION_ICON_COLOR_RESOURCE, 'resource');
+        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_FCM_NOTIFICATION_ICON_COLOR, exports.NOTIFICATION_ICON_COLOR_RESOURCE, 'resource');
+        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_LOCAL_NOTIFICATION_ICON_COLOR, exports.NOTIFICATION_ICON_COLOR_RESOURCE, 'resource');
     }
     else {
-        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_NOTIFICATION_ICON_COLOR);
+        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_FCM_NOTIFICATION_ICON_COLOR);
+        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_LOCAL_NOTIFICATION_ICON_COLOR);
+    }
+    if (props.defaultChannel) {
+        addMetaDataItemToMainApplication(mainApplication, exports.META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID, props.defaultChannel, 'value');
+    }
+    else {
+        removeMetaDataItemFromMainApplication(mainApplication, exports.META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID);
     }
     return manifest;
 }
@@ -152,7 +169,6 @@ function setNotificationSounds(projectRoot, sounds) {
         writeNotificationSoundFile(soundFileRelativePath, projectRoot);
     }
 }
-exports.setNotificationSounds = setNotificationSounds;
 /**
  * Copies the input file to the `<project-root>/android/app/src/main/res/raw` directory if
  * there isn't already an existing file under that name.
@@ -174,10 +190,10 @@ function writeNotificationSoundFile(soundFileRelativePath, projectRoot) {
         }
     }
 }
-const withNotificationsAndroid = (config, { icon = null, color = null, sounds = [] }) => {
+const withNotificationsAndroid = (config, { icon = null, color = null, sounds = [], defaultChannel = null }) => {
     config = (0, exports.withNotificationIconColor)(config, { color });
     config = (0, exports.withNotificationIcons)(config, { icon });
-    config = (0, exports.withNotificationManifest)(config, { icon, color });
+    config = (0, exports.withNotificationManifest)(config, { icon, color, defaultChannel });
     config = (0, exports.withNotificationSounds)(config, { sounds });
     return config;
 };

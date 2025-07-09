@@ -3,13 +3,11 @@ package expo.modules.devmenu.devtools
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.util.Log
-import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuManagerInterface
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
@@ -17,13 +15,13 @@ import java.lang.ref.WeakReference
 
 class DevMenuDevToolsDelegate(
   private val manager: DevMenuManagerInterface,
-  reactInstanceManager: ReactInstanceManager
+  reactHost: ReactHostWrapper
 ) {
   private val _reactDevManager = WeakReference(
-    reactInstanceManager.devSupportManager
+    reactHost.devSupportManager
   )
   private val _reactContext = WeakReference(
-    reactInstanceManager.currentReactContext
+    reactHost.currentReactContext
   )
 
   val reactDevManager
@@ -47,16 +45,6 @@ class DevMenuDevToolsDelegate(
     reactDevManager?.toggleElementInspector()
   }
 
-  fun toggleRemoteDebugging() = runWithDevSupportEnabled {
-    val reactDevManager = reactDevManager ?: return
-    val devSettings = devSettings ?: return
-    manager.closeMenu()
-    UiThreadUtil.runOnUiThread {
-      devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-      reactDevManager.handleReloadJS()
-    }
-  }
-
   fun togglePerformanceMonitor(context: Context) {
     val reactDevManager = reactDevManager ?: return
     val devSettings = devSettings ?: return
@@ -68,7 +56,7 @@ class DevMenuDevToolsDelegate(
   }
 
   fun openJSInspector() = runWithDevSupportEnabled {
-    val devSettings = (devSettings as? DevInternalSettings) ?: return
+    val devSettings = devSettings ?: return
     val reactContext = reactContext ?: return
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 
@@ -99,10 +87,7 @@ class DevMenuDevToolsDelegate(
    * Such permission is required to enable performance monitor.
    */
   private fun requestOverlaysPermission(context: Context) {
-    if (
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-      !Settings.canDrawOverlays(context)
-    ) {
+    if (!Settings.canDrawOverlays(context)) {
       val uri = Uri.parse("package:" + context.applicationContext.packageName)
       val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK

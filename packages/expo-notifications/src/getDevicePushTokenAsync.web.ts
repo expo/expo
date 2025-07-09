@@ -1,11 +1,12 @@
 import Constants from 'expo-constants';
-import { CodedError, Platform, SyntheticPlatformEmitter } from 'expo-modules-core';
+import { CodedError, Platform } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import { DevicePushToken } from './Tokens.types';
 
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   const data = await _subscribeDeviceToPushNotificationsAsync();
-  SyntheticPlatformEmitter.emit('onDevicePushToken', { devicePushToken: data });
+  DeviceEventEmitter.emit('onDevicePushToken', { devicePushToken: data });
   return { type: Platform.OS, data };
 }
 
@@ -45,7 +46,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   if (!serviceWorkerPath) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',
-      'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Please provide the path to the service worker that will handle notifications.'
+      'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Provide the path to the service worker that will handle notifications.'
     );
   }
   guardPermission();

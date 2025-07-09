@@ -5,7 +5,7 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * authentication process instead of a custom button. Limited customization of the button is
  * available via the provided properties.
  *
- * You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#isavailableasync)
+ * You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
  * resolves to `true`. This component will render nothing if it is not available, and you will get
  * a warning in development mode (`__DEV__ === true`).
  *
@@ -22,5 +22,5 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): JSX.Element | null;
+export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): import("react").JSX.Element | null;
 //# sourceMappingURL=AppleAuthenticationButton.d.ts.map

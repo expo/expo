@@ -4,80 +4,78 @@ import ExpoModulesCore
 import MobileCoreServices
 import Photos
 import PhotosUI
+import UniformTypeIdentifiers
 
 internal struct MediaHandler {
   internal weak var fileSystem: EXFileSystemInterface?
   internal let options: ImagePickerOptions
 
-  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (ImagePickerResult) -> Void) {
+  internal func handleMedia(_ mediaInfo: MediaInfo) async throws -> AssetInfo {
     let mediaType: String? = mediaInfo[UIImagePickerController.InfoKey.mediaType] as? String
-    let imageType = kUTTypeImage as String
-    let videoType = kUTTypeMovie as String
 
     switch mediaType {
-    case imageType: return handleImage(mediaInfo: mediaInfo, completion: completion)
-    case videoType: return handleVideo(mediaInfo: mediaInfo, completion: completion)
-    default: return completion(.failure(InvalidMediaTypeException(mediaType)))
+    case UTType.image.identifier:
+      return try await handleImage(mediaInfo: mediaInfo)
+
+    case UTType.movie.identifier:
+      return try await handleVideo(mediaInfo: mediaInfo)
+
+    default:
+      throw InvalidMediaTypeException(mediaType)
     }
   }
 
-  @available(iOS 14, *)
-  internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (ImagePickerResult) -> Void) {
-    var results = [AssetInfo?](repeating: nil, count: selection.count)
-
-    let dispatchGroup = DispatchGroup()
-    let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
-
-    let resultHandler = { (index: Int, result: SelectedMediaResult) -> Void in
-      switch result {
-      case .failure(let exception):
-        return completion(.failure(exception))
-      case .success(let mediaInfo):
-        dispatchQueue.async {
-          results[index] = mediaInfo
-          dispatchGroup.leave()
-        }
-      }
-    }
-
-    for (index, selectedItem) in selection.enumerated() {
+  internal func handleMultipleMedia(_ selection: [PHPickerResult]) async throws -> [AssetInfo] {
+    // TODO: (@hirbod): Use withThrowingTaskGroup instead of asyncMap once iOS 15 support is dropped
+    return try await asyncMap(selection) { selectedItem in
       let itemProvider = selectedItem.itemProvider
 
-      dispatchGroup.enter()
-      if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-        handleImage(from: selectedItem, atIndex: index, completion: resultHandler)
-      } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-        handleVideo(from: selectedItem, atIndex: index, completion: resultHandler)
-      } else {
-        completion(.failure(InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)))
+      if itemProvider.canLoadObject(ofClass: PHLivePhoto.self) && options.mediaTypes.contains(.livePhotos) {
+        return try await handleLivePhoto(from: selectedItem)
       }
-    }
+      if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+        return try await handleImage(from: selectedItem)
+      }
+      if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+        return try await handleVideo(from: selectedItem)
+      }
 
-    dispatchGroup.notify(queue: .main) {
-      completion(.success(
-        ImagePickerResponse(assets: results.compactMap({ $0 }), canceled: false)
-      ))
+      // Fallback to capability-based detection when the provider reports no identifiers (iOS bug?).
+      // This can happen when files have been synced via AirDrop or iTunes and the file extension is not recognized.
+      if itemProvider.canLoadObject(ofClass: UIImage.self) {
+        return try await handleImage(from: selectedItem)
+      }
+
+      // Default fallback – assume video when image cannot be loaded.
+      return try await handleVideo(from: selectedItem)
     }
   }
 
   // MARK: - Image
 
-  // TODO: convert to async/await syntax once we drop support for iOS 12
-  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (ImagePickerResult) -> Void) {
+  private func handleImage(mediaInfo: MediaInfo) async throws -> AssetInfo {
     do {
-      guard let image = ImageUtils.readImageFrom(mediaInfo: mediaInfo, shouldReadCroppedImage: options.allowsEditing) else {
-        return completion(.failure(FailedToReadImageException()))
+      guard
+        let image = ImageUtils.readImageFrom(
+          mediaInfo: mediaInfo, shouldReadCroppedImage: options.allowsEditing)
+      else {
+        throw FailedToReadImageException()
       }
 
-      let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
-                                                                               mediaInfo: mediaInfo,
-                                                                               options: options)
+      let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(
+        image: image,
+        mediaInfo: mediaInfo,
+        options: options
+      )
 
       let targetUrl = try generateUrl(withFileExtension: fileExtension)
+      let mimeType = getMimeType(from: targetUrl.pathExtension)
 
       // no modification requested
-      let imageModified = options.allowsEditing || options.quality != nil
-      let fileWasCopied = !imageModified && ImageUtils.tryCopyingOriginalImageFrom(mediaInfo: mediaInfo, to: targetUrl)
+      let imageModified = options.allowsEditing || options.quality < 1
+      let fileWasCopied =
+        !imageModified
+        && ImageUtils.tryCopyingOriginalImageFrom(mediaInfo: mediaInfo, to: targetUrl)
       if !fileWasCopied {
         try ImageUtils.write(imageData: imageData, to: targetUrl)
       }
@@ -88,169 +86,359 @@ internal struct MediaHandler {
       var fileName = asset?.value(forKey: "filename") as? String
       // Extension will change to png when editing BMP files, reflect that change in fileName
       if let unwrappedName = fileName {
-        fileName = replaceFileExtension(fileName: unwrappedName, targetExtension: fileExtension.lowercased())
+        fileName = replaceFileExtension(
+          fileName: unwrappedName, targetExtension: fileExtension.lowercased())
       }
       let fileSize = getFileSize(from: targetUrl)
 
-      let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
-                                                           orImageFileUrl: targetUrl,
-                                                           tryReadingFile: fileWasCopied,
-                                                           shouldReadBase64: self.options.base64)
+      let base64 =
+        options.base64
+        ? try ImageUtils.readBase64From(
+          imageData: imageData, orImageFileUrl: targetUrl, tryReadingFile: fileWasCopied) : nil
 
-      ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, shouldReadExif: self.options.exif) { exif in
-        let imageInfo = AssetInfo(assetId: asset?.localIdentifier,
-                                  uri: targetUrl.absoluteString,
-                                  width: image.size.width,
-                                  height: image.size.height,
-                                  fileName: fileName,
-                                  fileSize: fileSize,
-                                  base64: base64,
-                                  exif: exif)
-        let response = ImagePickerResponse(assets: [imageInfo], canceled: false)
-        completion(.success(response))
-      }
+      let exif = options.exif ? await ImageUtils.readExifFrom(mediaInfo: mediaInfo) : nil
+      let size = ImageUtils.readSizeFrom(url: targetUrl) ?? .zero
+
+      return AssetInfo(
+        assetId: asset?.localIdentifier,
+        uri: targetUrl.absoluteString,
+        width: Double(size.width),
+        height: Double(size.height),
+        fileName: fileName,
+        fileSize: fileSize,
+        mimeType: mimeType,
+        base64: base64,
+        exif: exif
+      )
     } catch let exception as Exception {
-      return completion(.failure(exception))
+      throw exception
     } catch {
-      return completion(.failure(UnexpectedException(error)))
+      throw UnexpectedException(error)
     }
   }
 
-  @available(iOS 14, *)
-  private func handleImage(from selectedImage: PHPickerResult,
-                           atIndex index: Int = -1,
-                           completion: @escaping (Int, SelectedMediaResult) -> Void) {
+  private func handleImage(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
-    itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { rawData, error in
-      do {
-        guard error == nil,
-              let rawData = rawData,
-              let image = try? UIImage(data: rawData) else {
-          return completion(index, .failure(FailedToReadImageException().causedBy(error)))
+
+    // Fast-path: copy original file when no processing is required and current representation is requested.
+    let fastPath =
+      !options.allowsEditing && options.quality >= 1
+      && options.preferredAssetRepresentationMode == .current
+
+    if fastPath {
+      // Attempt to obtain original file URL
+      if let targetUrl = try? await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<URL, Error>)
+        in itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
+          guard let srcUrl = url else {
+            return continuation.resume(throwing: error ?? FailedToReadImageException())
+          }
+          do {
+            let destUrl = try generateUrl(withFileExtension: "." + srcUrl.pathExtension)
+            try FileManager.default.copyItem(at: srcUrl, to: destUrl)
+            continuation.resume(returning: destUrl)
+          } catch {
+            continuation.resume(throwing: error)
+          }
         }
+      }) {
+        let cachedUrl = targetUrl
+        let fileExtension = "." + cachedUrl.pathExtension
 
-        let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
-                                                                                 rawData: rawData,
-                                                                                 itemProvider: itemProvider,
-                                                                                 options: self.options)
-
-        let targetUrl = try generateUrl(withFileExtension: fileExtension)
-        try ImageUtils.write(imageData: imageData, to: targetUrl)
-        let fileSize = getFileSize(from: targetUrl)
+        let size = ImageUtils.readSizeFrom(url: cachedUrl) ?? .zero
+        let fileSize = getFileSize(from: cachedUrl)
+        let mimeType = getMimeType(from: cachedUrl.pathExtension)
         let fileName = itemProvider.suggestedName.map { $0 + fileExtension }
 
-        // We need to get EXIF from original image data, as it is being lost in UIImage
-        let exif = ImageUtils.optionallyReadExifFrom(data: rawData, shouldReadExif: self.options.exif)
+        // Conditionally read raw data only if needed to avoid unnecessary I/O
+        var rawData: Data?
+        if options.base64 || options.exif {
+          rawData = try? Data(contentsOf: cachedUrl)
+        }
 
-        let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
-                                                             orImageFileUrl: targetUrl,
-                                                             tryReadingFile: false,
-                                                             shouldReadBase64: self.options.base64)
+        let base64 = options.base64 ? rawData?.base64EncodedString() : nil
+        let exif = options.exif ? (rawData.flatMap { ImageUtils.readExifFrom(data: $0) }) : nil
 
-        let imageInfo = AssetInfo(assetId: selectedImage.assetIdentifier,
-                                  uri: targetUrl.absoluteString,
-                                  width: image.size.width,
-                                  height: image.size.height,
-                                  fileName: fileName,
-                                  fileSize: fileSize,
-                                  base64: base64,
-                                  exif: exif)
-        completion(index, .success(imageInfo))
-      } catch let exception as Exception {
-        return completion(index, .failure(exception))
-      } catch {
-        return completion(index, .failure(UnexpectedException(error)))
+        return AssetInfo(
+          assetId: selectedImage.assetIdentifier,
+          uri: cachedUrl.absoluteString,
+          width: Double(size.width),
+          height: Double(size.height),
+          fileName: fileName,
+          fileSize: fileSize,
+          mimeType: mimeType,
+          base64: base64,
+          exif: exif
+        )
       }
-    } // loadObject
+    }
+
+    // If fast copy path failed or was not available because of the props
+    // use slow path (existing implementation)
+    let rawData = try await itemProvider.loadImageDataRepresentation()
+
+    guard let image = UIImage(data: rawData) else {
+      throw Exception(name: "FailedCreatingUIImage", description: "")
+    }
+
+    let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(
+      image: image,
+      rawData: rawData,
+      itemProvider: itemProvider,
+      options: options
+    )
+
+    let mimeType = getMimeType(from: String(fileExtension.dropFirst()))
+    let targetUrl = try generateUrl(withFileExtension: fileExtension)
+    try ImageUtils.write(imageData: imageData, to: targetUrl)
+    let fileSize = getFileSize(from: targetUrl)
+    let fileName = itemProvider.suggestedName.map { $0 + fileExtension }
+
+    // We need to get EXIF from original image data, as it is being lost in UIImage
+    let exif = options.exif ? ImageUtils.readExifFrom(data: rawData) : nil
+    let base64 = options.base64 ? imageData?.base64EncodedString() : nil
+
+    let size = ImageUtils.readSizeFrom(url: targetUrl) ?? .zero
+
+    return AssetInfo(
+      assetId: selectedImage.assetIdentifier,
+      uri: targetUrl.absoluteString,
+      width: Double(size.width),
+      height: Double(size.height),
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      base64: base64,
+      exif: exif
+    )
+  }
+
+  // Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
+  // otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
+  // As a result a live photo photo cannot be compressed or edited.
+  private func handleLivePhoto(from selectedImage: PHPickerResult) async throws -> AssetInfo {
+    let itemProvider = selectedImage.itemProvider
+    let livePhotoObject = try await itemProvider.loadObject(ofClass: PHLivePhoto.self)
+    guard let livePhoto = livePhotoObject as? PHLivePhoto else {
+      throw FailedToPickLivePhotoException()
+    }
+    let assetResources = PHAssetResource.assetResources(for: livePhoto)
+    guard
+      let photoResource = assetResources.first(where: { $0.type == .photo }),
+      let videoResource = assetResources.first(where: { $0.type == .pairedVideo })
+    else {
+      throw FailedToPickLivePhotoException()
+    }
+
+    let fileName = photoResource.originalFilename
+    let pairedVideoFileName = videoResource.originalFilename
+    let photoFileExtension = getFileExtension(from: fileName)
+    let pairedVideoFileExtension = getFileExtension(from: pairedVideoFileName)
+    let (photoUrl, pairedVideoUrl) = try generatePairedUrls(
+      photoFileExtension: photoFileExtension, videoFileExtension: pairedVideoFileExtension)
+
+    let imageData = try await PHAssetResourceManager.default().requestData(
+      for: photoResource, options: nil)
+
+    try await PHAssetResourceManager.default().writeData(
+      for: photoResource, toFile: photoUrl, options: nil)
+    try await PHAssetResourceManager.default().writeData(
+      for: videoResource, toFile: pairedVideoUrl, options: nil)
+
+    let fileSize = getFileSize(from: photoUrl)
+    let mimeType = getMimeType(from: photoUrl.pathExtension)
+    let base64 = options.base64 ? imageData.base64EncodedString() : nil
+    let exif = options.exif ? ImageUtils.readExifFrom(data: imageData) : nil
+
+    let pairedVideoAssetInfo = try getPairedAssetInfo(
+      from: videoResource, fileUrl: pairedVideoUrl, assetId: selectedImage.assetIdentifier)
+
+    return AssetInfo(
+      assetId: selectedImage.assetIdentifier,
+      type: "livePhoto",
+      uri: photoUrl.absoluteString,
+      width: livePhoto.size.width,
+      height: livePhoto.size.height,
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      base64: base64,
+      exif: exif,
+      pairedVideoAsset: pairedVideoAssetInfo
+    )
+  }
+
+  private func getPairedAssetInfo(
+    from videoResource: PHAssetResource, fileUrl: URL, assetId: String?
+  ) throws -> AssetInfo {
+    let fileName = videoResource.originalFilename
+    guard let dimensions = VideoUtils.readSizeFrom(url: fileUrl) else {
+      throw FailedToReadVideoSizeException()
+    }
+    let duration = VideoUtils.readDurationFrom(url: fileUrl)
+    let mimeType = getMimeType(from: fileUrl.pathExtension)
+    let fileSize = getFileSize(from: fileUrl)
+
+    return AssetInfo(
+      assetId: assetId,
+      type: "pairedVideo",
+      uri: fileUrl.absoluteString,
+      width: dimensions.width,
+      height: dimensions.height,
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      duration: duration
+    )
+  }
+
+  private func getMimeType(from pathExtension: String) -> String? {
+    return UTType(filenameExtension: pathExtension)?.preferredMIMEType
   }
 
   // MARK: - Video
 
-  // TODO: convert to async/await syntax once we drop support for iOS 12
-  func handleVideo(mediaInfo: MediaInfo, completion: (ImagePickerResult) -> Void) {
-    do {
-      guard let pickedVideoUrl = VideoUtils.readVideoUrlFrom(mediaInfo: mediaInfo) else {
-        return completion(.failure(FailedToReadVideoException()))
+  func handleVideo(mediaInfo: MediaInfo) async throws -> AssetInfo {
+    // Attempt to obtain a usable URL first.
+    let pickedVideoUrl = VideoUtils.readVideoUrlFrom(mediaInfo: mediaInfo)
+
+    // Fast-path: if we have a PHAsset and passthrough preset, stream the full-size resource to avoid
+    // assets-library URLs that FileManager cannot copy.
+    if options.videoExportPreset == .passthrough, let asset = mediaInfo[.phAsset] as? PHAsset {
+      let resources = PHAssetResource.assetResources(for: asset)
+      if let resource = resources.first(where: { $0.type == .fullSizeVideo }) ?? resources.first(where: { $0.type == .video }) {
+        let originalFilename = resource.originalFilename
+        let fileExtension = getFileExtension(from: originalFilename)
+        let destinationUrl = try generateUrl(withFileExtension: fileExtension)
+
+        try await PHAssetResourceManager.default().writeData(
+          for: resource,
+          toFile: destinationUrl,
+          options: nil
+        )
+
+        let mimeType = getMimeType(from: destinationUrl.pathExtension)
+        return try buildVideoResult(
+          for: destinationUrl,
+          withName: originalFilename,
+          mimeType: mimeType,
+          assetId: asset.localIdentifier
+        )
       }
-
-      let targetUrl = try generateUrl(withFileExtension: ".mov")
-
-      try VideoUtils.tryCopyingVideo(at: pickedVideoUrl, to: targetUrl)
-
-      guard let dimensions = VideoUtils.readSizeFrom(url: targetUrl) else {
-        return completion(.failure(FailedToReadVideoSizeException()))
-      }
-
-      // If video was edited (the duration is affected) then read the duration from the original edited video.
-      // Otherwise read the duration from the target video file.
-      // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
-      let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
-      let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
-
-      let asset = mediaInfo[.phAsset] as? PHAsset
-      let fileName = asset?.value(forKey: "filename") as? String
-      let fileSize = getFileSize(from: targetUrl)
-      let videoInfo = AssetInfo(assetId: asset?.localIdentifier,
-                                type: "video",
-                                uri: targetUrl.absoluteString,
-                                width: dimensions.width,
-                                height: dimensions.height,
-                                fileName: fileName,
-                                fileSize: fileSize,
-                                duration: duration)
-
-      completion(.success(ImagePickerResponse(assets: [videoInfo], canceled: false)))
-    } catch let exception as Exception {
-      return completion(.failure(exception))
-    } catch {
-      return completion(.failure(UnexpectedException(error)))
     }
+
+    // Legacy/regular path: copy the temporary file when we have a real URL.
+    guard let pickedUrl = pickedVideoUrl else {
+      throw FailedToReadVideoException()
+    }
+
+    // If the URL uses the deprecated assets-library scheme, fall back to exporting via PHAsset above.
+    // This can happen when files have been synced via AirDrop or iTunes.
+    if pickedUrl.scheme == "assets-library" {
+      throw FailedToReadVideoException()
+    }
+
+    let targetUrl = try generateUrl(withFileExtension: ".mov")
+    try VideoUtils.tryCopyingVideo(at: pickedUrl, to: targetUrl)
+
+    guard let dimensions = VideoUtils.readSizeFrom(url: targetUrl) else {
+      throw FailedToReadVideoSizeException()
+    }
+
+    // If video was edited (the duration is affected) then read the duration from the original edited video.
+    // Otherwise read the duration from the target video file.
+    // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
+    let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedUrl : targetUrl
+
+    let asset = mediaInfo[.phAsset] as? PHAsset
+    let mimeType = getMimeType(from: targetUrl.pathExtension)
+    let fileName = asset?.value(forKey: "filename") as? String
+    let fileSize = getFileSize(from: targetUrl)
+
+    return AssetInfo(
+      assetId: asset?.localIdentifier,
+      type: "video",
+      uri: targetUrl.absoluteString,
+      width: dimensions.width,
+      height: dimensions.height,
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      duration: VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
+    )
   }
 
-  @available(iOS 14, *)
-  private func handleVideo(from selectedVideo: PHPickerResult,
-                           atIndex index: Int = -1,
-                           completion: @escaping (Int, SelectedMediaResult) -> Void) {
-    let itemProvider = selectedVideo.itemProvider
-    itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
-      do {
-        guard error == nil,
-              let videoUrl = url as? URL else {
-          return completion(index, .failure(FailedToReadVideoException().causedBy(error)))
+  private func handleVideo(from selectedVideo: PHPickerResult) async throws -> AssetInfo {
+    // Fast-path: If transcoding is disabled (passthrough) and we have direct access to the underlying
+    // `PHAsset`, try to copy the original/full-size video resource via `PHAssetResourceManager`.
+    // This avoids `loadFileRepresentation`, which can be noticeably slower once a user
+    // tweaks only the metadata (e.g. adjusts the capture date) because the photo service marks the
+    // asset as *adjusted* and will re-render a temporary file for us. Copying the resource bytes
+    // ourselves is dramatically faster because it just streams the already-existing file.
+
+    if options.videoExportPreset == .passthrough, let assetId = selectedVideo.assetIdentifier {
+      let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
+      if let asset = fetchResult.firstObject {
+        // Prefer the full-size resource when available, otherwise fall back to the default `.video`.
+        let resources = PHAssetResource.assetResources(for: asset)
+        if let resource = resources.first(where: { $0.type == .fullSizeVideo }) ??
+          resources.first(where: { $0.type == .video }) {
+          // Determine the file extension from the original filename so we preserve it (e.g. .MOV / .MP4)
+          let originalFilename = resource.originalFilename
+          let fileExtension = getFileExtension(from: originalFilename)
+          let destinationUrl = try generateUrl(withFileExtension: fileExtension)
+
+          // Stream the resource into our cache directory. This API is asynchronous but doesn't require
+          // a temporary file like `loadFileRepresentation`.
+          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: nil)
+
+          // Build and return the result using the helper.
+          let mimeType = getMimeType(from: destinationUrl.pathExtension)
+          return try buildVideoResult(
+            for: destinationUrl,
+            withName: originalFilename,
+            mimeType: mimeType,
+            assetId: assetId
+          )
         }
-
-        // In case of passthrough, we want original file extension, mp4 otherwise
-        // TODO: (barthap) Support other file extensions?
-        let transcodeFileType = AVFileType.mp4
-        let transcodeFileExtension = ".mp4"
-        let originalExtension = ".\(videoUrl.pathExtension)"
-
-        // We need to copy the result into a place that we control, because the picker
-        // can remove the original file during conversion.
-        // Also, the transcoding may need a separate url - one of these will be used as a final result
-        let assetUrl = try generateUrl(withFileExtension: originalExtension)
-        let transcodedUrl = try generateUrl(withFileExtension: transcodeFileExtension)
-        try VideoUtils.tryCopyingVideo(at: videoUrl, to: assetUrl)
-
-        VideoUtils.transcodeVideoAsync(sourceAssetUrl: assetUrl,
-                                       destinationUrl: transcodedUrl,
-                                       outputFileType: transcodeFileType,
-                                       exportPreset: options.videoExportPreset) { result in
-          switch result {
-          case .failure(let exception):
-            return completion(index, .failure(exception))
-          case .success(let targetUrl):
-            let fileName = itemProvider.suggestedName.map { $0 + transcodeFileExtension }
-            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, assetId: selectedVideo.assetIdentifier)
-            return completion(index, videoResult)
-          }
-        }
-      } catch let exception as Exception {
-        return completion(index, .failure(exception))
-      } catch {
-        return completion(index, .failure(UnexpectedException(error)))
       }
+      // If anything above fails we'll gracefully fall back to the existing (slower) path below.
     }
+
+    let videoUrl = try await VideoUtils.loadVideoRepresentation(
+      provider: selectedVideo.itemProvider
+    ) { tmpUrl in
+      // We need to copy the result into a place that we control, because the picker
+      // can remove the original file during conversion.
+      return try generateUrl(withFileExtension: ".\(tmpUrl.pathExtension)")
+    }
+
+    // Decide whether we need to transcode.
+    let isPassthrough = options.videoExportPreset == .passthrough
+
+    // Keep original extension for passthrough, otherwise use mp4.
+    let originalFileExtension = ".\(videoUrl.pathExtension)"
+    let transcodeFileExtension = isPassthrough ? originalFileExtension : ".mp4"
+    let transcodeFileType: AVFileType = .mp4
+
+    let finalUrl: URL
+    if isPassthrough {
+      finalUrl = videoUrl
+    } else {
+      // Create destination url for transcoded video
+      let transcodedUrl = try generateUrl(withFileExtension: transcodeFileExtension)
+      finalUrl = try await VideoUtils.transcodeVideoAsync(
+        sourceAssetUrl: videoUrl,
+        destinationUrl: transcodedUrl,
+        outputFileType: transcodeFileType,
+        exportPreset: options.videoExportPreset
+      )
+    }
+
+    let mimeType = getMimeType(from: finalUrl.pathExtension)
+    let fileName = selectedVideo.itemProvider.suggestedName.map { $0 + transcodeFileExtension }
+
+    return try buildVideoResult(
+      for: finalUrl, withName: fileName, mimeType: mimeType, assetId: selectedVideo.assetIdentifier)
   }
 
   // MARK: - utils
@@ -275,30 +463,46 @@ internal struct MediaHandler {
     guard let fileSystem = self.fileSystem else {
       throw FileSystemModuleNotFoundException()
     }
-    let directory =  fileSystem.cachesDirectory.appending(
+    let directory = fileSystem.cachesDirectory.appending(
       fileSystem.cachesDirectory.hasSuffix("/") ? "" : "/" + "ImagePicker"
     )
     let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
-    let url = URL(fileURLWithPath: path)
-    return url
+    return URL(fileURLWithPath: path)
   }
 
-  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, assetId: String?) -> SelectedMediaResult {
+  private func generatePairedUrls(photoFileExtension: String, videoFileExtension: String) throws
+    -> (URL, URL) {
+    let parsedVideoFileExtension =
+      videoFileExtension.starts(with: ".")
+      ? String(videoFileExtension.dropFirst()) : videoFileExtension
+    let photoUrl = try generateUrl(withFileExtension: photoFileExtension)
+    let baseUrl = photoUrl.deletingLastPathComponent()
+    let filename = photoUrl.deletingPathExtension().lastPathComponent
+    let videoUrl = baseUrl.appendingPathComponent(filename).appendingPathExtension(
+      parsedVideoFileExtension)
+    return (photoUrl, videoUrl)
+  }
+
+  private func buildVideoResult(
+    for videoUrl: URL, withName fileName: String?, mimeType: String?, assetId: String?
+  ) throws -> AssetInfo {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
-      return .failure(FailedToReadVideoSizeException())
+      throw FailedToReadVideoSizeException()
     }
     let duration = VideoUtils.readDurationFrom(url: videoUrl)
     let fileSize = getFileSize(from: videoUrl)
 
-    let result = AssetInfo(assetId: assetId,
-                           type: "video",
-                           uri: videoUrl.absoluteString,
-                           width: size.width,
-                           height: size.height,
-                           fileName: fileName,
-                           fileSize: fileSize,
-                           duration: duration)
-    return .success(result)
+    return AssetInfo(
+      assetId: assetId,
+      type: "video",
+      uri: videoUrl.absoluteString,
+      width: size.width,
+      height: size.height,
+      fileName: fileName,
+      fileSize: fileSize,
+      mimeType: mimeType,
+      duration: duration
+    )
   }
 
   private func getFileSize(from fileUrl: URL) -> Int? {
@@ -310,363 +514,30 @@ internal struct MediaHandler {
       return nil
     }
   }
-}
 
-private struct ImageUtils {
-  static func readImageFrom(mediaInfo: MediaInfo, shouldReadCroppedImage: Bool) -> UIImage? {
-    guard let originalImage = mediaInfo[.originalImage] as? UIImage,
-          let image = originalImage.fixOrientation()
-    else {
-      return nil
-    }
-
-    if !shouldReadCroppedImage {
-      return image
-    }
-
-    guard let cropRect = mediaInfo[.cropRect] as? CGRect,
-          let croppedImage = ImageUtils.crop(image: image, to: cropRect)
-    else {
-      return nil
-    }
-
-    return croppedImage
-  }
-
-  static func crop(image: UIImage, to: CGRect) -> UIImage? {
-    guard let cgImage = image.cgImage?.cropping(to: to) else {
-      return nil
-    }
-    return UIImage(cgImage: cgImage,
-                   scale: image.scale,
-                   orientation: image.imageOrientation)
-  }
-
-  static func readDataAndFileExtension(
-    image: UIImage,
-    mediaInfo: MediaInfo,
-    options: ImagePickerOptions
-  ) throws -> (imageData: Data?, fileExtension: String) {
-    let compressionQuality = options.quality ?? DEFAULT_QUALITY
-
-    // nil when an image is picked from camera
-    let referenceUrl = mediaInfo[.referenceURL] as? URL
-
-    switch referenceUrl?.absoluteString {
-    case .some(let s) where s.contains("ext=PNG"):
-      let data = image.pngData()
-      return (data, ".png")
-
-    case .some(let s) where s.contains("ext=BMP"):
-      if options.allowsEditing {
-        // switch to png if editing
-        let data = image.pngData()
-        return (data, ".png")
-      }
-      return (nil, ".bmp")
-
-    case .some(let s) where s.contains("ext=GIF"):
-      var rawData: Data?
-      if let imgUrl = mediaInfo[.imageURL] as? URL {
-         rawData = try? Data(contentsOf: imgUrl)
-      }
-      let inputData = rawData ?? image.jpegData(compressionQuality: compressionQuality)
-      let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
-      let cropRect = options.allowsEditing ? mediaInfo[.cropRect] as? CGRect : nil
-      let gifData = try processGifData(inputData: inputData,
-                                       compressionQuality: options.quality,
-                                       initialMetadata: metadata,
-                                       cropRect: cropRect)
-      return (gifData, ".gif")
-    default:
-      let data = image.jpegData(compressionQuality: compressionQuality)
-      return (data, ".jpg")
-    }
-  }
-
-  @available(iOS 14, *)
-  static func readDataAndFileExtension(
-    image: UIImage,
-    rawData: Data,
-    itemProvider: NSItemProvider,
-    options: ImagePickerOptions
-  ) throws -> (imageData: Data?, fileExtension: String) {
-    let compressionQuality = options.quality ?? DEFAULT_QUALITY
-    let preferredFormat = itemProvider.registeredTypeIdentifiers.first
-
-    switch preferredFormat {
-    case UTType.bmp.identifier:
-      if options.allowsEditing {
-        // switch to png if editing
-        let data = image.pngData()
-        return (data, ".png")
-      }
-      return (rawData, ".bmp")
-    case UTType.png.identifier:
-      let data = image.pngData()
-      return (data, ".png")
-    case UTType.gif.identifier:
-      let gifData = try processGifData(inputData: rawData,
-                                       compressionQuality: options.quality,
-                                       initialMetadata: nil)
-      return (gifData, ".gif")
-    default:
-      let data = image.jpegData(compressionQuality: compressionQuality)
-      return (data, ".jpg")
-    }
-  }
-
-  static func write(imageData: Data?, to: URL) throws {
-    do {
-      try imageData?.write(to: to, options: [.atomic])
-    } catch {
-      throw FailedToWriteImageException()
-        .causedBy(error)
-    }
-  }
-
-  /**
-   @returns `true` upon copying success and `false` otherwise
-   */
-  static func tryCopyingOriginalImageFrom(mediaInfo: MediaInfo, to: URL) -> Bool {
-    guard let from = mediaInfo[.imageURL] as? URL else {
-      return false
-    }
-
-    do {
-      try FileManager.default.copyItem(atPath: from.path, toPath: to.path)
-      return true
-    } catch {
-      return false
-    }
-  }
-
-  /**
-   Reads base64 representation of the image data. If the data is `nil` fallbacks to reading the data from the url.
-   */
-  static func optionallyReadBase64From(
-    imageData: Data?,
-    orImageFileUrl url: URL,
-    tryReadingFile: Bool,
-    shouldReadBase64: Bool
-  ) throws -> String? {
-    if !shouldReadBase64 {
-      return nil
-    }
-
-    if tryReadingFile {
-      do {
-        let data = try Data(contentsOf: url)
-        return data.base64EncodedString()
-      } catch {
-        throw FailedToReadImageDataException()
-          .causedBy(error)
-      }
-    }
-
-    guard let data = imageData else {
-      throw FailedToReadImageDataForBase64Exception()
-    }
-
-    return data.base64EncodedString()
-  }
-
-  static func optionallyReadExifFrom(
-    mediaInfo: MediaInfo,
-    shouldReadExif: Bool,
-    completion: @escaping (_ result: ExifInfo?) -> Void
-  ) {
-    if !shouldReadExif {
-      return completion(nil)
-    }
-
-    let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
-
-    if metadata != nil {
-      let exif = ImageUtils.readExifFrom(imageMetadata: metadata!)
-      return completion(exif)
-    }
-
-    guard let imageUrl = mediaInfo[.referenceURL] as? URL else {
-      log.error("Could not fetch metadata for image")
-      return completion(nil)
-    }
-
-    let assets = PHAsset.fetchAssets(withALAssetURLs: [imageUrl], options: nil)
-
-    guard let asset = assets.firstObject else {
-      log.error("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
-      return completion(nil)
-    }
-
-    let options = PHContentEditingInputRequestOptions()
-    options.isNetworkAccessAllowed = true
-    asset.requestContentEditingInput(with: options) { input, info in
-      guard let imageUrl = input?.fullSizeImageURL,
-            let properties = CIImage(contentsOf: imageUrl)?.properties
-      else {
-        log.error("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
-        return completion(nil)
-      }
-      let exif = ImageUtils.readExifFrom(imageMetadata: properties)
-      return completion(exif)
-    }
-  }
-
-  static func optionallyReadExifFrom(data: Data, shouldReadExif: Bool) -> ExifInfo? {
-    if shouldReadExif,
-       let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
-       let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) {
-      return ImageUtils.readExifFrom(imageMetadata: properties as! [String: Any])
-    }
-    return nil
-  }
-
-  static func readExifFrom(imageMetadata: [String: Any]) -> ExifInfo {
-    var exif: ExifInfo = imageMetadata[kCGImagePropertyExifDictionary as String] as? ExifInfo ?? [:]
-
-    // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
-    let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
-    if gps != nil {
-      gps!.forEach { key, value in
-        exif["GPS\(key)"] = value
-      }
-    }
-
-    // Inject orientation into exif
-    let orientationKey = kCGImagePropertyOrientation as String
-    let orientationValue = imageMetadata[orientationKey]
-    if orientationValue != nil {
-      exif[orientationKey] = orientationValue
-    }
-
-    return exif
-  }
-
-  static func processGifData(
-    inputData: Data?,
-    compressionQuality: Double?,
-    initialMetadata: [String: Any]?,
-    cropRect: CGRect? = nil
-  ) throws -> Data? {
-    let quality = compressionQuality ?? MAXIMUM_QUALITY
-    // for uncropped, maximum quality image we can just pass through the raw data
-    if cropRect == nil && quality >= MAXIMUM_QUALITY {
-      return inputData
-    }
-
-    guard let sourceData = inputData,
-          let imageSource = CGImageSourceCreateWithData(sourceData as CFData, nil)
-    else {
-      throw FailedToReadImageException()
-    }
-
-    let gifProperties = CGImageSourceCopyProperties(imageSource, nil) as? [String: Any]
-    let frameCount = CGImageSourceGetCount(imageSource)
-
-    let destinationData = NSMutableData()
-    guard let imageDestination = CGImageDestinationCreateWithData(destinationData, kUTTypeGIF, frameCount, nil)
-    else {
-      throw FailedToCreateGifException()
-    }
-
-    let gifMetadata = initialMetadata ?? gifProperties
-    CGImageDestinationSetProperties(imageDestination, gifMetadata as CFDictionary?)
-
-    for frameIndex in 0 ..< frameCount {
-      guard var cgImage = CGImageSourceCreateImageAtIndex(imageSource, frameIndex, nil),
-            var frameProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, frameIndex, nil) as? [String: Any]
-      else {
-        throw FailedToCreateGifException()
-      }
-      if cropRect != nil {
-        cgImage = cgImage.cropping(to: cropRect!)!
-      }
-      if quality != nil {
-        frameProperties[kCGImageDestinationLossyCompressionQuality as String] = quality
-      }
-      CGImageDestinationAddImage(imageDestination, cgImage, frameProperties as CFDictionary)
-    }
-
-    if !CGImageDestinationFinalize(imageDestination) {
-      throw FailedToExportGifException()
-    }
-    return destinationData as Data
+  private func getFileExtension(from fileName: String) -> String {
+    return ".\(URL(fileURLWithPath: fileName).pathExtension)"
   }
 }
 
-private struct VideoUtils {
-  static func tryCopyingVideo(at: URL, to: URL) throws {
-    do {
-      // we copy the file as `moveItem(at:,to:)` throws an error in iOS 13 due to missing permissions
-      try FileManager.default.copyItem(at: at, to: to)
-    } catch {
-      throw FailedToPickVideoException()
-        .causedBy(error)
-    }
-  }
-
-  /**
-   @returns duration in milliseconds
-   */
-  static func readDurationFrom(url: URL) -> Double {
-    let asset = AVURLAsset(url: url)
-    return Double(asset.duration.value) / Double(asset.duration.timescale) * 1_000
-  }
-
-  static func readSizeFrom(url: URL) -> CGSize? {
-    let asset = AVURLAsset(url: url)
-    guard let assetTrack = asset.tracks(withMediaType: .video).first else {
-      return nil
-    }
-    // The video could be rotated and the resulting transform can result in a negative width/height.
-    let size = assetTrack.naturalSize.applying(assetTrack.preferredTransform)
-    return CGSize(width: abs(size.width), height: abs(size.height))
-  }
-
-  static func readVideoUrlFrom(mediaInfo: MediaInfo) -> URL? {
-    return mediaInfo[.mediaURL] as? URL
-        ?? mediaInfo[.referenceURL] as? URL
-  }
-
-  /**
-   Asynchronously transcodes asset provided as `sourceAssetUrl` according to `exportPreset`.
-   Result URL is returned to the `completion` closure.
-   Transcoded video is saved at `destinationUrl`, unless `exportPreset` is set to `passthrough`.
-   In this case, `sourceAssetUrl` is returned.
-   */
-  static func transcodeVideoAsync(sourceAssetUrl: URL,
-                                  destinationUrl: URL,
-                                  outputFileType: AVFileType,
-                                  exportPreset: VideoExportPreset,
-                                  completion: @escaping (Result<URL, Exception>) -> Void) {
-    if case .passthrough = exportPreset {
-      return completion(.success((sourceAssetUrl)))
-    }
-
-    let asset = AVURLAsset(url: sourceAssetUrl)
-    let preset = exportPreset.toAVAssetExportPreset()
-    AVAssetExportSession.determineCompatibility(ofExportPreset: preset,
-                                                with: asset,
-                                                outputFileType: outputFileType) { canBeTranscoded in
-      guard canBeTranscoded else {
-        return completion(.failure(UnsupportedVideoExportPresetException(preset.description)))
+extension PHAssetResourceManager {
+  fileprivate func requestData(
+    for assetResource: PHAssetResource, options: PHAssetResourceRequestOptions?
+  ) async throws -> Data {
+    return try await withCheckedThrowingContinuation { continuation in
+      var data = Data()
+      let dataHandler = { (dataBatch: Data) in
+        data.append(dataBatch)
       }
-      guard let exportSession = AVAssetExportSession(asset: asset,
-                                                     presetName: preset) else {
-        return completion(.failure(FailedToTranscodeVideoException()))
-      }
-      exportSession.outputFileType = outputFileType
-      exportSession.outputURL = destinationUrl
-      exportSession.exportAsynchronously {
-        switch exportSession.status {
-        case .failed:
-          let error = exportSession.error
-          completion(.failure(FailedToTranscodeVideoException().causedBy(error)))
-        default:
-          completion(.success((destinationUrl)))
+      let completionHandler = { (error: Error?) in
+        if let error {
+          continuation.resume(throwing: error)
+          return
         }
+        continuation.resume(returning: data)
       }
+
+      self.requestData(for: assetResource, options: options, dataReceivedHandler: dataHandler, completionHandler: completionHandler)
     }
   }
 }

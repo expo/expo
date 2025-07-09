@@ -1,9 +1,19 @@
-import spawnAsync, { SpawnOptions } from '@expo/spawn-async';
+import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:platforms:ios:xcrun') as typeof console.log;
+
+export function isSpawnResultError(obj: any): obj is Error & SpawnResult {
+  return (
+    obj &&
+    'message' in obj &&
+    obj.status !== undefined &&
+    obj.stdout !== undefined &&
+    obj.stderr !== undefined
+  );
+}
 
 export async function xcrunAsync(args: (string | undefined)[], options?: SpawnOptions) {
   debug('Running: xcrun ' + args.join(' '));
@@ -18,7 +28,7 @@ function throwXcrunError(e: any): never {
   if (isLicenseOutOfDate(e.stdout) || isLicenseOutOfDate(e.stderr)) {
     throw new CommandError(
       'XCODE_LICENSE_NOT_ACCEPTED',
-      'Xcode license is not accepted. Please run `sudo xcodebuild -license`.'
+      'Xcode license is not accepted. Run `sudo xcodebuild -license`.'
     );
   } else if (e.stderr?.includes('not a developer tool or in PATH')) {
     throw new CommandError(

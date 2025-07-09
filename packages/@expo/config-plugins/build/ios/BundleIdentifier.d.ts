@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
-import { ConfigPlugin } from '../Plugin.types';
 import { InfoPlist } from './IosConfig.types';
+import { ConfigPlugin } from '../Plugin.types';
 export declare const withBundleIdentifier: ConfigPlugin<{
     bundleIdentifier?: string;
 }>;

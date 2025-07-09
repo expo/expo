@@ -1,5 +1,3 @@
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
-
 // Generic data type
 
 export type GeneratedData = EnumDefinitionData &
@@ -11,28 +9,55 @@ export type GeneratedData = EnumDefinitionData &
   ConstantDefinitionData &
   ClassDefinitionData;
 
+/* eslint-disable @typescript-eslint/naming-convention */
+export enum TypeDocKind {
+  Namespace = 4,
+  Enum = 8,
+  Variable = 32,
+  Function = 64,
+  Class = 128,
+  Interface = 256,
+  Property = 1024,
+  Method = 2048,
+  Parameter = 32768,
+  TypeParameter = 131072,
+  Accessor = 262144,
+  TypeAlias = 2097152,
+  TypeAlias_Legacy = 4194304,
+}
+/* eslint-enable @typescript-eslint/naming-convention */
+
 // Shared data types
 
 export type CommentData = {
+  name?: string;
   summary: CommentContentData[];
   returns?: string;
   blockTags?: CommentTagData[];
+  modifierTags?: string[];
 };
 
 export type CommentTagData = {
   tag: string;
+  name?: string;
   content: CommentContentData[];
 };
 
 export type CommentContentData = {
   kind: string;
   text: string;
+  tag?: string;
+  tsLinkText?: string;
 };
 
 export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  element?: {
+    name: string;
+    type: string;
+  };
   elements?: TypeDefinitionData[];
   elementType?: {
     name?: string;
@@ -55,15 +80,20 @@ export type TypeDefinitionData = {
   declaration?: TypeDeclarationContentData;
   value?: string | number | boolean | null;
   operator?: string;
+  package?: string;
   objectType?: {
     name: string;
     type: string;
   };
   indexType?: {
-    type: string;
+    name?: string;
+    type?: string;
     value: string;
   };
   qualifiedName?: string;
+  head?: string;
+  tail?: (TypeDefinitionData | string)[][];
+  target?: TypeDefinitionData;
 };
 
 export type MethodParamData = {
@@ -78,6 +108,8 @@ export type TypePropertyDataFlags = {
   isExternal?: boolean;
   isOptional?: boolean;
   isStatic?: boolean;
+  isRest?: boolean;
+  isReadonly?: boolean;
 };
 
 // Constants section
@@ -124,13 +156,14 @@ export type InterfaceDefinitionData = {
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
   type?: TypeDefinitionData;
-  isSensor: boolean;
+  allowOverwrites: boolean;
 };
 
 // Methods section
 
 export type MethodDefinitionData = {
   name: string;
+  comment?: CommentData;
   signatures: MethodSignatureData[];
   getSignature?: MethodSignatureData[];
   setSignatures?: MethodSignatureData[];
@@ -139,7 +172,8 @@ export type MethodDefinitionData = {
 
 export type AccessorDefinitionData = {
   name: string;
-  getSignature?: MethodSignatureData[];
+  comment?: CommentData;
+  getSignature?: MethodSignatureData;
   kind: TypeDocKind;
 };
 
@@ -148,6 +182,8 @@ export type MethodSignatureData = {
   parameters: MethodParamData[];
   comment: CommentData;
   type: TypeDefinitionData;
+  kind?: TypeDocKind;
+  typeParameter?: TypeParameterData[];
 };
 
 // Properties section
@@ -165,13 +201,14 @@ export type PropData = {
   name: string;
   kind?: TypeDocKind;
   comment?: CommentData;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  getSignature?: MethodSignatureData;
   overwrites?: TypeDefinitionData;
   implementationOf?: TypeDefinitionData;
-  inheritedFrom?: TypeGeneralData;
+  inheritedFrom?: InheritedFromData;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -188,6 +225,7 @@ export type TypeGeneralData = {
   type: TypeDefinitionData;
   typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
+  variant?: string;
 };
 
 export type TypeDeclarationContentData = {
@@ -195,15 +233,20 @@ export type TypeDeclarationContentData = {
   kind?: TypeDocKind;
   indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
-  parameters?: PropData[];
+  parameters?: MethodParamData[];
   children?: PropData[];
   comment?: CommentData;
 };
 
-export type TypeSignaturesData = {
-  name?: string;
-  comment?: CommentData;
-  parameters?: MethodParamData[];
-  type: TypeDefinitionData;
-  kind?: TypeDocKind;
+export type TypeSignaturesData = Partial<MethodSignatureData>;
+
+export type TypeParameterData = {
+  name: string;
+  kind: TypeDocKind;
+  variant: string;
+};
+
+export type InheritedFromData = {
+  type: 'reference';
+  name: string;
 };

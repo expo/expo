@@ -1,27 +1,23 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UIKit/UIKit.h>
-#import <React/RCTBridge.h>
-#import <React/RCTRootView.h>
+#import <ExpoModulesCore/Platform.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class EXReactDelegate;
 
 /**
  A wrapper of `ExpoReactDelegate` for Objective-C bindings.
  */
 @interface EXReactDelegateWrapper : NSObject
 
-- (RCTBridge *)createBridgeWithDelegate:(id<RCTBridgeDelegate>)delegate
-                          launchOptions:(nullable NSDictionary *)launchOptions;
+- (instancetype)initWithExpoReactDelegate:(EXReactDelegate *)expoReactDelegate;
 
-- (RCTRootView *)createRootViewWithBridge:(RCTBridge *)bridge
-                               moduleName:(NSString *)moduleName
-                        initialProperties:(nullable NSDictionary *)initialProperties;
+- (UIView *)createReactRootView:(NSString *)moduleName
+              initialProperties:(nullable NSDictionary *)initialProperties
+                  launchOptions:(nullable NSDictionary *)launchOptions;
 
-- (RCTRootView *)createRootViewWithBridge:(RCTBridge *)bridge
-                               moduleName:(NSString *)moduleName
-                        initialProperties:(nullable NSDictionary *)initialProperties
-                            fabricEnabled:(BOOL)fabricEnabled;
+- (NSURL *)bundleURL;
 
 - (UIViewController *)createRootViewController;
 

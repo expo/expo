@@ -3,7 +3,6 @@ import { JSONObject } from '@expo/json-file';
 export default interface AppConfig extends JSONObject {
   expo: {
     name: string;
-    owner?: string;
     description: string;
     slug: string;
     privacy: string;
@@ -29,5 +28,15 @@ export default interface AppConfig extends JSONObject {
       androidManifestPath: string;
     };
     isKernel?: boolean;
+
+    extra?: {
+      eas?: {
+        projectId?: string;
+      };
+    };
+
+    updates?: {
+      url?: string;
+    };
   };
 }

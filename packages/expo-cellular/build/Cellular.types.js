@@ -15,11 +15,11 @@ export var CellularGeneration;
      */
     CellularGeneration[CellularGeneration["CELLULAR_2G"] = 1] = "CELLULAR_2G";
     /**
-     * Currently connected to a 3G cellular network. Includes EHRPD, EVDO, HSPA, HSUPA, HSDPA, and UTMS type connections.
+     * Currently connected to a 3G cellular network. Includes EHRPD, EVDO, HSPA, HSUPA, HSDPA, HSPAP, and UTMS type connections.
      */
     CellularGeneration[CellularGeneration["CELLULAR_3G"] = 2] = "CELLULAR_3G";
     /**
-     * Currently connected to a 4G cellular network. Includes HSPAP and LTE type connections.
+     * Currently connected to a 4G cellular network. Includes LTE type connections.
      */
     CellularGeneration[CellularGeneration["CELLULAR_4G"] = 3] = "CELLULAR_4G";
     /**

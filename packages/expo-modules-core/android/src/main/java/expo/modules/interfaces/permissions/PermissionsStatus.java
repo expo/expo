@@ -5,7 +5,7 @@ public enum PermissionsStatus {
   UNDETERMINED("undetermined"),
   DENIED("denied");
 
-  private String status;
+  private final String status;
 
   PermissionsStatus(String status) {
     this.status = status;

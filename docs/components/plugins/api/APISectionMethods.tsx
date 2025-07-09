@@ -1,38 +1,25 @@
-import { CornerDownRightIcon } from '@expo/styleguide-icons';
-import ReactMarkdown from 'react-markdown';
+import { mergeClasses } from '@expo/styleguide';
+import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
+import { APIMethodParamRows } from '~/components/plugins/api/components/APIMethodParamRows';
+import { H2 } from '~/ui/components/Text';
+
 import {
   AccessorDefinitionData,
+  CommentTagData,
   MethodDefinitionData,
-  MethodParamData,
-  MethodSignatureData,
   PropData,
-  TypeSignaturesData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getMethodName,
-  getTagNamesList,
-  mdComponents,
-  renderParams,
-  resolveTypeName,
-  STYLES_APIBOX,
-  STYLES_APIBOX_NESTED,
-  STYLES_NOT_EXPOSED_HEADER,
-  TypeDocKind,
-  H3Code,
-  H4Code,
-  getTagData,
-  getCommentContent,
-  BoxSectionHeader,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { getMethodName, resolveTypeName, getTagData, getAllTagData } from './APISectionUtils';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
+  sdkVersion: string;
   apiName?: string;
   header?: string;
   exposeInSidebar?: boolean;
@@ -40,69 +27,116 @@ export type APISectionMethodsProps = {
 
 export type RenderMethodOptions = {
   apiName?: string;
+  sdkVersion: string;
   header?: string;
+  nested?: boolean;
   exposeInSidebar?: boolean;
+  baseNestingLevel?: number;
+  parentPlatforms?: CommentTagData[];
 };
+
+function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
+  if ('signatures' in method) {
+    return method.signatures ?? [];
+  }
+  if ('getSignature' in method) {
+    return method.getSignature ? [method.getSignature] : [];
+  }
+  if ('type' in method) {
+    if (method?.type?.declaration?.signatures) {
+      if (method.type.declaration.name === '__type') {
+        return method.type.declaration.signatures.map(signature => ({
+          ...signature,
+          comment: method.comment,
+        }));
+      }
+      return method.type.declaration.signatures ?? [];
+    }
+  }
+  return [];
+}
 
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
-  { apiName, exposeInSidebar = true }: RenderMethodOptions = {}
+  {
+    apiName,
+    exposeInSidebar = true,
+    nested = false,
+    sdkVersion,
+    parentPlatforms,
+    ...options
+  }: RenderMethodOptions
 ) => {
-  const signatures =
-    (method as MethodDefinitionData).signatures ||
-    (method as PropData)?.type?.declaration?.signatures || [
-      (method as AccessorDefinitionData)?.getSignature,
-    ] ||
-    [];
-  const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
-  return signatures.map(
-    ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => {
-      const returnComment = getTagData('returns', comment);
-      return (
-        <div
-          key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
-          css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-          <APISectionDeprecationNote comment={comment} />
-          <APISectionPlatformTags comment={comment} prefix="Only for:" />
-          <HeaderComponent tags={getTagNamesList(comment)}>
-            <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
-              {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
-            </MONOSPACE>
-          </HeaderComponent>
-          {parameters && parameters.length > 0 && (
-            <>
-              {renderParams(parameters)}
-              <br />
-            </>
+  const signatures = getMethodRootSignatures(method);
+  const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+
+  return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
+    const returnComment = getTagData('returns', comment);
+    const platforms = getAllTagData('platform', comment);
+    return (
+      <div
+        key={`method-signature-${method.name || name}-${parameters?.length ?? 0}`}
+        className={mergeClasses(
+          !nested && STYLES_APIBOX,
+          !nested && STYLES_APIBOX_NESTED,
+          nested && 'border-b border-palette-gray4 last:border-b-0'
+        )}>
+        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
+        <APIBoxHeader
+          name={getMethodName(
+            method as MethodDefinitionData,
+            apiName,
+            name,
+            parameters,
+            typeParameter
           )}
-          <CommentTextBlock comment={comment} includePlatforms={false} />
-          {resolveTypeName(type) !== 'undefined' && (
-            <>
-              <BoxSectionHeader text="Returns" />
-              <UL className="!list-none !ml-0">
-                <LI>
-                  <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
-                  <APIDataType typeDefinition={type} />
-                </LI>
-              </UL>
+          platforms={platforms.length > 0 ? platforms : parentPlatforms}
+          baseNestingLevel={baseNestingLevel}
+        />
+        {parameters && parameters.length > 0 && (
+          <>
+            <APIMethodParamRows parameters={parameters} sdkVersion={sdkVersion} />
+            <br />
+          </>
+        )}
+        <APICommentTextBlock
+          comment={method?.comment ?? comment}
+          includePlatforms={false}
+          afterContent={
+            type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
               <>
-                <br />
+                <div
+                  className={mergeClasses(
+                    'flex flex-row items-start gap-2',
+                    !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
+                  )}>
+                  <div className="flex flex-row items-center gap-2">
+                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <span className={STYLES_SECONDARY}>Returns:</span>
+                  </div>
+                  <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+                </div>
                 {returnComment ? (
-                  <ReactMarkdown components={mdComponents}>
-                    {getCommentContent(returnComment.content)}
-                  </ReactMarkdown>
+                  <div className="mb-1 mt-1.5 flex flex-col pl-6">
+                    <APICommentTextBlock
+                      comment={{ summary: returnComment.content }}
+                      includeSpacing={false}
+                    />
+                  </div>
                 ) : undefined}
               </>
-            </>
-          )}
-        </div>
-      );
-    }
-  );
+            ) : undefined
+          }
+        />
+        {}
+      </div>
+    );
+  });
 };
 
 const APISectionMethods = ({
   data,
+  sdkVersion,
   apiName,
   header = 'Methods',
   exposeInSidebar = true,
@@ -111,66 +145,9 @@ const APISectionMethods = ({
     <>
       <H2 key={`${header}-header`}>{header}</H2>
       {data.map((method: MethodDefinitionData | PropData) =>
-        renderMethod(method, { apiName, header, exposeInSidebar })
+        renderMethod(method, { apiName, sdkVersion, header, exposeInSidebar })
       )}
     </>
   ) : null;
 
 export default APISectionMethods;
-
-export const APIMethod = ({
-  name,
-  comment,
-  returnTypeName,
-  isProperty = false,
-  isReturnTypeReference = false,
-  exposeInSidebar = false,
-  parameters = [],
-  platforms = [],
-}: {
-  exposeInSidebar?: boolean;
-  name: string;
-  comment: string;
-  returnTypeName: string;
-  isProperty: boolean;
-  isReturnTypeReference: boolean;
-  platforms: ('Android' | 'iOS' | 'Web')[];
-  parameters: {
-    name: string;
-    comment?: string;
-    typeName: string;
-    isReference?: boolean;
-  }[];
-}) => {
-  const parsedParameters = parameters.map(
-    param =>
-      ({
-        name: param.name,
-        type: { name: param.typeName, type: param.isReference ? 'reference' : 'literal' },
-        comment: {
-          summary: [{ kind: 'text', text: param.comment }],
-        },
-      } as MethodParamData)
-  );
-  return renderMethod(
-    {
-      name,
-      signatures: [
-        {
-          name,
-          parameters: parsedParameters,
-          comment: {
-            summary: [{ kind: 'text', text: comment }],
-            blockTags: platforms.map(text => ({
-              tag: 'platform',
-              content: [{ kind: 'text', text }],
-            })),
-          },
-          type: { name: returnTypeName, type: isReturnTypeReference ? 'reference' : 'literal' },
-        },
-      ],
-      kind: isProperty ? TypeDocKind.Property : TypeDocKind.Function,
-    },
-    { exposeInSidebar }
-  );
-};

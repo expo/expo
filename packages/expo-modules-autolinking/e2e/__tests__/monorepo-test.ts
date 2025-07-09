@@ -1,9 +1,16 @@
-import fs from 'fs-extra';
+import crypto from 'crypto';
+import fs from 'fs';
+import os from 'os';
 import { join } from 'path';
-import temporary from 'tempy';
 
 import { GitDirectory } from '../../../../tools/src/Git';
 import { autolinkingRunAsync, yarnSync, combinations } from '../TestUtils';
+
+function tempDirectory() {
+  const directory = join(fs.realpathSync(os.tmpdir()), crypto.randomBytes(16).toString('hex'));
+  fs.mkdirSync(directory);
+  return directory;
+}
 
 const monorepoConfig = {
   source: 'https://github.com/byCedric/eas-monorepo-example.git',
@@ -11,32 +18,34 @@ const monorepoConfig = {
 };
 
 const apps = ['ejected', 'managed', 'with-sentry'];
-const testCases = combinations('app', apps, 'platform', ['android', 'ios']);
+const testCases = combinations('app', apps, 'platform', ['android', 'apple']);
+
+jest.setTimeout(5 * 60 * 1000);
 
 describe('monorepo', () => {
   let monorepoProject: string | undefined;
 
   function removeProjectPath(str: string | undefined): string | undefined {
-    return str?.replace(monorepoProject, 'monorepo');
+    return str?.replace(monorepoProject!, 'monorepo');
   }
 
   function projectPath(app: string): string {
-    return join(monorepoProject, 'apps', app);
+    return join(monorepoProject!, 'apps', app);
   }
 
   beforeAll(async () => {
-    const temp = join(temporary.directory(), 'monorepo');
+    const temp = join(tempDirectory(), 'monorepo');
     console.log(`Cloning monorepo into: ${temp}`);
     await GitDirectory.shallowCloneAsync(temp, monorepoConfig.source, monorepoConfig.ref);
     console.log('Yarning');
     yarnSync({ cwd: temp });
     monorepoProject = temp;
-  }, 5 * 60 * 1000);
+  });
 
   afterAll(async () => {
     if (monorepoProject) {
       console.log(`Removing: ${monorepoProject}`);
-      await fs.remove(monorepoProject);
+      await fs.promises.rm(monorepoProject, { recursive: true, force: true });
     }
   });
 
@@ -97,29 +106,23 @@ describe('monorepo', () => {
     });
   });
 
-  describe('generate-package-list', () => {
+  describe('generate-package-list / generate-modules-provider', () => {
     test.each(testCases)('%s', async ({ app, platform }) => {
+      const command =
+        platform === 'android' ? 'generate-package-list' : 'generate-modules-provider';
       const appPath = projectPath(app);
       const target = join(appPath, 'generated', 'file.txt');
-      const namespace = 'com.test';
+      const platformExtraArgs = platform === 'android' ? ['--namespace', 'com.test'] : [];
 
       const generatePackageListResult = await autolinkingRunAsync(
-        [
-          'generate-package-list',
-          '--platform',
-          platform,
-          '--target',
-          target,
-          '--namespace',
-          namespace,
-        ],
+        [command, '--platform', platform, '--target', target, ...platformExtraArgs],
         {
           cwd: appPath,
         }
       );
 
       expect(generatePackageListResult.status).toBe(0);
-      const generatedFile = await fs.readFile(target, 'utf-8');
+      const generatedFile = await fs.promises.readFile(target, 'utf-8');
       expect(generatedFile).toMatchSnapshot();
     });
   });

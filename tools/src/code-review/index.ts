@@ -1,8 +1,5 @@
 import chalk from 'chalk';
 
-import Git from '../Git';
-import * as GitHub from '../GitHub';
-import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import lintSwiftFiles from './reviewers/lintSwiftFiles';
@@ -16,6 +13,9 @@ import {
   ReviewStatus,
   Reviewer,
 } from './types';
+import Git from '../Git';
+import * as GitHub from '../GitHub';
+import logger from '../Logger';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
@@ -82,7 +82,14 @@ export async function reviewPullRequestAsync(prNumber: number) {
   logger.info('🕵️‍♀️  Reviewing changes');
   const reviewActions = REVIEWERS.filter(
     (reviewer) => !pr.body?.includes(getMagicCommentForReviewer(reviewer))
-  ).map(({ action }) => action(input));
+  ).map(async ({ id, action }) => {
+    try {
+      return await action(input);
+    } catch (error) {
+      logger.error(`😫 Code review action '${chalk.green(id)}' failed`);
+      throw error;
+    }
+  });
   const outputs = (await Promise.all(reviewActions)).filter(Boolean) as ReviewOutput[];
 
   // Only active (non-passive) outputs will be reported in the review body.
@@ -178,6 +185,7 @@ async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
  * Finds all reports made by me and this expotools command in given pull request.
  */
 async function findExistingReportsAsync(prNumber: number, userId: number) {
+  logger.info(`🔍 Finding existing reports`);
   return (await GitHub.listAllCommentsAsync(prNumber)).filter((comment) => {
     return comment.user?.id === userId && comment.body?.startsWith(COMMENT_HEADER);
   });
@@ -187,6 +195,7 @@ async function findExistingReportsAsync(prNumber: number, userId: number) {
  * Finds all reviews submitted by me and this expotools command in given pull request.
  */
 async function findExistingReviewsAsync(prNumber: number, userId: number) {
+  logger.info(`🔍 Finding existing reviews`);
   return (await GitHub.listPullRequestReviewsAsync(prNumber)).filter(
     (review) => review.user?.id === userId
   );

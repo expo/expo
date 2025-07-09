@@ -1,17 +1,19 @@
 import { ExpoConfig } from '@expo/config-types';
 type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>;
 export interface IOSSplashConfig {
-    image?: string | null;
+    imageWidth?: number;
+    image?: string;
     backgroundColor: string;
+    enableFullScreenImage_legacy?: boolean;
     resizeMode: NonNullable<ExpoConfigIosSplash['resizeMode']>;
-    tabletImage: string | null;
-    tabletBackgroundColor: string | null;
+    tabletImage?: string;
+    tabletBackgroundColor?: string;
     dark?: {
-        image?: string | null;
-        backgroundColor?: string | null;
-        tabletImage?: string | null;
-        tabletBackgroundColor?: string | null;
+        image?: string;
+        backgroundColor?: string;
+        tabletImage?: string;
+        tabletBackgroundColor?: string;
     };
 }
-export declare function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null;
+export declare function getIosSplashConfig(config: ExpoConfig, props: IOSSplashConfig | null): IOSSplashConfig | null;
 export {};

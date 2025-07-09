@@ -18,6 +18,7 @@ import com.bumptech.glide.util.Preconditions
 import com.bumptech.glide.util.Synthetic
 import expo.modules.core.utilities.ifNull
 import expo.modules.image.enums.ContentFit
+import expo.modules.kotlin.tracing.endAsyncTraceBlock
 import java.lang.ref.WeakReference
 import kotlin.math.max
 
@@ -29,7 +30,7 @@ import kotlin.math.max
  * of implementing the transition between bitmaps.
  */
 class ImageViewWrapperTarget(
-  private val imageViewHolder: WeakReference<ExpoImageViewWrapper>,
+  private val imageViewHolder: WeakReference<ExpoImageViewWrapper>
 ) : Target<Drawable> {
   /**
    * Whether the target has a main, non-placeholder source
@@ -52,6 +53,25 @@ class ImageViewWrapperTarget(
   var sourceWidth = -1
 
   /**
+   * The placeholder height where -1 means unknown
+   */
+  var placeholderHeight = -1
+
+  /**
+   * The placeholder width where -1 means unknown
+   */
+  var placeholderWidth = -1
+
+  private var cookie = -1
+
+  fun setCookie(newValue: Int) {
+    endLoadingNewImageTraceBlock()
+    synchronized(this) {
+      cookie = newValue
+    }
+  }
+
+  /**
    * The content fit of the placeholder
    */
   var placeholderContentFit: ContentFit? = null
@@ -59,11 +79,21 @@ class ImageViewWrapperTarget(
   private var request: Request? = null
   private var sizeDeterminer = SizeDeterminer(imageViewHolder)
 
+  private fun endLoadingNewImageTraceBlock() = synchronized(this) {
+    if (cookie < 0) {
+      return@synchronized
+    }
+
+    endAsyncTraceBlock(Trace.tag, Trace.loadNewImageBlock, cookie)
+    cookie = -1
+  }
+
   override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
     // The image view should always be valid. When the view is deallocated, all targets should be
     // canceled. Therefore that code shouldn't be called in that case. Instead of crashing, we
     // decided to ignore that.
     val imageView = imageViewHolder.get().ifNull {
+      endLoadingNewImageTraceBlock()
       Log.w("ExpoImage", "The `ExpoImageViewWrapper` was deallocated, but the target wasn't canceled in time.")
       return
     }
@@ -73,9 +103,13 @@ class ImageViewWrapperTarget(
     val isPlaceholder = if (request is ThumbnailRequestCoordinator) {
       (request as? ThumbnailRequestCoordinator)
         ?.getPrivateFullRequest()
-        ?.isComplete != true
+        ?.isComplete == false
     } else {
       false
+    }
+
+    if (!isPlaceholder) {
+      endLoadingNewImageTraceBlock()
     }
 
     imageView.onResourceReady(this, resource, isPlaceholder)
@@ -90,7 +124,9 @@ class ImageViewWrapperTarget(
   override fun onLoadStarted(placeholder: Drawable?) = Unit
 
   // When loading fails, it's handled by the global listener, therefore that method can be NOOP.
-  override fun onLoadFailed(errorDrawable: Drawable?) = Unit
+  override fun onLoadFailed(errorDrawable: Drawable?) {
+    endLoadingNewImageTraceBlock()
+  }
 
   override fun onLoadCleared(placeholder: Drawable?) = Unit
 
@@ -299,6 +335,7 @@ internal class SizeDeterminer(private val imageViewHolder: WeakReference<ExpoIma
     var maxDisplayLength: Int? = null
 
     // Use the maximum to avoid depending on the device's current orientation.
+    @Suppress("DEPRECATION") // We have copied this code from Glide and are waiting for them to remove the deprecated APIs.
     private fun getMaxDisplayLength(context: Context): Int {
       if (maxDisplayLength == null) {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

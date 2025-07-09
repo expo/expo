@@ -1,5 +1,6 @@
-import { Subscription } from 'expo-modules-core';
-import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { type EventSubscription } from 'expo-modules-core';
+import type { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import { ClipboardPasteButton } from './ClipboardPasteButton';
 type ClipboardEvent = {
     /**
      * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
@@ -10,9 +11,9 @@ type ClipboardEvent = {
      */
     contentTypes: ContentType[];
 };
-export { Subscription, ClipboardEvent };
+export { EventSubscription as Subscription, ClipboardEvent };
 /**
- * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
+ * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
  *
  * @param options Options for the clipboard content to be retrieved.
@@ -70,8 +71,9 @@ export declare function setUrlAsync(url: string): Promise<void>;
  */
 export declare function hasUrlAsync(): Promise<boolean>;
 /**
- * Gets the image from the user's clipboard and returns it in the specified format. Please note that calling
- * this method on web will prompt the user to grant your app permission to "see text and images copied to the clipboard."
+ * Gets the image from the user's clipboard and returns it in the specified
+ * format. Calling this method on web will prompt the user to grant your app
+ * permission to "see text and images copied to the clipboard."
  *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to
@@ -129,7 +131,7 @@ export declare function hasImageAsync(): Promise<boolean>;
  * });
  * ```
  */
-export declare function addClipboardListener(listener: (event: ClipboardEvent) => void): Subscription;
+export declare function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription;
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
  *
@@ -143,6 +145,16 @@ export declare function addClipboardListener(listener: (event: ClipboardEvent) =
  * removeClipboardListener(subscription);
  * ```
  */
-export declare function removeClipboardListener(subscription: Subscription): void;
+export declare function removeClipboardListener(subscription: EventSubscription): void;
+/**
+ * Property that determines if the `ClipboardPasteButton` is available.
+ *
+ * This requires the users device to be using at least iOS 16.
+ *
+ * `true` if the component is available, and `false` otherwise.
+ */
+export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
+export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
+export { ClipboardPasteButton };
 //# sourceMappingURL=Clipboard.d.ts.map

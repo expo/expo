@@ -1,9 +1,16 @@
+import { NativeModule } from 'expo-modules-core';
+import { DownloadProgressData, ProgressEvent, UploadProgressData } from './FileSystem.types';
 type PlatformMethod = (...args: any[]) => Promise<any>;
-export interface ExponentFileSystemModule {
-    readonly name: 'ExponentFileSystem';
+/**
+ * @hidden
+ */
+export type FileSystemEvents = {
+    'expo-file-system.downloadProgress'(event: ProgressEvent<DownloadProgressData>): void;
+    'expo-file-system.uploadProgress'(event: ProgressEvent<UploadProgressData>): void;
+};
+export declare class ExponentFileSystemModule extends NativeModule<FileSystemEvents> {
     readonly documentDirectory: string | null;
     readonly cacheDirectory: string | null;
-    readonly bundledAssets: string | null;
     readonly bundleDirectory: string | null;
     readonly getInfoAsync?: PlatformMethod;
     readonly readAsStringAsync?: PlatformMethod;
@@ -26,10 +33,6 @@ export interface ExponentFileSystemModule {
     readonly createSAFFileAsync?: PlatformMethod;
     readonly networkTaskCancelAsync?: PlatformMethod;
     readonly uploadTaskStartAsync?: PlatformMethod;
-    startObserving?: () => void;
-    stopObserving?: () => void;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
 }
 export {};
 //# sourceMappingURL=types.d.ts.map

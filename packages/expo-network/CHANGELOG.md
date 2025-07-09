@@ -10,6 +10,132 @@
 
 ### 💡 Others
 
+## 7.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.4 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- [Android] Added `netInfo` null check. ([#33559](https://github.com/expo/expo/pull/33559)) by [@pchalupa](https://github.com/pchalupa)
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 7.0.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.4 - 2024-12-16
+
+### 🐛 Bug fixes
+
+- On `Android`, Prevent crash from the `networkCallback` calling `fetchNetworkState`. ([#33563](https://github.com/expo/expo/pull/33563) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 7.0.3 - 2024-12-02
+
+### 🐛 Bug fixes
+
+- Fix event emitters not working on web. ([#33327](https://github.com/expo/expo/pull/33327) by [@aleqsio](https://github.com/aleqsio))
+
+## 7.0.2 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.1 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- [iOS] Added fix to getNetworkStateAsync failing on iOS ([#33137](https://github.com/expo/expo/pull/33137) by [@chrfalch](https://github.com/chrfalch))
+
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Add network state change listeners ([#28808](https://github.com/expo/expo/pull/28808) by [@reichhartd](https://github.com/reichhartd))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `java.lang.IllegalArgumentException: NetworkCallback was not registered`. ([#30185](https://github.com/expo/expo/pull/30185) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix wired ethernet connection being reported as unknown type. ([#30169](https://github.com/expo/expo/pull/30169) by [@Simek](https://github.com/Simek))
+- [iOS] Fix getting IP address from wired ethernet connection interfaces. ([#31223](https://github.com/expo/expo/pull/31223) by [@matt-oakes](https://github.com/matt-oakes))
+- Add missing `react` peer dependencies for isolated modules. ([#30477](https://github.com/expo/expo/pull/30477) by [@byCedric](https://github.com/byCedric))
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add Apple TV support. ([#27819](https://github.com/expo/expo/pull/27819) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 5.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Add Node.js support. ([#24505](https://github.com/expo/expo/pull/24505) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Remove deprecated `getMacAddressAsync` method. ([#24505](https://github.com/expo/expo/pull/24505) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 5.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 5.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 5.3.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

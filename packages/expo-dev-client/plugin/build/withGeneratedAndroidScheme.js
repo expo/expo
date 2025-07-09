@@ -3,8 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeExpoSchemaFromVerifiedIntentFilters = exports.setGeneratedAndroidScheme = exports.withGeneratedAndroidScheme = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+exports.withGeneratedAndroidScheme = void 0;
+exports.setGeneratedAndroidScheme = setGeneratedAndroidScheme;
+exports.removeExpoSchemaFromVerifiedIntentFilters = removeExpoSchemaFromVerifiedIntentFilters;
+const config_plugins_1 = require("expo/config-plugins");
 const getDefaultScheme_1 = __importDefault(require("./getDefaultScheme"));
 const withGeneratedAndroidScheme = (config) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
@@ -22,7 +24,6 @@ function setGeneratedAndroidScheme(config, androidManifest) {
     }
     return androidManifest;
 }
-exports.setGeneratedAndroidScheme = setGeneratedAndroidScheme;
 /**
  * Remove the custom Expo dev client scheme from intent filters, which are set to `autoVerify=true`.
  * The custom scheme `<data android:scheme="exp+<slug>"/>` seems to block verification for these intent filters.
@@ -50,7 +51,6 @@ function removeExpoSchemaFromVerifiedIntentFilters(config, androidManifest) {
     }
     return androidManifest;
 }
-exports.removeExpoSchemaFromVerifiedIntentFilters = removeExpoSchemaFromVerifiedIntentFilters;
 /**
  * Determine if the activity should contain the intent filters to clean.
  *

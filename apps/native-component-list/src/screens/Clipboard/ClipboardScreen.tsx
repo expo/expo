@@ -3,11 +3,11 @@ import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { Text, ScrollView, StyleSheet, Alert } from 'react-native';
 
+import ClipboardListenerDemo from './ClipboardListenerDemo';
+import ImagePreview from './ImagePreview';
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 import { ActionFunction, Platform } from '../../components/FunctionDemo/index.types';
 import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
-import ClipboardListenerDemo from './ClipboardListenerDemo';
-import ImagePreview from './ImagePreview';
 
 const withSupportedPlatforms = (platforms: Platform[], action: ActionFunction): ActionFunction =>
   isCurrentPlatformSupported(platforms)
@@ -96,13 +96,23 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       type: 'constant',
       value: '[selected from image picker]',
     },
+    {
+      name: 'quality',
+      type: 'enum',
+      values: [
+        { name: 'RAW', value: 1.0 },
+        { name: '0.5', value: 0.5 },
+        { name: '0', value: 0 },
+      ],
+    },
   ],
-  actions: async () => {
+  actions: async (_, quality) => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         base64: true,
+        quality,
       });
       if (!result.canceled) {
         const [asset] = result.assets;

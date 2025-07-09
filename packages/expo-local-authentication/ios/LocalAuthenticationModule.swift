@@ -18,7 +18,7 @@ public class LocalAuthenticationModule: Module {
       let context = LAContext()
       var error: NSError?
       let isSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
-      let isEnrolled: Bool = isSupported && error == nil
+      let isEnrolled: Bool = (isSupported && error == nil) || error?.code == LAError.biometryLockout.rawValue
 
       return isEnrolled
     }
@@ -59,10 +59,10 @@ public class LocalAuthenticationModule: Module {
 
     AsyncFunction("authenticateAsync") { (options: LocalAuthenticationOptions, promise: Promise) -> Void in
       var warningMessage: String?
-      var reason = options.promptMessage
-      var cancelLabel = options.cancelLabel
-      var fallbackLabel = options.fallbackLabel
-      var disableDeviceFallback = options.disableDeviceFallback
+      let reason = options.promptMessage
+      let cancelLabel = options.cancelLabel
+      let fallbackLabel = options.fallbackLabel
+      let disableDeviceFallback = options.disableDeviceFallback
 
       if isFaceIdDevice() {
         let usageDescription = Bundle.main.object(forInfoDictionaryKey: "NSFaceIDUsageDescription")
@@ -94,7 +94,7 @@ public class LocalAuthenticationModule: Module {
           return promise.resolve([
             "success": false,
             "error": "missing_usage_description",
-            "warning": warningMessage
+            "warning": warningMessage as Any
           ])
         }
       }
@@ -108,8 +108,8 @@ public class LocalAuthenticationModule: Module {
 
         return promise.resolve([
           "success": success,
-          "error": err,
-          "warning": warningMessage
+          "error": err as Any,
+          "warning": warningMessage as Any
         ])
       }
     }
@@ -165,5 +165,6 @@ enum AuthenticationType: Int {
 enum SecurityLevel: Int {
   case none = 0
   case secret = 1
-  case biometric = 2
+  // We return any biometric as strong biometric, because there are currently no iOS devices with weak biometric options.
+  case biometric = 3
  }

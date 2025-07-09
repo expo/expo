@@ -5,104 +5,105 @@
 #include <vector>
 
 namespace expo {
-std::shared_ptr<JavaReferencesCache> JavaReferencesCache::instance() {
-  static std::shared_ptr<JavaReferencesCache> singleton{new JavaReferencesCache};
-  return singleton;
+
+JCache::JCache(JNIEnv *env) {
+#define REGISTER_CLASS_WITH_CONSTRUCTOR(variable, name, signature) \
+    { \
+      auto clazz = (jclass) env->NewGlobalRef(env->FindClass(name)); \
+      variable = { \
+        .clazz = clazz, \
+        .constructor = env->GetMethodID(clazz, "<init>", signature) \
+      }; \
+    }
+
+  REGISTER_CLASS_WITH_CONSTRUCTOR(jDouble, "java/lang/Double", "(D)V")
+  REGISTER_CLASS_WITH_CONSTRUCTOR(jBoolean, "java/lang/Boolean", "(Z)V")
+  REGISTER_CLASS_WITH_CONSTRUCTOR(jInteger, "java/lang/Integer", "(I)V")
+  REGISTER_CLASS_WITH_CONSTRUCTOR(jLong, "java/lang/Long", "(J)V")
+  REGISTER_CLASS_WITH_CONSTRUCTOR(jFloat, "java/lang/Float", "(F)V")
+
+  REGISTER_CLASS_WITH_CONSTRUCTOR(jPromise, "expo/modules/kotlin/jni/PromiseImpl",
+                                  "(Lexpo/modules/kotlin/jni/JavaCallback;)V")
+
+#undef REGISTER_CLASS_WITH_CONSTRUCTOR
+
+#define REGISTER_CLASS(name) (jclass) env->NewGlobalRef(env->FindClass(name))
+
+  jDoubleArray = REGISTER_CLASS("[D");
+  jBooleanArray = REGISTER_CLASS("[Z");
+  jIntegerArray = REGISTER_CLASS("[I");
+  jLongArray = REGISTER_CLASS("[J");
+  jFloatArray = REGISTER_CLASS("[F");
+
+  jCollection = REGISTER_CLASS("java/util/Collection");
+  jMap = REGISTER_CLASS("java/util/Map");
+
+  jObject = REGISTER_CLASS("java/lang/Object");
+  jString = REGISTER_CLASS("java/lang/String");
+
+  jJavaScriptObject = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptObject");
+  jJavaScriptValue = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptValue");
+  jJavaScriptTypedArray = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptTypedArray");
+
+  jReadableNativeArray = REGISTER_CLASS("com/facebook/react/bridge/ReadableNativeArray");
+  jReadableNativeMap = REGISTER_CLASS("com/facebook/react/bridge/ReadableNativeMap");
+  jWritableNativeArray = REGISTER_CLASS("com/facebook/react/bridge/WritableNativeArray");
+  jWritableNativeMap = REGISTER_CLASS("com/facebook/react/bridge/WritableNativeMap");
+
+  jSharedObject = REGISTER_CLASS("expo/modules/kotlin/sharedobjects/SharedObject");
+  jJavaScriptModuleObject = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptModuleObject");
+
+#undef REGISTER_CLASS
 }
 
-void JavaReferencesCache::loadJClasses(JNIEnv *env) {
-  loadJClass(env, "java/lang/Double", {
-    {"<init>", "(D)V"}
-  });
+std::shared_ptr<JCache> JCacheHolder::jCache = nullptr;
 
-  loadJClass(env, "java/lang/Boolean", {
-    {"<init>", "(Z)V"}
-  });
-
-  loadJClass(env, "java/lang/Integer", {
-    {"<init>", "(I)V"}
-  });
-
-  loadJClass(env, "java/lang/Long", {
-    {"<init>", "(J)V"}
-  });
-
-  loadJClass(env, "java/lang/Float", {
-    {"<init>", "(F)V"}
-  });
-
-  loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
-    {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
-  });
-
-  loadJClass(env, "expo/modules/kotlin/jni/PromiseImpl", {
-    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"}
-  });
-
-  loadJClass(env, "java/lang/Object", {});
-  loadJClass(env, "java/lang/String", {});
-  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptObject", {});
-  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptValue", {});
-  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptTypedArray", {});
-  loadJClass(env, "com/facebook/react/bridge/ReadableNativeArray", {});
-  loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
-  loadJClass(env, "com/facebook/react/bridge/WritableNativeArray", {});
-  loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
-
-  loadJClass(env, "expo/modules/kotlin/sharedobjects/SharedObject", {});
+void JCacheHolder::init(JNIEnv *env) {
+  jCache = std::make_shared<JCache>(env);
 }
 
-void JavaReferencesCache::loadJClass(
-  JNIEnv *env,
-  const std::string &name,
-  const std::vector<std::pair<std::string, std::string>> &methodsNames
-) {
-  // Note this clazz variable points to a leaked global reference.
-  // This is appropriate for classes that are never unloaded which is any class in an Android app.
-  auto clazz = (jclass) env->NewGlobalRef(env->FindClass(name.c_str()));
-
-  MethodHashMap methods;
-  methods.reserve(methodsNames.size());
-
-  for (auto &method: methodsNames) {
-    methods.insert(
-      {method, env->GetMethodID(clazz, method.first.c_str(), method.second.c_str())}
-    );
-  }
-
-  jClassRegistry.insert(
-    {name, CachedJClass(clazz, std::move(methods))}
-  );
+void JCacheHolder::unLoad(JNIEnv *env) {
+  jCache->unLoad(env);
+  jCache.reset();
 }
 
-JavaReferencesCache::CachedJClass &JavaReferencesCache::getJClass(
-  const std::string &className
-) {
-  return jClassRegistry.at(className);
+JCache &JCacheHolder::get() {
+  return *jCache;
 }
 
-JavaReferencesCache::CachedJClass &JavaReferencesCache::getOrLoadJClass(
+jclass JCache::getOrLoadJClass(
   JNIEnv *env,
   const std::string &className
 ) {
   auto result = jClassRegistry.find(className);
   if (result == jClassRegistry.end()) {
-    loadJClass(env, className, {});
-    return jClassRegistry.at(className);
+    auto clazz = (jclass) env->NewGlobalRef(env->FindClass(className.c_str()));
+    jClassRegistry.insert({className, clazz});
+    return clazz;
   }
 
   return result->second;
 }
 
-jmethodID JavaReferencesCache::CachedJClass::getMethod(
-  const std::string &name,
-  const std::string &signature
-) {
-  return methods.at({name, signature});
+void JCache::unLoad(JNIEnv *env) {
+  env->DeleteGlobalRef(jDoubleArray);
+  env->DeleteGlobalRef(jBooleanArray);
+  env->DeleteGlobalRef(jIntegerArray);
+  env->DeleteGlobalRef(jLongArray);
+  env->DeleteGlobalRef(jFloatArray);
+  env->DeleteGlobalRef(jCollection);
+  env->DeleteGlobalRef(jMap);
+  env->DeleteGlobalRef(jObject);
+  env->DeleteGlobalRef(jString);
+  env->DeleteGlobalRef(jJavaScriptObject);
+  env->DeleteGlobalRef(jJavaScriptValue);
+  env->DeleteGlobalRef(jJavaScriptTypedArray);
+  env->DeleteGlobalRef(jReadableNativeArray);
+  env->DeleteGlobalRef(jReadableNativeMap);
+  env->DeleteGlobalRef(jWritableNativeArray);
+  env->DeleteGlobalRef(jWritableNativeMap);
+  env->DeleteGlobalRef(jSharedObject);
+  env->DeleteGlobalRef(jJavaScriptModuleObject);
 }
 
-JavaReferencesCache::CachedJClass::CachedJClass(
-  jclass clazz,
-  MethodHashMap methods
-) : clazz(clazz), methods(std::move(methods)) {}
 } // namespace expo

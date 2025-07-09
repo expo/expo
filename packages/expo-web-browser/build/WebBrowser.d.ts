@@ -49,13 +49,13 @@ export declare function coolDownAsync(browserPackage?: string): Promise<WebBrows
  * Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller),
  * and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs)
  * on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need
- * this, use [`openAuthSessionAsync`](#webbrowseropenauthsessionasyncurl-redirecturl-browserparams).
+ * this, use [`openAuthSessionAsync`](#webbrowseropenauthsessionasyncurl-redirecturl-options).
  *
  * @param url The url to open in the web browser.
  * @param browserParams A dictionary of key-value pairs.
  *
  * @return The promise behaves differently based on the platform.
- * On Android promise resolves with `{type: 'opened'}` if we were able to open browser.
+ * On Android promise resolves with `{ type: 'opened' }` if we were able to open browser.
  * On iOS:
  * - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
@@ -64,26 +64,28 @@ export declare function openBrowserAsync(url: string, browserParams?: WebBrowser
 /**
  * Dismisses the presented web browser.
  *
- * @return The `void` on successful attempt, or throws error, if dismiss functionality is not avaiable.
+ * @return The promise that resolves with `{ type: 'dismiss' }` on the successful attempt or throws an error if dismiss functionality is not available.
  * @platform ios
  */
-export declare function dismissBrowser(): void;
+export declare function dismissBrowser(): Promise<{
+    type: WebBrowserResultType.DISMISS;
+}>;
 /**
+ * # On Android:
+ * This will be done using a "custom Chrome tabs" browser, [AppState](https://reactnative.dev/docs/appstate),
+ * and [Linking](./linking/) APIs.
+ *
  * # On iOS:
  * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
  * whether to allow the app to authenticate using the given url.
  * To handle redirection back to the mobile application, the redirect URI set in the authentication server
- * has to use the protocol provided as the scheme in **app.json** [`expo.scheme`](./../config/app/#scheme)
- * e.g. `demo://` not `https://` protocol.
+ * has to use the protocol provided as the scheme in **app.json** [`expo.scheme`](./../config/app/#scheme).
+ * For example, `demo://` not `https://` protocol.
  * Using `Linking.addEventListener` is not needed and can have side effects.
  *
- * # On Android:
- * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
- * and [Linking](./linking/) APIs.
- *
  * # On web:
- * > This API can only be used in a secure environment (`https`). You can use expo `start:web --https`
- * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#errwebbrowsercrypto) will be thrown.
+ * > This API can only be used in a secure environment (localhost/https).
+ * to test this. Otherwise, an error with code [`ERR_WEB_BROWSER_CRYPTO`](#err_web_browser_crypto) will be thrown.
  * This will use the browser's [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) API.
  * - _Desktop_: This will create a new web popup window in the browser that can be closed later using `WebBrowser.maybeCompleteAuthSession()`.
  * - _Mobile_: This will open a new tab in the browser which can be closed using `WebBrowser.maybeCompleteAuthSession()`.
@@ -101,7 +103,7 @@ export declare function dismissBrowser(): void;
  *
  * > On mobile web, Chrome and Safari will block any call to [`window.open()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open)
  * which takes too long to fire after a user interaction. This method must be invoked immediately
- * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
+ * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#err_web_browser_blocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
  * @param redirectUrl _Optional_ - The url to deep link back into your app.
@@ -118,6 +120,14 @@ export declare function dismissBrowser(): void;
  * the Promise fulfills with `{ type: 'dismiss' }` object.
  */
 export declare function openAuthSessionAsync(url: string, redirectUrl?: string | null, options?: AuthSessionOpenOptions): Promise<WebBrowserAuthSessionResult>;
+/**
+ * Dismisses the current authentication session. On web, it will close the popup window associated with auth process.
+ *
+ * @return The `void` on the successful attempt or throws an error if dismiss functionality is not available.
+ *
+ * @platform ios
+ * @platform web
+ */
 export declare function dismissAuthSession(): void;
 /**
  * Possibly completes an authentication session on web in a window popup. The method
@@ -128,7 +138,7 @@ export declare function dismissAuthSession(): void;
  * @return Returns an object with message about why the redirect failed or succeeded:
  *
  * If `type` is set to `failed`, the reason depends on the message:
- * - `Not supported on this platform`: If the platform doesn't support this method (iOS, Android).
+ * - `Not supported on this platform`: If the platform doesn't support this method (Android, iOS).
  * - `Cannot use expo-web-browser in a non-browser environment`: If the code was executed in an SSR
  *   or node environment.
  * - `No auth session is currently in progress`: (the cached state wasn't found in local storage).

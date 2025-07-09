@@ -1,7 +1,7 @@
-import { StyleProp, ViewStyle, ViewProps } from 'react-native';
+import type { StyleProp, ViewStyle, ViewProps } from 'react-native';
 export declare type AppleAuthenticationButtonProps = ViewProps & {
     /**
-     * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#isavailableasync)
+     * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationisavailableasync)
      * in here.
      */
     onPress: () => void;
@@ -162,6 +162,14 @@ export type AppleAuthenticationFullName = {
     nickname: string | null;
 };
 /**
+ * A value to specify the style for formatting a name.
+ *
+ * @see [Apple
+ * Documentation](https://developer.apple.com/documentation/foundation/personnamecomponentsformatter)
+ * for more details.
+ */
+export type AppleAuthenticationFullNameFormatStyle = 'default' | 'short' | 'medium' | 'long' | 'abbreviated';
+/**
  * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *
  * > Note that it is possible that you will not be granted all of the scopes which you request.
@@ -219,7 +227,7 @@ export declare enum AppleAuthenticationUserDetectionStatus {
     LIKELY_REAL = 2
 }
 /**
- * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
+ * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationbutton).
  */
 export declare enum AppleAuthenticationButtonType {
     /**
@@ -237,7 +245,7 @@ export declare enum AppleAuthenticationButtonType {
     SIGN_UP = 2
 }
 /**
- * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
+ * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationbutton).
  */
 export declare enum AppleAuthenticationButtonStyle {
     /**

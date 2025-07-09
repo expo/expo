@@ -315,7 +315,7 @@ async function createScripts({ projectDir }) {
   await fs.mkdir(scriptsDir);
 
   const scriptsToCopy = path.resolve(EXPO_DIR, 'template-files/generate-bare-app/scripts');
-  await fs.copy(scriptsToCopy, scriptsDir, { recursive: true });
+  await fs.copy(scriptsToCopy, scriptsDir);
 
   const pkgJsonPath = path.resolve(projectDir, 'package.json');
   const pkgJson = await fs.readJSON(pkgJsonPath);

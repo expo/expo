@@ -36,13 +36,17 @@ export declare class TokenResponse implements TokenResponseConfig {
     state?: string;
     idToken?: string;
     issuedAt: number;
-    constructor(response: TokenResponseConfig);
+    /**
+     * Contains the unprocessed token response. Use it to access properties which aren't part of RFC 6749.
+     * */
+    rawResponse?: unknown;
+    constructor(response: TokenResponseConfig, rawResponse?: unknown);
     private applyResponseConfig;
     getRequestConfig(): TokenResponseConfig;
     refreshAsync(config: Omit<TokenRequestConfig, 'grantType' | 'refreshToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
     shouldRefresh(): boolean;
 }
-declare class Request<T, B> {
+export declare class Request<T, B> {
     protected request: T;
     constructor(request: T);
     performAsync(discovery: ServiceConfig.DiscoveryDocument): Promise<B>;
@@ -52,13 +56,13 @@ declare class Request<T, B> {
 /**
  * A generic token request.
  */
-declare class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> {
+export declare class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> implements TokenRequestConfig {
     grantType: GrantType;
     readonly clientId: string;
     readonly clientSecret?: string;
     readonly scopes?: string[];
     readonly extraParams?: Record<string, string>;
-    constructor(request: any, grantType: GrantType);
+    constructor(request: T, grantType: GrantType);
     getHeaders(): Headers;
     performAsync(discovery: Pick<ServiceConfig.DiscoveryDocument, 'tokenEndpoint'>): Promise<TokenResponse>;
     getQueryBody(): Record<string, string>;
@@ -165,5 +169,4 @@ export declare function revokeAsync(config: RevokeTokenRequestConfig, discovery:
  * @param discovery The `userInfoEndpoint` for a provider.
  */
 export declare function fetchUserInfoAsync(config: Pick<TokenResponse, 'accessToken'>, discovery: Pick<ServiceConfig.DiscoveryDocument, 'userInfoEndpoint'>): Promise<Record<string, any>>;
-export {};
 //# sourceMappingURL=TokenRequest.d.ts.map

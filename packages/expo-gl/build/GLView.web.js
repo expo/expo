@@ -39,9 +39,7 @@ function ensureContext(canvas, contextAttributes) {
     if (!canvas) {
         throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
     }
-    // Apple disables WebGL 2.0 and doesn't provide any way to detect if it's disabled.
-    const isIOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
-    const context = (!isIOS && canvas.getContext('webgl2', contextAttributes)) ||
+    const context = canvas.getContext('webgl2', contextAttributes) ||
         canvas.getContext('webgl', contextAttributes) ||
         canvas.getContext('webgl-experimental', contextAttributes) ||
         canvas.getContext('experimental-webgl', contextAttributes);
@@ -116,7 +114,7 @@ export class GLView extends React.Component {
         const { onContextCreate, onContextRestored, onContextLost, webglContextAttributes, msaaSamples, nativeRef_EXPERIMENTAL, 
         // @ts-ignore: ref does not exist
         ref, ...domProps } = this.props;
-        return React.createElement(Canvas, { ...domProps, canvasRef: this.setCanvasRef });
+        return <Canvas {...domProps} canvasRef={this.setCanvasRef}/>;
     }
     componentDidUpdate(prevProps) {
         const { webglContextAttributes } = this.props;

@@ -1,0 +1,115 @@
+{
+  "name": "@react-native-async-storage/async-storage",
+  "version": "2.2.0",
+  "description": "Asynchronous, persistent, key-value storage system for React Native.",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "react-native": "src/index.ts",
+  "types": "lib/typescript/index.d.ts",
+  "files": [
+    "RNCAsyncStorage.podspec",
+    "android/",
+    "!android/.gradle",
+    "!android/build",
+    "ios/",
+    "jest/",
+    "lib/",
+    "macos/",
+    "src/",
+    "windows/"
+  ],
+  "author": "Krzysztof Borowy <contact@kborowy.com>",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
+    "Tommy Nguyen <4123478+tido64@users.noreply.github.com> (https://github.com/tido64)"
+  ],
+  "source": "src/index",
+  "homepage": "https://github.com/react-native-async-storage/async-storage#readme",
+  "license": "MIT",
+  "keywords": [
+    "react-native",
+    "react native",
+    "async storage",
+    "asyncstorage",
+    "storage"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/react-native-async-storage/async-storage.git",
+    "directory": "packages/default-storage-backend"
+  },
+  "scripts": {
+    "prepack": "yarn build",
+    "build": "bob build",
+    "start": "(cd example && react-native start)",
+    "test:lint": "eslint $(git ls-files '*.js' '*.ts' '*.tsx')",
+    "test:ts": "tsc"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  },
+  "dependencies": {
+    "merge-options": "^3.0.4"
+  },
+  "peerDependencies": {
+    "react-native": "^0.0.0-0 || >=0.65 <1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@babel/preset-env": "^7.25.0",
+    "@react-native/babel-preset": "^0.76.2",
+    "@types/lodash": "^4.14.184",
+    "@types/mocha": "^10.0.1",
+    "@types/react": "^18.0.0",
+    "@wdio/appium-service": "^8.24.0",
+    "@wdio/cli": "^8.24.0",
+    "@wdio/local-runner": "^8.24.0",
+    "@wdio/mocha-framework": "^8.11.0",
+    "@wdio/spec-reporter": "^8.24.0",
+    "appium": "2.2.2",
+    "appium-uiautomator2-driver": "^2.34.1",
+    "appium-xcuitest-driver": "^5.9.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.54.0",
+    "expo": "^48.0.0",
+    "lodash": "^4.17.21",
+    "prettier": "2.8.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-native": "^0.76.1",
+    "react-native-builder-bob": "^0.33.3",
+    "react-native-macos": "^0.76.1",
+    "react-native-web": "~0.18.10",
+    "react-native-windows": "^0.76.1",
+    "react-test-renderer": "^18.2.0",
+    "typescript": "^5.3.0",
+    "webdriverio": "^8.24.0"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "codegenConfig": {
+    "name": "rnasyncstorage",
+    "type": "modules",
+    "jsSrcsDir": "./src",
+    "android": {
+      "javaPackageName": "com.reactnativecommunity.asyncstorage"
+    },
+    "windows": {
+      "namespace": "RNCAsyncStorage",
+      "outputDirectory": "windows/code/codegen",
+      "separateDataTypes": true
+    }
+  }
+}

@@ -15,6 +15,12 @@ template<typename E = jobject>
 struct Collection : public jni::JavaClass<Collection<E>, Iterable<E>> {
   constexpr static auto kJavaDescriptor = "Ljava/util/Collection;";
 
+  [[nodiscard]] size_t size() const {
+    static auto sizeMethod =
+      Collection<E>::javaClassStatic()->template getMethod<jint()>("size");
+    return sizeMethod(this->self());
+  }
+
   bool add(jni::alias_ref<E> element) {
     static auto addMethod = Collection<E>::javaClassStatic()->
       template getMethod<jboolean(jni::alias_ref<jni::JObject>)>("add");
@@ -25,6 +31,12 @@ struct Collection : public jni::JavaClass<Collection<E>, Iterable<E>> {
 template<typename E = jobject>
 struct List : public jni::JavaClass<List<E>, Collection<E>> {
   constexpr static auto kJavaDescriptor = "Ljava/util/List;";
+
+  [[nodiscard]] jni::local_ref<E> get(int index) const {
+    static auto getMethod =
+      List<E>::javaClassStatic()->template getMethod<jni::local_ref<jobject>(int)>("get");
+    return jni::static_ref_cast<E>(getMethod(this->self(), index));
+  }
 };
 
 template<typename E = jobject>

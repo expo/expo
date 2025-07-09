@@ -1,11 +1,12 @@
-import gql from 'graphql-tag';
+import { TypedDocumentNode, gql } from '@urql/core';
 
-export const AppFragmentNode = gql`
+export const AppFragmentNode: TypedDocumentNode = gql`
   fragment AppFragment on App {
     id
     scopeKey
     ownerAccount {
       id
+      name
     }
   }
 `;

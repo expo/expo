@@ -1,4 +1,3 @@
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { getAttachedDevicesAsync, getServer } from '../adb';
 import { startAdbReverseAsync, stopAdbReverseAsync } from '../adbReverse';
@@ -21,7 +20,7 @@ jest.mock('../../../../utils/exit', () => ({
 
 describe(startAdbReverseAsync, () => {
   it(`reverses devices`, async () => {
-    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+    jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([
       {
         isAuthorized: true,
         isBooted: true,
@@ -39,7 +38,7 @@ describe(startAdbReverseAsync, () => {
     ]);
     await expect(startAdbReverseAsync([3000])).resolves.toBe(true);
 
-    expect(getServer().runAsync).toBeCalledTimes(2);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [
       '-s',
       'FA8251A00720',
@@ -49,7 +48,7 @@ describe(startAdbReverseAsync, () => {
     ]);
   });
   it(`reverses multiple ports`, async () => {
-    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+    jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([
       {
         isAuthorized: true,
         isBooted: true,
@@ -60,7 +59,7 @@ describe(startAdbReverseAsync, () => {
     ]);
     await expect(startAdbReverseAsync([3000, 3001])).resolves.toBe(true);
 
-    expect(getServer().runAsync).toBeCalledTimes(2);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [
       '-s',
       'emulator-5554',
@@ -71,7 +70,7 @@ describe(startAdbReverseAsync, () => {
   });
 
   it(`returns false when reversing a device that is unauthorized`, async () => {
-    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+    jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([
       {
         isAuthorized: false,
         isBooted: true,
@@ -81,12 +80,12 @@ describe(startAdbReverseAsync, () => {
       },
     ]);
     await expect(startAdbReverseAsync([3000])).resolves.toBe(false);
-    expect(getServer().runAsync).toBeCalledTimes(0);
-    expect(Log.warn).toBeCalledTimes(1);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(0);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
   });
 
   it(`returns false when reversing a device fails`, async () => {
-    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+    jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([
       {
         isAuthorized: true,
         isBooted: true,
@@ -95,16 +94,16 @@ describe(startAdbReverseAsync, () => {
         type: 'device',
       },
     ]);
-    asMock(getServer().runAsync).mockRejectedValueOnce(new Error('test'));
+    jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error('test'));
     await expect(startAdbReverseAsync([3000])).resolves.toBe(false);
-    expect(getServer().runAsync).toBeCalledTimes(1);
-    expect(Log.warn).toBeCalledTimes(1);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
   });
 });
 
 describe(stopAdbReverseAsync, () => {
   it(`stops reverse`, async () => {
-    asMock(getAttachedDevicesAsync).mockResolvedValueOnce([
+    jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([
       {
         isAuthorized: true,
         isBooted: true,
@@ -122,7 +121,7 @@ describe(stopAdbReverseAsync, () => {
       },
     ]);
     await stopAdbReverseAsync([3000]);
-    expect(getServer().runAsync).toBeCalledTimes(2);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [
       '-s',
       'FA8251A00720',

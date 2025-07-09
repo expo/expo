@@ -18,6 +18,6 @@ describe(compileAsync, () => {
       }),
     } as any);
 
-    expect(Log.warn).not.toBeCalled();
+    expect(Log.warn).not.toHaveBeenCalled();
   });
 });

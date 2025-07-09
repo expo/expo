@@ -2,15 +2,15 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import java.lang.reflect.InvocationTargetException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -35,7 +35,7 @@ import kotlin.coroutines.suspendCoroutine
  * - `onReactContext` - is called after the `ReactContext` was loaded.
  */
 abstract class DevLauncherAppLoader(
-  private val appHost: ReactNativeHost,
+  private val appHost: ReactHostWrapper,
   private val context: Context,
   private val controller: DevLauncherControllerInterface
 ) {
@@ -46,8 +46,8 @@ abstract class DevLauncherAppLoader(
     return { activity ->
       onDelegateWillBeCreated(activity)
 
-      require(appHost.reactInstanceManager.currentReactContext == null) { "App react context shouldn't be created before." }
-      appHost.reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
+      require(appHost.currentReactContext == null) { "App react context shouldn't be created before." }
+      appHost.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           if (reactContextWasInitialized) {
             return
@@ -55,25 +55,23 @@ abstract class DevLauncherAppLoader(
 
           controller.onAppLoaded(context)
           onReactContext(context)
-          maybeInitFlipper(context.applicationContext, appHost.reactInstanceManager)
-          appHost.reactInstanceManager.removeReactInstanceEventListener(this)
+          appHost.removeReactInstanceEventListener(this)
           reactContextWasInitialized = true
           continuation!!.resume(true)
         }
       })
 
-      activity.lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        fun onCreate() {
-          onCreate(activity)
+      activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onCreate(owner: LifecycleOwner) {
+          super.onCreate(owner)
           activity.lifecycle.removeObserver(this)
         }
       })
     }
   }
 
-  open suspend fun launch(intent: Intent): Boolean {
-    return suspendCoroutine { callback ->
+  open suspend fun launch(intent: Intent): Boolean = withContext(Dispatchers.Main) {
+    suspendCoroutine { callback ->
       if (injectBundleLoader()) {
         continuation = callback
         launchIntent(intent)
@@ -95,60 +93,5 @@ abstract class DevLauncherAppLoader(
 
   private fun launchIntent(intent: Intent) {
     context.applicationContext.startActivity(intent)
-  }
-
-  private fun maybeInitFlipper(appContext: Context, reactInstanceManager: ReactInstanceManager) {
-    try {
-      val wasRunning = tryToStopFlipper()
-
-      // Flipper wasn't initialized in the MainApplication so we don't want to start it.
-      if (!wasRunning) {
-        return
-      }
-
-      /*
-      We use reflection here to pick up the class that initializes Flipper,
-      since Flipper library is not available in release mode
-      */
-      val packageName = appContext.packageName
-      val aClass = Class.forName("$packageName.ReactNativeFlipper")
-      aClass
-        .getMethod("initializeFlipper", Context::class.java, ReactInstanceManager::class.java)
-        .invoke(null, context, reactInstanceManager)
-    } catch (e: ClassNotFoundException) {
-      e.printStackTrace()
-    } catch (e: NoSuchMethodException) {
-      e.printStackTrace()
-    } catch (e: IllegalAccessException) {
-      e.printStackTrace()
-    } catch (e: InvocationTargetException) {
-      e.printStackTrace()
-    }
-  }
-
-  private fun tryToStopFlipper(): Boolean {
-    val androidFlipperClientClass = Class.forName("com.facebook.flipper.android.AndroidFlipperClient");
-    val getInstanceMethod = androidFlipperClientClass.getMethod("getInstanceIfInitialized")
-
-    val flipperClient = getInstanceMethod.invoke(null) ?: return false
-    val flipperClientClass = flipperClient.javaClass
-
-    val stopMethod = flipperClientClass.getMethod("stop")
-    val getPluginMethod = flipperClientClass.getMethod("getPlugin", String::class.java)
-
-    stopMethod.invoke(flipperClient)
-    val mClassIdentifierMapField = flipperClientClass.getDeclaredField("mClassIdentifierMap")
-    mClassIdentifierMapField.isAccessible = true
-    val pluginsMap = mClassIdentifierMapField.get(flipperClient) as Map<Class<*>, String>
-    val flipperPlugins = pluginsMap.map { (_, id) -> getPluginMethod.invoke(flipperClient, id) }
-
-    val flipperPluginClass = Class.forName("com.facebook.flipper.core.FlipperPlugin")
-    val removePluginMethod = flipperClientClass.getMethod("removePlugin", flipperPluginClass)
-
-    flipperPlugins.forEach {
-      removePluginMethod.invoke(flipperClient, it)
-    }
-
-    return true
   }
 }

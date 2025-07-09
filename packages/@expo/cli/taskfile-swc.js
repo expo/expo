@@ -1,5 +1,5 @@
 // Based on Next.js swc taskr file.
-// https://github.com/vercel/next.js/blob/5378db8f807dbb9ff0993662f0a39d0f6cba2452/packages/next/taskfile-swc.js
+// https://github.com/vercel/next.js/blob/9d1ae19af360367e53c0f5a570e261e94cc8e59b/packages/next/taskfile-swc.js
 
 const path = require('path');
 const assert = require('assert');
@@ -8,16 +8,47 @@ const transform = require('@swc/core').transform;
 
 module.exports = function (task) {
   const ENVIRONMENTS = {
+    metroScript: {
+      output: 'build',
+      options: {
+        module: {
+          type: 'commonjs',
+          strict: true,
+          strictMode: false,
+          // The metro runtime is a standalone JS script that should not have the
+          // `Object.defineProperty(exports, "__esModule", {value: true});` interop.
+          noInterop: true,
+        },
+        env: {
+          targets: {
+            node: '16.8.0',
+          },
+        },
+        sourceMaps: false,
+
+        jsc: {
+          // Remove comments:
+          // https://github.com/swc-project/swc/discussions/4446#discussioncomment-2639516
+          minify: { compress: false, mangle: false },
+          loose: true,
+          parser: {
+            syntax: 'typescript',
+            dynamicImport: true,
+          },
+        },
+      },
+    },
     // Settings for compiling the CLI code that runs in Node.js environments.
     cli: {
       output: 'build',
       options: {
         module: {
           type: 'commonjs',
+          lazy: true,
         },
         env: {
           targets: {
-            node: '12.13.0',
+            node: '16.8.0',
           },
         },
         jsc: {
@@ -52,6 +83,9 @@ module.exports = function (task) {
       ...setting.options,
     };
 
+    if (file.data == null) {
+      throw new Error(`File "${file.base}" is empty.`);
+    }
     const output = yield transform(file.data.toString('utf-8'), options);
     const ext = path.extname(file.base);
 

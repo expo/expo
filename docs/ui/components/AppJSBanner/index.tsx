@@ -1,55 +1,76 @@
-import { css } from '@emotion/react';
-import { Button, theme } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import isBefore from 'date-fns/isBefore';
-import { useRouter } from 'next/compat/router';
-import React from 'react';
+import { Button, mergeClasses } from '@expo/styleguide';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
+import { isBefore } from 'date-fns/isBefore';
+import { useEffect, useState } from 'react';
 
-import { Background } from './Background';
+import { useLocalStorage } from '~/common/useLocalStorage';
 
-import { CALLOUT, HEADLINE } from '~/ui/components/Text';
+import { AppJSIcon } from './AppJSIcon';
 
 export function AppJSBanner() {
-  const router = useRouter();
-  const appJSConfEndDate = new Date('2023-05-10');
-  const showAppJSConfShoutout = isBefore(new Date(), appJSConfEndDate);
-  const isHomePage = router?.pathname === '/';
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isAppJSBannerVisible, setIsAppJSBannerVisible] = useLocalStorage<boolean>({
+    name: '2025-appjs-banner',
+    defaultValue: true,
+  });
 
-  if (!showAppJSConfShoutout || !isHomePage) {
+  const appJSConfEndDate = new Date('2025-05-28');
+  const showAppJSConfShoutout = isBefore(new Date(), appJSConfEndDate);
+
+  useEffect(function didMount() {
+    setIsLoaded(true);
+  }, []);
+
+  if (!isAppJSBannerVisible || !showAppJSConfShoutout || !isLoaded) {
     return null;
   }
 
   return (
-    <div className="relative flex justify-between items-center bg-[#0019C1] py-4 px-6 rounded-md overflow-hidden gap-3 shadow-xs my-6 flex-wrap">
-      <div className="absolute -top-1 -left-1">
-        <Background />
+    <div
+      className={mergeClasses(
+        'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
+        'bg-[#eef0ff] dark:bg-[#494CFC22]',
+        'border border-[#494CFC] dark:border-[#3133b0]',
+        'max-md-gutters:flex-wrap'
+      )}>
+      <div className="flex items-center gap-4">
+        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+          <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#494CFC]" />
+          <AppJSIcon className="icon-lg relative z-10 text-palette-white" />
+        </div>
+        <div className="relative grid grid-cols-1">
+          <p className="text-base font-medium text-[#494CFC] dark:text-[#a0b9ff]">
+            App.js Conf 2025
+          </p>
+          <p className="text-sm text-[#494CFC] dark:text-[#a0b9ff]">
+            Join us at the biggest React Native & Expo-focused conference.
+          </p>
+        </div>
       </div>
-      <div>
-        <HEADLINE css={headlineStyle}>App.js Conf 2023</HEADLINE>
-        <CALLOUT css={descriptionStyle}>
-          An Expo &amp; React Native conference in Europe is back, May 10-12 in Kraków, Poland!
-        </CALLOUT>
+      <div className="z-10 flex items-center gap-3">
+        <Button
+          size="xs"
+          href="https://appjs.co/"
+          openInNewTab
+          rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
+          className={mergeClasses(
+            'gap-1.5 border-[#494CFC] bg-[#494CFC] text-palette-white shadow-none',
+            'dark:hocus:border-[#23257b] dark:hocus:bg-[#23257b]',
+            'hocus:border-[#7189ff] hocus:bg-[#7189ff]'
+          )}>
+          Learn More
+        </Button>
+        <Button
+          size="xs"
+          theme="tertiary"
+          onClick={() => {
+            setIsAppJSBannerVisible(false);
+          }}
+          className="bg-transparent text-palette-white shadow-none hocus:bg-[#ccd8ff] dark:hocus:bg-[#23257b]"
+          leftSlot={<XIcon className="text-[#494CFC]" />}
+        />
       </div>
-      <Button
-        size="xs"
-        href="https://appjs.co"
-        openInNewTab
-        className="bg-palette-white text-[#0019C1] border-none hocus:bg-palette-white hocus:opacity-80"
-        rightSlot={<ArrowUpRightIcon className="icon-sm text-[#0019C1]" />}>
-        Learn more
-      </Button>
     </div>
   );
 }
-
-const headlineStyle = css({
-  position: 'relative',
-  color: theme.palette.white,
-  marginBottom: spacing[1],
-});
-
-const descriptionStyle = css({
-  position: 'relative',
-  color: '#CCD3FF',
-});

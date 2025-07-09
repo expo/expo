@@ -16,13 +16,13 @@ import { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
  */
 export declare function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): DiscoveryDocument | null;
 export declare function useLoadedAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null, AuthRequestInstance: typeof AuthRequest): AuthRequest | null;
-type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+export type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
 export declare function useAuthRequestResult(request: AuthRequest | null, discovery: DiscoveryDocument | null, customOptions?: AuthRequestPromptOptions): [AuthSessionResult | null, PromptMethod];
 /**
  * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.
  *
  * > In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`.
- * > See the [Identity example](/guides/authentication#identityserver-4) for more info.
+ * > See the [GitHub example](/guides/authentication#github) for more info.
  *
  * If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()`
  * to get a `TokenResponse` instance which you can use to easily refresh the token.
@@ -48,5 +48,4 @@ export declare function useAuthRequest(config: AuthRequestConfig, discovery: Dis
     AuthSessionResult | null,
     (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ];
-export {};
 //# sourceMappingURL=AuthRequestHooks.d.ts.map

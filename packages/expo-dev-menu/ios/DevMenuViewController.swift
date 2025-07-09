@@ -1,19 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import SwiftUI
 
 class DevMenuViewController: UIViewController {
-  static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
-  static let ContentDidAppearNotification = Notification.Name("RCTContentDidAppearNotification")
+  static let ContentDidAppearNotification = Notification.Name("DevMenuContentDidAppearNotification")
 
   private let manager: DevMenuManager
-  private var reactRootView: DevMenuRootView?
-  private var hasCalledJSLoadedNotification: Bool = false
+  private var hostingController: UIHostingController<DevMenuRootView>?
 
   init(manager: DevMenuManager) {
     self.manager = manager
-
     super.init(nibName: nil, bundle: nil)
+
     edgesForExtendedLayout = UIRectEdge.init(rawValue: 0)
     extendedLayoutIncludesOpaqueBars = true
   }
@@ -22,35 +21,20 @@ class DevMenuViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func updateProps() {
-    reactRootView?.appProperties = initialProps()
-  }
-
-  // MARK: UIViewController
-
   override func viewDidLoad() {
     super.viewDidLoad()
-    maybeRebuildRootView()
-  }
-
-  override func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    reactRootView?.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height)
+    setupSwiftUIView()
   }
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    forceRootViewToRenderHack()
-    reactRootView?.becomeFirstResponder()
+    NotificationCenter.default.post(name: DevMenuViewController.ContentDidAppearNotification, object: nil)
   }
 
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    get {
-      return UIInterfaceOrientationMask.all
-    }
+    return UIInterfaceOrientationMask.all
   }
 
-  @available(iOS 12.0, *)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle
@@ -58,53 +42,24 @@ class DevMenuViewController: UIViewController {
     set {}
   }
 
-  // MARK: private
+  private func setupSwiftUIView() {
+    let rootView = DevMenuRootView()
+    let hostingController = UIHostingController(rootView: rootView)
 
-  private func initialProps() -> [String: Any] {
-    let isSimulator = TARGET_IPHONE_SIMULATOR > 0
-    
-    return [
-      "showOnboardingView": manager.shouldShowOnboarding(),
-      "appInfo": manager.getAppInfo(),
-      "devSettings": manager.getDevSettings(),
-      "menuPreferences": DevMenuPreferences.serialize(),
-      "uuid": UUID.init().uuidString,
-      "isDevice": !isSimulator,
-      "registeredCallbacks": manager.registeredCallbacks.map { $0.name }
-    ]
-  }
+    hostingController.view.backgroundColor = UIColor.clear
 
-  // RCTRootView assumes it is created on a loading bridge.
-  // in our case, the bridge has usually already loaded. so we need to prod the view.
-  private func forceRootViewToRenderHack() {
-    if !hasCalledJSLoadedNotification, let bridge = manager.appInstance.bridge {
-      let notification = Notification(name: DevMenuViewController.JavaScriptDidLoadNotification, object: nil, userInfo: ["bridge": bridge])
+    addChild(hostingController)
+    view.addSubview(hostingController.view)
+    hostingController.didMove(toParent: self)
 
-      reactRootView?.javaScriptDidLoad(notification)
-      hasCalledJSLoadedNotification = true
-    }
-  }
+    hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+      hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+    ])
 
-  private func maybeRebuildRootView() {
-    guard let bridge = manager.appInstance.bridge else {
-      return
-    }
-    if reactRootView?.bridge != bridge {
-      if reactRootView != nil {
-        reactRootView?.removeFromSuperview()
-        reactRootView = nil
-      }
-      hasCalledJSLoadedNotification = false
-      reactRootView = DevMenuRootView(bridge: bridge, moduleName: "main", initialProperties: initialProps())
-      reactRootView?.frame = view.bounds
-      reactRootView?.backgroundColor = UIColor.clear
-
-      if isViewLoaded, let reactRootView = reactRootView {
-        view.addSubview(reactRootView)
-        view.setNeedsLayout()
-      }
-    } else {
-      updateProps()
-    }
+    self.hostingController = hostingController
   }
 }

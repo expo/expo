@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import { asMock } from '../../../__tests__/asMock';
 import { NgrokInstance, NgrokResolver } from '../../doctor/ngrok/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
@@ -67,17 +66,17 @@ describe('getActiveUrl', () => {
 describe('startAsync', () => {
   it(`skips adb reverse if Android cannot be found`, async () => {
     const { ngrok } = createNgrokInstance();
-    asMock(hasAdbReverseAsync).mockReturnValueOnce(false);
+    jest.mocked(hasAdbReverseAsync).mockReturnValueOnce(false);
 
     await ngrok.startAsync();
-    expect(startAdbReverseAsync).not.toBeCalled();
+    expect(startAdbReverseAsync).not.toHaveBeenCalled();
   });
   beforeEach(() => {
     delete process.env.EXPO_TUNNEL_SUBDOMAIN;
   });
   it(`fails if adb reverse doesn't work`, async () => {
     const { ngrok } = createNgrokInstance();
-    asMock(startAdbReverseAsync).mockResolvedValueOnce(false);
+    jest.mocked(startAdbReverseAsync).mockResolvedValueOnce(false);
 
     await expect(ngrok.startAsync()).rejects.toThrow(/adb/);
   });
@@ -90,14 +89,14 @@ describe('startAsync', () => {
     const { ngrok } = createNgrokInstance();
     expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
     const instance = await new NgrokResolver('/').resolveAsync();
-    expect(instance.connect).toBeCalledWith(expect.objectContaining({ subdomain: 'test' }));
+    expect(instance.connect).toHaveBeenCalledWith(expect.objectContaining({ subdomain: 'test' }));
   });
   it(`starts with any subdomain`, async () => {
     process.env.EXPO_TUNNEL_SUBDOMAIN = '1';
     const { ngrok } = createNgrokInstance();
     expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
     const instance = await new NgrokResolver('/').resolveAsync();
-    expect(instance.connect).toBeCalledWith(
+    expect(instance.connect).toHaveBeenCalledWith(
       expect.objectContaining({ subdomain: expect.stringMatching(/.*-anonymous-3000$/) })
     );
   });
@@ -109,7 +108,7 @@ describe('startAsync', () => {
     const connect = jest.fn(() => {
       throw new Error('woops');
     });
-    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect } as any));
+    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect }) as any);
 
     await expect(
       ngrok._connectToNgrokAsync({
@@ -136,7 +135,7 @@ describe('startAsync', () => {
         throw err;
       })
       .mockImplementationOnce(() => 'http://localhost:3000');
-    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect } as any));
+    ngrok.resolver.resolveAsync = jest.fn(async () => ({ connect }) as any);
 
     await ngrok._connectToNgrokAsync();
 
@@ -152,17 +151,36 @@ describe('_getProjectHostnameAsync', () => {
     vol.fromJSON({}, projectRoot);
 
     const hostname = await ngrok._getProjectHostnameAsync();
-    expect(hostname).toEqual(expect.stringMatching(/.*\.anonymous\.3000\.exp\.direct/));
+    expect(hostname).toEqual(expect.stringMatching(/.*-anonymous-3000\.exp\.direct/));
 
     // URL-safe
     expect(encodeURIComponent(hostname)).toEqual(hostname);
 
     // Works twice in a row...
     expect(await ngrok._getProjectHostnameAsync()).toEqual(
-      expect.stringMatching(/.*\.anonymous\.3000\.exp\.direct/)
+      expect.stringMatching(/.*-anonymous-3000\.exp\.direct/)
     );
 
     // randomness is persisted
     expect(JSON.parse(vol.toJSON()['/.expo/settings.json']).urlRandomness).toBeDefined();
+  });
+
+  it(`ignore invalid urlRandomness values`, async () => {
+    const { projectRoot, ngrok } = createNgrokInstance();
+    const invalidRandomness = '_abcdef';
+    vol.fromJSON(
+      { '/.expo/settings.json': `{"urlRandomness": "${invalidRandomness}"}` },
+      projectRoot
+    );
+
+    const hostname = await ngrok._getProjectHostnameAsync();
+
+    // The invalid randomness should be ignored
+    expect(hostname).not.toEqual('_abcd-anonymous-3000.exp.direct');
+
+    // New randomness should be generated
+    expect(JSON.parse(vol.toJSON()['/.expo/settings.json']).urlRandomness).not.toEqual(
+      invalidRandomness
+    );
   });
 });

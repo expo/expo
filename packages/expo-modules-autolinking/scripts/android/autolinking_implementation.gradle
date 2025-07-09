@@ -10,9 +10,13 @@ class ExpoModuleGradleProject {
   // Path to the folder with Android project
   String sourceDir
 
+  // Gradle projects containing AAR files
+  ExpoModuleGradleAarProject[] aarProjects
+
   ExpoModuleGradleProject(Object data) {
     this.name = data.name
     this.sourceDir = data.sourceDir
+    this.aarProjects = data.aarProjects.collect { new ExpoModuleGradleAarProject(it) }
   }
 }
 
@@ -27,10 +31,31 @@ class ExpoModuleGradlePlugin {
   // Path to the plugin folder
   String sourceDir
 
+  Boolean applyToRootProject
+
   ExpoModuleGradlePlugin(Object data) {
     this.id = data.id
     this.group = data.group
     this.sourceDir = data.sourceDir
+    this.applyToRootProject = data.applyToRootProject
+  }
+}
+
+// Object representing an gradle project containing AAR file
+class ExpoModuleGradleAarProject {
+  // Name of the project
+  String name
+
+  // Path to the AAR file
+  String aarFilePath
+
+  // Project directory
+  String projectDir
+
+  ExpoModuleGradleAarProject(Object data) {
+    this.name = data.name
+    this.aarFilePath = data.aarFilePath
+    this.projectDir = data.projectDir
   }
 }
 
@@ -54,6 +79,23 @@ class ExpoModule {
     this.projects = data.projects.collect { new ExpoModuleGradleProject(it) }
     this.plugins = data.plugins.collect { new ExpoModuleGradlePlugin(it) }
   }
+
+  List<ExpoModuleGradleAarProject> allAarProjects() {
+    return projects.collect { it.aarProjects }.flatten()
+  }
+}
+
+// Object representing a maven repository.
+class MavenRepo {
+  String url
+  Object credentials
+  String authentication
+
+  MavenRepo(Object data) {
+    this.url = data.url
+    this.credentials = data.credentials
+    this.authentication = data.authentication
+  }
 }
 
 class ExpoAutolinkingManager {
@@ -70,14 +112,20 @@ class ExpoAutolinkingManager {
     this.options = options
   }
 
-  Object resolve() {
+  Object resolve(ProviderFactory providers, shouldUseCachedValue=false) {
     if (cachedResolvingResults) {
       return cachedResolvingResults
+    }
+    if (shouldUseCachedValue) {
+      logger.warn("Warning: Expo modules were resolved multiple times. Probably something is wrong with the project configuration.")
     }
     String[] args = convertOptionsToCommandArgs('resolve', this.options)
     args += ['--json']
 
-    String output = exec(args, projectDir)
+    String output = providers.exec {
+      workingDir(projectDir)
+      commandLine(args)
+    }.standardOutput.asText.get().trim()
     Object json = new JsonSlurper().parseText(output)
 
     cachedResolvingResults = json
@@ -88,27 +136,36 @@ class ExpoAutolinkingManager {
     return options?.useAAR == true
   }
 
-  ExpoModule[] getModules() {
-    Object json = resolve()
+  ExpoModule[] getModules(ProviderFactory providers, shouldUseCachedValue=false) {
+    Object json = resolve(providers, shouldUseCachedValue)
     return json.modules.collect { new ExpoModule(it) }
+  }
+
+  MavenRepo[] getExtraMavenRepos(ProviderFactory providers, shouldUseCachedValue=false) {
+    Object json = resolve(providers, shouldUseCachedValue)
+    return json.extraDependencies.collect { new MavenRepo(it) }
+  }
+
+  static String getGeneratedFilePath(Project project) {
+    return Paths.get(
+      project.buildDir.toString(),
+      generatedFilesSrcDir,
+      generatedPackageListNamespace.replace('.', '/'),
+      generatedPackageListFilename
+    ).toString()
   }
 
   static void generatePackageList(Project project, Map options) {
     String[] args = convertOptionsToCommandArgs('generate-package-list', options)
 
     // Construct absolute path to generated package list.
-    def generatedFilePath = Paths.get(
-      project.buildDir.toString(),
-      generatedFilesSrcDir,
-      generatedPackageListNamespace.replace('.', '/'),
-      generatedPackageListFilename
-    )
+    def generatedFilePath = getGeneratedFilePath(project)
 
     args += [
       '--namespace',
       generatedPackageListNamespace,
       '--target',
-      generatedFilePath.toString()
+      generatedFilePath
     ]
 
     if (options == null) {
@@ -117,14 +174,10 @@ class ExpoAutolinkingManager {
       args += '--empty'
     }
 
-    exec(args, project.rootDir)
-  }
-
-  static String exec(String[] commandArgs, File dir) {
-    Process proc = commandArgs.execute(null, dir)
-    StringBuffer outputStream = new StringBuffer()
-    proc.waitForProcessOutput(outputStream, System.err)
-    return outputStream.toString()
+    project.providers.exec {
+      workingDir(project.rootDir)
+      commandLine(args)
+    }.result.get().assertNormalExitValue()
   }
 
   static private String[] convertOptionsToCommandArgs(String command, Map options) {
@@ -132,7 +185,8 @@ class ExpoAutolinkingManager {
       'node',
       '--no-warnings',
       '--eval',
-      'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+      // Resolve the `expo` > `expo-modules-autolinking` chain from the project root
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo\')] }))(process.argv.slice(1))',
       '--',
       command,
       '--platform',
@@ -185,7 +239,8 @@ if (rootProject instanceof ProjectDescriptor) {
   // i.e. adding the dependencies and generating the package list.
   ext.useExpoModules = { Map options = [:] ->
     ExpoAutolinkingManager manager = new ExpoAutolinkingManager(rootProject.projectDir, options)
-    ExpoModule[] modules = manager.getModules()
+    ExpoModule[] modules = manager.getModules(providers)
+    MavenRepo[] extraMavenRepos = manager.getExtraMavenRepos(providers)
 
     for (module in modules) {
       for (moduleProject in module.projects) {
@@ -195,14 +250,80 @@ if (rootProject instanceof ProjectDescriptor) {
       for (modulePlugin in module.plugins) {
         includeBuild(new File(modulePlugin.sourceDir))
       }
+      for (moduleAarProject in module.allAarProjects()) {
+        include(":${moduleAarProject.name}")
+        def projectDir = new File(moduleAarProject.projectDir)
+        if (!projectDir.exists()) {
+          projectDir.mkdirs()
+        }
+        project(":${moduleAarProject.name}").projectDir = projectDir
+      }
     }
 
-    // Add plugin classpath to the root project
     gradle.beforeProject { project ->
-      if (project === project.rootProject) {
-        for (module in modules) {
-          for (modulePlugin in module.plugins) {
-            project.buildscript.dependencies.add('classpath', "${modulePlugin.group}:${modulePlugin.id}")
+      // Setup AAR projects
+      for (module in modules) {
+        for (moduleAarProject in module.allAarProjects()) {
+          if (project.name == moduleAarProject.name) {
+            project.configurations.maybeCreate('default')
+            project.artifacts.add('default', file(moduleAarProject.aarFilePath))
+          }
+        }
+      }
+
+      // Setup autolinking from the root project
+      if (project !== project.rootProject) {
+        return
+      }
+      def rootProject = project
+
+      // Add plugin classpath to the root project
+      for (module in modules) {
+        for (modulePlugin in module.plugins) {
+          rootProject.buildscript.dependencies.add('classpath', "${modulePlugin.group}:${modulePlugin.id}")
+        }
+      }
+
+      // Add extra maven repositories to allprojects
+      for (mavenRepo in extraMavenRepos) {
+        println "Adding extra maven repository - '${mavenRepo.url}'"
+      }
+      rootProject.allprojects { eachProject ->
+        eachProject.repositories {
+          for (mavenRepo in extraMavenRepos) {
+            maven {
+              url "${mavenRepo.url}"
+              if (mavenRepo.credentials != null) {
+                if (mavenRepo.credentials.username && mavenRepo.credentials.password) {
+                  credentials {
+                    username mavenRepo.credentials.username
+                    password mavenRepo.credentials.password
+                  }
+                } else if (mavenRepo.credentials.name && mavenRepo.credentials.value) {
+                  credentials(HttpHeaderCredentials) {
+                    name mavenRepo.credentials.name
+                    value mavenRepo.credentials.value
+                  }
+                } else if (mavenRepo.credentials.accessKey && mavenRepo.credentials.secretKey) {
+                  credentials(AwsCredentials) {
+                    accessKey mavenRepo.credentials.accessKey
+                    secretKey mavenRepo.credentials.secretKey
+                    sessionToken mavenRepo.credentials.sessionToken
+                  }
+                }
+              }
+              if (mavenRepo.authentication != null) {
+                authentication {
+                  if (mavenRepo.authentication == "basic") {
+                    basic(BasicAuthentication)
+                  } else if (mavenRepo.authentication == "digest") {
+                    digest(DigestAuthentication)
+                  } else if (mavenRepo.authentication == "header") {
+                    header(HttpHeaderAuthentication)
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -215,6 +336,9 @@ if (rootProject instanceof ProjectDescriptor) {
       }
       for (module in modules) {
         for (modulePlugin in module.plugins) {
+          if (!modulePlugin.applyToRootProject) {
+            continue
+          }
           println " ${Emojis.INFORMATION}  ${Colors.YELLOW}Applying gradle plugin${Colors.RESET} '${Colors.GREEN}${modulePlugin.id}${Colors.RESET}' (${module.name}@${module.version})"
           project.plugins.apply(modulePlugin.id)
         }
@@ -237,7 +361,7 @@ if (rootProject instanceof ProjectDescriptor) {
 
   def addDependencies = { DependencyHandler handler, Project project ->
     def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
-    def modules = manager.getModules()
+    def modules = manager.getModules(project.providers, true)
 
     if (!modules.length) {
       return
@@ -304,12 +428,25 @@ if (rootProject instanceof ProjectDescriptor) {
     ExpoAutolinkingManager.generatePackageList(project, options)
   }
 
+  ext.getGenerateExpoModulesPackagesListPath = {
+    return ExpoAutolinkingManager.getGeneratedFilePath(project)
+  }
+
+  ext.getModulesConfig = {
+    if (!gradle.ext.has('expoAutolinkingManager')) {
+      return null
+    }
+
+    def modules = gradle.ext.expoAutolinkingManager.resolve(project.providers, true).modules
+    return modules.toString()
+  }
+
   ext.ensureDependeciesWereEvaluated = { Project project ->
     if (!gradle.ext.has('expoAutolinkingManager')) {
       return
     }
 
-    def modules = gradle.ext.expoAutolinkingManager.getModules()
+    def modules = gradle.ext.expoAutolinkingManager.getModules(project.providers, true)
     for (module in modules) {
       for (moduleProject in module.projects) {
         def dependency = project.findProject(":${moduleProject.name}")

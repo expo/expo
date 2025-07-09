@@ -1,4 +1,3 @@
-import { ExponentFileSystemModule } from './types';
-declare const _default: ExponentFileSystemModule;
+declare const _default: any;
 export default _default;
 //# sourceMappingURL=ExponentFileSystem.d.ts.map

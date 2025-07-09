@@ -1,5 +1,6 @@
-import { CreateURLOptions } from 'expo-linking';
-import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+import { AuthSessionOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+
+import { DiscoveryDocument } from './Discovery';
 
 // @needsAudit
 export enum CodeChallengeMethod {
@@ -74,25 +75,11 @@ export enum Prompt {
  * Options passed to the `promptAsync()` method of `AuthRequest`s.
  * This can be used to configure how the web browser should look and behave.
  */
-export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatures'> & {
+export type AuthRequestPromptOptions = Omit<AuthSessionOpenOptions, 'windowFeatures'> & {
   /**
    * URL to open when prompting the user. This usually should be defined internally and left `undefined` in most cases.
    */
   url?: string;
-  /**
-   * Should the authentication request use the Expo proxy service `auth.expo.io`.
-   * @default false
-   * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
-   */
-  useProxy?: boolean;
-  /**
-   * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
-   */
-  projectNameForProxy?: string;
-  /**
-   * URL options to be used when creating the redirect URL for the auth proxy.
-   */
-  proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & { path?: string };
   /**
    * Features to use with `window.open()`.
    * @platform web
@@ -104,7 +91,7 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
 /**
  * Represents an OAuth authorization request as JSON.
  */
-export interface AuthRequestConfig {
+export type AuthRequestConfig = {
   /**
    * Specifies what is returned from the authorization server.
    *
@@ -160,7 +147,7 @@ export interface AuthRequestConfig {
    *
    * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
    */
-  prompt?: Prompt;
+  prompt?: Prompt | Prompt[];
   /**
    * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
@@ -174,4 +161,6 @@ export interface AuthRequestConfig {
    * @default true
    */
   usePKCE?: boolean;
-}
+};
+
+export type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { findNodeHandle, Image, NativeMethods, StyleSheet, View } from 'react-native';
+import { findNodeHandle, Image, NativeMethods, StyleSheet, View, Platform } from 'react-native';
 
 import {
   assertStatusValuesInBounds,
@@ -12,6 +12,7 @@ import {
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
   AVPlaybackTolerance,
+  PitchCorrectionQuality,
 } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
@@ -29,6 +30,7 @@ import {
 const _STYLES = StyleSheet.create({
   base: {
     overflow: 'hidden',
+    pointerEvents: 'box-none',
   },
   poster: {
     position: 'absolute',
@@ -46,6 +48,8 @@ const _STYLES = StyleSheet.create({
     bottom: 0,
   },
 });
+
+let didWarnAboutVideoDeprecation: boolean = false;
 
 // On a real device UIManager should be present, however when running offline tests with jest-expo
 // we have to use the provided native module mock to access constants
@@ -99,8 +103,18 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
       throw new Error(`Cannot complete operation because the Video component has not yet loaded`);
     }
 
-    const handle = findNodeHandle(this._nativeRef.current)!;
-    const status: AVPlaybackStatus = await operation(handle);
+    let handle = null;
+    if (Platform.OS === 'web' && 'getVideoElement' in this._nativeRef.current!) {
+      handle = (this._nativeRef.current as any).getVideoElement() as HTMLMediaElement;
+    }
+    if (Platform.OS !== 'web') {
+      handle = findNodeHandle(this._nativeRef.current)!;
+    }
+    if (!handle) {
+      throw new Error('failed to find node handle');
+    }
+
+    const status: AVPlaybackStatus = await operation(handle! as number);
     this._handleNewStatus(status);
     return status;
   };
@@ -236,7 +250,11 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     positionMillis: number,
     tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
-  setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
+  setRateAsync!: (
+    rate: number,
+    shouldCorrectPitch: boolean,
+    pitchCorrectionQuality?: PitchCorrectionQuality
+  ) => Promise<AVPlaybackStatus>;
   setVolumeAsync!: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
   setIsMutedAsync!: (isMuted: boolean) => Promise<AVPlaybackStatus>;
   setIsLoopingAsync!: (isLooping: boolean) => Promise<AVPlaybackStatus>;
@@ -296,6 +314,8 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
   };
 
   render() {
+    maybeWarnAboutVideoDeprecation();
+
     const source = getNativeSourceFromSource(this.props.source) || undefined;
 
     let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
@@ -312,18 +332,20 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
 
     // Set status via individual props
     const status: AVPlaybackStatusToSet = { ...this.props.status };
-    [
-      'progressUpdateIntervalMillis',
-      'positionMillis',
-      'shouldPlay',
-      'rate',
-      'shouldCorrectPitch',
-      'volume',
-      'isMuted',
-      'isLooping',
-    ].forEach((prop) => {
+    (
+      [
+        'progressUpdateIntervalMillis',
+        'positionMillis',
+        'shouldPlay',
+        'rate',
+        'shouldCorrectPitch',
+        'volume',
+        'isMuted',
+        'isLooping',
+      ] as const
+    ).forEach((prop) => {
       if (prop in this.props) {
-        status[prop] = this.props[prop];
+        status[prop] = this.props[prop] as any;
       }
     });
 
@@ -351,7 +373,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     };
 
     return (
-      <View style={nativeProps.style} pointerEvents="box-none">
+      <View style={nativeProps.style}>
         <ExponentVideo ref={this._nativeRef} {...nativeProps} style={nativeProps.videoStyle} />
         {this._renderPoster()}
       </View>
@@ -365,6 +387,16 @@ function omit(props: Record<string, any>, propNames: string[]) {
     delete copied[propName];
   }
   return copied;
+}
+
+function maybeWarnAboutVideoDeprecation() {
+  if (__DEV__ && !didWarnAboutVideoDeprecation) {
+    didWarnAboutVideoDeprecation = true;
+    console.log(
+      '⚠️ \x1b[33m[expo-av]: Video component from `expo-av` is deprecated in favor of `expo-video`. ' +
+        'See the documentation at https://docs.expo.dev/versions/latest/sdk/video/ for the new API reference.'
+    );
+  }
 }
 
 Object.assign(Video.prototype, PlaybackMixin);

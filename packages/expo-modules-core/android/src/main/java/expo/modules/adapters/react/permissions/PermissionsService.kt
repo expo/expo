@@ -1,31 +1,27 @@
 package expo.modules.adapters.react.permissions
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import expo.modules.interfaces.permissions.Permissions
-import expo.modules.interfaces.permissions.PermissionsResponse
-import expo.modules.interfaces.permissions.PermissionsResponseListener
-import expo.modules.interfaces.permissions.PermissionsStatus
 import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
+import expo.modules.interfaces.permissions.PermissionsStatus
 import java.util.*
-import kotlin.collections.HashMap
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
@@ -36,9 +32,9 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   // state holders for asking for writing permissions
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
   private var mAskAsyncListener: PermissionsResponseListener? = null
-  private var mAskAsyncRequestedPermissions: Array<out String>? = null
+  private var mAskAsyncRequestedPermissions: Array<String>? = null
 
-  private val mPendingPermissionCalls: Queue<Pair<Array<out String>, PermissionsResponseListener>> = LinkedList()
+  private val mPendingPermissionCalls: Queue<Pair<Array<String>, PermissionsResponseListener>> = LinkedList()
   private var mCurrentPermissionListener: PermissionsResponseListener? = null
 
   private lateinit var mAskedPermissionsCache: SharedPreferences
@@ -62,11 +58,16 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     mAskedPermissionsCache = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
   }
 
-  override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+  override fun getPermissionsWithPromise(
+    promise:
+    @Suppress("DEPRECATION")
+    expo.modules.core.Promise,
+    vararg permissions: String
+  ) {
     getPermissions(
       PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
         val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
-        val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
+        val areAllDenied = permissionsMap.isNotEmpty() && permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
         val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
 
         promise.resolve(
@@ -89,7 +90,12 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     )
   }
 
-  override fun askForPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+  override fun askForPermissionsWithPromise(
+    promise:
+    @Suppress("DEPRECATION")
+    expo.modules.core.Promise,
+    vararg permissions: String
+  ) {
     askForPermissions(
       PermissionsResponseListener {
         getPermissionsWithPromise(promise, *permissions)
@@ -115,7 +121,12 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
 
   @Throws(IllegalStateException::class)
   override fun askForPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
-    if (permissions.contains(Manifest.permission.WRITE_SETTINGS) && isRuntimePermissionsAvailable()) {
+    if (permissions.isEmpty()) {
+      responseListener.onResult(mutableMapOf())
+      return
+    }
+
+    if (permissions.contains(Manifest.permission.WRITE_SETTINGS)) {
       val permissionsToAsk = permissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
       val newListener = PermissionsResponseListener {
         val status = if (hasWriteSettingsPermission()) {
@@ -138,6 +149,11 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
         addToAskedPermissionsCache(arrayOf(Manifest.permission.WRITE_SETTINGS))
         askForWriteSettingsPermissionFirst()
       } else {
+        // User only ask for `WRITE_SETTINGS`, we can already return response
+        if (permissionsToAsk.isEmpty()) {
+          newListener.onResult(mutableMapOf())
+          return
+        }
         askForManifestPermissions(permissionsToAsk, newListener)
       }
     } else {
@@ -155,10 +171,10 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   override fun isPermissionPresentInManifest(permission: String): Boolean {
     try {
       context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
-        return requestedPermissions.contains(permission)
+        return requestedPermissions!!.contains(permission)
       }
       return false
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
       return false
     }
   }
@@ -199,7 +215,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private fun canAskAgain(permission: String): Boolean {
     return mActivityProvider?.currentActivity?.let {
       ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
-    } ?: false
+    } == true
   }
 
   private fun parseNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {
@@ -227,16 +243,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   protected open fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    if (!isRuntimePermissionsAvailable()) {
-      // It's not possible to ask for the permissions in the runtime.
-      // We return to the user the permissions status, which was granted during installation.
-      addToAskedPermissionsCache(permissions)
-      val permissionsResult = permissions.map { getManifestPermission(it) }.toIntArray()
-      listener.onResult(parseNativeResult(permissions, permissionsResult))
-      return
-    }
-
-    delegateRequestToActivity(permissions, listener)
+    delegateRequestToActivity(arrayOf(*permissions), listener)
   }
 
   /**
@@ -245,7 +252,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
    *
    * @param permissions [android.Manifest.permission]
    */
-  protected fun delegateRequestToActivity(permissions: Array<out String>, listener: PermissionsResponseListener) {
+  protected fun delegateRequestToActivity(permissions: Array<String>, listener: PermissionsResponseListener) {
     addToAskedPermissionsCache(permissions)
 
     val currentActivity = mActivityProvider?.currentActivity
@@ -305,7 +312,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
    * 4. other permission invokes other system-specific activity that is visible as dialog what moves app again into background
    * 5. upon user action app is restored and [onHostResume] is being called again, but no further action is invoked and promise is resolved
    */
-  @TargetApi(Build.VERSION_CODES.M)
+
   private fun askForWriteSettingsPermissionFirst() {
     Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
       data = Uri.parse("package:${context.packageName}")
@@ -317,14 +324,8 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   private fun hasWriteSettingsPermission(): Boolean {
-    return if (isRuntimePermissionsAvailable()) {
-      Settings.System.canWrite(context.applicationContext)
-    } else {
-      true
-    }
+    return Settings.System.canWrite(context.applicationContext)
   }
-
-  private fun isRuntimePermissionsAvailable() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
   override fun onHostResume() {
     if (!mWriteSettingsPermissionBeingAsked) {

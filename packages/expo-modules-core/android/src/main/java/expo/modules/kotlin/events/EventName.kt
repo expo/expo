@@ -27,5 +27,10 @@ enum class EventName {
   /**
    * Called when other activity returns
    */
-  ON_ACTIVITY_RESULT
+  ON_ACTIVITY_RESULT,
+
+  /**
+   * Called when the user is about to leave the activity
+   */
+  ON_USER_LEAVES_ACTIVITY
 }

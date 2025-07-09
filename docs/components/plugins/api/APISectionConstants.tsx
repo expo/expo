@@ -1,52 +1,47 @@
-import { APIDataType } from '~/components/plugins/api/APIDataType';
-import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import {
-  CommentTextBlock,
-  getTagNamesList,
-  STYLE_APIBOX_NO_SPACING,
-  STYLES_APIBOX,
-  H3Code,
-} from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, MONOSPACE } from '~/ui/components/Text';
+import { mergeClasses } from '@expo/styleguide';
+
+import { getTagData } from '~/components/plugins/api/APISectionUtils';
+import { CALLOUT, H2 } from '~/ui/components/Text';
+
+import { ConstantDefinitionData } from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
+  sdkVersion: string;
   apiName?: string;
 };
 
 const renderConstant = (
   { name, comment, type }: ConstantDefinitionData,
+  sdkVersion: string,
   apiName?: string
-): JSX.Element => (
-  <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
-    <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" />
-    <H3Code tags={getTagNamesList(comment)}>
-      <MONOSPACE weight="medium">
-        {apiName ? `${apiName}.` : ''}
-        {name}
-      </MONOSPACE>
-    </H3Code>
+) => (
+  <div key={`constant-definition-${name}`} className={STYLES_APIBOX}>
+    <APISectionDeprecationNote comment={comment} sticky />
+    <APIBoxHeader
+      name={`${apiName ? `${apiName}.` : ''}${name}`}
+      comment={comment}
+      deprecated={Boolean(getTagData('deprecated', comment))}
+    />
     {type && (
-      <P>
-        <BOLD>Type:</BOLD> <APIDataType typeDefinition={type} />
-      </P>
+      <CALLOUT className={mergeClasses(STYLES_SECONDARY, ELEMENT_SPACING, VERTICAL_SPACING)}>
+        Type: <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+      </CALLOUT>
     )}
-    {comment && (
-      <div css={STYLE_APIBOX_NO_SPACING}>
-        <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
-      </div>
-    )}
+    {comment && <APICommentTextBlock comment={comment} includePlatforms={false} inlineHeaders />}
   </div>
 );
 
-const APISectionConstants = ({ data, apiName }: APISectionConstantsProps) =>
+const APISectionConstants = ({ data, sdkVersion, apiName }: APISectionConstantsProps) =>
   data?.length ? (
     <>
       <H2 key="constants-header">Constants</H2>
-      {data.map(constant => renderConstant(constant, apiName))}
+      {data.map(constant => renderConstant(constant, sdkVersion, apiName))}
     </>
   ) : null;
 

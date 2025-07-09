@@ -1,58 +1,62 @@
-import { renderMethod } from './APISectionMethods';
+import { mergeClasses } from '@expo/styleguide';
 
-import { APIDataType } from '~/components/plugins/api/APIDataType';
+import { Cell, Row, Table } from '~/ui/components/Table';
+import { H2, CALLOUT, CODE, DEMI } from '~/ui/components/Text';
+
 import {
   CommentData,
   InterfaceDefinitionData,
   MethodSignatureData,
   PropData,
-} from '~/components/plugins/api/APIDataTypes';
-import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+} from './APIDataTypes';
+import { APISectionDeprecationNote } from './APISectionDeprecationNote';
+import { renderMethod } from './APISectionMethods';
 import {
-  CommentTextBlock,
   getTagData,
   parseCommentContent,
   renderFlags,
-  renderParamRow,
-  ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
-  STYLES_APIBOX,
-  getTagNamesList,
-  STYLES_APIBOX_NESTED,
-  ELEMENT_SPACING,
-  H3Code,
   getCommentContent,
-  BoxSectionHeader,
-} from '~/components/plugins/api/APISectionUtils';
-import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, P, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
+} from './APISectionUtils';
+import { APIBoxHeader } from './components/APIBoxHeader';
+import { APIBoxSectionHeader } from './components/APIBoxSectionHeader';
+import { APICommentTextBlock } from './components/APICommentTextBlock';
+import { APIDataType } from './components/APIDataType';
+import { APIParamRow } from './components/APIParamRow';
+import { APIParamsTableHeadRow } from './components/APIParamsTableHeadRow';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_APIBOX_NESTED, STYLES_SECONDARY } from './styles';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
+  sdkVersion: string;
 };
 
 const renderInterfaceComment = (
+  sdkVersion: string,
   comment?: CommentData,
   signatures?: MethodSignatureData[],
   defaultValue?: string
 ) => {
-  if (signatures && signatures.length) {
+  if (signatures?.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
     const defaultTag = getTagData('default', signatureComment);
     const initValue =
-      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
+      defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
-        {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
+        {parameters?.length
+          ? parameters.map(param => (
+              <APIParamRow key={param.name} param={param} sdkVersion={sdkVersion} />
+            ))
+          : null}
         <DEMI>Returns</DEMI>
-        <CODE>{resolveTypeName(type)}</CODE>
+        <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
         {signatureComment && (
           <>
             <br />
             <APISectionDeprecationNote comment={comment} />
-            <CommentTextBlock
+            <APICommentTextBlock
               inlineHeaders
               comment={signatureComment}
               afterContent={renderDefaultValue(initValue)}
@@ -64,100 +68,104 @@ const renderInterfaceComment = (
   } else {
     const defaultTag = getTagData('default', comment);
     const initValue =
-      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
+      defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
         <APISectionDeprecationNote comment={comment} />
-        <CommentTextBlock
+        <APICommentTextBlock
+          inlineHeaders
           comment={comment}
           afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
+          emptyCommentFallback={getTagData('deprecated', comment) ? '' : '-'}
         />
       </>
     );
   }
 };
 
-const renderInterfacePropertyRow = ({
-  name,
-  flags,
-  type,
-  comment,
-  signatures,
-  defaultValue,
-}: PropData): JSX.Element => {
+const renderInterfacePropertyRow = (
+  { name, flags, type, comment, signatures, defaultValue }: PropData,
+  sdkVersion: string
+) => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
-    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : '')
+    defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : '')
   );
   return (
     <Row key={name}>
-      <Cell fitContent>
-        <BOLD>{name}</BOLD>
+      <Cell>
+        <DEMI>{name}</DEMI>
         {renderFlags(flags, initValue)}
       </Cell>
-      <Cell fitContent>
-        <APIDataType typeDefinition={type} />
+      <Cell>
+        {type ? (
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        ) : (
+          <CODE>undefined</CODE>
+        )}
       </Cell>
-      <Cell fitContent>{renderInterfaceComment(comment, signatures, initValue)}</Cell>
+      <Cell>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>
   );
 };
 
-const renderInterface = ({
-  name,
-  children,
-  comment,
-  extendedTypes,
-}: InterfaceDefinitionData): JSX.Element | null => {
+const renderInterface = (
+  { name, children, comment, extendedTypes }: InterfaceDefinitionData,
+  sdkVersion: string
+) => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
-  if (!interfaceChildren.length) return null;
+  if (interfaceChildren.length === 0) {
+    return null;
+  }
 
   const interfaceMethods = interfaceChildren.filter(child => child.signatures);
   const interfaceFields = interfaceChildren.filter(child => !child.signatures);
 
   return (
-    <div key={`interface-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-      <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" />
-      <H3Code tags={getTagNamesList(comment)}>
-        <MONOSPACE weight="medium">{name}</MONOSPACE>
-      </H3Code>
+    <div
+      key={`interface-definition-${name}`}
+      className={mergeClasses(STYLES_APIBOX, STYLES_APIBOX_NESTED, 'overflow-hidden')}>
+      <APISectionDeprecationNote comment={comment} sticky />
+      <APIBoxHeader name={name} comment={comment} />
       {extendedTypes?.length ? (
-        <P className={ELEMENT_SPACING}>
-          <DEMI>Extends: </DEMI>
+        <CALLOUT className={mergeClasses(ELEMENT_SPACING, 'px-4')}>
+          <span className={STYLES_SECONDARY}>Extends: </span>
           {extendedTypes.map(extendedType => (
-            <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
+            <CODE key={`extend-${extendedType.name}`}>
+              {resolveTypeName(extendedType, sdkVersion)}
+            </CODE>
           ))}
-        </P>
+        </CALLOUT>
       ) : null}
-      <CommentTextBlock comment={comment} includePlatforms={false} />
-      {interfaceMethods.length ? (
+      <APICommentTextBlock comment={comment} includePlatforms={false} />
+      {interfaceFields.length > 0 && (
         <>
-          <BoxSectionHeader text={`${name} Methods`} />
-          {interfaceMethods.map(method => renderMethod(method, { exposeInSidebar: false }))}
-        </>
-      ) : undefined}
-      {interfaceFields.length ? (
-        <>
-          <BoxSectionHeader text={`${name} Properties`} />
-          <Table>
-            <ParamsTableHeadRow />
-            <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
+          <Table containerClassName="rounded-none border-0 border-t">
+            <APIParamsTableHeadRow mainCellLabel="Property" />
+            <tbody>
+              {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}
+            </tbody>
           </Table>
-          <br />
         </>
-      ) : undefined}
+      )}
+      {interfaceMethods.length > 0 && (
+        <>
+          <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar baseNestingLevel={99} />
+          {interfaceMethods.map(method =>
+            renderMethod(method, { exposeInSidebar: false, sdkVersion, nested: true })
+          )}
+        </>
+      )}
     </div>
   );
 };
 
-const APISectionInterfaces = ({ data }: APISectionInterfacesProps) =>
+const APISectionInterfaces = ({ data, sdkVersion }: APISectionInterfacesProps) =>
   data?.length ? (
     <>
       <H2 key="interfaces-header">Interfaces</H2>
-      {data.map(renderInterface)}
+      {data.map(entity => renderInterface(entity, sdkVersion))}
     </>
   ) : null;
 

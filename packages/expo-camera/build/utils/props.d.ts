@@ -1,10 +1,9 @@
-import { CameraNativeProps, CameraType, FlashMode, AutoFocus, WhiteBalance, CameraProps } from '../Camera.types';
+import { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
 export declare const ConversionTables: {
-    type: Record<keyof typeof CameraType, CameraNativeProps['type']>;
-    flashMode: Record<keyof typeof FlashMode, CameraNativeProps['flashMode']>;
-    autoFocus: Record<keyof typeof AutoFocus, CameraNativeProps['autoFocus']>;
-    whiteBalance: Record<keyof typeof WhiteBalance, CameraNativeProps['whiteBalance']>;
+    type: Record<keyof CameraType, CameraNativeProps['facing']>;
+    flash: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
+    [prop: string]: unknown;
 };
-export declare function convertNativeProps(props?: CameraProps): CameraNativeProps;
-export declare function ensureNativeProps(props?: CameraProps): CameraNativeProps;
+export declare function convertNativeProps(props?: CameraViewProps): CameraNativeProps;
+export declare function ensureNativeProps(props?: CameraViewProps): CameraNativeProps;
 //# sourceMappingURL=props.d.ts.map

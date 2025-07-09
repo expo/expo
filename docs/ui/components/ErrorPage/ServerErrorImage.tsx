@@ -1,11 +1,11 @@
 import { theme } from '@expo/styleguide';
-import React from 'react';
 
 export const ServerErrorImage = () => (
   <svg width="218" height="133" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="m25.977 131.315 63.762-8.961c5.47-.769 9.28-5.826 8.511-11.295l-9.14-65.046a10 10 0 0 0-3.885-6.594L56.807 18.005a10 10 0 0 0-7.41-1.917l-38.846 5.46c-5.47.769-9.28 5.825-8.511 11.294l12.643 89.962c.769 5.469 5.825 9.279 11.294 8.511z"
       stroke={theme.border.default}
+      fill={theme.background.subtle}
       strokeWidth="2"
     />
     <path
@@ -15,6 +15,7 @@ export const ServerErrorImage = () => (
     <path
       d="m128.26 122.354 63.762 8.961c5.469.768 10.526-3.042 11.295-8.511l9.141-65.046a10 10 0 0 0-1.916-7.41l-21.414-28.417a9.999 9.999 0 0 0-6.595-3.885l-38.846-5.46c-5.469-.768-10.526 3.043-11.294 8.512l-12.644 89.961c-.768 5.469 3.042 10.526 8.511 11.295z"
       stroke={theme.border.default}
+      fill={theme.background.subtle}
       strokeWidth="2"
     />
     <path

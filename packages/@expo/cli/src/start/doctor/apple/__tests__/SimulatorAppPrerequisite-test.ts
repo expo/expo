@@ -1,39 +1,40 @@
 import { execAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { SimulatorAppPrerequisite } from '../SimulatorAppPrerequisite';
 
 jest.mock(`../../../../log`);
 
 it(`detects that Simulator.app is installed`, async () => {
   // Mock Simulator.app installed for CI
-  asMock(execAsync)
+  jest
+    .mocked(execAsync)
     .mockReset()
     .mockResolvedValueOnce(`com.apple.CoreSimulator.SimulatorTrampoline`);
-  asMock(spawnAsync)
+  jest
+    .mocked(spawnAsync)
     .mockReset()
     .mockResolvedValueOnce({} as any);
 
   await SimulatorAppPrerequisite.instance.assertImplementation();
 
-  expect(execAsync).toBeCalledWith('id of app "Simulator"');
-  expect(spawnAsync).toBeCalledWith('xcrun', ['simctl', 'help']);
+  expect(execAsync).toHaveBeenCalledWith('id of app "Simulator"');
+  expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
 });
 
 it(`asserts that Simulator.app is installed with invalid Simulator.app`, async () => {
   // Mock Simulator.app installed with invalid binary
-  asMock(execAsync).mockResolvedValueOnce(`com.apple.CoreSimulator.bacon`);
-  asMock(spawnAsync).mockReset();
+  jest.mocked(execAsync).mockResolvedValueOnce(`com.apple.CoreSimulator.bacon`);
+  jest.mocked(spawnAsync).mockReset();
 
   await expect(SimulatorAppPrerequisite.instance.assertImplementation()).rejects.toThrow(/\.bacon/);
-  expect(spawnAsync).not.toBeCalled();
+  expect(spawnAsync).not.toHaveBeenCalled();
 });
 
 it(`asserts that Simulator.app is installed but simctl doesn't work`, async () => {
   // Mock Simulator.app installed for CI
-  asMock(execAsync).mockResolvedValueOnce(`com.apple.CoreSimulator.SimulatorTrampoline`);
-  asMock(spawnAsync).mockImplementationOnce(() => {
+  jest.mocked(execAsync).mockResolvedValueOnce(`com.apple.CoreSimulator.SimulatorTrampoline`);
+  jest.mocked(spawnAsync).mockImplementationOnce(() => {
     throw new Error('foobar');
   });
 

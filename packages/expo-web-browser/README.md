@@ -7,12 +7,12 @@
   </a>
 </p>
 
-Provides access to the system's web browser and supports handling redirects. On iOS, it uses SFSafariViewController or SFAuthenticationSession, depending on the method you call, and on Android it uses ChromeCustomTabs. As of iOS 11, SFSafariViewController no longer shares cookies with Safari, so if you are using WebBrowser for authentication you will want to use WebBrowser.openAuthSessionAsync, and if you just want to open a webpage (such as your app privacy policy), then use WebBrowser.openBrowserAsync.
+Provides access to the system's web browser and supports handling redirects. On iOS, it uses SFSafariViewController or ASWebAuthenticationSession, depending on the method you call, and on Android it uses ChromeCustomTabs. As of iOS 11, SFSafariViewController no longer shares cookies with Safari, so if you are using WebBrowser for authentication you will want to use WebBrowser.openAuthSessionAsync, and if you just want to open a webpage (such as your app privacy policy), then use WebBrowser.openBrowserAsync.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/webbrowser.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/webbrowser/)
 
 # Installation in managed Expo projects
 
@@ -28,13 +28,13 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-web-browser
 ```
 
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
 ### Configure for Android
 
 No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 # Contributing
 

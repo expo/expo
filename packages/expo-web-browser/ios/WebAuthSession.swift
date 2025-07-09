@@ -5,7 +5,11 @@ import AuthenticationServices
 
 private class PresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    #if os(iOS)
     return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+    #else
+    return NSApp.mainWindow ?? ASPresentationAnchor()
+    #endif
   }
 }
 
@@ -31,15 +35,11 @@ final internal class WebAuthSession {
         ])
       }
     )
-    if #available(iOS 13.0, *) {
-      self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
-    }
+    self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
   }
 
   func open(_ promise: Promise) {
-    if #available(iOS 13.0, *) {
-      authSession?.presentationContextProvider = presentationContextProvider
-    }
+    authSession?.presentationContextProvider = presentationContextProvider
     authSession?.start()
     self.promise = promise
   }

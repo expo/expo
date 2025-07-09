@@ -1,9 +1,9 @@
 /* eslint-env jest */
-import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import os from 'os';
 
-import { execute, getLoadedModulesAsync, projectRoot } from './utils';
+import { getLoadedModulesAsync, projectRoot } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 beforeAll(async () => {
@@ -17,12 +17,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/whoami');`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/utils/args.js',
     '@expo/cli/build/src/utils/errors.js',
@@ -31,7 +25,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo whoami --help`', async () => {
-  const results = await execute('whoami', '--help');
+  const results = await executeExpoAsync(projectRoot, ['whoami', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -47,17 +41,15 @@ it('runs `npx expo whoami --help`', async () => {
 });
 
 it('throws on invalid project root', async () => {
-  expect.assertions(1);
-  try {
-    await execute('very---invalid', 'whoami');
-  } catch (e) {
-    const error = e as ExecaError;
-    expect(error.stderr).toMatch(/Invalid project root: \//);
-  }
+  await expect(
+    executeExpoAsync(projectRoot, ['very---invalid', 'whoami'], { verbose: false })
+  ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });
 
 it('runs `npx expo whoami`', async () => {
-  const results = await execute('whoami').catch((e) => e);
+  const results = await executeExpoAsync(projectRoot, ['whoami'], { verbose: false }).catch(
+    (e) => e
+  );
 
   // Test logged in or logged out.
   if (results.stderr) {
@@ -71,12 +63,8 @@ it('runs `npx expo whoami`', async () => {
 
 if (process.env.CI) {
   it('runs `npx expo whoami` and throws logged out error', async () => {
-    expect.assertions(1);
-    try {
-      console.log(await execute('whoami'));
-    } catch (e) {
-      const error = e as ExecaError;
-      expect(error.stderr).toMatch(/Not logged in/);
-    }
+    await expect(executeExpoAsync(projectRoot, ['whoami'], { verbose: false })).rejects.toThrow(
+      /Not logged in/
+    );
   });
 }

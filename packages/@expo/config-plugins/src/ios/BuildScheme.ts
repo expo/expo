@@ -1,7 +1,7 @@
-import { readXMLAsync } from '../utils/XML';
 import { findSchemeNames, findSchemePaths } from './Paths';
 import { findSignableTargets, TargetType } from './Target';
 import { getPbxproj, unquote } from './utils/Xcodeproj';
+import { readXMLAsync } from '../utils/XML';
 
 interface SchemeXML {
   Scheme?: {
@@ -89,7 +89,8 @@ async function readSchemeAsync(
   scheme: string
 ): Promise<SchemeXML | undefined> {
   const allSchemePaths = findSchemePaths(projectRoot);
-  const re = new RegExp(`/${scheme}.xcscheme`, 'i');
+  // NOTE(cedric): test on POSIX or UNIX separators, where UNIX needs to be double-escaped in the template literal and regex
+  const re = new RegExp(`[\\\\/]${scheme}.xcscheme`, 'i');
   const schemePath = allSchemePaths.find((i) => re.exec(i));
   if (schemePath) {
     return (await readXMLAsync({ path: schemePath })) as unknown as SchemeXML | undefined;

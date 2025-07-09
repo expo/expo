@@ -1,3 +1,4 @@
+import { GraphQLError } from '@0no-co/graphql.web';
 import { ExpoConfig } from '@expo/config';
 import {
   isMultipartPartWithName,
@@ -7,28 +8,25 @@ import {
 import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
-import { asMock } from '../../../../__tests__/asMock';
-import { APISettings } from '../../../../api/settings';
+import { AppQuery } from '../../../../api/graphql/queries/AppQuery';
 import { getUserAsync } from '../../../../api/user/user';
 import {
   mockExpoRootChain,
   mockSelfSigned,
 } from '../../../../utils/__tests__/fixtures/certificates';
-import { ExpoGoManifestHandlerMiddleware } from '../ExpoGoManifestHandlerMiddleware';
+import {
+  ExpoGoManifestHandlerMiddleware,
+  ResponseContentType,
+} from '../ExpoGoManifestHandlerMiddleware';
 import { ManifestMiddlewareOptions } from '../ManifestMiddleware';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from '../resolveRuntimeVersionWithExpoUpdatesAsync';
 import { ServerHeaders, ServerRequest } from '../server.types';
 
 jest.mock('../../../../api/user/user');
 jest.mock('../../../../log');
 jest.mock('../../../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
-    byIdAsync: jest.fn(async () => ({
-      id: 'blah',
-      scopeKey: 'scope-key',
-      ownerAccount: {
-        id: 'blah-account',
-      },
-    })),
+    byIdAsync: jest.fn(),
   },
 }));
 jest.mock('@expo/code-signing-certificates', () => ({
@@ -56,19 +54,14 @@ jest.mock('../../../../api/getExpoGoIntermediateCertificate', () => ({
 }));
 jest.mock('@expo/config-plugins', () => ({
   Updates: {
-    getRuntimeVersion: jest.fn(() => '45.0.0'),
+    getRuntimeVersionAsync: jest.fn(() => Promise.resolve('45.0.0')),
   },
 }));
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
   resolveGoogleServicesFile: jest.fn(),
 }));
-jest.mock('../../../../api/settings', () => ({
-  APISettings: {
-    isOffline: false,
-  },
-}));
-jest.mock('../resolveEntryPoint', () => ({
+jest.mock('@expo/config/paths', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
 jest.mock('@expo/config', () => ({
@@ -82,6 +75,7 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
+jest.mock('../resolveRuntimeVersionWithExpoUpdatesAsync');
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 
@@ -105,9 +99,12 @@ beforeEach(() => {
 });
 
 describe('getParsedHeaders', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_OFFLINE;
+  });
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
-  it('defaults to "none" with no platform header', () => {
+  it('defaults to "ios" with no platform header', () => {
     expect(
       middleware.getParsedHeaders(
         asReq({
@@ -117,9 +114,9 @@ describe('getParsedHeaders', () => {
       )
     ).toEqual({
       expectSignature: null,
-      explicitlyPrefersMultipartMixed: false,
+      responseContentType: ResponseContentType.TEXT_PLAIN,
       hostname: null,
-      platform: 'none',
+      platform: 'ios',
     });
   });
 
@@ -129,7 +126,37 @@ describe('getParsedHeaders', () => {
         asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'android' } })
       )
     ).toEqual({
-      explicitlyPrefersMultipartMixed: false,
+      responseContentType: ResponseContentType.TEXT_PLAIN,
+      expectSignature: null,
+      hostname: null,
+      platform: 'android',
+    });
+  });
+
+  it('supports application/json and expo+json', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { 'expo-platform': 'android', accept: 'application/json' },
+        })
+      )
+    ).toEqual({
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      expectSignature: null,
+      hostname: null,
+      platform: 'android',
+    });
+
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { 'expo-platform': 'android', accept: 'application/expo+json' },
+        })
+      )
+    ).toEqual({
+      responseContentType: ResponseContentType.APPLICATION_EXPO_JSON,
       expectSignature: null,
       hostname: null,
       platform: 'android',
@@ -150,7 +177,7 @@ describe('getParsedHeaders', () => {
         })
       )
     ).toEqual({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       expectSignature: 'wat',
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
@@ -161,13 +188,21 @@ describe('getParsedHeaders', () => {
 
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
-    APISettings.isOffline = false;
-    asMock(getUserAsync).mockImplementation(async () => ({
+    delete process.env.EXPO_OFFLINE;
+    jest.mocked(getUserAsync).mockImplementation(async () => ({
       __typename: 'User',
       id: 'userwat',
       username: 'wat',
       primaryAccount: { id: 'blah-account' },
       accounts: [],
+    }));
+
+    jest.mocked(AppQuery.byIdAsync).mockImplementation(async () => ({
+      id: 'blah',
+      scopeKey: 'scope-key',
+      ownerAccount: {
+        id: 'blah-account',
+      },
     }));
   });
 
@@ -192,7 +227,7 @@ describe('_getManifestResponseAsync', () => {
             },
             ...extraExpFields,
           },
-        } as any)
+        }) as any
     );
     return middleware;
   }
@@ -200,9 +235,9 @@ describe('_getManifestResponseAsync', () => {
   // Sanity
   it('returns an anon manifest when no code signing is requested', async () => {
     const middleware = createMiddleware();
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: null,
       hostname: 'localhost',
@@ -221,6 +256,110 @@ describe('_getManifestResponseAsync', () => {
     );
 
     const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(JSON.parse(body)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: {
+          extra: {
+            eas: {
+              projectId: 'projectId',
+            },
+          },
+          hostUri: 'https://localhost:8081',
+          slug: 'slug',
+        },
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
+    });
+  });
+
+  it('returns an anon manifest when viewer does not have permission to view app', async () => {
+    jest.mocked(AppQuery.byIdAsync).mockImplementation(async () => {
+      throw new GraphQLError('test');
+    });
+
+    const middleware = createMiddleware();
+
+    const results = await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
+      platform: 'android',
+      expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    const { body, headers: manifestPartHeaders } = nullthrows(
+      await getMultipartPartAsync('manifest', results)
+    );
+    expect(manifestPartHeaders.get('expo-signature')).toBe(undefined);
+
+    expect(JSON.parse(body)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: {
+          extra: {
+            eas: {
+              projectId: 'projectId',
+            },
+          },
+          hostUri: 'https://localhost:8081',
+          slug: 'slug',
+        },
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
+    });
+  });
+
+  it('returns an anon manifest when viewer can view app but does not have permission to view account', async () => {
+    jest.mocked(AppQuery.byIdAsync).mockImplementation(async () => ({
+      id: 'blah',
+      scopeKey: 'scope-key',
+      ownerAccount: {
+        id: 'blah-other-account',
+      },
+    }));
+
+    const middleware = createMiddleware();
+
+    const results = await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
+      platform: 'android',
+      expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    const { body, headers: manifestPartHeaders } = nullthrows(
+      await getMultipartPartAsync('manifest', results)
+    );
+    expect(manifestPartHeaders.get('expo-signature')).toBe(undefined);
+
     expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
@@ -273,7 +412,7 @@ describe('_getManifestResponseAsync', () => {
     );
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -312,7 +451,7 @@ describe('_getManifestResponseAsync', () => {
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -357,7 +496,7 @@ describe('_getManifestResponseAsync', () => {
       'custom/private/key/path/private-key.pem': mockSelfSigned.privateKey,
     });
 
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
 
     const middleware = createMiddleware(
       {
@@ -375,7 +514,7 @@ describe('_getManifestResponseAsync', () => {
     );
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -412,23 +551,23 @@ describe('_getManifestResponseAsync', () => {
 
   it('returns a code signed manifest with expo-root chain when requested when offline and has cached dev cert', async () => {
     // start online to cache cert and stuff
-    APISettings.isOffline = false;
+    delete process.env.EXPO_OFFLINE;
 
     const middlewareOnline = createMiddleware();
     await middlewareOnline._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
     });
 
     // go offline
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
 
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -467,14 +606,79 @@ describe('_getManifestResponseAsync', () => {
     expect(certificateChainPartBody).toMatchSnapshot();
   });
 
-  it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
+  it('returns application/json when requested', async () => {
     const middleware = createMiddleware();
-    APISettings.isOffline = true;
+    process.env.EXPO_OFFLINE = '1';
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: false,
+      responseContentType: ResponseContentType.APPLICATION_JSON,
       platform: 'android',
       expectSignature: null,
       hostname: 'localhost',
+    });
+
+    expect(JSON.parse(results.body)).toMatchObject({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
+    });
+    expect(results.version).toBe('45.0.0');
+
+    expect(results.headers).toEqual(
+      new Map(
+        Object.entries({
+          'expo-protocol-version': 0,
+          'expo-sfv-version': 0,
+          'cache-control': 'private, max-age=0',
+          'content-type': 'application/json',
+        })
+      )
+    );
+  });
+
+  it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+    const results = await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.TEXT_PLAIN,
+      platform: 'android',
+      expectSignature: null,
+      hostname: 'localhost',
+    });
+
+    expect(JSON.parse(results.body)).toMatchObject({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
     });
     expect(results.version).toBe('45.0.0');
 
@@ -488,5 +692,22 @@ describe('_getManifestResponseAsync', () => {
         })
       )
     );
+  });
+
+  it('delegates runtime version resolution to expo-updates if possible', async () => {
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+    const results = await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
+      platform: 'android',
+      expectSignature: null,
+      hostname: 'localhost',
+    });
+    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(JSON.parse(body)).toMatchObject({
+      runtimeVersion: 'testrtv',
+    });
   });
 });

@@ -1,4 +1,9 @@
 {
-  "compilerOptions": {},
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "paths": {
+      "ThemeProvider": ["../common/ThemeProvider"]
+    }
+  },
+  "include": ["tests/**/*"]
 }

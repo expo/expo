@@ -2,7 +2,6 @@ import { PermissionResponse } from 'expo-modules-core';
 import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
 import type { RecordingStatus } from './Audio/Recording.types';
 declare const _default: {
-    readonly name: string;
     getStatusForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
     loadForVideo(element: HTMLMediaElement, nativeSource: AVPlaybackNativeSource, fullInitialStatus: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
     unloadForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
@@ -12,8 +11,8 @@ declare const _default: {
     setAudioIsEnabled(): Promise<void>;
     getStatusForSound(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
     loadForSound(nativeSource: string | {
-        [key: string]: any;
         uri: string;
+        [key: string]: any;
     }, fullInitialStatus: AVPlaybackStatusToSet): Promise<[HTMLMediaElement, AVPlaybackStatus]>;
     unloadForSound(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
     setStatusForSound(element: HTMLMediaElement, status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;
@@ -21,7 +20,7 @@ declare const _default: {
     getAudioRecordingStatus(): Promise<RecordingStatus>;
     prepareAudioRecorder(options: any): Promise<{
         uri: string | null;
-        status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
+        status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, "canRecord">>;
     }>;
     startAudioRecording(): Promise<RecordingStatus>;
     pauseAudioRecording(): Promise<RecordingStatus>;

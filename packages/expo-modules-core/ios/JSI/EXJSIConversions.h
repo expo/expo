@@ -5,8 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #import <jsi/jsi.h>
-#import <React/RCTBridgeModule.h>
-#import <ReactCommon/CallInvoker.h>
+#import <React/React-Core-umbrella.h>
 
 using namespace facebook;
 using namespace react;

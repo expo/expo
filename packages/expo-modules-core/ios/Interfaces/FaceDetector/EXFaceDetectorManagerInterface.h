@@ -2,10 +2,9 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <UIKit/UIKit.h>
 
 @protocol EXFaceDetectorManagerInterface
-
+#if !TARGET_OS_TV
 - (void)setSessionQueue:(dispatch_queue_t)sessionQueue;
 - (void)setIsEnabled:(BOOL)enabled;
 - (void)setOnFacesDetected:(void (^)(NSArray<NSDictionary *> *))onFacesDetected;
@@ -16,5 +15,5 @@
 - (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
 - (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL) mirrored;
 - (void)stopFaceDetection;
-
+#endif
 @end

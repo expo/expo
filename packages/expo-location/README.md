@@ -11,8 +11,8 @@ Allows reading geolocation information from the device. Your app can poll for th
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/location.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/location/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/location/)
 
 # Installation in managed Expo projects
 
@@ -28,6 +28,24 @@ For bare React Native projects, you must ensure that you have [installed and con
 npx expo install expo-location
 ```
 
+### Configure for Android
+
+This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. These permissions are automatically added.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+<!-- Optional permissions -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+```
+
+> [!note]
+> On Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en) or [foreground location permissions](https://support.google.com/googleplay/android-developer/answer/13392821?hl=en).
+
 ### Configure for iOS
 
 Add `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSLocationAlwaysUsageDescription` and `NSLocationWhenInUseUsageDescription` keys to your `Info.plist`:
@@ -42,22 +60,6 @@ Add `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSLocationAlwaysUsageDescri
 ```
 
 Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. These permissions are automatically added.
-
-```xml
-<!-- Added permissions -->
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
-<!-- Optional permissions -->
-<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-```
-
-> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 # Contributing
 

@@ -1,6 +1,5 @@
 import { parse } from 'url';
 
-import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import {
   assertMissingRuntimePlatform,
@@ -10,6 +9,7 @@ import {
   RuntimePlatform,
 } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
+import * as Log from '../../../log';
 
 const debug = require('debug')(
   'expo:start:server:middleware:runtimeRedirect'
@@ -27,7 +27,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: {
-      onDeepLink: DeepLinkHandler;
+      onDeepLink?: DeepLinkHandler;
       getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
     }
   ) {
@@ -44,7 +44,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
 
     debug(`props:`, { platform, runtime });
 
-    this.options.onDeepLink({ runtime, platform });
+    this.options.onDeepLink?.({ runtime, platform });
 
     const redirect = this.options.getLocation({ runtime });
     if (!redirect) {

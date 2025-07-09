@@ -1,10 +1,8 @@
-import { css } from '@emotion/react';
-import { mergeClasses, theme, typography } from '@expo/styleguide';
-import { borderRadius, spacing } from '@expo/styleguide-base';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
-import { A } from '../Text';
+import * as Tooltip from '~/ui/components/Tooltip';
 
 type SidebarSingleEntryProps = {
   href: string;
@@ -13,6 +11,8 @@ type SidebarSingleEntryProps = {
   isActive?: boolean;
   isExternal?: boolean;
   secondary?: boolean;
+  shouldLeakReferrer?: boolean;
+  allowCompactDisplay?: boolean;
 };
 
 export const SidebarSingleEntry = ({
@@ -22,84 +22,42 @@ export const SidebarSingleEntry = ({
   isActive = false,
   isExternal = false,
   secondary = false,
+  shouldLeakReferrer = false,
+  allowCompactDisplay = false,
 }: SidebarSingleEntryProps) => {
   return (
-    <A
-      href={href}
-      css={[containerStyle, secondary && secondaryContainerStyle, isActive && activeContainerStyle]}
-      isStyled>
-      <span
-        css={[
-          iconWrapperStyle,
-          secondary && secondaryIconWrapperStyle,
-          isActive && activeIconWrapperStyle,
-        ]}>
-        <Icon
+    <Tooltip.Root delayDuration={500} disableHoverableContent>
+      <Tooltip.Trigger asChild>
+        <LinkBase
+          href={href}
           className={mergeClasses(
-            'icon-sm',
-            isActive ? 'text-palette-blue11' : 'text-icon-secondary'
+            'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary',
+            'hocus:bg-element',
+            'focus-visible:relative focus-visible:z-10',
+            allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
+            secondary && 'text-xs',
+            isActive &&
+              '!bg-palette-blue3 font-medium text-link hocus:!bg-palette-blue4 hocus:text-link'
           )}
-        />
-      </span>
-      {title}
-      {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
-    </A>
+          {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}>
+          <Icon
+            className={mergeClasses(
+              'shrink-0',
+              secondary ? 'icon-xs' : 'icon-sm',
+              isActive ? 'text-palette-blue11' : 'text-icon-tertiary'
+            )}
+          />
+          <span className={mergeClasses(allowCompactDisplay && 'compact-height:hidden')}>
+            {title}
+          </span>
+          {isExternal && <ArrowUpRightIcon className="icon-sm ml-auto text-icon-secondary" />}
+        </LinkBase>
+      </Tooltip.Trigger>
+      <Tooltip.Content
+        side="bottom"
+        className={mergeClasses('z-50 hidden', allowCompactDisplay && 'compact-height:flex')}>
+        <span className="text-2xs text-secondary">{title}</span>
+      </Tooltip.Content>
+    </Tooltip.Root>
   );
 };
-
-const containerStyle = css({
-  ...typography.fontSizes[14],
-  minHeight: 38,
-  lineHeight: '100%',
-  padding: `${spacing[1]}px ${spacing[1]}px`,
-  color: theme.text.secondary,
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  userSelect: 'none',
-  transition: 'color 150ms, opacity 150ms',
-  textDecoration: 'none',
-  borderRadius: borderRadius.md,
-  fontWeight: 500,
-  gap: spacing[2.5],
-
-  '&:hover': {
-    color: theme.text.default,
-    opacity: 1,
-  },
-});
-
-const secondaryContainerStyle = css({
-  fontWeight: 400,
-
-  '&:hover': {
-    color: theme.text.secondary,
-    opacity: 0.8,
-  },
-});
-
-const activeContainerStyle = css({
-  color: theme.text.link,
-
-  '&:hover': {
-    color: theme.text.link,
-  },
-});
-
-const iconWrapperStyle = css({
-  display: 'flex',
-  backgroundColor: theme.background.element,
-  width: spacing[6],
-  height: spacing[6],
-  borderRadius: borderRadius.sm,
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
-const activeIconWrapperStyle = css({
-  backgroundColor: theme.palette.blue4,
-});
-
-const secondaryIconWrapperStyle = css({
-  backgroundColor: 'transparent',
-});

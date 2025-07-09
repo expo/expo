@@ -7,20 +7,6 @@ exports.applyNameSettingsGradle = applyNameSettingsGradle;
 exports.getName = getName;
 exports.sanitizeNameForGradle = sanitizeNameForGradle;
 exports.withNameSettingsGradle = exports.withName = void 0;
-function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
-  _androidPlugins = function () {
-    return data;
-  };
-  return data;
-}
-function _warnings() {
-  const data = require("../utils/warnings");
-  _warnings = function () {
-    return data;
-  };
-  return data;
-}
 function _Resources() {
   const data = require("./Resources");
   _Resources = function () {
@@ -31,6 +17,20 @@ function _Resources() {
 function _Strings() {
   const data = require("./Strings");
   _Strings = function () {
+    return data;
+  };
+  return data;
+}
+function _androidPlugins() {
+  const data = require("../plugins/android-plugins");
+  _androidPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _warnings() {
+  const data = require("../utils/warnings");
+  _warnings = function () {
     return data;
   };
   return data;
@@ -50,8 +50,7 @@ function sanitizeNameForGradle(name) {
   // The project name 'My-Special 😃 Co/ol_Project' must not contain any of the following characters: [/, \, :, <, >, ", ?, *, |]. Set the 'rootProject.name' or adjust the 'include' statement (see https://docs.gradle.org/6.2/dsl/org.gradle.api.initialization.Settings.html#org.gradle.api.initialization.Settings:include(java.lang.String[]) for more details).
   return name.replace(/(\/|\\|:|<|>|"|\?|\*|\|)/g, '');
 }
-const withName = (0, _androidPlugins().createStringsXmlPlugin)(applyNameFromConfig, 'withName');
-exports.withName = withName;
+const withName = exports.withName = (0, _androidPlugins().createStringsXmlPlugin)(applyNameFromConfig, 'withName');
 const withNameSettingsGradle = config => {
   return (0, _androidPlugins().withSettingsGradle)(config, config => {
     if (config.modResults.language === 'groovy') {
@@ -84,8 +83,7 @@ function applyNameFromConfig(config, stringsJSON) {
  * @param settingsGradle
  */
 function applyNameSettingsGradle(config, settingsGradle) {
-  var _getName;
-  const name = sanitizeNameForGradle((_getName = getName(config)) !== null && _getName !== void 0 ? _getName : '');
+  const name = sanitizeNameForGradle(getName(config) ?? '');
 
   // Select rootProject.name = '***' and replace the contents between the quotes.
   return settingsGradle.replace(/rootProject.name\s?=\s?(["'])(?:(?=(\\?))\2.)*?\1/g, `rootProject.name = '${name.replace(/'/g, "\\'")}'`);

@@ -1,0 +1,1 @@
+{"version":3,"file":"dom-hooks.d.ts","sourceRoot":"","sources":["../../src/dom/dom-hooks.ts"],"names":[],"mappings":"AAAA,OAAO,EAA+C,KAAK,cAAc,EAAE,KAAK,GAAG,EAAE,MAAM,OAAO,CAAC;AAEnG,OAAO,KAAK,EAAE,oBAAoB,EAAE,MAAM,aAAa,CAAC;AAOxD;;;GAGG;AACH,wBAAgB,sBAAsB,CAAC,CAAC,SAAS,oBAAoB,EACnE,GAAG,EAAE,GAAG,CAAC,CAAC,CAAC,EACX,IAAI,EAAE,MAAM,CAAC,EACb,IAAI,CAAC,EAAE,cAAc,QA6BtB"}

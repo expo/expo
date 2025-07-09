@@ -56,8 +56,8 @@ export function formatCommitHash(hash?: string): string {
 export function formatChangelogEntry(entry: string): string {
   return entry
     .replace(/\[(#\d+|@\w+)\]\(([^)]+?)\)/g, blue.bold(link('$1', '$2')))
-    .replace(/(\W)([_*]{2})([^\2]*?)\2(\W)/g, '$1' + reset.bold('$3') + '$4')
-    .replace(/(\W)([_*])([^\2]*?)\2(\W)/g, '$1' + reset.italic('$3') + '$4')
+    .replace(/(\W)([_*]{2})([^\x02]*?)\2(\W)/g, '$1' + reset.bold('$3') + '$4')
+    .replace(/(\W)([_*])([^\x02]*?)\2(\W)/g, '$1' + reset.italic('$3') + '$4')
     .replace(/`([^`]+?)`/g, dim('$1'));
 }
 

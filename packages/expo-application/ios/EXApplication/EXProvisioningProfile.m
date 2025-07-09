@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXApplication/EXProvisioningProfile.h>
+#import "EXProvisioningProfile.h"
 
 @implementation EXProvisioningProfile {
   NSDictionary *_plist;

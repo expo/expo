@@ -1,1 +1,1 @@
-{"version":3,"file":"LocationEventEmitter.web.d.ts","sourceRoot":"","sources":["../src/LocationEventEmitter.web.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,mBAAmB,CAAC;AAEjD,eAAO,MAAM,oBAAoB,cAA8B,CAAC"}
+{"version":3,"file":"LocationEventEmitter.web.d.ts","sourceRoot":"","sources":["../src/LocationEventEmitter.web.ts"],"names":[],"mappings":"AAEA,eAAO,MAAM,oBAAoB,uDAAqB,CAAC"}

@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 🐛 Bug fixes
+
+- [iOS] Resolve StoryBoard name from Info.plist. ([#37151](https://github.com/expo/expo/pull/37151) by [@Vadko](https://github.com/Vadko))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -9,6 +13,336 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.30.10 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.9 - 2025-06-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.8 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.7 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.6 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.5 — 2025-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.29.22 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.21 - 2025-01-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.20 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.19 - 2025-01-08
+
+### 🐛 Bug fixes
+
+- On `iOS`, show the splashscreen again when the app is reloaded. ([#33793](https://github.com/expo/expo/pull/33793) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.18 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.17 - 2024-12-10
+
+### 🎉 New features
+
+- On Android, add support for providing vector drawables as the splashscreen icon. ([#33507](https://github.com/expo/expo/pull/33507) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.16 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.15 - 2024-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.14 - 2024-12-05
+
+### 💡 Others
+
+- Use `light` and `dark` colors on `iOS` instead of `any`. ([#33472](https://github.com/expo/expo/pull/33472) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.13 — 2024-11-22
+
+### 🐛 Bug fixes
+
+- Correctly handle `resizeMode` in config plugin. ([#33143](https://github.com/expo/expo/pull/33143) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.12 — 2024-11-20
+
+### 🐛 Bug fixes
+
+- Prevent `setOptions` from being called in Expo Go. ([#33104](https://github.com/expo/expo/pull/33104) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.29.11 — 2024-11-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.10 — 2024-11-14
+
+### 💡 Others
+
+- Bump minimum @expo/prebuild-config version.
+
+## 0.29.9 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.8 — 2024-11-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.7 — 2024-11-12
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.6 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.5 — 2024-11-10
+
+### 🐛 Bug fixes
+
+- [Android] Added guard to prevent null pointer exception when the splashScreen property is referenced without an activity (headless JS) ([#32707](https://github.com/expo/expo/pull/32707) by [@chrfalch](https://github.com/chrfalch))
+
+## 0.29.4 — 2024-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.3 — 2024-11-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.2 — 2024-11-05
+
+### 💡 Others
+
+- Migrate internal logic used by router from JS to native ([#32610](https://github.com/expo/expo/pull/32610) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.29.1 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.29.0 — 2024-10-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.5 — 2024-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.4 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.3 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.2 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.28.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `preventAutoHideAsync()` broken on iOS bridgeless mode. ([#28234](https://github.com/expo/expo/pull/28234) by [@kudo](https://github.com/kudo))
+
+## 0.27.6 - 2024-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.5 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.4 — 2024-05-03
+
+### 💡 Others
+
+- No-op when native module is not installed ([#28599](https://github.com/expo/expo/pull/28599) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.27.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.27.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Fixed white screen flickering when using expo-updates with longer `fallbackToCacheTimeout`. ([#28227](https://github.com/expo/expo/pull/28227) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 0.26.4 - 2024-01-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.2 - 2024-01-10
+
+### 🐛 Bug fixes
+
+- Fixed return value of the `preventAutoHideAsync` function. ([#26348](https://github.com/expo/expo/pull/26348) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 0.26.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.26.0 — 2023-12-12
+
+### 💡 Others
+
+- Removed 'The current activity is no longer available' warning on Android. ([#25608](https://github.com/expo/expo/pull/25608) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.25.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🎉 New features
+
+- Automatically dismiss splash screen when an error is thrown to prevent blocking error information. ([#24893](https://github.com/expo/expo/pull/24893) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Moved changes required for splash screen orchestration from `expo-router` to `expo-splash-screen`. ([#24893](https://github.com/expo/expo/pull/24893) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.24.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- On Android, remove `isClickable` on `SplashScreenView` that caused incorrect behaviour with `TalkBack`. ([#24601](https://github.com/expo/expo/pull/24601) by [@alanhughes](https://github.com/alanjhughes))
+
+## 0.23.1 — 2023-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.23.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Delete deprecated `hide` and `preventAutoHide` methods. ([#24296](https://github.com/expo/expo/pull/24296) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.22.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Removed 'No native splash screen registered' warning on iOS when opening and reloading the app. ([#24210](https://github.com/expo/expo/pull/24210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.21.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.21.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- [Android] Fixed splash screen is missing when using the `getDelayLoadAppHandler()` from expo-updates. ([#23747](https://github.com/expo/expo/pull/23747) by [@kudo](https://github.com/kudo))
+
+## 0.20.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.1 — 2023-06-24
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.0 — 2023-06-21
+
+### 🛠 Breaking changes
+
+- Deprecated `@expo/configure-splash-screen` in favor of the splash screen config plugin. ([#21464](https://github.com/expo/expo/pull/21464) by [@byCedric](https://github.com/byCedric))
+
+### 🎉 New features
+
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+- Migrated Android codebase to use Expo modules API. ([#22827](https://github.com/expo/expo/pull/22827) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 0.19.0 — 2023-05-08
 

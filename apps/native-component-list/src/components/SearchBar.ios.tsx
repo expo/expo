@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
@@ -23,7 +23,7 @@ const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMarg
 
 const SearchIcon = () => (
   <View style={styles.searchIconContainer}>
-    <Ionicons name="ios-search" size={18} color="#ccc" />
+    <Ionicons name="search" size={18} color="#ccc" />
   </View>
 );
 
@@ -139,7 +139,7 @@ export default function SearchBar({
           <Text
             style={{
               fontSize: 17,
-              color: tintColor || '#007AFF',
+              color: tintColor,
             }}>
             {cancelButtonText || 'Cancel'}
           </Text>

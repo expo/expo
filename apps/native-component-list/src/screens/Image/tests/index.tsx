@@ -1,10 +1,9 @@
-import { ImageTestGroup } from '../types';
 import AppearanceTests from './appearance';
 import BorderTests from './borders';
 import ShadowsTests from './shadows';
 import SourcesTests from './sources';
 
-const tests: ImageTestGroup = {
+const tests = {
   name: 'Image',
   tests: [AppearanceTests, BorderTests, ShadowsTests, SourcesTests],
 };

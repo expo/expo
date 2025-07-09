@@ -1,0 +1,59 @@
+name: TV compile test
+
+on:
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
+      - packages/expo-modules-core/ios/Core/Views/SwiftUI/**
+      - packages/expo-ui/**
+      - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+      - packages/expo-updates/e2e/setup/project.ts
+      - templates/expo-template-bare-minimum/**
+  pull_request:
+    branches: [main]
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
+      - packages/expo-modules-core/ios/Core/Views/SwiftUI/**
+      - packages/expo-ui/**
+      - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+      - packages/expo-updates/e2e/setup/project.ts
+      - templates/expo-template-bare-minimum/**
+  schedule:
+    - cron: '0 17 * * SUN' # 22:00 UTC every Sunday
+
+jobs:
+  ios:
+    runs_on: macos-large
+    image: latest
+    steps:
+      - name: Install applesimutils
+        id: ios_simulator
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          /opt/homebrew/bin/brew tap wix/brew
+          /opt/homebrew/bin/brew install applesimutils
+          xcrun simctl list
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Set up TV compile test project
+        id: setup
+        working_directory: ../..
+        env:
+          UPDATES_HOST: localhost
+          UPDATES_PORT: "4747"
+        run: |
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+          ls -la ../updates-e2e
+      - name: Prepare TV project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        run: |
+          npx pod-install
+      - name: Compile TV project
+        id: build
+        working_directory: ../../../updates-e2e
+        run: |
+          yarn tvos:build | npx @expo/xcpretty

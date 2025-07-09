@@ -25,8 +25,7 @@ describe(resolveProps, () => {
     });
   });
   it(`resolves legacy props`, () => {
-    // @ts-ignore: jest
-    WarningAggregator.addWarningAndroid.mockImplementationOnce();
+    jest.mocked(WarningAggregator.addWarningAndroid).mockClear();
     expect(
       resolveProps({
         androidNavigationBar: {
@@ -43,8 +42,7 @@ describe(resolveProps, () => {
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
   });
   it(`skips legacy props if any config plugin props are provided`, () => {
-    // @ts-ignore: jest
-    WarningAggregator.addWarningAndroid.mockImplementationOnce();
+    jest.mocked(WarningAggregator.addWarningAndroid).mockClear();
     expect(
       resolveProps(
         {
@@ -239,7 +237,7 @@ describe('e2e: write navigation color and style to files correctly', () => {
 
     const group = AndroidConfig.Styles.getStylesGroupAsObject(
       stylesJSON,
-      AndroidConfig.Styles.getAppThemeLightNoActionBarGroup()
+      AndroidConfig.Styles.getAppThemeGroup()
     );
     expect(group?.['android:navigationBarColor']).toBe('@color/navigationBarColor');
     expect(group?.['android:windowLightNavigationBar']).toBe('true');

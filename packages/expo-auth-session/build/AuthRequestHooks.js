@@ -31,7 +31,8 @@ export function useAutoDiscovery(issuerOrDiscovery) {
 }
 export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
     const [request, setRequest] = useState(null);
-    const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
+    const scopeString = config.scopes?.join(' ');
+    const promptString = createPromptString(config.prompt);
     const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [config.extraParams]);
     useEffect(() => {
         let isMounted = true;
@@ -51,15 +52,27 @@ export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
         config.clientId,
         config.redirectUri,
         config.responseType,
-        config.prompt,
         config.clientSecret,
         config.codeChallenge,
         config.state,
         config.usePKCE,
         scopeString,
+        promptString,
         extraParamsString,
     ]);
     return request;
+}
+/**
+ * @returns Prompt type converted to a primitive value to be used as a React hook dependency
+ */
+function createPromptString(prompt) {
+    if (!prompt) {
+        return;
+    }
+    if (Array.isArray(prompt)) {
+        return prompt.join(' ');
+    }
+    return prompt;
 }
 export function useAuthRequestResult(request, discovery, customOptions = {}) {
     const [result, setResult] = useState(null);
@@ -86,7 +99,7 @@ export function useAuthRequestResult(request, discovery, customOptions = {}) {
  * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.
  *
  * > In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`.
- * > See the [Identity example](/guides/authentication#identityserver-4) for more info.
+ * > See the [GitHub example](/guides/authentication#github) for more info.
  *
  * If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()`
  * to get a `TokenResponse` instance which you can use to easily refresh the token.

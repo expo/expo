@@ -1,0 +1,32 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '2.1.9'
+
+android {
+  namespace "expo.modules.video"
+  defaultConfig {
+    versionCode 1
+    versionName '2.1.9'
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+
+  // Remember to keep this in sync with the version in `expo-audio`
+  def androidxMedia3Version = "1.4.0"
+  implementation "androidx.media3:media3-session:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-exoplayer-hls:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-ui:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-datasource-okhttp:${androidxMedia3Version}"
+
+  def fragment_version = "1.6.2"
+  implementation "androidx.fragment:fragment:$fragment_version"
+  implementation "androidx.fragment:fragment-ktx:$fragment_version"
+}

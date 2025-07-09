@@ -1,7 +1,6 @@
 package expo.modules.kotlin.views
 
 import android.view.View
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -35,7 +34,7 @@ class SimpleViewManagerWrapper(
   override fun getNativeProps(): MutableMap<String, String> {
     val props = super.getNativeProps()
     viewWrapperDelegate.props.forEach { (key, prop) ->
-      props[key] = prop.type.kType.toString()
+      props[key] = prop.type.kType.classifier.toString()
     }
     return props
   }
@@ -46,18 +45,7 @@ class SimpleViewManagerWrapper(
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    viewWrapperDelegate.getExportedCustomDirectEventTypeConstants()?.let {
-      val directEvents = super.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
-      val builder = MapBuilder.builder<String, Any>()
-      directEvents.forEach { event ->
-        builder.put(event.key, event.value)
-      }
-      it.forEach { event ->
-        builder.put(event.key, event.value)
-      }
-      return builder.build()
-    }
-
-    return super.getExportedCustomDirectEventTypeConstants()
+    val expoEvent = viewWrapperDelegate.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
+    return super.getExportedCustomDirectEventTypeConstants()?.plus(expoEvent) ?: expoEvent
   }
 }

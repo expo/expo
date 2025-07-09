@@ -1,7 +1,6 @@
 {
-  "name": "expo-mail-composer",
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "modules": ["MailComposerModule"]
   },
   "android": {

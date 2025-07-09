@@ -15,9 +15,9 @@ function _configPlugins() {
   };
   return data;
 }
-function _normalizeColor() {
-  const data = _interopRequireDefault(require("@react-native/normalize-color"));
-  _normalizeColor = function () {
+function _normalizeColors() {
+  const data = _interopRequireDefault(require("@react-native/normalize-colors"));
+  _normalizeColors = function () {
     return data;
   };
   return data;
@@ -29,7 +29,7 @@ function _semver() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // @ts-ignore: uses flow
 
 // Maps to the template AppDelegate.m
@@ -67,7 +67,7 @@ function setRootViewBackgroundColor(config, infoPlist) {
   if (!backgroundColor) {
     delete infoPlist[BACKGROUND_COLOR_KEY];
   } else {
-    let color = (0, _normalizeColor().default)(backgroundColor);
+    let color = (0, _normalizeColors().default)(backgroundColor);
     if (!color) {
       throw new Error('Invalid background color on iOS');
     }
@@ -78,7 +78,6 @@ function setRootViewBackgroundColor(config, infoPlist) {
   return infoPlist;
 }
 function getRootViewBackgroundColor(config) {
-  var _config$ios;
-  return ((_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.backgroundColor) || config.backgroundColor || null;
+  return config.ios?.backgroundColor || config.backgroundColor || null;
 }
 //# sourceMappingURL=withIosRootViewBackgroundColor.js.map

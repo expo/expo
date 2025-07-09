@@ -10,6 +10,144 @@
 
 ### 💡 Others
 
+## 14.2.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.2 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.0 — 2025-04-11
+
+### 🎉 New features
+
+- [iOS] Added support for access groups. ([#36056](https://github.com/expo/expo/pull/36056) by [@chrsmys](https://github.com/chrsmys))
+
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 14.0.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [Android] Add a config plugin for configuring the Android backup system. ([#29944](https://github.com/expo/expo/pull/29944) by [@behenate](https://github.com/behenate))
+- Add Apple TV support. ([#31374](https://github.com/expo/expo/pull/31374) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- [iOS] check return value of SecAccessControlCreateWithFlags ([#29983](https://github.com/expo/expo/pull/29983) by [@vonovak](https://github.com/vonovak))
+- Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+
+## 13.0.2 - 2024-06-27
+
+### 🐛 Bug fixes
+
+- [iOS] Improve error message for unhandled errors ([#29394](https://github.com/expo/expo/pull/29394) by [@hassankhan](https://github.com/hassankhan))
+- [Android] Fix decryption errors after Android Auto Backup has restored `expo-secure-store` data. ([#29943](https://github.com/expo/expo/pull/29943) by [@behenate](https://github.com/behenate))
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `canUseBiometricAuthentication` function. ([#26767](https://github.com/expo/expo/pull/26767) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 12.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.8.0 — 2023-12-12
+
+### 🎉 New features
+
+- [iOS] Added possibility to store values that require authentication and ones that don't under the same `keychainService`. ([#23841](https://github.com/expo/expo/pull/23841) by [@behenate](https://github.com/behenate))
+- [iOS] Added synchronous functions for storing and retrieving values from the store. ([#23841](https://github.com/expo/expo/pull/23841) by [@behenate](https://github.com/behenate))
+
+## 12.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Enforce minimum authentication tag length for the `AESEncryptor` for improved security. ([#25294](https://github.com/expo/expo/pull/25294) by [@behenate](https://github.com/behenate))
+
+## 12.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Fixed the 'WHEN_UNLOCKED_THIS_DEVICE_ONLY' constraint being incorrectly mapped to wrong secure store accessible ([#24831](https://github.com/expo/expo/pull/24831) by [@mmmguitar](https://github.com/mmmguitar))
+
+## 12.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- [Android] Migrated to Expo Modules API. ([#23804](https://github.com/expo/expo/pull/23804) by [@behenate](https://github.com/behenate))
+- [Android] It is now possible to store values that require authentication and ones that don't under the same `keychainService`. ([#23804](https://github.com/expo/expo/pull/23804) by [@behenate](https://github.com/behenate))
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.0 — 2023-07-28
+
+### 🎉 New features
+
+- Added a config plugin to automatically set NSFaceIDUsageDescription on iOS. ([#23268](https://github.com/expo/expo/pull/23268) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.3.1 - 2023-07-04
+
+### 💡 Others
+
+- Added a check for the `NSFaceIDUsageDescription` key in the `set` function. ([#23275](https://github.com/expo/expo/pull/23275) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.3.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Added automatic invalidated key handling on Android. ([#22716](https://github.com/expo/expo/pull/22716) by [@behenate](https://github.com/behenate))
+
 ## 12.2.0 — 2023-05-08
 
 ### 🎉 New features

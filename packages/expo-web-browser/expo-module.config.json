@@ -1,9 +1,9 @@
 {
-  "platforms": ["ios", "android"],
-  "ios": {
-    "modulesClassNames": ["WebBrowserModule"]
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["WebBrowserModule"]
   },
   "android": {
-    "modulesClassNames": ["expo.modules.webbrowser.WebBrowserModule"]
+    "modules": ["expo.modules.webbrowser.WebBrowserModule"]
   }
 }

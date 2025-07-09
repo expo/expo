@@ -16,6 +16,7 @@ describe('scheme', () => {
     expect(getScheme({ scheme: 'myapp' })).toStrictEqual(['myapp']);
     expect(
       getScheme({
+        // @ts-ignore
         scheme: ['myapp', 'other', null],
       })
     ).toStrictEqual(['myapp', 'other']);
@@ -25,10 +26,8 @@ describe('scheme', () => {
     expect(
       setScheme(
         {
-          // @ts-ignore: TODO -- add this to the ExpoConfig type
           scheme: ['myapp', 'more'],
           ios: {
-            // @ts-ignore: TODO -- add this to the ExpoConfig type
             scheme: ['ios-only'],
             bundleIdentifier: 'com.demo.value',
           },

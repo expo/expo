@@ -1,44 +1,21 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
 import fs from 'fs/promises';
-import { sync as globSync } from 'glob';
-import klawSync from 'klaw-sync';
 import path from 'path';
+import semver from 'semver';
 
 import {
-  bin,
-  execute,
   projectRoot,
   getRoot,
-  setupTestProjectAsync,
+  setupTestProjectWithOptionsAsync,
   getLoadedModulesAsync,
+  findProjectFiles,
 } from './utils';
+import { executeExpoAsync } from '../utils/expo';
+import { createPackageTarball } from '../utils/package';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
-
-const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
-
-function getTemplatePath() {
-  const results = globSync(`*.tgz`, {
-    absolute: true,
-    cwd: templateFolder,
-  });
-
-  return results[0];
-}
-
-async function ensureTemplatePathAsync() {
-  let templatePath = getTemplatePath();
-  if (templatePath) return templatePath;
-  await execa('npm', ['pack'], { cwd: templateFolder });
-
-  templatePath = getTemplatePath();
-  if (templatePath) return templatePath;
-
-  throw new Error('Could not find template tarball');
-}
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -54,12 +31,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/prebuild').expoPrebuild`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/prebuild/index.js',
     '@expo/cli/build/src/utils/args.js',
@@ -67,7 +38,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo prebuild --help`', async () => {
-  const results = await execute('prebuild', '--help');
+  const results = await executeExpoAsync(projectRoot, ['prebuild', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -82,8 +53,9 @@ it('runs `npx expo prebuild --help`', async () => {
         --clean                                  Delete the native folders and regenerate them before applying changes
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
+        --bun                                    Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
-        --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
+        --template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
         -h, --help                               Usage info
@@ -92,131 +64,237 @@ it('runs `npx expo prebuild --help`', async () => {
 });
 
 it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
-  const projectName = 'basic-prebuild-assert-no-expo';
-  const projectRoot = getRoot(projectName);
+  const projectRoot = getRoot('basic-prebuild-assert-no-expo');
+
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
   await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
-  await expect(execute('prebuild', projectName, '--no-install')).rejects.toThrowError(
-    /Cannot determine which native SDK version your project uses because the module `expo` is not installed\. Please install it with `yarn add expo` and try again./
+  await expect(
+    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], { verbose: false })
+  ).rejects.toThrow(
+    /Cannot determine the project's Expo SDK version because the module `expo` is not installed\. Install it with `npm install expo` and try again./
   );
 });
 
-it(
-  'runs `npx expo prebuild`',
-  async () => {
-    const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
-    // `npx expo prebuild --no-install`
+/**
+ * Asserts that the placeholder values for the app name have been renamed to the
+ * values configured by the user
+ *
+ * @see packages/create-expo/README.md for an explanation of placeholder values.
+ */
+async function expectTemplateAppNameToHaveBeenRenamed(projectRoot: string) {
+  // We could read the files in parallel to save a tiny bit of time, but the
+  // test code and stack trace is far easier to follow when arranged like this.
+  const read = (filePath: string) => fs.readFile(path.resolve(projectRoot, filePath), 'utf-8');
+  let contents: string;
 
-    const templateFolder = await ensureTemplatePathAsync();
-    console.log('Using local template:', templateFolder);
+  // For each of these tests, we provide both positive and negative test cases.
+  // - We expect it *not to match* the template's initial value.
+  //   - … This guards against renaming some, but not all cases of the string.
+  // - We expect it *to match* the renamed value configured by the user.
+  //   - … This guards against renaming the string, but to the wrong value.
 
-    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
-      cwd: projectRoot,
-    });
+  contents = await read('app.json');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('com.example.minimal');
 
-    // List output files with sizes for snapshotting.
-    // This is to make sure that any changes to the output are intentional.
-    // Posix path formatting is used to make paths the same across OSes.
-    const files = klawSync(projectRoot)
-      .map((entry) => {
-        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
-          return null;
-        }
-        return path.posix.relative(projectRoot, entry.path);
-      })
-      .filter(Boolean);
+  contents = await read('android/settings.gradle');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basic-prebuild');
 
-    const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  // Although renameTemplateAppName() renames to "com.basicprebuild"
+  // post-extraction, there seems to be a follow-up step that (correctly)
+  // renames it once again to the value configured in `exp.android.package`.
+  contents = await read('android/app/build.gradle');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
 
-    // Deleted
-    expect(pkg.main).not.toBeDefined();
+  contents = await read('android/app/src/main/java/com/example/minimal/MainApplication.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
 
-    // Added new packages
-    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
-      'expo',
-      'expo-splash-screen',
-      'expo-status-bar',
-      'react',
-      'react-native',
-    ]);
+  contents = await read('android/app/src/main/java/com/example/minimal/MainActivity.kt');
+  expect(contents).not.toMatch('com.helloworld');
+  expect(contents).toMatch('com.example.minimal');
 
-    // Updated scripts
-    expect(pkg.scripts).toStrictEqual({
-      android: 'expo run:android',
-      ios: 'expo run:ios',
-      start: 'expo start --dev-client',
-    });
+  contents = await read('ios/Podfile');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
 
-    // If this changes then everything else probably changed as well.
-    expect(files).toMatchInlineSnapshot(`
-      [
-        "App.js",
-        "android/.gitignore",
-        "android/app/build.gradle",
-        "android/app/debug.keystore",
-        "android/app/proguard-rules.pro",
-        "android/app/src/debug/AndroidManifest.xml",
-        "android/app/src/debug/java/com/example/minimal/ReactNativeFlipper.java",
-        "android/app/src/main/AndroidManifest.xml",
-        "android/app/src/main/java/com/example/minimal/MainActivity.java",
-        "android/app/src/main/java/com/example/minimal/MainApplication.java",
-        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
-        "android/app/src/main/res/drawable/splashscreen.xml",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-        "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
-        "android/app/src/main/res/values/colors.xml",
-        "android/app/src/main/res/values/strings.xml",
-        "android/app/src/main/res/values/styles.xml",
-        "android/app/src/main/res/values-night/colors.xml",
-        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
-        "android/build.gradle",
-        "android/gradle/wrapper/gradle-wrapper.jar",
-        "android/gradle/wrapper/gradle-wrapper.properties",
-        "android/gradle.properties",
-        "android/gradlew",
-        "android/gradlew.bat",
-        "android/settings.gradle",
-        "app.json",
-        "index.js",
-        "ios/.gitignore",
-        "ios/.xcode.env",
-        "ios/Podfile",
-        "ios/Podfile.properties.json",
-        "ios/basicprebuild/AppDelegate.h",
-        "ios/basicprebuild/AppDelegate.mm",
-        "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
-        "ios/basicprebuild/Images.xcassets/Contents.json",
-        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
-        "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/image.png",
-        "ios/basicprebuild/Info.plist",
-        "ios/basicprebuild/SplashScreen.storyboard",
-        "ios/basicprebuild/Supporting/Expo.plist",
-        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
-        "ios/basicprebuild/basicprebuild.entitlements",
-        "ios/basicprebuild/main.m",
-        "ios/basicprebuild/noop-file.swift",
-        "ios/basicprebuild.xcodeproj/project.pbxproj",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
-        "metro.config.js",
-        "package.json",
-        "yarn.lock",
-      ]
-    `);
-  },
-  // Could take 45s depending on how fast npm installs
-  60 * 1000
-);
+  contents = await read('ios/basicprebuild.xcodeproj/project.pbxproj');
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  contents = await read(
+    'ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme'
+  );
+  expect(contents).not.toMatch('HelloWorld');
+  expect(contents).toMatch('basicprebuild');
+
+  // In case this template ever changes in future, other typical files to look
+  // out for include:
+  // android/app/BUCK
+  // android/app/src/main/AndroidManifest.xml
+  // android/app/src/main/res/values/strings.xml
+  // android/app/src/debug/java/com/minimal/ReactNativeFlipper.java
+  // android/app/src/main/java/com/minimal/MainActivity.java
+  // android/app/src/main/java/com/minimal/MainApplication.java
+}
+
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
+    reuseExisting: false,
+  });
+
+  const templateTarball = await createPackageTarball(
+    projectRoot,
+    'templates/expo-template-bare-minimum'
+  );
+
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
+
+  // Clean up the tarballs to avoid `.tarballs` being validated
+  await fs.rm(path.dirname(templateTarball.absolutePath), { force: true, recursive: true });
+
+  const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+
+  // Added new packages
+  expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
+    'expo',
+    'react',
+    'react-native',
+  ]);
+
+  // Updated scripts
+  expect(pkg.scripts).toStrictEqual({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
+
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
+
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0.43`', async () => {
+  const npmTemplatePackage = 'expo-template-bare-minimum@50.0.43';
+  const projectRoot = await setupTestProjectWithOptionsAsync('basic-prebuild', 'with-blank', {
+    reuseExisting: false,
+  });
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--no-install',
+    '--template',
+    npmTemplatePackage,
+  ]);
+
+  await expectTemplateAppNameToHaveBeenRenamed(projectRoot);
+
+  // Added new packages
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
+  });
+
+  // Updated scripts
+  expect(pkg.read().scripts).toMatchObject({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
+
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
+
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'github-template-prebuild',
+    'with-blank',
+    { reuseExisting: false }
+  );
+  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
+
+  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
+  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  if (!expoSdkVersion) {
+    throw new Error('Could not determine Expo SDK major version from template');
+  }
+
+  const templateUrl = `https://github.com/expo/expo/tree/sdk-${expoSdkVersion}/templates/expo-template-bare-minimum`;
+
+  await executeExpoAsync(projectRoot, ['prebuild', '--no-install', '--template', templateUrl]);
+
+  // Added new packages
+  expect(pkg.read().dependencies).toMatchObject({
+    expo: expect.any(String),
+    react: expect.any(String),
+    'react-native': expect.any(String),
+  });
+
+  // Updated scripts
+  expect(pkg.read().scripts).toMatchObject({
+    android: 'expo run:android',
+    ios: 'expo run:ios',
+  });
+
+  // If this changes then everything else probably changed as well.
+  expect(findProjectFiles(projectRoot)).toMatchSnapshot();
+});
+
+// Regression test for https://github.com/expo/expo/issues/36289
+// This tests contains assertions related to ios files, making it incompatible with Windows
+itNotWindows('runs `npx expo prebuild --platform ios` after building Android', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'regression-expo-36289',
+    'with-blank',
+    { reuseExisting: false }
+  );
+
+  const templateTarball = await createPackageTarball(
+    projectRoot,
+    'templates/expo-template-bare-minimum'
+  );
+
+  // Execute prebuild for android
+  await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--platform=android',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
+
+  // Create the `android/.gradle` folder that Gradle creates, and create the empty `android/.gradle/vcs-1/gc.properties` file
+  // We can also run `./gradlew :app:assembleDebug` but that's an expensive operation.
+  await fs.mkdir(path.join(projectRoot, 'android/.gradle/vcs-1'), { recursive: true });
+  await fs.writeFile(path.join(projectRoot, 'android/.gradle/vcs-1/gc.properties'), '');
+
+  // Execute prebuild for iOS
+  const command = await executeExpoAsync(projectRoot, [
+    'prebuild',
+    '--platform=ios',
+    '--no-install',
+    '--template',
+    templateTarball.relativePath,
+  ]);
+
+  // Ensure there are no errors
+  expect(command).not.toMatchObject({
+    stderr: expect.stringContaining('Failed to read template file'),
+  });
+});

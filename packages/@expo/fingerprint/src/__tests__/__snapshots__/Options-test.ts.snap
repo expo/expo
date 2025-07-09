@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`normalizeOptionsAsync should return the default options if no options are provided 1`] = `
+{
+  "concurrentIoLimit": 1,
+  "enableReactImportsPatcher": false,
+  "hashAlgorithm": "sha1",
+  "platforms": [
+    "android",
+    "ios",
+  ],
+  "sourceSkips": 512,
+  "useCNGForPlatforms": {
+    "android": false,
+    "ios": false,
+  },
+}
+`;

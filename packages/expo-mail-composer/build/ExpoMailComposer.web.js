@@ -1,5 +1,4 @@
-import qs from 'query-string';
-import { MailComposerStatus } from './MailComposer.types';
+import { MailComposerStatus, } from './MailComposer.types';
 function removeNullishValues(obj) {
     for (const propName in obj) {
         if (obj[propName] == null) {
@@ -16,25 +15,29 @@ function checkValue(value) {
     return arr.join(',');
 }
 export default {
-    get name() {
-        return 'ExpoMailComposer';
+    getClients() {
+        return [];
     },
     async composeAsync(options) {
+        if (typeof window === 'undefined') {
+            return { status: MailComposerStatus.CANCELLED };
+        }
+        const mailtoUrl = new URL('mailto:' + (checkValue(options.recipients) || ''));
         const email = removeNullishValues({
-            cc: checkValue(options.ccRecipients),
-            bcc: checkValue(options.bccRecipients),
+            cc: options.ccRecipients,
+            bcc: options.bccRecipients,
             subject: options.subject,
             body: options.body,
         });
-        const query = qs.stringify(email);
-        const queryComponent = query ? '?' + query : '';
-        const to = checkValue(options.recipients) || '';
-        const mailto = `mailto:${to}${queryComponent}`;
-        window.open(mailto);
+        Object.entries(email).forEach(([key, value]) => {
+            // TODO(@kitten): This was implicitly cast before. Is this what we want?
+            mailtoUrl.searchParams.append(key, '' + value);
+        });
+        window.open(mailtoUrl.toString());
         return { status: MailComposerStatus.UNDETERMINED };
     },
     async isAvailableAsync() {
-        return true;
+        return typeof window !== 'undefined';
     },
 };
 //# sourceMappingURL=ExpoMailComposer.web.js.map

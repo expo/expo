@@ -1,4 +1,3 @@
 {
-  "name": "expo-dev-menu-interface",
-  "platforms": ["ios", "android"]
+  "platforms": ["apple", "android"]
 }

@@ -26,7 +26,7 @@ public class HapticsModule: Module {
     .runOnQueue(.main)
   }
 
-  enum NotificationType: String, EnumArgument {
+  enum NotificationType: String, Enumerable {
     case success
     case warning
     case error
@@ -43,10 +43,12 @@ public class HapticsModule: Module {
     }
   }
 
-  enum ImpactStyle: String, EnumArgument {
+  enum ImpactStyle: String, Enumerable {
     case light
     case medium
     case heavy
+    case soft
+    case rigid
 
     func toFeedbackStyle() -> UIImpactFeedbackGenerator.FeedbackStyle {
       switch self {
@@ -56,6 +58,10 @@ public class HapticsModule: Module {
         return .medium
       case .heavy:
         return .heavy
+      case .soft:
+        return .soft
+      case .rigid:
+        return .rigid
       }
     }
   }

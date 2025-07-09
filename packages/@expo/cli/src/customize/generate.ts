@@ -1,11 +1,11 @@
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { DestinationResolutionProps, selectTemplatesAsync, TEMPLATES } from './templates';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { copyAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
-import { DestinationResolutionProps, selectTemplatesAsync, TEMPLATES } from './templates';
 
 export async function queryAndGenerateAsync(
   projectRoot: string,
@@ -88,14 +88,18 @@ async function generateAsync(
 ) {
   // Copy files
   await Promise.all(
-    answer.map((file) => {
+    answer.map(async (file) => {
       const template = TEMPLATES[file];
+
+      if (template.configureAsync) {
+        if (await template.configureAsync(projectRoot)) {
+          return;
+        }
+      }
+
       const projectFilePath = path.resolve(projectRoot, template.destination(props));
       // copy the file from template
-      return copyAsync(template.file(projectRoot), projectFilePath, {
-        overwrite: true,
-        recursive: true,
-      });
+      return copyAsync(template.file(projectRoot), projectFilePath);
     })
   );
 

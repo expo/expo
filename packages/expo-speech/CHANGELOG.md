@@ -6,9 +6,122 @@
 
 ### 🎉 New features
 
+- [iOS] added `useApplicationAudioSession` option ([#37487](https://github.com/expo/expo/pull/37487) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.1.7 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [Android] Fix calling getVoices before TTS initialization ([#36664](https://github.com/expo/expo/pull/36664) by [@jakex7](https://github.com/jakex7))
+
+## 13.1.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 13.0.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [Web] Fix `onDone` not firing listeners. ([#28904](https://github.com/expo/expo/pull/28904) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [Web] Change module registration. ([#29870](https://github.com/expo/expo/pull/29870) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.0.2 — 2024-05-09
+
+### 🐛 Bug fixes
+
+- [Web] Fix crash on `listenerCount` accessor. ([#28721](https://github.com/expo/expo/pull/28721) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Removed the usage of the legacy EventEmitter. ([#28195](https://github.com/expo/expo/pull/28195) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 11.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 11.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Use new `EventEmitter` instead of `NativeEventEmitter`. ([#24221](https://github.com/expo/expo/pull/24221) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Migrated Android codebase to use Expo modules API. ([#23862](https://github.com/expo/expo/pull/23862) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 11.3.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 11.2.0 — 2023-05-08
 

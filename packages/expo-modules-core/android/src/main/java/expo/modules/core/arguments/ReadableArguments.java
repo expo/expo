@@ -63,6 +63,7 @@ public interface ReadableArguments {
 
   int size();
 
+  @SuppressWarnings("unchecked")
   default Bundle toBundle() {
     Bundle bundle = new Bundle();
     for (String key : keys()) {

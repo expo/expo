@@ -1,11 +1,18 @@
-# expo-cellular
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/cellular/">
+    <img
+      src="../../.github/resources/expo-cellular.svg"
+      alt="expo-cellular"
+      height="64" />
+  </a>
+</p>
 
 Information about the user’s cellular service provider, such as its unique identifier, cellular connection type and whether it allows VoIP calls on its network.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/cellular.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/cellular/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/cellular/)
 
 # Installation in managed Expo projects
 

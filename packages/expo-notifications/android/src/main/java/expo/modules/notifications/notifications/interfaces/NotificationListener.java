@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications.interfaces;
 
+import android.os.Bundle;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 
 import expo.modules.notifications.notifications.model.Notification;
@@ -11,7 +13,7 @@ import expo.modules.notifications.notifications.model.NotificationResponse;
  */
 public interface NotificationListener {
   /**
-   * Callback called when new notification is received.
+   * Callback called when new notification is received while the app is in foreground.
    *
    * @param notification Notification received
    */
@@ -26,6 +28,14 @@ public interface NotificationListener {
    */
   default boolean onNotificationResponseReceived(NotificationResponse response) {
     return false;
+  }
+
+  /**
+   * Callback called when notification response is received through package lifecycle listeners
+   *
+   * @param extras Bundle of extras from the lifecycle method
+   */
+  default void onNotificationResponseIntentReceived(Bundle extras) {
   }
 
   /**

@@ -1,22 +1,21 @@
 ---
 title: Brightness
+description: A library that provides access to an API for getting and setting the screen brightness.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-brightness'
 packageName: 'expo-brightness'
 iconUrl: '/static/images/packages/expo-brightness.png'
+platforms: ['android', 'ios']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline } from '~/ui/components/Snippet';
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
 
 An API to get and set screen brightness.
 
 On Android, there is a global system-wide brightness setting, and each app has its own brightness setting that can optionally override the global setting. It is possible to set either of these values with this API. On iOS, the system brightness setting cannot be changed programmatically; instead, any changes to the screen brightness will persist until the device is locked or powered off.
-
-<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -26,7 +25,11 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-brightness` repository](https://github.com/expo/expo/tree/main/packages/expo-brightness#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the `android.permission.WRITE_SETTINGS` permission to the **AndroidManifest.xml** file:
+
+```xml android/app/src/main/AndroidManifest.xml
+<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+```
 
 </ConfigReactNative>
 
@@ -35,7 +38,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <SnackInline label='Basic Brightness Usage' dependencies={['expo-brightness']}>
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import * as Brightness from 'expo-brightness';
 
@@ -56,7 +59,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -65,7 +67,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -78,7 +79,7 @@ import * as Brightness from 'expo-brightness';
 
 <APISection packageName="expo-brightness" apiName="Brightness" />
 
-## Error Codes
+## Error codes
 
 ### `ERR_BRIGHTNESS`
 
@@ -104,7 +105,7 @@ An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['WRITE_SETTINGS']} />
 

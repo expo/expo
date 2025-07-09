@@ -1,21 +1,22 @@
 import {
-  PermissionStatus,
+  CodedError,
+  createPermissionHook,
   PermissionExpiration,
   PermissionHookOptions,
   PermissionResponse,
-  createPermissionHook,
+  PermissionStatus,
   UnavailabilityError,
-  CodedError,
 } from 'expo-modules-core';
 
 import ExponentImagePicker from './ExponentImagePicker';
 import {
   CameraPermissionResponse,
-  MediaLibraryPermissionResponse,
-  ImagePickerResult,
   ImagePickerErrorResult,
   ImagePickerOptions,
+  ImagePickerResult,
+  MediaLibraryPermissionResponse,
 } from './ImagePicker.types';
+import { mapDeprecatedOptions } from './utils';
 
 function validateOptions(options: ImagePickerOptions) {
   const { aspect, quality, videoMaxDuration } = options;
@@ -46,42 +47,6 @@ function validateOptions(options: ImagePickerOptions) {
   }
 
   return options;
-}
-
-const DEPRECATED_RESULT_KEYS = [
-  'uri',
-  'assetId',
-  'width',
-  'height',
-  'type',
-  'exif',
-  'base64',
-  'duration',
-  'fileName',
-  'fileSize',
-];
-function mergeDeprecatedResult(result: ImagePickerResult): ImagePickerResult {
-  const firstAsset = result?.assets?.[0];
-  const deprecatedResult = {
-    ...result,
-    get cancelled() {
-      console.warn(
-        'Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead'
-      );
-      return this.canceled;
-    },
-  };
-  for (const key of DEPRECATED_RESULT_KEYS) {
-    Object.defineProperty(deprecatedResult, key, {
-      get() {
-        console.warn(
-          `Key "${key}" in the image picker result is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead`
-        );
-        return firstAsset?.[key];
-      },
-    });
-  }
-  return deprecatedResult;
 }
 
 // @needsAudit
@@ -165,22 +130,22 @@ export const useCameraPermissions = createPermissionHook({
 // @needsAudit
 /**
  * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this
- * happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost
+ * happens, we lose the data selected using the `ImagePicker`. However, you can retrieve the lost
  * data by calling `getPendingResultAsync`. You can test this functionality by turning on
  * `Don't keep activities` in the developer options.
  * @return
- * - **On Android:** a promise that resolves to an array of objects of exactly same type as in
+ * - **On Android:** a promise that resolves to an object of exactly same type as in
  * `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker`
- * finished successfully. Otherwise, to the array of [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
- * - **On other platforms:** an empty array.
+ * finished successfully. Otherwise, an object of type [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
+ * - **On other platforms:** `null`
  */
 export async function getPendingResultAsync(): Promise<
-  (ImagePickerResult | ImagePickerErrorResult)[]
+  ImagePickerResult | ImagePickerErrorResult | null
 > {
   if (ExponentImagePicker.getPendingResultAsync) {
     return ExponentImagePicker.getPendingResultAsync();
   }
-  return [];
+  return null;
 }
 
 // @needsAudit
@@ -205,8 +170,8 @@ export async function launchCameraAsync(
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
-  const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
-  return mergeDeprecatedResult(result);
+  const mappedOptions = mapDeprecatedOptions(options);
+  return await ExponentImagePicker.launchCameraAsync(validateOptions(mappedOptions));
 }
 
 // @needsAudit
@@ -231,22 +196,24 @@ export async function launchCameraAsync(
  * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export async function launchImageLibraryAsync(
-  options?: ImagePickerOptions
+  options: ImagePickerOptions = {}
 ): Promise<ImagePickerResult> {
+  const mappedOptions = mapDeprecatedOptions(options);
+
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
-  if (options?.allowsEditing && options.allowsMultipleSelection) {
+  if (mappedOptions?.allowsEditing && mappedOptions.allowsMultipleSelection) {
     console.warn(
       '[expo-image-picker] `allowsEditing` is not supported when `allowsMultipleSelection` is enabled and will be ignored.' +
         "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
         'to fix this warning.'
     );
   }
-  const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
-  return mergeDeprecatedResult(result);
+  return await ExponentImagePicker.launchImageLibraryAsync(mappedOptions);
 }
 
 export * from './ImagePicker.types';
 
-export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export type { PermissionExpiration, PermissionHookOptions, PermissionResponse };
+export { PermissionStatus };

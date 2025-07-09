@@ -1,0 +1,180 @@
+---
+title: Expo
+description: Set of common methods and types for Expo and related packages.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo'
+packageName: 'expo'
+iconUrl: '/static/images/packages/expo.png'
+platforms: ['android', 'ios', 'tvos', 'web']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
+
+## Installation
+
+<APIInstallSection hideBareInstructions />
+
+## API
+
+```tsx
+import * as Expo from 'expo';
+```
+
+### `expo/fetch` API
+
+`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.wintercg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
+
+```ts Streaming fetch
+import { fetch } from 'expo/fetch';
+
+const resp = await fetch('https://httpbin.org/drip?numbytes=512&duration=2', {
+  headers: { Accept: 'text/event-stream' },
+});
+const reader = resp.body.getReader();
+const chunks = [];
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) {
+    break;
+  }
+  chunks.push(value);
+}
+const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+console.log(buffer.length); // 512
+```
+
+### Encoding APIs
+
+`TextEncoder` and `TextDecoder` are built-in APIs that provide a way to encode and decode text in various character encodings. They are available on all platforms. Refer to the [browser and server runtime support](https://caniuse.com/textencoder) for web and Node.js.
+
+```ts TextEncoder and TextDecoder
+// [104, 101, 108, 108, 111]
+const hello = new TextEncoder().encode('hello');
+
+// "hello"
+const text = new TextDecoder().decode(hello);
+```
+
+The `TextEncoder` API is included in the Hermes engine. See the [source code in TextEncoder.cpp inside the Hermes GitHub repository](https://github.com/facebook/hermes/blob/9e2bbf8eda15936ee00aee4f8e024ceaa7cd800d/lib/VM/JSLib/TextEncoder.cpp#L1).
+
+The `TextDecoder` API is not [spec-compliant](https://encoding.spec.whatwg.org/#textdecoder) on native platforms. Only the UTF-8 encoding is supported. If you need support for more encodings, use a polyfill like [`text-encoding`](https://www.npmjs.com/package/text-encoding).
+
+The stream equivalents of these APIs, `TextEncoderStream` and `TextDecoderStream`, are also available on all platforms. They allow you to encode and decode text in a streaming manner, which is useful for processing large amounts of data without loading it all into memory at once.
+
+```ts TextEncoderStream
+const encoder = new TextEncoderStream();
+const stream = new ReadableStream({
+  start(controller) {
+    controller.enqueue('Hello');
+    controller.enqueue('World');
+    controller.close();
+  },
+});
+const reader = stream.pipeThrough(encoder).getReader();
+reader.read().then(({ done, value }) => {
+  console.log(value); // Uint8Array [72, 101, 108, 108, 111]
+});
+```
+
+### Streams API
+
+Global support for standard web streams is available on native platforms to match the behavior of web and server platforms. Refer to the [browser and server runtime support](https://caniuse.com/streams) for specific web and Node.js support. EAS Hosting server runtime also includes support for the standard web streams API.
+
+Globally access `ReadableStream`, `WritableStream`, and `TransformStream` classes.
+
+```js ReadableStream
+const stream = new ReadableStream({
+  start(controller) {
+    controller.enqueue('Hello');
+    controller.enqueue('World');
+    controller.close();
+  },
+});
+const reader = stream.getReader();
+reader.read().then(({ done, value }) => {
+  console.log(value); // Hello
+});
+reader.read().then(({ done, value }) => {
+  console.log(value); // World
+});
+```
+
+### URL API
+
+`URL` provides the standard API on all platforms.
+
+On native platforms, built-in `URL` and `URLSearchParams` implementations replace the shims in `react-native`. Refer to the [browser and server runtime support](https://caniuse.com/url) for web and Node.js.
+
+```ts URL and URLSearchParams
+const url = new URL('https://expo.dev');
+
+const params = new URLSearchParams();
+```
+
+Expo's built-in `URL` support attempts to be fully [spec compliant](https://developer.mozilla.org/en-US/docs/Web/API/URL). The only missing exception is that native platforms do not currently support [non-ASCII characters](https://unicode.org/reports/tr46/) in the hostname.
+
+```ts Non-ASCII characters
+console.log(new URL('http://🥓').toString());
+
+// This outputs the following:
+// - Web, Node.js: http://xn--pr9h/
+// - Android, iOS: http://🥓/
+```
+
+<APISection packageName="expo" />
+
+## Common questions
+
+Some common questions about using the `expo` package in your project.
+
+<Collapsible summary={<><CODE>rootRegisterComponent</CODE> setup for existing React Native projects</>}>
+
+If you are managing your React Native project's native directories (**android** and **ios**) manually, you need to follow the instructions below to set up the `registerRootComponent` function. This is necessary for the Expo modules to work correctly.
+
+**Android**
+
+Update the **android/app/src/main/your-package/MainActivity.java** file to use the name `main` in the `getMainComponentName` function.
+
+```diff android/app/src/main/your-package/MainActivity.java
+  @Override
+  protected String getMainComponentName() {
++    return "main";
+  }
+```
+
+**iOS**
+
+Update the iOS **ios/your-project/AppDelegate.(m|mm|swift)** file to use the **moduleName** `main` in the `createRootViewWithBridge:bridge moduleName:@"main" initialProperties:initProps` line of the `application:didFinishLaunchingWithOptions:` function.
+
+</Collapsible>
+
+<Collapsible summary="What if I want to name my main app file something other than App.js or app/_layout.tsx?">
+
+**For projects that do not use [Expo Router](/router/introduction/)**, you can set the `"main"` in **package.json** to any file within your project. If you do this, then you need to use `registerRootComponent`. The `export default` will not make this component the root for the app if you are using a custom entry file.
+
+For example, let's say you want to make **src/main.jsx** the entry file for your app &mdash; maybe you don't like having JavaScript files in the project root. First, set this in **package.json**:
+
+```json package.json
+{
+  "main": "src/main.jsx"
+}
+```
+
+Then, in **src/main.jsx**, make sure you call `registerRootComponent` and pass in the component you want to render at the root of the app:
+
+```jsx src/main.jsx
+import { registerRootComponent } from 'expo';
+import { View } from 'react-native';
+
+function App() {
+  return <View />;
+}
+
+registerRootComponent(App);
+```
+
+**For projects that use [Expo Router](/router/introduction/)**, you can create a custom entry point by following these steps from [Expo Router's installation guide](/router/installation/#custom-entry-point-to-initialize-and-load). To use the top-level **src** directory in your Expo Router project, see [src directory reference](/router/reference/src-directory/) for more information.
+
+</Collapsible>

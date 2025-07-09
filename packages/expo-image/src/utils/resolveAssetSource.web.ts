@@ -1,8 +1,8 @@
-import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
+import { getAssetByID } from '@react-native/assets-registry/registry';
 
 import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver.web';
 
-let _customSourceTransformer;
+let _customSourceTransformer: undefined | ((resolver: AssetSourceResolver) => ResolvedAssetSource);
 
 export function setCustomSourceTransformer(
   transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource

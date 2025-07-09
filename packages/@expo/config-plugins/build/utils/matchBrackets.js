@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.findMatchingBracketPosition = findMatchingBracketPosition;
-const LEFT_BRACKETS = ['(', '{'];
-const RIGHT_BRACKETS = [')', '}'];
 function findMatchingBracketPosition(contents, bracket, offset = 0) {
   // search first occurrence of `bracket`
   const firstBracketPos = contents.indexOf(bracket, offset);
@@ -45,7 +43,7 @@ function findMatchingBracketPosition(contents, bracket, offset = 0) {
   return -1;
 }
 function isLeftBracket(bracket) {
-  const leftBracketList = LEFT_BRACKETS;
+  const leftBracketList = ['(', '{'];
   return leftBracketList.includes(bracket);
 }
 function getMatchingBracket(bracket) {

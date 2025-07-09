@@ -1,4 +1,7 @@
 // @needsAudit
+/**
+ * @platform ios
+ */
 export var InterruptionModeIOS;
 (function (InterruptionModeIOS) {
     /**
@@ -14,6 +17,9 @@ export var InterruptionModeIOS;
      */
     InterruptionModeIOS[InterruptionModeIOS["DuckOthers"] = 2] = "DuckOthers";
 })(InterruptionModeIOS || (InterruptionModeIOS = {}));
+/**
+ * @platform android
+ */
 export var InterruptionModeAndroid;
 (function (InterruptionModeAndroid) {
     /**

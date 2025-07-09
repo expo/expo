@@ -1,12 +1,8 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
-import { Podspec } from '../CocoaPods';
-import { IOS_DIR } from '../Constants';
-import logger from '../Logger';
-import { Package } from '../Packages';
 import {
   createSpecFromPodspecAsync,
   generateXcodeProjectAsync,
@@ -14,8 +10,12 @@ import {
 } from './XcodeGen';
 import XcodeProject from './XcodeProject';
 import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
+import { Podspec } from '../CocoaPods';
+import { EXPO_GO_IOS_DIR } from '../Constants';
+import logger from '../Logger';
+import { Package } from '../Packages';
 
-const PODS_DIR = path.join(IOS_DIR, 'Pods');
+const PODS_DIR = path.join(EXPO_GO_IOS_DIR, 'Pods');
 
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).
@@ -25,7 +25,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-application',
   // 'expo-av',
   // 'expo-background-fetch',
-  'expo-barcode-scanner',
   // 'expo-battery',
   // 'expo-blur',
   // 'expo-brightness',
@@ -37,7 +36,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-crypto',
   // 'expo-device',
   // 'expo-document-picker',
-  // 'expo-face-detector',
   'expo-file-system',
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',

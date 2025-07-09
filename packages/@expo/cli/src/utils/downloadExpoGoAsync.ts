@@ -1,15 +1,15 @@
-import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
 import ProgressBar from 'progress';
 import { gt } from 'semver';
 
-import { getVersionsAsync, SDKVersion } from '../api/getVersions';
-import { Log } from '../log';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
 import { ora } from './ora';
 import { profile } from './profile';
 import { createProgressBar } from './progress';
+import { getVersionsAsync, SDKVersion } from '../api/getVersions';
+import { getExpoHomeDirectory } from '../api/user/UserSettings';
+import { Log } from '../log';
 
 const debug = require('debug')('expo:utils:downloadExpoGo') as typeof console.log;
 
@@ -74,7 +74,7 @@ export async function downloadExpoGoAsync(
     sdkVersion,
   }: {
     url?: string;
-    sdkVersion?: string;
+    sdkVersion: string;
   }
 ): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
@@ -85,12 +85,6 @@ export async function downloadExpoGoAsync(
 
   try {
     if (!url) {
-      if (!sdkVersion) {
-        throw new CommandError(
-          `Unable to determine which Expo Go version to install (platform: ${platform})`
-        );
-      }
-
       const version = await getExpoGoVersionEntryAsync(sdkVersion);
 
       debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
@@ -128,8 +122,9 @@ export async function downloadExpoGoAsync(
               complete: '=',
               incomplete: ' ',
             });
+          } else {
+            bar!.update(progress, total);
           }
-          bar!.update(progress, total);
         }
       },
     });

@@ -8,13 +8,12 @@ import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.typeOf
 
 /**
  * Base class of all exported functions
@@ -23,22 +22,35 @@ abstract class AnyFunction(
   protected val name: String,
   protected val desiredArgsTypes: Array<AnyType>
 ) {
-  internal val argsCount get() = desiredArgsTypes.size
-
+  @PublishedApi
   internal var canTakeOwner: Boolean = false
 
   @PublishedApi
   internal var ownerType: KType? = null
 
+  internal var isEnumerable: Boolean = true
+
   internal val takesOwner: Boolean
-    get() = canTakeOwner &&
-      desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(typeOf<JavaScriptObject>()) == true ||
-      (ownerType != null && desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(ownerType!!) == true)
+    get() {
+      if (canTakeOwner) {
+        val firstArgumentType = desiredArgsTypes.firstOrNull()?.kType?.classifier as? KClass<*>
+          ?: return false
+
+        if (firstArgumentType == JavaScriptObject::class) {
+          return true
+        }
+
+        val ownerClass = ownerType?.classifier as? KClass<*> ?: return false
+
+        return firstArgumentType == ownerClass
+      }
+      return false
+    }
 
   /**
    * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
    */
-  internal val requiredArgumentsCount = run {
+  private val requiredArgumentsCount = run {
     val nonNullableArgIndex = desiredArgsTypes
       .reversed()
       .indexOfFirst { !it.kType.isMarkedNullable }
@@ -61,7 +73,7 @@ abstract class AnyFunction(
       throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size, requiredArgumentsCount)
     }
 
-    val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
+    val finalArgs = arrayOfNulls<Any?>(desiredArgsTypes.size)
     val argIterator = args.iterator()
     for (index in 0 until args.size()) {
       val desiredType = desiredArgsTypes[index]
@@ -83,20 +95,23 @@ abstract class AnyFunction(
    * @throws `CodedException` if conversion isn't possible
    */
   @Throws(CodedException::class)
-  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null): Array<out Any?> {
+  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null, forceConversion: Boolean = false): Array<out Any?> {
     if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
       throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
 
-    val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
-    val argIterator = args.iterator()
+    val finalArgs = if (desiredArgsTypes.size == args.size) {
+      args
+    } else {
+      arrayOfNulls<Any?>(desiredArgsTypes.size)
+    }
     for (index in args.indices) {
-      val element = argIterator.next()
+      val element = args[index]
       val desiredType = desiredArgsTypes[index]
       exceptionDecorator({ cause ->
         ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
       }) {
-        finalArgs[index] = desiredType.convert(element, appContext)
+        finalArgs[index] = desiredType.convert(element, appContext, forceConversion)
       }
     }
     return finalArgs
@@ -105,9 +120,13 @@ abstract class AnyFunction(
   /**
    * Attaches current function to the provided js object.
    */
-  abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
+  abstract fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject, moduleName: String)
 
-  fun getCppRequiredTypes(): List<ExpectedType> {
+  internal fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }
+  }
+
+  fun enumerable(isEnumerable: Boolean = true) = apply {
+    this.isEnumerable = isEnumerable
   }
 }

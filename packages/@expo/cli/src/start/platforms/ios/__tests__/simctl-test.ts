@@ -10,9 +10,6 @@ import {
 
 jest.mock(`../../../../log`);
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 describe(isOSType, () => {
   it(`returns true for iOS`, () => {
     expect(isOSType('iOS')).toBe(true);
@@ -28,17 +25,17 @@ describe(isOSType, () => {
 
 describe(getDevicesAsync, () => {
   it(`returns a list of malformed devices`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: 'foobar',
     } as any);
 
-    await expect(getDevicesAsync()).rejects.toThrowError();
+    await expect(getDevicesAsync()).rejects.toThrow();
     // Blame for the error.
-    expect(Log.error).toBeCalledWith(expect.stringMatching(/Apple's simctl/));
+    expect(Log.error).toHaveBeenCalledWith(expect.stringMatching(/Apple's simctl/));
   });
 
   it(`returns a list of devices`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: JSON.stringify(require('./fixtures/xcrun-simctl-list-devices.json')),
     } as any);
 
@@ -55,7 +52,8 @@ describe(getDevicesAsync, () => {
 
 describe(getInfoPlistValueAsync, () => {
   it(`fetches a value from the Info.plist of an app`, async () => {
-    asMock(spawnAsync)
+    jest
+      .mocked(spawnAsync)
       .mockResolvedValueOnce({
         // Like: '/Users/evanbacon/Library/Developer/CoreSimulator/Devices/EFEEA6EF-E3F5-4EDE-9B72-29EAFA7514AE/data/Containers/Bundle/Application/FA43A0C6-C2AD-442D-B8B1-EAF3E88CF3BF/Exponent-2.23.2.tar.app'
         stdout: '  /path/to/my-app.app ',
@@ -79,7 +77,7 @@ describe(getInfoPlistValueAsync, () => {
 
 describe(getContainerPathAsync, () => {
   it(`returns container path`, async () => {
-    asMock(spawnAsync).mockResolvedValueOnce({
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
       stdout: '  /path/to/my-app.app ',
     } as any);
 
@@ -87,14 +85,14 @@ describe(getContainerPathAsync, () => {
       '/path/to/my-app.app'
     );
 
-    expect(spawnAsync).toBeCalledWith(
+    expect(spawnAsync).toHaveBeenCalledWith(
       'xcrun',
       ['simctl', 'get_app_container', 'booted', 'foobar'],
       undefined
     );
   });
   it(`returns null when the requested app isn't installed`, async () => {
-    asMock(spawnAsync).mockRejectedValueOnce({
+    jest.mocked(spawnAsync).mockRejectedValueOnce({
       stderr: 'No such file or directory',
     } as any);
 

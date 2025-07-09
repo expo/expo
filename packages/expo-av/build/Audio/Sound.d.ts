@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 export type AudioChannel = {
@@ -35,12 +35,7 @@ export type SoundObject = {
     status: AVPlaybackStatus;
 };
 type AudioInstance = number | HTMLMediaElement | null;
-type AudioSampleCallback = ((sample: AudioSample) => void) | null;
-declare global {
-    interface Global {
-        __EXAV_setOnAudioSampleReceivedCallback: ((key: number, callback: AudioSampleCallback) => void) | undefined;
-    }
-}
+export type AudioSampleCallback = ((sample: AudioSample) => void) | null;
 /**
  * This class represents a sound corresponding to an Asset or URL.
  * @return A newly constructed instance of `Audio.Sound`.
@@ -73,7 +68,7 @@ export declare class Sound implements Playback {
     _subscriptions: {
         remove: () => void;
     }[];
-    _eventEmitter: EventEmitter;
+    _eventEmitter: LegacyEventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
     _onMetadataUpdate: ((metadata: AVMetadata) => void) | null;

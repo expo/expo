@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions } from './AuthRequest.types';
+import { AuthRequestConfig, AuthRequestPromptOptions, Prompt } from './AuthRequest.types';
 import { AuthSessionResult } from './AuthSession.types';
 import { DiscoveryDocument, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
 
@@ -43,7 +43,8 @@ export function useLoadedAuthRequest(
   AuthRequestInstance: typeof AuthRequest
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
-  const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
+  const scopeString = config.scopes?.join(' ');
+  const promptString = createPromptString(config.prompt);
   const extraParamsString = useMemo(
     () => JSON.stringify(config.extraParams || {}),
     [config.extraParams]
@@ -67,18 +68,33 @@ export function useLoadedAuthRequest(
     config.clientId,
     config.redirectUri,
     config.responseType,
-    config.prompt,
     config.clientSecret,
     config.codeChallenge,
     config.state,
     config.usePKCE,
     scopeString,
+    promptString,
     extraParamsString,
   ]);
   return request;
 }
 
-type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+/**
+ * @returns Prompt type converted to a primitive value to be used as a React hook dependency
+ */
+function createPromptString(prompt: Prompt | Prompt[] | undefined): string | undefined {
+  if (!prompt) {
+    return;
+  }
+
+  if (Array.isArray(prompt)) {
+    return prompt.join(' ');
+  }
+
+  return prompt;
+}
+
+export type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
 
 export function useAuthRequestResult(
   request: AuthRequest | null,
@@ -115,7 +131,7 @@ export function useAuthRequestResult(
  * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.
  *
  * > In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`.
- * > See the [Identity example](/guides/authentication#identityserver-4) for more info.
+ * > See the [GitHub example](/guides/authentication#github) for more info.
  *
  * If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()`
  * to get a `TokenResponse` instance which you can use to easily refresh the token.
@@ -142,7 +158,7 @@ export function useAuthRequest(
 ): [
   AuthRequest | null,
   AuthSessionResult | null,
-  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
+  (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
   const request = useLoadedAuthRequest(config, discovery, AuthRequest);
   const [result, promptAsync] = useAuthRequestResult(request, discovery);

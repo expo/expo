@@ -1,11 +1,11 @@
 import { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 
+import rnFixture from './fixtures/react-native-project';
 import { addWarningIOS } from '../../utils/warnings';
 import { createInfoPlistPluginWithPropertyGuard } from '../ios-plugins';
 import { evalModsAsync } from '../mod-compiler';
 import { getIosModFileProviders, withIosBaseMods } from '../withIosBaseMods';
-import rnFixture from './fixtures/react-native-project';
 
 jest.mock('../../utils/warnings', () => ({
   addWarningIOS: jest.fn(),
@@ -63,8 +63,8 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
 
     expect(results.ios.infoPlist.CFFakeValue).toEqual(false);
 
-    expect(setter).not.toBeCalled();
-    expect(addWarningIOS).toBeCalledWith(
+    expect(setter).not.toHaveBeenCalled();
+    expect(addWarningIOS).toHaveBeenCalledWith(
       'ios.appStoreUrl',
       '"ios.infoPlist.CFFakeValue" is set in the config. Ignoring abstract property "ios.appStoreUrl": underlying'
     );
@@ -104,8 +104,8 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
 
     expect(results.ios.infoPlist.CFFakeValue).toEqual(false);
 
-    expect(setter).not.toBeCalled();
-    expect(addWarningIOS).not.toBeCalled();
+    expect(setter).not.toHaveBeenCalled();
+    expect(addWarningIOS).not.toHaveBeenCalled();
   });
 
   it(`uses default behavior when not overwritten`, async () => {
@@ -138,7 +138,7 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
       assertMissingModProviders: true,
     });
 
-    expect(setter).toBeCalled();
-    expect(addWarningIOS).not.toBeCalled();
+    expect(setter).toHaveBeenCalled();
+    expect(addWarningIOS).not.toHaveBeenCalled();
   });
 });

@@ -11,15 +11,16 @@ import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
-import expo.modules.test.core.PromiseMock
-import expo.modules.test.core.assertRejectedWithCode
-import expo.modules.test.core.promiseResolvedWithType
+import expo.modules.test.core.legacy.PromiseMock
+import expo.modules.test.core.legacy.assertRejectedWithCode
+import expo.modules.test.core.legacy.promiseResolvedWithType
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
+import junit.framework.ComparisonFailure
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -27,8 +28,19 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.assertListsEqual
 import java.io.IOException
+
+private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
+  if (first == second) return
+
+  if (first == null || second == null) {
+    throw throw ComparisonFailure(message, first.toString(), second.toString())
+  }
+
+  if (!first.toTypedArray().contentDeepEquals(second.toTypedArray())) {
+    throw ComparisonFailure(message, first.toString(), second.toString())
+  }
+}
 
 @RunWith(RobolectricTestRunner::class)
 internal class GetAssetInfoTests {

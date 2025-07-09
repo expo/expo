@@ -1,0 +1,70 @@
+---
+title: Publish your web app
+sidebar_title: Deploy web apps
+description: Learn how to deploy your web app using EAS Hosting.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **warning** **EAS Hosting** is in preview and subject to changes.
+
+If you are building a universal app, you can quickly deploy your web app using [EAS Hosting](/eas/hosting/introduction/). It is a service for deploying web apps built with Expo Router and React.
+
+## Prerequisites
+
+Before you begin, in your project's **app.json** file, ensure that the [`expo.web.output`](/versions/latest/config/app/#output) property is either `static` or `server`.
+
+## Export your web project
+
+To deploy your web app, you need to create a static build of your web project. Export your web project into a **dist** directory by running the following command:
+
+<Terminal cmd={['$ npx expo export --platform web']} />
+
+> Remember to re-run this command every time before deploying when you make changes to your web app.
+
+## Initial deployment
+
+To publish your web app, run the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas deploy']} />
+
+After running this command for the first time, you'll be prompted to select a preview subdomain for your project. This subdomain is a prefix used to create a preview URL and is used for production deployments. For example, in `https://test-app--1234.expo.app`, `test-app` is the preview subdomain.
+
+Once your deployment is complete, the EAS CLI will output a preview URL to access your deployed app.
+
+## Production deployment
+
+To create a production deployment, run the following [EAS CLI](/develop/tools/#eas-cli) command:
+
+<Terminal cmd={['$ eas deploy --prod']} />
+
+Once your deployment is complete, the EAS CLI will output a production URL to access your deployed app.
+
+## Deploy automatically
+
+You can automatically deploy your app to the web with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/deploy-web.yml** at the root of your project, then add the following workflow configuration:
+
+```yaml .eas/workflows/deploy-web.yml
+name: Deploy web
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy_web:
+    name: Deploy web
+    type: deploy
+    params:
+      prod: true
+```
+
+The workflow above will create a web deployment on every commit to your project's `main` branch. You can also run this workflow manually with the following EAS CLI command:
+
+<Terminal cmd={['$ eas workflow:run deploy-web.yml']} />
+
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
+
+## Learn more
+
+You can learn more about setting up [deployment aliases](/eas/hosting/deployments-and-aliases/), using a [custom domain](/eas/hosting/custom-domain/), or [deploying an API Route](/router/reference/api-routes/#deployment).

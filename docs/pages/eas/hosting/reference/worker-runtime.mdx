@@ -1,0 +1,92 @@
+---
+sidebar_title: Worker runtime
+title: EAS Hosting worker runtime
+description: Learn about EAS Hosting worker runtime and Node.js compatibility.
+---
+
+import { YesIcon, NoIcon, AlertIcon } from '~/ui/components/DocIcons';
+
+EAS Hosting is built on [Cloudflare Workers](https://developers.cloudflare.com/workers/), a modern and powerful platform for serverless APIs that's been built for seamless scalability, high reliability, and exceptional performance globally.
+
+The Cloudflare Workers runtime runs on the V8 JavaScript engine, the same powering JavaScript in Node.js and Chromium. However, its runtime has a few key differences from what you might be used to in traditional serverless Node.js deployments.
+
+Instead of each request running in a full JavaScript process, Workers are designed to run them in small V8 isolates, a feature of the V8 runtime. Think of them as micro-containers in a single JavaScript process.
+
+For more information on how Workers work, see [Cloudflare Workers](https://developers.cloudflare.com/workers/reference/how-workers-works/) documentation.
+
+## Node.js compatibility
+
+Cloudflare is part of [Winter TC](https://wintertc.org/), is more similar to the JavaScript environments in browsers and service workers rather than in Node.js. Restrictions like these provide a leaner runtime than Node.js, which is still familiar. This common runtime is a minimal standard supported by many JavaScript runtime these days.
+
+This means, many Node.js APIs that you might be used to or some dependencies you utilize, aren't directly available in the EAS Hosting runtime. To ease this transition, as not all dependencies will have first-class support for Web APIs yet, Node.js compatibility modules exist and can be used in your API routes.
+
+| Node.js built-in module    | Supported     | Implementation notes                                                               |
+| -------------------------- | ------------- | ---------------------------------------------------------------------------------- |
+| `node:assert`              | <YesIcon />   |                                                                                    |
+| `node:async_hooks`         | <YesIcon />   |                                                                                    |
+| `node:buffer`              | <YesIcon />   |                                                                                    |
+| `node:crypto`              | <YesIcon />   | Select deprecated algorithms are not available                                     |
+| `node:console`             | <AlertIcon /> | Provided as partially functional JS shims                                          |
+| `node:constants`           | <YesIcon />   |                                                                                    |
+| `node:diagnostics_channel` | <YesIcon />   | Select deprecated algorithms are not implemented                                   |
+| `node:dns`                 | <YesIcon />   | `Resolver` is unimplemented, all DNS requests are sent to Cloudflare               |
+| `node:dns/promises`        | <YesIcon />   | All DNS requests are sent to Cloudflare                                            |
+| `node:events`              | <YesIcon />   |                                                                                    |
+| `node:fs`                  | <NoIcon />    | Provided as JS stubs, since workers have no file system                            |
+| `node:fs/promises`         | <NoIcon />    | Provided as JS stubs, since workers have no file system                            |
+| `node:http`                | <AlertIcon /> | Provided as partially functional JS shims based on `fetch`                         |
+| `node:https`               | <AlertIcon /> | Provided as partially functional JS shims based on `fetch`                         |
+| `node:module`              | <AlertIcon /> | `SourceMap` is unimplemented, partially supported otherwise                        |
+| `node:net`                 | <AlertIcon /> | `Server` and `BlockList` are unimplemented, client sockets are partially supported |
+| `node:os`                  | <YesIcon />   | Provided as JS stubs that provide mock values matching Node.js on Linux            |
+| `node:path`                | <YesIcon />   |                                                                                    |
+| `node:path/posix`          | <YesIcon />   |                                                                                    |
+| `node:path/win32`          | <YesIcon />   |                                                                                    |
+| `node:process`             | <YesIcon />   | Provided as JS stubs                                                               |
+| `node:punycode`            | <NoIcon />    |                                                                                    |
+| `node:querystring`         | <YesIcon />   |                                                                                    |
+| `node:readline`            | <NoIcon />    | Provided as non-functional JS stubs, since workers have no `stdin`                 |
+| `node:readline/promises`   | <NoIcon />    | Provided as non-functional JS stubs, since workers have no `stdin`                 |
+| `node:stream`              | <YesIcon />   |                                                                                    |
+| `node:stream/consumers`    | <YesIcon />   |                                                                                    |
+| `node:stream/promises`     | <YesIcon />   |                                                                                    |
+| `node:stream/web`          | <YesIcon />   |                                                                                    |
+| `node:string_decoder`      | <YesIcon />   |                                                                                    |
+| `node:timers`              | <YesIcon />   |                                                                                    |
+| `node:timers/promises`     | <YesIcon />   |                                                                                    |
+| `node:tls`                 | <AlertIcon /> | `Server` is unimplemented, client sockets are partially supported                  |
+| `node:trace_events`        | <AlertIcon /> | Provided as non-functional JS stubs                                                |
+| `node:tty`                 | <YesIcon />   | Provided as JS shims redirecting output to the Console API                         |
+| `node:url`                 | <YesIcon />   |                                                                                    |
+| `node:util`                | <YesIcon />   |                                                                                    |
+| `node:util/types`          | <YesIcon />   |                                                                                    |
+| `node:worker_threads`      | <NoIcon />    | Provided as non-functional JS stubs, since workers don't support threading         |
+| `node:zlib`                | <YesIcon />   |                                                                                    |
+
+These modules generally provide a lower-accuracy polyfill or approximation of their Node.js counterparts.
+For example, the `http` and `https` modules only provide thin Node.js compatibility wrappers around the `fetch` API and cannot be used to make arbitrary HTTP requests.
+
+Any of the above listed Node.js modules can be used in API routes or dependencies of your API routes as usual and will use appropriate compatibility modules. However, some of these modules may not provide any practical functionality and only exist to shim APIs to prevent runtime crashes.
+
+Any modules that aren't mentioned here are unavailable or unsupported, and your code and none of your dependencies should rely on them being provided.
+
+> More Node.js compatibility shims may be added in the future, but all Node.js APIs that are not documented in this non-exhaustive list are not expected to work.
+
+## Globals
+
+| JavaScript runtime globals | Supported     | Implementation notes                                                                                                          |
+| -------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `origin`                   | <YesIcon />   | Will always be the same as the incoming request's `Origin` header                                                             |
+| `process`                  | <YesIcon />   |                                                                                                                               |
+| `process.env`              | <YesIcon />   | Populated with EAS Hosting environment variables                                                                              |
+| `process.stdout`           | <YesIcon />   | Will redirect output to the Console API (`console.log`) for logging                                                           |
+| `process.stderr`           | <YesIcon />   | Will redirect output to the Console API (`console.error`) for logging                                                         |
+| `setImmediate`             | <YesIcon />   |                                                                                                                               |
+| `clearImmediate`           | <YesIcon />   |                                                                                                                               |
+| `Buffer`                   | <YesIcon />   | Set to `Buffer` from `node:buffer`                                                                                            |
+| `EventEmitter`             | <YesIcon />   | Set to `EventEmitter` from `node:events`                                                                                      |
+| `global`                   | <YesIcon />   | Set to `globalThis`                                                                                                           |
+| `WeakRef`                  | <YesIcon />   |                                                                                                                               |
+| `FinalizationRegistry`     | <YesIcon />   |                                                                                                                               |
+| `require`                  | <AlertIcon /> | External requires are supported but limited to deployed JS files and built-in modules. Node module resolution is unsupported. |
+| `require.cache`            | <NoIcon />    |                                                                                                                               |

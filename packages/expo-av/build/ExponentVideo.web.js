@@ -10,6 +10,9 @@ export default class ExponentVideo extends React.Component {
     componentWillUnmount() {
         this._removeFullscreenListener?.();
     }
+    getVideoElement = () => {
+        return this._video;
+    };
     onFullscreenChange = (isFullscreen) => {
         if (!this.props.onFullscreenUpdate)
             return;
@@ -92,7 +95,7 @@ export default class ExponentVideo extends React.Component {
             objectFit,
             overflow: 'hidden',
         };
-        return (React.createElement(Video, { ref: this.onRef, onLoadStart: this.onLoadStart, onLoadedData: this.onLoadedData, onError: this.onError, onTimeUpdate: this.onProgress, onSeeking: this.onSeeking, onEnded: this.onEnded, onLoadedMetadata: this.onLoadedMetadata, onCanPlay: this.onCanPlay, onStalled: this.onStalled, src: source?.uri || undefined, muted: status.isMuted, loop: status.isLooping, autoPlay: status.shouldPlay, controls: useNativeControls, style: [style, customStyle], playsInline: true }));
+        return (<Video ref={this.onRef} onLoadStart={this.onLoadStart} onLoadedData={this.onLoadedData} onError={this.onError} onTimeUpdate={this.onProgress} onSeeking={this.onSeeking} onEnded={this.onEnded} onLoadedMetadata={this.onLoadedMetadata} onCanPlay={this.onCanPlay} onStalled={this.onStalled} src={source?.uri || undefined} muted={status.isMuted} loop={status.isLooping} autoPlay={status.shouldPlay} controls={useNativeControls} style={[style, customStyle]} playsInline/>);
     }
 }
 //# sourceMappingURL=ExponentVideo.web.js.map

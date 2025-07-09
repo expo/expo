@@ -25,14 +25,13 @@ function _Errors() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Resolve the Expo SDK Version either from the input Expo config or from the installed
  * version of the `expo` package.
  */
 function getExpoSDKVersion(projectRoot, exp = {}) {
-  var _exp$sdkVersion;
-  return (_exp$sdkVersion = exp === null || exp === void 0 ? void 0 : exp.sdkVersion) !== null && _exp$sdkVersion !== void 0 ? _exp$sdkVersion : getExpoSDKVersionFromPackage(projectRoot);
+  return exp?.sdkVersion ?? getExpoSDKVersionFromPackage(projectRoot);
 }
 
 /**
@@ -42,7 +41,7 @@ function getExpoSDKVersion(projectRoot, exp = {}) {
 function getExpoSDKVersionFromPackage(projectRoot) {
   const packageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo/package.json');
   if (!packageJsonPath) {
-    throw new (_Errors().ConfigError)(`Cannot determine which native SDK version your project uses because the module \`expo\` is not installed. Please install it with \`yarn add expo\` and try again.`, 'MODULE_NOT_FOUND');
+    throw new (_Errors().ConfigError)(`Cannot determine the project's Expo SDK version because the module \`expo\` is not installed. Install it with \`npm install expo\` and try again.`, 'MODULE_NOT_FOUND');
   }
   const expoPackageJson = _jsonFile().default.read(packageJsonPath, {
     json5: true
@@ -52,7 +51,7 @@ function getExpoSDKVersionFromPackage(projectRoot) {
   } = expoPackageJson;
   if (!(typeof packageVersion === 'string')) {
     // This is technically impossible.
-    throw new (_Errors().ConfigError)(`Cannot determine which native SDK version your project uses because the module \`expo\` has an invalid package.json (missing \`version\` field). Try reinstalling node modules and trying again.`, 'MODULE_NOT_FOUND');
+    throw new (_Errors().ConfigError)(`Cannot determine the project's Expo SDK version because the module \`expo\` has an invalid package.json (missing \`version\` field). Try reinstalling node modules and trying again.`, 'MODULE_NOT_FOUND');
   }
   const majorVersion = packageVersion.split('.').shift();
   return `${majorVersion}.0.0`;

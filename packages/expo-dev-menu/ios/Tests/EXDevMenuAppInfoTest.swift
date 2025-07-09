@@ -1,4 +1,5 @@
- import XCTest
+import XCTest
+import React
 
  @testable import EXDevMenu
 
@@ -28,7 +29,7 @@
 
 //   func test_if_app_info_gets_host_from_bridge() {
 //     let appInfo = EXDevMenuAppInfo.getAppInfo()
-    
+
 //     let host = appInfo["hostUrl"] as! String
 //     XCTAssertEqual(host, "localhost")
 //   }

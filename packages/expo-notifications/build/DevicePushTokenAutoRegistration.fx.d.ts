@@ -6,6 +6,8 @@ export type DevicePushTokenRegistration = {
     isEnabled: boolean;
 };
 /**
+ * @hidden - the comment is misleading and the purpose of the function needs to be reevaluated
+ *
  * Sets the registration information so that the device push token gets pushed
  * to the given registration endpoint
  * @param enabled

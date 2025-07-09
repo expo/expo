@@ -1,8 +1,5 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-
+import ExpoScreenOrientation from '../ExpoScreenOrientation';
 import * as ScreenOrientation from '../ScreenOrientation';
-
-const { ExpoScreenOrientation } = NativeModulesProxy;
 
 it(`calls the lockPlatformAsync platform API with only Android properties`, async () => {
   const screenOrientationConstantAndroid = 1;
@@ -22,14 +19,16 @@ it(`calls the lockPlatformAsync platform API with only Android properties`, asyn
     ...badProperties,
   });
 
-  expect(ExpoScreenOrientation.lockPlatformAsync).toBeCalledWith(screenOrientationConstantAndroid);
+  expect(ExpoScreenOrientation.lockPlatformAsync).toHaveBeenCalledWith(
+    screenOrientationConstantAndroid
+  );
 });
 
 it(`throws when lockPlatformAsync is called with unsupported types in its Android properties`, async () => {
   await expect(
     ScreenOrientation.lockPlatformAsync({ screenOrientationConstantAndroid: NaN as any })
-  ).rejects.toThrowError(TypeError);
+  ).rejects.toThrow(TypeError);
   await expect(
     ScreenOrientation.lockPlatformAsync({ screenOrientationConstantAndroid: 'test' as any })
-  ).rejects.toThrowError(TypeError);
+  ).rejects.toThrow(TypeError);
 });

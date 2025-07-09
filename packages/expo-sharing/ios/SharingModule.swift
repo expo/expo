@@ -6,14 +6,9 @@ public final class SharingModule: Module {
     Name("ExpoSharing")
 
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
-      guard let filePermissions: EXFilePermissionModuleInterface =
-        appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self)
-      else {
-        throw FilePermissionModuleException()
-      }
+      let grantedPermissions = FileSystemUtilities.permissions(appContext, for: url)
 
-      let grantedPermissions = filePermissions.getPathPermissions(url.relativePath)
-      guard grantedPermissions.rawValue >= EXFileSystemPermissionFlags.read.rawValue else {
+      guard grantedPermissions.contains(.read) else {
         throw FilePermissionException()
       }
 
@@ -39,12 +34,14 @@ public final class SharingModule: Module {
       // Apple docs state that `UIActivityViewController` must be presented in a
       // popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
       if UIDevice.current.userInterfaceIdiom == .pad {
+        let rect = options.anchor
         let viewFrame = currentViewcontroller.view.frame
+
         activityController.popoverPresentationController?.sourceRect = CGRect(
-          x: viewFrame.midX,
-          y: viewFrame.maxY,
-          width: 0,
-          height: 0
+          x: rect?.x ?? viewFrame.midX,
+          y: rect?.y ?? viewFrame.maxY,
+          width: rect?.width ?? 0,
+          height: rect?.height ?? 0
         )
         activityController.popoverPresentationController?.sourceView = currentViewcontroller.view
         activityController.modalPresentationStyle = .pageSheet

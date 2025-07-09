@@ -1,46 +1,15 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import { spacing, breakpoints } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
 import type { PropsWithChildren, ComponentType } from 'react';
-
-import { SidebarGroup, SidebarSection, VersionSelector } from './index';
 
 import { NavigationType, NavigationRoute } from '~/types/common';
 
-const STYLES_SIDEBAR = css`
-  padding: ${spacing[4]}px;
-  width: 280px;
-  position: relative;
-  background-color: ${theme.background.default};
-
-  @media screen and (max-width: ${breakpoints.medium + 124}px) {
-    width: 100%;
-  }
-`;
-
-const STYLES_SIDEBAR_FADE = css`
-  background: linear-gradient(${theme.background.default}, transparent);
-  height: 30px;
-  width: 274px;
-  position: fixed;
-  margin-top: -${spacing[4]}px;
-  left: 0;
-  z-index: 10;
-  pointer-events: none;
-
-  @media screen and (max-width: ${breakpoints.medium + 124}px) {
-    display: none;
-  }
-`;
+import { SidebarGroup } from './SidebarGroup';
+import { SidebarSection } from './SidebarSection';
+import { SidebarNodeProps } from './types';
 
 type SidebarProps = PropsWithChildren<{
   routes?: NavigationRoute[];
 }>;
-
-export type SidebarNodeProps = {
-  route: NavigationRoute;
-  parentRoute?: NavigationRoute;
-};
 
 export const Sidebar = ({ routes = [] }: SidebarProps) => {
   const renderTypes: Record<NavigationType, ComponentType<SidebarNodeProps> | null> = {
@@ -50,10 +19,19 @@ export const Sidebar = ({ routes = [] }: SidebarProps) => {
   };
 
   return (
-    <nav css={STYLES_SIDEBAR} data-sidebar>
-      <div css={[STYLES_SIDEBAR_FADE]} />
-      <VersionSelector />
+    <nav className="relative w-[280px] bg-default p-4 max-lg-gutters:w-full" data-sidebar>
+      <div
+        className={mergeClasses(
+          'pointer-events-none fixed left-0 z-10 mt-[-22px] h-8 w-[273px]',
+          'bg-gradient-to-b from-default to-transparent opacity-90',
+          'max-lg-gutters:hidden'
+        )}
+      />
       {routes.map(route => {
+        if (!route) {
+          return null;
+        }
+
         const Component = renderTypes[route.type];
         return !!Component && <Component key={`${route.type}-${route.name}`} route={route} />;
       })}

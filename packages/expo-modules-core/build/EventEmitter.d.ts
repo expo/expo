@@ -1,26 +1,14 @@
-import { NativeEventEmitter } from 'react-native';
-type NativeModule = {
-    __expo_module_name__?: string;
-    startObserving?: () => void;
-    stopObserving?: () => void;
-    addListener: (eventName: string) => void;
-    removeListeners: (count: number) => void;
-};
-export type Subscription = {
+import type { EventEmitter } from './ts-declarations/EventEmitter';
+/**
+ * A subscription object that allows to conveniently remove an event listener from the emitter.
+ */
+export interface EventSubscription {
     /**
-     * A method to unsubscribe the listener.
+     * Removes an event listener for which the subscription has been created.
+     * After calling this function, the listener will no longer receive any events from the emitter.
      */
-    remove: () => void;
-};
-export declare class EventEmitter {
-    _listenerCount: number;
-    _nativeModule: NativeModule;
-    _eventEmitter: NativeEventEmitter;
-    constructor(nativeModule: NativeModule);
-    addListener<T>(eventName: string, listener: (event: T) => void): Subscription;
-    removeAllListeners(eventName: string): void;
-    removeSubscription(subscription: Subscription): void;
-    emit(eventName: string, ...params: any[]): void;
+    remove(): void;
 }
-export {};
+declare const _default: typeof EventEmitter;
+export default _default;
 //# sourceMappingURL=EventEmitter.d.ts.map

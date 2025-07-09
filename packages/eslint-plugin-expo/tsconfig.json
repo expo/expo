@@ -1,0 +1,11 @@
+{
+  "extends": "expo-module-scripts/tsconfig.node",
+  "include": ["./src"],
+  "exclude": ["**/__tests__/*"],
+  "compilerOptions": {
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "declaration": false,
+    "composite": false
+  }
+}

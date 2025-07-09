@@ -40,8 +40,10 @@ export function assertWithOptionsArgs(
   try {
     return arg(schema, options);
   } catch (error: any) {
-    // Ensure unknown options are handled the same way.
-    if (error.code === 'ARG_UNKNOWN_OPTION') {
+    // Handle errors caused by user input.
+    // Only errors from `arg`, which does not start with `ARG_CONFIG_` are user input errors.
+    // See: https://github.com/vercel/arg/releases/tag/5.0.0
+    if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
       Log.exit(error.message, 1);
     }
     // Otherwise rethrow the error.

@@ -1,12 +1,17 @@
+import chalk from 'chalk';
+import { vol } from 'memfs';
+
+import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
 import {
   hashForDependencyMap,
-  isPkgMainExpoAppEntry,
-  shouldDeleteMainField,
   updatePkgDependencies,
+  updatePackageJSONAsync,
+  updatePkgScripts,
 } from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
+jest.mock('../../log');
 
 describe(hashForDependencyMap, () => {
   it(`dependencies in any order hash to the same value`, () => {
@@ -16,32 +21,126 @@ describe(hashForDependencyMap, () => {
   });
 });
 
-describe(shouldDeleteMainField, () => {
-  it(`should delete non index field`, () => {
-    expect(shouldDeleteMainField(null)).toBe(false);
-    expect(shouldDeleteMainField()).toBe(false);
-    expect(shouldDeleteMainField('expo/AppEntry')).toBe(true);
-    // non-expo fields
-    expect(shouldDeleteMainField('.src/other.js')).toBe(false);
-    expect(shouldDeleteMainField('index.js')).toBe(false);
-    expect(shouldDeleteMainField('index.ios.js')).toBe(false);
-    expect(shouldDeleteMainField('index.ts')).toBe(false);
-    expect(shouldDeleteMainField('./index')).toBe(false);
+describe(updatePackageJSONAsync, () => {
+  beforeAll(() => {
+    (isModuleSymlinked as any).mockImplementation(() => false);
   });
-});
 
-describe(isPkgMainExpoAppEntry, () => {
-  it(`matches expo app entry`, () => {
-    expect(isPkgMainExpoAppEntry('./node_modules/expo/AppEntry.js')).toBe(true);
-    expect(isPkgMainExpoAppEntry('./node_modules/expo/AppEntry')).toBe(true);
-    expect(isPkgMainExpoAppEntry('expo/AppEntry.js')).toBe(true);
-    expect(isPkgMainExpoAppEntry('expo/AppEntry')).toBe(true);
+  it(`has no changes`, async () => {
+    vol.fromJSON({}, '/');
+
+    expect(
+      await updatePackageJSONAsync('/', {
+        pkg: {
+          scripts: {
+            ios: 'expo run:ios',
+            android: 'expo run:android',
+          },
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+          },
+        },
+        templateDirectory: '/template',
+        templatePkg: {
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+            'expo-status-bar': '1.0.0',
+            'expo-splash-screen': '1.0.0',
+          },
+          devDependencies: {
+            'no-copy': '1.0.0',
+          },
+        },
+      })
+    ).toEqual({
+      changedDependencies: [],
+      scriptsChanged: false,
+    });
+
+    expect(vol.toJSON()).toEqual({});
   });
-  it(`doesn't match expo app entry`, () => {
-    expect(isPkgMainExpoAppEntry()).toBe(false);
-    expect(isPkgMainExpoAppEntry(null)).toBe(false);
-    expect(isPkgMainExpoAppEntry('./expo/AppEntry')).toBe(false);
-    expect(isPkgMainExpoAppEntry('./expo/AppEntry.js')).toBe(false);
+
+  it(`injects custom scripts`, async () => {
+    vol.fromJSON({}, '/');
+
+    expect(
+      await updatePackageJSONAsync('/', {
+        pkg: {
+          scripts: {
+            ios: 'expo start --ios',
+            android: 'expo start --android',
+          },
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+          },
+        },
+        templateDirectory: '/template',
+        templatePkg: {
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+            'expo-status-bar': '1.0.0',
+            'expo-splash-screen': '1.0.0',
+          },
+          devDependencies: {
+            'no-copy': '1.0.0',
+          },
+        },
+      })
+    ).toEqual({
+      changedDependencies: [],
+      scriptsChanged: true,
+    });
+
+    expect(JSON.parse(vol.toJSON()['/package.json'])).toEqual({
+      dependencies: { expo: '1.0.0', 'react-native': '0.1.0' },
+      scripts: { android: 'expo run:android', ios: 'expo run:ios' },
+    });
+  });
+
+  // TODO: We should change this functionality in the future to either require a custom dependency field
+  // or just not exist.
+  it(`updates dependencies if the template adds custom values`, async () => {
+    vol.fromJSON({}, '/');
+
+    expect(
+      await updatePackageJSONAsync('/', {
+        pkg: {
+          scripts: {
+            ios: 'expo run:ios',
+            android: 'expo run:android',
+          },
+          dependencies: {
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+          },
+        },
+        templateDirectory: '/template',
+        templatePkg: {
+          dependencies: {
+            unexpected: '1.0.0',
+            expo: '1.0.0',
+            'react-native': '0.1.0',
+            'expo-status-bar': '1.0.0',
+            'expo-splash-screen': '1.0.0',
+          },
+          devDependencies: {
+            'no-copy': '1.0.0',
+          },
+        },
+      })
+    ).toEqual({
+      changedDependencies: ['unexpected'],
+      scriptsChanged: false,
+    });
+
+    expect(JSON.parse(vol.toJSON()['/package.json'])).toEqual({
+      dependencies: { unexpected: '1.0.0', expo: '1.0.0', 'react-native': '0.1.0' },
+      scripts: { android: 'expo run:android', ios: 'expo run:ios' },
+    });
   });
 });
 
@@ -78,6 +177,7 @@ describe(updatePkgDependencies, () => {
     });
     expect(pkg.dependencies).toStrictEqual({
       ...requiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
       'optional-package': 'version-from-project-1',
       'optional-package-2': 'version-from-template-2',
       'optional-package-3': 'version-from-project-3',
@@ -139,9 +239,86 @@ describe(updatePkgDependencies, () => {
     });
     expect(pkg.dependencies).toStrictEqual({
       ...sdk44RequiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
       'optional-package': 'version-from-project-1',
       'optional-package-2': 'version-from-template-2',
       'optional-package-3': 'version-from-project-3',
     });
+  });
+  test('does not overwrite add-only packages when defined', () => {
+    const pkg = {
+      dependencies: {
+        expo: 'version-from-project',
+        'react-native': 'version-from-project',
+      },
+      devDependencies: {},
+    };
+    updatePkgDependencies('fake path', {
+      templatePkg: {
+        dependencies: {
+          ...requiredPackages,
+          expo: 'version-from-template',
+        },
+        devDependencies: {},
+      },
+      pkg,
+    });
+    expect(pkg.dependencies).toStrictEqual({
+      ...requiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
+      expo: 'version-from-project',
+    });
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`instead of recommended ${chalk.bold('expo@version-from-template')}`)
+    );
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        `instead of recommended ${chalk.bold('react-native@version-from-template-required-1')}`
+      )
+    );
+  });
+});
+
+describe(updatePkgScripts, () => {
+  it(`modifies the default Expo project values`, () => {
+    const pkg = {
+      scripts: {
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('expo run:android');
+    expect(pkg.scripts.ios).toBe('expo run:ios');
+  });
+
+  it(`modifies the default RN CLI project values`, () => {
+    const pkg = {
+      scripts: {
+        android: 'react-native run-android',
+        ios: 'react-native run-ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('expo run:android');
+    expect(pkg.scripts.ios).toBe('expo run:ios');
+  });
+
+  it(`skips modification if user altered the script`, () => {
+    const pkg = {
+      scripts: {
+        android: 'echo 123 && expo start --android',
+        ios: 'time expo start --ios',
+      },
+    };
+
+    updatePkgScripts({ pkg });
+
+    expect(pkg.scripts.android).toBe('echo 123 && expo start --android');
+    expect(pkg.scripts.ios).toBe('time expo start --ios');
   });
 });

@@ -1,13 +1,38 @@
+import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 import { BackgroundFetchResult, BackgroundFetchStatus, } from './BackgroundFetch.types';
 import ExpoBackgroundFetch from './ExpoBackgroundFetch';
+let didShowDeprecationWarning = false;
+const showDeprecationWarning = () => {
+    if (!didShowDeprecationWarning) {
+        didShowDeprecationWarning = true;
+        console.warn('expo-background-fetch: This library is deprecated. Use expo-background-task instead.');
+    }
+};
+let warnedAboutExpoGo = false;
+function _validate(taskName) {
+    if (isRunningInExpoGo()) {
+        if (!warnedAboutExpoGo) {
+            const message = '`Background Fetch` functionality is not available in Expo Go:\n' +
+                'You can use this API, and all others, in a development build. Learn more: https://expo.fyi/dev-client.';
+            console.warn(message);
+            warnedAboutExpoGo = true;
+        }
+    }
+    if (!taskName || typeof taskName !== 'string') {
+        throw new TypeError('`taskName` must be a non-empty string.');
+    }
+}
 // @needsAudit
 /**
  * Gets a status of background fetch.
  * @return Returns a promise which fulfils with one of `BackgroundFetchStatus` enum values.
+ * @deprecated Use [`getStatusAsync()`](./background-task/#backgroundtaskgetstatusasync) from `expo-background-task`
+ * instead. The `expo-background-fetch` package has been deprecated.
  */
 export async function getStatusAsync() {
+    showDeprecationWarning();
     if (Platform.OS === 'android') {
         return BackgroundFetchStatus.Available;
     }
@@ -24,8 +49,12 @@ export async function getStatusAsync() {
  *
  * @param minimumInterval Number of seconds that must elapse before another background fetch can be called.
  * @return A promise which fulfils once the minimum interval is set.
+ * @deprecated Use the [`registerTaskAsync()`](./background-task#backgroundtaskregistertaskasynctaskname-options) method
+ * from expo-background-task package, and specify [`BackgroundTaskOptions`](./background-task/#backgroundtaskoptions)
+ * argument instead, when setting task interval time.
  */
 export async function setMinimumIntervalAsync(minimumInterval) {
+    showDeprecationWarning();
     if (!ExpoBackgroundFetch.setMinimumIntervalAsync) {
         return;
     }
@@ -35,7 +64,7 @@ export async function setMinimumIntervalAsync(minimumInterval) {
 // @needsAudit
 /**
  * Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
- * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](taskmanager#defineTask)
+ * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](task-manager/#taskmanagerdefinetaskttaskname-taskexecutor)
  * for more details.
  * @param options An object containing the background fetch options.
  *
@@ -53,14 +82,18 @@ export async function setMinimumIntervalAsync(minimumInterval) {
  *   }
  * });
  * ```
+ * @deprecated Use [`registerTaskAsync()`](./background-task#backgroundtaskregistertaskasynctaskname-options) from `expo-background-task`
+ * instead. The `expo-background-fetch` package has been deprecated.
  */
 export async function registerTaskAsync(taskName, options = {}) {
+    showDeprecationWarning();
     if (!ExpoBackgroundFetch.registerTaskAsync) {
         throw new UnavailabilityError('BackgroundFetch', 'registerTaskAsync');
     }
     if (!TaskManager.isTaskDefined(taskName)) {
         throw new Error(`Task '${taskName}' is not defined. You must define a task using TaskManager.defineTask before registering.`);
     }
+    _validate(taskName);
     await ExpoBackgroundFetch.registerTaskAsync(taskName, options);
 }
 // @needsAudit
@@ -68,11 +101,15 @@ export async function registerTaskAsync(taskName, options = {}) {
  * Unregisters background fetch task, so the application will no longer be executing this task.
  * @param taskName Name of the task to unregister.
  * @return A promise which fulfils when the task is fully unregistered.
+ * @deprecated Use [`unregisterTaskAsync()`](./background-task/#backgroundtaskunregistertaskasynctaskname) from `expo-background-task`
+ * instead. The `expo-background-fetch` package has been deprecated.
  */
 export async function unregisterTaskAsync(taskName) {
+    showDeprecationWarning();
     if (!ExpoBackgroundFetch.unregisterTaskAsync) {
         throw new UnavailabilityError('BackgroundFetch', 'unregisterTaskAsync');
     }
+    _validate(taskName);
     await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
 export { BackgroundFetchResult, BackgroundFetchStatus };

@@ -1,0 +1,34 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": [
+      "BackgroundModule",
+      "BadgeModule",
+      "CategoriesModule",
+      "EmitterModule",
+      "HandlerModule",
+      "PermissionsModule",
+      "PresentationModule",
+      "PushTokenModule",
+      "SchedulerModule",
+      "ServerRegistrationModule"
+    ],
+    "appDelegateSubscribers": ["NotificationsAppDelegateSubscriber"]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.notifications.badge.BadgeModule",
+      "expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule",
+      "expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule",
+      "expo.modules.notifications.notifications.channels.NotificationChannelGroupManagerModule",
+      "expo.modules.notifications.notifications.channels.NotificationChannelManagerModule",
+      "expo.modules.notifications.notifications.emitting.NotificationsEmitter",
+      "expo.modules.notifications.notifications.handling.NotificationsHandler",
+      "expo.modules.notifications.permissions.NotificationPermissionsModule",
+      "expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule",
+      "expo.modules.notifications.notifications.scheduling.NotificationScheduler",
+      "expo.modules.notifications.serverregistration.ServerRegistrationModule",
+      "expo.modules.notifications.tokens.PushTokenModule"
+    ]
+  }
+}

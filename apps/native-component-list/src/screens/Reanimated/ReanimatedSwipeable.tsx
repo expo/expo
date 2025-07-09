@@ -64,7 +64,9 @@ function SwipableList(): React.ReactElement {
     <View style={s.container}>
       <FlatList
         data={data}
+        // Type 'unknown' is not assignable to type 'Data'.ts(2322)
         renderItem={({ item }) => <ListItem item={item} onRemove={onRemove} />}
+        // 'item' is of type 'unknown'.
         keyExtractor={(item) => item.id}
       />
     </View>

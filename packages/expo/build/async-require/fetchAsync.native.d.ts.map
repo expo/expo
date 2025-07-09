@@ -1,0 +1,1 @@
+{"version":3,"file":"fetchAsync.native.d.ts","sourceRoot":"","sources":["../../src/async-require/fetchAsync.native.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAOH,wBAAgB,UAAU,CACxB,GAAG,EAAE,MAAM,GACV,OAAO,CAAC;IAAE,IAAI,EAAE,MAAM,CAAC;IAAC,MAAM,EAAE,MAAM,CAAC;IAAC,OAAO,EAAE,MAAM,CAAC,MAAM,EAAE,MAAM,CAAC,CAAA;CAAE,CAAC,CA2D5E"}

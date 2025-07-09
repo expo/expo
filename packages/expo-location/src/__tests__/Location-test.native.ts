@@ -1,7 +1,8 @@
-import { NativeModulesProxy, Platform } from 'expo-modules-core';
+import { Platform } from 'expo-modules-core';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
-import * as Location from '../Location';
+import ExpoLocation from '../ExpoLocation';
+import * as Location from '../index';
 
 const fakeReturnValue = {
   coords: {
@@ -17,12 +18,12 @@ const fakeReturnValue = {
 
 function applyMocks() {
   mockProperty(
-    NativeModulesProxy.ExpoLocation,
+    ExpoLocation,
     'getCurrentPositionAsync',
     jest.fn(async () => fakeReturnValue)
   );
   mockProperty(
-    NativeModulesProxy.ExpoLocation,
+    ExpoLocation,
     'requestPermissionsAsync',
     jest.fn(async () => {})
   );
@@ -52,11 +53,7 @@ describe('watchPositionAsync', () => {
     const watchBarrier = new Promise((resolve) => {
       resolveBarrier = resolve;
     });
-    mockProperty(
-      NativeModulesProxy.ExpoLocation,
-      'watchPositionImplAsync',
-      jest.fn(resolveBarrier)
-    );
+    mockProperty(ExpoLocation, 'watchPositionImplAsync', jest.fn(resolveBarrier));
     await Location.watchPositionAsync({}, callback);
     await watchBarrier;
 
@@ -70,7 +67,7 @@ if (Platform.OS === 'android') {
   xdescribe('geocodeAsync', () => {
     // TODO(@tsapeta): This doesn't work due to missing Google Maps API key.
     it(`falls back to Google Maps API on Android without Google Play services`, () => {
-      mockProperty(NativeModulesProxy.ExpoLocation, 'geocodeAsync', async () => {
+      mockProperty(ExpoLocation, 'geocodeAsync', async () => {
         const error = new Error();
         (error as any).code = 'E_NO_GEOCODER';
         throw error;
@@ -102,27 +99,27 @@ describe('navigator.geolocation polyfill', () => {
 
   describe('getCurrentPosition', () => {
     it(`delegates to getCurrentPositionAsync`, async () => {
-      let pass;
+      let pass: (_arg?: any) => void;
       const barrier = new Promise((resolve) => {
         pass = resolve;
       });
-      navigator.geolocation.getCurrentPosition(pass, pass, {});
+      navigator.geolocation.getCurrentPosition(pass!, pass!, {});
       await barrier;
-      expect(NativeModulesProxy.ExpoLocation.getCurrentPositionAsync).toHaveBeenCalled();
+      expect(ExpoLocation.getCurrentPositionAsync).toHaveBeenCalled();
     });
   });
 
   describe('watchPosition', () => {
     it(`watches for updates and stops when clearWatch is called`, async () => {
-      let resolveBarrier;
+      let resolveBarrier: (_args?: any) => void;
       const watchBarrier = new Promise((resolve) => {
         resolveBarrier = resolve;
       });
       mockProperty(
-        NativeModulesProxy.ExpoLocation,
+        ExpoLocation,
         'watchPositionImplAsync',
         jest.fn(async () => {
-          resolveBarrier();
+          resolveBarrier!();
         })
       );
       const callback = jest.fn();
@@ -141,7 +138,7 @@ describe('navigator.geolocation polyfill', () => {
   });
 });
 
-function emitNativeLocationUpdate(location) {
+function emitNativeLocationUpdate(location: any) {
   Location.EventEmitter.emit('Expo.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,

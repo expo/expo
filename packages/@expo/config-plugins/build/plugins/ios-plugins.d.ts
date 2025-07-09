@@ -3,7 +3,7 @@ import type { JSONObject } from '@expo/json-file';
 import type { XcodeProject } from 'xcode';
 import type { ConfigPlugin, Mod } from '../Plugin.types';
 import type { ExpoPlist, InfoPlist } from '../ios/IosConfig.types';
-import type { AppDelegateProjectFile } from '../ios/Paths';
+import type { AppDelegateProjectFile, PodfileProjectFile } from '../ios/Paths';
 type MutateInfoPlistAction = (expo: ExpoConfig, infoPlist: InfoPlist) => Promise<InfoPlist> | InfoPlist;
 /**
  * Helper method for creating mods from existing config functions.
@@ -60,6 +60,13 @@ export declare const withExpoPlist: ConfigPlugin<Mod<ExpoPlist>>;
  * @param action
  */
 export declare const withXcodeProject: ConfigPlugin<Mod<XcodeProject>>;
+/**
+ * Provides the Podfile for modification.
+ *
+ * @param config
+ * @param action
+ */
+export declare const withPodfile: ConfigPlugin<Mod<PodfileProjectFile>>;
 /**
  * Provides the Podfile.properties.json for modification.
  *

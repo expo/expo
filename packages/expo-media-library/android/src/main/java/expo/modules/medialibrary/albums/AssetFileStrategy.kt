@@ -18,7 +18,11 @@ internal fun interface AssetFileStrategy {
     val moveStrategy = AssetFileStrategy strategy@{ src, dir, context ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && src is MediaLibraryUtils.AssetFile) {
         val assetId = src.assetId
-        val assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId.toLong())
+        val assetUri = if (src.mimeType.startsWith("video")) {
+          ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, assetId.toLong())
+        } else {
+          ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId.toLong())
+        }
         val newFile = MediaLibraryUtils.safeCopyFile(src, dir)
         context.contentResolver.delete(assetUri, null)
         return@strategy newFile
@@ -26,7 +30,8 @@ internal fun interface AssetFileStrategy {
       val newFile = MediaLibraryUtils.safeMoveFile(src, dir)
       context.contentResolver.delete(
         EXTERNAL_CONTENT_URI,
-        "${MediaStore.MediaColumns.DATA}=?", arrayOf(src.path)
+        "${MediaStore.MediaColumns.DATA}=?",
+        arrayOf(src.path)
       )
       newFile
     }

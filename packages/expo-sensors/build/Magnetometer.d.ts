@@ -16,6 +16,10 @@ export type MagnetometerMeasurement = {
      * Value representing strength of magnetic field recorded in Z axis.
      */
     z: number;
+    /**
+     * Timestamp of the measurement in seconds.
+     */
+    timestamp: number;
 };
 /**
  * @platform android
@@ -31,7 +35,8 @@ export declare class MagnetometerSensor extends DeviceSensor<MagnetometerMeasure
     isAvailableAsync(): Promise<boolean>;
     /**
      * Subscribe for updates to the magnetometer.
-     * @param listener A callback that is invoked when a barometer update is available. When invoked, the listener is provided with a single argument that is `MagnetometerMeasurement`.
+     * @param listener A callback that is invoked when a magnetometer update is available.
+     * When invoked, the listener is provided with a single argument that is `MagnetometerMeasurement`.
      * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
      */
     addListener(listener: Listener<MagnetometerMeasurement>): Subscription;

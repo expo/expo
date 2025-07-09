@@ -2,29 +2,38 @@ import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
-import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
-import { APISettings } from '../../../api/settings';
-import UserSettings from '../../../api/user/UserSettings';
+import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
+import { ServerHeaders, ServerRequest } from './server.types';
+import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
-import * as Log from '../../../log';
-import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
   getCodeSigningInfoAsync,
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
+import {
+  encodeMultipartMixed,
+  FormDataField,
+  EncodedFormData,
+} from '../../../utils/multipartMixed';
 import { stripPort } from '../../../utils/url';
-import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { ServerHeaders, ServerRequest } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
+export enum ResponseContentType {
+  TEXT_PLAIN,
+  APPLICATION_JSON,
+  APPLICATION_EXPO_JSON,
+  MULTIPART_MIXED,
+}
+
 interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
-  explicitlyPrefersMultipartMixed: boolean;
+  responseContentType: ResponseContentType;
   expectSignature: string | null;
 }
 
@@ -34,9 +43,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     if (!platform) {
       debug(
-        `No "expo-platform" header or "platform" query parameter specified. Falling back to "none".`
+        `No "expo-platform" header or "platform" query parameter specified. Falling back to "ios".`
       );
-      platform = 'none';
+      platform = 'ios';
     }
 
     assertRuntimePlatform(platform);
@@ -46,16 +55,38 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     // URLs in a browser, we denote the response as "text/plain" if the user agent appears not to be
     // an Expo Updates client.
     const accept = accepts(req);
-    const explicitlyPrefersMultipartMixed =
-      accept.types(['unknown/unknown', 'multipart/mixed']) === 'multipart/mixed';
+    const acceptedType = accept.types([
+      'unknown/unknown',
+      'multipart/mixed',
+      'application/json',
+      'application/expo+json',
+      'text/plain',
+    ]);
+
+    let responseContentType;
+    switch (acceptedType) {
+      case 'multipart/mixed':
+        responseContentType = ResponseContentType.MULTIPART_MIXED;
+        break;
+      case 'application/json':
+        responseContentType = ResponseContentType.APPLICATION_JSON;
+        break;
+      case 'application/expo+json':
+        responseContentType = ResponseContentType.APPLICATION_EXPO_JSON;
+        break;
+      default:
+        responseContentType = ResponseContentType.TEXT_PLAIN;
+        break;
+    }
 
     const expectSignature = req.headers['expo-expect-signature'];
 
     return {
-      explicitlyPrefersMultipartMixed,
+      responseContentType,
       platform,
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
+      protocol: req.headers['x-forwarded-proto'] as 'http' | 'https' | undefined,
     };
   }
 
@@ -73,14 +104,22 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     version: string;
     headers: ServerHeaders;
   }> {
-    const { exp, hostUri, expoGoConfig, bundleUrl } = await this._resolveProjectSettingsAsync(
-      requestOptions
-    );
+    const { exp, hostUri, expoGoConfig, bundleUrl } =
+      await this._resolveProjectSettingsAsync(requestOptions);
 
-    const runtimeVersion = Updates.getRuntimeVersion(
-      { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-      requestOptions.platform
-    );
+    const runtimeVersion =
+      (await resolveRuntimeVersionWithExpoUpdatesAsync({
+        projectRoot: this.projectRoot,
+        platform: requestOptions.platform,
+      })) ??
+      // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
+      // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
+      // expo-updates is not installed.
+      (await Updates.getRuntimeVersionAsync(
+        this.projectRoot,
+        { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
+        requestOptions.platform
+      ));
     if (!runtimeVersion) {
       throw new CommandError(
         'MANIFEST_MIDDLEWARE',
@@ -142,28 +181,62 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       certificateChainBody = codeSigningInfo.certificateChainForResponse.join('\n');
     }
 
-    const form = this.getFormData({
-      stringifiedManifest,
-      manifestPartHeaders,
-      certificateChainBody,
-    });
-
     const headers = this.getDefaultResponseHeaders();
-    headers.set(
-      'content-type',
-      requestOptions.explicitlyPrefersMultipartMixed
-        ? `multipart/mixed; boundary=${form.getBoundary()}`
-        : 'text/plain'
-    );
 
-    return {
-      body: form.getBuffer().toString(),
-      version: runtimeVersion,
-      headers,
-    };
+    switch (requestOptions.responseContentType) {
+      case ResponseContentType.MULTIPART_MIXED: {
+        const encoded = await this.encodeFormDataAsync({
+          stringifiedManifest,
+          manifestPartHeaders,
+          certificateChainBody,
+        });
+        headers.set('content-type', `multipart/mixed; boundary=${encoded.boundary}`);
+        return {
+          body: encoded.body,
+          version: runtimeVersion,
+          headers,
+        };
+      }
+      case ResponseContentType.APPLICATION_EXPO_JSON:
+      case ResponseContentType.APPLICATION_JSON:
+      case ResponseContentType.TEXT_PLAIN: {
+        headers.set(
+          'content-type',
+          ExpoGoManifestHandlerMiddleware.getContentTypeForResponseContentType(
+            requestOptions.responseContentType
+          )
+        );
+        if (manifestPartHeaders) {
+          Object.entries(manifestPartHeaders).forEach(([key, value]) => {
+            headers.set(key, value);
+          });
+        }
+
+        return {
+          body: stringifiedManifest,
+          version: runtimeVersion,
+          headers,
+        };
+      }
+    }
   }
 
-  private getFormData({
+  private static getContentTypeForResponseContentType(
+    responseContentType: ResponseContentType
+  ): string {
+    switch (responseContentType) {
+      case ResponseContentType.MULTIPART_MIXED:
+        return 'multipart/mixed';
+      case ResponseContentType.APPLICATION_EXPO_JSON:
+        return 'application/expo+json';
+      case ResponseContentType.APPLICATION_JSON:
+        return 'application/json';
+      case ResponseContentType.TEXT_PLAIN:
+        return 'text/plain';
+    }
+  }
+
+  private encodeFormDataAsync({
     stringifiedManifest,
     manifestPartHeaders,
     certificateChainBody,
@@ -171,26 +244,23 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     stringifiedManifest: string;
     manifestPartHeaders: { 'expo-signature': string } | null;
     certificateChainBody: string | null;
-  }): FormData {
-    const form = new FormData();
-    form.append('manifest', stringifiedManifest, {
-      contentType: 'application/json',
-      header: {
-        ...manifestPartHeaders,
+  }): Promise<EncodedFormData> {
+    const fields: FormDataField[] = [
+      {
+        name: 'manifest',
+        value: stringifiedManifest,
+        contentType: 'application/json',
+        partHeaders: manifestPartHeaders,
       },
-    });
+    ];
     if (certificateChainBody && certificateChainBody.length > 0) {
-      form.append('certificate_chain', certificateChainBody, {
+      fields.push({
+        name: 'certificate_chain',
+        value: certificateChainBody,
         contentType: 'application/x-pem-file',
       });
     }
-    return form;
-  }
-
-  protected trackManifest(version?: string) {
-    logEventAsync('Serve Expo Updates Manifest', {
-      runtimeVersion: version,
-    });
+    return encodeMultipartMixed(fields);
   }
 
   private static async getScopeKeyAsync({
@@ -205,17 +275,17 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       return scopeKeyFromCodeSigningInfo;
     }
 
-    Log.warn(
-      APISettings.isOffline
-        ? 'Using anonymous scope key in manifest for offline mode.'
-        : 'Using anonymous scope key in manifest.'
-    );
+    // Log.warn(
+    //   env.EXPO_OFFLINE
+    //     ? 'Using anonymous scope key in manifest for offline mode.'
+    //     : 'Using anonymous scope key in manifest.'
+    // );
     return await getAnonymousScopeKeyAsync(slug);
   }
 }
 
 async function getAnonymousScopeKeyAsync(slug: string): Promise<string> {
-  const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
+  const userAnonymousIdentifier = await getAnonymousIdAsync();
   return `@${ANONYMOUS_USERNAME}/${slug}-${userAnonymousIdentifier}`;
 }
 

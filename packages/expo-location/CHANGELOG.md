@@ -10,6 +10,234 @@
 
 ### 💡 Others
 
+## 18.1.6 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 18.1.5 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix `shouldUseForegroundService` being always `true`. ([#35875](https://github.com/expo/expo/pull/35875) by [@filipef101](https://github.com/filipef101))
+
+## 18.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- [Android] Add missing ProGuard rule to fix task consumer failed ([#34098](https://github.com/expo/expo/pull/34098) by [@cornejobarraza](https://github.com/cornejobarraza))
+- [iOS] `startLocationUpdatesAsync` should not require background permissions ([#33617](https://github.com/expo/expo/pull/33617) by [@andrejpavlovic](https://github.com/andrejpavlovic)
+
+### 💡 Others
+
+- On Android, remove dependency on `smart-location-lib`. ([#33609](https://github.com/expo/expo/pull/33609) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Added missing dependency. ([#35822](https://github.com/expo/expo/pull/35822) by [@lukmccall](https://github.com/lukmccall))
+
+## 18.0.10 - 2025-04-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed issue with some permission request flows resolving too soon on iOS. ([#35693](https://github.com/expo/expo/pull/35693) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Remove restarting all services when CLLocationManager reports an error ([#35478](https://github.com/expo/expo/pull/35478) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.9 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.8 - 2025-03-14
+
+### 💡 Others
+
+- On iOS, added setting the scope value as per our documentation. ([#35452](https://github.com/expo/expo/pull/35452) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.7 - 2025-02-19
+
+### 🐛 Bug fixes
+
+- [iOS] Added guards to avoid task options to crash the app. ([#35477](https://github.com/expo/expo/pull/35477) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Added error handler to the streaming location/heading methods since these can fail while streaming ([#35004](https://github.com/expo/expo/pull/35004) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.6 - 2025-02-10
+
+### 🐛 Bug fixes
+
+- [Android] Use less specific exception in catch block of `resolveUserSettingsForRequest`. ([#34784](https://github.com/expo/expo/pull/34784) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 18.0.5 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.4 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.3 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.2 — 2024-11-19
+
+### 🐛 Bug fixes
+
+- Fixed NoClassDefFoundError for `Landroid/support/v4/app/ActivityCompat;`. ([#33088](https://github.com/expo/expo/pull/33088) by [@kudo](https://github.com/kudo))
+
+## 18.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Remove deprecated code: geocoding using Google Maps API, old permission methods and related types. ([#29961](https://github.com/expo/expo/pull/29961) by [@Simek](https://github.com/Simek))
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30867](https://github.com/expo/expo/pull/30867) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [iOS] Migrated the native module to Swift. ([#30388](https://github.com/expo/expo/pull/30388) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix an issue where if the user selects "Allow Once" for location permissions, we needed to request background permissions twice because the first time had effect. ([#29272](https://github.com/expo/expo/pull/29272) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Added warning when using background location in Expo Go. ([#31461](https://github.com/expo/expo/pull/31461) by [@chrfalch](https://github.com/chrfalch))
+- Keep using the legacy event emitter as the module is not fully migrated to Expo Modules API. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Rework package exports. ([#29953](https://github.com/expo/expo/pull/29953) by [@Simek](https://github.com/Simek))
+- Updated documentation for default LocationAccuracy ([#31066](https://github.com/expo/expo/pull/31066) by [@johnculviner](https://github.com/johnculviner))
+
+## 17.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- [Web] `getPermissionsAsync` no longer prompts the user for permission instead we use the new browser API `navigator.permissions.query` to check the permission status. ([#26836](https://github.com/expo/expo/pull/26837) by [@hems](https://github.com/hems))
+
+### 🎉 New features
+
+- Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Fixed unit test errors. ([#28208](https://github.com/expo/expo/pull/28208) by [@kudo](https://github.com/kudo))
+
+## 16.5.5 - 2024-02-29
+
+_This version does not introduce any user-facing changes._
+
+## 16.5.4 - 2024-02-27
+
+### 🎉 New features
+
+- [Android] Make foreground service permission opt-in with `isAndroidForegroundServiceEnabled` config plugin option [#27265](https://github.com/expo/expo/pull/27265) by [@brentvatne](https://github.com/brentvatne))
+- [Android] Enable foreground service by default when background location is enabled [#27359](https://github.com/expo/expo/pull/27359) by [@brentvatne](https://github.com/brentvatne))
+
+## 16.5.3 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- [Android] Fixed: `NullPointerException: it must not be null`. ([#26688](https://github.com/expo/expo/pull/26688) by [@lukmccall](https://github.com/lukmccall))
+- On `Android`, prevent location service from starting when permission is not in the manifest. ([#27355](https://github.com/expo/expo/pull/27355) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.5.2 - 2024-01-10
+
+### 🎉 New features
+
+- [Android] Added `formattedAddress` to the `LocationGeocodedAddress`. ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan) & [@lukmccall](https://github.com/lukmccall)) ([#26342](https://github.com/expo/expo/pull/26342) by [@whysetiawan](https://github.com/whysetiawan), [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [Android] Fix the module requiring the `expo-task-manager` module for methods that don't use it. ([#26200](https://github.com/expo/expo/pull/26200) by [@behenate](https://github.com/behenate))
+
+## 16.5.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 16.5.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Moved to the new Modules API. ([#24737](https://github.com/expo/expo/pull/24737) by [@behenate](https://github.com/behenate))
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+
+### 📚 3rd party library updates
+
+- Updated `com.google.android.gms:play-services-location` to `21.0.1`. ([#25028](https://github.com/expo/expo/pull/25028) by [@behenate](https://github.com/behenate))
+
+## 16.4.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 16.3.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 16.2.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 16.2.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 - 2023-07-13
+
+### 🐛 Bug fixes
+
+- Downgrade play-services-location to 20.0.0 to support react-native-maps. ([#23501](https://github.com/expo/expo/pull/23501) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 16.0.0 — 2023-06-21
+
+_This version does not introduce any user-facing changes._
+
+## 15.3.0 — 2023-06-13
+
+### 📚 3rd party library updates
+
+- Updated `com.google.android.gms:play-services-location` to `21.0.1` and `io.nlopez.smartlocation:library` to `3.3.3` ([#22468](https://github.com/expo/expo/pull/22468) by [@josephyanks](https://github.com/josephyanks))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- On Android, removed use of deprecated `LocationRequest` constructor and replaced with `LocationRequest.Builder`. ([#22653](https://github.com/expo/expo/pull/22653) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed the Geocoding API service. ([#22830](https://github.com/expo/expo/pull/22830) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 15.2.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._
@@ -223,7 +451,7 @@ _This version does not introduce any user-facing changes._
 - Add `scope` field in returned value to indicate whether background permissions are granted. Add `android.accuracy` field to determine whether `coarse` or `fine` location permission is granted. ([#9446](https://github.com/expo/expo/pull/9446) by [@mczernek](https://github.com/mczernek))
 - `getLastKnownPositionAsync` no longer rejects when the last known location is not available – now it returns `null`. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
 - Removed the deprecated `enableHighAccuracy` option of `getCurrentPositionAsync`. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
-- Removed `maximumAge` and `timeout` options from `getCurrentPositionAsync` – it's been Android only and the same behavior can be achieved on all platforms on the JavaScript side. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
+- Removed `maximumAge` and `timeout` options from `getCurrentPositionAsync` – it's been Android only and the same behavior can be achieved on all platforms on the JavaScript side. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
 - Made type and enum names more consistent and in line with our standards — they all are now prefixed by `Location`. The most common ones are still accessible without the prefix, but it's not the recommended way. ([#9251](https://github.com/expo/expo/pull/9251) by [@tsapeta](https://github.com/tsapeta))
 - `geocodeAsync` and `reverseGeocodeAsync` no longer falls back to Google Maps API on Android. ([#9444](https://github.com/expo/expo/pull/9444) by [@tsapeta](https://github.com/tsapeta))
 

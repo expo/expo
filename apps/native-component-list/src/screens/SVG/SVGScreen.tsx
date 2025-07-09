@@ -1,59 +1,55 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React from 'react';
-import {
-  FlatList,
-  ListRenderItem,
-  PixelRatio,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import examples from './examples';
+import { optionalRequire } from '../../navigation/routeBuilder';
+
+export const SVGScreens = [
+  {
+    name: 'SVGExample',
+    route: 'svg/example',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SVGExampleScreen'));
+    },
+  },
+];
 
 type StackParams = {
   SVGExample: { title: string; key: string };
 };
 
-export default class SVGScreen extends React.Component<{
+export default function SVGScreen({
+  navigation,
+}: {
   navigation: StackNavigationProp<StackParams>;
-}> {
-  static navigationOptions = {
-    title: '<Svg />',
-  };
-
-  renderItem: ListRenderItem<string> = ({ item: exampleKey }) => (
-    <TouchableHighlight
-      underlayColor="#dddddd"
-      style={styles.rowTouchable}
-      onPress={() =>
-        this.props.navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })
-      }>
-      <View style={styles.row}>
-        <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
-        <Text style={styles.rowLabel}>{exampleKey}</Text>
-        <Text style={styles.rowDecorator}>
-          <Ionicons name="chevron-forward" size={18} color="#595959" />
-        </Text>
-      </View>
-    </TouchableHighlight>
+}) {
+  return (
+    <FlatList<string>
+      style={styles.container}
+      data={Object.keys(examples)}
+      renderItem={({ item: exampleKey }) => (
+        <TouchableHighlight
+          underlayColor="#dddddd"
+          style={styles.rowTouchable}
+          onPress={() => navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })}>
+          <View style={styles.row}>
+            <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
+            <Text style={styles.rowLabel}>{exampleKey}</Text>
+            <Text style={styles.rowDecorator}>
+              <Ionicons name="chevron-forward" size={18} color="#595959" />
+            </Text>
+          </View>
+        </TouchableHighlight>
+      )}
+      keyExtractor={(item: string) => item}
+    />
   );
-
-  keyExtractor = (item: string) => item;
-
-  render() {
-    return (
-      <FlatList<string>
-        style={styles.container}
-        data={Object.keys(examples)}
-        renderItem={this.renderItem}
-        keyExtractor={this.keyExtractor}
-      />
-    );
-  }
 }
+SVGScreen.navigationOptions = {
+  title: '<Svg />',
+};
 
 const styles = StyleSheet.create({
   container: {

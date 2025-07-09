@@ -2,10 +2,9 @@ import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
-import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -22,17 +21,19 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
+  expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
-  'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
-  'expo-auth-session': ['AuthSession.ts'],
+  'expo-audio': ['index.ts'],
+  'expo-audio-av': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
+  'expo-auth-session': ['index.ts'],
   'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
+  'expo-background-task': ['BackgroundTask.ts'],
   'expo-battery': ['Battery.ts'],
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
-  'expo-barcode-scanner': ['BarCodeScanner.tsx'],
   'expo-blur': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
@@ -42,55 +43,73 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-checkbox': ['Checkbox.ts'],
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
-  'expo-contacts': ['Contacts.ts'],
+  'expo-contacts': ['index.ts'],
   'expo-crypto': ['Crypto.ts'],
+  'expo-dev-client': ['DevClient.ts'],
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
-  'expo-face-detector': ['FaceDetector.ts'],
   'expo-file-system': ['index.ts'],
+  'expo-file-system-next': ['next/index.ts', 'expo-file-system'],
   'expo-font': ['index.ts'],
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-haptics': ['Haptics.ts'],
-  'expo-image': [['Image.tsx', 'Image.types.ts']],
-  'expo-image-manipulator': ['ImageManipulator.ts'],
+  'expo-image': ['index.ts'],
+  'expo-image-manipulator': [['index.ts', 'ImageManipulator.types.ts']],
   'expo-image-picker': ['ImagePicker.ts'],
-  'expo-in-app-purchases': ['InAppPurchases.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
   'expo-keep-awake': ['index.ts'],
   'expo-light-sensor': [['LightSensor.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-linking': ['Linking.ts'],
   'expo-linear-gradient': ['LinearGradient.tsx'],
+  'expo-live-photo': ['index.ts'],
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
-  'expo-location': ['Location.ts'],
+  'expo-location': ['index.ts'],
+  'expo-maps': [
+    [
+      'index.ts',
+      'apple/AppleMapsView.tsx',
+      'apple/AppleMaps.types.ts',
+      'google/GoogleMapsView.tsx',
+      'google/GoogleMaps.types.ts',
+      'google/GoogleStreetView.tsx',
+    ],
+  ],
   'expo-magnetometer': [['Magnetometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
+  'expo-manifests': ['Manifests.ts'],
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['MediaLibrary.ts'],
-  'expo-navigation-bar': ['NavigationBar.ts'],
+  'expo-mesh-gradient': ['index.ts'],
+  'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-random': ['Random.ts'],
+  'expo-router': ['exports.ts'],
+  'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
   'expo-sharing': ['Sharing.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
-  'expo-splash-screen': ['SplashScreen.ts'],
-  'expo-sqlite': ['index.ts'],
-  'expo-status-bar': ['StatusBar.ts'],
+  'expo-splash-screen': ['index.ts'],
+  'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
+  'expo-status-bar': ['StatusBar.tsx'],
   'expo-store-review': ['StoreReview.ts'],
+  'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
   'expo-task-manager': ['TaskManager.ts'],
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
+  'expo-ui': ['types.ts'],
   'expo-updates': ['index.ts'],
-  'expo-video': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
+  'expo-video': ['index.ts'],
+  'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
+  '@expo/fingerprint': ['index.ts'],
 };
 
 const executeCommand = async (
@@ -99,10 +118,7 @@ const executeCommand = async (
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
-  const app = new Application();
-
-  app.options.addReader(new TSConfigReader());
-  app.options.addReader(new TypeDocReader());
+  const { Application, Configuration, TSConfigReader, TypeDocReader } = await import('typedoc');
 
   const dataPath = path.join(
     EXPO_DIR,
@@ -130,19 +146,35 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  app.bootstrap({
-    entryPoints,
-    tsconfig: tsConfigPath,
-    disableSources: true,
-    hideGenerator: true,
-    excludePrivate: true,
-    excludeProtected: true,
-    skipErrorChecking: true,
-    excludeExternals: true,
-    pretty: !MINIFY_JSON,
-  });
+  const app = await Application.bootstrapWithPlugins(
+    {
+      entryPoints,
+      tsconfig: tsConfigPath,
+      disableSources: true,
+      hideGenerator: true,
+      excludePrivate: true,
+      excludeProtected: true,
+      excludeExternals: true,
+      pretty: !MINIFY_JSON,
+      commentStyle: 'block',
+      jsDocCompatibility: false,
+      preserveLinkText: true,
+      sourceLinkExternal: false,
+      markdownLinkExternal: false,
+      blockTags: [
+        ...Configuration.OptionDefaults.blockTags,
+        '@alias',
+        '@deprecated',
+        '@docsMissing',
+        '@header',
+        '@needsAudit',
+        '@platform',
+      ],
+    },
+    [new TSConfigReader(), new TypeDocReader()]
+  );
 
-  const project = app.convert();
+  const project = await app.convert();
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
@@ -158,21 +190,30 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    const { readme, symbolIdMap, ...trimmedOutput } = output;
+
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(
-        output,
-        ({ key, node }) =>
-          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
-          (key === 'flags' && !Object.keys(node).length)
-      );
+      const minifiedJson = filterOutKeys(filterOutKeys(trimmedOutput));
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(output));
+      await fs.writeFile(jsonOutputPath, JSON.stringify(trimmedOutput));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
   }
 };
+
+const KEYS_TO_OMIT = ['id', 'groups', 'kindString', 'originalName', 'files', 'sourceFileName'];
+
+function filterOutKeys(data: Record<string, any>) {
+  return recursiveOmitBy(data, ({ key, node }) => {
+    return (
+      KEYS_TO_OMIT.includes(key) ||
+      (key === 'flags' && !Object.keys(node).length) ||
+      (key === 'target' && typeof node !== 'object')
+    );
+  });
+}
 
 async function action({ packageName, sdk }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);

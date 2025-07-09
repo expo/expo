@@ -9,9 +9,9 @@ import Debug from 'debug';
 import * as fs from 'fs';
 import { Socket } from 'net';
 
+import { ResponseError, ServiceClient } from './ServiceClient';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
 import { isLockdownResponse, LockdownProtocolClient } from '../protocol/LockdownProtocol';
-import { ResponseError, ServiceClient } from './ServiceClient';
 
 const debug = Debug('expo:apple-device:client:mobile_image_mounter');
 

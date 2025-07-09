@@ -1,8 +1,8 @@
 package expo.modules.crypto
 
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.test.core.ModuleMock
-import expo.modules.test.core.ModuleMockHolder
+import expo.modules.test.core.legacy.ModuleMock
+import expo.modules.test.core.legacy.ModuleMockHolder
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,13 +18,13 @@ private inline fun withCryptoModuleMock(
 ) = ModuleMock.createMock(
   CryptoModuleTestInterface::class,
   CryptoModule(),
-  block = block,
+  block = block
 )
 
 @RunWith(RobolectricTestRunner::class)
 class CryptoModuleTest {
   private val testValue = "Expo"
-  private val algorithms = DigestAlgorithm.values()
+  private val algorithms = DigestAlgorithm.entries
 
   @Test
   fun digestStringForBase64() = withCryptoModuleMock {

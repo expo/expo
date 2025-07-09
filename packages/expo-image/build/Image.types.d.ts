@@ -1,36 +1,43 @@
-import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
+import type { NativeModule, SharedRef, SharedRefType } from 'expo';
+import { ImageStyle as RNImageStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
-     * which could be an http address, a local file path, or the name of a static image resource.
+     * which could be an HTTPS address, a local file path, or the name of a static image resource.
      */
     uri?: string;
     /**
      * An object representing the HTTP headers to send along with the request for a remote image.
-     * @platform android
-     * @platform ios
+     * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
      */
     headers?: Record<string, string>;
     /**
      * Can be specified if known at build time, in which case the value
-     * will be used to set the default `<Image/>` component dimension
+     * will be used to set the default `<Image/>` component dimension.
      */
-    width?: number;
+    width?: number | null;
     /**
      * Can be specified if known at build time, in which case the value
-     * will be used to set the default `<Image/>` component dimension
+     * will be used to set the default `<Image/>` component dimension.
      */
-    height?: number;
+    height?: number | null;
     /**
-     * The blurhash string to use to generate the image. You can read more about the blurhash
-     * on [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repo. Ignored when `uri` is provided.
+     * A string used to generate the image [`placeholder`](#placeholder). For example,
+     * `placeholder={blurhash}`.  If `uri` is provided as the value of the `source` prop,
+     * this is ignored since the `source` can only have `blurhash` or `uri`.
+     *
      * When using the blurhash, you should also provide `width` and `height` (higher values reduce performance),
      * otherwise their default value is `16`.
+     * For more information, see [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repository.
      */
     blurhash?: string;
     /**
-     * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
-     * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+     * A string used to generate the image [`placeholder`](#placeholder). For example,
+     * `placeholder={thumbhash}`.  If `uri` is provided as the value of the `source` prop,
+     * this is ignored since the `source` can only have `thumbhash` or `uri`.
+     *
+     * For more information, see [`thumbhash website`](https://evanw.github.io/thumbhash/).
      */
     thumbhash?: string;
     /**
@@ -38,6 +45,20 @@ export type ImageSource = {
      * If not provided, the `uri` is used also as the cache key.
      */
     cacheKey?: string;
+    /**
+     * The max width of the viewport for which this source should be selected.
+     * Has no effect if `source` prop is not an array or has only 1 element.
+     * Has no effect if `responsivePolicy` is not set to `static`.
+     * Ignored if `blurhash` or `thumbhash` is provided (image hashes are never selected if passed in an array).
+     * @platform web
+     */
+    webMaxViewportWidth?: number;
+    /**
+     * Whether the image is animated (an animated GIF or WebP for example).
+     * @platform android
+     * @platform ios
+     */
+    isAnimated?: boolean;
 };
 /**
  * @hidden
@@ -49,22 +70,32 @@ export type ImageStyle = RNImageStyle;
  */
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 /**
+ * Determines which format should be used to decode the image.
+ * It's suggestion for the platform to use the specified format, but it's not guaranteed.
+ * @hidden Described in the {@link ImageProps['decodeFormat']}
+ */
+export type ImageDecodeFormat = 'argb' | 'rgb';
+/**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export interface ImageProps extends ViewProps {
+export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
     /** @hidden */
-    style?: RNImageStyle | RNImageStyle[];
+    style?: StyleProp<RNImageStyle>;
     /**
      * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
      * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
      * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
      */
-    source?: ImageSource | string | number | ImageSource[] | string[] | null;
+    source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
      * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
+     *
+     * > **Note**: The default value for placeholder's content fit is 'scale-down', which differs from the source image's default value.
+     * > Using a lower-resolution placeholder may cause flickering due to scaling differences between it and the final image.
+     * > To prevent this, you can set the [`placeholderContentFit`](#placeholdercontentfit) to match the [`contentFit`](#contentfit) value.
      */
-    placeholder?: ImageSource | string | number | ImageSource[] | string[] | null;
+    placeholder?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
      * Determines how the image should be resized to fit its container. This property tells the image to fill the container
      * in a variety of ways; such as "preserve that aspect ratio" or "stretch up and take up as much space as possible".
@@ -86,8 +117,7 @@ export interface ImageProps extends ViewProps {
      */
     contentFit?: ImageContentFit;
     /**
-     * Determines how the placeholder should be resized to fit its container
-     * @hidden Described in the {@link ImageProps['contentFit']}
+     * Determines how the placeholder should be resized to fit its container. Available resize modes are the same as for the [`contentFit`](#contentfit) prop.
      * @default 'scale-down'
      */
     placeholderContentFit?: ImageContentFit;
@@ -110,11 +140,9 @@ export interface ImageProps extends ViewProps {
     blurRadius?: number;
     /**
      * A color used to tint template images (a bitmap image where only the opacity matters).
-     * The color is applied to every non-transparent pixel, causing the image’s shape to adopt that color.
+     * The color is applied to every non-transparent pixel, causing the image's shape to adopt that color.
      * This effect is not applied to placeholders.
      * @default null
-     * @platform android
-     * @platform ios
      */
     tintColor?: string | null;
     /**
@@ -140,12 +168,21 @@ export interface ImageProps extends ViewProps {
      */
     cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk' | /** @hidden */ null;
     /**
-     * Determines whether to choose image source based on container size only on mount or on every resize.
-     * Use `initial` to improve performance.
-     * @default "live"
+     * Controls the selection of the image source based on the container or viewport size on the web.
+     *
+     * If set to `'static'`, the browser selects the correct source based on user's viewport width. Works with static rendering.
+     * Make sure to set the `'webMaxViewportWidth'` property on each source for best results.
+     * For example, if an image occupies 1/3 of the screen width, set the `'webMaxViewportWidth'` to 3x the image width.
+     * The source with the largest `'webMaxViewportWidth'` is used even for larger viewports.
+     *
+     * If set to `'initial'`, the component will select the correct source during mount based on container size. Does not work with static rendering.
+     *
+     * If set to `'live'`, the component will select the correct source on every resize based on container size. Does not work with static rendering.
+     *
+     * @default 'static'
      * @platform web
      */
-    responsivePolicy?: 'live' | 'initial';
+    responsivePolicy?: 'live' | 'initial' | 'static';
     /**
      * Changing this prop resets the image view content to blank or a placeholder before loading and rendering the final image.
      * This is especially useful for any kinds of recycling views like [FlashList](https://github.com/shopify/flash-list)
@@ -155,6 +192,14 @@ export interface ImageProps extends ViewProps {
      * @platform ios
      */
     recyclingKey?: string | null;
+    /**
+     * Determines if an image should automatically begin playing if it is an
+     * animated image.
+     * @default true
+     * @platform android
+     * @platform ios
+     */
+    autoplay?: boolean;
     /**
      * Called when the image starts to load.
      */
@@ -176,6 +221,10 @@ export interface ImageProps extends ViewProps {
      * Called when the image load either succeeds or fails.
      */
     onLoadEnd?: () => void;
+    /**
+     * Called when the image view successfully rendered the source image.
+     */
+    onDisplay?: () => void;
     /**
      * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
      * Use [`placeholder`](#placeholder) prop instead.
@@ -215,21 +264,15 @@ export interface ImageProps extends ViewProps {
      */
     accessible?: boolean;
     /**
-     * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
+     * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
      * @default undefined
-     * @platform android
-     * @platform ios
-     * @platform web
      */
     accessibilityLabel?: string;
     /**
-     * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
+     * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
      *
      * @alias accessibilityLabel
      * @default undefined
-     * @platform android
-     * @platform ios
-     * @platform web
      */
     alt?: string;
     /**
@@ -245,9 +288,40 @@ export interface ImageProps extends ViewProps {
      *
      * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
      * @default true
-     * @platform android
      */
     allowDownscaling?: boolean;
+    /**
+     * The format in which the image data should be decoded.
+     * It's not guaranteed that the platform will use the specified format.
+     *
+     * - `'argb'` - The image is decoded into a 32-bit color space with alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#ARGB_8888).
+     *
+     * - `'rgb'` - The image is decoded into a 16-bit color space without alpha channel (https://developer.android.com/reference/android/graphics/Bitmap.Config#RGB_565).
+     *
+     * @default 'argb'
+     * @platform android
+     */
+    decodeFormat?: ImageDecodeFormat;
+    /**
+     * Whether to use the Apple's default WebP codec.
+     *
+     * Set this prop to `false` to use the official standard-compliant [libwebp](https://github.com/webmproject/libwebp) codec for WebP images.
+     * The default implementation from Apple is faster and uses less memory but may render animated images with incorrect blending or play them at the wrong framerate.
+     * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
+     *
+     * @default true
+     * @platform ios
+     */
+    useAppleWebpCodec?: boolean;
+    /**
+     * Force early resizing of the image to match the container size.
+     * This option helps to reduce the memory usage of the image view, especially when the image is larger than the container.
+     * It may affect the `resizeType` and `contentPosition` properties when the image view is resized dynamically.
+     *
+     * @default false
+     * @platform ios
+     */
+    enforceEarlyResizing?: boolean;
 }
 /**
  * It narrows down some props to types expected by the native/web side.
@@ -255,10 +329,13 @@ export interface ImageProps extends ViewProps {
  */
 export interface ImageNativeProps extends ImageProps {
     style?: RNImageStyle;
-    source?: ImageSource[];
-    placeholder?: ImageSource[];
+    source?: ImageSource[] | SharedRefType<'image'>;
+    placeholder?: ImageSource[] | SharedRefType<'image'>;
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
+    autoplay?: boolean;
+    nativeViewRef?: React.RefObject<ExpoImage | null>;
+    containerViewRef?: React.RefObject<View | null>;
 }
 /**
  * A value that represents the relative position of a single axis.
@@ -285,28 +362,40 @@ export type ImageContentPosition =
 {
     top?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the top-left corner.
  */
-{
+ | {
     top?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-right corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     right?: ImageContentPositionValue;
-} | 
+}
 /**
  * An object that positions the image relatively to the bottom-left corner.
  */
-{
+ | {
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
+/**
+ * It allows you to use an image as a background while rendering other content on top of it.
+ * It extends all `Image` props but provides separate styling controls for the container and the background image itself.
+ */
+export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
+    /** The style of the image container. */
+    style?: StyleProp<ViewStyle> | undefined;
+    /** Style object for the image. */
+    imageStyle?: StyleProp<RNImageStyle> | undefined;
+    /** @hidden */
+    children?: React.ReactNode | undefined;
+}
 /**
  * @hidden It's described as part of {@link ImageContentPosition}.
  */
@@ -346,6 +435,7 @@ export type ImageLoadEventData = {
         width: number;
         height: number;
         mediaType: string | null;
+        isAnimated?: boolean;
     };
 };
 export type ImageProgressEventData = {
@@ -354,6 +444,76 @@ export type ImageProgressEventData = {
 };
 export type ImageErrorEventData = {
     error: string;
+};
+export type ImagePrefetchOptions = {
+    /**
+     * The cache policy for prefetched images.
+     * @default 'memory-disk'
+     */
+    cachePolicy?: 'disk' | 'memory-disk' | 'memory';
+    /**
+     * A map of headers to use when prefetching the images.
+     */
+    headers?: Record<string, string>;
+};
+/**
+ * An object that is a reference to a native image instance – [Drawable](https://developer.android.com/reference/android/graphics/drawable/Drawable)
+ * on Android and [UIImage](https://developer.apple.com/documentation/uikit/uiimage) on iOS.
+ * Instances of this class can be passed as a source to the [Image](#image) component in which case the image is rendered immediately
+ * since its native representation is already available in the memory.
+ */
+export declare class ImageRef extends SharedRef<'image'> {
+    /**
+     * Logical width of the image. Multiply it by the value in the `scale` property to get the width in pixels.
+     */
+    readonly width: number;
+    /**
+     * Logical height of the image. Multiply it by the value in the `scale` property to get the height in pixels.
+     */
+    readonly height: number;
+    /**
+     * On iOS, if you load an image from a file whose name includes the `@2x` modifier, the scale is set to **2.0**. All other images are assumed to have a scale factor of **1.0**.
+     * On Android, it calculates the scale based on the bitmap density divided by screen density.
+     *
+     * On all platforms, if you multiply the logical size of the image by this value, you get the dimensions of the image in pixels.
+     */
+    readonly scale: number;
+    /**
+     * Media type (also known as MIME type) of the image, based on its format.
+     * Returns `null` when the format is unknown or not supported.
+     * @platform ios
+     */
+    readonly mediaType: string | null;
+    /**
+     * Whether the referenced image is an animated image.
+     */
+    readonly isAnimated?: boolean;
+}
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule {
+    Image: typeof ImageRef;
+    loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
+}
+/**
+ * An object with options for the [`useImage`](#useimage) hook.
+ */
+export type ImageLoadOptions = {
+    /**
+     * If provided, the image will be automatically resized to not exceed this width in pixels, preserving its aspect ratio.
+     * @platform ios
+     */
+    maxWidth?: number;
+    /**
+     * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
+     * @platform ios
+     */
+    maxHeight?: number;
+    /**
+     * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
+     */
+    onError?(error: Error, retry: () => void): void;
 };
 export {};
 //# sourceMappingURL=Image.types.d.ts.map

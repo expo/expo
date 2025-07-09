@@ -1,41 +1,56 @@
 {
   "name": "expo",
-  "version": "49.0.0-alpha.3",
+  "version": "53.0.9",
   "description": "The Expo SDK",
-  "main": "build/Expo.js",
-  "module": "build/Expo.js",
+  "main": "src/Expo.ts",
+  "module": "src/Expo.ts",
   "types": "build/Expo.d.ts",
   "sideEffects": [
-    "*.fx.js",
-    "*.fx.web.js"
+    "*.fx.tsx",
+    "*.fx.web.tsx",
+    "./src/winter/*.ts",
+    "./src/async-require/*.ts"
   ],
-  "bin": "bin/cli",
+  "bin": {
+    "expo": "bin/cli",
+    "expo-modules-autolinking": "bin/autolinking",
+    "fingerprint": "bin/fingerprint"
+  },
   "files": [
     "android",
     "bin",
     "build",
     "ios",
     "scripts",
-    "tools",
+    "src",
     "AppEntry.js",
     "Expo.podspec",
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
     "metro-config.d.ts",
-    "config.js",
-    "config.d.ts",
+    "dom",
+    "config",
     "config-plugins.js",
     "config-plugins.d.ts",
+    "devtools.js",
+    "devtools.d.ts",
+    "fetch.js",
+    "fetch.d.ts",
+    "fingerprint.js",
+    "fingerprint.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
-    "tsconfig.base.json"
+    "tsconfig.base.json",
+    "types",
+    "virtual"
   ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -58,35 +73,53 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.8.0",
-    "@expo/vector-icons": "^13.0.0",
-    "@expo/config-plugins": "7.0.0",
-    "@expo/config": "8.0.4",
-    "babel-preset-expo": "~9.4.0",
-    "expo-application": "~5.2.0",
-    "expo-asset": "~8.9.2",
-    "expo-constants": "~14.3.0",
-    "expo-file-system": "~15.3.0",
-    "expo-font": "~11.2.0",
-    "expo-keep-awake": "~12.1.0",
-    "expo-modules-autolinking": "1.3.0",
-    "expo-modules-core": "1.3.2",
-    "fbemitter": "^3.0.0",
-    "invariant": "^2.2.4",
-    "md5-file": "^3.2.3",
-    "node-fetch": "^2.6.7",
-    "pretty-format": "^26.5.2",
-    "uuid": "^3.4.0"
+    "@expo/cli": "0.24.13",
+    "@expo/config": "~11.0.10",
+    "@expo/config-plugins": "~10.0.2",
+    "@expo/fingerprint": "0.13.0",
+    "@expo/metro-config": "0.20.14",
+    "@expo/vector-icons": "^14.0.0",
+    "babel-preset-expo": "~13.1.11",
+    "expo-asset": "~11.1.5",
+    "expo-constants": "~17.1.6",
+    "expo-file-system": "~18.1.10",
+    "expo-font": "~13.3.1",
+    "expo-keep-awake": "~14.1.4",
+    "expo-modules-autolinking": "2.1.10",
+    "expo-modules-core": "2.3.13",
+    "pretty-format": "^29.7.0",
+    "react-native-edge-to-edge": "1.6.0",
+    "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
-    "@types/fbemitter": "^2.0.32",
-    "@types/invariant": "^2.2.33",
-    "@types/react": "~18.0.14",
-    "@types/react-test-renderer": "^18.0.0",
-    "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^3.0.8",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.71.7"
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.0.10",
+    "@types/react-test-renderer": "^19.1.0",
+    "expo-module-scripts": "^4.1.7",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.80.1",
+    "web-streams-polyfill": "^3.3.2",
+    "ws": "^8.18.0"
+  },
+  "peerDependencies": {
+    "@expo/dom-webview": "*",
+    "@expo/metro-runtime": "*",
+    "metro-runtime": "*",
+    "react": "*",
+    "react-refresh": "*",
+    "react-native": "*",
+    "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "@expo/dom-webview": {
+      "optional": true
+    },
+    "@expo/metro-runtime": {
+      "optional": true
+    },
+    "react-native-webview": {
+      "optional": true
+    }
   }
 }

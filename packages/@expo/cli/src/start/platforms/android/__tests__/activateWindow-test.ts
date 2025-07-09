@@ -2,7 +2,6 @@
 import { execAsync } from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
-import { asMock } from '../../../../__tests__/asMock';
 import { activateWindowAsync } from '../activateWindow';
 
 const platform = process.platform;
@@ -20,28 +19,28 @@ afterEach(() => {
 it(`skips on windows`, async () => {
   mockPlatform('win32');
   await activateWindowAsync({ type: 'emulator', pid: 'emulator-5554' });
-  expect(execFileSync).toBeCalledTimes(0);
+  expect(execFileSync).toHaveBeenCalledTimes(0);
 });
 
 it(`skips for devices`, async () => {
   mockPlatform('darwin');
   await activateWindowAsync({ type: 'device', pid: 'emulator-5554' });
-  expect(execFileSync).toBeCalledTimes(0);
+  expect(execFileSync).toHaveBeenCalledTimes(0);
 });
 
 it(`brings window to the front`, async () => {
   mockPlatform('darwin');
-  asMock(execFileSync).mockReturnValueOnce('36420' as any);
+  jest.mocked(execFileSync).mockReturnValueOnce('36420' as any);
   await activateWindowAsync({ type: 'emulator', pid: 'emulator-5554' });
-  expect(execFileSync).toBeCalledTimes(1);
-  expect(execAsync).toBeCalledTimes(1);
-  expect(execAsync).toBeCalledWith(expect.stringMatching(/36420/));
+  expect(execFileSync).toHaveBeenCalledTimes(1);
+  expect(execAsync).toHaveBeenCalledTimes(1);
+  expect(execAsync).toHaveBeenCalledWith(expect.stringMatching(/36420/));
 });
 
 it(`skips if the pid cannot be found`, async () => {
   mockPlatform('darwin');
-  asMock(execFileSync).mockReturnValueOnce('' as any);
+  jest.mocked(execFileSync).mockReturnValueOnce('' as any);
   await activateWindowAsync({ type: 'emulator', pid: 'emulator-5554' });
-  expect(execFileSync).toBeCalledTimes(1);
-  expect(execAsync).toBeCalledTimes(0);
+  expect(execFileSync).toHaveBeenCalledTimes(1);
+  expect(execAsync).toHaveBeenCalledTimes(0);
 });

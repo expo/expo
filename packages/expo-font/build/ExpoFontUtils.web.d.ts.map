@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoFontUtils.web.d.ts","sourceRoot":"","sources":["../src/ExpoFontUtils.web.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAA0C,MAAM,mBAAmB,CAAC;AAEzF,OAAO,EAAE,oBAAoB,EAAE,MAAM,mBAAmB,CAAC;AAEzD,cAAM,aAAc,SAAQ,YAAY;IAChC,kBAAkB,CAAC,MAAM,EAAE,MAAM,EAAE,OAAO,CAAC,EAAE,oBAAoB,GAAG,OAAO,CAAC,MAAM,CAAC;CAG1F;;AAED,wBAAiE"}

@@ -10,6 +10,122 @@
 
 ### 💡 Others
 
+- Mark `uri` option as supported on iOS and Android only. ([#37312](https://github.com/expo/expo/pull/37312) by [@aleqsio](https://github.com/aleqsio))
+
+## 14.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add `textZoom` option to override font scaling applied by the user’s Android device settings. ([#33784](https://github.com/expo/expo/pull/33784) by [@BatDroid](https://github.com/BatDroid))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 14.0.3 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.2 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Add missing `react-native` peer dependencies for isolated modules. ([#30479](https://github.com/expo/expo/pull/30479) by [@byCedric](https://github.com/byCedric))
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 12.8.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 12.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Remove `unimodule.json` in favour of `expo-module.config.json`. ([#25100](https://github.com/expo/expo/pull/25100) by [@reichhartd](https://github.com/reichhartd))
+
+## 12.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 12.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.5.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 12.4.2 — 2023-06-28
+
+### 🐛 Bug fixes
+
+- Fixed missing constants on iOS, restricted possibility of starting multiple print jobs at once, which would lead to crashes. ([#23128](https://github.com/expo/expo/pull/23128) by [@behenate](https://github.com/behenate))
+
+## 12.4.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- Fixed a regression after refactoring to Swift (restore functionality to print from web url or data string). ([#22997](https://github.com/expo/expo/pull/22997) by [@mroswald](https://github.com/mroswald), [@behenate](https://github.com/behenate))
+
+## 12.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 12.3.0 — 2023-05-08
 
 ### 🎉 New features

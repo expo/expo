@@ -14,7 +14,7 @@ import {
 describe('MATCH_INIT', () => {
   it(`matches React AppDelegate`, () => {
     expect(
-      `- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions`
+      `return super.application(application, didFinishLaunchingWithOptions: launchOptions)`
     ).toMatch(MATCH_INIT);
   });
 });
@@ -67,10 +67,10 @@ describe(addMapsCocoaPods, () => {
 
 describe(addGoogleMapsAppDelegateImport, () => {
   it(`adds maps import to AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.mm']);
+    const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.swift']);
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
-    expect(results.contents).toMatch(/f2f83125c99c0d74b42a2612947510c4e08c423a/);
+    expect(results.contents).toMatch(/bee50fec513f89284e0fa3f5d935afdde33af98f/);
     // did add new content
     expect(results.didMerge).toBe(true);
     // didn't remove old content
@@ -82,7 +82,7 @@ describe(addGoogleMapsAppDelegateImport, () => {
     expect(modded.didClear).toBe(false);
 
     const modded2 = removeGoogleMapsAppDelegateImport(modded.contents);
-    expect(modded2.contents).toBe(rnFixture['ios/HelloWorld/AppDelegate.mm']);
+    expect(modded2.contents).toBe(rnFixture['ios/HelloWorld/AppDelegate.swift']);
     // didn't add new content
     expect(modded2.didMerge).toBe(false);
     // did remove the generated content
@@ -96,12 +96,12 @@ describe(addGoogleMapsAppDelegateImport, () => {
 describe(addGoogleMapsAppDelegateInit, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
-      rnFixture['ios/HelloWorld/AppDelegate.mm'],
+      rnFixture['ios/HelloWorld/AppDelegate.swift'],
       'mykey'
     );
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
-    expect(results.contents).toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);
+    expect(results.contents).toMatch(/d167568d212e7a4ec24615c397330e087bc93758/);
     // did add new content
     expect(results.didMerge).toBe(true);
     // didn't remove old content
@@ -114,14 +114,14 @@ describe(addGoogleMapsAppDelegateInit, () => {
 
     // Test that the block is updated when the API key changes
     const modded2 = addGoogleMapsAppDelegateInit(results.contents, 'mykey-2');
-    expect(modded2.contents).not.toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);
-    expect(modded2.contents).toMatch(/a5c6f82bb5656264220096dea4cfdaa4383d60ab/);
+    expect(modded2.contents).not.toMatch(/d167568d212e7a4ec24615c397330e087bc93758/);
+    expect(modded2.contents).toMatch(/39ee0ad05073499562c15fd671e3d0459ac1c60b/);
     // nothing changed
     expect(modded2.didMerge).toBe(true);
     expect(modded2.didClear).toBe(true);
 
     const modded3 = removeGoogleMapsAppDelegateInit(modded.contents);
-    expect(modded3.contents).toBe(rnFixture['ios/HelloWorld/AppDelegate.mm']);
+    expect(modded3.contents).toBe(rnFixture['ios/HelloWorld/AppDelegate.swift']);
     // didn't add new content
     expect(modded3.didMerge).toBe(false);
     // did remove the generated content
@@ -129,12 +129,12 @@ describe(addGoogleMapsAppDelegateInit, () => {
   });
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
-      rnFixture['ios/HelloWorld/AppDelegate.mm'],
+      rnFixture['ios/HelloWorld/AppDelegate.swift'],
       'mykey'
     );
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
-    expect(results.contents).toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);
+    expect(results.contents).toMatch(/d167568d212e7a4ec24615c397330e087bc93758/);
     // did add new content
     expect(results.didMerge).toBe(true);
     // didn't remove old content

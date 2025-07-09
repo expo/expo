@@ -1,0 +1,57 @@
+{
+  "name": "eslint-config-expo",
+  "version": "9.2.0",
+  "description": "ESLint config for Expo apps",
+  "main": "default.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/eslint-config-expo"
+  },
+  "keywords": [
+    "eslint-config",
+    "expo",
+    "react-native"
+  ],
+  "files": [
+    "README.md",
+    "default.js",
+    "flat.js",
+    "flat",
+    "utils"
+  ],
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*-test.js"
+    ]
+  },
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-expo",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-expo": "^0.1.4",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "globals": "^16.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.18.0",
+    "eslint8": "npm:eslint@^8.57.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.4.2"
+  },
+  "peerDependencies": {
+    "eslint": ">=8.10"
+  }
+}

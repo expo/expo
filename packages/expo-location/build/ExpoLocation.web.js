@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 import { LocationAccuracy, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 class GeocoderError extends Error {
@@ -36,32 +36,70 @@ function isLocationValid(location, options) {
     return Date.now() - location.timestamp <= maxAge && locationAccuracy <= requiredAccuracy;
 }
 /**
- * Gets the permission details. The implementation is not very good as it actually requests
- * for the current location, but there is no better way on web so far :(
+ * Gets the permission details. The implementation is not very good as it's not
+ * possible to query for permission on all browsers, apparently only the
+ * latest versions will support this.
  */
-async function getPermissionsAsync() {
-    return new Promise((resolve) => {
-        const resolveWithStatus = (status) => resolve({
-            status,
-            granted: status === PermissionStatus.GRANTED,
+async function getPermissionsAsync(shouldAsk = false) {
+    if (!navigator?.permissions?.query) {
+        throw new UnavailabilityError('expo-location', 'navigator.permissions API is not available');
+    }
+    const permission = await navigator.permissions.query({ name: 'geolocation' });
+    if (permission.state === 'granted') {
+        return {
+            status: PermissionStatus.GRANTED,
+            granted: true,
             canAskAgain: true,
             expires: 0,
+        };
+    }
+    if (permission.state === 'denied') {
+        return {
+            status: PermissionStatus.DENIED,
+            granted: false,
+            canAskAgain: true,
+            expires: 0,
+        };
+    }
+    if (shouldAsk) {
+        return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(() => {
+                resolve({
+                    status: PermissionStatus.GRANTED,
+                    granted: true,
+                    canAskAgain: true,
+                    expires: 0,
+                });
+            }, (positionError) => {
+                if (positionError.code === positionError.PERMISSION_DENIED) {
+                    resolve({
+                        status: PermissionStatus.DENIED,
+                        granted: false,
+                        canAskAgain: true,
+                        expires: 0,
+                    });
+                    return;
+                }
+                resolve({
+                    status: PermissionStatus.GRANTED,
+                    granted: false,
+                    canAskAgain: true,
+                    expires: 0,
+                });
+            });
         });
-        navigator.geolocation.getCurrentPosition(() => resolveWithStatus(PermissionStatus.GRANTED), ({ code }) => {
-            if (code === 1 /* PERMISSION_DENIED */) {
-                resolveWithStatus(PermissionStatus.DENIED);
-            }
-            else {
-                resolveWithStatus(PermissionStatus.UNDETERMINED);
-            }
-        }, { enableHighAccuracy: false, maximumAge: Infinity });
-    });
+    }
+    // The permission state is 'prompt' when the permission has not been requested
+    // yet, tested on Chrome.
+    return {
+        status: PermissionStatus.UNDETERMINED,
+        granted: false,
+        canAskAgain: true,
+        expires: 0,
+    };
 }
 let lastKnownPosition = null;
 export default {
-    get name() {
-        return 'ExpoLocation';
-    },
     async getProviderStatusAsync() {
         return {
             locationServicesEnabled: 'geolocation' in navigator,
@@ -89,7 +127,7 @@ export default {
     async removeWatchAsync(watchId) {
         navigator.geolocation.clearWatch(watchId);
     },
-    async watchDeviceHeading(headingId) {
+    async watchDeviceHeading(_headingId) {
         console.warn('Location.watchDeviceHeading: is not supported on web');
     },
     async hasServicesEnabledAsync() {
@@ -103,28 +141,21 @@ export default {
     },
     async watchPositionImplAsync(watchId, options) {
         return new Promise((resolve) => {
-            // @ts-ignore: the types here need to be fixed
-            watchId = global.navigator.geolocation.watchPosition((position) => {
+            watchId = navigator.geolocation.watchPosition((position) => {
                 lastKnownPosition = geolocationPositionToJSON(position);
                 LocationEventEmitter.emit('Expo.locationChanged', {
                     watchId,
                     location: lastKnownPosition,
                 });
-            }, undefined, 
-            // @ts-ignore: the options object needs to be fixed
-            options);
+            }, undefined, options);
             resolve(watchId);
         });
     },
-    getPermissionsAsync,
-    async requestPermissionsAsync() {
-        return getPermissionsAsync();
-    },
     async requestForegroundPermissionsAsync() {
-        return getPermissionsAsync();
+        return getPermissionsAsync(true);
     },
     async requestBackgroundPermissionsAsync() {
-        return getPermissionsAsync();
+        return getPermissionsAsync(true);
     },
     async getForegroundPermissionsAsync() {
         return getPermissionsAsync();
@@ -132,8 +163,5 @@ export default {
     async getBackgroundPermissionsAsync() {
         return getPermissionsAsync();
     },
-    // no-op
-    startObserving() { },
-    stopObserving() { },
 };
 //# sourceMappingURL=ExpoLocation.web.js.map

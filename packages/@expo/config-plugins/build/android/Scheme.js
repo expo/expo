@@ -25,8 +25,7 @@ function _warnings() {
   };
   return data;
 }
-const withScheme = (0, _androidPlugins().createAndroidManifestPlugin)(setScheme, 'withScheme');
-exports.withScheme = withScheme;
+const withScheme = exports.withScheme = (0, _androidPlugins().createAndroidManifestPlugin)(setScheme, 'withScheme');
 function getScheme(config) {
   if (Array.isArray(config.scheme)) {
     const validate = value => typeof value === 'string';
@@ -41,14 +40,7 @@ function getScheme(config) {
 // The only way to reliably remove schemes from the project is to nuke the file and regenerate the code (`npx expo prebuild --clean`).
 // Regardless, having extra schemes isn't a fatal issue and therefore a tolerable compromise is to just add new schemes that aren't currently present.
 function setScheme(config, androidManifest) {
-  var _config$android, _config$android2;
-  const schemes = [...getScheme(config),
-  // @ts-ignore: TODO: android.scheme is an unreleased -- harder to add to turtle v1.
-  ...getScheme((_config$android = config.android) !== null && _config$android !== void 0 ? _config$android : {})];
-  // Add the package name to the list of schemes for easier Google auth and parity with Turtle v1.
-  if ((_config$android2 = config.android) !== null && _config$android2 !== void 0 && _config$android2.package) {
-    schemes.push(config.android.package);
-  }
+  const schemes = [...getScheme(config), ...getScheme(config.android ?? {})];
   if (schemes.length === 0) {
     return androidManifest;
   }
@@ -77,25 +69,12 @@ function isValidRedirectIntentFilter({
   return actions.includes('android.intent.action.VIEW') && !categories.includes('android.intent.category.LAUNCHER');
 }
 function propertiesFromIntentFilter(intentFilter) {
-  var _intentFilter$action$, _intentFilter$action, _intentFilter$categor, _intentFilter$categor2, _intentFilter$data$fi, _intentFilter$data, _intentFilter$data$fi2;
-  const actions = (_intentFilter$action$ = intentFilter === null || intentFilter === void 0 ? void 0 : (_intentFilter$action = intentFilter.action) === null || _intentFilter$action === void 0 ? void 0 : _intentFilter$action.map(data => {
-    var _data$$;
-    return data === null || data === void 0 ? void 0 : (_data$$ = data.$) === null || _data$$ === void 0 ? void 0 : _data$$['android:name'];
-  })) !== null && _intentFilter$action$ !== void 0 ? _intentFilter$action$ : [];
-  const categories = (_intentFilter$categor = intentFilter === null || intentFilter === void 0 ? void 0 : (_intentFilter$categor2 = intentFilter.category) === null || _intentFilter$categor2 === void 0 ? void 0 : _intentFilter$categor2.map(data => {
-    var _data$$2;
-    return data === null || data === void 0 ? void 0 : (_data$$2 = data.$) === null || _data$$2 === void 0 ? void 0 : _data$$2['android:name'];
-  })) !== null && _intentFilter$categor !== void 0 ? _intentFilter$categor : [];
-  const data = (_intentFilter$data$fi = intentFilter === null || intentFilter === void 0 ? void 0 : (_intentFilter$data = intentFilter.data) === null || _intentFilter$data === void 0 ? void 0 : (_intentFilter$data$fi2 = _intentFilter$data.filter(data => {
-    var _data$$3;
-    return data === null || data === void 0 ? void 0 : (_data$$3 = data.$) === null || _data$$3 === void 0 ? void 0 : _data$$3['android:scheme'];
-  })) === null || _intentFilter$data$fi2 === void 0 ? void 0 : _intentFilter$data$fi2.map(data => {
-    var _data$$4, _data$$5;
-    return {
-      scheme: data === null || data === void 0 ? void 0 : (_data$$4 = data.$) === null || _data$$4 === void 0 ? void 0 : _data$$4['android:scheme'],
-      host: data === null || data === void 0 ? void 0 : (_data$$5 = data.$) === null || _data$$5 === void 0 ? void 0 : _data$$5['android:host']
-    };
-  })) !== null && _intentFilter$data$fi !== void 0 ? _intentFilter$data$fi : [];
+  const actions = intentFilter?.action?.map(data => data?.$?.['android:name']) ?? [];
+  const categories = intentFilter?.category?.map(data => data?.$?.['android:name']) ?? [];
+  const data = intentFilter?.data?.filter(data => data?.$?.['android:scheme'])?.map(data => ({
+    scheme: data?.$?.['android:scheme'],
+    host: data?.$?.['android:host']
+  })) ?? [];
   return {
     actions,
     categories,
@@ -111,10 +90,7 @@ function getSingleTaskIntentFilters(androidManifest) {
     } = application;
     // @ts-ignore
     const activities = Array.isArray(activity) ? activity : [activity];
-    const singleTaskActivities = activities.filter(activity => {
-      var _activity$$;
-      return (activity === null || activity === void 0 ? void 0 : (_activity$$ = activity.$) === null || _activity$$ === void 0 ? void 0 : _activity$$['android:launchMode']) === 'singleTask';
-    });
+    const singleTaskActivities = activities.filter(activity => activity?.$?.['android:launchMode'] === 'singleTask');
     for (const activity of singleTaskActivities) {
       const intentFilters = activity['intent-filter'];
       outputSchemes = outputSchemes.concat(intentFilters);
@@ -146,8 +122,7 @@ function ensureManifestHasValidIntentFilter(androidManifest) {
   }
   for (const application of androidManifest.manifest.application) {
     for (const activity of application.activity || []) {
-      var _activity$$2;
-      if ((activity === null || activity === void 0 ? void 0 : (_activity$$2 = activity.$) === null || _activity$$2 === void 0 ? void 0 : _activity$$2['android:launchMode']) === 'singleTask') {
+      if (activity?.$?.['android:launchMode'] === 'singleTask') {
         for (const intentFilter of activity['intent-filter'] || []) {
           // Parse valid intent filters...
           const properties = propertiesFromIntentFilter(intentFilter);
@@ -188,10 +163,13 @@ function appendScheme(scheme, androidManifest) {
   if (!Array.isArray(androidManifest.manifest.application)) {
     return androidManifest;
   }
+  if (!ensureManifestHasValidIntentFilter(androidManifest)) {
+    (0, _warnings().addWarningAndroid)('scheme', `Cannot add schemes because the provided manifest does not have a valid Activity with \`android:launchMode="singleTask"\``, 'https://expo.fyi/setup-android-uri-scheme');
+    return androidManifest;
+  }
   for (const application of androidManifest.manifest.application) {
     for (const activity of application.activity || []) {
-      var _activity$$3;
-      if ((activity === null || activity === void 0 ? void 0 : (_activity$$3 = activity.$) === null || _activity$$3 === void 0 ? void 0 : _activity$$3['android:launchMode']) === 'singleTask') {
+      if (activity?.$?.['android:launchMode'] === 'singleTask') {
         for (const intentFilter of activity['intent-filter'] || []) {
           const properties = propertiesFromIntentFilter(intentFilter);
           if (isValidRedirectIntentFilter(properties)) {
@@ -215,18 +193,15 @@ function removeScheme(scheme, androidManifest) {
   }
   for (const application of androidManifest.manifest.application) {
     for (const activity of application.activity || []) {
-      var _activity$$4;
-      if ((activity === null || activity === void 0 ? void 0 : (_activity$$4 = activity.$) === null || _activity$$4 === void 0 ? void 0 : _activity$$4['android:launchMode']) === 'singleTask') {
+      if (activity?.$?.['android:launchMode'] === 'singleTask') {
         for (const intentFilter of activity['intent-filter'] || []) {
           // Parse valid intent filters...
           const properties = propertiesFromIntentFilter(intentFilter);
           if (isValidRedirectIntentFilter(properties)) {
-            for (const dataKey in (intentFilter === null || intentFilter === void 0 ? void 0 : intentFilter.data) || []) {
-              var _intentFilter$data2, _data$$6;
-              const data = (_intentFilter$data2 = intentFilter.data) === null || _intentFilter$data2 === void 0 ? void 0 : _intentFilter$data2[dataKey];
-              if ((data === null || data === void 0 ? void 0 : (_data$$6 = data.$) === null || _data$$6 === void 0 ? void 0 : _data$$6['android:scheme']) === scheme) {
-                var _intentFilter$data3;
-                (_intentFilter$data3 = intentFilter.data) === null || _intentFilter$data3 === void 0 ? true : delete _intentFilter$data3[dataKey];
+            for (const dataKey in intentFilter?.data || []) {
+              const data = intentFilter.data?.[dataKey];
+              if (data?.$?.['android:scheme'] === scheme) {
+                delete intentFilter.data?.[dataKey];
               }
             }
           }

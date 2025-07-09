@@ -1,4 +1,13 @@
 import ExpoMailComposer from './ExpoMailComposer';
+/**
+ * Retrieves a list of available email clients installed on the device.
+ * This can be used to present options to the user for sending emails through their preferred email client,
+ * or to open an email client so the user can access their mailbox — for example, to open a confirmation email sent by your app.
+ * @returns An array of available mail clients.
+ */
+export function getClients() {
+    return ExpoMailComposer.getClients();
+}
 // @needsAudit
 /**
  * Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided
@@ -14,10 +23,10 @@ export async function composeAsync(options) {
 /**
  * Determine if the `MailComposer` API can be used in this app.
  * @return A promise resolves to `true` if the API can be used, and `false` otherwise.
- * - Returns `true` on iOS when the device has a default email setup for sending mail.
+ * - Returns `true` when the device has a default email setup for sending mail.
  * - Can return `false` on iOS if an MDM profile is setup to block outgoing mail. If this is the
  * case, you may want to use the Linking API instead.
- * - Always returns `true` in the browser and on Android.
+ * - Always returns `true` in the browser.
  */
 export async function isAvailableAsync() {
     return await ExpoMailComposer.isAvailableAsync();

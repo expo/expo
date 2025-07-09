@@ -1,24 +1,30 @@
-import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
-import assert from 'assert';
-import openBrowserAsync from 'better-opn';
 import chalk from 'chalk';
 
+import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 import * as Log from '../../log';
-import { delayAsync } from '../../utils/delay';
+import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
-import { selectAsync } from '../../utils/prompts';
+import { openBrowserAsync } from '../../utils/open';
+import { ExpoChoice, selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import {
-  addReactDevToolsReloadListener,
-  startReactDevToolsProxyAsync,
-} from '../server/ReactDevToolsProxy';
-import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
+  openJsInspector,
+  queryAllInspectorAppsAsync,
+  promptInspectorAppAsync,
+} from '../server/middleware/inspector/JsInspector';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
 
+interface MoreToolMenuItem extends ExpoChoice<string> {
+  action?: () => unknown;
+}
+
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
-  constructor(private devServerManager: DevServerManager) {}
+  constructor(
+    private devServerManager: DevServerManager,
+    private options: Pick<StartOptions, 'devClient' | 'platforms'>
+  ) {}
 
   printDevServerInfo(
     options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
@@ -39,10 +45,30 @@ export class DevServerManagerActions {
             )
           );
         }
+
+        if (env.__EXPO_E2E_TEST) {
+          // Print the URL to stdout for tests
+          console.info(
+            `[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: devServer.getDevServerUrl() })}`
+          );
+        }
+
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
-        // TODO: if development build, change this message!
-        Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
+        if (options.devClient === false) {
+          // TODO: if development build, change this message!
+          Log.log(
+            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
+          );
+        } else {
+          Log.log(
+            printItem(
+              'Scan the QR code above to open the project in a development build. ' +
+                learnMore('https://expo.fyi/start')
+            )
+          );
+        }
       } catch (error) {
+        console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
           throw error;
@@ -54,11 +80,13 @@ export class DevServerManagerActions {
       }
     }
 
-    const webDevServer = this.devServerManager.getWebDevServer();
-    const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
-    if (webUrl) {
-      Log.log();
-      Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
+    if (this.options.platforms?.includes('web')) {
+      const webDevServer = this.devServerManager.getWebDevServer();
+      const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
+      if (webUrl) {
+        Log.log();
+        Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
+      }
     }
 
     printUsage(options, { verbose: false });
@@ -67,24 +95,32 @@ export class DevServerManagerActions {
   }
 
   async openJsInspectorAsync() {
-    Log.log('Opening JavaScript inspector in the browser...');
-    const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
-    assert(metroServerOrigin, 'Metro dev server is not running');
-    const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-    if (!apps.length) {
-      Log.warn(
-        `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine. ${learnMore(
-          'https://docs.expo.dev/guides/using-hermes/'
-        )}`
-      );
-      return;
-    }
     try {
-      for (const app of apps) {
-        await openJsInspector(app);
+      const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
+      const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+      if (!apps.length) {
+        return Log.warn(
+          chalk`{bold Debug:} No compatible apps connected, React Native DevTools can only be used with Hermes. ${learnMore(
+            'https://docs.expo.dev/guides/using-hermes/'
+          )}`
+        );
+      }
+
+      const app = await promptInspectorAppAsync(apps);
+      if (!app) {
+        return Log.error(chalk`{bold Debug:} No inspectable device selected`);
+      }
+
+      if (!(await openJsInspector(metroServerOrigin, app))) {
+        Log.warn(
+          chalk`{bold Debug:} Failed to open the React Native DevTools, see debug logs for more info.`
+        );
       }
     } catch (error: any) {
-      Log.error('Failed to open JavaScript inspector. This is often an issue with Google Chrome.');
+      // Handle aborting prompt
+      if (error.code === 'ABORTED') return;
+
+      Log.error('Failed to open the React Native DevTools.');
       Log.exception(error);
     }
   }
@@ -96,22 +132,38 @@ export class DevServerManagerActions {
   }
 
   async openMoreToolsAsync() {
+    // Options match: Chrome > View > Developer
     try {
-      // Options match: Chrome > View > Developer
-      const value = await selectAsync(chalk`Dev tools {dim (native only)}`, [
+      const defaultMenuItems: MoreToolMenuItem[] = [
         { title: 'Inspect elements', value: 'toggleElementInspector' },
         { title: 'Toggle performance monitor', value: 'togglePerformanceMonitor' },
         { title: 'Toggle developer menu', value: 'toggleDevMenu' },
         { title: 'Reload app', value: 'reload' },
-        { title: 'Start React devtools', value: 'startReactDevTools' },
         // TODO: Maybe a "View Source" option to open code.
-        // Toggling Remote JS Debugging is pretty rough, so leaving it disabled.
-        // { title: 'Toggle Remote Debugging', value: 'toggleRemoteDebugging' },
-      ]);
-      if (value === 'startReactDevTools') {
-        this.startReactDevToolsAsync();
-      } else {
-        this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
+      ];
+      const pluginMenuItems = (
+        await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
+      ).map((plugin) => ({
+        title: chalk`Open {bold ${plugin.packageName}}`,
+        value: `devtoolsPlugin:${plugin.packageName}`,
+        action: async () => {
+          const url = new URL(
+            plugin.webpageEndpoint,
+            this.devServerManager
+              .getDefaultDevServer()
+              .getUrlCreator()
+              .constructUrl({ scheme: 'http' })
+          );
+          await openBrowserAsync(url.toString());
+        },
+      }));
+      const menuItems = [...defaultMenuItems, ...pluginMenuItems];
+      const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
+      const menuItem = menuItems.find((item) => item.value === value);
+      if (menuItem?.action) {
+        menuItem.action();
+      } else if (menuItem?.value) {
+        this.devServerManager.broadcastMessage('sendDevCommand', { name: menuItem.value });
       }
     } catch (error: any) {
       debug(error);
@@ -119,22 +171,6 @@ export class DevServerManagerActions {
     } finally {
       printHelp();
     }
-  }
-
-  async startReactDevToolsAsync() {
-    await startReactDevToolsProxyAsync();
-    const url = this.devServerManager.getDefaultDevServer().getReactDevToolsUrl();
-    await openBrowserAsync(url);
-    addReactDevToolsReloadListener(() => {
-      this.reconnectReactDevTools();
-    });
-    this.reconnectReactDevTools();
-  }
-
-  async reconnectReactDevTools() {
-    // Wait a little time for react-devtools to be initialized in browser
-    await delayAsync(3000);
-    this.devServerManager.broadcastMessage('sendDevCommand', { name: 'reconnectReactDevTools' });
   }
 
   toggleDevMenu() {

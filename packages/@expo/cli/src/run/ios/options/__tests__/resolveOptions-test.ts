@@ -4,9 +4,6 @@ import rnFixture from '../../../../prebuild/__tests__/fixtures/react-native-proj
 import { isSimulatorDevice } from '../resolveDevice';
 import { resolveOptionsAsync } from '../resolveOptions';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
 jest.mock('../../../../utils/port');
 
 jest.mock('../resolveDevice', () => ({
@@ -17,11 +14,19 @@ jest.mock('../resolveDevice', () => ({
   })),
 }));
 
+const fixture = {
+  ...rnFixture,
+  'package.json': JSON.stringify({}),
+  'node_modules/expo/package.json': JSON.stringify({
+    version: '53.0.0',
+  }),
+};
+
 describe(resolveOptionsAsync, () => {
   afterEach(() => vol.reset());
 
   it(`resolves default options`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(fixture, '/');
 
     expect(await resolveOptionsAsync('/', {})).toEqual({
       buildCache: true,
@@ -37,9 +42,9 @@ describe(resolveOptionsAsync, () => {
     });
   });
   it(`resolves complex options`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(fixture, '/');
 
-    asMock(isSimulatorDevice).mockImplementationOnce(() => false);
+    jest.mocked(isSimulatorDevice).mockImplementationOnce(() => false);
 
     expect(
       await resolveOptionsAsync('/', {
@@ -47,7 +52,7 @@ describe(resolveOptionsAsync, () => {
         bundler: true,
         device: 'search',
         install: true,
-        port: 19000,
+        port: 8081,
         configuration: 'Release',
         scheme: 'MyScheme',
       })
@@ -56,7 +61,7 @@ describe(resolveOptionsAsync, () => {
       configuration: 'Release',
       device: { name: 'mock', udid: '123' },
       isSimulator: false,
-      port: 19000,
+      port: 8081,
       projectRoot: '/',
       scheme: 'MyScheme',
       shouldSkipInitialBundling: false,

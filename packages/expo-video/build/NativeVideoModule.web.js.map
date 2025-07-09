@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeVideoModule.web.js","sourceRoot":"","sources":["../src/NativeVideoModule.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,kFAAkF;IAClF,cAAc,EAAE,GAAG,EAAE,GAAE,CAAC;CACzB,CAAC","sourcesContent":["export default {\n  // Fixes webpack issues with NativeVideoModule.VideoThumbnail not existing on web.\n  VideoThumbnail: () => {},\n};\n"]}

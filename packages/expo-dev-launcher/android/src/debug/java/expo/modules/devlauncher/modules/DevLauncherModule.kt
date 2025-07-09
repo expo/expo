@@ -11,8 +11,6 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
 
   override fun getName() = "EXDevLauncher"
 
-  override fun hasConstants() = true
-
   override fun getConstants(): Map<String, Any?> {
     val manifestString = try {
       controller?.manifest?.getRawJson().toString()

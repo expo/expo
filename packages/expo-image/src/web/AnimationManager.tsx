@@ -13,7 +13,7 @@ export type AnimationManagerNode = [
   key: string,
   renderFunction: (
     renderProps: NonNullable<Callbacks>
-  ) => (className: string, style: React.CSSProperties) => React.ReactElement
+  ) => (className: string, style: React.CSSProperties) => React.ReactElement,
 ];
 
 const SUPPORTED_ANIMATIONS: ImageTransition['effect'][] = [
@@ -214,11 +214,18 @@ export default function AnimationManager({
     <>
       {[...nodes]
         .filter((n) => n.status !== 'errored')
-        .map((n) => (
-          <div className={animation?.containerClass} key={n.animationKey}>
-            {wrapNodeWithCallbacks(n)(classes[n.status], styles)}
-          </div>
-        ))}
+        .map((n) => {
+          const status = n.status as keyof typeof classes & NodeStatus;
+          // TODO(@kitten): This creates impossible states!
+          // Ensure that the above type is either exhaustively reflected in this `map` so `className` sheds `undefined`,
+          // or retype the `MountedAnimationNode` function to accept `className: string | undefined`
+          const className = classes[status]!;
+          return (
+            <div className={animation?.containerClass} key={n.animationKey}>
+              {wrapNodeWithCallbacks(n)(className, styles)}
+            </div>
+          );
+        })}
     </>
   );
 }

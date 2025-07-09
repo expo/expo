@@ -1,12 +1,9 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-
+import ExpoScreenOrientation from '../ExpoScreenOrientation';
 import * as ScreenOrientation from '../ScreenOrientation';
 
-const { ExpoScreenOrientation } = NativeModulesProxy;
-
 it(`throws when lockAsync is called with an unsupported type`, async () => {
-  await expect(ScreenOrientation.lockAsync(NaN as any)).rejects.toThrowError(TypeError);
-  await expect(ScreenOrientation.lockAsync('test' as any)).rejects.toThrowError(TypeError);
+  await expect(ScreenOrientation.lockAsync(NaN as any)).rejects.toThrow(TypeError);
+  await expect(ScreenOrientation.lockAsync('test' as any)).rejects.toThrow(TypeError);
 });
 
 it(`doesn't call the lockAsync platform API with known unsupported locks`, async () => {
@@ -15,10 +12,10 @@ it(`doesn't call the lockAsync platform API with known unsupported locks`, async
 });
 
 it(`throws when supportsOrientationLockAsync is called with an unsupported type`, async () => {
-  await expect(ScreenOrientation.supportsOrientationLockAsync(NaN as any)).rejects.toThrowError(
+  await expect(ScreenOrientation.supportsOrientationLockAsync(NaN as any)).rejects.toThrow(
     TypeError
   );
-  await expect(ScreenOrientation.supportsOrientationLockAsync('test' as any)).rejects.toThrowError(
+  await expect(ScreenOrientation.supportsOrientationLockAsync('test' as any)).rejects.toThrow(
     TypeError
   );
 });

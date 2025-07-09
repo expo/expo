@@ -80,7 +80,10 @@ public class AndroidXNotificationsChannelManager implements NotificationsChannel
     NotificationChannel channel = new NotificationChannel(channelId, name, importance);
     configureChannelWithOptions(channel, channelOptions);
     mNotificationManager.createNotificationChannel(channel);
-    return channel;
+    // We return the channel given by mNotificationManager, not the one we created.
+    // see "Note that the created channel may differ from this value." ("this value" = the one we provided)
+    // https://developer.android.com/reference/android/app/NotificationManager#createNotificationChannel(android.app.NotificationChannel)
+    return mNotificationManager.getNotificationChannel(channelId);
   }
 
   // Processing options

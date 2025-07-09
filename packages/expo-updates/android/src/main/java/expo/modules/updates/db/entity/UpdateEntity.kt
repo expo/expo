@@ -36,13 +36,11 @@ class UpdateEntity(
   @field:ColumnInfo(typeAffinity = ColumnInfo.BLOB) @field:PrimaryKey var id: UUID,
   @field:ColumnInfo(name = "commit_time") var commitTime: Date,
   @field:ColumnInfo(name = "runtime_version") var runtimeVersion: String,
-  @field:ColumnInfo(name = "scope_key") var scopeKey: String
+  @field:ColumnInfo(name = "scope_key") var scopeKey: String,
+  @field:ColumnInfo(name = "manifest") var manifest: JSONObject
 ) {
   @ColumnInfo(name = "launch_asset_id")
   var launchAssetId: Long? = null
-
-  @ColumnInfo(name = "manifest")
-  var manifest: JSONObject? = null
 
   var status = UpdateStatus.PENDING
 
@@ -61,4 +59,6 @@ class UpdateEntity(
 
   @ColumnInfo(name = "failed_launch_count", defaultValue = "0")
   var failedLaunchCount = 0
+
+  fun debugInfo(): String = JSONObject(mapOf("id" to id.toString(), "status" to status.name)).toString()
 }

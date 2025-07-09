@@ -1,11 +1,11 @@
 {
-  "name": "expo-screen-orientation",
-  "platforms": ["ios", "android"],
+  "platforms": ["apple", "android"],
+  "apple": {
+    "appDelegateSubscribers": ["ScreenOrientationAppDelegate"],
+    "reactDelegateHandlers": ["ScreenOrientationReactDelegateHandler"],
+    "modules": ["ScreenOrientationModule"]
+  },
   "android": {
     "modules": ["expo.modules.screenorientation.ScreenOrientationModule"]
-  },
-  "ios": {
-    "appDelegateSubscribers": ["ScreenOrientationAppDelegate"],
-    "reactDelegateHandlers": ["ScreenOrientationReactDelegateHandler"]
   }
 }

@@ -1,4 +1,4 @@
-import { CodedError, Platform, Subscription } from 'expo-modules-core';
+import { CodedError, Platform, type EventSubscription } from 'expo-modules-core';
 
 import { KeepAwakeEventState, KeepAwakeListener } from './KeepAwake.types';
 
@@ -49,7 +49,7 @@ export default {
       );
     }
   },
-  addListenerForTag(tag: string, listener: KeepAwakeListener): Subscription {
+  addListenerForTag(tag: string, listener: KeepAwakeListener): EventSubscription {
     const eventListener = () => {
       listener({ state: KeepAwakeEventState.RELEASE });
     };

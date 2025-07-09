@@ -4,7 +4,7 @@ import ExpoModulesTestCore
 @testable import EXDevMenu
 
 class DevMenuInternalModuleTest: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let module = DevMenuInternalModule(appContext: appContext)
 
@@ -14,7 +14,7 @@ class DevMenuInternalModuleTest: ExpoSpec {
       #else
           let doesDeviceSupportKeyCommands = false
       #endif
-      let constants = module.definition().getConstants()
+      let constants = module.definition().getLegacyConstants()
 
       expect(constants["doesDeviceSupportKeyCommands"] as? Bool).to(equal(doesDeviceSupportKeyCommands))
     }

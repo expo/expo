@@ -13,14 +13,12 @@ function _iosPlugins() {
   };
   return data;
 }
-const withUsesNonExemptEncryption = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setUsesNonExemptEncryption, {
+const withUsesNonExemptEncryption = exports.withUsesNonExemptEncryption = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setUsesNonExemptEncryption, {
   infoPlistProperty: 'ITSAppUsesNonExemptEncryption',
   expoConfigProperty: 'ios.config.usesNonExemptEncryption'
 }, 'withUsesNonExemptEncryption');
-exports.withUsesNonExemptEncryption = withUsesNonExemptEncryption;
 function getUsesNonExemptEncryption(config) {
-  var _config$ios$config$us, _config$ios, _config$ios$config;
-  return (_config$ios$config$us = config === null || config === void 0 ? void 0 : (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : (_config$ios$config = _config$ios.config) === null || _config$ios$config === void 0 ? void 0 : _config$ios$config.usesNonExemptEncryption) !== null && _config$ios$config$us !== void 0 ? _config$ios$config$us : null;
+  return config?.ios?.config?.usesNonExemptEncryption ?? null;
 }
 function setUsesNonExemptEncryption(config, {
   ITSAppUsesNonExemptEncryption,

@@ -6,18 +6,16 @@ import * as DevMenu from '../native-modules/DevMenu';
 // TODO - this would be better suited as an event emitter subscriber
 
 const defaultDevSettings: DevMenu.DevSettings = {
-  isDebuggingRemotely: false,
   isElementInspectorShown: false,
   isHotLoadingEnabled: false,
   isPerfMonitorShown: false,
   isElementInspectorAvailable: true,
   isHotLoadingAvailable: true,
   isPerfMonitorAvailable: true,
-  isRemoteDebuggingAvailable: true,
   isJSInspectorAvailable: false,
 };
 
-const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
+const DevSettingsContext = React.createContext<DevMenu.DevSettings | undefined>(defaultDevSettings);
 
 export type DevSettingsProviderProps = {
   children: React.ReactNode;
@@ -65,12 +63,6 @@ export function useDevSettings() {
     DevMenu.closeMenu();
   }, []);
 
-  const toggleDebugRemoteJS = React.useCallback(async () => {
-    eagerToggleValue('isDebuggingRemotely');
-    await DevMenu.toggleDebugRemoteJSAsync();
-    DevMenu.closeMenu();
-  }, []);
-
   const togglePerformanceMonitor = React.useCallback(async () => {
     eagerToggleValue('isPerfMonitorShown');
     await DevMenu.togglePerformanceMonitorAsync();
@@ -88,8 +80,7 @@ export function useDevSettings() {
   }, []);
 
   const openRNDevMenu = React.useCallback(async () => {
-    await DevMenu.openDevMenuFromReactNative();
-    DevMenu.closeMenu();
+    DevMenu.openDevMenuFromReactNative();
   }, []);
 
   const openJSInspector = React.useCallback(async () => {
@@ -101,7 +92,6 @@ export function useDevSettings() {
     devSettings,
     actions: {
       togglePerformanceMonitor,
-      toggleDebugRemoteJS,
       toggleElementInspector,
       toggleFastRefresh,
       reload,

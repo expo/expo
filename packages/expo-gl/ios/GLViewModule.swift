@@ -6,11 +6,14 @@ public final class GLViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExponentGLView")
 
-    View(EXGLView.self) {
+    View(GLView.self) {
       Events("onSurfaceCreate")
 
       Prop("msaaSamples") { (view, msaaSamples: Int) in
         view.msaaSamples = msaaSamples
+      }
+      Prop("enableExperimentalWorkletSupport") { (view, enableExperimentalWorkletSupport: Bool) in
+        view.enableExperimentalWorkletSupport = enableExperimentalWorkletSupport
       }
     }
   }

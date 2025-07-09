@@ -1,3 +1,4 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
-export default NativeModulesProxy.ExpoTrackingTransparency;
+// TODO: Rename the package to 'ExpoTracking'
+export default requireNativeModule('ExpoTrackingTransparency');

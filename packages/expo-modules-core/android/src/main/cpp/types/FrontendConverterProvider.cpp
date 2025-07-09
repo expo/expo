@@ -16,6 +16,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::FLOAT, FloatFrontendConverter);
   RegisterConverter(CppType::DOUBLE, DoubleFrontendConverter);
   RegisterConverter(CppType::BOOLEAN, BooleanFrontendConverter);
+  RegisterConverter(CppType::UINT8_TYPED_ARRAY, ByteArrayFrontendConverter);
   RegisterConverter(CppType::TYPED_ARRAY, TypedArrayFrontendConverter);
   RegisterConverter(CppType::JS_OBJECT, JavaScriptObjectFrontendConverter);
   RegisterConverter(CppType::JS_VALUE, JavaScriptValueFrontendConverter);
@@ -25,6 +26,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::READABLE_ARRAY, ReadableNativeArrayFrontendConverter);
   RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
   RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
+  RegisterConverter(CppType::ANY, AnyFrontendConvert);
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {
@@ -41,16 +43,6 @@ void FrontendConverterProvider::createConverters() {
 
   // Enums
   registerPolyConverter({CppType::STRING, CppType::INT});
-
-  // Any
-  // We are not using all types here to provide a similar behaviour to the bridge implementation
-  registerPolyConverter({
-                          CppType::DOUBLE,
-                          CppType::READABLE_MAP,
-                          CppType::READABLE_ARRAY,
-                          CppType::STRING,
-                          CppType::BOOLEAN
-                        });
 }
 
 std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
@@ -62,8 +54,16 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
     return result->second;
   }
 
+  if (combinedType == CppType::NULLABLE) {
+    return std::make_shared<NullableFrontendConverter>(expectedType->getFirstType());
+  }
+
   if (combinedType == CppType::PRIMITIVE_ARRAY) {
     return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType->getFirstType());
+  }
+
+  if (combinedType == CppType::ARRAY) {
+    return std::make_shared<ArrayFrontendConverter>(expectedType->getFirstType());
   }
 
   if (combinedType == CppType::LIST) {
@@ -101,6 +101,10 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverterFor
 
   if (combinedType == CppType::PRIMITIVE_ARRAY) {
     return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType);
+  }
+
+  if (combinedType == CppType::ARRAY) {
+    return std::make_shared<ArrayFrontendConverter>(expectedType);
   }
 
   if (combinedType == CppType::LIST) {

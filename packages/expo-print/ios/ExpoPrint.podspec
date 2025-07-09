@@ -10,10 +10,12 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platforms      = {
+    :ios => '15.1'
+  }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  s.swift_version  = '5.4'
+  s.swift_version  = '5.9'
 
   s.dependency 'ExpoModulesCore'
 

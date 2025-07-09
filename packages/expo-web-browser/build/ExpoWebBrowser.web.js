@@ -1,6 +1,5 @@
-import compareUrls from 'compare-urls';
-import { CodedError, Platform } from 'expo-modules-core';
-import { AppState, Dimensions } from 'react-native';
+import { CodedError } from 'expo-modules-core';
+import { AppState } from 'react-native';
 import { WebBrowserResultType, } from './WebBrowser.types';
 const POPUP_WIDTH = 500;
 const POPUP_HEIGHT = 650;
@@ -9,6 +8,10 @@ const listenerMap = new Map();
 const getHandle = () => 'ExpoWebBrowserRedirectHandle';
 const getOriginUrlHandle = (hash) => `ExpoWebBrowser_OriginUrl_${hash}`;
 const getRedirectUrlHandle = (hash) => `ExpoWebBrowser_RedirectUrl_${hash}`;
+export function normalizeUrl(url) {
+    const origin = url.origin.replace(url.protocol, '').replace(/^\/+/, '').replace(/\/+$/, '');
+    return (origin + decodeURI(url.pathname.replace(/\/{2,}/g, '/'))).toLowerCase();
+}
 function dismissPopup() {
     if (!popupWindow) {
         return;
@@ -30,24 +33,22 @@ function dismissPopup() {
     }
 }
 export default {
-    get name() {
-        return 'ExpoWebBrowser';
-    },
     async openBrowserAsync(url, browserParams = {}) {
-        if (!Platform.isDOMAvailable)
+        if (typeof window === 'undefined') {
             return { type: WebBrowserResultType.CANCEL };
+        }
         const { windowName = '_blank', windowFeatures } = browserParams;
         const features = getPopupFeaturesString(windowFeatures);
         window.open(url, windowName, features);
         return { type: WebBrowserResultType.OPENED };
     },
     dismissAuthSession() {
-        if (!Platform.isDOMAvailable)
+        if (typeof window === 'undefined')
             return;
         dismissPopup();
     },
     maybeCompleteAuthSession({ skipRedirectCheck }) {
-        if (!Platform.isDOMAvailable) {
+        if (typeof window === 'undefined') {
             return {
                 type: 'failed',
                 message: 'Cannot use expo-web-browser in a non-browser environment',
@@ -61,8 +62,8 @@ export default {
         if (skipRedirectCheck !== true) {
             const redirectUrl = window.localStorage.getItem(getRedirectUrlHandle(handle));
             // Compare the original redirect url against the current url with it's query params removed.
-            const currentUrl = window.location.origin + window.location.pathname;
-            if (!compareUrls(redirectUrl, currentUrl)) {
+            const currentUrl = normalizeUrl(window.location);
+            if (redirectUrl !== currentUrl) {
                 return {
                     type: 'failed',
                     message: `Current URL "${currentUrl}" and original redirect URL "${redirectUrl}" do not match.`,
@@ -83,7 +84,7 @@ export default {
     },
     // This method should be invoked from user input.
     async openAuthSessionAsync(url, redirectUrl, openOptions) {
-        if (!Platform.isDOMAvailable)
+        if (typeof window === 'undefined')
             return { type: WebBrowserResultType.CANCEL };
         redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
         if (popupWindow == null || popupWindow?.closed) {
@@ -102,8 +103,18 @@ export default {
         const state = await getStateFromUrlOrGenerateAsync(url);
         // Save handle for session
         window.localStorage.setItem(getHandle(), state);
+        const normalizedRedirectUrl = (() => {
+            if (!redirectUrl)
+                return redirectUrl;
+            try {
+                return normalizeUrl(new URL(redirectUrl));
+            }
+            catch {
+                return redirectUrl;
+            }
+        })();
         // Save redirect Url for further verification
-        window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
+        window.localStorage.setItem(getRedirectUrlHandle(state), normalizedRedirectUrl);
         return new Promise(async (resolve) => {
             // Create a listener for messages sent from the popup
             const listener = (event) => {
@@ -159,7 +170,7 @@ export default {
 };
 // Crypto
 function isCryptoAvailable() {
-    if (!Platform.isDOMAvailable)
+    if (typeof window === 'undefined')
         return false;
     return !!window?.crypto;
 }
@@ -190,7 +201,7 @@ function getRedirectUrlFromUrlOrGenerate(inputUrl) {
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 async function generateStateAsync() {
     if (!isSubtleCryptoAvailable()) {
-        throw new CodedError('ERR_WEB_BROWSER_CRYPTO', `The current environment doesn't support crypto. Ensure you are running from a secure origin (https).`);
+        throw new CodedError('ERR_WEB_BROWSER_CRYPTO', `The current environment doesn't support crypto. Ensure you are running from a secure origin (localhost/https).`);
     }
     const encoder = new TextEncoder();
     const data = generateRandom(10);
@@ -216,12 +227,12 @@ function generateRandom(size) {
     return bufferToString(array);
 }
 function bufferToString(buffer) {
-    const state = [];
+    let state = '';
     for (let i = 0; i < buffer.byteLength; i += 1) {
         const index = buffer[i] % CHARSET.length;
-        state.push(CHARSET[index]);
+        state += CHARSET[index];
     }
-    return state.join('');
+    return state;
 }
 // Window Features
 // Ensure feature string is an object
@@ -248,9 +259,8 @@ function getPopupFeaturesString(options) {
     const windowFeatures = normalizePopupFeaturesString(options);
     const width = windowFeatures.width ?? POPUP_WIDTH;
     const height = windowFeatures.height ?? POPUP_HEIGHT;
-    const dimensions = Dimensions.get('screen');
-    const top = windowFeatures.top ?? Math.max(0, (dimensions.height - height) * 0.5);
-    const left = windowFeatures.left ?? Math.max(0, (dimensions.width - width) * 0.5);
+    const top = windowFeatures.top ?? Math.max(0, (window.screen.height - height) * 0.5);
+    const left = windowFeatures.left ?? Math.max(0, (window.screen.width - width) * 0.5);
     // Create a reasonable popup
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/open#Window_features
     return featureObjectToString({

@@ -15,6 +15,11 @@
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
 #import <EXAV/EXAV+AudioSampleCallback.h>
+#if __has_include(<EXAV/EXAV-Swift.h>)
+#import <EXAV/EXAV-Swift.h>
+#else
+#import "EXAV-Swift.h"
+#endif
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";
@@ -429,6 +434,9 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   NSNumber *interruptionType = [[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
   if (interruptionType.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
+    if (_audioRecorder && [_audioRecorder isRecording]) {
+      [self _deactivateAudioSession];
+    }
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
   
@@ -492,10 +500,12 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXVideoView class]]) {
       block(view);
+    } else if ([[[view subviews] firstObject] isKindOfClass:[EXVideoView class]]) {
+      block([[view subviews] firstObject]);
     } else {
       reject(@"E_VIDEO_TAGINCORRECT", [NSString stringWithFormat:@"Invalid view returned from registry, expecting EXVideo, got: %@", view], nil);
     }
-  } forView:reactTag ofClass:[EXVideoView class]];
+  } forView:reactTag ofClass:[ExpoVideoView class]];
 }
 
 #pragma mark - Internal audio recording helper methods
@@ -971,13 +981,14 @@ EX_EXPORT_METHOD_AS(stopAudioRecording,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
+    _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
     if (_audioRecorder.recording) {
-      _audioRecorderDurationMillis = [self _getDurationMillisOfRecordingAudioRecorder];
       [_audioRecorder stop];
+    }
       _prevAudioRecorderDurationMillis = 0;
       _audioRecorderStartTimestamp = 0;
       [self demoteAudioSessionIfPossible];
-    }
+
     resolve([self _getAudioRecorderStatus]);
   }
 }

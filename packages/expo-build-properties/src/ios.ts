@@ -1,4 +1,10 @@
-import { IOSConfig, ConfigPlugin, withXcodeProject, XcodeProject } from 'expo/config-plugins';
+import {
+  IOSConfig,
+  ConfigPlugin,
+  withXcodeProject,
+  XcodeProject,
+  WarningAggregator,
+} from 'expo/config-plugins';
 
 import type { PluginConfigType } from './pluginConfig';
 
@@ -8,24 +14,44 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
   [
     {
       propName: 'newArchEnabled',
-      propValueGetter: (config) => config.ios?.newArchEnabled?.toString(),
+      propValueGetter: (config) => {
+        if (config.ios?.newArchEnabled !== undefined) {
+          WarningAggregator.addWarningIOS(
+            'withIosBuildProperties',
+            'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
+            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
+          );
+        }
+        return config.ios?.newArchEnabled?.toString();
+      },
     },
     {
       propName: 'ios.useFrameworks',
       propValueGetter: (config) => config.ios?.useFrameworks,
     },
     {
-      propName: 'ios.flipper',
+      propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
+      propValueGetter: (config) => (config.ios?.networkInspector ?? true).toString(),
+    },
+    {
+      propName: 'apple.extraPods',
       propValueGetter: (config) => {
-        if (typeof config.ios?.flipper === 'string' || typeof config.ios?.flipper === 'boolean') {
-          return config.ios.flipper.toString();
-        }
-        return undefined;
+        const extraPods = config.ios?.extraPods ?? [];
+        return extraPods.length > 0 ? JSON.stringify(extraPods) : undefined;
       },
     },
     {
-      propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-      propValueGetter: (config) => config.ios?.unstable_networkInspector?.toString(),
+      propName: 'apple.ccacheEnabled',
+      propValueGetter: (config) => config.ios?.ccacheEnabled?.toString(),
+    },
+    {
+      propName: 'apple.privacyManifestAggregationEnabled',
+      propValueGetter: (config) =>
+        (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
+    },
+    {
+      propName: 'ios.buildFromSource',
+      propValueGetter: (config) => config.ios?.buildFromSource?.toString(),
     },
   ],
   'withIosBuildProperties'
@@ -69,8 +95,7 @@ function updateDeploymentTargetXcodeProject(
     .map(([_, target]) => target.buildConfigurationList);
 
   for (const buildConfigListId of targetBuildConfigListIds) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [_, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+    for (const [, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
       project,
       buildConfigListId
     )) {

@@ -9,8 +9,7 @@ import org.json.JSONObject
  * for ordering) is chosen, but the manifest filters are always taken into account before the
  * `commitTime`.
  */
-class LauncherSelectionPolicyFilterAware(private val runtimeVersions: List<String>) : LauncherSelectionPolicy {
-  constructor(runtimeVersion: String) : this(listOf<String>(runtimeVersion))
+class LauncherSelectionPolicyFilterAware(private val runtimeVersion: String) : LauncherSelectionPolicy {
 
   override fun selectUpdateToLaunch(
     updates: List<UpdateEntity>,
@@ -18,7 +17,7 @@ class LauncherSelectionPolicyFilterAware(private val runtimeVersions: List<Strin
   ): UpdateEntity? {
     var updateToLaunch: UpdateEntity? = null
     for (update in updates) {
-      if (!runtimeVersions.contains(update.runtimeVersion) || !SelectionPolicies.matchesFilters(update, filters)) {
+      if (runtimeVersion != update.runtimeVersion || !SelectionPolicies.matchesFilters(update, filters)) {
         continue
       }
       if (updateToLaunch == null || updateToLaunch.commitTime.before(update.commitTime)) {

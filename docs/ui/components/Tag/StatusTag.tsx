@@ -1,28 +1,29 @@
 import { mergeClasses } from '@expo/styleguide';
-import { Stars02Icon } from '@expo/styleguide-icons';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
-import { TagProps } from './Tag';
-import { labelStyle, tagStyle, tagToCStyle } from './styles';
+import { formatName, getTagClasses } from '~/ui/components/Tag/helpers';
 
-import { formatName, TAG_CLASSES } from '~/ui/components/Tag/helpers';
+import { TagProps } from './types';
 
 type StatusTagProps = Omit<TagProps, 'name'> & {
   status: 'deprecated' | 'experimental' | string;
   note?: string;
 };
 
-export const StatusTag = ({ status, type, note }: StatusTagProps) => {
+export const StatusTag = ({ status, note, className }: StatusTagProps) => {
   return (
     <div
       className={mergeClasses(
-        status === 'deprecated' && TAG_CLASSES['deprecated'],
-        status === 'experimental' && TAG_CLASSES['experimental']
-      )}
-      css={[tagStyle, type === 'toc' && tagToCStyle]}>
-      {status === 'experimental' && <Stars02Icon className="icon-xs text-palette-pink11" />}
-      <span css={labelStyle}>
-        {formatName(status)}
-        {note && `: ${note}`}
+        'mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border border-default bg-element px-[7px] py-0.5 font-medium',
+        '[table_&]:mt-0 [table_&]:px-2.5 [table_&]:py-0.5',
+        '[h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0',
+        status === 'deprecated' && getTagClasses('deprecated'),
+        status === 'experimental' && getTagClasses('experimental'),
+        className
+      )}>
+      {status === 'experimental' && <Star06Icon className="icon-2xs text-palette-pink12" />}
+      <span className={mergeClasses('whitespace-nowrap !text-3xs font-normal !leading-none')}>
+        {status ? formatName(status) + (note ? `: ${note}` : '') : note}
       </span>
     </div>
   );

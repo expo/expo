@@ -1,22 +1,26 @@
-import React, { ComponentType, forwardRef, PropsWithChildren } from 'react';
+import React, { ComponentType, PropsWithChildren } from 'react';
 import { Platform } from 'react-native';
 
 import Text, { TextProps } from '../primitives/Text';
 import View, { ViewProps } from '../primitives/View';
 
 function createView(nativeProps: ViewProps = {}): ComponentType<ViewProps> {
-  return forwardRef((props: ViewProps, ref) => {
-    return <View {...nativeProps} {...props} ref={ref} />;
-  }) as ComponentType<ViewProps>;
+  return function Dom(props: ViewProps) {
+    return <View {...nativeProps} {...props} />;
+  };
 }
 
 export const UL = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'list',
+      role: 'list',
     },
   })
 );
+
+if (__DEV__) {
+  UL.displayName = 'UL';
+}
 
 function isTextProps(props: any): props is TextProps {
   // Treat <li></li> as a Text element.
@@ -25,17 +29,17 @@ function isTextProps(props: any): props is TextProps {
 
 type LIProps = TextProps | ViewProps;
 
-export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
+export function LI(props: PropsWithChildren<LIProps>) {
   if (isTextProps(props)) {
-    const accessibilityRole: LIProps['accessibilityRole'] = Platform.select({
+    const role: LIProps['role'] = Platform.select({
       web: 'listitem',
-      default: props.accessibilityRole,
+      default: props.role,
     });
-    return <Text {...props} accessibilityRole={accessibilityRole} ref={ref} />;
+    return <Text {...props} role={role} />;
   }
-  const accessibilityRole: LIProps['accessibilityRole'] = Platform.select({
+  const role: LIProps['role'] = Platform.select({
     web: 'listitem',
-    default: props.accessibilityRole,
+    default: props.role,
   });
-  return <View {...props} accessibilityRole={accessibilityRole} ref={ref} />;
-}) as ComponentType<LIProps>;
+  return <View {...props} role={role} />;
+}

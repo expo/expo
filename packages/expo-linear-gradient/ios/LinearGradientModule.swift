@@ -8,7 +8,7 @@ public class LinearGradientModule: Module {
     Name("ExpoLinearGradient")
 
     View(LinearGradientView.self) {
-      Prop("colors") { (view: LinearGradientView, colors: [CGColor]) in
+      Prop("colors") { (view: LinearGradientView, colors: [UIColor]) in
         view.gradientLayer.setColors(colors)
       }
 

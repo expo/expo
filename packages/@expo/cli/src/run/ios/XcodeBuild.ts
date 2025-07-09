@@ -5,18 +5,38 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { BuildProps, ProjectInfo } from './XcodeBuild.types';
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
+import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 import * as Log from '../../log';
 import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
-import { BuildProps, ProjectInfo } from './XcodeBuild.types';
-import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
-import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }
 
+export function matchEstimatedBinaryPath(buildOutput: string): string | null {
+  // Match the full path that contains `/(.*)/Developer/Xcode/DerivedData/(.*)/Build/Products/(.*)/(.*).app`
+  const appBinaryPathMatch = buildOutput.match(
+    /(\/(?:\\\s|[^ ])+\/Developer\/Xcode\/DerivedData\/(?:\\\s|[^ ])+\/Build\/Products\/(?:Debug|Release)-(?:[^\s/]+)\/(?:\\\s|[^ ])+\.app)/
+  );
+  if (!appBinaryPathMatch?.length) {
+    throw new CommandError(
+      'XCODE_BUILD',
+      `Malformed xcodebuild results: app binary path was not generated in build output. Report this issue and run your project with Xcode instead.`
+    );
+  } else {
+    // Sort for the shortest
+    const shortestPath = (appBinaryPathMatch.filter((a) => typeof a === 'string' && a) as string[])
+      .sort((a: string, b: string) => a.length - b.length)[0]
+      .trim();
+
+    Log.debug(`Found app binary path: ${shortestPath}`);
+    return shortestPath;
+  }
+}
 /**
  *
  * @returns '/Users/evanbacon/Library/Developer/Xcode/DerivedData/myapp-gpgjqjodrxtervaufttwnsgimhrx/Build/Products/Debug-iphonesimulator/myapp.app'
@@ -25,31 +45,41 @@ export function getAppBinaryPath(buildOutput: string) {
   // Matches what's used in "Bundle React Native code and images" script.
   // Requires that `-hideShellScriptEnvironment` is not included in the build command (extra logs).
 
-  // Like `\=/Users/evanbacon/Library/Developer/Xcode/DerivedData/Exponent-anpuosnglkxokahjhfszejloqfvo/Build/Products/Debug-iphonesimulator`
-  const CONFIGURATION_BUILD_DIR = extractEnvVariableFromBuild(
-    buildOutput,
-    'CONFIGURATION_BUILD_DIR'
-  ).sort(
-    // Longer name means more suffixes, we want the shortest possible one to be first.
-    // Massive projects (like Expo Go) can sometimes print multiple different sets of environment variables.
-    // This can become an issue with some
-    (a, b) => a.length - b.length
-  );
-  // Like `Exponent.app`
-  const UNLOCALIZED_RESOURCES_FOLDER_PATH = extractEnvVariableFromBuild(
-    buildOutput,
-    'UNLOCALIZED_RESOURCES_FOLDER_PATH'
-  );
+  try {
+    // Like `\=/Users/evanbacon/Library/Developer/Xcode/DerivedData/Exponent-anpuosnglkxokahjhfszejloqfvo/Build/Products/Debug-iphonesimulator`
+    const CONFIGURATION_BUILD_DIR = extractEnvVariableFromBuild(
+      buildOutput,
+      'CONFIGURATION_BUILD_DIR'
+    ).sort(
+      // Longer name means more suffixes, we want the shortest possible one to be first.
+      // Massive projects (like Expo Go) can sometimes print multiple different sets of environment variables.
+      // This can become an issue with some
+      (a, b) => a.length - b.length
+    );
+    // Like `Exponent.app`
+    const UNLOCALIZED_RESOURCES_FOLDER_PATH = extractEnvVariableFromBuild(
+      buildOutput,
+      'UNLOCALIZED_RESOURCES_FOLDER_PATH'
+    );
 
-  const binaryPath = path.join(
-    // Use the shortest defined env variable (usually there's just one).
-    CONFIGURATION_BUILD_DIR[0],
-    // Use the last defined env variable.
-    UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]
-  );
+    const binaryPath = path.join(
+      // Use the shortest defined env variable (usually there's just one).
+      CONFIGURATION_BUILD_DIR[0],
+      // Use the last defined env variable.
+      UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]
+    );
 
-  // If the app has a space in the name it'll fail because it isn't escaped properly by Xcode.
-  return getEscapedPath(binaryPath);
+    // If the app has a space in the name it'll fail because it isn't escaped properly by Xcode.
+    return getEscapedPath(binaryPath);
+  } catch (error) {
+    if (error instanceof CommandError && error.code === 'XCODE_BUILD') {
+      const possiblePath = matchEstimatedBinaryPath(buildOutput);
+      if (possiblePath) {
+        return possiblePath;
+      }
+    }
+    throw error;
+  }
 }
 
 export function getEscapedPath(filePath: string): string {
@@ -62,7 +92,7 @@ export function getEscapedPath(filePath: string): string {
   }
   throw new CommandError(
     'XCODE_BUILD',
-    `Unexpected: Generated app at path "${filePath}" cannot be read, the app cannot be installed. Please report this and build onto a simulator.`
+    `Unexpected: Generated app at path "${filePath}" cannot be read, the app cannot be installed. Report this and build onto a simulator.`
   );
 }
 
@@ -74,7 +104,7 @@ export function extractEnvVariableFromBuild(buildOutput: string, variableName: s
   if (!matched || !matched.length) {
     throw new CommandError(
       'XCODE_BUILD',
-      `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Please report this issue and run your project with Xcode instead.`
+      `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Report this issue and run your project with Xcode instead.`
     );
   }
   return matched.map((value) => value[1]).filter(Boolean) as string[];
@@ -85,11 +115,13 @@ export function getProcessOptions({
   shouldSkipInitialBundling,
   terminal,
   port,
+  eagerBundleOptions,
 }: {
   packager: boolean;
   shouldSkipInitialBundling?: boolean;
   terminal: string | undefined;
   port: number;
+  eagerBundleOptions?: string;
 }): SpawnOptionsWithoutStdio {
   const SKIP_BUNDLING = shouldSkipInitialBundling ? '1' : undefined;
   if (packager) {
@@ -99,6 +131,7 @@ export function getProcessOptions({
         RCT_TERMINAL: terminal,
         SKIP_BUNDLING,
         RCT_METRO_PORT: port.toString(),
+        __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
       },
     };
   }
@@ -108,6 +141,7 @@ export function getProcessOptions({
       ...process.env,
       RCT_TERMINAL: terminal,
       SKIP_BUNDLING,
+      __EXPO_EAGER_BUNDLE_OPTIONS: eagerBundleOptions,
       // Always skip launching the packager from a build script.
       // The script is used for people building their project directly from Xcode.
       // This essentially means "› Running script 'Start Packager'" does nothing.
@@ -270,7 +304,7 @@ async function spawnXcodeBuildWithFormat(
 export async function buildAsync(props: BuildProps): Promise<string> {
   const args = await getXcodeBuildArgsAsync(props);
 
-  const { projectRoot, xcodeProject, shouldSkipInitialBundling, port } = props;
+  const { projectRoot, xcodeProject, shouldSkipInitialBundling, port, eagerBundleOptions } = props;
 
   const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
     args,
@@ -279,6 +313,7 @@ export async function buildAsync(props: BuildProps): Promise<string> {
       terminal: getUserTerminal(),
       shouldSkipInitialBundling,
       port,
+      eagerBundleOptions,
     }),
     {
       projectRoot,

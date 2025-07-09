@@ -49,7 +49,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       self.handlePermissionRequest(requesterClass: self.getMediaLibraryPermissionRequester(writeOnly), operationType: .ask, promise: promise)
     })
 
-    AsyncFunction("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) -> Void in
+    AsyncFunction("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) in
       guard let permissions = self.appContext?.permissions else {
         return promise.reject(PermissionsModuleNotFoundException())
       }
@@ -91,7 +91,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
                                         options: options,
                                         imagePickerHandler: imagePickerDelegate)
 
-    if #available(iOS 14, *), !options.allowsEditing && sourceType != .camera {
+    if !options.allowsEditing && sourceType != .camera {
       self.launchMultiSelectPicker(pickingContext: pickingContext)
     } else {
       self.launchLegacyImagePicker(sourceType: sourceType, pickingContext: pickingContext)
@@ -102,6 +102,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     let options = pickingContext.options
 
     let picker = UIImagePickerController()
+    picker.fixCannotMoveEditingBox()
 
     if sourceType == .camera {
 #if targetEnvironment(simulator)
@@ -116,7 +117,17 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       picker.sourceType = .photoLibrary
     }
 
-    picker.mediaTypes = options.mediaTypes.toArray()
+    picker.mediaTypes = options.toMediaTypesArray()
+
+    if options.requiresMicrophonePermission() && sourceType == .camera {
+      do {
+        try checkMicrophonePermissions()
+      } catch {
+        pickingContext.promise.reject(error)
+        return
+      }
+    }
+
     picker.videoExportPreset = options.videoExportPreset.toAVAssetExportPreset()
     picker.videoQuality = options.videoQuality.toQualityType()
     picker.videoMaximumDuration = options.videoMaxDuration
@@ -134,17 +145,21 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     presentPickerUI(picker, pickingContext: pickingContext)
   }
 
-  @available(iOS 14, *)
+  private func checkMicrophonePermissions() throws {
+    guard Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription") != nil else {
+      throw MissingMicrophonePermissionException()
+    }
+  }
+
   private func launchMultiSelectPicker(pickingContext: PickingContext) {
     var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
     let options = pickingContext.options
 
     // selection limit = 1 --> single selection, reflects the old picker behavior
     configuration.selectionLimit = options.allowsMultipleSelection ? options.selectionLimit : SINGLE_SELECTION
-    configuration.filter = options.mediaTypes.toPickerFilter()
-    if #available(iOS 15, *) {
-      configuration.selection = options.orderedSelection ? .ordered : .default
-    }
+    configuration.filter = options.toPickerFilter()
+    configuration.preferredAssetRepresentationMode = options.preferredAssetRepresentationMode.toAssetRepresentationMode()
+    configuration.selection = options.orderedSelection ? .ordered : .default
 
     let picker = PHPickerViewController(configuration: configuration)
 
@@ -157,6 +172,18 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     }
 
     picker.modalPresentationStyle = context.options.presentationStyle.toPresentationStyle()
+
+    if UIDevice.current.userInterfaceIdiom == .pad {
+      let viewFrame = currentViewController.view.frame
+      picker.popoverPresentationController?.sourceRect = CGRect(
+        x: viewFrame.midX,
+        y: viewFrame.maxY,
+        width: 0,
+        height: 0
+      )
+      picker.popoverPresentationController?.sourceView = currentViewController.view
+    }
+
     picker.setResultHandler(context.imagePickerHandler)
 
     // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
@@ -171,7 +198,6 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     self.currentPickingContext = nil
   }
 
-  @available(iOS 14, *)
   func didPickMultipleMedia(selection: [PHPickerResult]) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
@@ -188,10 +214,12 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // Clean up the currently stored picking context
     self.currentPickingContext = nil
 
-    mediaHandler.handleMultipleMedia(selection) { result -> Void in
-      switch result {
-      case .failure(let error): return promise.reject(error)
-      case .success(let response): return promise.resolve(response)
+    Task {
+      do {
+        let assets = try await mediaHandler.handleMultipleMedia(selection)
+        promise.resolve(ImagePickerResponse(assets: assets, canceled: false))
+      } catch {
+        promise.reject(error)
       }
     }
   }
@@ -211,10 +239,12 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     let mediaHandler = MediaHandler(fileSystem: fileSystem,
                                     options: options)
-    mediaHandler.handleMedia(mediaInfo) { result -> Void in
-      switch result {
-      case .failure(let error): return promise.reject(error)
-      case .success(let response): return promise.resolve(response)
+    Task {
+      do {
+        let asset = try await mediaHandler.handleMedia(mediaInfo)
+        promise.resolve(ImagePickerResponse(assets: [asset], canceled: false))
+      } catch {
+        promise.reject(error)
       }
     }
   }

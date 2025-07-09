@@ -22,6 +22,16 @@ export const expoExportEmbed: Command = async (argv) => {
     '--unstable-transform-profile': String,
     '--config': String,
 
+    // Hack: This is added because react-native-xcode.sh script always includes this value.
+    // If supplied, we'll do nothing with the value, but at least the process won't crash.
+    // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
+    '--config-cmd': String,
+
+    // New flag to guess the other flags based on the environment.
+    '--eager': Boolean,
+    // Export the bundle as Hermes bytecode bundle
+    '--bytecode': Boolean,
+
     // This is here for compatibility with the `npx react-native bundle` command.
     // devs should use `DEBUG=expo:*` instead.
     '--verbose': Boolean,
@@ -56,10 +66,11 @@ export const expoExportEmbed: Command = async (argv) => {
         `--asset-catalog-dest <string>          Directory to create an iOS Asset Catalog for images`,
         `--unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default`,
         `--reset-cache                          Removes cached files`,
+        `--eager                                Eagerly export the bundle with default options`,
+        `--bytecode                             Export the bundle as Hermes bytecode bundle`,
         `-v, --verbose                          Enables debug logging`,
 
         `--config <string>                      Path to the CLI configuration file`,
-        `--generate-static-view-configs         Generate static view configs for Fabric components. If there are no Fabric components in the bundle or Fabric is disabled, this is just no-op.`,
         // This is seemingly unused.
         `--read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.`,
 
@@ -74,21 +85,24 @@ export const expoExportEmbed: Command = async (argv) => {
     { logCmdError },
     { resolveCustomBooleanArgsAsync },
   ] = await Promise.all([
-    import('./exportEmbedAsync'),
-    import('./resolveOptions'),
-    import('../../utils/errors'),
-    import('../../utils/resolveArgs'),
+    import('./exportEmbedAsync.js'),
+    import('./resolveOptions.js'),
+    import('../../utils/errors.js'),
+    import('../../utils/resolveArgs.js'),
   ]);
 
   return (async () => {
     const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {
+      '--eager': Boolean,
+      '--bytecode': Boolean,
       '--dev': Boolean,
       '--minify': Boolean,
       '--sourcemap-use-absolute-path': Boolean,
       '--reset-cache': Boolean,
       '--read-global-cache': Boolean,
-      '--generate-static-view-configs': Boolean,
     });
-    return exportEmbedAsync(path.resolve(parsed.projectRoot), resolveOptions(args, parsed));
+
+    const projectRoot = path.resolve(parsed.projectRoot);
+    return exportEmbedAsync(projectRoot, resolveOptions(projectRoot, args, parsed));
   })().catch(logCmdError);
 };

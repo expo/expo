@@ -3,13 +3,19 @@ package expo.modules.medialibrary.albums
 import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
+import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AlbumException
+import expo.modules.medialibrary.AssetFileException
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.MediaLibraryException
+import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
+import java.io.File
 
 /**
  * Queries for assets filtered by given `selection`.
@@ -82,4 +88,62 @@ fun getAssetsInAlbums(context: Context, vararg albumIds: String?): List<String> 
     }
   }
   return assetIds
+}
+
+internal fun getFileOrNullByContextResolver(context: Context, selection: String, selectionArgs: Array<String>): File? {
+  context.contentResolver.query(
+    EXTERNAL_CONTENT_URI,
+    arrayOf(MediaColumns.DATA),
+    selection,
+    selectionArgs,
+    null
+  ).use { fileCursor ->
+    if (fileCursor == null) {
+      throw AlbumException("Could not get album. Query returns null.")
+    } else if (fileCursor.count == 0) {
+      return null
+    }
+    fileCursor.moveToNext()
+    val filePathColumnIndex = fileCursor.getColumnIndex(MediaStore.Images.Media.DATA)
+    val fileInAlbum = File(fileCursor.getString(filePathColumnIndex))
+
+    // Media store table can be corrupted. Extra check won't harm anyone.
+    if (!fileInAlbum.isFile && !fileInAlbum.isDirectory) {
+      throw MediaLibraryException()
+    }
+    return File(fileInAlbum.parent!!)
+  }
+}
+
+internal fun getAlbumFileByNameOrNull(context: Context, albumName: String): File? {
+  val selection = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE} AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
+  val selectionArgs = arrayOf(albumName)
+
+  return getFileOrNullByContextResolver(context, selection, selectionArgs)
+}
+
+internal fun getAlbumFileOrNull(context: Context, albumId: String): File? {
+  val selection = "${MediaColumns.BUCKET_ID}=?"
+  val selectionArgs = arrayOf(albumId)
+
+  return getFileOrNullByContextResolver(context, selection, selectionArgs)
+}
+
+internal fun getAlbumFile(context: Context, albumId: String): File {
+  val albumFile = getAlbumFileOrNull(context, albumId)
+  return albumFile ?: throw AlbumException("Could not get album. Query returns null.")
+}
+
+internal fun createAlbumFile(mimeType: String, albumName: String): File {
+  val albumDir = MediaLibraryUtils.getEnvDirectoryForAssetType(mimeType, false)
+    .ifNull {
+      throw AssetFileException("Could not guess asset type.")
+    }
+
+  val album = File(albumDir.path, albumName)
+    .takeIf { it.exists() || it.mkdirs() }
+    .ifNull {
+      throw AlbumException("Could not create album directory.")
+    }
+  return album
 }

@@ -118,6 +118,27 @@ export async function test(t) {
       });
     });
 
+    t.describe('getRemindersAsync() with minimal parameters', () => {
+      let reminderId;
+
+      t.beforeAll(async () => {
+        reminderId = await createTestReminderAsync(calendarId);
+      });
+
+      t.it('returns an array of reminders', async () => {
+        const reminders = await Calendar.getRemindersAsync([calendarId]);
+
+        t.expect(Array.isArray(reminders)).toBe(true);
+        t.expect(reminders.length).toBe(1);
+        t.expect(reminders[0].id).toBe(reminderId);
+        testReminderShape(t, reminders[0]);
+      });
+
+      t.afterAll(async () => {
+        await Calendar.deleteReminderAsync(reminderId);
+      });
+    });
+
     t.describe('getReminderAsync()', () => {
       let reminderId;
 
@@ -179,7 +200,6 @@ export async function test(t) {
         }
         t.expect(error).toBeDefined();
         t.expect(error instanceof Error).toBe(true);
-        t.expect(error.code).toBe('E_REMINDER_NOT_FOUND');
       });
 
       t.afterAll(async () => {

@@ -6,9 +6,6 @@ const noPermissionResponse = {
     expires: 'never',
 };
 export default {
-    get name() {
-        return 'ExpoMediaLibrary';
-    },
     get CHANGE_LISTENER_NAME() {
         return 'mediaLibraryDidChange';
     },

@@ -54,10 +54,8 @@ jest.mock('../XcodeBuild', () => ({
 
 jest.mock('../launchApp', () => ({
   launchAppAsync: jest.fn(async () => {}),
+  getLaunchInfoForBinaryAsync: jest.fn(async () => ({})),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const mockPlatform = (value: typeof process.platform) =>
   Object.defineProperty(process, 'platform', {
@@ -76,16 +74,25 @@ describe(resolveOptionsAsync, () => {
   it(`asserts that the function only runs on darwin machines`, async () => {
     mockPlatform('win32');
     await expect(runIosAsync('/', {})).rejects.toThrow(/EXIT_CALLED/);
-    expect(Log.exit).toBeCalledWith(expect.stringMatching(/eas build -p ios/));
+    expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
   });
 
   it(`runs ios on simulator`, async () => {
     mockPlatform('darwin');
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runIosAsync('/', {});
 
-    expect(buildAsync).toBeCalledWith({
+    expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
@@ -98,30 +105,45 @@ describe(resolveOptionsAsync, () => {
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
 
-    expect(launchAppAsync).toBeCalledWith('/mock_binary', expect.anything(), {
-      device: { name: 'mock', udid: '123' },
-      isSimulator: true,
-      shouldStartBundler: true,
-    });
+    expect(launchAppAsync).toHaveBeenCalledWith(
+      '/mock_binary',
+      expect.anything(),
+      {
+        device: { name: 'mock', udid: '123' },
+        isSimulator: true,
+        shouldStartBundler: true,
+      },
+      undefined
+    );
 
-    expect(logProjectLogsLocation).toBeCalled();
+    expect(logProjectLogsLocation).toHaveBeenCalled();
   });
 
   it(`runs ios on device`, async () => {
-    asMock(resolveDeviceAsync).mockResolvedValueOnce({
+    jest.mocked(resolveDeviceAsync).mockResolvedValueOnce({
       name: "Evan's phone",
       model: 'iPhone13,4',
       osVersion: '15.4.1',
       deviceType: 'device',
       udid: '00008101-001964A22629003A',
+      connectionType: 'USB',
     });
-    asMock(isSimulatorDevice).mockReturnValueOnce(false);
+    jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runIosAsync('/', { device: '00008101-001964A22629003A' });
 
-    expect(buildAsync).toBeCalledWith({
+    expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
       configuration: 'Debug',
       device: {
@@ -130,6 +152,7 @@ describe(resolveOptionsAsync, () => {
         name: "Evan's phone",
         osVersion: '15.4.1',
         udid: '00008101-001964A22629003A',
+        connectionType: 'USB',
       },
       isSimulator: false,
       port: 8081,
@@ -140,18 +163,24 @@ describe(resolveOptionsAsync, () => {
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
 
-    expect(launchAppAsync).toBeCalledWith('/mock_binary', expect.anything(), {
-      device: {
-        deviceType: 'device',
-        model: 'iPhone13,4',
-        name: "Evan's phone",
-        osVersion: '15.4.1',
-        udid: '00008101-001964A22629003A',
+    expect(launchAppAsync).toHaveBeenCalledWith(
+      '/mock_binary',
+      expect.anything(),
+      {
+        device: {
+          deviceType: 'device',
+          model: 'iPhone13,4',
+          name: "Evan's phone",
+          osVersion: '15.4.1',
+          udid: '00008101-001964A22629003A',
+          connectionType: 'USB',
+        },
+        isSimulator: false,
+        shouldStartBundler: true,
       },
-      isSimulator: false,
-      shouldStartBundler: true,
-    });
+      undefined
+    );
 
-    expect(logProjectLogsLocation).toBeCalled();
+    expect(logProjectLogsLocation).toHaveBeenCalled();
   });
 });

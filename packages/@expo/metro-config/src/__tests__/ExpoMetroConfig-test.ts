@@ -1,13 +1,9 @@
 import { vol } from 'memfs';
 
-import { getDefaultConfig, loadAsync } from '../ExpoMetroConfig';
+import { getDefaultConfig, createStableModuleIdFactory } from '../ExpoMetroConfig';
 
 const projectRoot = '/';
 const consoleError = console.error;
-
-beforeEach(() => {
-  delete process.env.EXPO_USE_EXOTIC;
-});
 
 function mockProject() {
   vol.fromJSON(
@@ -16,9 +12,9 @@ function mockProject() {
         name: 'hello-world',
         private: true,
       }),
-      'node_modules/expo-asset/tools/hashAssetFiles.js': '',
       'node_modules/react-native/package.json': '',
-      'node_modules/babel-preset-fbjs/package.json': '',
+      'node_modules/react-native/node_modules/metro-runtime/package.json': '',
+      'node_modules/react-native/node_modules/metro-runtime/src/modules/asyncRequire.js': '',
       'node_modules/metro-react-native-babel-transformer/package.json': '',
     },
     projectRoot
@@ -50,50 +46,30 @@ describe(getDefaultConfig, () => {
     );
   });
 
-  it('loads exotic configuration', () => {
-    expect(getDefaultConfig(projectRoot, { mode: 'exotic' })).toEqual(
-      expect.objectContaining({
-        projectRoot,
-        resolver: expect.objectContaining({
-          resolverMainFields: ['browser', 'main'],
-          sourceExts: expect.arrayContaining(['cjs']),
-        }),
-      })
-    );
-  });
-
   it('loads default configuration for apps', () => {
-    expect(getDefaultConfig(projectRoot).resolver.sourceExts).toEqual(
+    expect(getDefaultConfig(projectRoot).resolver?.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
     );
   });
 });
 
-describe(loadAsync, () => {
-  beforeEach(() => {
-    mockProject();
+describe(createStableModuleIdFactory, () => {
+  it('defaults to standard behavior without context object', () => {
+    const factory = createStableModuleIdFactory('/');
+    expect(factory('/react.js')).toBe(factory('react.js'));
   });
-  afterEach(() => {
-    vol.reset();
+  it('creates scoped module IDs for SSR', () => {
+    const factory = createStableModuleIdFactory('/');
+    expect(factory('/react.js', { platform: 'ios', environment: 'react-server' })).toBe(
+      factory('react.js?platform=ios&env=react-server')
+    );
+    expect(factory('/react.js', { platform: 'ios', environment: 'client' })).toBe(
+      factory('react.js')
+    );
   });
-  it('adds runtime options to the default configuration', async () => {
-    const options = {
-      maxWorkers: 10,
-      resetCache: true,
-      reporter: { update() {} },
-      sourceExts: ['yml', 'toml', 'json'],
-      assetExts: ['json'],
-    };
-    const config = await loadAsync(projectRoot, options);
-
-    expect(config).toMatchObject({
-      maxWorkers: options.maxWorkers,
-      resetCache: options.resetCache,
-      reporter: options.reporter,
-      resolver: {
-        sourceExts: options.sourceExts,
-        assetExts: options.assetExts,
-      },
-    });
+  it('asserts platform is missing for SSR context', () => {
+    const factory = createStableModuleIdFactory('/');
+    // @ts-expect-error
+    expect(() => factory('/react.js', { environment: 'react-server' })).toThrow();
   });
 });

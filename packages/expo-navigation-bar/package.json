@@ -1,9 +1,9 @@
 {
   "name": "expo-navigation-bar",
-  "version": "2.2.0",
-  "description": "Interact with the system navigation bar",
-  "main": "build/NavigationBar.js",
-  "types": "build/NavigationBar.d.ts",
+  "version": "4.2.4",
+  "description": "Modify and observe the native navigation bar on Android devices.",
+  "main": "src/index.ts",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -16,7 +16,8 @@
   "keywords": [
     "react-native",
     "expo",
-    "expo-navigation-bar"
+    "expo-navigation-bar",
+    "android"
   ],
   "repository": {
     "type": "git",
@@ -33,14 +34,18 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/navigation-bar",
   "dependencies": {
-    "@react-native/normalize-color": "^2.0.0",
-    "debug": "^4.3.2"
+    "@react-native/normalize-colors": "0.80.1",
+    "debug": "^4.3.2",
+    "react-native-is-edge-to-edge": "^1.1.6",
+    "react-native-edge-to-edge": "1.6.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

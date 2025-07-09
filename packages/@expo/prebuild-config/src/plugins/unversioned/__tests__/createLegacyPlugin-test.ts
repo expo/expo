@@ -19,8 +19,9 @@ describe(createLegacyPlugin, () => {
       fallback,
     });
     let config: ExpoConfig = { slug: '', name: '', _internal: { projectRoot: '/' } };
+
     config = withPlugin(config);
-    expect(fallback).toBeCalledTimes(1);
+    expect(fallback).toHaveBeenCalledTimes(1);
     expect(config._internal.pluginHistory).toStrictEqual({
       'expo-foobar': {
         name: 'expo-foobar',
@@ -29,11 +30,11 @@ describe(createLegacyPlugin, () => {
     });
     // Only invokes the fallback once
     config = withPlugin(config);
-    expect(fallback).toBeCalledTimes(1);
+    expect(fallback).toHaveBeenCalledTimes(1);
   });
 
   it(`uses versioned plugin instead of fallback`, () => {
-    require('@expo/config-plugins').withStaticPlugin = jest.fn();
+    jest.mocked(ConfigPlugins.withStaticPlugin).mockImplementation();
     const fallback = jest.fn((config) => config);
     const withPlugin = createLegacyPlugin({
       packageName: 'expo-foobar',
@@ -41,7 +42,7 @@ describe(createLegacyPlugin, () => {
     });
     const config: ExpoConfig = { slug: '', name: '', _internal: { projectRoot: '/' } };
     withPlugin(config);
-    expect(ConfigPlugins.withStaticPlugin).toBeCalledTimes(1);
-    expect(fallback).toBeCalledTimes(0);
+    expect(ConfigPlugins.withStaticPlugin).toHaveBeenCalledTimes(1);
+    expect(fallback).toHaveBeenCalledTimes(0);
   });
 });

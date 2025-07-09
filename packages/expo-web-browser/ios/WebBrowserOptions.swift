@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
-
+#if os(iOS)
 import SafariServices
+#endif
 import ExpoModulesCore
 
 struct WebBrowserOptions: Record {
@@ -18,7 +19,7 @@ struct WebBrowserOptions: Record {
 
   @Field
   var controlsColor: UIColor?
-  
+
   // Defaults to .overFullScreen to keep backwards compatibility
   @Field
   var presentationStyle: PresentationStyle = .overFullScreen
@@ -29,11 +30,12 @@ struct AuthSessionOptions: Record {
   var preferEphemeralSession: Bool = false
 }
 
-enum DismissButtonStyle: String, EnumArgument {
+enum DismissButtonStyle: String, Enumerable {
   case done
   case close
   case cancel
 
+#if os(iOS)
   func toSafariDismissButtonStyle() -> SFSafariViewController.DismissButtonStyle {
     switch self {
     case .done:
@@ -44,9 +46,10 @@ enum DismissButtonStyle: String, EnumArgument {
       return .cancel
     }
   }
+#endif
 }
 
-internal enum PresentationStyle: String, EnumArgument {
+internal enum PresentationStyle: String, Enumerable {
   case fullScreen
   case pageSheet
   case formSheet
@@ -57,6 +60,7 @@ internal enum PresentationStyle: String, EnumArgument {
   case none
   case automatic
 
+#if os(iOS)
   func toPresentationStyle() -> UIModalPresentationStyle {
     switch self {
     case .fullScreen:
@@ -76,11 +80,31 @@ internal enum PresentationStyle: String, EnumArgument {
     case .none:
       return .none
     case .automatic:
-      if #available(iOS 13.0, *) {
-        return .automatic
-      }
-      // default prior iOS 13
-      return .fullScreen
+      return .automatic
     }
   }
+#else
+  func toContentRect() -> NSRect {
+    switch self {
+    case .fullScreen, .overFullScreen:
+      if let screenFrame = NSScreen.main?.frame {
+        return screenFrame
+      } else {
+        return NSRect(x: 0, y: 0, width: 1440, height: 900)
+      }
+
+    case .pageSheet:
+      return NSRect(x: 0, y: 0, width: 1000, height: 700)
+
+    case .formSheet:
+      return NSRect(x: 0, y: 0, width: 600, height: 400)
+
+    case .popover:
+      return NSRect(x: 0, y: 0, width: 300, height: 200)
+
+    case .automatic, .none, .currentContext, .overCurrentContext:
+      return NSRect(x: 0, y: 0, width: 1200, height: 800)
+    }
+  }
+#endif
 }

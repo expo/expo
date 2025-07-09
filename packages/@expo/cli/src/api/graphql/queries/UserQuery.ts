@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from '@urql/core';
 
 import { CurrentUserQuery } from '../../../graphql/generated';
 import { graphqlClient, withErrorHandlingAsync } from '../client';
@@ -36,7 +36,7 @@ export const UserQuery = {
           `,
           /* variables */ undefined,
           {
-            additionalTypenames: ['User'],
+            additionalTypenames: ['User', 'SSOUser'],
           }
         )
         .toPromise()

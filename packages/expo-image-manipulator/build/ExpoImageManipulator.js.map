@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoImageManipulator.js","sourceRoot":"","sources":["../src/ExpoImageManipulator.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,oBAAoB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.ExpoImageManipulator || {};\n"]}

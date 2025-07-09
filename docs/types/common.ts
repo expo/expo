@@ -8,6 +8,10 @@ export type PageMetadata = {
   /* If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
   hideTOC?: boolean;
+  platforms?: string[];
+  modificationDate?: string;
+  searchRank?: number;
+  searchPosition?: number;
 };
 
 /**
@@ -40,11 +44,34 @@ export type NavigationRoute = {
   expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
-  children?: NavigationRoute[];
+  isNew?: boolean;
+  isAlpha?: boolean;
+  isDeprecated?: boolean;
+  inExpoGo?: boolean;
+  hasVideoLink?: boolean;
+  children?: NavigationRouteWithSection[];
 };
+
+export type NavigationRouteWithSection = NavigationRoute & { section?: string };
 
 /**
  * Available platforms supported by our APIs.
  * Temporarily it also accepts other strings for compatibility reasons.
  */
-export type PlatformName = 'ios' | 'android' | 'web' | 'expo' | string;
+export type PlatformName =
+  | 'ios'
+  | 'ios-nosim'
+  | 'android'
+  | 'android-noemu'
+  | 'web'
+  | 'expo'
+  | 'macos'
+  | 'tvos'
+  | string;
+
+export type WithTestRequire = {
+  /**
+   * @internal For test usage only.
+   */
+  testRequire?: any;
+};

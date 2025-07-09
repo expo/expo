@@ -1,5 +1,6 @@
-import { EventEmitter, CodedError, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, CodedError, UnavailabilityError, } from 'expo-modules-core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
+import { mapNotification } from './utils/mapNotificationResponse';
 /**
  * @hidden
  */
@@ -11,7 +12,7 @@ export class NotificationTimeoutError extends CodedError {
     }
 }
 // Web uses SyntheticEventEmitter
-const notificationEmitter = new EventEmitter(NotificationsHandlerModule);
+const notificationEmitter = new LegacyEventEmitter(NotificationsHandlerModule);
 const handleNotificationEventName = 'onHandleNotification';
 const handleNotificationTimeoutEventName = 'onHandleNotificationTimeout';
 let handleSubscription = null;
@@ -34,7 +35,8 @@ let handleTimeoutSubscription = null;
  *
  * Notifications.setNotificationHandler({
  *   handleNotification: async () => ({
- *     shouldShowAlert: true,
+ *     shouldShowBanner: true,
+ *     shouldShowList: true,
  *     shouldPlaySound: false,
  *     shouldSetBadge: false,
  *   }),
@@ -58,15 +60,20 @@ export function setNotificationHandler(handler) {
                 return;
             }
             try {
-                const behavior = await handler.handleNotification(notification);
+                const mappedNotification = mapNotification(notification);
+                const behavior = await handler.handleNotification(mappedNotification);
+                if (behavior.shouldShowAlert) {
+                    console.warn('[expo-notifications]: `shouldShowAlert` is deprecated. Specify `shouldShowBanner` and / or `shouldShowList` instead.');
+                }
                 await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
                 handler.handleSuccess?.(id);
             }
             catch (error) {
+                // TODO(@kitten): This callback expects specific Error types, but we never narrow the type before calling this callback
                 handler.handleError?.(id, error);
             }
         });
-        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, notification)));
+        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, mapNotification(notification))));
     }
 }
 //# sourceMappingURL=NotificationsHandler.js.map

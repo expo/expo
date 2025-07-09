@@ -22,8 +22,7 @@ async function getProjectStringsXMLPathAsync(projectRoot, {
   });
 }
 function setStringItem(itemToAdd, stringFileContentsJSON) {
-  var _stringFileContentsJS;
-  if (!(stringFileContentsJSON !== null && stringFileContentsJSON !== void 0 && (_stringFileContentsJS = stringFileContentsJSON.resources) !== null && _stringFileContentsJS !== void 0 && _stringFileContentsJS.string)) {
+  if (!stringFileContentsJSON?.resources?.string) {
     if (!stringFileContentsJSON.resources || typeof stringFileContentsJSON.resources === 'string') {
       // file was empty and JSON is `{resources : ''}`
       stringFileContentsJSON.resources = {};
@@ -43,8 +42,7 @@ function setStringItem(itemToAdd, stringFileContentsJSON) {
   return stringFileContentsJSON;
 }
 function removeStringItem(named, stringFileContentsJSON) {
-  var _stringFileContentsJS2;
-  if (stringFileContentsJSON !== null && stringFileContentsJSON !== void 0 && (_stringFileContentsJS2 = stringFileContentsJSON.resources) !== null && _stringFileContentsJS2 !== void 0 && _stringFileContentsJS2.string) {
+  if (stringFileContentsJSON?.resources?.string) {
     const stringNameExists = stringFileContentsJSON.resources.string.findIndex(e => e.$.name === named);
     if (stringNameExists > -1) {
       // replace the previous value

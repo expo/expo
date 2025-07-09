@@ -17,8 +17,6 @@ import java.net.URLConnection
 class SharingModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw MissingCurrentActivityException()
   private var pendingPromise: Promise? = null
 
   override fun definition() = ModuleDefinition {
@@ -51,7 +49,7 @@ class SharingModule : Module() {
           context.grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         pendingPromise = promise
-        currentActivity.startActivityForResult(intent, REQUEST_CODE)
+        appContext.throwingActivity.startActivityForResult(intent, REQUEST_CODE)
       } catch (e: InvalidArgumentException) {
         throw SharingInvalidArgsException(e.message, e)
       } catch (e: Exception) {

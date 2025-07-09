@@ -58,7 +58,7 @@ describe('Android navigation bar', () => {
 
       const group = AndroidConfig.Styles.getStylesGroupAsObject(
         stylesJSON,
-        AndroidConfig.Styles.getAppThemeLightNoActionBarGroup()
+        AndroidConfig.Styles.getAppThemeGroup()
       );
       expect(group['android:navigationBarColor']).toBe('@color/navigationBarColor');
       expect(group['android:windowLightNavigationBar']).toBe('true');

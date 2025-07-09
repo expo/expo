@@ -53,7 +53,16 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
     return "java/lang/Integer";
   }
   if (type == CppType::FLOAT) {
+    if (allowsPrimitives) {
+      return "F";
+    }
     return "java/lang/Float";
+  }
+  if (type == CppType::LONG) {
+    if (allowsPrimitives) {
+      return "J";
+    }
+    return "java/lang/Long";
   }
   if (type == CppType::STRING) {
     return "java/lang/String";
@@ -70,6 +79,9 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
   if (type == CppType::READABLE_MAP) {
     return "com/facebook/react/bridge/ReadableNativeMap";
   }
+  if (type == CppType::UINT8_TYPED_ARRAY) {
+    return "[B";
+  }
   if (type == CppType::TYPED_ARRAY) {
     return "expo/modules/kotlin/jni/JavaScriptTypedArray";
   }
@@ -79,8 +91,18 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
       // is a primitive type
       return "[" + innerType;
     }
-
     return "[L" + innerType + ";";
+  }
+  if (type == CppType::ARRAY) {
+    auto innerType = this->getFirstType()->getFirstParameterType()->getJClassString();
+    if (innerType.starts_with("[")) {
+      // contains another array
+      return "[" + innerType;
+    }
+    return "[L" + innerType + ";";
+  }
+  if (type == CppType::NULLABLE) {
+    return this->getFirstType()->getFirstParameterType()->getJClassString();
   }
   if (type == CppType::LIST) {
     return "java/util/ArrayList";

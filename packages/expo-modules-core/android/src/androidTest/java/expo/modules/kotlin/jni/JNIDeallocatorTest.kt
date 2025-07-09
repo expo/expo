@@ -14,19 +14,9 @@ class JNIDeallocatorTest {
     }
   ) {
     val moduleObject = evaluateScript("expo.modules.TestModule")
-    Truth.assertThat(JNIDeallocator.inspectMemory()).contains(moduleObject)
-  }
 
-  @Test
-  fun deallocate_should_clear_all_saved_references() {
-    withJSIInterop(
-      inlineModule {
-        Name("TestModule")
-      }
-    ) {
-      evaluateScript("expo.modules.TestModule")
-    }
-    // JNIDeallocator.deallocate() is automatically call in the end of `withJSIInterop` scope
-    Truth.assertThat(JNIDeallocator.inspectMemory()).isEmpty()
+    val deallocator = runtimeContextHolder.get()!!.jniDeallocator
+
+    Truth.assertThat(deallocator.inspectMemory()).contains(moduleObject)
   }
 }

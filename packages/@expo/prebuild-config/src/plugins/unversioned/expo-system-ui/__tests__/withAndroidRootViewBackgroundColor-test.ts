@@ -1,15 +1,15 @@
 import { AndroidConfig, withAndroidColors, withAndroidStyles, XML } from '@expo/config-plugins';
 
+import { compileMockModWithResultsAsync } from './mockMods';
 import {
   getRootViewBackgroundColor,
   withRootViewBackgroundColorColors,
   withRootViewBackgroundColorStyles,
 } from '../withAndroidRootViewBackgroundColor';
-import { compileMockModWithResultsAsync } from './mockMods';
 
 const { parseXMLAsync } = XML;
 const { getColorsAsObject, getObjectAsColorsXml } = AndroidConfig.Colors;
-const { getAppThemeLightNoActionBarGroup, getStylesGroupAsObject } = AndroidConfig.Styles;
+const { getAppThemeGroup, getStylesGroupAsObject } = AndroidConfig.Styles;
 
 jest.mock('@expo/config-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins');
@@ -74,7 +74,7 @@ describe(withRootViewBackgroundColorStyles, () => {
         modResults: { resources: {} },
       }
     );
-    expect(getStylesGroupAsObject(modResults, getAppThemeLightNoActionBarGroup())).toStrictEqual({
+    expect(getStylesGroupAsObject(modResults, getAppThemeGroup())).toStrictEqual({
       'android:windowBackground': '@color/activityBackground',
     });
   });
@@ -100,7 +100,7 @@ describe(withRootViewBackgroundColorStyles, () => {
       }
     );
     // Extract the styles group items given the group
-    expect(getStylesGroupAsObject(modResults, getAppThemeLightNoActionBarGroup())).toStrictEqual(
+    expect(getStylesGroupAsObject(modResults, getAppThemeGroup())).toStrictEqual(
       // Should be an empty k/v pair
       {}
     );

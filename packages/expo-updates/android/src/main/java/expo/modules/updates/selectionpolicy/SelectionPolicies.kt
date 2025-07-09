@@ -10,16 +10,15 @@ import java.lang.Exception
  * Utility methods used by multiple [SelectionPolicy] subclasses.
  */
 object SelectionPolicies {
-  val TAG = SelectionPolicies::class.java.simpleName
+  val TAG: String = SelectionPolicies::class.java.simpleName
 
   fun matchesFilters(update: UpdateEntity, manifestFilters: JSONObject?): Boolean {
-    val rawManifest = update.manifest
-    if (manifestFilters == null || rawManifest == null) {
+    if (manifestFilters == null) {
       // empty matches all
       return true
     }
 
-    val manifest = Manifest.fromManifestJson(rawManifest)
+    val manifest = Manifest.fromManifestJson(update.manifest)
     val metadata = manifest.getMetadata() ?: return true // empty matches all
 
     try {

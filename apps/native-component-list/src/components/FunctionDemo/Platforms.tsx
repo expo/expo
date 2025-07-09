@@ -5,7 +5,7 @@ import { Platform } from './index.types';
 
 function joinWithCamelCase<T extends string, H extends string>([first, second]: [
   H,
-  T
+  T,
 ]): `${H}${Capitalize<T>}` {
   return `${first}${second.charAt(0).toUpperCase()}${second.slice(1)}` as `${H}${Capitalize<T>}`;
 }

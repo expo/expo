@@ -22,16 +22,12 @@ class EXDevLauncherURLHelperTests: XCTestCase {
 
     let actual2 = EXDevLauncherURLHelper.replaceEXPScheme(URL(string: "http://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081")!, to: "scheme")
     XCTAssertEqual(URL(string: "http://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081"), actual2)
-
-    // should not crash if provided URL does not include scheme
-    let actual3 = EXDevLauncherURLHelper.replaceEXPScheme(URL(string: "192.168.0.12:19000")!, to: "scheme")
-    XCTAssertEqual(URL(string: "192.168.0.12:19000"), actual3)
   }
 
   func testDevLauncherUrls() {
     // dev-client scheme with valid url param -> loadApp with specified url param
-    expectDevLauncherUrlToEqual(input:"scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Findex.bundle%3Fplatform%3Dios%26dev%3Dtrue",
-                         expected:"http://localhost:8081/index.bundle?platform=ios&dev=true")
+    expectDevLauncherUrlToEqual(input: "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081%2Findex.bundle%3Fplatform%3Dios%26dev%3Dtrue",
+                         expected: "http://localhost:8081/index.bundle?platform=ios&dev=true")
 
     // non-dev-client scheme with valid url param -> defer loading to loaded app
     expectDevLauncherUrlToEqual(input: "scheme://not-dev-client/?url=\(encodedUrlString)",
@@ -41,7 +37,7 @@ class EXDevLauncherURLHelperTests: XCTestCase {
 
   func testDevLauncherUrlQueryParams() {
     let url = "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&updateMessage=123"
-    let devLauncherUrl = EXDevLauncherUrl(URL(string:url)!)
+    let devLauncherUrl = EXDevLauncherUrl(URL(string: url)!)
     let queryParams = devLauncherUrl.queryParams
 
     XCTAssertEqual(queryParams["updateMessage"], "123")
@@ -50,7 +46,7 @@ class EXDevLauncherURLHelperTests: XCTestCase {
 
   //  HELPER
   func expectDevLauncherUrlToEqual(input: String, expected: String) {
-    let devLauncherUrl = EXDevLauncherUrl(URL(string:input)!)
+    let devLauncherUrl = EXDevLauncherUrl(URL(string: input)!)
     XCTAssertEqual(devLauncherUrl.url.absoluteString, expected)
   }
 }

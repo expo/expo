@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import qrcode from 'qrcode-terminal';
 import wrapAnsi from 'wrap-ansi';
@@ -41,13 +41,20 @@ export function printUsage(
   const isIosDisabled = !platforms.includes('ios');
   const isWebDisable = !platforms.includes('web');
 
+  const switchMsg = `switch to ${options.devClient === false ? 'development build' : 'Expo Go'}`;
+  const target = options.devClient === false ? `Expo Go` : 'development build';
+
+  Log.log();
+  Log.log(printItem(chalk`Using {cyan ${target}}`));
+
   if (verbose) {
     logCommandsTable([
+      { key: 's', msg: switchMsg },
       {},
       { key: 'a', msg: 'open Android', disabled: isAndroidDisabled },
-      { key: 'shift+a', msg: 'select a device or emulator', disabled: isAndroidDisabled },
+      { key: 'shift+a', msg: 'select an Android device or emulator', disabled: isAndroidDisabled },
       isMac && { key: 'i', msg: 'open iOS simulator', disabled: isIosDisabled },
-      isMac && { key: 'shift+i', msg: 'select a simulator', disabled: isIosDisabled },
+      isMac && { key: 'shift+i', msg: 'select an iOS simulator', disabled: isIosDisabled },
       { key: 'w', msg: 'open web', disabled: isWebDisable },
       {},
       { key: 'r', msg: 'reload app' },
@@ -60,6 +67,7 @@ export function printUsage(
     ]);
   } else {
     logCommandsTable([
+      { key: 's', msg: switchMsg },
       {},
       { key: 'a', msg: 'open Android', disabled: isAndroidDisabled },
       isMac && { key: 'i', msg: 'open iOS simulator', disabled: isIosDisabled },
@@ -68,6 +76,8 @@ export function printUsage(
       { key: 'j', msg: 'open debugger' },
       { key: 'r', msg: 'reload app' },
       !!options.isWebSocketsEnabled && { key: 'm', msg: 'toggle menu' },
+      !!options.isWebSocketsEnabled && { key: 'shift+m', msg: 'more tools' },
+      { key: 'o', msg: 'open project code in your editor' },
       {},
     ]);
   }

@@ -2,12 +2,13 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
-import { PNPM_WORKSPACE_FILE } from '../../utils/nodeWorkspaces';
+import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { PnpmPackageManager } from '../PnpmPackageManager';
 
 jest.mock('@expo/spawn-async');
-jest.mock('fs');
+// Jest doesn't mock `node:fs` when mocking `fs`
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 
 const originalCI = process.env.CI;
 
@@ -40,7 +41,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -53,12 +54,25 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, env: { ADBLOCK: '0' } });
       await pnpm.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
           env: { ADBLOCK: '0', DISABLE_OPENCOLLECTIVE: '1' },
         })
+      );
+    });
+  });
+
+  describe('runBinAsync', () => {
+    it('executes pnpm with the expected command and options', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runBinAsync(['eslint', '.']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'pnpm',
+        expect.arrayContaining(['eslint', '.']),
+        expect.objectContaining({ cwd: projectRoot })
       );
     });
   });
@@ -75,7 +89,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.runAsync(['install']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({ stdio: 'inherit' })
@@ -86,7 +100,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, silent: true });
       await pnpm.runAsync(['install']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({ stdio: undefined })
@@ -97,7 +111,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.runAsync(['add', '--save-peer', '@babel/core']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '--save-peer', '@babel/core'],
         expect.objectContaining({ cwd: projectRoot })
@@ -108,7 +122,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.runAsync(['add', '--save-peer', '@babel/core', '@babel/runtime']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '--save-peer', '@babel/core', '@babel/runtime'],
         expect.objectContaining({ cwd: projectRoot })
@@ -118,27 +132,33 @@ describe('PnpmPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from pnpm', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' })));
 
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
 
       expect(await pnpm.versionAsync()).toBe('7.0.0');
-      expect(spawnAsync).toBeCalledWith('pnpm', ['--version'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith('pnpm', ['--version'], expect.anything());
     });
   });
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from pnpm', async () => {
-      mockedSpawnAsync.mockImplementation(() =>
-        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
-      );
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation(() =>
+          mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+        );
 
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
 
       expect(await pnpm.getConfigAsync('registry')).toBe('https://custom.registry.org/');
-      expect(spawnAsync).toBeCalledWith('pnpm', ['config', 'get', 'registry'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'pnpm',
+        ['config', 'get', 'registry'],
+        expect.anything()
+      );
     });
   });
 
@@ -147,7 +167,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -158,7 +178,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.installAsync(['--ignore-scripts']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['install', '--ignore-scripts'],
         expect.objectContaining({ cwd: projectRoot })
@@ -170,7 +190,7 @@ describe('PnpmPackageManager', () => {
         const pnpm = new PnpmPackageManager({ cwd: projectRoot });
         await pnpm.installAsync();
 
-        expect(spawnAsync).toBeCalledWith(
+        expect(spawnAsync).toHaveBeenCalledWith(
           'pnpm',
           ['install'],
           expect.objectContaining({ cwd: projectRoot })
@@ -183,7 +203,7 @@ describe('PnpmPackageManager', () => {
         const pnpm = new PnpmPackageManager({ cwd: projectRoot });
         await pnpm.installAsync();
 
-        expect(spawnAsync).toBeCalledWith(
+        expect(spawnAsync).toHaveBeenCalledWith(
           'pnpm',
           ['install', '--no-frozen-lockfile'],
           expect.objectContaining({ cwd: projectRoot })
@@ -196,7 +216,7 @@ describe('PnpmPackageManager', () => {
         const pnpm = new PnpmPackageManager({ cwd: projectRoot });
         await pnpm.installAsync(['--frozen-lockfile']);
 
-        expect(spawnAsync).toBeCalledWith(
+        expect(spawnAsync).toHaveBeenCalledWith(
           'pnpm',
           ['install', '--frozen-lockfile'],
           expect.objectContaining({ cwd: projectRoot })
@@ -243,7 +263,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -254,7 +274,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addAsync(['@react-navigation/native']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '@react-navigation/native'],
         expect.objectContaining({ cwd: projectRoot })
@@ -265,7 +285,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addAsync(['@react-navigation/native', '@react-navigation/drawer']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '@react-navigation/native', '@react-navigation/drawer'],
         expect.objectContaining({ cwd: projectRoot })
@@ -278,7 +298,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addDevAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -289,7 +309,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addDevAsync(['eslint']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '--save-dev', 'eslint'],
         expect.objectContaining({ cwd: projectRoot })
@@ -300,7 +320,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addDevAsync(['eslint', 'prettier']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '--save-dev', 'eslint', 'prettier'],
         expect.objectContaining({ cwd: projectRoot })
@@ -313,7 +333,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addGlobalAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -324,7 +344,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addGlobalAsync(['expo-cli@^5']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '--global', 'expo-cli@^5'],
         expect.anything()
@@ -335,7 +355,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.addGlobalAsync(['expo-cli@^5', 'eas-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['add', '--global', 'expo-cli@^5', 'eas-cli'],
         expect.anything()
@@ -348,7 +368,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.removeAsync(['metro']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['remove', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
@@ -359,7 +379,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.removeAsync(['metro', 'jest-haste-map']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['remove', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
@@ -372,7 +392,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.removeDevAsync(['metro']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['remove', '--save-dev', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
@@ -383,7 +403,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.removeDevAsync(['metro', 'jest-haste-map']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['remove', '--save-dev', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
@@ -396,7 +416,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.removeGlobalAsync(['expo-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['remove', '--global', 'expo-cli'],
         expect.objectContaining({ cwd: projectRoot })
@@ -407,7 +427,7 @@ describe('PnpmPackageManager', () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.removeGlobalAsync(['expo-cli', 'eas-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
         ['remove', '--global', 'expo-cli', 'eas-cli'],
         expect.objectContaining({ cwd: projectRoot })
@@ -435,10 +455,8 @@ describe('PnpmPackageManager', () => {
       vol.fromJSON(
         {
           'packages/test/package.json': JSON.stringify({ name: 'project' }),
-          'package.json': JSON.stringify({
-            name: 'monorepo',
-          }),
-          [PNPM_WORKSPACE_FILE]: 'packages:\n  - packages/*',
+          'package.json': JSON.stringify({ name: 'monorepo' }),
+          'pnpm-workspace.yaml': 'packages:\n  - packages/*',
         },
         workspaceRoot
       );

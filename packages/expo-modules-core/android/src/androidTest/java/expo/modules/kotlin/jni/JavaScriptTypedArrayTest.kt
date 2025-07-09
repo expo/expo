@@ -17,7 +17,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 internal class JavaScriptTypedArrayTest {
-
   @Test
   fun kind_should_return_correct_type() = withJSIInterop {
     val uint16Result = evaluateScript("new Uint16Array(4)")
@@ -315,14 +314,14 @@ internal class JavaScriptTypedArrayTest {
 
   @Test
   fun float32_read() = withJSIInterop {
-    val rawTypedArray = evaluateScript("new Float32Array([-1.12432, 987765.312])").getTypedArray()
+    val rawTypedArray = evaluateScript("new Float32Array([-1.12432, 987765.3])").getTypedArray()
     val typedArray = Float32Array(rawTypedArray)
 
     val first = typedArray[0]
     val second = typedArray[1]
 
     Truth.assertThat(first).isEqualTo(-1.12432f)
-    Truth.assertThat(second).isEqualTo(987765.312f)
+    Truth.assertThat(second).isEqualTo(987765.3f)
   }
 
   @Test
@@ -331,13 +330,13 @@ internal class JavaScriptTypedArrayTest {
     val typedArray = Float32Array(rawTypedArray)
 
     typedArray[0] = -1.12432f
-    typedArray[1] = 987765.312f
+    typedArray[1] = 987765.3f
 
     val first = typedArray[0]
     val second = typedArray[1]
 
     Truth.assertThat(first).isEqualTo(-1.12432f)
-    Truth.assertThat(second).isEqualTo(987765.312f)
+    Truth.assertThat(second).isEqualTo(987765.3f)
   }
 
   @Test

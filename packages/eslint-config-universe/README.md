@@ -1,5 +1,6 @@
 # eslint-config-universe
-Shared ESLint configs for Node, Web, and universal Expo projects.
+
+Shared ESLint configs for internal Expo projects.
 
 ## Installation
 
@@ -10,7 +11,7 @@ yarn add --dev eslint-config-universe
 You will also need to install `eslint` and `prettier`:
 
 ```sh
-yarn add --dev eslint prettier
+yarn add --dev eslint@8 prettier
 ```
 
 ## Usage
@@ -43,8 +44,7 @@ If you would like to customize the Prettier settings, create a file named `.pret
   "printWidth": 100,
   "tabWidth": 2,
   "singleQuote": true,
-  "bracketSameLine": true,
-  "trailingComma": "es5"
+  "bracketSameLine": true
 }
 ```
 

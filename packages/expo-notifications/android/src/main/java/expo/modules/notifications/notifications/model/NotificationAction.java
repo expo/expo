@@ -7,6 +7,9 @@ import java.io.Serializable;
 
 /**
  * A class representing a single notification action button.
+ *
+ * TODO vonovak: no need to implement serializable, parcelable is enough for storing
+ *
  */
 public class NotificationAction implements Parcelable, Serializable {
   private final String mIdentifier;

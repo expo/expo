@@ -1,10 +1,10 @@
 package expo.modules.kotlin.objects
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.functions.SyncFunctionComponent
-import expo.modules.kotlin.jni.CppType
-import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JNIFunctionBody
-import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
+import expo.modules.kotlin.types.JSTypeConverter
 
 class PropertyComponent(
   /**
@@ -25,10 +25,11 @@ class PropertyComponent(
   /**
    * Attaches property to the provided js object.
    */
-  fun attachToJSObject(jsObject: JavaScriptModuleObject) {
+  fun attachToJSObject(appContext: AppContext, jsObject: JSDecoratorsBridgingObject) {
     val jniGetter = if (getter != null) {
-      JNIFunctionBody {
-        return@JNIFunctionBody getter.call(emptyArray())
+      JNIFunctionBody { args ->
+        val result = getter.callUserImplementation(args, appContext)
+        return@JNIFunctionBody JSTypeConverter.convertToJSValue(result)
       }
     } else {
       null
@@ -36,7 +37,7 @@ class PropertyComponent(
 
     val jniSetter = if (setter != null) {
       JNIFunctionBody { args ->
-        setter.call(args)
+        setter.callUserImplementation(args, appContext)
         return@JNIFunctionBody null
       }
     } else {
@@ -45,8 +46,11 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      setter?.getCppRequiredTypes()?.first() ?: ExpectedType(CppType.NONE),
+      getter?.takesOwner == true,
+      getter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniGetter,
+      setter?.takesOwner == true,
+      setter?.getCppRequiredTypes()?.toTypedArray() ?: emptyArray(),
       jniSetter
     )
   }

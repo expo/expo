@@ -1,0 +1,10 @@
+appId: host.exp.Exponent
+name: Tabs navigation
+---
+# Can navigate between routes
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}/(platform-routes)
+- assertVisible:
+    id: e2e-screen
+    text: 'iOS index'

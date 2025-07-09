@@ -24,6 +24,7 @@
     "incremental": true,
     "types": [
       "jest",
+      "@types/jest",
       "@testing-library/jest-dom",
       "@types/gtag.js",
       "user-agent-data-types"
@@ -41,6 +42,7 @@
     "public/static/data",
     "public/static/diffs",
     "public/static/examples",
-    "public/static/libs"
+    "public/static/libs",
+    "out"
   ]
 }

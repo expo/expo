@@ -1,5 +1,5 @@
+import { S3 } from '@aws-sdk/client-s3';
 import { Command } from '@expo/commander';
-import aws from 'aws-sdk';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
@@ -17,7 +17,7 @@ import { ClientBuilder, ClientBuildFlavor, Platform } from '../client-build/type
 import askForPlatformAsync from '../utils/askForPlatformAsync';
 import askForSdkVersionAsync from '../utils/askForSDKVersionAsync';
 
-const s3Client = new aws.S3({ region: 'us-east-1' });
+const s3Client = new S3({ region: 'us-east-1' });
 const { yellow, blue, magenta } = chalk;
 
 type ActionOptions = {

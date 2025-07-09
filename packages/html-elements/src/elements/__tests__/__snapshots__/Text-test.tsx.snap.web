@@ -2,8 +2,9 @@
 
 exports[`renders B 1`] = `
 <div
-  className="css-text-1rynq56 r-fontWeight-vw2c0b"
+  className="css-text-146c3p1 r-fontWeight-vw2c0b"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -11,29 +12,33 @@ exports[`renders B 1`] = `
 
 exports[`renders BR 1`] = `
 <div
-  className="css-text-1rynq56 r-height-10rkof1 r-width-1h2t8mc"
+  className="css-text-146c3p1 r-height-10rkof1 r-width-1h2t8mc"
   dir="auto"
+  ref={[Function]}
 />
 `;
 
 exports[`renders BlockQuote 1`] = `
 <div
-  className="css-view-175oi2r r-marginVertical-gdo61v"
+  className="css-view-g5y9jx r-marginBlock-11nzuo4"
   dir={null}
+  ref={[Function]}
 />
 `;
 
 exports[`renders Code 1`] = `
 <div
-  className="css-text-1rynq56 r-fontFamily-1pm8pkb r-fontWeight-majxgm"
+  className="css-text-146c3p1 r-fontFamily-1pm8pkb r-fontWeight-majxgm"
   dir="auto"
+  ref={[Function]}
 />
 `;
 
 exports[`renders Del 1`] = `
 <div
-  className="css-text-1rynq56 r-textDecorationLine-142tt33 r-textDecorationStyle-1a2p6p6"
+  className="css-text-146c3p1 r-textDecorationLine-142tt33 r-textDecorationStyle-1a2p6p6"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -41,8 +46,9 @@ exports[`renders Del 1`] = `
 
 exports[`renders EM 1`] = `
 <div
-  className="css-text-1rynq56 r-fontStyle-36ujnk"
+  className="css-text-146c3p1 r-fontStyle-36ujnk"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -50,8 +56,9 @@ exports[`renders EM 1`] = `
 
 exports[`renders I 1`] = `
 <div
-  className="css-text-1rynq56 r-fontStyle-36ujnk"
+  className="css-text-146c3p1 r-fontStyle-36ujnk"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -59,15 +66,17 @@ exports[`renders I 1`] = `
 
 exports[`renders Mark 1`] = `
 <div
-  className="css-text-1rynq56 r-backgroundColor-98uye2 r-color-cqee49"
+  className="css-text-146c3p1 r-backgroundColor-98uye2 r-color-cqee49"
   dir="auto"
+  ref={[Function]}
 />
 `;
 
 exports[`renders P 1`] = `
 <div
-  className="css-text-1rynq56 r-marginVertical-gdo61v"
+  className="css-text-146c3p1 r-marginBlock-11nzuo4"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -75,8 +84,9 @@ exports[`renders P 1`] = `
 
 exports[`renders Pre 1`] = `
 <div
-  className="css-text-1rynq56 r-fontFamily-1pm8pkb r-fontWeight-majxgm r-marginVertical-gdo61v"
+  className="css-text-146c3p1 r-fontFamily-1pm8pkb r-fontWeight-majxgm r-marginBlock-11nzuo4"
   dir="auto"
+  ref={[Function]}
 >
   
     body {
@@ -88,8 +98,9 @@ exports[`renders Pre 1`] = `
 
 exports[`renders Q 1`] = `
 <div
-  className="css-text-1rynq56 r-fontStyle-36ujnk"
+  className="css-text-146c3p1 r-fontStyle-36ujnk"
   dir="auto"
+  ref={[Function]}
 >
   "
   demo
@@ -99,8 +110,9 @@ exports[`renders Q 1`] = `
 
 exports[`renders S 1`] = `
 <div
-  className="css-text-1rynq56 r-textDecorationLine-142tt33 r-textDecorationStyle-1a2p6p6"
+  className="css-text-146c3p1 r-textDecorationLine-142tt33 r-textDecorationStyle-1a2p6p6"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -108,8 +120,9 @@ exports[`renders S 1`] = `
 
 exports[`renders Span 1`] = `
 <div
-  className="css-text-1rynq56"
+  className="css-text-146c3p1"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -117,8 +130,9 @@ exports[`renders Span 1`] = `
 
 exports[`renders Strong 1`] = `
 <div
-  className="css-text-1rynq56 r-fontWeight-vw2c0b"
+  className="css-text-146c3p1 r-fontWeight-vw2c0b"
   dir="auto"
+  ref={[Function]}
 >
   demo
 </div>
@@ -126,8 +140,9 @@ exports[`renders Strong 1`] = `
 
 exports[`renders Time 1`] = `
 <div
-  className="css-text-1rynq56"
+  className="css-text-146c3p1"
   dir="auto"
+  ref={[Function]}
 >
   May 15
 </div>

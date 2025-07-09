@@ -17,11 +17,10 @@ function _iosPlugins() {
   };
   return data;
 }
-const withScheme = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setScheme, {
+const withScheme = exports.withScheme = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setScheme, {
   infoPlistProperty: 'CFBundleURLTypes',
   expoConfigProperty: 'scheme'
 }, 'withScheme');
-exports.withScheme = withScheme;
 function getScheme(config) {
   if (Array.isArray(config.scheme)) {
     const validate = value => {
@@ -34,12 +33,9 @@ function getScheme(config) {
   return [];
 }
 function setScheme(config, infoPlist) {
-  var _config$ios, _config$ios2;
-  const scheme = [...getScheme(config),
-  // @ts-ignore: TODO: ios.scheme is an unreleased -- harder to add to turtle v1.
-  ...getScheme((_config$ios = config.ios) !== null && _config$ios !== void 0 ? _config$ios : {})];
+  const scheme = [...getScheme(config), ...getScheme(config.ios ?? {})];
   // Add the bundle identifier to the list of schemes for easier Google auth and parity with Turtle v1.
-  if ((_config$ios2 = config.ios) !== null && _config$ios2 !== void 0 && _config$ios2.bundleIdentifier) {
+  if (config.ios?.bundleIdentifier) {
     scheme.push(config.ios.bundleIdentifier);
   }
   if (scheme.length === 0) {
@@ -53,12 +49,11 @@ function setScheme(config, infoPlist) {
   };
 }
 function appendScheme(scheme, infoPlist) {
-  var _infoPlist$CFBundleUR;
   if (!scheme) {
     return infoPlist;
   }
-  const existingSchemes = (_infoPlist$CFBundleUR = infoPlist.CFBundleURLTypes) !== null && _infoPlist$CFBundleUR !== void 0 ? _infoPlist$CFBundleUR : [];
-  if (existingSchemes !== null && existingSchemes !== void 0 && existingSchemes.some(({
+  const existingSchemes = infoPlist.CFBundleURLTypes ?? [];
+  if (existingSchemes?.some(({
     CFBundleURLSchemes
   }) => CFBundleURLSchemes.includes(scheme))) {
     return infoPlist;
@@ -94,7 +89,7 @@ function removeScheme(scheme, infoPlist) {
 function hasScheme(scheme, infoPlist) {
   const existingSchemes = infoPlist.CFBundleURLTypes;
   if (!Array.isArray(existingSchemes)) return false;
-  return existingSchemes === null || existingSchemes === void 0 ? void 0 : existingSchemes.some(({
+  return existingSchemes?.some(({
     CFBundleURLSchemes: schemes
   }) => Array.isArray(schemes) ? schemes.includes(scheme) : false);
 }

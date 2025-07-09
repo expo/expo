@@ -1,3 +1,6 @@
+import { BuildCacheProvider } from '@expo/config';
+
+import { OSType } from '../../start/platforms/ios/simctl';
 import { BundlerProps } from '../resolveBundlerProps';
 
 export type XcodeConfiguration = 'Debug' | 'Release';
@@ -17,6 +20,11 @@ export type Options = {
   install?: boolean;
   /** Should use derived data for builds. */
   buildCache?: boolean;
+  /** Path to an existing binary to install on the device. */
+  binary?: string;
+
+  /** Re-bundle JS and assets, then embed in existing app, and install again. */
+  rebundle?: boolean;
 };
 
 export type ProjectInfo = {
@@ -30,11 +38,15 @@ export type BuildProps = {
   /** Is the target a simulator. */
   isSimulator: boolean;
   xcodeProject: ProjectInfo;
-  device: { name: string; udid: string };
+  device: { name: string; udid: string; osType: OSType };
   configuration: XcodeConfiguration;
   /** Disable the initial bundling from the native script. */
   shouldSkipInitialBundling: boolean;
   /** Should use derived data for builds. */
   buildCache: boolean;
   scheme: string;
+  buildCacheProvider?: BuildCacheProvider;
+
+  /** Options that were used to create the eager bundle in release builds. */
+  eagerBundleOptions?: string;
 } & BundlerProps;

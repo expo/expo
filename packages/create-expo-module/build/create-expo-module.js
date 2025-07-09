@@ -9,7 +9,7 @@ const commander_1 = require("commander");
 const download_tarball_1 = __importDefault(require("download-tarball"));
 const ejs_1 = __importDefault(require("ejs"));
 const find_up_1 = __importDefault(require("find-up"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
+const fs_1 = __importDefault(require("fs"));
 const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
@@ -18,7 +18,7 @@ const packageManager_1 = require("./packageManager");
 const prompts_2 = require("./prompts");
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const telemetry_1 = require("./telemetry");
-const utils_1 = require("./utils");
+const ora_1 = require("./utils/ora");
 const debug = require('debug')('create-expo-module:main');
 const packageJson = require('../package.json');
 // Opt in to using beta versions
@@ -51,7 +51,7 @@ async function getCorrectLocalDirectory(targetOrSlug) {
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
- * @param command An object from `commander`.
+ * @param options An options object for `commander`.
  */
 async function main(target, options) {
     if (options.local) {
@@ -66,27 +66,27 @@ async function main(target, options) {
     if (!targetDir) {
         return;
     }
-    await fs_extra_1.default.ensureDir(targetDir);
+    await fs_1.default.promises.mkdir(targetDir, { recursive: true });
     await confirmTargetDirAsync(targetDir);
     options.target = targetDir;
     const data = await askForSubstitutionDataAsync(slug, options.local);
     // Make one line break between prompts and progress logs
     console.log();
-    const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
+    const packageManager = (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir, options.local);
-    (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
-    await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
+    await (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
+    await (0, ora_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
     });
     if (!options.local) {
-        await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
+        await (0, ora_1.newStep)('Installing module dependencies', async (step) => {
             await (0, packageManager_1.installDependencies)(packageManager, targetDir);
             step.succeed('Installed module dependencies');
         });
-        await (0, utils_1.newStep)('Compiling TypeScript files', async (step) => {
+        await (0, ora_1.newStep)('Compiling TypeScript files', async (step) => {
             await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
                 cwd: targetDir,
                 stdio: 'ignore',
@@ -97,20 +97,20 @@ async function main(target, options) {
     if (!options.source) {
         // Files in the downloaded tarball are wrapped in `package` dir.
         // We should remove it after all.
-        await fs_extra_1.default.remove(packagePath);
+        await fs_1.default.promises.rm(packagePath, { recursive: true, force: true });
     }
     if (!options.local && data.type !== 'local') {
         if (!options.withReadme) {
-            await fs_extra_1.default.remove(path_1.default.join(targetDir, 'README.md'));
+            await fs_1.default.promises.rm(path_1.default.join(targetDir, 'README.md'), { force: true });
         }
         if (!options.withChangelog) {
-            await fs_extra_1.default.remove(path_1.default.join(targetDir, 'CHANGELOG.md'));
+            await fs_1.default.promises.rm(path_1.default.join(targetDir, 'CHANGELOG.md'), { force: true });
         }
         if (options.example) {
             // Create "example" folder
             await (0, createExampleApp_1.createExampleApp)(data, targetDir, packageManager);
         }
-        await (0, utils_1.newStep)('Creating an empty Git repository', async (step) => {
+        await (0, ora_1.newStep)('Creating an empty Git repository', async (step) => {
             try {
                 const result = await createGitRepositoryAsync(targetDir);
                 if (result) {
@@ -123,8 +123,8 @@ async function main(target, options) {
                     step.warn('Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true');
                 }
             }
-            catch (e) {
-                step.fail(e.toString());
+            catch (error) {
+                step.fail(error.toString());
             }
         });
     }
@@ -144,13 +144,13 @@ async function main(target, options) {
 async function getFilesAsync(root, dir = null) {
     const files = [];
     const baseDir = dir ? path_1.default.join(root, dir) : root;
-    for (const file of await fs_extra_1.default.readdir(baseDir)) {
+    for (const file of await fs_1.default.promises.readdir(baseDir)) {
         const relativePath = dir ? path_1.default.join(dir, file) : file;
         if (IGNORES_PATHS.includes(relativePath) || IGNORES_PATHS.includes(file)) {
             continue;
         }
         const fullPath = path_1.default.join(baseDir, file);
-        const stat = await fs_extra_1.default.lstat(fullPath);
+        const stat = await fs_1.default.promises.lstat(fullPath);
         if (stat.isDirectory()) {
             files.push(...(await getFilesAsync(root, relativePath)));
         }
@@ -169,16 +169,58 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
+ * Gets expo SDK version major from the local package.json.
+ */
+async function getLocalSdkMajorVersion() {
+    const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
+    if (!path) {
+        return null;
+    }
+    const { version } = require(path) ?? {};
+    return version?.split('.')[0] ?? null;
+}
+/**
+ * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
+ */
+async function getTemplateVersion(isLocal) {
+    if (EXPO_BETA) {
+        return 'next';
+    }
+    if (!isLocal) {
+        return 'latest';
+    }
+    try {
+        const sdkVersionMajor = await getLocalSdkMajorVersion();
+        return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
+    }
+    catch {
+        console.log();
+        console.warn(chalk_1.default.yellow("Couldn't determine the SDK version from the local project, using `latest` as the template version."));
+        return 'latest';
+    }
+}
+/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir, isLocal = false) {
-    return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
-        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', EXPO_BETA ? 'next' : 'latest');
-        await (0, download_tarball_1.default)({
-            url: tarballUrl,
-            dir: targetDir,
-        });
-        step.succeed('Downloaded module template from npm');
+    return await (0, ora_1.newStep)('Downloading module template from npm', async (step) => {
+        const templateVersion = await getTemplateVersion(isLocal);
+        const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+        try {
+            await (0, download_tarball_1.default)({
+                url: await getNpmTarballUrl(packageName, templateVersion),
+                dir: targetDir,
+            });
+        }
+        catch {
+            console.log();
+            console.warn(chalk_1.default.yellow("Couldn't download the versioned template from npm, falling back to the latest version."));
+            await (0, download_tarball_1.default)({
+                url: await getNpmTarballUrl(packageName, 'latest'),
+                dir: targetDir,
+            });
+        }
+        step.succeed('Downloaded module template from npm registry.');
         return path_1.default.join(targetDir, 'package');
     });
 }
@@ -202,9 +244,12 @@ async function createModuleFromTemplate(templatePath, targetPath, data) {
         });
         const fromPath = path_1.default.join(templatePath, file);
         const toPath = path_1.default.join(targetPath, renderedRelativePath);
-        const template = await fs_extra_1.default.readFile(fromPath, { encoding: 'utf8' });
+        const template = await fs_1.default.promises.readFile(fromPath, 'utf8');
         const renderedContent = ejs_1.default.render(template, data);
-        await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
+        if (!fs_1.default.existsSync(path_1.default.dirname(toPath))) {
+            await fs_1.default.promises.mkdir(path_1.default.dirname(toPath), { recursive: true });
+        }
+        await fs_1.default.promises.writeFile(toPath, renderedContent, 'utf8');
     }
 }
 async function createGitRepositoryAsync(targetDir) {
@@ -214,7 +259,7 @@ async function createGitRepositoryAsync(targetDir) {
             stdio: 'ignore',
             cwd: targetDir,
         });
-        debug(chalk_1.default.dim('New project is already inside of a Git repo, skipping git init.'));
+        debug(chalk_1.default.dim('New project is already inside of a Git repository, skipping `git init`.'));
         return null;
     }
     catch (e) {
@@ -248,9 +293,7 @@ async function askForPackageSlugAsync(customTargetPath, isLocal = false) {
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
 async function askForSubstitutionDataAsync(slug, isLocal = false) {
-    const promptQueries = await (isLocal
-        ? prompts_2.getLocalSubstitutionDataPrompts
-        : prompts_2.getSubstitutionDataPrompts)(slug);
+    const promptQueries = await (isLocal ? prompts_2.getLocalSubstitutionDataPrompts : prompts_2.getSubstitutionDataPrompts)(slug);
     // Stop the process when the user cancels/exits the prompt.
     const onCancel = () => {
         process.exit(0);
@@ -288,7 +331,7 @@ async function askForSubstitutionDataAsync(slug, isLocal = false) {
  * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
  */
 async function confirmTargetDirAsync(targetDir) {
-    const files = await fs_extra_1.default.readdir(targetDir);
+    const files = await fs_1.default.promises.readdir(targetDir);
     if (files.length === 0) {
         return;
     }
@@ -315,7 +358,7 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
             (0, resolvePackageManager_1.formatRunCommand)(packageManager, 'open:android'),
         ];
         console.log();
-        console.log('To start developing your module, navigate to the directory and open iOS and Android projects of the example app');
+        console.log('To start developing your module, navigate to the directory and open Android and iOS projects of the example app');
         commands.forEach((command) => console.log(chalk_1.default.gray('>'), chalk_1.default.bold(command)));
         console.log();
     }
@@ -324,11 +367,11 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
 function printFurtherLocalInstructions(slug, name) {
     console.log();
     console.log(`You can now import this module inside your application.`);
-    console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-    console.log(`${chalk_1.default.gray.italic(`import { hello } from './modules/${slug}';`)}`);
+    console.log(`For example, you can add this line to your App.tsx or App.js file:`);
+    console.log(`${chalk_1.default.gray.italic(`import ${name} from './modules/${slug}';`)}`);
     console.log();
     console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
-    console.log(chalk_1.default.yellow(`Remember you need to rebuild your development client or reinstall pods to see the changes.`));
+    console.log(chalk_1.default.yellow(`Remember to re-build your native app (for example, with ${chalk_1.default.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`));
 }
 const program = new commander_1.Command();
 program

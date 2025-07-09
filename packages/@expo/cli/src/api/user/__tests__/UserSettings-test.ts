@@ -1,10 +1,16 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
-import UserSettings from '../UserSettings';
+import {
+  getAccessToken,
+  getSession,
+  getSettingsDirectory,
+  getSettingsFilePath,
+  setSessionAsync,
+} from '../UserSettings';
 
-describe(UserSettings.getDirectory, () => {
+describe(getSettingsDirectory, () => {
   beforeEach(() => {
     delete process.env.__UNSAFE_EXPO_HOME_DIRECTORY;
     delete process.env.EXPO_STAGING;
@@ -17,19 +23,19 @@ describe(UserSettings.getDirectory, () => {
   });
 
   it(`gets the default state directory`, () => {
-    expect(UserSettings.getDirectory()).toBe('/home/.expo');
+    expect(getSettingsDirectory()).toBe('/home/.expo');
   });
   it(`gets the staging state directory`, () => {
     process.env.EXPO_STAGING = 'true';
-    expect(UserSettings.getDirectory()).toBe('/home/.expo-staging');
+    expect(getSettingsDirectory()).toBe('/home/.expo-staging');
   });
   it(`gets the local state directory`, () => {
     process.env.EXPO_LOCAL = 'true';
-    expect(UserSettings.getDirectory()).toBe('/home/.expo-local');
+    expect(getSettingsDirectory()).toBe('/home/.expo-local');
   });
   it(`gets the custom state directory`, () => {
     process.env.__UNSAFE_EXPO_HOME_DIRECTORY = '/foobar/yolo';
-    expect(UserSettings.getDirectory()).toBe('/foobar/yolo');
+    expect(getSettingsDirectory()).toBe('/foobar/yolo');
   });
 });
 
@@ -44,38 +50,39 @@ beforeEach(() => {
   vol.reset();
 });
 
-describe(UserSettings.getSession, () => {
+describe(getSession, () => {
   it('returns null when session is not stored', () => {
-    expect(UserSettings.getSession()).toBeNull();
+    expect(getSession()).toBeNull();
   });
 
   it('returns stored session data', async () => {
-    await fs.mkdirp(path.dirname(UserSettings.getFilePath()));
-    await fs.writeJSON(UserSettings.getFilePath(), { auth: authStub });
-    expect(UserSettings.getSession()).toMatchObject(authStub);
+    await fs.promises.mkdir(path.dirname(getSettingsFilePath()), { recursive: true });
+    await fs.promises.writeFile(getSettingsFilePath(), JSON.stringify({ auth: authStub }));
+    expect(getSession()).toMatchObject(authStub);
   });
 });
 
-describe(UserSettings.setSessionAsync, () => {
+describe(setSessionAsync, () => {
   it('stores empty session data', async () => {
-    await UserSettings.setSessionAsync();
-    expect(await fs.pathExists(UserSettings.getFilePath())).toBeTruthy();
+    await setSessionAsync();
+    expect(fs.existsSync(getSettingsFilePath())).toBeTruthy();
   });
 
   it('stores actual session data', async () => {
-    await UserSettings.setSessionAsync(authStub);
-    expect(await fs.readJSON(UserSettings.getFilePath())).toMatchObject({ auth: authStub });
+    await setSessionAsync(authStub);
+    const contents = await fs.promises.readFile(getSettingsFilePath(), 'utf8');
+    expect(JSON.parse(contents)).toMatchObject({ auth: authStub });
   });
 });
 
-describe(UserSettings.getAccessToken, () => {
+describe(getAccessToken, () => {
   it('returns null when envvar is undefined', () => {
-    expect(UserSettings.getAccessToken()).toBeNull();
+    expect(getAccessToken()).toBeNull();
   });
 
   it('returns token when envar is defined', () => {
     process.env.EXPO_TOKEN = 'mytesttoken';
-    expect(UserSettings.getAccessToken()).toBe('mytesttoken');
+    expect(getAccessToken()).toBe('mytesttoken');
     process.env.EXPO_TOKEN = undefined;
   });
 });

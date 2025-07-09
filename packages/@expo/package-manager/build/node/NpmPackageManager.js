@@ -5,20 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NpmPackageManager = void 0;
 const json_file_1 = __importDefault(require("@expo/json-file"));
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const npm_package_arg_1 = __importDefault(require("npm-package-arg"));
 const path_1 = __importDefault(require("path"));
-const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
-const spawn_1 = require("../utils/spawn");
 const BasePackageManager_1 = require("./BasePackageManager");
+const nodeManagers_1 = require("../utils/nodeManagers");
+const spawn_1 = require("../utils/spawn");
 class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
-    constructor() {
-        super(...arguments);
-        this.name = 'npm';
-        this.bin = 'npm';
-        this.lockFile = nodeWorkspaces_1.NPM_LOCK_FILE;
-    }
+    name = 'npm';
+    bin = 'npm';
+    lockFile = nodeManagers_1.NPM_LOCK_FILE;
     workspaceRoot() {
-        const root = (0, nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
+        const root = (0, nodeManagers_1.resolveWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {
             return new NpmPackageManager({
                 ...this.options,
@@ -67,6 +65,10 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
     removeGlobalAsync(namesOrFlags) {
         return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
     }
+    runBinAsync(command, options = {}) {
+        this.log?.(`> npx ${command.join(' ')}`);
+        return (0, spawn_async_1.default)('npx', command, { ...this.options, ...options });
+    }
     /**
      * Parse all package specifications from the names or flag list.
      * The result from this method can be used for `.updatePackageFileAsync`.
@@ -84,7 +86,8 @@ class NpmPackageManager extends BasePackageManager_1.BasePackageManager {
             .forEach((spec) => {
             // When using a dist-tag version of a library, we need to consider it as "unversioned".
             // Doing so will install that version with `npm install --save(-dev)`, and resolve the dist-tag properly.
-            if (spec && spec.rawSpec && spec.type !== 'tag') {
+            const hasExactSpec = !!spec && spec.rawSpec !== '' && spec.rawSpec !== '*';
+            if (spec && hasExactSpec && spec.type !== 'tag') {
                 result.versioned.push(spec);
             }
             else if (spec) {

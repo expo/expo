@@ -1,11 +1,12 @@
+import { getAssetByID } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 
 import { AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
+import { downloadAsync } from './ExpoAsset';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
-import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { IS_ENV_WITH_LOCAL_ASSETS } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
 // @docsMissing
@@ -25,66 +26,65 @@ type DownloadPromiseCallbacks = {
 
 export { AssetMetadata };
 
-// @needsAudit
+/**
+ * Android resource URL prefix.
+ * @hidden
+ */
+export const ANDROID_EMBEDDED_URL_BASE_RESOURCE = 'file:///android_res/';
+
 /**
  * The `Asset` class represents an asset in your app. It gives metadata about the asset (such as its
  * name and type) and provides facilities to load the asset data.
  */
 export class Asset {
-  /**
-   * @private
-   */
-  static byHash = {};
-  /**
-   * @private
-   */
-  static byUri = {};
+  private static byHash: Record<string, Asset | undefined> = {};
+  private static byUri: Record<string, Asset | undefined> = {};
 
   /**
    * The name of the asset file without the extension. Also without the part from `@` onward in the
    * filename (used to specify scale factor for images).
    */
-  name: string;
+  public name: string;
   /**
    * The extension of the asset filename.
    */
-  type: string;
+  public readonly type: string;
   /**
    * The MD5 hash of the asset's data.
    */
-  hash: string | null = null;
+  public readonly hash: string | null = null;
   /**
    * A URI that points to the asset's data on the remote server. When running the published version
    * of your app, this refers to the location on Expo's asset server where Expo has stored your
    * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
    * server running on your computer and the asset is served directly from your computer. If you
    * are not using Classic Updates (legacy), this field should be ignored as we ensure your assets
-   * are on device before before running your application logic.
+   * are on device before running your application logic.
    */
-  uri: string;
+  public readonly uri: string;
   /**
    * If the asset has been downloaded (by calling [`downloadAsync()`](#downloadasync)), the
    * `file://` URI pointing to the local file on the device that contains the asset data.
    */
-  localUri: string | null = null;
+  public localUri: string | null = null;
   /**
    * If the asset is an image, the width of the image data divided by the scale factor. The scale
    * factor is the number after `@` in the filename, or `1` if not present.
    */
-  width: number | null = null;
+  public width: number | null = null;
   /**
    * If the asset is an image, the height of the image data divided by the scale factor. The scale factor is the number after `@` in the filename, or `1` if not present.
    */
-  height: number | null = null;
-  // @docsMissing
-  downloading: boolean = false;
-  // @docsMissing
-  downloaded: boolean = false;
+  public height: number | null = null;
+
+  private downloading: boolean = false;
 
   /**
-   * @private
+   * Whether the asset has finished downloading from a call to [`downloadAsync()`](#downloadasync).
    */
-  _downloadCallbacks: DownloadPromiseCallbacks[] = [];
+  public downloaded: boolean = false;
+
+  private _downloadCallbacks: DownloadPromiseCallbacks[] = [];
 
   constructor({ name, type, hash = null, uri, width, height }: AssetDescriptor) {
     this.name = name;
@@ -101,7 +101,11 @@ export class Asset {
 
     if (hash) {
       this.localUri = getLocalAssetUri(hash, type);
-      if (this.localUri) {
+      if (this.localUri?.startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
+        // Treat Android embedded resources as not downloaded state, because the uri is not direct accessible.
+        this.uri = this.localUri;
+        this.localUri = null;
+      } else if (this.localUri) {
         this.downloaded = true;
       }
     }
@@ -140,9 +144,26 @@ export class Asset {
    * network URL
    * @return The [`Asset`](#asset) instance for the asset.
    */
-  static fromModule(virtualAssetModule: number | string): Asset {
+  static fromModule(
+    virtualAssetModule: number | string | { uri: string; width: number; height: number }
+  ): Asset {
     if (typeof virtualAssetModule === 'string') {
       return Asset.fromURI(virtualAssetModule);
+    }
+    if (
+      typeof virtualAssetModule === 'object' &&
+      'uri' in virtualAssetModule &&
+      typeof virtualAssetModule.uri === 'string'
+    ) {
+      const extension = AssetUris.getFileExtension(virtualAssetModule.uri);
+      return new Asset({
+        name: '',
+        type: extension.startsWith('.') ? extension.substring(1) : extension,
+        hash: null,
+        uri: virtualAssetModule.uri,
+        width: virtualAssetModule.width,
+        height: virtualAssetModule.height,
+      });
     }
 
     const meta = getAssetByID(virtualAssetModule);
@@ -152,8 +173,10 @@ export class Asset {
 
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
-    if (!IS_ENV_WITH_UPDATES_ENABLED) {
-      const { uri } = resolveAssetSource(virtualAssetModule);
+    if (!IS_ENV_WITH_LOCAL_ASSETS) {
+      // null-check is performed above with `getAssetByID`.
+      const { uri } = resolveAssetSource(virtualAssetModule)!;
+
       const asset = new Asset({
         name: meta.name,
         type: meta.type,
@@ -163,10 +186,9 @@ export class Asset {
         height: meta.height,
       });
 
-      // TODO: FileSystem should probably support 'downloading' from drawable
-      // resources But for now it doesn't (it only supports raw resources) and
-      // React Native's Image works fine with drawable resource names for
-      // images.
+      // For images backward compatibility,
+      // keeps localUri the same as uri for React Native's Image that
+      // works fine with drawable resource names.
       if (Platform.OS === 'android' && !uri.includes(':') && (meta.width || meta.height)) {
         asset.localUri = asset.uri;
         asset.downloaded = true;
@@ -231,7 +253,7 @@ export class Asset {
   // @needsAudit
   /**
    * Downloads the asset data to a local file in the device's cache directory. Once the returned
-   * promise is fulfilled without error, the [`localUri`](#assetlocaluri) field of this asset points
+   * promise is fulfilled without error, the [`localUri`](#localuri) field of this asset points
    * to a local file containing the asset data. The asset is only downloaded if an up-to-date local
    * file for the asset isn't already present due to an earlier download. The downloaded `Asset`
    * will be returned when the promise is resolved.
@@ -260,11 +282,11 @@ export class Asset {
           this.name = AssetUris.getFilename(this.uri);
         }
       }
-      this.localUri = await downloadAsync(this.uri, this.hash, this.type, this.name);
+      this.localUri = await downloadAsync(this.uri, this.hash, this.type);
 
       this.downloaded = true;
       this._downloadCallbacks.forEach(({ resolve }) => resolve());
-    } catch (e) {
+    } catch (e: any) {
       this._downloadCallbacks.forEach(({ reject }) => reject(e));
       throw e;
     } finally {

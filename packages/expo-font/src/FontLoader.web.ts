@@ -4,23 +4,26 @@ import { CodedError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontResource, FontSource, FontDisplay } from './Font.types';
 
-function uriFromFontSource(asset: any): string | null {
+function uriFromFontSource(asset: FontSource): string | number | null {
   if (typeof asset === 'string') {
     return asset || null;
-  } else if (typeof asset === 'object') {
-    return asset.uri || asset.localUri || asset.default || null;
   } else if (typeof asset === 'number') {
     return uriFromFontSource(Asset.fromModule(asset));
+  } else if (typeof asset === 'object' && typeof asset.uri === 'number') {
+    return uriFromFontSource(asset.uri);
+  } else if (typeof asset === 'object') {
+    return asset.uri || (asset as Asset).localUri || (asset as FontResource).default || null;
   }
+
   return null;
 }
 
-function displayFromFontSource(asset: any): FontDisplay | undefined {
-  return asset.display || FontDisplay.AUTO;
-}
+function displayFromFontSource(asset: FontSource): FontDisplay {
+  if (typeof asset === 'object' && 'display' in asset) {
+    return asset.display || FontDisplay.AUTO;
+  }
 
-export function fontFamilyNeedsScoping(name: string): boolean {
-  return false;
+  return FontDisplay.AUTO;
 }
 
 export function getAssetForSource(source: FontSource): Asset | FontResource {
@@ -32,7 +35,7 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
   }
 
   return {
-    uri: uri!,
+    uri,
     display,
   };
 }
@@ -46,17 +49,17 @@ function throwInvalidSourceError(source: any): never {
   );
 }
 
-export async function loadSingleFontAsync(
-  name: string,
-  input: Asset | FontResource
-): Promise<void> {
+// NOTE(EvanBacon): No async keyword!
+export function loadSingleFontAsync(name: string, input: Asset | FontResource): Promise<void> {
   if (typeof input !== 'object' || typeof input.uri !== 'string' || (input as any).downloadAsync) {
     throwInvalidSourceError(input);
   }
 
-  await ExpoFontLoader.loadAsync(name, input);
-}
+  try {
+    return ExpoFontLoader.loadAsync(name, input);
+  } catch {
+    // No-op.
+  }
 
-export function getNativeFontName(name: string): string {
-  return name;
+  return Promise.resolve();
 }

@@ -1,5 +1,10 @@
-import internalIp from 'internal-ip';
+import { lanNetworkSync } from 'lan-network';
 
 export function getIpAddress(): string {
-  return internalIp.v4.sync() || '127.0.0.1';
+  try {
+    const lan = lanNetworkSync();
+    return lan.address;
+  } catch {
+    return '127.0.0.1';
+  }
 }

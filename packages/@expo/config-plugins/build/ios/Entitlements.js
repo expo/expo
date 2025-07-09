@@ -28,13 +28,6 @@ function _slash() {
   };
   return data;
 }
-function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
-  _iosPlugins = function () {
-    return data;
-  };
-  return data;
-}
 function _Target() {
   const data = require("./Target");
   _Target = function () {
@@ -56,15 +49,20 @@ function _string() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-const withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
-exports.withAssociatedDomains = withAssociatedDomains;
+function _iosPlugins() {
+  const data = require("../plugins/ios-plugins");
+  _iosPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const withAssociatedDomains = exports.withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
 function setAssociatedDomains(config, {
   'com.apple.developer.associated-domains': _,
   ...entitlementsPlist
 }) {
-  var _config$ios;
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.associatedDomains) {
+  if (config.ios?.associatedDomains) {
     return {
       ...entitlementsPlist,
       'com.apple.developer.associated-domains': config.ios.associatedDomains
@@ -88,8 +86,7 @@ function getEntitlementsPath(projectRoot, {
   return entitlementsPath && _fs().default.existsSync(entitlementsPath) ? entitlementsPath : null;
 }
 function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration) {
-  var _xcBuildConfiguration;
-  const entitlementsPathRaw = xcBuildConfiguration === null || xcBuildConfiguration === void 0 ? void 0 : (_xcBuildConfiguration = xcBuildConfiguration.buildSettings) === null || _xcBuildConfiguration === void 0 ? void 0 : _xcBuildConfiguration.CODE_SIGN_ENTITLEMENTS;
+  const entitlementsPathRaw = xcBuildConfiguration?.buildSettings?.CODE_SIGN_ENTITLEMENTS;
   if (entitlementsPathRaw) {
     return _path().default.normalize(_path().default.join(projectRoot, 'ios', (0, _string().trimQuotes)(entitlementsPathRaw)));
   } else {

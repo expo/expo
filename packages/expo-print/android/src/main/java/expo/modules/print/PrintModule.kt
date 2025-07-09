@@ -47,9 +47,6 @@ class PrintModule : Module() {
   val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
-
   private suspend fun print(options: PrintOptions) {
     withContext(Dispatchers.Main) {
       suspendCancellableCoroutine { continuation ->
@@ -149,7 +146,7 @@ class PrintModule : Module() {
   }
 
   private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: PrintOptions) {
-    (currentActivity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
+    (appContext.throwingActivity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
       val attributes = getAttributesFromOptions(options)
       it.print(jobName, document, attributes.build())
     } ?: throw PrintManagerNotAvailableException()

@@ -24,8 +24,8 @@ type Props = {
 };
 
 const Anchor = createPermalinkedComponent(P, {
-  baseNestingLevel: 3,
-  sidebarType: HeadingType.InlineCode,
+  baseNestingLevel: 4,
+  sidebarType: HeadingType.INLINE_CODE,
 });
 
 const PropertyName = ({ name, nestingLevel }: Pick<FormattedProperty, 'name' | 'nestingLevel'>) => (

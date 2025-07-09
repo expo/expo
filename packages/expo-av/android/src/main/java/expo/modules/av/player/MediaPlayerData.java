@@ -6,15 +6,13 @@ import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.RequiresApi;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
+import expo.modules.av.ForwardingCookieHandler;
 import expo.modules.core.ModuleRegistry;
 
 import java.io.IOException;
-import java.net.CookieHandler;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.ArrayList;
@@ -28,25 +26,26 @@ import expo.modules.av.AudioFocusNotAcquiredException;
 
 
 class MediaPlayerData extends PlayerData implements
-    MediaPlayer.OnBufferingUpdateListener,
-    MediaPlayer.OnCompletionListener,
-    MediaPlayer.OnErrorListener,
-    MediaPlayer.OnInfoListener,
-    MediaPlayer.OnSeekCompleteListener,
-    MediaPlayer.OnVideoSizeChangedListener {
+  MediaPlayer.OnBufferingUpdateListener,
+  MediaPlayer.OnCompletionListener,
+  MediaPlayer.OnErrorListener,
+  MediaPlayer.OnInfoListener,
+  MediaPlayer.OnSeekCompleteListener,
+  MediaPlayer.OnVideoSizeChangedListener {
 
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
   private MediaPlayer mMediaPlayer = null;
   private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
-
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
+  private ForwardingCookieHandler cookieHandler;
 
   MediaPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mModuleRegistry = avModule.getModuleRegistry();
+    cookieHandler = avModule.getCookieHandler();
   }
 
   @Override
@@ -156,7 +155,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   protected double getCurrentPositionSeconds() {
-    return (double)mMediaPlayer.getCurrentPosition() / 1000.0;
+    return (double) mMediaPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override
@@ -165,8 +164,6 @@ class MediaPlayerData extends PlayerData implements
   }
 
   // Set status
-
-  @RequiresApi(api = Build.VERSION_CODES.M)
   private void playMediaPlayerWithRateMAndHigher(final float rate) {
     final PlaybackParams params = mMediaPlayer.getPlaybackParams();
     params.setPitch(mShouldCorrectPitch ? 1.0f : rate);
@@ -188,49 +185,37 @@ class MediaPlayerData extends PlayerData implements
 
     updateVolumeMuteAndDuck();
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      if (!mMediaPlayer.isPlaying()) {
-        mMediaPlayer.start();
-        mMediaPlayerHasStartedEver = true;
+    boolean rateAndPitchAreSetCorrectly;
+    try {
+      final PlaybackParams params = mMediaPlayer.getPlaybackParams();
+      final float setRate = params.getSpeed();
+      final boolean setShouldCorrectPitch = params.getPitch() == 1.0f;
+      rateAndPitchAreSetCorrectly = setRate == mRate && setShouldCorrectPitch == mShouldCorrectPitch;
+    } catch (final Throwable throwable) {
+      rateAndPitchAreSetCorrectly = false;
+    }
+    if (mRate != 0 && (!mMediaPlayer.isPlaying() || !rateAndPitchAreSetCorrectly)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        playMediaPlayerWithRateMAndHigher(mRate);
+      } else {
+        // Bizarrely, I wasn't able to change rate while a sound was playing unless I had
+        // changed the rate to something other than 1f before the sound started.
+        // This workaround seems to fix this issue (which is said to only be fixed in N):
+        // https://code.google.com/p/android/issues/detail?id=192135
+        playMediaPlayerWithRateMAndHigher(2f);
+        mMediaPlayer.pause();
+        playMediaPlayerWithRateMAndHigher(mRate);
       }
-    } else {
-      boolean rateAndPitchAreSetCorrectly;
-      try {
-        final PlaybackParams params = mMediaPlayer.getPlaybackParams();
-        final float setRate = params.getSpeed();
-        final boolean setShouldCorrectPitch = params.getPitch() == 1.0f;
-        rateAndPitchAreSetCorrectly = setRate == mRate && setShouldCorrectPitch == mShouldCorrectPitch;
-      } catch (final Throwable throwable) {
-        rateAndPitchAreSetCorrectly = false;
-      }
-      if (mRate != 0 && (!mMediaPlayer.isPlaying() || !rateAndPitchAreSetCorrectly)) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          playMediaPlayerWithRateMAndHigher(mRate);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          // Bizarrely, I wasn't able to change rate while a sound was playing unless I had
-          // changed the rate to something other than 1f before the sound started.
-          // This workaround seems to fix this issue (which is said to only be fixed in N):
-          // https://code.google.com/p/android/issues/detail?id=192135
-          playMediaPlayerWithRateMAndHigher(2f);
-          mMediaPlayer.pause();
-          playMediaPlayerWithRateMAndHigher(mRate);
-        }
-        mMediaPlayerHasStartedEver = true;
-      }
+      mMediaPlayerHasStartedEver = true;
     }
     beginUpdatingProgressIfNecessary();
   }
 
   @Override
   void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AudioFocusNotAcquiredException, IllegalStateException {
+    throws AudioFocusNotAcquiredException, IllegalStateException {
     if (mMediaPlayer == null) {
       throw new IllegalStateException("mMediaPlayer is null!");
-    }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && mRate != 1.0f) {
-      Log.w("Expo MediaPlayerData", "Cannot set audio/video playback rate for Android SDK < 23.");
-      mRate = 1.0f;
     }
 
     // Set looping idempotently
@@ -425,26 +410,23 @@ class MediaPlayerData extends PlayerData implements
   // Utilities
 
   private List<HttpCookie> getHttpCookiesList() {
-    if (mModuleRegistry != null) {
-      CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-      if (cookieHandler != null) {
-        try {
-          Map<String, List<String>> headersMap = cookieHandler.get(URI.create(mUri.toString()), null);
-          List<String> cookies = headersMap.get("Cookie");
-          if (cookies != null) {
-            List<HttpCookie> httpCookies = new ArrayList<>();
-            for (String cookieValue : cookies) {
-              httpCookies.addAll(HttpCookie.parse(cookieValue));
-            }
-            return httpCookies;
-          } else {
-            return Collections.emptyList();
-          }
-        } catch (IOException e) {
-          // do nothing, we'll return an empty list
+
+    try {
+      Map<String, List<String>> headersMap = cookieHandler.get(URI.create(mUri.toString()), null);
+      List<String> cookies = headersMap.get("Cookie");
+      if (cookies != null) {
+        List<HttpCookie> httpCookies = new ArrayList<>();
+        for (String cookieValue : cookies) {
+          httpCookies.addAll(HttpCookie.parse(cookieValue));
         }
+        return httpCookies;
+      } else {
+        return Collections.emptyList();
       }
+    } catch (IOException e) {
+      // do nothing, we'll return an empty list
     }
+
     return Collections.emptyList();
   }
 }

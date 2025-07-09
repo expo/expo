@@ -25,6 +25,10 @@ class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener, A
     appContextHolder.get()?.onHostPause()
   }
 
+  override fun onUserLeaveHint(activity: Activity) {
+    appContextHolder.get()?.onUserLeaveHint()
+  }
+
   override fun onHostDestroy() {
     appContextHolder.get()?.onHostDestroy()
   }
@@ -33,7 +37,7 @@ class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener, A
     appContextHolder.get()?.onActivityResult(activity, requestCode, resultCode, data)
   }
 
-  override fun onNewIntent(intent: Intent?) {
+  override fun onNewIntent(intent: Intent) {
     appContextHolder.get()?.onNewIntent(intent)
   }
 }

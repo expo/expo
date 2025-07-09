@@ -47,6 +47,13 @@ function _xcode() {
   };
   return data;
 }
+function _createBaseMod() {
+  const data = require("./createBaseMod");
+  _createBaseMod = function () {
+    return data;
+  };
+  return data;
+}
 function _ios() {
   const data = require("../ios");
   _ios = function () {
@@ -96,16 +103,9 @@ function _warnings() {
   };
   return data;
 }
-function _createBaseMod() {
-  const data = require("./createBaseMod");
-  _createBaseMod = function () {
-    return data;
-  };
-  return data;
-}
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
   readFile,
   writeFile
@@ -124,6 +124,7 @@ function getInfoPlistTemplate() {
     CFBundlePackageType: '$(PRODUCT_BUNDLE_PACKAGE_TYPE)',
     CFBundleInfoDictionaryVersion: '6.0',
     CFBundleSignature: '????',
+    LSMinimumSystemVersion: '12.0',
     LSRequiresIPhoneOS: true,
     NSAppTransportSecurity: {
       NSAllowsArbitraryLoads: true,
@@ -136,11 +137,21 @@ function getInfoPlistTemplate() {
     UILaunchStoryboardName: 'SplashScreen',
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
-    UIStatusBarStyle: 'UIStatusBarStyleDefault'
+    UIStatusBarStyle: 'UIStatusBarStyleDefault',
+    CADisableMinimumFrameDurationOnPhone: true
   };
 }
 const defaultProviders = {
   dangerous: (0, _createBaseMod().provider)({
+    getFilePath() {
+      return '';
+    },
+    async read() {
+      return {};
+    },
+    async write() {}
+  }),
+  finalized: (0, _createBaseMod().provider)({
     getFilePath() {
       return '';
     },
@@ -312,9 +323,8 @@ const defaultProviders = {
     isIntrospective: true,
     async getFilePath(config) {
       try {
-        var _Entitlements$getEnti;
         (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(config.modRequest.projectRoot);
-        return (_Entitlements$getEnti = _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot)) !== null && _Entitlements$getEnti !== void 0 ? _Entitlements$getEnti : '';
+        return _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot) ?? '';
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -326,7 +336,7 @@ const defaultProviders = {
     async read(filePath, config) {
       let modResults;
       try {
-        if (_fs().default.existsSync(filePath)) {
+        if (!config.modRequest.ignoreExistingNativeFiles && _fs().default.existsSync(filePath)) {
           const contents = await readFile(filePath, 'utf8');
           (0, _assert().default)(contents, 'Entitlements plist is empty');
           modResults = _plist().default.parse(contents);
@@ -366,6 +376,27 @@ const defaultProviders = {
       await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(config.modResults)));
     }
   }),
+  podfile: (0, _createBaseMod().provider)({
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
+      return _ios().Paths.getPodfilePath(projectRoot);
+    },
+    // @ts-expect-error
+    async read(filePath) {
+      // Note(cedric): this file is ruby, which is a 1-value subset of AppleLanguage and fails the type check
+      return _ios().Paths.getFileInfo(filePath);
+    },
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
+      await writeFile(filePath, contents);
+    }
+  }),
   // Append a rule to supply Podfile.properties.json data to mods on `mods.ios.podfileProperties`
   podfileProperties: (0, _createBaseMod().provider)({
     isIntrospective: true,
@@ -403,7 +434,7 @@ function withIosBaseMods(config, {
   return (0, _createBaseMod().withGeneratedBaseMods)(config, {
     ...props,
     platform: 'ios',
-    providers: providers !== null && providers !== void 0 ? providers : getIosModFileProviders()
+    providers: providers ?? getIosModFileProviders()
   });
 }
 function getIosModFileProviders() {

@@ -1,9 +1,6 @@
-import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 
-import {
-  NotificationPermissionsRequest,
-  NotificationPermissionsStatus,
-} from './NotificationPermissions.types';
+import { NotificationPermissionsRequest } from './NotificationPermissions.types';
 import NotificationPermissionsModule from './NotificationPermissionsModule';
 
 /**
@@ -11,7 +8,7 @@ import NotificationPermissionsModule from './NotificationPermissionsModule';
  * It lets you verify whether the app is currently allowed to display alerts, play sounds, etc.
  * There is no user-facing effect of calling this.
  * @return It returns a `Promise` resolving to an object represents permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)).
- * On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
+ * On iOS, make sure you [properly interpret the permissions response](#interpret-the-ios-permissions-response).
  * @example Check if the app is allowed to send any type of notifications (interrupting and non-interrupting–provisional on iOS).
  * ```ts
  * import * as Notifications from 'expo-notifications';
@@ -38,18 +35,17 @@ export async function getPermissionsAsync() {
  * setting badge count and playing sounds**.
  * @param permissions An object representing configuration for the request scope.
  * @return It returns a Promise resolving to an object represents permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)).
- * On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
+ * On iOS, make sure you [properly interpret the permissions response](#interpret-the-ios-permissions-response).
  * @example Prompts the user to allow the app to show alerts, play sounds, set badge count and let Siri read out messages through AirPods.
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
  * export function requestPermissionsAsync() {
- *   return await Notifications.requestPermissionsAsync({
+ *   return Notifications.requestPermissionsAsync({
  *     ios: {
  *       allowAlert: true,
  *       allowBadge: true,
  *       allowSound: true,
- *       allowAnnouncements: true,
  *     },
  *   });
  * }
@@ -68,24 +64,8 @@ export async function requestPermissionsAsync(permissions?: NotificationPermissi
       allowSound: true,
     },
   };
-  const requestedPlatformPermissions = requestedPermissions[Platform.OS];
-  return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions);
+  const requestedPlatformPermissions =
+    requestedPermissions[Platform.OS as keyof typeof requestedPermissions];
+  // TODO(@kitten): This never checks whether the configuration object is undefined
+  return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions!);
 }
-
-// @needsAudit
-/**
- * Check or request permissions to send and receive push notifications.
- * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
- * @example
- * ```ts
- * const [permissionResponse, requestPermission] = Notifications.usePermissions();
- * ```
- * @header permission
- */
-export const usePermissions = createPermissionHook<
-  NotificationPermissionsStatus,
-  NotificationPermissionsRequest
->({
-  requestMethod: requestPermissionsAsync,
-  getMethod: getPermissionsAsync,
-});

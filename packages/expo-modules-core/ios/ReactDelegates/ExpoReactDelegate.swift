@@ -3,7 +3,7 @@
 /**
  An extensible react instance creation delegate. This class will loop through each `ExpoReactDelegateHandler` to determine the winner to create the instance.
  */
-@objc
+@objc(EXReactDelegate)
 public class ExpoReactDelegate: NSObject {
   private let handlers: [ExpoReactDelegateHandler]
 
@@ -12,31 +12,40 @@ public class ExpoReactDelegate: NSObject {
   }
 
   @objc
-  public func createBridge(delegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge {
-    self.handlers.forEach { $0.bridgeWillCreate() }
-    let result = self.handlers.lazy
-      .compactMap { $0.createBridge(reactDelegate: self, bridgeDelegate: delegate, launchOptions: launchOptions) }
-      .first(where: { _ in true }) ?? RCTBridge(delegate: delegate, launchOptions: launchOptions)!
-    self.handlers.forEach { $0.bridgeDidCreate(bridge: result) }
-    return result
+  public func createReactRootView(
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView {
+    return self.handlers
+      .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
+      .first(where: { _ in true })
+      ?? {
+        guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+          ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
+          fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
+        }
+
+        return appDelegate.recreateRootView(
+          withBundleURL: nil,
+          moduleName: moduleName,
+          initialProps: initialProperties,
+          launchOptions: launchOptions
+        )
+      }()
   }
 
   @objc
-  public func createRootView(
-    bridge: RCTBridge,
-    moduleName: String,
-    initialProperties: [AnyHashable: Any]?,
-    fabricEnabled: Bool = EXAppDefines.APP_NEW_ARCH_ENABLED
-  ) -> UIView {
+  public func bundleURL() -> URL? {
     return self.handlers.lazy
-      .compactMap { $0.createRootView(reactDelegate: self, bridge: bridge, moduleName: moduleName, initialProperties: initialProperties) }
-      .first(where: { _ in true }) ?? EXAppSetupDefaultRootView(bridge, moduleName, initialProperties, fabricEnabled)
+      .compactMap { $0.bundleURL(reactDelegate: self) }
+      .first(where: { _ in true })
   }
 
   @objc
   public func createRootViewController() -> UIViewController {
     return self.handlers.lazy
-      .compactMap { $0.createRootViewController(reactDelegate: self) }
+      .compactMap { $0.createRootViewController() }
       .first(where: { _ in true }) ?? UIViewController()
   }
 }

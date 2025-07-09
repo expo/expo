@@ -1,8 +1,9 @@
 import Constants from 'expo-constants';
-import { CodedError, Platform, SyntheticPlatformEmitter } from 'expo-modules-core';
+import { CodedError, Platform } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 export default async function getDevicePushTokenAsync() {
     const data = await _subscribeDeviceToPushNotificationsAsync();
-    SyntheticPlatformEmitter.emit('onDevicePushToken', { devicePushToken: data });
+    DeviceEventEmitter.emit('onDevicePushToken', { devicePushToken: data });
     return { type: Platform.OS, data };
 }
 function guardPermission() {
@@ -25,7 +26,7 @@ async function _subscribeDeviceToPushNotificationsAsync() {
     // @ts-expect-error: TODO: not on the schema
     const serviceWorkerPath = Constants.expoConfig?.notification?.serviceWorkerPath;
     if (!serviceWorkerPath) {
-        throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Please provide the path to the service worker that will handle notifications.');
+        throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Provide the path to the service worker that will handle notifications.');
     }
     guardPermission();
     let registration = null;

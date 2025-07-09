@@ -1,5 +1,6 @@
-import { SidebarNodeProps } from './Sidebar';
-import { SidebarGroup, SidebarCollapsible, SidebarLink } from './index';
+import { SidebarCollapsible } from './SidebarCollapsible';
+import { SidebarLink } from './SidebarLink';
+import { SidebarNodeProps } from './types';
 
 export const SidebarSection = ({ route, ...rest }: SidebarNodeProps) => {
   // If the section or group is hidden, or has no content, we should not render it
@@ -13,14 +14,14 @@ export const SidebarSection = ({ route, ...rest }: SidebarNodeProps) => {
         {route.children.map(child =>
           child.type === 'page' ? (
             <SidebarLink key={`${route.name}-${child.name}`} info={child}>
-              {child.sidebarTitle || child.name}
+              {child.sidebarTitle ?? child.name}
             </SidebarLink>
           ) : (
-            <SidebarGroup
-              {...rest}
+            <SidebarSection
               key={`group-${child.name}-${route.name}`}
               route={child}
               parentRoute={route}
+              {...rest}
             />
           )
         )}

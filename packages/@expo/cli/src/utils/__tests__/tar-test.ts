@@ -1,10 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import tar from 'tar';
+import * as tar from 'tar';
 
 import * as Log from '../../log';
 import { extractAsync } from '../tar';
-
-const asMock = (fn: any): jest.Mock => fn;
 
 jest.mock(`../../log`);
 
@@ -18,9 +16,9 @@ describe(extractAsync, () => {
   const originalPlatform = process.platform;
 
   beforeEach(() => {
-    asMock(spawnAsync).mockClear();
-    asMock(tar.extract).mockClear();
-    asMock(Log.warn).mockClear();
+    jest.mocked(spawnAsync).mockClear();
+    jest.mocked(tar.extract).mockClear();
+    jest.mocked(Log.warn).mockClear();
   });
 
   afterAll(() => {
@@ -30,19 +28,19 @@ describe(extractAsync, () => {
   it('extracts a tar file using node module when native fails', async () => {
     // set to mac in order to test native tools.
     mockPlatform('darwin');
-    asMock(spawnAsync).mockImplementationOnce(() => {
+    jest.mocked(spawnAsync).mockImplementationOnce(() => {
       throw new Error('mock failure');
     });
 
     await extractAsync('./template.tgz', './output');
 
     // Expect a warning that surfaces the native error message.
-    expect(Log.warn).toBeCalledTimes(1);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
     expect(Log.warn).toHaveBeenLastCalledWith(
       expect.stringMatching(/Failed to extract tar.*mock failure/)
     );
     // JS tools
-    expect(tar.extract).toBeCalledTimes(1);
+    expect(tar.extract).toHaveBeenCalledTimes(1);
     expect(tar.extract).toHaveBeenLastCalledWith({ cwd: './output', file: './template.tgz' });
   });
 
@@ -52,9 +50,9 @@ describe(extractAsync, () => {
 
     await extractAsync('./template.tgz', './output');
 
-    expect(spawnAsync).toBeCalledTimes(1);
-    expect(Log.warn).toBeCalledTimes(0);
-    expect(tar.extract).toBeCalledTimes(0);
+    expect(spawnAsync).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(tar.extract).toHaveBeenCalledTimes(0);
   });
 
   it('skips native tools on windows', async () => {
@@ -63,10 +61,10 @@ describe(extractAsync, () => {
     await extractAsync('./template.tgz', './output');
 
     // No native tools or warnings.
-    expect(spawnAsync).toBeCalledTimes(0);
-    expect(Log.warn).toBeCalledTimes(0);
+    expect(spawnAsync).toHaveBeenCalledTimes(0);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
     // JS tools
-    expect(tar.extract).toBeCalledTimes(1);
+    expect(tar.extract).toHaveBeenCalledTimes(1);
     expect(tar.extract).toHaveBeenLastCalledWith({ cwd: './output', file: './template.tgz' });
   });
 });

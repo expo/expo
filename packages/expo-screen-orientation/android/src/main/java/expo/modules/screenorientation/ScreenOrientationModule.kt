@@ -17,8 +17,10 @@ import expo.modules.screenorientation.enums.OrientationAttr
 import expo.modules.screenorientation.enums.OrientationLock
 
 class ScreenOrientationModule : Module(), LifecycleEventListener {
+  private val weakCurrentActivity get() = appContext.currentActivity
   private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = weakCurrentActivity ?: throw Exceptions.MissingActivity()
+
   private val uiManager
     get() = appContext.legacyModuleRegistry.getModule(UIManager::class.java)
       ?: throw IllegalStateException("Could not find implementation for UIManager.")
@@ -27,6 +29,9 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenOrientation")
+
+    // This is unused on Android. It is only here to suppress the native event emitter warning
+    Events("expoDidUpdateDimensions")
 
     AsyncFunction("lockAsync") { orientationLock: OrientationLock ->
       try {
@@ -40,11 +45,11 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
       currentActivity.requestedOrientation = orientationAttr.value
     }
 
-    AsyncFunction("getOrientationAsync") {
+    AsyncFunction<Int>("getOrientationAsync") {
       return@AsyncFunction getScreenOrientation(currentActivity).value
     }
 
-    AsyncFunction("getOrientationLockAsync") {
+    AsyncFunction<OrientationLock>("getOrientationLockAsync") {
       try {
         return@AsyncFunction OrientationLock.fromPlatformInt(currentActivity.requestedOrientation)
       } catch (e: Exception) {
@@ -52,7 +57,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
       }
     }
 
-    AsyncFunction("getPlatformOrientationLockAsync") {
+    AsyncFunction<Int>("getPlatformOrientationLockAsync") {
       try {
         return@AsyncFunction currentActivity.requestedOrientation
       } catch (e: Exception) {
@@ -71,13 +76,13 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
     OnDestroy {
       uiManager.unregisterLifecycleEventListener(this@ScreenOrientationModule)
       initialOrientation?.let {
-        currentActivity.requestedOrientation = it
+        weakCurrentActivity?.requestedOrientation = it
       }
     }
   }
 
   override fun onHostResume() {
-    initialOrientation = initialOrientation ?: currentActivity.requestedOrientation
+    initialOrientation = initialOrientation ?: weakCurrentActivity?.requestedOrientation
   }
 
   override fun onHostPause() = Unit
@@ -92,6 +97,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
     val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       currentActivity.window.context.display?.rotation ?: return Orientation.UNKNOWN
     } else {
+      @Suppress("DEPRECATION")
       windowManager.defaultDisplay.rotation
     }
 
@@ -104,6 +110,7 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
         heightPixels = windowMetrics.bounds.height() - insets.top - insets.bottom
       }
     } else {
+      @Suppress("DEPRECATION")
       DisplayMetrics().also(windowManager.defaultDisplay::getMetrics)
     }
 

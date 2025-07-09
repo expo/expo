@@ -6,8 +6,6 @@ import { downloadAppAsync } from '../downloadAppAsync';
 import { downloadExpoGoAsync, getExpoGoVersionEntryAsync } from '../downloadExpoGoAsync';
 import { extractAsync } from '../tar';
 
-const asMock = (fn: any): jest.Mock => fn;
-
 jest.mock('../../log');
 
 jest.mock(`../downloadAppAsync`, () => ({
@@ -18,13 +16,20 @@ jest.mock(`../tar`, () => ({
   extractAsync: jest.fn(),
 }));
 
+const originalEnv = process.env;
+
+beforeAll(() => {
+  // Disable fetch caching for now, as it conflicts with `memfs.vol.reset`
+  process.env.EXPO_NO_CACHE = 'true';
+});
+
+afterAll(() => {
+  process.env = originalEnv;
+});
+
 describe(getExpoGoVersionEntryAsync, () => {
-  beforeEach(() => {
-    vol.fromJSON({ tmp: '' }, '/tmp');
-  });
-  afterEach(() => {
-    vol.reset();
-  });
+  beforeEach(() => vol.fromJSON({ tmp: '' }, '/tmp'));
+  afterAll(() => vol.reset());
 
   it(`returns the entry for a version`, async () => {
     const scope = nock(getExpoApiBaseUrl())
@@ -58,10 +63,10 @@ describe(getExpoGoVersionEntryAsync, () => {
 
 describe(downloadExpoGoAsync, () => {
   beforeEach(() => {
-    asMock(extractAsync).mockImplementationOnce(jest.fn());
-    asMock(downloadAppAsync).mockImplementationOnce(
-      jest.fn(jest.requireActual('../downloadAppAsync').downloadAppAsync)
-    );
+    jest.mocked(extractAsync).mockImplementationOnce(jest.fn());
+    jest
+      .mocked(downloadAppAsync)
+      .mockImplementationOnce(jest.fn(jest.requireActual('../downloadAppAsync').downloadAppAsync));
     vol.reset();
   });
   it('downloads the Expo Go app on iOS', async () => {

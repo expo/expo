@@ -1,0 +1,1 @@
+export { fetchThenEvalAsync } from './fetchThenEvalJs';

@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import NotificationCategoriesModule from './NotificationCategoriesModule.native';
+import NotificationCategoriesModule from './NotificationCategoriesModule';
 /**
  * Fetches information about all known notification categories.
  * @return A Promise which resolves to an array of `NotificationCategory`s. On platforms that do not support notification channels,

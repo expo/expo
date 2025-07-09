@@ -18,6 +18,7 @@ export default (program: Command) => {
       'main'
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
+    .option('-c, --core', 'Whether to add core packages to check.', false)
     .option('--no-build', 'Whether to skip `yarn build` check.', false)
     .option('--no-test', 'Whether to skip `yarn test` check.', false)
     .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
@@ -27,6 +28,7 @@ export default (program: Command) => {
       'Whether to check the uniformity of committed and generated build files.',
       false
     )
+    .option('--no-dependency-check', 'Whether to skip the valid dependency chain check.', false)
     .description('Checks if packages build successfully and their tests pass.')
     .asyncAction(main);
 };
@@ -39,7 +41,7 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   let passCount = 0;
 
   for (const pkg of packages) {
-    if (await checkPackageAsync(pkg, options)) {
+    if (await checkPackageAsync(pkg, { ...options, checkPackageType: 'package' })) {
       passCount++;
     } else {
       failedPackages.push(pkg.packageName);
@@ -56,7 +58,6 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
       failedPackages.map((failedPackage) => yellow(failedPackage)).join(', ')
     );
     process.exit(1);
-    return;
   }
   logger.success('🏁 All packages passed.');
 }

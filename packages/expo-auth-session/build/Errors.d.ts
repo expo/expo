@@ -2,7 +2,7 @@ import { CodedError } from 'expo-modules-core';
 /**
  * Server response error.
  */
-export interface ResponseErrorConfig extends Record<string, any> {
+export type ResponseErrorConfig = Record<string, any> & {
     /**
      * Error code
      */
@@ -15,13 +15,13 @@ export interface ResponseErrorConfig extends Record<string, any> {
      * URI for more info on the error
      */
     error_uri?: string;
-}
-export interface AuthErrorConfig extends ResponseErrorConfig {
+};
+export type AuthErrorConfig = ResponseErrorConfig & {
     /**
      * Required only if state is used in the initial request
      */
     state?: string;
-}
+};
 /**
  * [Section 4.1.2.1](https://tools.ietf.org/html/rfc6749#section-4.1.2.1)
  */
@@ -41,7 +41,7 @@ export declare class ResponseError extends CodedError {
      * Raw results of the error.
      */
     params: Record<string, string>;
-    constructor(params: ResponseErrorConfig, errorCodeType: string);
+    constructor(params: ResponseErrorConfig, errorCodeType: 'auth' | 'token');
 }
 /**
  * Represents an authorization response error: [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2).

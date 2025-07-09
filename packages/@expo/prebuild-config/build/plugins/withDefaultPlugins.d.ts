@@ -16,10 +16,9 @@ export declare const withIosExpoPlugins: ConfigPlugin<{
  */
 export declare const withAndroidExpoPlugins: ConfigPlugin<{
     package: string;
+    projectRoot: string;
 }>;
-export declare const withVersionedExpoSDKPlugins: ConfigPlugin<{
-    expoUsername: string | null;
-}>;
+export declare const withVersionedExpoSDKPlugins: ConfigPlugin;
 export declare function getAutoPlugins(): string[];
 export declare function getLegacyExpoPlugins(): string[];
 export declare function withLegacyExpoPlugins(config: ExpoConfig): ExpoConfig;

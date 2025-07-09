@@ -2,7 +2,8 @@ import path from 'path';
 import { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
-import { findGitHubEmail, findGitHubProfileUrl, findMyName, guessRepoUrl } from './utils';
+import { findGitHubEmail, findMyName } from './utils/git';
+import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 
 function getInitialName(customTargetPath?: string | null): string {
   const targetBasename = customTargetPath && path.basename(customTargetPath);
@@ -88,7 +89,7 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       name: 'authorUrl',
       message: "What is the URL to the author's GitHub profile?",
       initial: async (_, answers: Answers<string>) =>
-        await findGitHubProfileUrl(answers.authorEmail),
+        await findGitHubUserFromEmail(answers.authorEmail).then((actor) => actor || ''),
     },
     {
       type: 'text',

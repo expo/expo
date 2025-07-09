@@ -6,11 +6,14 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.WindowCompat
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactInstanceManager
+import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreen
@@ -20,7 +23,7 @@ import org.koin.core.component.inject
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
-class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceEventListener, DevLauncherKoinComponent {
+class DevLauncherActivity : ReactActivity(), ReactInstanceEventListener, DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   private var devMenuManager: DevMenuManager = DevMenuManager
   private var splashScreen: DevLauncherSplashScreen? = null
@@ -31,9 +34,11 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   override fun getMainComponentName() = "main"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return object : ReactActivityDelegate(this, mainComponentName) {
+    return object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
 
-      override fun getReactNativeHost() = controller.devClientHost
+      override fun getReactNativeHost() = controller.devClientHost.reactNativeHost
+
+      override fun getReactHost() = controller.devClientHost.reactHost
 
       override fun getLaunchOptions() = Bundle().apply {
         putBoolean("isSimulator", isSimulator)
@@ -47,6 +52,8 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    // Enables edge-to-edge
+    WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
 
     contentView = findViewById(android.R.id.content) ?: return
@@ -57,12 +64,12 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    reactInstanceManager.currentReactContext?.let {
+    controller.devClientHost.currentReactContext?.let {
       onReactContextInitialized(it)
       return
     }
 
-    reactInstanceManager.addReactInstanceEventListener(this)
+    controller.devClientHost.addReactInstanceEventListener(this)
   }
 
   override fun onPause() {
@@ -76,11 +83,11 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    return devMenuManager.onKeyEvent(keyCode, event) == true || super.onKeyUp(keyCode, event)
+    return devMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
   }
 
   override fun onReactContextInitialized(context: ReactContext) {
-    reactInstanceManager.removeReactInstanceEventListener(this)
+    controller.devClientHost.removeReactInstanceEventListener(this)
   }
 
   private val isSimulator

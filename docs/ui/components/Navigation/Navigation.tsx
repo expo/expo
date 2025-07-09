@@ -1,13 +1,12 @@
 import { useRouter } from 'next/compat/router';
 import React, { FC, useMemo } from 'react';
 
-import { ApiVersionSelect } from './ApiVersionSelect';
+import { LayoutScroll, usePersistScroll } from '~/ui/components/Layout';
+
 import { GroupList } from './GroupList';
 import { PageLink } from './PageLink';
 import { SectionList } from './SectionList';
 import { NavigationNode, NavigationRenderProps, NavigationType } from './types';
-
-import { LayoutScroll, usePersistScroll } from '~/ui/components/Layout';
 
 export type NavigationProps = {
   /** The tree of navigation nodes to render in the sidebar */
@@ -20,9 +19,8 @@ export function Navigation({ routes }: NavigationProps) {
   const persistScroll = usePersistScroll('navigation');
 
   return (
-    <nav className="w-[280px] h-full bg-subtle dark:bg-default">
+    <nav className="h-full w-[280px] bg-subtle dark:bg-default">
       <LayoutScroll {...persistScroll}>
-        <ApiVersionSelect />
         {routes.map(route => navigationRenderer(route, activeRoutes))}
       </LayoutScroll>
     </nav>
@@ -39,11 +37,13 @@ function navigationRenderer(
   route: NavigationNode,
   activeRoutes: Record<NavigationType, NavigationNode | null>
 ) {
-  if (route.hidden) return null;
+  if (route.hidden) {
+    return null;
+  }
   const Component = renderers[route.type];
   const routeKey = `${route.type}-${route.name}`;
   const isActive = activeRoutes[route.type] === route;
-  const hasChildren = route.type !== 'page' && route.children.length;
+  const hasChildren = route.type !== 'page' && route.children.length > 0;
   return (
     <Component key={routeKey} route={route} isActive={isActive}>
       {hasChildren && route.children.map(nested => navigationRenderer(nested, activeRoutes))}
@@ -71,7 +71,9 @@ export function findActiveRoute(routes: NavigationNode[], pathname?: string) {
 
   for (const route of routes) {
     // Try to exit early on hidden routes
-    if (route.hidden) continue;
+    if (route.hidden) {
+      continue;
+    }
 
     switch (route.type) {
       case 'page':

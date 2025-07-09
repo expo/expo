@@ -1,6 +1,6 @@
-import { Subscription } from 'expo-modules-core';
+import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const FAST_INTERVAL = 16;
@@ -21,6 +21,7 @@ export default class SensorScreen extends React.Component {
         <BarometerSensor />
         <LightSensor />
         <DeviceMotionSensor />
+        <PedometerSensor />
       </ScrollView>
     );
   }
@@ -28,13 +29,17 @@ export default class SensorScreen extends React.Component {
 
 type State<Measurement> = {
   data: Measurement;
+  isListening: boolean;
   isAvailable?: boolean;
 };
 
 abstract class SensorBlock<Measurement> extends React.Component<object, State<Measurement>> {
-  readonly state: State<Measurement> = { data: {} as Measurement };
+  readonly state: State<Measurement> = {
+    data: {} as Measurement,
+    isListening: false,
+  };
 
-  _subscription?: Subscription;
+  _subscription?: EventSubscription;
 
   componentDidMount() {
     this.checkAvailability();
@@ -55,8 +60,10 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
   _toggle = () => {
     if (this._subscription) {
       this._unsubscribe();
+      this.setState({ isListening: false });
     } else {
       this._subscribe();
+      this.setState({ isListening: true });
     }
   };
 
@@ -84,8 +91,11 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
       this.state.data && (
         <Text>
           {Object.entries(this.state.data)
+            .sort(([keyA], [keyB]) => {
+              return keyA.localeCompare(keyB);
+            })
             .map(([key, value]) => `${key}: ${typeof value === 'number' ? round(value) : 0}`)
-            .join(' ')}
+            .join('\n')}
         </Text>
       )
     );
@@ -101,7 +111,7 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
         {this.renderData()}
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={this._toggle} style={styles.button}>
-            <Text>Toggle</Text>
+            <Text>{this.state.isListening ? 'Stop' : 'Start'}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={this._slow} style={[styles.button, styles.middleButton]}>
             <Text>Slow</Text>
@@ -191,6 +201,47 @@ class LightSensor extends SensorBlock<Sensors.LightSensorMeasurement> {
     </View>
   );
 }
+
+const PedometerSensor = () => {
+  const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  const [pastStepCount, setPastStepCount] = useState(0);
+  const [currentStepCount, setCurrentStepCount] = useState(0);
+
+  useEffect(() => {
+    let listener: EventSubscription;
+    const subscribe = async () => {
+      const isAvailable = await Sensors.Pedometer.isAvailableAsync();
+      setIsPedometerAvailable(String(isAvailable));
+
+      if (isAvailable) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 1);
+
+        const pastStepCountResult = await Sensors.Pedometer.getStepCountAsync(start, end);
+        if (pastStepCountResult) {
+          setPastStepCount(pastStepCountResult.steps);
+        }
+
+        listener = Sensors.Pedometer.watchStepCount((result) => {
+          setCurrentStepCount(result.steps);
+        });
+      }
+    };
+
+    subscribe();
+    return () => listener && listener.remove();
+  }, []);
+
+  return (
+    <View style={styles.sensor}>
+      <Text>Pedometer:</Text>
+      <Text>Is available: {isPedometerAvailable}</Text>
+      <Text>Steps taken in the last 24 hours: {pastStepCount}</Text>
+      <Text>Watch step count: {currentStepCount}</Text>
+    </View>
+  );
+};
 
 function round(n?: number) {
   return n ? Math.floor(n * 100) / 100 : 0;

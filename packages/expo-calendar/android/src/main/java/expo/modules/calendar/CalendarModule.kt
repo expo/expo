@@ -3,56 +3,240 @@ package expo.modules.calendar
 import android.Manifest
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import expo.modules.calendar.EventRecurrenceUtils.createRecurrenceRule
+import expo.modules.calendar.EventRecurrenceUtils.extractRecurrence
+import expo.modules.calendar.dialogs.CreateEventContract
+import expo.modules.calendar.dialogs.CreateEventIntentResult
+import expo.modules.calendar.dialogs.CreatedEventOptions
+import expo.modules.calendar.dialogs.ViewEventIntentResult
+import expo.modules.calendar.dialogs.ViewEventContract
+import expo.modules.calendar.dialogs.ViewedEventOptions
+import expo.modules.core.arguments.ReadableArguments
+import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.RegistryLifecycleListener
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CalendarModule(
-  private val mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(mContext), RegistryLifecycleListener {
-  private val mPermissions: Permissions by moduleRegistry()
+class CalendarModule : Module() {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
   private val contentResolver
-    get() = mContext.contentResolver
+    get() = (appContext.reactContext ?: throw Exceptions.ReactContextLost()).contentResolver
+
+  private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
+  private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
 
   private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
     timeZone = TimeZone.getTimeZone("GMT")
   }
 
-  override fun getName() = "ExpoCalendar"
+  override fun definition() = ModuleDefinition {
+    Name("ExpoCalendar")
 
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+    RegisterActivityContracts {
+      createEventLauncher = registerForActivityResult(
+        CreateEventContract()
+      )
+      viewEventLauncher = registerForActivityResult(
+        ViewEventContract()
+      )
+    }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-  }
+    OnDestroy {
+      try {
+        moduleCoroutineScope.cancel(ModuleDestroyedException())
+      } catch (e: IllegalStateException) {
+        Log.e(TAG, "The scope does not have a job in it")
+      }
+    }
 
-  override fun onDestroy() {
-    try {
-      moduleCoroutineScope.cancel(ModuleDestroyedException())
-    } catch (e: IllegalStateException) {
-      Log.e(TAG, "The scope does not have a job in it")
+    AsyncFunction("getCalendarsAsync") { type: String?, promise: Promise ->
+      withPermissions(promise) {
+        if (type != null && type == "reminder") {
+          promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android", null)
+          return@withPermissions
+        }
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val calendars = findCalendars()
+            promise.resolve(calendars)
+          } catch (e: Exception) {
+            promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("saveCalendarAsync") { details: ReadableArguments, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val calendarID = saveCalendar(details)
+            promise.resolve(calendarID.toString())
+          } catch (e: Exception) {
+            promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("deleteCalendarAsync") { calendarID: String, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          val successful = deleteCalendar(calendarID)
+          if (successful) {
+            promise.resolve(null)
+          } else {
+            promise.reject("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted", null)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("getEventsAsync") { startDate: Any, endDate: Any, calendars: List<String>, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val results = findEvents(startDate, endDate, calendars)
+            promise.resolve(results)
+          } catch (e: Exception) {
+            promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("getEventByIdAsync") { eventID: String, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          val results = findEventById(eventID)
+          if (results != null) {
+            promise.resolve(results)
+          } else {
+            promise.reject("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found", null)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("saveEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val eventID = saveEvent(details)
+            promise.resolve(eventID.toString())
+          } catch (e: ParseException) {
+            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+          } catch (e: EventNotSavedException) {
+            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+          } catch (e: InvalidArgumentException) {
+            promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("deleteEventAsync") { details: ReadableArguments, _: ReadableArguments?, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val successful = removeEvent(details)
+            if (successful) {
+              promise.resolve(null)
+            } else {
+              promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", null)
+            }
+          } catch (e: Exception) {
+            promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("getAttendeesForEventAsync") { eventID: String, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          val results = findAttendeesByEventId(eventID)
+          promise.resolve(results)
+        }
+      }
+    }
+
+    AsyncFunction("saveAttendeeForEventAsync") { details: ReadableArguments, eventID: String?, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          try {
+            val attendeeID = saveAttendeeForEvent(details, eventID)
+            promise.resolve(attendeeID.toString())
+          } catch (e: Exception) {
+            promise.reject("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("deleteAttendeeAsync") { attendeeID: String, promise: Promise ->
+      withPermissions(promise) {
+        launchAsyncWithModuleScope(promise) {
+          val successful = deleteAttendee(attendeeID)
+          if (successful) {
+            promise.resolve(null)
+          } else {
+            promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted", null)
+          }
+        }
+      }
+    }
+
+    AsyncFunction("createEventInCalendarAsync") Coroutine { eventOptions: CreatedEventOptions ->
+      val result = createEventLauncher.launch(eventOptions)
+      return@Coroutine result
+    }
+
+    AsyncFunction("openEventInCalendarAsync") Coroutine { params: ViewedEventOptions ->
+      val result = viewEventLauncher.launch(params)
+      return@Coroutine result
+    }
+
+    AsyncFunction("editEventInCalendarAsync") Coroutine { params: ViewedEventOptions ->
+      viewEventLauncher.launch(params)
+      val editResult = CreateEventIntentResult()
+      return@Coroutine editResult
+    }
+
+    /**
+     * @deprecated in favor of openEventInCalendarAsync
+     * */
+    AsyncFunction("openEventInCalendar") { eventID: String ->
+      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+      val sendIntent = Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(uri)
+      if (sendIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(sendIntent)
+      }
+    }
+
+    AsyncFunction("requestCalendarPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+    }
+
+    AsyncFunction("getCalendarPermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
     }
   }
 
@@ -61,7 +245,7 @@ class CalendarModule(
       try {
         block()
       } catch (e: ModuleDestroyedException) {
-        promise.reject("E_CALENDAR_MODULE_DESTROYED", "Module destroyed, promise canceled")
+        promise.reject("E_CALENDAR_MODULE_DESTROYED", "Module destroyed, promise canceled", null)
       }
     }
   }
@@ -71,155 +255,6 @@ class CalendarModule(
       return
     }
     block()
-  }
-
-  //region Exported methods
-  @ExpoMethod
-  fun getCalendarsAsync(type: String?, promise: Promise) = withPermissions(promise) {
-    if (type != null && type == "reminder") {
-      promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android")
-      return
-    }
-    launchAsyncWithModuleScope(promise) {
-      try {
-        val calendars = findCalendars()
-        promise.resolve(calendars)
-      } catch (e: Exception) {
-        promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun saveCalendarAsync(details: ReadableArguments, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      try {
-        val calendarID = saveCalendar(details)
-        promise.resolve(calendarID.toString())
-      } catch (e: Exception) {
-        promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun deleteCalendarAsync(calendarID: String, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      val successful = deleteCalendar(calendarID)
-      if (successful) {
-        promise.resolve(null)
-      } else {
-        promise.reject("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted")
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun getEventsAsync(startDate: Any, endDate: Any, calendars: List<String>, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      try {
-        val results = findEvents(startDate, endDate, calendars)
-        promise.resolve(results)
-      } catch (e: Exception) {
-        promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun getEventByIdAsync(eventID: String, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      val results = findEventById(eventID)
-      if (results != null) {
-        promise.resolve(results)
-      } else {
-        promise.reject("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found")
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun saveEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      try {
-        val eventID = saveEvent(details)
-        promise.resolve(eventID.toString())
-      } catch (e: ParseException) {
-        promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-      } catch (e: EventNotSavedException) {
-        promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-      } catch (e: InvalidArgumentException) {
-        promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun deleteEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      try {
-        val successful = removeEvent(details)
-        if (successful) {
-          promise.resolve(null)
-        } else {
-          promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted")
-        }
-      } catch (e: Exception) {
-        promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun getAttendeesForEventAsync(eventID: String, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      val results = findAttendeesByEventId(eventID)
-      promise.resolve(results)
-    }
-  }
-
-  @ExpoMethod
-  fun saveAttendeeForEventAsync(details: ReadableArguments, eventID: String?, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      try {
-        val attendeeID = saveAttendeeForEvent(details, eventID)
-        promise.resolve(attendeeID.toString())
-      } catch (e: Exception) {
-        promise.reject("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun deleteAttendeeAsync(attendeeID: String, promise: Promise) = withPermissions(promise) {
-    launchAsyncWithModuleScope(promise) {
-      val successful = deleteAttendee(attendeeID)
-      if (successful) {
-        promise.resolve(null)
-      } else {
-        promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted")
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun openEventInCalendar(eventID: Int, promise: Promise) {
-    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-    val sendIntent = Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(uri)
-    if (sendIntent.resolveActivity(mContext.packageManager) != null) {
-      mContext.startActivity(sendIntent)
-    }
-    promise.resolve(null)
-  }
-
-  @ExpoMethod
-  fun requestCalendarPermissionsAsync(promise: Promise?) {
-    mPermissions.askForPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
-  }
-
-  @ExpoMethod
-  fun getCalendarPermissionsAsync(promise: Promise) {
-    mPermissions.getPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
   }
 
   //endregion
@@ -262,12 +297,13 @@ class CalendarModule(
       selection += calendarQuery
     }
     selection += ")"
+    val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
     val cursor = contentResolver.query(
       uri,
       findEventsQueryParameters,
       selection,
       null,
-      null
+      sortOrder
     )
 
     requireNotNull(cursor) { "Cursor shouldn't be null" }
@@ -408,9 +444,11 @@ class CalendarModule(
               Log.e(TAG, "Parsed date is null")
             }
           }
+
           is Number -> {
             calendarEventBuilder.put(CalendarContract.Events.DTSTART, startDate.toLong())
           }
+
           else -> {
             Log.e(TAG, "startDate has unsupported type")
           }
@@ -443,33 +481,9 @@ class CalendarModule(
     if (details.containsKey("recurrenceRule")) {
       val recurrenceRule = details.getArguments("recurrenceRule")
       if (recurrenceRule.containsKey("frequency")) {
-        val frequency = recurrenceRule.getString("frequency")
-        var interval: Int? = null
-        var occurrence: Int? = null
-        var endDate: String? = null
-        if (recurrenceRule.containsKey("interval")) {
-          interval = recurrenceRule.getInt("interval")
-        }
-        if (recurrenceRule.containsKey("occurrence")) {
-          occurrence = recurrenceRule.getInt("occurrence")
-        }
-        if (recurrenceRule.containsKey("endDate")) {
-          val format = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
-          val endDateObj = recurrenceRule["endDate"]
-          if (endDateObj is String) {
-            val parsedDate = sdf.parse(endDateObj)
-            if (parsedDate != null) {
-              endDate = format.format(parsedDate)
-            } else {
-              Log.e(TAG, "endDate is null")
-            }
-          } else if (endDateObj is Number) {
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = endDateObj.toLong()
-            endDate = format.format(calendar.time)
-          }
-        }
-        if (endDate == null && occurrence == null) {
+        val opts = extractRecurrence(recurrenceRule)
+
+        if (opts.endDate == null && opts.occurrence == null) {
           val eventStartDate = calendarEventBuilder.getAsLong(CalendarContract.Events.DTSTART)
           val eventEndDate = calendarEventBuilder.getAsLong(CalendarContract.Events.DTEND)
           val duration = (eventEndDate - eventStartDate) / 1000
@@ -478,7 +492,7 @@ class CalendarModule(
             .putNull(CalendarContract.Events.DTEND)
             .put(CalendarContract.Events.DURATION, "PT${duration}S")
         }
-        val rule = createRecurrenceRule(frequency, interval, endDate, occurrence)
+        val rule = createRecurrenceRule(opts)
         calendarEventBuilder.put(CalendarContract.Events.RRULE, rule)
       }
     }
@@ -620,7 +634,8 @@ class CalendarModule(
   @Throws(SecurityException::class)
   private fun removeRemindersForEvent(eventID: Int) {
     val cursor = CalendarContract.Reminders.query(
-      contentResolver, eventID.toLong(),
+      contentResolver,
+      eventID.toLong(),
       arrayOf(
         CalendarContract.Reminders._ID
       )
@@ -629,25 +644,6 @@ class CalendarModule(
       val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
       contentResolver.delete(reminderUri, null, null)
     }
-  }
-
-  private fun createRecurrenceRule(recurrence: String, interval: Int?, endDate: String?, occurrence: Int?): String {
-    var rrule: String = when (recurrence) {
-      "daily" -> "FREQ=DAILY"
-      "weekly" -> "FREQ=WEEKLY"
-      "monthly" -> "FREQ=MONTHLY"
-      "yearly" -> "FREQ=YEARLY"
-      else -> ""
-    }
-    if (interval != null) {
-      rrule += ";INTERVAL=$interval"
-    }
-    if (endDate != null) {
-      rrule += ";UNTIL=$endDate"
-    } else if (occurrence != null) {
-      rrule += ";COUNT=$occurrence"
-    }
-    return rrule
   }
 
   private fun serializeEvents(cursor: Cursor): List<Bundle> {
@@ -743,7 +739,8 @@ class CalendarModule(
   private fun serializeAlarms(eventID: Long): ArrayList<Bundle> {
     val alarms = ArrayList<Bundle>()
     val cursor = CalendarContract.Reminders.query(
-      contentResolver, eventID,
+      contentResolver,
+      eventID,
       arrayOf(
         CalendarContract.Reminders.MINUTES,
         CalendarContract.Reminders.METHOD
@@ -771,7 +768,7 @@ class CalendarModule(
     val calendar = Bundle().apply {
       putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID))
       putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME))
-      putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) === "1")
+      putBoolean("isPrimary", optIntFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) == 1)
       putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(stringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)))
       putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME))
       putString("color", String.format("#%06X", 0xFFFFFF and optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR)))
@@ -846,8 +843,8 @@ class CalendarModule(
   }
 
   private fun checkPermissions(promise: Promise): Boolean {
-    if (!mPermissions.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
-      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.")
+    if (appContext.permissions?.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR) != true) {
+      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.", null)
       return false
     }
     return true
@@ -863,9 +860,11 @@ class CalendarModule(
           Log.e(TAG, "Parsed date is null")
         }
       }
+
       is Number -> {
         calendar.timeInMillis = date.toLong()
       }
+
       else -> {
         Log.e(TAG, "date has unsupported type")
       }

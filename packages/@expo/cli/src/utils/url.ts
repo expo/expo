@@ -61,10 +61,7 @@ function coerceUrl(urlString?: string): URL | null {
   }
   try {
     return new URL('/', urlString);
-  } catch (error: any) {
-    if (error.code !== 'ERR_INVALID_URL') {
-      throw error;
-    }
+  } catch {
     return new URL('/', `http://${urlString}`);
   }
 }

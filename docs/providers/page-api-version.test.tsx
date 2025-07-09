@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import mockRouter from 'next-router-mock';
 import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
 import { PropsWithChildren } from 'react';
@@ -31,9 +31,9 @@ describe('PageApiVersionContext', () => {
 
   it('defaults to setVersion throwing error', () => {
     const { result } = renderHook(usePageApiVersion);
-    expect(() => result.current.setVersion('v44.0.0')).toThrowError(
-      'PageApiVersionContext not found'
-    );
+    expect(() => {
+      result.current.setVersion('v44.0.0');
+    }).toThrow('PageApiVersionContext not found');
   });
 });
 
@@ -57,9 +57,11 @@ describe(PageApiVersionProvider, () => {
     const onPush = jest.fn<typeof mockRouter.push>();
     const { result, rerender } = renderContext('/versions/latest/sdk', onPush);
     expect(result.current).toMatchObject({ version: 'latest', hasVersion: true });
-    act(() => result.current.setVersion('unversioned'));
+    act(() => {
+      result.current.setVersion('unversioned');
+    });
     rerender();
-    expect(onPush).toBeCalledWith('/versions/unversioned/sdk', { shallow: false });
+    expect(onPush).toHaveBeenCalledWith('/versions/unversioned/sdk', { shallow: false });
   });
 });
 

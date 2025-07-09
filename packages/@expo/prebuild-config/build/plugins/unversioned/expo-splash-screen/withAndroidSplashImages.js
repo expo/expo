@@ -20,9 +20,9 @@ function _imageUtils() {
   };
   return data;
 }
-function _fsExtra() {
-  const data = _interopRequireDefault(require("fs-extra"));
-  _fsExtra = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -41,17 +41,18 @@ function _getAndroidSplashConfig() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const IMAGE_CACHE_NAME = 'splash-android';
-const SPLASH_SCREEN_FILENAME = 'splashscreen_image.png';
+const SPLASH_SCREEN_FILENAME = 'splashscreen_logo.png';
+const SPLASH_SCREEN_DRAWABLE_NAME = 'splashscreen_logo.xml';
 const DRAWABLES_CONFIGS = {
   default: {
     modes: {
       light: {
-        path: `./res/drawable/${SPLASH_SCREEN_FILENAME}`
+        path: `./res/drawable/${SPLASH_SCREEN_DRAWABLE_NAME}`
       },
       dark: {
-        path: `./res/drawable-night/${SPLASH_SCREEN_FILENAME}`
+        path: `./res/drawable-night/${SPLASH_SCREEN_DRAWABLE_NAME}`
       }
     },
     dimensionsMultiplier: 1
@@ -112,9 +113,11 @@ const DRAWABLES_CONFIGS = {
     dimensionsMultiplier: 4
   }
 };
-const withAndroidSplashImages = config => {
+const withAndroidSplashImages = (config, splash) => {
   return (0, _configPlugins().withDangerousMod)(config, ['android', async config => {
-    await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot);
+    if (splash) {
+      await setSplashImageDrawablesAsync(config, splash, config.modRequest.projectRoot, splash?.imageWidth ?? 200);
+    }
     return config;
   }]);
 };
@@ -127,11 +130,11 @@ const withAndroidSplashImages = config => {
  * @param androidMainPath Absolute path to the main directory containing code and resources in Android project. In general that would be `android/app/src/main`.
  */
 exports.withAndroidSplashImages = withAndroidSplashImages;
-async function setSplashImageDrawablesAsync(config, projectRoot) {
+async function setSplashImageDrawablesAsync(config, props, projectRoot, imageWidth) {
   await clearAllExistingSplashImagesAsync(projectRoot);
-  const splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
-  const darkSplash = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config);
-  await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot)]);
+  const splash = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props);
+  const darkSplash = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config, props);
+  await Promise.all([setSplashImageDrawablesForThemeAsync(splash, 'light', projectRoot, imageWidth), setSplashImageDrawablesForThemeAsync(darkSplash, 'dark', projectRoot, imageWidth)]);
 }
 async function clearAllExistingSplashImagesAsync(projectRoot) {
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
@@ -141,41 +144,81 @@ async function clearAllExistingSplashImagesAsync(projectRoot) {
     await Promise.all(Object.values(modes).map(async ({
       path: filePath
     }) => {
-      if (await _fsExtra().default.pathExists(_path().default.resolve(androidMainPath, filePath))) {
-        await _fsExtra().default.remove(_path().default.resolve(androidMainPath, filePath));
-      }
+      await _fs().default.promises.rm(_path().default.resolve(androidMainPath, filePath), {
+        force: true,
+        recursive: true
+      });
     }));
   }));
 }
-async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot) {
+async function setSplashImageDrawablesForThemeAsync(config, theme, projectRoot, imageWidth = 100) {
   if (!config) return;
   const androidMainPath = _path().default.join(projectRoot, 'android/app/src/main');
-  await Promise.all(['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async imageKey => {
+  if (config.drawable) {
+    await writeSplashScreenDrawablesAsync(androidMainPath, projectRoot, config.drawable);
+    return;
+  }
+  const sizes = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'];
+  await Promise.all(sizes.map(async imageKey => {
     // @ts-ignore
     const image = config[imageKey];
     if (image) {
-      // Using this method will cache the images in `.expo` based on the properties used to generate them.
-      // this method also supports remote URLs and using the global sharp instance.
+      const multiplier = DRAWABLES_CONFIGS[imageKey].dimensionsMultiplier;
+      const size = imageWidth * multiplier; // "imageWidth" must be replaced by the logo width chosen by the user in its config file
+      const canvasSize = 288 * multiplier;
+      const background = await (0, _imageUtils().generateImageBackgroundAsync)({
+        width: canvasSize,
+        height: canvasSize,
+        backgroundColor: config.backgroundColor ?? 'transparent',
+        resizeMode: 'cover'
+      });
       const {
-        source
+        source: foreground
       } = await (0, _imageUtils().generateImageAsync)({
         projectRoot,
         cacheType: IMAGE_CACHE_NAME
       }, {
-        src: image
+        src: image,
+        resizeMode: 'contain',
+        width: size,
+        height: size
+      });
+      const composedImage = await (0, _imageUtils().compositeImagesAsync)({
+        background,
+        foreground,
+        x: (canvasSize - size) / 2,
+        y: (canvasSize - size) / 2
       });
 
       // Get output path for drawable.
-      const outputPath = _path().default.join(androidMainPath,
-      // @ts-ignore
-      DRAWABLES_CONFIGS[imageKey].modes[theme].path);
-      // Ensure directory exists.
+      const outputPath = _path().default.join(androidMainPath, DRAWABLES_CONFIGS[imageKey].modes[theme].path);
       const folder = _path().default.dirname(outputPath);
-      await _fsExtra().default.ensureDir(folder);
-      // Write image buffer to the file system.
-      await _fsExtra().default.writeFile(outputPath, source);
+      // Ensure directory exists.
+      await _fs().default.promises.mkdir(folder, {
+        recursive: true
+      });
+      await _fs().default.promises.writeFile(outputPath, composedImage);
     }
     return null;
   }));
+}
+async function writeSplashScreenDrawablesAsync(drawablePath, projectRoot, drawable) {
+  if (!drawable) {
+    return;
+  }
+  const lightDrawablePath = _path().default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.light.path);
+  const darkDrawablePath = _path().default.join(drawablePath, DRAWABLES_CONFIGS.default.modes.dark.path);
+  const lightFolder = _path().default.dirname(lightDrawablePath);
+  await _fs().default.promises.mkdir(lightFolder, {
+    recursive: true
+  });
+  await _fs().default.promises.copyFile(_path().default.join(projectRoot, drawable.icon), lightDrawablePath);
+  if (drawable.darkIcon) {
+    const darkFolder = _path().default.dirname(darkDrawablePath);
+    await _fs().default.promises.mkdir(darkFolder, {
+      recursive: true
+    });
+    await _fs().default.promises.copyFile(_path().default.join(projectRoot, drawable.darkIcon), darkDrawablePath);
+  }
 }
 //# sourceMappingURL=withAndroidSplashImages.js.map

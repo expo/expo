@@ -21,15 +21,14 @@ function _getAndroidSplashConfig() {
 }
 const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 const STATUS_BAR_TRANSLUCENT_KEY = 'expo_splash_screen_status_bar_translucent';
-const withAndroidSplashStrings = config => {
+const withAndroidSplashStrings = (config, props) => {
   return (0, _configPlugins().withStringsXml)(config, config => {
-    const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
+    const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props);
     if (splashConfig) {
-      var _config$androidStatus;
       const {
         resizeMode
       } = splashConfig;
-      const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
+      const statusBarTranslucent = !!config.androidStatusBar?.translucent;
       config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent);
     }
     return config;

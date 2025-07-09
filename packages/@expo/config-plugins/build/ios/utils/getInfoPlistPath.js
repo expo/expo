@@ -4,16 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getInfoPlistPathFromPbxproj = getInfoPlistPathFromPbxproj;
-function _Target() {
-  const data = require("../Target");
-  _Target = function () {
+function _Xcodeproj() {
+  const data = require("./Xcodeproj");
+  _Xcodeproj = function () {
     return data;
   };
   return data;
 }
-function _Xcodeproj() {
-  const data = require("./Xcodeproj");
-  _Xcodeproj = function () {
+function _Target() {
+  const data = require("../Target");
+  _Target = function () {
     return data;
   };
   return data;
@@ -44,7 +44,6 @@ function getInfoPlistPathFromPbxproj(projectRootOrProject, {
   return sanitizeInfoPlistBuildProperty(xcBuildConfiguration.buildSettings.INFOPLIST_FILE);
 }
 function sanitizeInfoPlistBuildProperty(infoPlist) {
-  var _infoPlist$replace$re;
-  return (_infoPlist$replace$re = infoPlist === null || infoPlist === void 0 ? void 0 : infoPlist.replace(/"/g, '').replace('$(SRCROOT)', '')) !== null && _infoPlist$replace$re !== void 0 ? _infoPlist$replace$re : null;
+  return infoPlist?.replace(/"/g, '').replace('$(SRCROOT)', '') ?? null;
 }
 //# sourceMappingURL=getInfoPlistPath.js.map

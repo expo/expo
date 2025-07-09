@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import {
   assertSensorEventEnabledAsync,
@@ -10,9 +10,6 @@ import {
 const eventName = 'devicemotion';
 
 export default {
-  get name(): string {
-    return 'ExponentDeviceMotion';
-  },
   /**
    * Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
    */
@@ -25,11 +22,12 @@ export default {
     }
     return await isSensorEnabledAsync(eventName);
   },
-  _handleMotion(motion) {
+  _handleMotion(motion: DeviceMotionEvent) {
     // TODO: Bacon: Can rotation be calculated?
-    SyntheticPlatformEmitter.emit('deviceMotionDidUpdate', {
+    DeviceEventEmitter.emit('deviceMotionDidUpdate', {
       acceleration: motion.acceleration,
       accelerationIncludingGravity: motion.accelerationIncludingGravity,
+      timestamp: motion.timeStamp / 1000,
       interval: motion.interval,
       rotationRate: motion.rotationRate,
       orientation: window.orientation,

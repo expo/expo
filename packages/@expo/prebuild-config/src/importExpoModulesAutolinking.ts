@@ -1,4 +1,4 @@
-// NOTE: Keep these types in-sync with expo-modules-autolinking
+import resolveFrom from 'resolve-from';
 
 export type SearchResults = {
   [moduleName: string]: object;
@@ -10,10 +10,7 @@ export type SearchOptions = {
   silent?: boolean;
 };
 
-export type AutolinkingModule = {
-  resolveSearchPathsAsync(searchPaths: string[] | null, cwd: string): Promise<string[]>;
-  findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;
-};
+type AutolinkingModule = typeof import('expo-modules-autolinking/exports');
 
 /**
  * Imports the `expo-modules-autolinking` package installed in the project at the given path.
@@ -25,16 +22,17 @@ export function importExpoModulesAutolinking(projectRoot: string): AutolinkingMo
 }
 
 function tryRequireExpoModulesAutolinking(projectRoot: string): AutolinkingModule {
-  try {
-    const resolvedAutolinkingPath = require.resolve('expo-modules-autolinking/build/autolinking', {
-      paths: [projectRoot],
-    });
-    return require(resolvedAutolinkingPath);
-  } catch {
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const autolinkingExportsPath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'expo-modules-autolinking/exports'
+  );
+  if (!autolinkingExportsPath) {
     throw new Error(
       "Cannot find 'expo-modules-autolinking' package in your project, make sure that you have 'expo' package installed"
     );
   }
+  return require(autolinkingExportsPath);
 }
 
 function assertAutolinkingCompatibility(autolinking: AutolinkingModule): void {

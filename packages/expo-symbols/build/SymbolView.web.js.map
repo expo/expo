@@ -1,0 +1,1 @@
+{"version":3,"file":"SymbolView.web.js","sourceRoot":"","sources":["../src/SymbolView.web.tsx"],"names":[],"mappings":"AAEA,MAAM,UAAU,UAAU,CAAC,KAAsB;IAC/C,OAAO,KAAK,CAAC,QAAQ,CAAC;AACxB,CAAC","sourcesContent":["import { SymbolViewProps } from './SymbolModule.types';\n\nexport function SymbolView(props: SymbolViewProps) {\n  return props.fallback;\n}\n"]}

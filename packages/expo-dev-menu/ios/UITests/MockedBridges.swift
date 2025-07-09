@@ -1,5 +1,6 @@
 @testable import EXDevMenu
 @testable import EXDevMenuInterface
+import React
 
 class UIMockedNOOPBridge: RCTBridge {
   override func invalidate() {
@@ -12,19 +13,7 @@ class UIMockedNOOPBridge: RCTBridge {
 }
 
 class BridgeWithDevMenuExtension: UIMockedNOOPBridge {
-  var extensions: [DevMenuExtensionProtocol] = []
-
-  override func modulesConforming(to protocolClass: Protocol!) -> [Any]! {
-    let extensionProtocol: Protocol = DevMenuExtensionProtocol.self
-    if protocolClass === extensionProtocol {
-      return extensions
-    }
-    return []
-  }
-
   override func module(forName moduleName: String!) -> Any! {
-    return extensions.first(where: {
-      type(of: $0).moduleName?() == moduleName
-    })
+    return []
   }
 }

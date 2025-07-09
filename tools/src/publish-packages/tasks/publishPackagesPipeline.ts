@@ -1,17 +1,15 @@
 import chalk from 'chalk';
 
-import logger from '../../Logger';
-import { Task } from '../../TasksRunner';
-import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
-import { commentOnIssuesTask } from './commentOnIssuesTask';
+// import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
 import { loadRequestedParcels } from './loadRequestedParcels';
+import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -21,8 +19,43 @@ import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import Git from '../../Git';
+import logger from '../../Logger';
+import { Task } from '../../TasksRunner';
+import { runWithSpinner } from '../../Utils';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, yellow } = chalk;
+
+/**
+ * Cleans up all the changes that were made by previously run tasks.
+ */
+const cleanWorkingTree = new Task<TaskArgs>(
+  {
+    name: 'cleanWorkingTree',
+    dependsOn: [],
+  },
+  async () => {
+    await runWithSpinner(
+      'Cleaning up the working tree',
+      async () => {
+        // JSON files are automatically added to the index after previous tasks.
+        await Git.checkoutAsync({
+          ref: 'HEAD',
+          paths: ['packages/**/expo-module.config.json'],
+        });
+
+        // Remove local repositories.
+        await Git.cleanAsync({
+          recursive: true,
+          force: true,
+          paths: ['packages/**/local-maven-repo/**'],
+        });
+      },
+      'Cleaned up the working tree'
+    );
+  }
+);
 
 /**
  * Pipeline with a bunch of tasks required to publish packages.
@@ -41,6 +74,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
+      publishAndroidArtifacts,
       updateIosProjects,
       cutOffChangelogs,
       commitStagedChanges,
@@ -48,7 +82,8 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       publishPackages,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
-      commentOnIssuesTask,
+      cleanWorkingTree,
+      // commentOnIssuesTask,
     ],
   },
   async (parcels: Parcel[], options: CommandOptions) => {

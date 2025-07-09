@@ -55,8 +55,8 @@ const EXPO_CLIENT_SCHEMES = Platform.select({
  * This method is based on the `Scheme` modules from `@expo/config-plugins`
  * which are used for collecting the schemes before prebuilding a native app.
  *
- * - iOS: scheme -> ios.scheme -> ios.bundleIdentifier
- * - Android: scheme -> android.scheme -> android.package
+ * - Android: `scheme` -> `android.scheme` -> `android.package`
+ * - iOS: `scheme` -> `ios.scheme` -> `ios.bundleIdentifier`
  */
 export function collectManifestSchemes(): string[] {
   // ios.scheme, android.scheme, and scheme as an array are not yet added to the
@@ -67,20 +67,9 @@ export function collectManifestSchemes(): string[] {
     (Platform.select<any>({
       ios: Constants.expoConfig?.ios,
       android: Constants.expoConfig?.android,
-      web: {},
     }) as SchemeConfig) ?? {};
 
-  const schemes = getSchemes(Constants.expoConfig);
-
-  // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
-  if (Constants.expoConfig?.detach?.scheme) {
-    schemes.push(Constants.expoConfig.detach.scheme);
-  }
-
-  // Add the unimplemented platform schemes last.
-  schemes.push(...getSchemes(platformManifest));
-
-  return schemes;
+  return getSchemes(Constants.expoConfig).concat(getSchemes(platformManifest));
 }
 
 function getNativeAppIdScheme(): string | null {
@@ -100,10 +89,7 @@ function getNativeAppIdScheme(): string | null {
  * Ensure the user has linked the expo-constants manifest in bare workflow.
  */
 export function hasConstantsManifest(): boolean {
-  return (
-    !!Object.keys(Constants.manifest ?? {}).length ||
-    !!Object.keys(Constants.manifest2 ?? {}).length
-  );
+  return !!Object.keys(Constants.expoConfig ?? {}).length;
 }
 
 // @docsMissing
@@ -138,7 +124,7 @@ export function resolveScheme(options: { scheme?: string; isSilent?: boolean }):
   if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
     if (options.scheme) {
       // This enables users to use the fb or google redirects on iOS in the Expo client.
-      if (EXPO_CLIENT_SCHEMES.includes(options.scheme)) {
+      if (EXPO_CLIENT_SCHEMES?.includes(options.scheme)) {
         return options.scheme;
       }
       // Silently ignore to make bare workflow development easier.
@@ -200,7 +186,7 @@ export function resolveScheme(options: { scheme?: string; isSilent?: boolean }):
         nativeAppId,
       ]
         .filter(Boolean)
-        .join(', ')}.\nPlease supply the preferred URI scheme to the Linking API.`
+        .join(', ')}.\nProvide the preferred URI scheme to the Linking API.`
     );
   }
   return scheme;

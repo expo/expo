@@ -1,3 +1,4 @@
+import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
@@ -5,21 +6,22 @@ import { Platform, StatusBar } from 'react-native';
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
-function useSplashScreen(loadingFunction: () => void) {
+SplashScreen.preventAutoHideAsync();
+
+function useSplashScreen(loadingFunction: () => Promise<void>) {
   const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     async function loadAsync() {
       try {
-        await SplashScreen.preventAutoHideAsync();
         await loadingFunction();
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
       } finally {
         setLoadingComplete(true);
-        await SplashScreen.hideAsync();
+        await SplashScreen.hide();
       }
     }
 
@@ -29,7 +31,7 @@ function useSplashScreen(loadingFunction: () => void) {
   return isLoadingCompleted;
 }
 
-const App = () => {
+export default function App() {
   const isLoadingCompleted = useSplashScreen(async () => {
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('dark-content', false);
@@ -37,7 +39,5 @@ const App = () => {
     await loadAssetsAsync();
   });
 
-  return isLoadingCompleted ? <RootNavigation /> : null;
-};
-
-export default App;
+  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
+}

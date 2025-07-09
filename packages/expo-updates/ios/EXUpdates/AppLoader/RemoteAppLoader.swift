@@ -1,32 +1,31 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-// swiftlint:disable closure_body_length
+// swiftlint:disable function_parameter_count
 
 import Foundation
 
 /**
  * Subclass of AppLoader which handles downloading updates from a remote server.
  */
-internal final class RemoteAppLoader: AppLoader {
-  private static let ErrorDomain = "EXUpdatesRemoteAppLoader"
-
+public final class RemoteAppLoader: AppLoader {
   private let downloader: FileDownloader
   private var remoteUpdateResponse: UpdateResponse?
   private let completionQueue: DispatchQueue
 
-  required init(
+  public required override init(
     config: UpdatesConfig,
+    logger: UpdatesLogger,
     database: UpdatesDatabase,
     directory: URL,
     launchedUpdate: Update?,
     completionQueue: DispatchQueue
   ) {
-    self.downloader = FileDownloader(config: config)
+    self.downloader = FileDownloader(config: config, logger: logger)
     self.completionQueue = completionQueue
-    super.init(config: config, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
+    super.init(config: config, logger: logger, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
 
-  override func loadUpdate(
+  override public func loadUpdate(
     fromURL url: URL,
     onUpdateResponse updateResponseBlockArg: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlockArg: @escaping AppLoaderAssetBlock,
@@ -48,12 +47,12 @@ internal final class RemoteAppLoader: AppLoader {
         let responseHeaderData = remoteUpdateResponse.responseHeaderData {
         strongSelf.database.databaseQueue.async {
           do {
-            // swiftlint:disable:next force_unwrapping
-            try strongSelf.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: strongSelf.config.scopeKey!)
+            try strongSelf.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: strongSelf.config.scopeKey)
             successBlockArg(updateResponse)
           } catch {
-            NSLog("Error persisting header data to disk: %@", error.localizedDescription)
-            errorBlockArg(error)
+            let cause = UpdatesError.remoteAppLoaderHeaderDataError(cause: error)
+            strongSelf.logger.error(cause: cause, code: UpdatesErrorCode.unknown)
+            errorBlockArg(cause)
           }
         }
       } else {
@@ -66,6 +65,7 @@ internal final class RemoteAppLoader: AppLoader {
       let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
         withDatabase: self.database,
         config: self.config,
+        logger: self.logger,
         launchedUpdate: self.launchedUpdate,
         embeddedUpdate: embeddedUpdate
       )
@@ -84,7 +84,7 @@ internal final class RemoteAppLoader: AppLoader {
     }
   }
 
-  override func downloadAsset(_ asset: UpdateAsset) {
+  override public func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     FileDownloader.assetFilesQueue.async {
@@ -96,23 +96,16 @@ internal final class RemoteAppLoader: AppLoader {
       } else {
         guard let assetUrl = asset.url else {
           self.handleAssetDownload(
-            withError: NSError(
-              domain: RemoteAppLoader.ErrorDomain,
-              code: 1006,
-              userInfo: [
-                NSLocalizedDescriptionKey: "Failed to download asset with no URL provided"
-              ]
-            ),
+            withError: UpdatesError.remoteAppLoaderAssetMissingUrl,
             asset: asset
           )
           return
         }
-
-        self.downloader.downloadFile(
+        self.downloader.downloadAsset(
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
-          extraHeaders: asset.extraRequestHeaders ?? [:]
+          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current }
         ) { data, response, _ in
           DispatchQueue.global().async {
             self.handleAssetDownload(withData: data, response: response, asset: asset)
@@ -125,4 +118,112 @@ internal final class RemoteAppLoader: AppLoader {
       }
     }
   }
+
+  static func processSuccessLoaderResult(
+    config: UpdatesConfig,
+    logger: UpdatesLogger,
+    database: UpdatesDatabase,
+    selectionPolicy: SelectionPolicy,
+    launchedUpdate: Update?,
+    directory: URL,
+    loaderTaskQueue: DispatchQueue,
+    updateResponse: UpdateResponse?,
+    priorError: UpdatesError?,
+    onComplete: @escaping (_ updateToLaunch: Update?, _ error: UpdatesError?, _ didRollBackToEmbedded: Bool) -> Void
+  ) {
+    let updateBeingLaunched = updateResponse?.manifestUpdateResponsePart?.updateManifest
+
+    if let rollBackDirective = updateResponse?.directiveUpdateResponsePart?.updateDirective as? RollBackToEmbeddedUpdateDirective {
+      self.processRollBackToEmbeddedDirective(
+        config: config,
+        logger: logger,
+        database: database,
+        selectionPolicy: selectionPolicy,
+        launchedUpdate: launchedUpdate,
+        directory: directory,
+        loaderTaskQueue: loaderTaskQueue,
+        rollBackDirective: rollBackDirective,
+        manifestFilters: updateResponse?.responseHeaderData?.manifestFilters,
+        priorError: priorError,
+        onComplete: onComplete
+      )
+    } else {
+      onComplete(updateBeingLaunched, priorError, false)
+    }
+  }
+
+  /**
+   * If directive is to roll-back to the embedded update and there is an embedded update,
+   * we need to update embedded update in the DB with the newer commitTime from the message so that
+   * the selection policy will choose it. That way future updates can continue to be applied
+   * over this roll back, but older ones won't.
+   * The embedded update is guaranteed to be in the DB from the earlier [EmbeddedAppLoader] call in this task.
+   */
+  private static func processRollBackToEmbeddedDirective(
+    config: UpdatesConfig,
+    logger: UpdatesLogger,
+    database: UpdatesDatabase,
+    selectionPolicy: SelectionPolicy,
+    launchedUpdate: Update?,
+    directory: URL,
+    loaderTaskQueue: DispatchQueue,
+    rollBackDirective: RollBackToEmbeddedUpdateDirective,
+    manifestFilters: [String: Any]?,
+    priorError: UpdatesError?,
+    onComplete: @escaping (_ updateToLaunch: Update?, _ error: UpdatesError?, _ didRollBackToEmbedded: Bool) -> Void
+  ) {
+    if !config.hasEmbeddedUpdate {
+      onComplete(nil, priorError, false)
+      return
+    }
+
+    guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database) else {
+      onComplete(nil, priorError, false)
+      return
+    }
+
+    if !selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      rollBackDirective,
+      withEmbeddedUpdate: embeddedManifest,
+      launchedUpdate: launchedUpdate,
+      filters: manifestFilters
+    ) {
+      onComplete(nil, priorError, false)
+      return
+    }
+
+    // update the embedded update commit time in the in-memory embedded update since it is a singleton
+    embeddedManifest.commitTime = rollBackDirective.commitTime
+
+    EmbeddedAppLoader(
+      config: config,
+      logger: logger,
+      database: database,
+      directory: directory,
+      launchedUpdate: nil,
+      completionQueue: loaderTaskQueue
+    ).loadUpdateResponseFromEmbeddedManifest(
+      withCallback: { _ in
+        return true
+      }, asset: { _, _, _, _ in
+      }, success: { updateResponse in
+        do {
+          let update = updateResponse?.manifestUpdateResponsePart?.updateManifest
+          // do this synchronously as it is needed to launch, and we're already on a background dispatch queue so no UI will be blocked
+          try database.databaseQueue.sync {
+            // swiftlint:disable force_unwrapping
+            try database.setUpdateCommitTime(rollBackDirective.commitTime, onUpdate: update!)
+            // swiftlint:enable force_unwrapping
+          }
+          onComplete(update, priorError, true)
+        } catch {
+          onComplete(nil, UpdatesError.remoteAppLoaderUnknownError(cause: error), false)
+        }
+      }, error: { embeddedLoaderError in
+        onComplete(nil, embeddedLoaderError, false)
+      }
+    )
+  }
 }
+
+// swiftlint:enable function_parameter_count

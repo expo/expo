@@ -1,5 +1,3 @@
-@file:OptIn(DelicateCoroutinesApi::class)
-
 package expo.modules.kotlin.activityresult
 
 import android.app.Activity
@@ -22,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * Manager class that takes care of proper communication with [AppContextActivityResultRegistry]
  * It also monitors the needed lifecycle state using [AppCompatActivityAwareHelper]
  */
+@OptIn(DelicateCoroutinesApi::class)
 class ActivityResultsManager(
   currentActivityProvider: CurrentActivityProvider
 ) : AppContextActivityResultCaller, AppCompatActivityAware {
@@ -49,7 +48,7 @@ class ActivityResultsManager(
 
   // region Lifecycle
 
-  fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+  fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     registry.dispatchResult(requestCode, resultCode, data)
   }
 

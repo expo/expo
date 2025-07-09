@@ -1,11 +1,18 @@
-# expo-sharing
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/sharing/">
+    <img
+      src="../../.github/resources/expo-sharing.svg"
+      alt="expo-sharing"
+      height="64" />
+  </a>
+</p>
 
-Sharing standalone module
+Provides a way to share files directly with other compatible applications.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sharing.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sharing/)
+- [Documentation for the main branch](https://docs.expo.dev/versions/unversioned/sdk/sharing/)
 
 # Installation in managed Expo projects
 
@@ -20,10 +27,6 @@ For bare React Native projects, you must ensure that you have [installed and con
 ```
 npx expo install expo-sharing
 ```
-
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 

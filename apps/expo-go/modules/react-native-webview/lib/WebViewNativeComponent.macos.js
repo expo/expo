@@ -1,0 +1,1 @@
+Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _reactNative=require("react-native");var RNCWebView=(0,_reactNative.requireNativeComponent)('RNCWebView');var _default=exports.default=RNCWebView;

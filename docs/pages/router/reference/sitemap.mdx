@@ -1,0 +1,53 @@
+---
+title: Sitemap
+description: Learn how to use the sitemap to debug your app with Expo Router.
+hideTOC: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+On native, you can use the [`uri-scheme`](https://www.npmjs.com/package/uri-scheme) CLI to test opening native links on a device.
+
+For example, if you want to launch the Expo Go app on iOS to the `/form-sheet` route, run:
+
+<Terminal cmd={['$ npx uri-scheme open exp://192.168.87.39:19000/--/form-sheet --ios']} />
+
+> Replace `192.168.87.39:19000` with the IP address shown when running `npx expo start`.
+
+You can also search for links directly in a browser like Safari or Chrome to test deep linking on physical devices. Learn more about [testing deep links](https://reactnavigation.org/docs/deep-linking).
+
+## Sitemap
+
+<ContentSpotlight
+  alt="Directory structure"
+  src="/static/images/expo-router/directory.png"
+  className="max-w-[720px]"
+/>
+
+Expo Router currently injects a **/\_sitemap** automatically that provides a list of all routes in the app. This is useful for debugging.
+
+In SDK 52 and above, the sitemap can be removed by adding `sitemap: false` to the `expo-router` config plugin in the app config:
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        /* @info Disable the sitemap generation. */
+        "sitemap": false
+        /* @end */
+      }
+    ]
+  ]
+}
+```
+
+In SDK 51 and below, the sitemap can be removed by creating an empty **\_sitemap** file inside the **app** directory:
+
+```tsx app/_sitemap.tsx
+export default function Sitemap() {
+  return null;
+}
+```

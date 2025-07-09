@@ -266,7 +266,7 @@ export interface Playback extends AV {
    * Playback may not start immediately after calling this function for reasons such as buffering. Make sure to update your UI based
    * on the `isPlaying` and `isBuffering` properties of the `AVPlaybackStatus`.
    * @param positionMillis The desired position of playback in milliseconds.
-   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would)).
+   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it)).
    */
   playFromPositionAsync(
     positionMillis: number,
@@ -296,7 +296,7 @@ export interface Playback extends AV {
   /**
    * This is equivalent to `playbackObject.setStatusAsync({ positionMillis })`.
    * @param positionMillis The desired position of playback in milliseconds.
-   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would)).
+   * @param tolerances The tolerances are used only on iOS ([more details](#what-is-seek-tolerance-and-why-would-i-want-to-use-it)).
    */
   setPositionAsync(
     positionMillis: number,
@@ -308,7 +308,8 @@ export interface Playback extends AV {
    * @param rate The desired playback rate of the media. This value must be between `0.0` and `32.0`. Only available on Android API version 23 and later and iOS.
    * @param shouldCorrectPitch A boolean describing if we should correct the pitch for a changed rate. If set to `true`, the pitch of the audio will be corrected
    * (so a rate different than `1.0` will timestretch the audio).
-   * @param pitchCorrectionQuality iOS time pitch algorithm setting, defaults to `Audio.PitchCorrectionQuality.Low`.
+   * @param pitchCorrectionQuality iOS time pitch algorithm setting, defaults to `Audio.PitchCorrectionQuality.Medium`.
+   * Using `Audio.PitchCorrectionQuality.Low` may cause automatic playback rate changes on iOS >= 17, as `AVAudioTimePitchAlgorithmLowQualityZeroLatency` is deprecated.
    */
   setRateAsync(
     rate: number,
@@ -388,7 +389,7 @@ export const PlaybackMixin = {
   async setRateAsync(
     rate: number,
     shouldCorrectPitch: boolean = false,
-    pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
+    pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Medium
   ): Promise<AVPlaybackStatus> {
     return (this as any as Playback).setStatusAsync({
       rate,

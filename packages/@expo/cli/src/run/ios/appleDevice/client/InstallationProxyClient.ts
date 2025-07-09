@@ -8,9 +8,9 @@
 import Debug from 'debug';
 import { Socket } from 'net';
 
+import { ResponseError, ServiceClient } from './ServiceClient';
 import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
-import { ResponseError, ServiceClient } from './ServiceClient';
 
 const debug = Debug('expo:apple-device:client:installation_proxy');
 

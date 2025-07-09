@@ -11,85 +11,69 @@ namespace jni = facebook::jni;
 
 namespace expo {
 
-template <typename T>
-inline void hash_combine(std::size_t& seed, const T& v)
-{
-  std::hash<T> hasher;
-  // Reference from: https://github.com/boostorg/container_hash/blob/boost-1.76.0/include/boost/container_hash/hash.hpp
-  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
-
-struct pairhash {
-  template <typename A, typename B>
-  std::size_t operator()(const std::pair<A, B>& v) const {
-    std::size_t seed = 0;
-    hash_combine(seed, v.first);
-    hash_combine(seed, v.second);
-    return seed;
-  }
-};
-
-using MethodHashMap = std::unordered_map<std::pair<std::string, std::string>, jmethodID, pairhash>;
-
-/**
- * Singleton registry used to store references to often used Java classes.
- */
-class JavaReferencesCache {
+class JCache {
 public:
-  /**
-   * An entry in the Java class registry.
-   */
-  class CachedJClass {
-  public:
-    CachedJClass(jclass clazz, MethodHashMap methods);
-
-    /**
-     * A bare reference to the class object.
-     */
+  struct ConstructableJClass {
     jclass clazz;
-
-    /**
-     * Returns a cached method id for provided method name and signature.
-     */
-    jmethodID getMethod(const std::string &name, const std::string &signature);
-
-  private:
-    MethodHashMap methods;
+    jmethodID constructor;
   };
 
-  JavaReferencesCache(JavaReferencesCache const &) = delete;
-
-  JavaReferencesCache &operator=(JavaReferencesCache const &) = delete;
-
-  /**
-   * Gets a singleton instance
-   */
-  static std::shared_ptr<JavaReferencesCache> instance();
-
-  /**
-   * Gets a cached Java class entry.
-   */
-  CachedJClass &getJClass(const std::string &className);
+  JCache(JNIEnv *env);
 
   /**
    * Gets a cached Java class entry or loads it to the registry.
    */
-  CachedJClass &getOrLoadJClass(JNIEnv *env, const std::string &className);
+  jclass getOrLoadJClass(JNIEnv *env, const std::string &className);
 
+  ConstructableJClass jDouble;
+  ConstructableJClass jBoolean;
+  ConstructableJClass jInteger;
+  ConstructableJClass jLong;
+  ConstructableJClass jFloat;
+
+  ConstructableJClass jPromise;
+
+  jclass jDoubleArray;
+  jclass jBooleanArray;
+  jclass jIntegerArray;
+  jclass jLongArray;
+  jclass jFloatArray;
+
+  jclass jCollection;
+  jclass jMap;
+
+  jclass jObject;
+  jclass jString;
+
+  jclass jJavaScriptObject;
+  jclass jJavaScriptValue;
+  jclass jJavaScriptTypedArray;
+
+  jclass jReadableNativeArray;
+  jclass jReadableNativeMap;
+  jclass jWritableNativeArray;
+  jclass jWritableNativeMap;
+
+  jclass jSharedObject;
+  jclass jJavaScriptModuleObject;
+
+  void unLoad(JNIEnv *env);
+private:
+  std::unordered_map<std::string, jclass> jClassRegistry;
+};
+
+class JCacheHolder {
+public:
+  static void init(JNIEnv *env);
+
+  static void unLoad(JNIEnv *env);
   /**
-   * Loads predefined set of Java classes and stores them
+   * Gets a singleton instance
    */
-  void loadJClasses(JNIEnv *env);
+  static JCache &get();
 
 private:
-  JavaReferencesCache() = default;
-
-  std::unordered_map<std::string, CachedJClass> jClassRegistry;
-
-  void loadJClass(
-    JNIEnv *env,
-    const std::string &name,
-    const std::vector<std::pair<std::string, std::string>> &methods
-  );
+  static std::shared_ptr<JCache> jCache;
 };
+
 } // namespace expo

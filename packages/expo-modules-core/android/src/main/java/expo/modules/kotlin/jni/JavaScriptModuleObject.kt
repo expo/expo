@@ -1,11 +1,8 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.NativeMap
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.objects.ObjectDefinitionData
+import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.
@@ -16,7 +13,10 @@ import expo.modules.kotlin.objects.ObjectDefinitionData
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptModuleObject(val name: String) : Destructible {
+class JavaScriptModuleObject(
+  jniDeallocator: JNIDeallocator,
+  val name: String
+) : Destructible {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()
@@ -24,49 +24,13 @@ class JavaScriptModuleObject(val name: String) : Destructible {
   private external fun initHybrid(): HybridData
 
   init {
-    JNIDeallocator.addReference(this)
+    jniDeallocator.addReference(this)
   }
 
-  fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {
-    val constants = definition.constantsProvider()
-    val convertedConstants = Arguments.makeNativeMap(constants)
-    exportConstants(convertedConstants)
+  val isValid: Boolean
+    get() = mHybridData.isValid
 
-    definition
-      .functions
-      .forEach { function ->
-        function.attachToJSObject(appContext, this)
-      }
-
-    definition
-      .properties
-      .forEach { (_, prop) ->
-        prop.attachToJSObject(this)
-      }
-  }
-
-  /**
-   * Exports constants
-   */
-  external fun exportConstants(constants: NativeMap)
-
-  /**
-   * Register a promise-less function on the CPP module representation.
-   * After calling this function, user can access the exported function in the JS code.
-   */
-  external fun registerSyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
-
-  /**
-   * Register a promise function on the CPP module representation.
-   * After calling this function, user can access the exported function in the JS code.
-   */
-  external fun registerAsyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
-
-  external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
-
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
-
-  external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
+  external fun decorate(decorator: JSDecoratorsBridgingObject)
 
   @Throws(Throwable::class)
   protected fun finalize() {

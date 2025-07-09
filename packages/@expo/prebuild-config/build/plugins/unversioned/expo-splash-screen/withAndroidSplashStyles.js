@@ -32,37 +32,91 @@ function _getAndroidSplashConfig() {
 }
 const styleResourceGroup = {
   name: 'Theme.App.SplashScreen',
-  parent: 'AppTheme'
+  parent: 'Theme.SplashScreen'
 };
 const SPLASH_COLOR_NAME = 'splashscreen_background';
-const withAndroidSplashStyles = config => {
+const withAndroidSplashStyles = (config, {
+  splashConfig,
+  isLegacyConfig
+}) => {
   config = (0, _configPlugins().withAndroidColors)(config, config => {
-    const backgroundColor = getSplashBackgroundColor(config);
+    const backgroundColor = getSplashBackgroundColor(config, splashConfig);
+    if (!backgroundColor) {
+      return config;
+    }
     config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
     return config;
   });
   config = (0, _configPlugins().withAndroidColorsNight)(config, config => {
-    const backgroundColor = getSplashDarkBackgroundColor(config);
+    const backgroundColor = getSplashDarkBackgroundColor(config, splashConfig);
+    if (!backgroundColor) {
+      return config;
+    }
     config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
     return config;
   });
   config = (0, _configPlugins().withAndroidStyles)(config, config => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
-    config.modResults = setSplashStylesForTheme(config.modResults);
+    config.modResults = addSplashScreenStyle(config.modResults, isLegacyConfig);
     return config;
   });
   return config;
 };
 
-// Remove the old style group which didn't extend the base theme properly.
+// Add the style that extends Theme.SplashScreen
 exports.withAndroidSplashStyles = withAndroidSplashStyles;
+function addSplashScreenStyle(styles, isLegacyConfig) {
+  const {
+    resources
+  } = styles;
+  const {
+    style = []
+  } = resources;
+  let item;
+  if (isLegacyConfig) {
+    item = [{
+      $: {
+        name: 'android:windowBackground'
+      },
+      _: '@drawable/ic_launcher_background'
+    }];
+  } else {
+    item = [{
+      $: {
+        name: 'windowSplashScreenBackground'
+      },
+      _: '@color/splashscreen_background'
+    }, {
+      $: {
+        name: 'windowSplashScreenAnimatedIcon'
+      },
+      _: '@drawable/splashscreen_logo'
+    }, {
+      $: {
+        name: 'postSplashScreenTheme'
+      },
+      _: '@style/AppTheme'
+    }];
+  }
+  styles.resources.style = [...style.filter(({
+    $
+  }) => $.name !== 'Theme.App.SplashScreen'), {
+    $: {
+      ...styleResourceGroup,
+      parent: isLegacyConfig ? 'AppTheme' : 'Theme.SplashScreen'
+    },
+    item
+  }];
+  return styles;
+}
+
+// Remove the old style group which didn't extend the base theme properly.
 function removeOldSplashStyleGroup(styles) {
-  var _styles$resources$sty, _styles$resources$sty2;
   const group = {
     name: 'Theme.App.SplashScreen',
     parent: 'Theme.AppCompat.Light.NoActionBar'
   };
-  styles.resources.style = (_styles$resources$sty = styles.resources.style) === null || _styles$resources$sty === void 0 ? void 0 : (_styles$resources$sty2 = _styles$resources$sty.filter) === null || _styles$resources$sty2 === void 0 ? void 0 : _styles$resources$sty2.call(_styles$resources$sty, ({
+  styles.resources.style = styles.resources.style?.filter?.(({
     $: head
   }) => {
     let matches = head.name === group.name;
@@ -73,20 +127,18 @@ function removeOldSplashStyleGroup(styles) {
   });
   return styles;
 }
-function getSplashBackgroundColor(config) {
-  var _getAndroidSplashConf, _getAndroidSplashConf2;
-  return (_getAndroidSplashConf = (_getAndroidSplashConf2 = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config)) === null || _getAndroidSplashConf2 === void 0 ? void 0 : _getAndroidSplashConf2.backgroundColor) !== null && _getAndroidSplashConf !== void 0 ? _getAndroidSplashConf : null;
+function getSplashBackgroundColor(config, props) {
+  return (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props)?.backgroundColor ?? null;
 }
-function getSplashDarkBackgroundColor(config) {
-  var _getAndroidDarkSplash, _getAndroidDarkSplash2;
-  return (_getAndroidDarkSplash = (_getAndroidDarkSplash2 = (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config)) === null || _getAndroidDarkSplash2 === void 0 ? void 0 : _getAndroidDarkSplash2.backgroundColor) !== null && _getAndroidDarkSplash !== void 0 ? _getAndroidDarkSplash : null;
+function getSplashDarkBackgroundColor(config, props) {
+  return (0, _getAndroidSplashConfig().getAndroidDarkSplashConfig)(config, props)?.backgroundColor ?? null;
 }
 function setSplashStylesForTheme(styles) {
   // Add splash screen image
   return _configPlugins().AndroidConfig.Styles.assignStylesValue(styles, {
     add: true,
-    value: '@drawable/splashscreen',
-    name: 'android:windowBackground',
+    value: '@drawable/splashscreen_logo',
+    name: 'android:windowSplashScreenBackground',
     parent: styleResourceGroup
   });
 }

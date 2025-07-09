@@ -1,6 +1,6 @@
-import React from 'react';
+import { render } from '@testing-library/react-native';
+import * as React from 'react';
 import { Platform, View as NativeView } from 'react-native';
-import renderer from 'react-test-renderer';
 
 import { createDevView } from '../createDevView';
 
@@ -18,34 +18,36 @@ afterAll(() => {
   console.warn = originalConsoleWarn;
 });
 
-it(`renders`, () => {
+it('renders', () => {
   // Ensure no errors
-  renderer
-    .create(
+  expect(() =>
+    render(
       <View>
         <View />
       </View>
     )
-    .toJSON();
+  ).not.toThrow();
 });
 
-it(`asserts react-dom elements`, () => {
+it('asserts react-dom elements', () => {
   const instance = (
     <View>
       <div />
     </View>
   );
+
   if (Platform.OS === 'web') {
     // Ensure no errors
-    expect(() => renderer.create(instance)).not.toThrowError();
+    expect(() => render(instance)).not.toThrow();
   } else {
-    expect(() => renderer.create(instance)).toThrowError(/Using unsupported React DOM element/);
+    expect(() => render(instance)).toThrow(/Using unsupported React DOM element/);
   }
 });
 
-it(`warns about unwrapped strings`, () => {
+it('warns about unwrapped strings', () => {
   // Ensure no errors
-  expect(renderer.create(<View>Hey</View>).toJSON()).toMatchSnapshot();
+  const { toJSON } = render(<View>Hey</View>);
+  expect(toJSON()).toMatchSnapshot();
 
   expect(console.warn).toHaveBeenCalledTimes(1);
 });

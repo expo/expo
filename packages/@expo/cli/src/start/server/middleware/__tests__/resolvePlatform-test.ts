@@ -21,7 +21,7 @@ describe(parsePlatformHeader, () => {
     ).toBe(null);
   });
   it(`parses from 'platform' query parameter`, () => {
-    expect(parsePlatformHeader(asRequest({ url: 'http://localhost:19000/?platform=ios' }))).toBe(
+    expect(parsePlatformHeader(asRequest({ url: 'http://localhost:8081/?platform=ios' }))).toBe(
       'ios'
     );
     // Handles arrays
@@ -53,7 +53,7 @@ describe(parsePlatformHeader, () => {
     expect(
       parsePlatformHeader(
         asRequest({
-          url: 'http://localhost:19000/?platform=ios',
+          url: 'http://localhost:8081/?platform=ios',
           headers: { 'expo-platform': 'android' },
         })
       )
@@ -63,7 +63,7 @@ describe(parsePlatformHeader, () => {
     expect(
       parsePlatformHeader(
         asRequest({
-          url: 'http://localhost:19000/',
+          url: 'http://localhost:8081/',
           headers: {
             'expo-platform': 'android',
             'exponent-platform': 'ios',
@@ -128,7 +128,7 @@ describe(assertMissingRuntimePlatform, () => {
   it('asserts missing', () => {
     expect(() => {
       assertMissingRuntimePlatform();
-    }).toThrowError('Must specify "expo-platform" header or "platform" query parameter');
+    }).toThrow('Must specify "expo-platform" header or "platform" query parameter');
   });
   it('does not assert on valid', () => {
     assertMissingRuntimePlatform('ios');
@@ -146,6 +146,6 @@ describe(assertRuntimePlatform, () => {
     }).not.toThrow();
     expect(() => {
       assertRuntimePlatform('not-supported');
-    }).toThrowError('platform must be "android", "ios", or "none". Received: "not-supported"');
+    }).toThrow('platform must be "android", "ios", or "web". Received: "not-supported"');
   });
 });

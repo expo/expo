@@ -22,16 +22,6 @@ public class BasePackage implements Package {
   }
 
   @Override
-  public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public List<ViewManager> createViewManagers(Context context) {
-    return Collections.emptyList();
-  }
-
-  @Override
   public List<SingletonModule> createSingletonModules(Context context) {
     return Collections.emptyList();
   }

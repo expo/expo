@@ -1,8 +1,8 @@
-#import "EXDevLauncherController.h"
+#import <EXDevLauncher/EXDevLauncherController.h>
 
 @import EXDevMenuInterface;
 
-@interface EXDevLauncherDevMenuExtensions : NSObject <RCTBridgeModule, EXDevExtensionProtocol>
+@interface EXDevLauncherDevMenuExtensions : NSObject <RCTBridgeModule>
 
 @end
 

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { Component } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';

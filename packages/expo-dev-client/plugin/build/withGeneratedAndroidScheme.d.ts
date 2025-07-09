@@ -1,5 +1,5 @@
-import { AndroidConfig, AndroidManifest, ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from 'expo/config';
+import type { ExpoConfig } from 'expo/config';
+import { AndroidConfig, type AndroidManifest, type ConfigPlugin } from 'expo/config-plugins';
 export declare const withGeneratedAndroidScheme: ConfigPlugin;
 export declare function setGeneratedAndroidScheme(config: Pick<ExpoConfig, 'scheme' | 'slug'>, androidManifest: AndroidManifest): AndroidManifest;
 /**

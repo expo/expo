@@ -7,22 +7,46 @@ import AuthenticationServices
 final public class WebBrowserModule: Module {
   private var currentWebBrowserSession: WebBrowserSession?
   private var currentAuthSession: WebAuthSession?
+  private var vcDidPresent = false
+
+  private func isValid(url: URL) -> Bool {
+    return url.scheme == "http" || url.scheme == "https"
+  }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoWebBrowser")
 
-    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) throws in
-      guard self.currentWebBrowserSession?.isOpen != true else {
-        throw WebBrowserAlreadyOpenException()
+    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) in
+      if vcDidPresent {
+        self.currentWebBrowserSession = nil
+        vcDidPresent = false
       }
-      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options)
-      self.currentWebBrowserSession?.open(promise)
+
+      guard self.currentWebBrowserSession == nil else {
+        promise.resolve(["type": "locked"])
+        return
+      }
+
+      guard self.isValid(url: url) else {
+        throw WebBrowserInvalidURLException()
+      }
+
+      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { [promise] type in
+        promise.resolve(["type": type])
+        self.currentWebBrowserSession = nil
+      } didPresent: {
+        self.vcDidPresent = true
+      }
+
+      self.currentWebBrowserSession?.open()
     }
     .runOnQueue(.main)
 
-    AsyncFunction("dismissBrowser") {
-      self.currentWebBrowserSession?.dismiss()
-      self.currentWebBrowserSession = nil
+    AsyncFunction("dismissBrowser") { (promise: Promise) in
+      currentWebBrowserSession?.dismiss { type in
+        self.currentWebBrowserSession = nil
+        promise.resolve(["type": type])
+      }
     }
     .runOnQueue(.main)
 

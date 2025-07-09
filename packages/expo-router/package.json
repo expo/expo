@@ -1,0 +1,125 @@
+{
+  "name": "expo-router",
+  "version": "5.0.7",
+  "description": "Expo Router is a file-based router for React Native and web applications.",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "sideEffects": [
+    "rsc/entry.js",
+    "entry-classic.js",
+    "entry.js"
+  ],
+  "files": [
+    "link",
+    "assets",
+    "build",
+    "vendor",
+    "!src",
+    "_ctx-html.js",
+    "_ctx-shared.js",
+    "_ctx.*",
+    "_error.js",
+    "app.plugin.js",
+    "babel.js",
+    "doctor.js",
+    "drawer.d.ts",
+    "drawer.js",
+    "entry-classic.js",
+    "entry.js",
+    "expo-module.config.json",
+    "head.d.ts",
+    "head.js",
+    "html.d.ts",
+    "html.js",
+    "index.d.ts",
+    "ios",
+    "node",
+    "plugin",
+    "rsc",
+    "server.d.ts",
+    "server.js",
+    "stack.d.ts",
+    "stack.js",
+    "tabs.js",
+    "types",
+    "tabs.d.ts",
+    "ui.js",
+    "ui.d.ts",
+    "testing-library.js",
+    "testing-library.d.ts",
+    "_async-server-import.js"
+  ],
+  "repository": {
+    "url": "https://github.com/expo/expo.git",
+    "type": "git",
+    "directory": "packages/expo-router"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "scripts": {
+    "build": "bash -c 'if [ -z \"$1\" ]; then expo-module build -p tsconfig.json; else expo-module build \"$1\"; fi' --",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
+    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo"
+  ],
+  "peerDependencies": {
+    "@react-navigation/drawer": "^7.3.9",
+    "expo": "*",
+    "expo-constants": "*",
+    "expo-linking": "*",
+    "react-native-reanimated": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-screens": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "@react-navigation/drawer": {
+      "optional": true
+    },
+    "@testing-library/jest-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@react-navigation/drawer": "^7.3.9",
+    "@testing-library/jest-native": "^5.4.2",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/react-native": "^13.1.0",
+    "@types/semver": "^7.7.0",
+    "immer": "^10.1.1",
+    "react-server-dom-webpack": "~19.0.0",
+    "tsd": "^0.28.1"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "5.0.4",
+    "@expo/server": "^0.6.2",
+    "@radix-ui/react-slot": "1.2.0",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/native-stack": "^7.3.10",
+    "client-only": "^0.0.1",
+    "invariant": "^2.2.4",
+    "react-fast-compare": "^3.2.2",
+    "react-native-is-edge-to-edge": "^1.1.6",
+    "schema-utils": "^4.0.1",
+    "semver": "~7.6.3",
+    "server-only": "^0.0.1",
+    "sf-symbols-typescript": "^2.1.0",
+    "shallowequal": "^1.1.0",
+    "vaul": "^0.9.0"
+  }
+}

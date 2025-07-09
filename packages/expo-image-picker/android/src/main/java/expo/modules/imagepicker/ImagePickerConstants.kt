@@ -66,7 +66,7 @@ object ImagePickerConstants {
         ExifInterface.TAG_SUBSEC_TIME,
         ExifInterface.TAG_SUBSEC_TIME_DIGITIZED,
         ExifInterface.TAG_SUBSEC_TIME_ORIGINAL,
-        ExifInterface.TAG_USER_COMMENT,
+        ExifInterface.TAG_USER_COMMENT
       ),
       "double" to listOf(
         ExifInterface.TAG_APERTURE_VALUE,
@@ -100,7 +100,7 @@ object ImagePickerConstants {
         ExifInterface.TAG_WHITE_POINT,
         ExifInterface.TAG_X_RESOLUTION,
         ExifInterface.TAG_Y_CB_CR_COEFFICIENTS,
-        ExifInterface.TAG_Y_RESOLUTION,
+        ExifInterface.TAG_Y_RESOLUTION
       ),
       "int" to listOf(
         ExifInterface.TAG_BITS_PER_SAMPLE,
@@ -157,7 +157,7 @@ object ImagePickerConstants {
         ExifInterface.TAG_TRANSFER_FUNCTION,
         ExifInterface.TAG_WHITE_BALANCE,
         ExifInterface.TAG_Y_CB_CR_POSITIONING,
-        ExifInterface.TAG_Y_CB_CR_SUB_SAMPLING,
+        ExifInterface.TAG_Y_CB_CR_SUB_SAMPLING
       )
     )
   }

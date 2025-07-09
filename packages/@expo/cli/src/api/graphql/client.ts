@@ -2,23 +2,23 @@ import {
   cacheExchange,
   Client,
   CombinedError as GraphqlError,
+  AnyVariables,
+  DocumentInput,
   createClient as createUrqlClient,
-  dedupExchange,
   fetchExchange,
   OperationContext,
   OperationResult,
-  PromisifiedSource,
-  TypedDocumentNode,
+  OperationResultSource,
 } from '@urql/core';
 import { retryExchange } from '@urql/exchange-retry';
-import { DocumentNode } from 'graphql';
-import fetch from 'node-fetch';
 
 import * as Log from '../../log';
+import { fetch } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { wrapFetchWithOffline } from '../rest/wrapFetchWithOffline';
 import { wrapFetchWithProxy } from '../rest/wrapFetchWithProxy';
-import UserSettings from '../user/UserSettings';
+import { wrapFetchWithUserAgent } from '../rest/wrapFetchWithUserAgent';
+import { getAccessToken, getSession } from '../user/UserSettings';
 
 type AccessTokenHeaders = {
   authorization: string;
@@ -31,7 +31,6 @@ type SessionHeaders = {
 export const graphqlClient = createUrqlClient({
   url: getExpoApiBaseUrl() + '/graphql',
   exchanges: [
-    dedupExchange,
     cacheExchange,
     retryExchange({
       maxDelayMs: 4000,
@@ -41,9 +40,9 @@ export const graphqlClient = createUrqlClient({
     fetchExchange,
   ],
   // @ts-ignore Type 'typeof fetch' is not assignable to type '(input: RequestInfo, init?: RequestInit | undefined) => Promise<Response>'.
-  fetch: wrapFetchWithOffline(wrapFetchWithProxy(fetch)),
+  fetch: wrapFetchWithOffline(wrapFetchWithProxy(wrapFetchWithUserAgent(fetch))),
   fetchOptions: (): { headers?: AccessTokenHeaders | SessionHeaders } => {
-    const token = UserSettings.getAccessToken();
+    const token = getAccessToken();
     if (token) {
       return {
         headers: {
@@ -51,7 +50,7 @@ export const graphqlClient = createUrqlClient({
         },
       };
     }
-    const sessionSecret = UserSettings.getSession()?.sessionSecret;
+    const sessionSecret = getSession()?.sessionSecret;
     if (sessionSecret) {
       return {
         headers: {
@@ -65,12 +64,11 @@ export const graphqlClient = createUrqlClient({
 
 /* Please specify additionalTypenames in your Graphql queries */
 export interface StricterClient extends Client {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  query<Data = any, Variables extends object = {}>(
-    query: DocumentNode | TypedDocumentNode<Data, Variables> | string,
-    variables: Variables | undefined,
+  query<Data = any, Variables extends AnyVariables = AnyVariables>(
+    query: DocumentInput<Data, Variables>,
+    variables: Variables,
     context: Partial<OperationContext> & { additionalTypenames: string[] }
-  ): PromisifiedSource<OperationResult<Data, Variables>>;
+  ): OperationResultSource<OperationResult<Data, Variables>>;
 }
 
 export async function withErrorHandlingAsync<T>(promise: Promise<OperationResult<T>>): Promise<T> {

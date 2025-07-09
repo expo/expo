@@ -1,0 +1,16 @@
+fragment CommonAppData on App {
+  id
+  name
+  fullName
+  ownerAccount {
+    name
+  }
+  firstTwoBranches: updateBranches(limit: 2, offset: 0) {
+    id
+    name
+    updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+      id
+      ...UpdateData
+    }
+  }
+}

@@ -1,7 +1,7 @@
-import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
 import ExpoTaskManager from './ExpoTaskManager';
 const tasks = new Map();
-function _validateTaskName(taskName) {
+function _validate(taskName) {
     if (!taskName || typeof taskName !== 'string') {
         throw new TypeError('`taskName` must be a non-empty string.');
     }
@@ -43,20 +43,19 @@ export function isTaskDefined(taskName) {
  * preserved between sessions.
  *
  * @param taskName Name of the task.
- * @returns A promise which fulfills with a `boolean` value whether or not the task with given name
- * is already registered.
+ * @returns A promise which resolves to `true` if a task with the given name is registered, otherwise `false`.
  */
 export async function isTaskRegisteredAsync(taskName) {
     if (!ExpoTaskManager.isTaskRegisteredAsync) {
         throw new UnavailabilityError('TaskManager', 'isTaskRegisteredAsync');
     }
-    _validateTaskName(taskName);
+    _validate(taskName);
     return ExpoTaskManager.isTaskRegisteredAsync(taskName);
 }
 // @needsAudit
 /**
  * Retrieves `options` associated with the task, that were passed to the function registering the task
- * (eg. `Location.startLocationUpdatesAsync`).
+ * (e.g. `Location.startLocationUpdatesAsync`).
  *
  * @param taskName Name of the task.
  * @return A promise which fulfills with the `options` object that was passed while registering task
@@ -66,15 +65,16 @@ export async function getTaskOptionsAsync(taskName) {
     if (!ExpoTaskManager.getTaskOptionsAsync) {
         throw new UnavailabilityError('TaskManager', 'getTaskOptionsAsync');
     }
-    _validateTaskName(taskName);
+    _validate(taskName);
     return ExpoTaskManager.getTaskOptionsAsync(taskName);
 }
 // @needsAudit
 /**
  * Provides information about tasks registered in the app.
  *
- * @returns A promise which fulfills with an array of tasks registered in the app. Example:
- * ```json
+ * @returns A promise which fulfills with an array of tasks registered in the app.
+ * @example
+ * ```js
  * [
  *   {
  *     taskName: 'location-updates-task-name',
@@ -113,7 +113,7 @@ export async function unregisterTaskAsync(taskName) {
     if (!ExpoTaskManager.unregisterTaskAsync) {
         throw new UnavailabilityError('TaskManager', 'unregisterTaskAsync');
     }
-    _validateTaskName(taskName);
+    _validate(taskName);
     await ExpoTaskManager.unregisterTaskAsync(taskName);
 }
 // @needsAudit
@@ -129,7 +129,7 @@ export async function unregisterAllTasksAsync() {
     await ExpoTaskManager.unregisterAllTasksAsync();
 }
 if (ExpoTaskManager) {
-    const eventEmitter = new EventEmitter(ExpoTaskManager);
+    const eventEmitter = new LegacyEventEmitter(ExpoTaskManager);
     eventEmitter.addListener(ExpoTaskManager.EVENT_NAME, async ({ data, error, executionInfo }) => {
         const { eventId, taskName } = executionInfo;
         const taskExecutor = tasks.get(taskName);
@@ -148,7 +148,7 @@ if (ExpoTaskManager) {
             }
         }
         else {
-            console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Please make sure that "TaskManager.defineTask" is called during initialization phase.`);
+            console.warn(`TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Make sure that "TaskManager.defineTask" is called during initialization phase.`);
             // No tasks defined -> we need to notify about finish anyway.
             await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });
             // We should also unregister such tasks automatically as the task might have been removed
@@ -160,10 +160,12 @@ if (ExpoTaskManager) {
 // @needsAudit
 /**
  * Determine if the `TaskManager` API can be used in this app.
- * @return A promise fulfills with `true` if the API can be used, and `false` otherwise.
- * On the web it always returns `false`.
+ * @return A promise which fulfills with `true` if the API can be used, and `false` otherwise.
+ * With Expo Go, `TaskManager` is not available on Android, and does not support background execution on iOS.
+ * Use a development build to avoid limitations: https://expo.fyi/dev-client.
+ * On the web, it always returns `false`.
  */
 export async function isAvailableAsync() {
-    return await ExpoTaskManager.isAvailableAsync();
+    return ExpoTaskManager.isAvailableAsync();
 }
 //# sourceMappingURL=TaskManager.js.map

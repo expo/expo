@@ -1,61 +1,62 @@
 package expo.modules.splashscreen
 
-import android.content.Context
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import kotlinx.coroutines.launch
 
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
+class SplashScreenOptions : Record {
+  @Field
+  val duration: Long = 400L
 
-// Below import must be kept unversioned even in versioned code to provide a redirection from
-// versioned code realm to unversioned code realm.
-// Without this import any `SplashScreen.anyMethodName(...)` invocation on JS side ends up
-// in versioned SplashScreen kotlin object that stores no information about the ExperienceActivity.
-import expo.modules.splashscreen.singletons.SplashScreen
+  @Field
+  var fade: Boolean = true
+}
 
-class SplashScreenModule(context: Context) : ExportedModule(context) {
-  companion object {
-    private const val NAME = "ExpoSplashScreen"
-    private const val ERROR_TAG = "ERR_SPLASH_SCREEN"
-  }
+class SplashScreenModule : Module() {
+  private var userControlledAutoHideEnabled: Boolean = false
 
-  private lateinit var activityProvider: ActivityProvider
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSplashScreen")
 
-  override fun getName(): String {
-    return NAME
-  }
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-  }
-
-  @ExpoMethod
-  fun preventAutoHideAsync(promise: Promise) {
-    val activity = activityProvider.currentActivity
-    if (activity == null) {
-      promise.reject(CurrentActivityNotFoundException())
-      return
+    AsyncFunction<Boolean>("preventAutoHideAsync") {
+      // The user has manually invoked prevent autohide, this is used to allow libraries
+      // such as expo-router to know whether it's safe to hide or if they should wait for
+      // the user to do it.
+      userControlledAutoHideEnabled = true
+      SplashScreenManager.preventAutoHideCalled = true
+      return@AsyncFunction true
     }
-    SplashScreen.preventAutoHide(
-      activity,
-      { hasEffect -> promise.resolve(hasEffect) },
-      { m -> promise.reject(ERROR_TAG, m) }
-    )
-  }
 
-  @ExpoMethod
-  fun hideAsync(promise: Promise) {
-    val activity = activityProvider.currentActivity
-    if (activity == null) {
-      promise.reject(CurrentActivityNotFoundException())
-      return
+    AsyncFunction<Unit>("internalPreventAutoHideAsync") {
+      SplashScreenManager.preventAutoHideCalled = true
     }
-    SplashScreen.hide(
-      activity,
-      { hasEffect -> promise.resolve(hasEffect) },
-      { m -> promise.reject(ERROR_TAG, m) }
-    )
+
+    Function("setOptions") { options: SplashScreenOptions ->
+      // Needs to run on the main thread on apis below 33
+      appContext.mainQueue.launch {
+        SplashScreenManager.setSplashScreenOptions(options)
+      }
+    }
+
+    Function("hide") {
+      SplashScreenManager.hide()
+    }
+
+    // For backwards compatibility
+    AsyncFunction("hideAsync") {
+      SplashScreenManager.hide()
+    }
+
+    AsyncFunction("internalMaybeHideAsync") {
+      if (!userControlledAutoHideEnabled) {
+        SplashScreenManager.hide()
+      }
+    }
+
+    OnDestroy {
+      SplashScreenManager.unregisterContentAppearedListener()
+    }
   }
 }

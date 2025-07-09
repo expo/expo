@@ -9,17 +9,17 @@ constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy
 void EXGLContext::prepareContext(jsi::Runtime &runtime, std::function<void(void)> flushMethod) {
   this->flushOnGLThread = flushMethod;
   try {
-    auto viewport = prepareOpenGLESContext();
-    createWebGLRenderer(runtime, this, viewport, runtime.global());
+    this->initialGlesContext = prepareOpenGLESContext();
+    createWebGLRenderer(runtime, this, this->initialGlesContext, runtime.global());
     tryRegisterOnJSRuntimeDestroy(runtime);
 
-    maybePrepareWorkletContext(runtime, viewport);
+    maybeResolveWorkletContext(runtime);
   } catch (const std::runtime_error &err) {
     EXGLSysLog("Failed to setup EXGLContext [%s]", err.what());
   }
 }
 
-void EXGLContext::maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesContext viewport) {
+void EXGLContext::maybeResolveWorkletContext(jsi::Runtime &runtime) {
   jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
   if (!workletRuntimeValue.isObject()) {
     return;
@@ -34,14 +34,19 @@ void EXGLContext::maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesCont
     return;
   }
   uintptr_t rawWorkletRuntimePointer =
-      *reinterpret_cast<uintptr_t*>(workletRuntimeArrayBuffer.data(runtime));
-  jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(rawWorkletRuntimePointer);
+      *reinterpret_cast<uintptr_t *>(workletRuntimeArrayBuffer.data(runtime));
+  jsi::Runtime *workletRuntime = reinterpret_cast<jsi::Runtime *>(rawWorkletRuntimePointer);
+  this->maybeWorkletRuntime = workletRuntime;
+}
+
+void EXGLContext::prepareWorkletContext() {
+  if (maybeWorkletRuntime == nullptr) {
+    return;
+  }
+  jsi::Runtime &runtime = *this->maybeWorkletRuntime;
   createWebGLRenderer(
-      workletRuntime,
-      this,
-      viewport,
-      workletRuntime.global().getPropertyAsObject(workletRuntime, "global"));
-  tryRegisterOnJSRuntimeDestroy(workletRuntime);
+      runtime, this, initialGlesContext, runtime.global().getPropertyAsObject(runtime, "global"));
+  tryRegisterOnJSRuntimeDestroy(runtime);
 }
 
 void EXGLContext::endNextBatch() noexcept {
@@ -129,8 +134,8 @@ void EXGLContext::tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime) {
           runtime, std::make_shared<InvalidateCacheOnDestroy>(runtime)));
 }
 
-initGlesContext EXGLContext::prepareOpenGLESContext() {
-  initGlesContext result;
+glesContext EXGLContext::prepareOpenGLESContext() {
+  glesContext result;
   // Clear everything to initial values
   addBlockingToNextBatch([&] {
     std::string version = reinterpret_cast<const char *>(glGetString(GL_VERSION));

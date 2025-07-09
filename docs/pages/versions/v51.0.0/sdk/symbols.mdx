@@ -1,0 +1,63 @@
+---
+title: Symbols
+description: A library that allows access to native symbols.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-symbols'
+packageName: 'expo-symbols'
+iconUrl: '/static/images/packages/expo-symbols.png'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **warning** This library is currently in beta and subject to breaking changes.
+
+`expo-symbols` provides access to the [SF Symbols](https://developer.apple.com/sf-symbols/) library on iOS.
+
+<ContentSpotlight
+  className="max-w-[200px]"
+  src="/static/images/symbols.png"
+  alt="A collection of the Symbols from the Expo Symbols shown on an iOS device."
+/>
+
+## Installation
+
+<APIInstallSection packageName="expo-symbols" />
+
+## Usage
+
+```jsx App.js
+import { SymbolView, SymbolViewProps, SFSymbol } from 'expo-symbols';
+import { StyleSheet, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <SymbolView name="airpods.chargingcase" style={styles.symbol} type="hierarchical" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  symbol: {
+    width: 35,
+    height: 35,
+    margin: 5,
+  },
+});
+```
+
+## API
+
+```js
+import { SymbolView } from 'expo-symbols';
+```
+
+<APISection packageName="expo-symbols" apiName="Symbol" />

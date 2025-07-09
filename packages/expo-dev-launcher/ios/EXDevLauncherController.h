@@ -3,13 +3,32 @@
 
 #import <UIKit/UIKit.h>
 
+// When `use_frameworks!` is used, the generated Swift header is inside modules.
+// Otherwise, it's available only locally with double-quoted imports.
+#if __has_include(<EXUpdatesInterface/EXUpdatesInterface-Swift.h>)
 #import <EXUpdatesInterface/EXUpdatesInterface-Swift.h>
+#else
+#import "EXUpdatesInterface-Swift.h"
+#endif
+#if __has_include(<EXManifests/EXManifests-Swift.h>)
 #import <EXManifests/EXManifests-Swift.h>
+#else
+#import "EXManifests-Swift.h"
+#endif
+
+#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#elif __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
+// for importing the header from framework, the dash will be transformed to underscore
+#import <React_RCTAppDelegate/RCTAppDelegate.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EXAppContext;
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
+@class EXDevLauncherRecentlyOpenedAppsRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
 
@@ -20,12 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
+@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
-@property (nonatomic, strong) RCTBridge *launcherBridge;
+@property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
-@property (nonatomic, strong) id updatesInterface;
+@property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
+@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 
 + (instancetype)sharedInstance;
@@ -46,11 +66,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
-- (NSDictionary *)recentlyOpenedApps;
-
 - (void)clearRecentlyOpenedApps;
 
-- (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
+- (NSDictionary *)getLaunchOptions;
 
 - (EXManifestsManifest * _Nullable)appManifest;
 
@@ -74,7 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)copyToClipboard:(NSString *)content;
 
-- (NSDictionary *)getUpdatesConfig;
+- (NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants;
+
+- (UIViewController *)createRootViewController;
+
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
 @end
 

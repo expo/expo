@@ -1,9 +1,9 @@
 {
   "name": "expo-maps",
-  "version": "0.0.2",
-  "description": "ExpoMaps standalone module",
-  "main": "build/Map.js",
-  "types": "build/Map.d.ts",
+  "version": "0.10.0",
+  "description": "Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.",
+  "main": "src/index.ts",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -13,32 +13,27 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-maps"
-  ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/maps/",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-maps"
+    "directory": "packages/expo-ui"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "UI components"
+  ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
-  "dependencies": {
-    "expo-asset": "^8.6.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "@types/react": "~19.0.10",
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts/ios"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

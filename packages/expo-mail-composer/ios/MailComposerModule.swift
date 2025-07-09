@@ -8,6 +8,7 @@ public class MailComposerModule: Module {
   var currentSession: MailComposingSession?
 
   public func definition() -> ModuleDefinition {
+    // TODO: Rename the package to 'ExpoMail'
     Name("ExpoMailComposer")
 
     AsyncFunction("isAvailableAsync", canSendMail)
@@ -20,7 +21,7 @@ public class MailComposerModule: Module {
         throw OperationInProgressException()
       }
       guard let appContext = self.appContext else {
-        throw AppContextLostException()
+        throw Exceptions.AppContextLost()
       }
 
       let session = MailComposingSession(appContext)
@@ -37,7 +38,23 @@ public class MailComposerModule: Module {
       }
     }
     .runOnQueue(.main)
+
+    // Function to check the availability of listed mail clients on the device
+    Function("getClients") { () -> [MailClient] in
+      return getAvailableMailClients()
+    }
   }
+}
+
+// Private function to check each mail client for availability
+private func getAvailableMailClients() -> [MailClient] {
+  var availableClients = [MailClient]()
+  for client in mailClients {
+    if let url = URL(string: client.url), UIApplication.shared.canOpenURL(url) {
+      availableClients.append(client)
+    }
+  }
+  return availableClients
 }
 
 private func canSendMail() -> Bool {

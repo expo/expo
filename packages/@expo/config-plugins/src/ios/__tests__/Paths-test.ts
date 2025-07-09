@@ -9,6 +9,8 @@ import {
   getAllInfoPlistPaths,
   getAppDelegate,
   getXcodeProjectPath,
+  getPBXProjectPath,
+  getPodfilePath,
 } from '../Paths';
 
 jest.mock('fs');
@@ -30,6 +32,30 @@ describe(findSchemeNames, () => {
     );
 
     expect(findSchemeNames('/')).toStrictEqual(['client.beta', 'my_app', 'my-app']);
+  });
+});
+
+describe(getPodfilePath, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('returns podfile path', () => {
+    vol.fromJSON(
+      {
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+        'ios/Podfile': 'content',
+        'ios/TestPod.podspec': 'noop',
+        'ios/testproject/AppDelegate.m': '',
+      },
+      '/app'
+    );
+    expect(getPodfilePath('/app')).toBe('/app/ios/Podfile');
+  });
+
+  it(`throws when no podfile is found`, () => {
+    expect(() => getPodfilePath('/none')).toThrow(UnexpectedError);
   });
 });
 
@@ -156,13 +182,13 @@ describe(getAppDelegate, () => {
     });
   });
 
-  it(`returns C++ (objcpp) path`, () => {
+  it(`returns Swift path`, () => {
     vol.fromJSON(rnFixture, '/');
 
     expect(getAppDelegate('/')).toStrictEqual({
       contents: expect.any(String),
-      path: '/ios/HelloWorld/AppDelegate.mm',
-      language: 'objcpp',
+      path: '/ios/HelloWorld/AppDelegate.swift',
+      language: 'swift',
     });
   });
 
@@ -249,5 +275,18 @@ describe(getAllInfoPlistPaths, () => {
       '/app/ios/ExampleE2ETests/Info.plist',
       '/app/ios/ExampleE2E-tvOSTests/Info.plist',
     ]);
+  });
+});
+
+describe(getPBXProjectPath, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it(`gets the pbxproj path`, () => {
+    vol.fromJSON({
+      '/app/ios/app.xcodeproj/project.pbxproj': '',
+    });
+    expect(getPBXProjectPath('/app')).toBe('/app/ios/app.xcodeproj/project.pbxproj');
   });
 });

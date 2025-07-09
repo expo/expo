@@ -1,0 +1,34 @@
+diff --git a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js
+index 38e04fb..24cc8ef 100644
+--- a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js
++++ b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js
+@@ -800,9 +800,9 @@
+         return bound
+           ? "fulfilled" === bound.status
+             ? callServer(id, bound.value.concat(args))
+-            : Promise.resolve(bound).then(function (boundArgs) {
+-                return callServer(id, boundArgs.concat(args));
+-              })
++            // HACK: This is required to make native server actions return a non-undefined value. 
++            // Seems like a bug in the Hermes engine since the same babel transforms work in Chrome/web.
++            : (async () => callServer(id, (await bound).concat(args)))()
+           : callServer(id, args);
+       }
+       var id = metaData.id,
+diff --git a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js
+index 7a5db2b..74dbad0 100644
+--- a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js
++++ b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js
+@@ -512,9 +512,9 @@ function createBoundServerReference(metaData, callServer) {
+     return bound
+       ? "fulfilled" === bound.status
+         ? callServer(id, bound.value.concat(args))
+-        : Promise.resolve(bound).then(function (boundArgs) {
+-            return callServer(id, boundArgs.concat(args));
+-          })
++        // HACK: This is required to make native server actions return a non-undefined value. 
++        // Seems like a bug in the Hermes engine since the same babel transforms work in Chrome/web.
++        : (async () => callServer(id, (await bound).concat(args)))()
+       : callServer(id, args);
+   }
+   var id = metaData.id,

@@ -1,6 +1,5 @@
 import { fs, vol } from 'memfs';
 
-import { asMock } from '../../__tests__/asMock';
 import * as Log from '../../log';
 import { FileNotifier } from '../FileNotifier';
 
@@ -29,7 +28,8 @@ it('returns null when no files can be found', () => {
 });
 
 it('observes the first existing file', () => {
-  asMock(fs.watchFile)
+  jest
+    .mocked(fs.watchFile)
     // @ts-expect-error
     .mockImplementationOnce((_, callback) => {
       // @ts-expect-error: polymorphism
@@ -55,7 +55,7 @@ it('observes the first existing file', () => {
   expect(fileNotifier.startObserving()).toBe('/babel.config.js');
 
   // We mock out the callback firing and test that a warning was logged.
-  expect(Log.log).toBeCalledTimes(1);
-  expect(Log.log).toBeCalledWith(expect.stringContaining('babel.config.js'));
-  expect(Log.log).toBeCalledWith(expect.stringContaining('foobar'));
+  expect(Log.log).toHaveBeenCalledTimes(1);
+  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('babel.config.js'));
+  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('foobar'));
 });

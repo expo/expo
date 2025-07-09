@@ -5,10 +5,12 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "@expo/vector-icons": ["react-native-vector-icons"]
+      "@expo/vector-icons": ["react-native-vector-icons"],
+      "ThemeProvider": ["../common/ThemeProvider"],
+      "benchmarking": ["../bare-expo/modules/benchmarking"]
     },
     "types": ["jest"],
-    "typeRoots": ["./ts-declarations", "node_modules/@types"],
+    "typeRoots": ["./ts-declarations", "./node_modules/@types", "../../node_modules/@types"],
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,

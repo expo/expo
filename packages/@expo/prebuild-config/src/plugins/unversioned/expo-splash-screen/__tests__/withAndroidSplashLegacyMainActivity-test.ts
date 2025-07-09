@@ -1,6 +1,6 @@
 import { AndroidConfig } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { vol } from 'memfs';
 
 import fixtures from '../../../__tests__/fixtures/react-native-project';
@@ -29,13 +29,19 @@ describe(setSplashScreenLegacyMainActivity, () => {
     };
     const mainActivity = await AndroidConfig.Paths.getMainActivityAsync('/app');
     let contents = fs.readFileSync(mainActivity.path).toString();
-    contents = await setSplashScreenLegacyMainActivity(exp, contents, mainActivity.language);
+    contents = await setSplashScreenLegacyMainActivity(
+      exp,
+      { backgroundColor: '#000020', resizeMode: 'native' },
+      contents,
+      mainActivity.language
+    );
     expect(contents).toMatch(
-      /SplashScreen.show\(this, SplashScreenImageResizeMode\.NATIVE, ReactRootView\.class, false\);/
+      /SplashScreen\.show\(this, SplashScreenImageResizeMode\.NATIVE, ReactRootView::class\.java, false\)/
     );
     // Try it twice...
     const nextContents = await setSplashScreenLegacyMainActivity(
       exp,
+      { backgroundColor: '#000020', resizeMode: 'native' },
       contents,
       mainActivity.language
     );

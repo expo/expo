@@ -1,4 +1,11 @@
-# expo-splash-screen
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/splash-screen/">
+    <img
+      src="../../.github/resources/expo-splash-screen.svg"
+      alt="expo-splash-screen"
+      height="64" />
+  </a>
+</p>
 
 `expo-splash-screen` allows you to customize your app's splash screen, which is the initial screen users see when the app is launched, before it has loaded. Splash screens (sometimes called launch screens) provide a user's first experience with your application.
 
@@ -250,10 +257,6 @@ npx expo install expo-splash-screen
 
 Run `npx pod-install` after installing the package.
 
-### Automatic configuration
-
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/main/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
-
 ### Manual Configuration
 
 To achieve native splash screen (in iOS ecosystem it's called `LaunchScreen`) behavior, you have to provide either a `SplashScreen.storyboard` file or a `SplashScreen.xib` file, and configure your Xcode project accordingly.
@@ -381,10 +384,6 @@ The newly created `SplashScreen.storyboard` needs to be marked as the `Launch Sc
 
 ##### Provide different background colors
 
-Depending on what iOS version your application is targeting, you have to adjust your native project differently to a obtain working per-appearance splash screen view.
-
-##### I'm targeting iOS 11+
-
 You can take advantage of [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) in your Xcode project.
 
 1. Create a new `Color Set` and customize its values for different color modes:
@@ -406,19 +405,6 @@ You can take advantage of [`named colors`](https://developer.apple.com/library/a
  <summary>Show image with details</summary>
 <img src="./assets/configuration-ios-selectNamedColor.png" height="350" />
 </details>
-
-##### I'm targeting iOS version < 11
-
-You cannot use [`named colors`](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/WhatsNewXcode/xcode_9/xcode_9.html) feature in your Xcode project.
-Instead you have to create an additional image set that contains small 1x1px images, each with the desired background color. Then, you'll use this additional image resource as a background in the splash screen view.
-
-You can use this online generator to obtain 1x1px `.png` images with desired colors: http://www.1x1px.me.
-
-1. Create `SplashScreenBackground` `Image Set` with desired background colors for each mode in your `Images.xcassets` directory:
-   - open your `.xcassets` directory with images,
-   - in the content panel add `New image set` and name it `SplashScreenBackground`,
-   - convert this `Image set` to support `Dark Appearance` by navigating to `Attributes Inspector` in the right panel and changing `Appearance` to `Any, Dark`,
-   - provide images with colors for every mode (you can generate color 1x1px images using http://www.1x1px.me).
 
 <details>
  <summary>Show image with details</summary>
@@ -471,11 +457,6 @@ You might want to add a separate image for `dark` mode. If the system is switche
 <img src="./assets/configuration-ios-addDarkImagesXcassets.png" height="280" />
 </details>
 
-###### Background color when you want to support iOS < 11
-
-If you're targeting a version of iOS < 11 then you cannot use `named color` feature and instead you need to generate images with desired background colors that are going to be used as the background for splash screen view.
-There is this awesome 1x1px png online generator: http://www.1x1px.me (use it to generate two 1x1px images with desired background colors for different color modes).
-
 #### 🛠 (<em>optional</em>) Customize StatusBar
 
 You might want to customize the StatusBar appearance during the time the SplashScreen is being shown.
@@ -503,10 +484,6 @@ You might want to customize the StatusBar appearance during the time the SplashS
 ## 🤖 Configure Android
 
 To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be hooked into the native view hierarchy and consume some resources that have to be placed under `/android/app/src/res` directory.
-
-### Automatic configuration
-
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/main/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 
@@ -565,7 +542,7 @@ Create the file with the following content:
 
 #### `NATIVE` mode adjustments
 
-If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#-optional-customize-resizemode), you shoulw add:
+If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#-optional-customize-resizemode), you should add:
 
 ```diff
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
@@ -699,7 +676,6 @@ Create new color resource in your `res/values/colors.xml` (if your application s
 
 ```diff
   <resources>
-    <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
     <color name="splashscreen_background">#D0D0C0</color>
 +   <color name="splashscreen_statusbar_color">#(AA)RRGGBB</color> <!-- #AARRGGBB or #RRGGBB format -->
   </resources>
@@ -744,7 +720,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 
 ### iOS caching
 
-Splash Screens on iOS apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However, the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
+Splash Screens on iOS apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However, the caching sometimes can persist for a day or two, so be patient if the aforementioned steps were unable to resolve the issue.
 
 ### `NATIVE` mode pushes splash image up a little bit
 
@@ -767,8 +743,8 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
  import com.facebook.react.ReactRootView;
  import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
--import expo.modules.splashscreen.singletons.SplashScreen;
--import expo.modules.splashscreen.SplashScreenImageResizeMode;
+-import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen;
+-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode;
 -
  public class MainActivity extends ReactActivity {
    @Override
@@ -777,7 +753,6 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
      setTheme(R.style.AppTheme);
      super.onCreate(null);
 -    // SplashScreen.show(...) has to be called after super.onCreate(...)
--    // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
 -    SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
    }
 ```

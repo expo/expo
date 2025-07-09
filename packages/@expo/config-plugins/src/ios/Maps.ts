@@ -1,17 +1,14 @@
 import { ExpoConfig } from '@expo/config-types';
-import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { ConfigPlugin, InfoPlist } from '../Plugin.types';
-import { createInfoPlistPlugin, withAppDelegate } from '../plugins/ios-plugins';
-import { withDangerousMod } from '../plugins/withDangerousMod';
+import { createInfoPlistPlugin, withAppDelegate, withPodfile } from '../plugins/ios-plugins';
 import { mergeContents, MergeResults, removeContents } from '../utils/generateCode';
 
 const debug = require('debug')('expo:config-plugins:ios:maps') as typeof console.log;
 
-export const MATCH_INIT =
-  /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
+export const MATCH_INIT = /\bsuper\.application\(\w+?, didFinishLaunchingWithOptions: \w+?\)/g;
 
 const withGoogleMapsKey = createInfoPlistPlugin(setGoogleMapsApiKey, 'withGoogleMapsKey');
 
@@ -51,19 +48,14 @@ export function setGoogleMapsApiKey(
 }
 
 export function addGoogleMapsAppDelegateImport(src: string): MergeResults {
-  const newSrc = [];
-  newSrc.push(
-    '#if __has_include(<GoogleMaps/GoogleMaps.h>)',
-    '#import <GoogleMaps/GoogleMaps.h>',
-    '#endif'
-  );
+  const newSrc = ['#if canImport(GoogleMaps)', 'import GoogleMaps', '#endif'];
 
   return mergeContents({
     tag: 'react-native-maps-import',
     src,
     newSrc: newSrc.join('\n'),
-    anchor: /#import "AppDelegate\.h"/,
-    offset: 1,
+    anchor: /@UIApplicationMain/,
+    offset: 0,
     comment: '//',
   });
 }
@@ -76,19 +68,14 @@ export function removeGoogleMapsAppDelegateImport(src: string): MergeResults {
 }
 
 export function addGoogleMapsAppDelegateInit(src: string, apiKey: string): MergeResults {
-  const newSrc = [];
-  newSrc.push(
-    '#if __has_include(<GoogleMaps/GoogleMaps.h>)',
-    `  [GMSServices provideAPIKey:@"${apiKey}"];`,
-    '#endif'
-  );
+  const newSrc = ['#if canImport(GoogleMaps)', `GMSServices.provideAPIKey("${apiKey}")`, '#endif'];
 
   return mergeContents({
     tag: 'react-native-maps-init',
     src,
     newSrc: newSrc.join('\n'),
     anchor: MATCH_INIT,
-    offset: 2,
+    offset: 0,
     comment: '//',
   });
 }
@@ -143,77 +130,77 @@ function isReactNativeMapsAutolinked(config: Pick<ExpoConfig, '_internal'>): boo
 }
 
 const withMapsCocoaPods: ConfigPlugin<{ useGoogleMaps: boolean }> = (config, { useGoogleMaps }) => {
-  return withDangerousMod(config, [
-    'ios',
-    async (config) => {
-      const filePath = path.join(config.modRequest.platformProjectRoot, 'Podfile');
-      const contents = await fs.promises.readFile(filePath, 'utf-8');
-      let results: MergeResults;
-      // Only add the block if react-native-maps is installed in the project (best effort).
-      // Generally prebuild runs after a yarn install so this should always work as expected.
-      const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
-      const isLinked = isReactNativeMapsAutolinked(config);
-      debug('Is Expo Autolinked:', isLinked);
-      debug('react-native-maps path:', googleMapsPath);
-      if (isLinked && googleMapsPath && useGoogleMaps) {
-        try {
-          results = addMapsCocoaPods(contents);
-        } catch (error: any) {
-          if (error.code === 'ERR_NO_MATCH') {
-            throw new Error(
-              `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`
-            );
-          }
-          throw error;
+  return withPodfile(config, async (config) => {
+    // Only add the block if react-native-maps is installed in the project (best effort).
+    // Generally prebuild runs after a yarn install so this should always work as expected.
+    const googleMapsPath = isReactNativeMapsInstalled(config.modRequest.projectRoot);
+    const isLinked = isReactNativeMapsAutolinked(config);
+    debug('Is Expo Autolinked:', isLinked);
+    debug('react-native-maps path:', googleMapsPath);
+
+    let results: MergeResults;
+
+    if (isLinked && googleMapsPath && useGoogleMaps) {
+      try {
+        results = addMapsCocoaPods(config.modResults.contents);
+      } catch (error: any) {
+        if (error.code === 'ERR_NO_MATCH') {
+          throw new Error(
+            `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Report this with a copy of your project Podfile: https://github.com/expo/expo/issues`
+          );
         }
-      } else {
-        // If the package is no longer installed, then remove the block.
-        results = removeMapsCocoaPods(contents);
+        throw error;
       }
-      if (results.didMerge || results.didClear) {
-        await fs.promises.writeFile(filePath, results.contents);
-      }
-      return config;
-    },
-  ]);
+    } else {
+      // If the package is no longer installed, then remove the block.
+      results = removeMapsCocoaPods(config.modResults.contents);
+    }
+
+    if (results.didMerge || results.didClear) {
+      config.modResults.contents = results.contents;
+    }
+
+    return config;
+  });
 };
 
 const withGoogleMapsAppDelegate: ConfigPlugin<{ apiKey: string | null }> = (config, { apiKey }) => {
   return withAppDelegate(config, (config) => {
-    if (['objc', 'objcpp'].includes(config.modResults.language)) {
-      if (
-        apiKey &&
-        isReactNativeMapsAutolinked(config) &&
-        isReactNativeMapsInstalled(config.modRequest.projectRoot)
-      ) {
-        try {
-          config.modResults.contents = addGoogleMapsAppDelegateImport(
-            config.modResults.contents
-          ).contents;
-          config.modResults.contents = addGoogleMapsAppDelegateInit(
-            config.modResults.contents,
-            apiKey
-          ).contents;
-        } catch (error: any) {
-          if (error.code === 'ERR_NO_MATCH') {
-            throw new Error(
-              `Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`
-            );
-          }
-          throw error;
-        }
-      } else {
-        config.modResults.contents = removeGoogleMapsAppDelegateImport(
-          config.modResults.contents
-        ).contents;
-        config.modResults.contents = removeGoogleMapsAppDelegateInit(
-          config.modResults.contents
-        ).contents;
-      }
-    } else {
+    if (
+      !apiKey ||
+      !isReactNativeMapsAutolinked(config) ||
+      !isReactNativeMapsInstalled(config.modRequest.projectRoot)
+    ) {
+      config.modResults.contents = removeGoogleMapsAppDelegateImport(
+        config.modResults.contents
+      ).contents;
+      config.modResults.contents = removeGoogleMapsAppDelegateInit(
+        config.modResults.contents
+      ).contents;
+      return config;
+    }
+
+    if (config.modResults.language !== 'swift') {
       throw new Error(
         `Cannot setup Google Maps because the project AppDelegate is not a supported language: ${config.modResults.language}`
       );
+    }
+
+    try {
+      config.modResults.contents = addGoogleMapsAppDelegateImport(
+        config.modResults.contents
+      ).contents;
+      config.modResults.contents = addGoogleMapsAppDelegateInit(
+        config.modResults.contents,
+        apiKey
+      ).contents;
+    } catch (error: any) {
+      if (error.code === 'ERR_NO_MATCH') {
+        throw new Error(
+          `Cannot add Google Maps to the project's AppDelegate because it's malformed. Report this with a copy of your project AppDelegate: https://github.com/expo/expo/issues`
+        );
+      }
+      throw error;
     }
     return config;
   });

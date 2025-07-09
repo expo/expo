@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, SyntheticPlatformEmitter } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { DeviceEventEmitter } from 'react-native';
 
 import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
 import type { RecordingStatus } from './Audio/Recording.types';
@@ -48,6 +49,9 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     };
 
   return new Promise((resolve, reject) => {
+    // TODO(@kitten): The types indicates that this is incorrect.
+    // Please check whether this is correct!
+    // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
 }
@@ -121,6 +125,9 @@ async function setStatusForMedia(
   if (status.rate !== undefined) {
     media.playbackRate = status.rate;
   }
+  if (status.shouldCorrectPitch !== undefined) {
+    media.preservesPitch = status.shouldCorrectPitch;
+  }
   if (status.volume !== undefined) {
     media.volume = status.volume;
   }
@@ -134,7 +141,7 @@ async function setStatusForMedia(
   return getStatusFromMedia(media);
 }
 
-let mediaRecorder: null | any /*MediaRecorder*/ = null;
+let mediaRecorder: null | MediaRecorder = null;
 let mediaRecorderUptimeOfLastStartResume: number = 0;
 let mediaRecorderDurationAlreadyRecorded: number = 0;
 let mediaRecorderIsRecording: boolean = false;
@@ -148,9 +155,6 @@ function getAudioRecorderDurationMillis() {
 }
 
 export default {
-  get name(): string {
-    return 'ExponentAV';
-  },
   async getStatusForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus> {
     return getStatusFromMedia(element);
   },
@@ -190,14 +194,14 @@ export default {
     const media = new Audio(source);
 
     media.ontimeupdate = () => {
-      SyntheticPlatformEmitter.emit('didUpdatePlaybackStatus', {
+      DeviceEventEmitter.emit('didUpdatePlaybackStatus', {
         key: media,
         status: getStatusFromMedia(media),
       });
     };
 
     media.onerror = () => {
-      SyntheticPlatformEmitter.emit('ExponentAV.onError', {
+      DeviceEventEmitter.emit('ExponentAV.onError', {
         key: media,
         error: media.error!.message,
       });
@@ -237,7 +241,8 @@ export default {
       uri: null,
     };
   },
-  async prepareAudioRecorder(options): Promise<{
+  // TODO(@kitten): Needs to be typed
+  async prepareAudioRecorder(options: any): Promise<{
     uri: string | null;
     // status is of type RecordingStatus, but without the canRecord field populated
     status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
@@ -251,7 +256,7 @@ export default {
 
     const stream = await getUserMedia({ audio: true });
 
-    mediaRecorder = new (window as any).MediaRecorder(
+    mediaRecorder = new window.MediaRecorder(
       stream,
       options?.web || RecordingOptionsPresets.HIGH_QUALITY.web
     );
@@ -312,21 +317,22 @@ export default {
     return this.getAudioRecordingStatus();
   },
   async stopAudioRecording(): Promise<RecordingStatus> {
-    if (mediaRecorder === null) {
+    const _mediaRecorder = mediaRecorder;
+    if (_mediaRecorder === null) {
       throw new Error(
         'Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.'
       );
     }
 
-    if (mediaRecorder.state === 'inactive') {
+    if (_mediaRecorder.state === 'inactive') {
       return this.getAudioRecordingStatus();
     }
 
     const dataPromise = new Promise<Blob>((resolve) =>
-      mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
+      _mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
     );
 
-    mediaRecorder.stop();
+    _mediaRecorder.stop();
 
     const data = await dataPromise;
     const url = URL.createObjectURL(data);

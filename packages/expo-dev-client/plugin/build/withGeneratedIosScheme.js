@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setGeneratedIosScheme = exports.withGeneratedIosScheme = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+exports.withGeneratedIosScheme = void 0;
+exports.setGeneratedIosScheme = setGeneratedIosScheme;
+const config_plugins_1 = require("expo/config-plugins");
 const getDefaultScheme_1 = __importDefault(require("./getDefaultScheme"));
 const withGeneratedIosScheme = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
@@ -21,4 +22,3 @@ function setGeneratedIosScheme(config, infoPlist) {
     }
     return infoPlist;
 }
-exports.setGeneratedIosScheme = setGeneratedIosScheme;

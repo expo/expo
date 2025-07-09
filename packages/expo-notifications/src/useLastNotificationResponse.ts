@@ -1,12 +1,17 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
-import { NotificationResponse } from './Notifications.types';
-import { addNotificationResponseReceivedListener } from './NotificationsEmitter';
-import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
+import {
+  addNotificationResponseReceivedListener,
+  addNotificationResponseClearedListener,
+  getLastNotificationResponseAsync,
+} from './NotificationsEmitter';
 
 /**
- * A React hook always returns the notification response that was received most recently
+ * A React hook which returns the notification response that was received most recently
  * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * To clear the last notification response, use [`clearLastNotificationResponseAsync()`](#notificationsclearlastnotificationresponseasync).
  *
  * > If you don't want to use a hook, you can use `Notifications.getLastNotificationResponseAsync()` instead.
  *
@@ -15,7 +20,8 @@ import NotificationsEmitterModule from './NotificationsEmitterModule';
  * - `null` - if no notification response has been received yet,
  * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  *
- * @example Responding to a notification tap by opening a URL that could be put into the notification's `data`
+ * @example
+ * Responding to a notification tap by opening a URL that could be put into the notification's `data`
  * (opening the URL is your responsibility and is not a part of the `expo-notifications` API):
  * ```jsx
  * import * as Notifications from 'expo-notifications';
@@ -40,31 +46,53 @@ import NotificationsEmitterModule from './NotificationsEmitterModule';
  * @header listen
  */
 export default function useLastNotificationResponse() {
-  const [lastNotificationResponse, setLastNotificationResponse] = useState<
-    NotificationResponse | null | undefined
-  >(undefined);
+  const [lastNotificationResponse, setLastNotificationResponse] =
+    useState<MaybeNotificationResponse>(undefined);
 
   // useLayoutEffect ensures the listener is registered as soon as possible
   useLayoutEffect(() => {
-    const subscription = addNotificationResponseReceivedListener((response) => {
-      setLastNotificationResponse(response);
+    let isMounted = true;
+    // Get the last response first, in case it was set earlier (even in native code on startup)
+    getLastNotificationResponseAsync().then((response) => {
+      if (isMounted) {
+        setLastNotificationResponse((prevResponse) =>
+          determineNextResponse(prevResponse, response)
+        );
+      }
+    });
+
+    // Set up listener for responses that come in, and set the last response if needed
+    const subscription = addNotificationResponseReceivedListener((response) =>
+      setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response))
+    );
+    const clearResponseSubscription = addNotificationResponseClearedListener(() => {
+      setLastNotificationResponse(null);
     });
     return () => {
+      isMounted = false;
       subscription.remove();
+      clearResponseSubscription.remove();
     };
-  }, []);
-
-  // On each mount of this hook we fetch last notification response
-  // from the native module which is an "always active listener"
-  // and always returns the most recent response.
-  useEffect(() => {
-    NotificationsEmitterModule.getLastNotificationResponseAsync?.().then((response) => {
-      // We only update the state with the resolved value if it's empty,
-      // because if it's not empty it must have been populated by the `useLayoutEffect`
-      // listener which returns "live" values.
-      setLastNotificationResponse((currentResponse) => currentResponse ?? response);
-    });
   }, []);
 
   return lastNotificationResponse;
 }
+
+// returns the new response if it is different from the previous,
+// also has to return undefined until we're sure of what to return (null or a response)
+// the transition from response to null is invalid
+export const determineNextResponse = (
+  prevResponse: MaybeNotificationResponse,
+  newResponse: NotificationResponse | null
+) => {
+  if (!newResponse) {
+    return null;
+  }
+  if (!prevResponse) {
+    return newResponse;
+  }
+  return prevResponse.notification.request.identifier !==
+    newResponse.notification.request.identifier
+    ? newResponse
+    : prevResponse;
+};

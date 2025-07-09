@@ -1,17 +1,17 @@
 ---
 title: Print
+description: A library that provides printing functionality for Android and iOS (AirPrint).
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-print'
 packageName: 'expo-print'
+iconUrl: '/static/images/packages/expo-print.png'
+platforms: ['android', 'ios', 'web']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
 `expo-print` provides an API for Android and iOS (AirPrint) printing functionality.
-
-<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -22,7 +22,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label='Print usage' dependencies={['expo-print', 'expo-sharing']}>
 
 ```jsx
-import * as React from 'react';
+import { useState } from 'react';
 import { View, StyleSheet, Button, Platform, Text } from 'react-native';
 import * as Print from 'expo-print';
 import { shareAsync } from 'expo-sharing';
@@ -44,7 +44,7 @@ const html = `
 `;
 
 export default function App() {
-  const [selectedPrinter, setSelectedPrinter] = React.useState();
+  const [selectedPrinter, setSelectedPrinter] = useState();
 
   const print = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
@@ -86,7 +86,6 @@ export default function App() {
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -102,7 +101,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-/* @end */
 ```
 
 </SnackInline>
@@ -117,28 +115,44 @@ import * as Print from 'expo-print';
 
 ## Local images
 
-On iOS, printing from HTML source doesn't support local asset URLs (due to WKWebView limitations). Instead, images need to be converted to base64 and inlined into the HTML.
+On iOS, printing from HTML source doesn't support local asset URLs (due to `WKWebView` limitations). Instead, images need to be converted to base64 and inlined into the HTML.
 
-```js
+```tsx Example
 import { Asset } from 'expo-asset';
+import { useImageManipulator } from 'expo-image-manipulator';
 import { printAsync } from 'expo-print';
-import { manipulateAsync } from 'expo-image-manipulator';
+import { useEffect } from 'react';
 
-async function generateHTML() {
-  const asset = Asset.fromModule(require('../../assets/logo.png'));
-  const image = await manipulateAsync(asset.localUri ?? asset.uri, [], { base64: true });
-  return `
-    <html>
-      <img
-        src="data:image/jpeg;base64,${image.base64}"
-        style="width: 90vw;" />
-    </html>
-  `;
-}
+const IMAGE = Asset.fromModule(require('@/assets/images/icon.png'));
 
-async function print() {
-  const html = await generateHTML();
-  await printAsync({ html });
+export function ImageManipulatorExample() {
+  const context = useImageManipulator(IMAGE.uri);
+
+  useEffect(() => {
+    async function generateAndPrint() {
+      try {
+        await IMAGE.downloadAsync();
+        const manipulatedImage = await context.renderAsync();
+        const result = await manipulatedImage.saveAsync({ base64: true });
+
+        const html = `
+          <html>
+            <img
+              src="data:image/png;base64,${result.base64}"
+              style="width: 90vw;" />
+          </html>
+        `;
+
+        await printAsync({ html });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    generateAndPrint();
+  }, [context]);
+
+  return <>{/* Render UI */}</>;
 }
 ```
 
@@ -171,4 +185,4 @@ They are set by `@page` style block and you can override them in your HTML code:
 </style>
 ```
 
-See [@page docs on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) for more details.
+See [`@page` documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) for more details.

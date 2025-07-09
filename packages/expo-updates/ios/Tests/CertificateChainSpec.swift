@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class CertificateChainSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     it("works for valid single certificate") {
       let cert = getTestCertificate(TestCertificate.test)
       let codeSigningCertificate = try CertificateChain(certificateStrings: [cert]).codeSigningCertificate()
@@ -55,10 +55,9 @@ class CertificateChainSpec : ExpoSpec {
       // missing intermediate
       let leafCert = getTestCertificate(TestCertificate.chainLeaf)
       let rootCert = getTestCertificate(TestCertificate.chainRoot)
-
       expect {
         try CertificateChain(certificateStrings: [leafCert, rootCert]).codeSigningCertificate()
-      }.to(throwError(CodeSigningError.CertificateChainError))
+      }.to(throwError(CodeSigningError.CertificateChainError(reason: .couldNotCreateSecTrust(osStatus: 1))))
     }
 
     it("throws when any signature is invalid") {
@@ -68,7 +67,7 @@ class CertificateChainSpec : ExpoSpec {
 
       expect {
         try CertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()
-      }.to(throwError(CodeSigningError.CertificateChainError))
+      }.to(throwError(CodeSigningError.CertificateChainError(reason: .couldNotCreateSecTrust(osStatus: 1))))
     }
 
     it("throws when root is not self signed") {
@@ -87,7 +86,7 @@ class CertificateChainSpec : ExpoSpec {
 
       expect {
         try CertificateChain(certificateStrings: [cert]).codeSigningCertificate()
-      }.to(throwError(CodeSigningError.CertificateChainError))
+      }.to(throwError(CodeSigningError.CertificateChainError(reason: .couldNotCreateSecTrust(osStatus: 1))))
     }
 
     it("throws when intermediate CA not CA") {
@@ -97,7 +96,7 @@ class CertificateChainSpec : ExpoSpec {
 
       expect {
         try CertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()
-      }.to(throwError(CodeSigningError.CertificateChainError))
+      }.to(throwError(CodeSigningError.CertificateChainError(reason: .couldNotCreateSecTrust(osStatus: 1))))
     }
 
     it("throws when CA path len violated") {
@@ -107,7 +106,7 @@ class CertificateChainSpec : ExpoSpec {
 
       expect {
         try CertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()
-      }.to(throwError(CodeSigningError.CertificateChainError))
+      }.to(throwError(CodeSigningError.CertificateChainError(reason: .couldNotCreateSecTrust(osStatus: 1))))
     }
 
     it("throws when expo project information violation") {

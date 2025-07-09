@@ -1,23 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.YarnPackageManager = void 0;
-const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
+const BasePackageManager_1 = require("./BasePackageManager");
+const nodeManagers_1 = require("../utils/nodeManagers");
 const spawn_1 = require("../utils/spawn");
 const yarn_1 = require("../utils/yarn");
-const BasePackageManager_1 = require("./BasePackageManager");
 class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
-    constructor() {
-        super(...arguments);
-        this.name = 'yarn';
-        this.bin = 'yarnpkg';
-        this.lockFile = nodeWorkspaces_1.YARN_LOCK_FILE;
-    }
+    name = 'yarn';
+    bin = 'yarnpkg';
+    lockFile = nodeManagers_1.YARN_LOCK_FILE;
     /** Check if Yarn is running in offline mode, and add the `--offline` flag */
     async withOfflineFlagAsync(namesOrFlags) {
         return (await (0, yarn_1.isYarnOfflineAsync)()) ? [...namesOrFlags, '--offline'] : namesOrFlags;
     }
     workspaceRoot() {
-        const root = (0, nodeWorkspaces_1.findYarnOrNpmWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
+        const root = (0, nodeManagers_1.resolveWorkspaceRoot)(this.ensureCwdDefined('workspaceRoot'));
         if (root) {
             return new YarnPackageManager({
                 ...this.options,

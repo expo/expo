@@ -1,4 +1,4 @@
-const eslint = require('eslint');
+const eslint = require('eslint8');
 const path = require('path');
 
 const checkPrettierRulesAsync = require('./tools/checkPrettierRulesAsync');
@@ -14,7 +14,7 @@ it(`has a default config`, () => {
         baseConfig: getBaseConfig(),
         overrideConfigFile: configFile,
         useEslintrc: false,
-      })
+      }),
   ).not.toThrow();
 });
 
@@ -23,11 +23,10 @@ it(`lints with the default config`, async () => {
     {
       baseConfig: getBaseConfig(),
       overrideConfigFile: configFile,
-      fix: true,
       ignore: false,
       useEslintrc: false,
     },
-    ['__tests__/fixtures/*all*']
+    ['fixtures/*all*'],
   );
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);

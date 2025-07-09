@@ -1,11 +1,4 @@
 import {
-  ClipboardImage,
-  GetImageOptions,
-  GetStringOptions,
-  SetStringOptions,
-  StringFormat,
-} from '../Clipboard.types';
-import {
   ClipboardUnavailableException,
   CopyFailureException,
   NoPermissionException,
@@ -20,11 +13,15 @@ import {
   htmlToPlainText,
   isClipboardPermissionDeniedAsync,
 } from './Utils';
+import {
+  ClipboardImage,
+  GetImageOptions,
+  GetStringOptions,
+  SetStringOptions,
+  StringFormat,
+} from '../Clipboard.types';
 
 export default {
-  get name(): string {
-    return 'ExpoClipboard';
-  },
   async getStringAsync(options: GetStringOptions): Promise<string> {
     if (!navigator.clipboard) {
       throw new ClipboardUnavailableException();
@@ -54,9 +51,12 @@ export default {
           return text;
         }
       }
-    } catch (e) {
+    } catch (error: any) {
       // it might fail, because user denied permission
-      if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+      if (
+        (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+        (await isClipboardPermissionDeniedAsync())
+      ) {
         throw new NoPermissionException();
       }
 
@@ -95,12 +95,15 @@ export default {
           const clipboardItemInput = createHtmlClipboardItem(text);
           await navigator.clipboard.write([clipboardItemInput]);
           return true;
-        } catch (e) {
+        } catch (error: any) {
           // it might fail, because user denied permission
-          if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+          if (
+            (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+            (await isClipboardPermissionDeniedAsync())
+          ) {
             throw new NoPermissionException();
           }
-          throw new CopyFailureException(e.message);
+          throw new CopyFailureException(error.message);
         }
       }
       default: {
@@ -139,12 +142,15 @@ export default {
       ]);
 
       return { data, size };
-    } catch (e) {
+    } catch (error: any) {
       // it might fail, because user denied permission
-      if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+      if (
+        (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+        (await isClipboardPermissionDeniedAsync())
+      ) {
         throw new NoPermissionException();
       }
-      throw new PasteFailureException(e.message);
+      throw new PasteFailureException(error.message);
     }
   },
   async setImageAsync(base64image: string): Promise<void> {
@@ -185,12 +191,15 @@ async function clipboardHasTypesAsync(types: string[]): Promise<boolean> {
   try {
     const clipboardItems = await navigator.clipboard.read();
     return clipboardItems.flatMap((item) => item.types).some((type) => types.includes(type));
-  } catch (e) {
+  } catch (error: any) {
     // it might fail, because user denied permission
-    if (e.name === 'NotAllowedError' || (await isClipboardPermissionDeniedAsync())) {
+    if (
+      (typeof error === 'object' && error?.name === 'NotAllowedError') ||
+      (await isClipboardPermissionDeniedAsync())
+    ) {
       throw new NoPermissionException();
     }
-    throw e;
+    throw error;
   }
 }
 

@@ -11,7 +11,7 @@ import expo.modules.devlauncher.R
 
 @SuppressLint("ViewConstructor")
 class DevLauncherSplashScreen(
-  context: Context,
+  context: Context
 ) : RelativeLayout(context) {
   init {
     setBackgroundColor(Color.WHITE)
@@ -27,7 +27,7 @@ class DevLauncherSplashScreen(
     imageView.setImageResource(R.drawable._expodevclientcomponents_assets_logoicon)
     imageView.layoutParams = LayoutParams(
       imageWidthPixels.toInt(),
-      LinearLayout.LayoutParams.WRAP_CONTENT,
+      LinearLayout.LayoutParams.WRAP_CONTENT
     ).apply {
       addRule(CENTER_IN_PARENT, TRUE)
     }

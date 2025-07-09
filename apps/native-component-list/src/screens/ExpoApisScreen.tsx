@@ -1,103 +1,38 @@
-import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'expo-modules-core';
-import * as Notifications from 'expo-notifications';
-import React from 'react';
+import { memo } from 'react';
+import { Platform } from 'react-native';
 
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
+import { type ScreenApiItem } from '../types/ScreenConfig';
 
 if (Platform.OS !== 'web') {
-  Notifications.setNotificationHandler({
+  // Optionally require expo-notifications as we cannot assume that the module is linked.
+  // It's not available on macOS and tvOS yet and we want to avoid errors caused by the top-level import.
+  const Notifications = (() => {
+    try {
+      return require('expo-notifications');
+    } catch {
+      return null;
+    }
+  })();
+
+  Notifications?.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true,
+      shouldShowList: true,
+      shouldShowBanner: true,
       shouldPlaySound: true,
       shouldSetBadge: true,
     }),
   });
 }
 
-const screens = [
-  'Accelerometer',
-  'ActionSheet',
-  'Alert',
-  'Appearance',
-  'AppleAuthentication',
-  'Audio',
-  'AsyncStorage',
-  'AuthSession',
-  'BackgroundFetch',
-  'BackgroundLocation',
-  'Battery',
-  'Brightness',
-  'Calendars',
-  'Cellular',
-  'Clipboard',
-  'Constants',
-  'Contacts',
-  'Crypto',
-  'Device',
-  'DocumentPicker',
-  'FaceDetector',
-  'FileSystem',
-  'Font',
-  'Errors',
-  'ExpoModules',
-  'Geocoding',
-  'Haptics',
-  'ImageManipulator',
-  'ImagePicker',
-  'IntentLauncher',
-  'KeepAwake',
-  'Linking',
-  'LocalAuthentication',
-  'Localization',
-  'Location',
-  'MailComposer',
-  'MediaLibrary',
-  'Network',
-  'NetInfo',
-  'Notification',
-  'Pedometer',
-  'Permissions',
-  'Print',
-  'Random',
-  'Recording',
-  'SMS',
-  'NavigationBar',
-  'SafeAreaContext',
-  'ScreenOrientation',
-  'SecureStore',
-  'ScreenCapture',
-  'Sensor',
-  'Sharing',
-  'StatusBar',
-  'StoreReview',
-  'SystemUI',
-  'TaskManager',
-  'TextToSpeech',
-  'TrackingTransparency',
-  'ViewShot',
-  'WebBrowser',
-];
-
-if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
-  screens.push('InAppPurchases');
-}
-
-export const ScreenItems = screens.map((name) => ({
-  name,
-  route: `/apis/${name.toLowerCase()}`,
-  // isAvailable: !!Screens[name],
-  isAvailable: true,
-}));
-
-export default function ExpoApisScreen() {
-  const renderItemRight = React.useCallback(
-    ({ name }: { name: string }) => (
-      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
-    ),
-    []
+export default memo(function ExpoApisScreen({ apis }: { apis: ScreenApiItem[] }) {
+  return (
+    <ComponentListScreen
+      renderItemRight={({ name }: { name: string }) => (
+        <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+      )}
+      apis={apis}
+    />
   );
-
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
-}
+});

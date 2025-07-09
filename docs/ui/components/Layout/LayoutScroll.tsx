@@ -1,6 +1,5 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import React, { forwardRef, HTMLAttributes, PropsWithChildren } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import { forwardRef, HTMLAttributes, PropsWithChildren } from 'react';
 
 type LayoutScrollProps = PropsWithChildren<
   HTMLAttributes<HTMLDivElement> & {
@@ -18,48 +17,14 @@ type LayoutScrollProps = PropsWithChildren<
 export const LayoutScroll = forwardRef<HTMLDivElement, LayoutScrollProps>(
   ({ smoothScroll = true, disableOverscroll = true, children, ...rest }, ref) => (
     <div
-      css={[
-        scrollStyle,
-        smoothScroll && smoothScrollBehavior,
-        disableOverscroll && disableOverscrollBehavior,
-      ]}
+      className={mergeClasses(
+        'flex flex-1 overflow-y-auto overflow-x-hidden',
+        smoothScroll && 'scroll-smooth',
+        disableOverscroll && 'overscroll-contain'
+      )}
       {...rest}
       ref={ref}>
       {children}
     </div>
   )
 );
-
-const scrollStyle = css({
-  flex: 1,
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  /**
-   * Scrollbar
-   */
-  '::-webkit-scrollbar': {
-    width: '6px',
-  },
-  // Track
-  '::-webkit-scrollbar-track': {
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-  },
-  // Handle
-  '::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.gray5,
-    borderRadius: '10px',
-  },
-  // Handle on hover
-  '::-webkit-scrollbar-thumb:hover': {
-    backgroundColor: theme.palette.gray6,
-  },
-});
-
-const smoothScrollBehavior = css({
-  scrollBehavior: 'smooth',
-});
-
-const disableOverscrollBehavior = css({
-  overscrollBehavior: 'contain',
-});

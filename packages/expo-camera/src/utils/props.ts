@@ -1,29 +1,19 @@
 import { Platform } from 'expo-modules-core';
 
-import {
-  CameraNativeProps,
-  CameraType,
-  FlashMode,
-  AutoFocus,
-  WhiteBalance,
-  CameraProps,
-} from '../Camera.types';
-import CameraManager from '../ExponentCameraManager';
+import { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
+import CameraManager from '../ExpoCameraManager';
 
 // Values under keys from this object will be transformed to native options
 export const ConversionTables: {
-  type: Record<keyof typeof CameraType, CameraNativeProps['type']>;
-  flashMode: Record<keyof typeof FlashMode, CameraNativeProps['flashMode']>;
-  autoFocus: Record<keyof typeof AutoFocus, CameraNativeProps['autoFocus']>;
-  whiteBalance: Record<keyof typeof WhiteBalance, CameraNativeProps['whiteBalance']>;
+  type: Record<keyof CameraType, CameraNativeProps['facing']>;
+  flash: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
+  [prop: string]: unknown;
 } = {
   type: CameraManager.Type,
-  flashMode: CameraManager.FlashMode,
-  autoFocus: CameraManager.AutoFocus,
-  whiteBalance: CameraManager.WhiteBalance,
+  flash: CameraManager.FlashMode,
 };
 
-export function convertNativeProps(props?: CameraProps): CameraNativeProps {
+export function convertNativeProps(props?: CameraViewProps): CameraNativeProps {
   if (!props || typeof props !== 'object') {
     return {};
   }
@@ -31,31 +21,25 @@ export function convertNativeProps(props?: CameraProps): CameraNativeProps {
   const nativeProps: CameraNativeProps = {};
 
   for (const [key, value] of Object.entries(props)) {
-    if (typeof value === 'string' && ConversionTables[key]) {
-      nativeProps[key] = ConversionTables[key][value];
+    const prop = key as 'type' | 'flash' | string;
+    if (typeof value === 'string' && ConversionTables[prop]) {
+      nativeProps[key as keyof CameraNativeProps] =
+        ConversionTables[prop as 'type' | 'flash'][value as any];
     } else {
-      nativeProps[key] = value;
+      nativeProps[key as keyof CameraNativeProps] = value;
     }
   }
 
   return nativeProps;
 }
 
-export function ensureNativeProps(props?: CameraProps): CameraNativeProps {
+export function ensureNativeProps(props?: CameraViewProps): CameraNativeProps {
   const newProps = convertNativeProps(props);
 
-  if (newProps.onBarCodeScanned) {
-    newProps.barCodeScannerEnabled = true;
-  }
-
-  if (newProps.onFacesDetected) {
-    newProps.faceDetectorEnabled = true;
-  }
-
-  if (Platform.OS !== 'android') {
-    delete newProps.ratio;
-    delete newProps.useCamera2Api;
-  }
+  newProps.barcodeScannerEnabled = !!props?.onBarcodeScanned;
+  newProps.flashMode = props?.flash ?? 'off';
+  newProps.mute = props?.mute ?? false;
+  newProps.autoFocus = props?.autofocus ?? 'off';
 
   if (Platform.OS !== 'web') {
     delete newProps.poster;

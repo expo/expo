@@ -25,16 +25,15 @@ function _createLegacyPlugin() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
 // Copied from expo-location package, this gets used when the
 // user has react-native-maps installed but not expo-location.
 const withDefaultLocationPermissions = config => {
-  var _config$_internal, _config$_internal2;
-  const isLinked = !((_config$_internal = config._internal) !== null && _config$_internal !== void 0 && _config$_internal.autolinkedModules) || config._internal.autolinkedModules.includes('react-native-maps');
+  const isLinked = !config._internal?.autolinkedModules || config._internal.autolinkedModules.includes('react-native-maps');
   // Only add location permissions if react-native-maps is installed.
-  if ((_config$_internal2 = config._internal) !== null && _config$_internal2 !== void 0 && _config$_internal2.projectRoot && _resolveFrom().default.silent(config._internal.projectRoot, 'react-native-maps') && isLinked) {
+  if (config._internal?.projectRoot && _resolveFrom().default.silent(config._internal.projectRoot, 'react-native-maps') && isLinked) {
     config = (0, _configPlugins().withInfoPlist)(config, config => {
       config.modResults.NSLocationWhenInUseUsageDescription = config.modResults.NSLocationWhenInUseUsageDescription || LOCATION_USAGE;
       return config;
@@ -43,9 +42,8 @@ const withDefaultLocationPermissions = config => {
   }
   return config;
 };
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'react-native-maps',
   fallback: [_configPlugins().AndroidConfig.GoogleMapsApiKey.withGoogleMapsApiKey, _configPlugins().IOSConfig.Maps.withMaps, withDefaultLocationPermissions]
 });
-exports.default = _default;
 //# sourceMappingURL=react-native-maps.js.map

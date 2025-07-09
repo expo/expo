@@ -1,7 +1,9 @@
 {
-  "name": "expo-tracking-transparency",
-  "platforms": ["ios"],
-  "ios": {
-    "modulesClassNames": ["TrackingTransparencyModule"]
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["TrackingTransparencyModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.trackingtransparency.TrackingTransparencyModule"]
   }
 }

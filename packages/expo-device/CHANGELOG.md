@@ -10,6 +10,126 @@
 
 ### 💡 Others
 
+## 7.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 7.0.3 - 2025-04-01
+
+### 🐛 Bug fixes
+
+- [ios] Fixed build errors in XCode 16.3 ([#35811](https://github.com/expo/expo/pull/35811) by [@chrfalch](https://github.com/chrfalch))
+
+## 7.0.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [iOS] Added some missing entries for 2024 Apple devices. ([#31970](https://github.com/expo/expo/pull/31970) by [@fobos531](https://github.com/fobos531))
+
+## 6.0.2 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- `Device.productName` now returns `Build.PRODUCT` instead of `Build.DEVICE`. ([#27230](https://github.com/expo/expo/pull/27230) by [@alex-fournier](https://github.com/alex-fournier))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 5.9.3 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.9.2 - 2024-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.9.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 5.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Added new devices for iOS. ([#24555](https://github.com/expo/expo/pull/24555) by [@johanholm](https://github.com/johanholm))
+
+### 🐛 Bug fixes
+
+- [iOS] fix tvOS compilation. ([#24845](https://github.com/expo/expo/pull/24845) by [@douglowder](https://github.com/douglowder))
+
+## 5.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+## 5.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 5.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.4.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 5.3.0 — 2023-05-08
 
 ### 🎉 New features

@@ -120,7 +120,6 @@ const glPromise = GLView.createContextAsync().then(async (gl) => {
   gl.uniform1i(gl.getUniformLocation(program, 'inputImageTexture'), 1);
 
   gl.clearColor(0, 0, 0, 1);
-  // tslint:disable-next-line: no-bitwise
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   return gl;
@@ -131,9 +130,7 @@ interface State {
   snapshot?: GL.GLSnapshot;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class GLHeadlessRenderingScreen extends React.PureComponent<{}, State> {
+export default class GLHeadlessRenderingScreen extends React.PureComponent<object, State> {
   static title = 'Headless rendering';
 
   isDrawing = false;

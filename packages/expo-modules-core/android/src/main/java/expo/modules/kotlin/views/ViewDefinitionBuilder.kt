@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
 @file:Suppress("FunctionName")
 
 package expo.modules.kotlin.views
@@ -9,26 +8,33 @@ import android.view.View
 import android.view.ViewGroup
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.component6
+import expo.modules.kotlin.component7
+import expo.modules.kotlin.component8
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
-import expo.modules.kotlin.functions.AsyncFunction
-import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
+import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.Queues
+import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.modules.DefinitionMarker
+import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toAnyType
+import expo.modules.kotlin.types.toArgsArray
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.KType
-import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.typeOf
 
 @DefinitionMarker
 class ViewDefinitionBuilder<T : View>(
   @PublishedApi internal val viewClass: KClass<T>,
-  @PublishedApi internal val viewType: KType
+  @PublishedApi internal val viewType: KType,
+  @PublishedApi internal val converters: TypeConverterProvider? = null
 ) {
+  @PublishedApi
+  internal var name = viewClass.simpleName
+
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
 
@@ -43,7 +49,7 @@ class ViewDefinitionBuilder<T : View>(
   private var callbacksDefinition: CallbacksDefinition? = null
 
   @PublishedApi
-  internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
+  internal var asyncFunctions = mutableMapOf<String, AsyncFunctionComponent>()
 
   private var functionBuilders = mutableMapOf<String, AsyncFunctionBuilder>()
 
@@ -52,18 +58,27 @@ class ViewDefinitionBuilder<T : View>(
     asyncFunctions.forEach { (_, function) ->
       function.runOnQueue(Queues.MAIN)
       function.ownerType = viewType
+      function.canTakeOwner = true
     }
 
     return ViewManagerDefinition(
       viewFactory = createViewFactory(),
       viewType = viewClass.java,
       props = props,
+      name = name,
       onViewDestroys = onViewDestroys,
       callbacksDefinition = callbacksDefinition,
       viewGroupDefinition = viewGroupDefinition,
       onViewDidUpdateProps = onViewDidUpdateProps,
-      asyncFunctions = asyncFunctions.values.toList(),
+      asyncFunctions = asyncFunctions.values.toList()
     )
+  }
+
+  /**
+   * Sets the name of the view that is exported to the JavaScript world.
+   */
+  fun Name(viewName: String) {
+    name = viewName
   }
 
   /**
@@ -111,7 +126,7 @@ class ViewDefinitionBuilder<T : View>(
   ) {
     props[name] = ConcreteViewProp(
       name,
-      typeOf<PropType>().toAnyType(),
+      toAnyType<PropType>(),
       body
     )
   }
@@ -126,9 +141,44 @@ class ViewDefinitionBuilder<T : View>(
   ) {
     props[name] = ConcreteViewProp(
       name,
-      typeOf<PropType>().toAnyType(),
+      toAnyType<PropType>(),
       body
     )
+  }
+
+  /**
+   * Creates a view prop that defines its name, default value and setter.
+   */
+  @JvmName("PropGeneric")
+  inline fun <reified ViewType : View, reified PropType> Prop(
+    name: String,
+    defaultValue: PropType,
+    noinline body: (view: ViewType, prop: PropType) -> Unit
+  ) {
+    props[name] = ConcreteViewPropWithDefault(
+      name,
+      toAnyType<PropType>(),
+      body,
+      defaultValue
+    )
+  }
+
+  inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(
+    vararg props: Pair<String, CustomValueType>,
+    noinline body: (view: ViewType, value: CustomValueType, prop: PropType) -> Unit
+  ) {
+    for ((name, value) in props) {
+      Prop<ViewType, PropType>(name) { view, prop -> body(view, value, prop) }
+    }
+  }
+
+  inline fun <reified ViewType : View, reified PropType> PropGroup(
+    vararg props: String,
+    noinline body: (view: ViewType, value: Int, prop: PropType) -> Unit
+  ) {
+    props.forEachIndexed { index, name ->
+      Prop<ViewType, PropType>(name) { view, prop -> body(view, index, prop) }
+    }
   }
 
   /**
@@ -162,8 +212,8 @@ class ViewDefinitionBuilder<T : View>(
   inline fun AsyncFunction(
     name: String,
     crossinline body: () -> Any?
-  ): AsyncFunction {
-    return AsyncFunctionComponent(name, arrayOf()) { body() }.also {
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
       asyncFunctions[name] = it
     }
   }
@@ -171,8 +221,8 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R> AsyncFunction(
     name: String,
     crossinline body: () -> R
-  ): AsyncFunction {
-    return AsyncFunctionComponent(name, arrayOf()) { body() }.also {
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, emptyArray()) { body() }.also {
       asyncFunctions[name] = it
     }
   }
@@ -180,13 +230,16 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0> AsyncFunction(
     name: String,
     crossinline body: (p0: P0) -> R
-  ): AsyncFunction {
+  ): AsyncFunctionComponent {
+    // We can't split that function, because that introduces a ambiguity when creating DSL component without parameters.
     return if (P0::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf()) { _, promise -> body(promise as P0) }
+      AsyncFunctionWithPromiseComponent(name, emptyArray()) { _, promise -> body(promise as P0) }
     } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
+      createAsyncFunctionComponent(name, toArgsArray<P0>()) { (p0) ->
+        enforceType<P0>(p0)
+        body(p0)
+      }
     }.also {
-      it.ownerType = viewType
       asyncFunctions[name] = it
     }
   }
@@ -194,11 +247,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
-  ): AsyncFunction {
-    return if (P1::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1>(converterProvider = converters)) { (p0, p1) ->
+      enforceType<P0, P1>(p0, p1)
+      body(p0, p1)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0>(converterProvider = converters)) { (p0), promise ->
+      enforceType<P0>(p0)
+      body(p0, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -207,11 +272,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
-  ): AsyncFunction {
-    return if (P2::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, promise as P2) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters)) { (p0, p1, p2) ->
+      enforceType<P0, P1, P2>(p0, p1, p2)
+      body(p0, p1, p2)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1>(converterProvider = converters)) { (p0, p1), promise ->
+      enforceType<P0, P1>(p0, p1)
+      body(p0, p1, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -220,11 +297,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
-  ): AsyncFunction {
-    return if (P3::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, promise as P3) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters)) { (p0, p1, p2, p3) ->
+      enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
+      body(p0, p1, p2, p3)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters)) { (p0, p1, p2), promise ->
+      enforceType<P0, P1, P2>(p0, p1, p2)
+      body(p0, p1, p2, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -233,11 +322,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
-  ): AsyncFunction {
-    return if (P4::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, promise as P4) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters)) { (p0, p1, p2, p3, p4) ->
+      enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
+      body(p0, p1, p2, p3, p4)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters)) { (p0, p1, p2, p3), promise ->
+      enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
+      body(p0, p1, p2, p3, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -246,11 +347,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
-  ): AsyncFunction {
-    return if (P5::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, promise as P5) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5) ->
+      enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
+      body(p0, p1, p2, p3, p4, p5)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters)) { (p0, p1, p2, p3, p4), promise ->
+      enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
+      body(p0, p1, p2, p3, p4, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -259,11 +372,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
-  ): AsyncFunction {
-    return if (P6::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, promise as P6) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6) ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
+      body(p0, p1, p2, p3, p4, p5, p6)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5), promise ->
+      enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
+      body(p0, p1, p2, p3, p4, p5, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -272,11 +397,23 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> AsyncFunction(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
-  ): AsyncFunction {
-    return if (P7::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6, promise as P7) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
+      body(p0, p1, p2, p3, p4, p5, p6, p7)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  @JvmName("AsyncFunctionWithPromise")
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncFunction(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: Promise) -> R
+  ): AsyncFunctionComponent {
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6), promise ->
+      enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
+      body(p0, p1, p2, p3, p4, p5, p6, promise)
     }.also {
       asyncFunctions[name] = it
     }
@@ -284,66 +421,54 @@ class ViewDefinitionBuilder<T : View>(
 
   fun AsyncFunction(
     name: String
-  ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
+  ) = AsyncFunctionBuilder(name, converters).also { functionBuilders[name] = it }
 
-  private fun createViewFactory(): (Context, AppContext) -> View = viewFactory@{ context: Context, appContext: AppContext ->
-    val primaryConstructor = requireNotNull(getPrimaryConstructor()) { "$viewClass doesn't have a primary constructor" }
-    val args = primaryConstructor.parameters
-
-    if (args.isEmpty()) {
-      throw IllegalStateException("Android view has to have a constructor with at least one argument.")
-    }
-
-    val firstArgType = args.first().type
-    if (Context::class != firstArgType.classifier) {
-      throw IllegalStateException("The type of the first constructor argument has to be `android.content.Context`.")
-    }
-
-    // Backward compatibility
-    if (args.size == 1) {
-      return@viewFactory try {
-        primaryConstructor.call(context)
-      } catch (e: Throwable) {
-        handleFailureDuringViewCreation(context, appContext, e)
+  private fun createViewFactory(): (Context, AppContext) -> View =
+    viewFactory@{ context: Context, appContext: AppContext ->
+      val fullConstructor = try {
+        // Try to use constructor with two arguments
+        viewClass.java.getConstructor(Context::class.java, AppContext::class.java)
+      } catch (_: NoSuchMethodException) {
+        null
       }
+
+      fullConstructor?.let {
+        return@viewFactory try {
+          it.newInstance(context, appContext)
+        } catch (e: Throwable) {
+          handleFailureDuringViewCreation(context, appContext, e)
+        }
+      }
+
+      val contextConstructor = try {
+        // Try to use constructor that use Android's context
+        viewClass.java.getConstructor(Context::class.java)
+      } catch (_: NoSuchMethodException) {
+        null
+      }
+
+      contextConstructor?.let {
+        return@viewFactory try {
+          it.newInstance(context)
+        } catch (e: Throwable) {
+          handleFailureDuringViewCreation(context, appContext, e)
+        }
+      }
+
+      throw IllegalStateException("Didn't find a correct constructor for $viewClass")
     }
 
-    val secondArgType = args[1].type
-    if (AppContext::class != secondArgType.classifier) {
-      throw IllegalStateException("The type of the second constructor argument has to be `expo.modules.kotlin.AppContext`.")
-    }
-
-    if (args.size != 2) {
-      throw IllegalStateException("Android view has more constructor arguments than expected.")
-    }
-
-    return@viewFactory try {
-      primaryConstructor.call(context, appContext)
-    } catch (e: Throwable) {
-      handleFailureDuringViewCreation(context, appContext, e)
-    }
-  }
-
-  private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, e: Throwable): View {
-    Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", e)
+  private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, error: Throwable): View {
+    Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", error)
 
     appContext.errorManager?.reportExceptionToLogBox(
-      if (e is CodedException) {
-        e
-      } else {
-        UnexpectedException(e)
-      }
+      error as? CodedException ?: UnexpectedException(error)
     )
-    return View(context)
-  }
 
-  private fun getPrimaryConstructor(): KFunction<T>? {
-    val kotlinContractor = viewClass.primaryConstructor
-    if (kotlinContractor != null) {
-      return kotlinContractor
+    return if (ViewGroup::class.java.isAssignableFrom(viewClass.java)) {
+      ErrorGroupView(context)
+    } else {
+      ErrorView(context)
     }
-
-    // Add compatibility with Java
-    return viewClass.constructors.firstOrNull()
   }
 }

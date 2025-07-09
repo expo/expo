@@ -1,23 +1,12 @@
-import { ExponentFileSystemModule } from './types';
+import { NativeModule } from 'expo-modules-core';
 
-const platformModule: ExponentFileSystemModule = {
-  get name(): 'ExponentFileSystem' {
-    return 'ExponentFileSystem';
-  },
-  get documentDirectory(): string | null {
-    return null;
-  },
-  get cacheDirectory(): string | null {
-    return null;
-  },
-  get bundledAssets(): string | null {
-    return null;
-  },
-  get bundleDirectory(): string | null {
-    return null;
-  },
-  addListener(eventName: string): void {},
-  removeListeners(count: number): void {},
-};
+import type { ExponentFileSystemModule, FileSystemEvents } from './types';
 
-export default platformModule;
+export default class FileSystemShim
+  extends NativeModule<FileSystemEvents>
+  implements ExponentFileSystemModule
+{
+  documentDirectory = null;
+  cacheDirectory = null;
+  bundleDirectory = null;
+}

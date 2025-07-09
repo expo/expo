@@ -1,404 +1,217 @@
 package expo.modules.updates
 
 import android.content.Context
-import android.os.AsyncTask
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.launcher.Launcher.LauncherCallback
-import expo.modules.updates.loader.*
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
+import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.manifest.ManifestMetadata
+import expo.modules.updates.statemachine.UpdatesStateContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.lang.ref.WeakReference
 import java.util.Date
 
-// these unused imports must stay because of versioning
-/* ktlint-disable no-unused-imports */
-
-/* ktlint-enable no-unused-imports */
+enum class UpdatesJSEvent(val eventName: String) : Enumerable {
+  StateChange("Expo.nativeUpdatesStateChangeEvent")
+}
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
  * and updates state, along with methods to check for and download new updates, reload with the
  * newest downloaded update applied, and read/clear native log entries.
- *
- * Communicates with the updates hub ([UpdatesController] in most apps, [ExpoUpdatesAppLoader] in
- * Expo Go and legacy standalone apps) via [UpdatesService], an internal module which is overridden
- * by [UpdatesBinding], a scoped module, in Expo Go.
  */
-class UpdatesModule(
-  context: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context) {
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+class UpdatesModule : Module(), IUpdatesEventManagerObserver {
+  private val logger: UpdatesLogger
+    get() = UpdatesLogger(context.filesDir)
 
-  private val updatesService: UpdatesInterface? by moduleRegistry()
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExpoUpdates")
 
-  override fun getName(): String {
-    return NAME
-  }
+    Events<UpdatesJSEvent>()
 
-  override fun getConstants(): Map<String, Any> {
-    UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
-    val constants = mutableMapOf<String, Any>()
-    try {
-      val updatesServiceLocal: UpdatesInterface? = updatesService
-      if (updatesServiceLocal != null) {
-        constants["isEmergencyLaunch"] = updatesServiceLocal.isEmergencyLaunch
-        constants["isEmbeddedLaunch"] = updatesServiceLocal.isEmbeddedLaunch
-        constants["isMissingRuntimeVersion"] =
-          updatesServiceLocal.configuration.isMissingRuntimeVersion
-        constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled
-        constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
-        constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
-        constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
-        constants["checkAutomatically"] = updatesServiceLocal.configuration.checkOnLaunch.toJSString()
-        constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
-        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
-
-        val launchedUpdate = updatesServiceLocal.launchedUpdate
-        if (launchedUpdate != null) {
-          constants["updateId"] = launchedUpdate.id.toString()
-          constants["commitTime"] = launchedUpdate.commitTime.time
-          constants["manifestString"] =
-            if (launchedUpdate.manifest != null) launchedUpdate.manifest.toString() else "{}"
-        }
-        val localAssetFiles = updatesServiceLocal.localAssetFiles
-        if (localAssetFiles != null) {
-          val localAssets = mutableMapOf<String, String>()
-          for (asset in localAssetFiles.keys) {
-            if (asset.key != null) {
-              localAssets[asset.key!!] = localAssetFiles[asset]!!
-            }
-          }
-          constants["localAssets"] = localAssets
-        }
-      }
-    } catch (e: Exception) {
-      // do nothing; this is expected in a development client
-      constants["isEnabled"] = false
-
-      // In a development client, we normally don't have access to the updates configuration, but
-      // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
-      // and warn the developer if not. This does not take into account any extra configuration
-      // provided at runtime in MainApplication.java, because we don't have access to that in a
-      // debug build.
-      val configuration = UpdatesConfiguration(context, null)
-      constants["isMissingRuntimeVersion"] = configuration.isMissingRuntimeVersion
+    Constants {
+      UpdatesLogger(context.filesDir).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
+      UpdatesController.instance.getConstantsForModule().toModuleConstantsMap()
     }
-    return constants
-  }
 
-  @ExpoMethod
-  fun reload(promise: Promise) {
-    try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.canRelaunch()) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot reload when expo-updates is not enabled."
-        )
-        return
-      }
-      updatesServiceLocal.relaunchReactApplication(object : LauncherCallback {
-        override fun onFailure(e: Exception) {
-          Log.e(TAG, "Failed to relaunch application", e)
-          promise.reject("ERR_UPDATES_RELOAD", e.message, e)
-        }
-
-        override fun onSuccess() {
-          promise.resolve(null)
-        }
-      })
-    } catch (e: IllegalStateException) {
-      promise.reject(
-        "ERR_UPDATES_RELOAD",
-        "The updates module controller has not been properly initialized. If you're using a development client, you cannot use `Updates.reloadAsync`. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-      )
+    OnStartObserving(UpdatesJSEvent.StateChange) {
+      UpdatesController.setUpdatesEventManagerObserver(WeakReference(this@UpdatesModule))
     }
-  }
 
-  @ExpoMethod
-  fun checkForUpdateAsync(promise: Promise) {
-    try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot check for updates when expo-updates is not enabled."
-        )
-        return
-      }
-      val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-        databaseHolder.database,
-        updatesServiceLocal.configuration,
-        updatesServiceLocal.launchedUpdate,
-        updatesServiceLocal.embeddedUpdate
-      )
-      databaseHolder.releaseDatabase()
-      updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
-        updatesServiceLocal.configuration,
-        extraHeaders,
-        context,
-        object : RemoteUpdateDownloadCallback {
-          override fun onFailure(message: String, e: Exception) {
-            promise.reject("ERR_UPDATES_CHECK", message, e)
-            Log.e(TAG, message, e)
-          }
+    OnStopObserving(UpdatesJSEvent.StateChange) {
+      UpdatesController.removeUpdatesEventManagerObserver()
+    }
 
-          override fun onSuccess(updateResponse: UpdateResponse) {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+    OnDestroy {
+      UpdatesController.removeUpdatesEventManagerObserver()
+      UpdatesController.instance.shutdown()
+    }
 
-            val updateInfo = Bundle()
-            if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                updateInfo.putBoolean("isRollBackToEmbedded", true)
-                promise.resolve(updateInfo)
-                return
-              }
-            }
+    AsyncFunction("reload") Coroutine { ->
+      UpdatesController.instance.relaunchReactApplicationForModule()
+    }
 
-            if (updateManifest == null) {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
-              return
-            }
+    AsyncFunction("checkForUpdateAsync") Coroutine { ->
+      when (val result = UpdatesController.instance.checkForUpdate()) {
+        is IUpdatesController.CheckForUpdateResult.ErrorResult -> {
+          throw CodedException("ERR_UPDATES_CHECK", "Failed to check for update", result.error)
+        }
 
-            val launchedUpdate = updatesServiceLocal.launchedUpdate
-            if (launchedUpdate == null) {
-              // this shouldn't ever happen, but if we don't have anything to compare
-              // the new manifest to, let the user know an update is available
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-              return
-            }
-
-            if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                updateManifest.updateEntity,
-                launchedUpdate,
-                updateResponse.responseHeaderData?.manifestFilters
-              )
-            ) {
-              updateInfo.putBoolean("isAvailable", true)
-              updateInfo.putString("manifestString", updateManifest.manifest.toString())
-              promise.resolve(updateInfo)
-            } else {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
-            }
+        is IUpdatesController.CheckForUpdateResult.NoUpdateAvailable -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isAvailable", false)
+            putString("reason", result.reason.value)
           }
         }
-      )
-    } catch (e: IllegalStateException) {
-      promise.reject(
-        "ERR_UPDATES_CHECK",
-        "The updates module controller has not been properly initialized. If you're using a development client, you cannot check for updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-      )
-    }
-  }
 
-  @ExpoMethod
-  fun fetchUpdateAsync(promise: Promise) {
-    try {
-      val updatesServiceLocal = updatesService
-      if (!updatesServiceLocal!!.configuration.isEnabled) {
-        promise.reject(
-          "ERR_UPDATES_DISABLED",
-          "You cannot fetch updates when expo-updates is not enabled."
-        )
-        return
+        is IUpdatesController.CheckForUpdateResult.RollBackToEmbedded -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", true)
+            putBoolean("isAvailable", false)
+          }
+        }
+
+        is IUpdatesController.CheckForUpdateResult.UpdateAvailable -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isAvailable", true)
+            putString(
+              "manifestString",
+              result.update.manifest.toString()
+            )
+          }
+        }
       }
-      AsyncTask.execute {
-        val databaseHolder = updatesServiceLocal.databaseHolder
-        RemoteLoader(
-          context,
-          updatesServiceLocal.configuration,
-          databaseHolder.database,
-          updatesServiceLocal.fileDownloader,
-          updatesServiceLocal.directory,
-          updatesServiceLocal.launchedUpdate
-        )
-          .start(
-            object : Loader.LoaderCallback {
-              override fun onFailure(e: Exception) {
-                databaseHolder.releaseDatabase()
-                promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e)
-              }
+    }
 
-              override fun onAssetLoaded(
-                asset: AssetEntity,
-                successfulAssetCount: Int,
-                failedAssetCount: Int,
-                totalAssetCount: Int
-              ) {
-              }
+    AsyncFunction("fetchUpdateAsync") Coroutine { ->
+      when (val result = UpdatesController.instance.fetchUpdate()) {
+        is IUpdatesController.FetchUpdateResult.ErrorResult -> {
+          throw CodedException("ERR_UPDATES_FETCH", "Failed to download new update", result.error)
+        }
 
-              override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-                val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-                if (updateDirective != null) {
-                  return Loader.OnUpdateResponseLoadedResult(
-                    shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                      is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                      is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                    }
-                  )
-                }
+        is IUpdatesController.FetchUpdateResult.Failure -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isNew", false)
+          }
+        }
 
-                val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+        is IUpdatesController.FetchUpdateResult.RollBackToEmbedded -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", true)
+            putBoolean("isNew", false)
+          }
+        }
 
-                return Loader.OnUpdateResponseLoadedResult(
-                  shouldDownloadManifestIfPresentInResponse = updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                    updateManifest.updateEntity,
-                    updatesServiceLocal.launchedUpdate,
-                    updateResponse.responseHeaderData?.manifestFilters
-                  )
-                )
-              }
-
-              override fun onSuccess(loaderResult: Loader.LoaderResult) {
-                databaseHolder.releaseDatabase()
-                val updateInfo = Bundle()
-
-                if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                  updateInfo.putBoolean("isRollBackToEmbedded", true)
-                } else {
-                  if (loaderResult.updateEntity == null) {
-                    updateInfo.putBoolean("isNew", false)
-                  } else {
-                    updatesServiceLocal.resetSelectionPolicy()
-                    updateInfo.putBoolean("isNew", true)
-                    updateInfo.putString(
-                      "manifestString",
-                      loaderResult.updateEntity.manifest.toString()
-                    )
-                  }
-                }
-
-                promise.resolve(updateInfo)
-              }
-            }
-          )
+        is IUpdatesController.FetchUpdateResult.Success -> {
+          Bundle().apply {
+            putBoolean("isRollBackToEmbedded", false)
+            putBoolean("isNew", true)
+            putString("manifestString", result.update.manifest.toString())
+          }
+        }
       }
-    } catch (e: IllegalStateException) {
-      promise.reject(
-        "ERR_UPDATES_FETCH",
-        "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
-      )
-    }
-  }
-
-  @ExpoMethod
-  fun getExtraParamsAsync(promise: Promise) {
-    val updatesServiceLocal = updatesService
-    if (!updatesServiceLocal!!.configuration.isEnabled) {
-      promise.reject(
-        "ERR_UPDATES_DISABLED",
-        "You cannot get extra params when expo-updates is not enabled."
-      )
-      return
     }
 
-    AsyncTask.execute {
-      val databaseHolder = updatesServiceLocal.databaseHolder
-      promise.resolve(
-        ManifestMetadata.getExtraParams(
-          databaseHolder.database,
-          updatesServiceLocal.configuration,
-        )
-      )
-    }
-  }
-
-  @ExpoMethod
-  fun setExtraParamAsync(key: String, value: String?, promise: Promise) {
-    val updatesServiceLocal = updatesService
-    if (!updatesServiceLocal!!.configuration.isEnabled) {
-      promise.reject(
-        "ERR_UPDATES_DISABLED",
-        "You cannot set extra client params when expo-updates is not enabled."
-      )
-      return
+    AsyncFunction("getExtraParamsAsync") Coroutine { ->
+      logger.debug("Called getExtraParamsAsync")
+      return@Coroutine UpdatesController.instance.getExtraParams()
     }
 
-    AsyncTask.execute {
-      val databaseHolder = updatesServiceLocal.databaseHolder
-      ManifestMetadata.setExtraParam(
-        databaseHolder.database,
-        updatesServiceLocal.configuration,
+    AsyncFunction("setExtraParamAsync") Coroutine { key: String, value: String? ->
+      logger.debug("Called setExtraParamAsync with key = $key, value = $value")
+      UpdatesController.instance.setExtraParam(
         key,
         value
       )
-      promise.resolve(null)
     }
-  }
 
-  @ExpoMethod
-  fun readLogEntriesAsync(maxAge: Long, promise: Promise) {
-    AsyncTask.execute {
-      val reader = UpdatesLogReader(context)
-      val date = Date()
-      val epoch = Date(date.time - maxAge)
-      val results = reader.getLogEntries(epoch)
-        .mapNotNull { UpdatesLogEntry.create(it) }
-        .map { entry ->
-          Bundle().apply {
-            putLong("timestamp", entry.timestamp)
-            putString("message", entry.message)
-            putString("code", entry.code)
-            putString("level", entry.level)
-            if (entry.updateId != null) {
-              putString("updateId", entry.updateId)
-            }
-            if (entry.assetId != null) {
-              putString("assetId", entry.assetId)
-            }
-            if (entry.stacktrace != null) {
-              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
-            }
-          }
-        }
-      promise.resolve(results)
+    AsyncFunction("readLogEntriesAsync") Coroutine { maxAge: Long ->
+      return@Coroutine readLogEntries(context.filesDir, maxAge)
     }
-  }
 
-  @ExpoMethod
-  fun clearLogEntriesAsync(promise: Promise) {
-    AsyncTask.execute {
-      val reader = UpdatesLogReader(context)
-      reader.purgeLogEntries(
-        olderThan = Date()
-      ) { error ->
+    AsyncFunction("clearLogEntriesAsync") Coroutine { ->
+      clearLogEntries(context.filesDir) { error ->
         if (error != null) {
-          promise.reject(
+          throw CodedException(
             "ERR_UPDATES_READ_LOGS",
             "There was an error when clearing the expo-updates log file",
             error
           )
-        } else {
-          promise.resolve(null)
         }
       }
+    }
+
+    Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
+      UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
   }
 
   companion object {
-    private const val NAME = "ExpoUpdates"
-
     private val TAG = UpdatesModule::class.java.simpleName
+
+    internal suspend fun readLogEntries(filesDirectory: File, maxAge: Long) =
+      withContext(Dispatchers.IO) {
+        val reader = UpdatesLogReader(filesDirectory)
+        val date = Date()
+        val epoch = Date(date.time - maxAge)
+        reader.getLogEntries(epoch)
+          .mapNotNull { UpdatesLogEntry.create(it) }
+          .map { entry ->
+            Bundle().apply {
+              putLong("timestamp", entry.timestamp)
+              putString("message", entry.message)
+              putString("code", entry.code)
+              putString("level", entry.level)
+              if (entry.updateId != null) {
+                putString("updateId", entry.updateId)
+              }
+              if (entry.assetId != null) {
+                putString("assetId", entry.assetId)
+              }
+              if (entry.stacktrace != null) {
+                putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+              }
+            }
+          }
+      }
+
+    internal suspend fun clearLogEntries(filesDirectory: File, completionHandler: (_: Exception?) -> Unit) {
+      val reader = UpdatesLogReader(filesDirectory)
+      reader.purgeLogEntries(
+        olderThan = Date(),
+        completionHandler
+      )
+    }
+  }
+
+  override fun onStateMachineContextEvent(context: UpdatesStateContext) {
+    sendEvent(UpdatesJSEvent.StateChange, Bundle().apply { putBundle("context", context.bundle) })
+  }
+
+  internal data class UpdatesConfigurationOverrideParam(
+    @Field val updateUrl: Uri,
+    @Field val requestHeaders: Map<String, String>
+  ) : Record {
+    fun toUpdatesConfigurationOverride(): UpdatesConfigurationOverride {
+      return UpdatesConfigurationOverride(updateUrl, requestHeaders)
+    }
   }
 }

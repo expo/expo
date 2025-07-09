@@ -8,7 +8,224 @@
 
 ### 🐛 Bug fixes
 
+- Remove invalid import from expo-dev-launcher. ([#37558](https://github.com/expo/expo/pull/37558) by [@douglowder](https://github.com/douglowder))
+- Fix check-packages warning. ([#37570](https://github.com/expo/expo/pull/37570) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+## 17.1.7 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.6 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.5 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 17.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Add missing types to package exports ([#35223](https://github.com/expo/expo/pull/35223) by [@timostroehlein](https://github.com/timostroehlein))
+
+### 💡 Others
+
+- [android][ios] Updated Gradle build and Podspec files to ensure app.json/app.config.js values are correctly updated during each native build. ([#34228](https://github.com/expo/expo/pull/34228) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+
+## 17.0.8 - 2025-03-11
+
+### 🐛 Bug fixes
+
+- [iOS] Fix pod install in older CocoaPods versions ([#35181](https://github.com/expo/expo/pull/35181) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 17.0.7 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.6 - 2025-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.3 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.2 — 2024-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.1 — 2024-10-22
+
+### 💡 Others
+
+- Fixed check-package test errors. ([#32232](https://github.com/expo/expo/pull/32232) by [@kudo](https://github.com/kudo))
+
+## 17.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Add support for React Server environments. ([#30586](https://github.com/expo/expo/pull/30586) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Add missing `react-native` peer dependencies for isolated modules. ([#30464](https://github.com/expo/expo/pull/30464) by [@byCedric](https://github.com/byCedric))
+- Only import from `expo/config` to follow proper dependency chains. ([#30501](https://github.com/expo/expo/pull/30501) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Deprecate `Constants.appOwnership`. ([#30021](https://github.com/expo/expo/pull/30021) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Removed all `NativeModulesProxy` occurrences. ([#31496](https://github.com/expo/expo/pull/31496) by [@reichhartd](https://github.com/reichhartd))
+
+## 16.0.2 - 2024-05-29
+
+### 🐛 Bug fixes
+
+- Source env when creating app config. ([#29099](https://github.com/expo/expo/pull/29099) by [@brentvatne](https://github.com/brentvatne))
+
+## 16.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- Remove deprecated installationId, isDevice, nativeAppVersion, nativeBuildVersion, platform.platform, platform.systemVersion, platform.userInterfaceIdiom properties. ([#26329](https://github.com/expo/expo/pull/26329) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- [expo-updates] Migrate to requireNativeModule/requireOptionalNativeModule. ([#25648](https://github.com/expo/expo/pull/25648) by [@wschurman](https://github.com/wschurman))
+- Remove most of Constants.appOwnership. ([#26313](https://github.com/expo/expo/pull/26313) by [@wschurman](https://github.com/wschurman))
+- Improve updates types and clarity in expo-asset. ([#26337](https://github.com/expo/expo/pull/26337) by [@wschurman](https://github.com/wschurman))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 15.4.5 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.4 - 2024-01-15
+
+### 🐛 Bug fixes
+
+- Fixed build error on AGP 8.2. ([#26362](https://github.com/expo/expo/pull/26362) by [@kudo](https://github.com/kudo))
+
+## 15.4.3 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26233](https://github.com/expo/expo/pull/26233) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.4.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.0 — 2023-12-12
+
+### 💡 Others
+
+- Drop `crypto` usage on web. ([#25411](https://github.com/expo/expo/pull/25411) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 15.3.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.2.0 — 2023-10-17
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Use dedicated `requireOptionalNativeModule` instead of try-catching `requireNativeModule`. ([#24262](https://github.com/expo/expo/pull/24262) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.0 — 2023-09-04
+
+### 🛠 Breaking changes
+
+- Change source of truth for constants types. ([#24049](https://github.com/expo/expo/pull/24049) by [@wschurman](https://github.com/wschurman))
+- Remove classic manifest types. ([#24053](https://github.com/expo/expo/pull/24053) by [@wschurman](https://github.com/wschurman))
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 14.5.1 — 2023-08-02
+
+### 🛠 Breaking changes
+
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`. ([#18596](https://github.com/expo/expo/pull/18596) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.5.0 — 2023-07-28
+
+### 🐛 Bug fixes
+
+- Fix task ':expo-constants:packageDebugAssets' uses this output of task ':expo-constants:copyReleaseExpoConfig' without declaring an explicit or implicit dependency when running `gradlew test` on Android. ([#23511](https://github.com/expo/expo/pull/23511) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 14.4.2 — 2023-06-24
+
+### 💡 Others
+
+- Remove the long-deprecated `Constants.deviceYearClass` and `Constants.platform.ios.model`. These properties now live on `expo-device`. ([#23068](https://github.com/expo/expo/pull/23068) by [@brentvatne](https://github.com/brentvatne))
+
+## 14.4.1 — 2023-06-22
+
+_This version does not introduce any user-facing changes._
+
+## 14.4.0 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 14.3.0 — 2023-05-08
 

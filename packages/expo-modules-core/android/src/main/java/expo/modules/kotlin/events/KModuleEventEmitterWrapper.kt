@@ -1,14 +1,17 @@
 package expo.modules.kotlin.events
 
 import android.os.Bundle
+import android.view.View
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.kotlin.ModuleHolder
+import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.toJSValueExperimental
 import java.lang.ref.WeakReference
 
 /**
@@ -17,28 +20,42 @@ import java.lang.ref.WeakReference
  * But because of that, we had to create a wrapper for EventEmitter.
  */
 class KModuleEventEmitterWrapper(
-  private val moduleHolder: ModuleHolder,
+  private val moduleHolder: ModuleHolder<*>,
   legacyEventEmitter: expo.modules.core.interfaces.services.EventEmitter,
   reactContextHolder: WeakReference<ReactApplicationContext>
 ) : KEventEmitterWrapper(legacyEventEmitter, reactContextHolder) {
   override fun emit(eventName: String, eventBody: Bundle?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toJSValueExperimental())
   }
 
   override fun emit(eventName: String, eventBody: WritableMap?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toHashMap())
   }
 
   override fun emit(eventName: String, eventBody: Record?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toJSValueExperimental())
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     checkIfEventWasExported(eventName)
-    super.emit(eventName, eventBody)
+    emitNative(eventName, eventBody?.toJSValueExperimental())
+  }
+
+  private fun emitNative(eventName: String, eventBody: Map<String, Any?>?) {
+    val runtimeContext = moduleHolder.module.runtimeContext
+    val jsObject = moduleHolder.safeJSObject ?: return
+    try {
+      JNIUtils.emitEvent(jsObject, runtimeContext.jsiContext, eventName, eventBody)
+    } catch (e: Exception) {
+      // If the jsObject is valid, we should throw an exception.
+      // Otherwise, we should ignore it.
+      if (jsObject.isValid) {
+        throw e
+      }
+    }
   }
 
   private fun checkIfEventWasExported(eventName: String) {
@@ -68,27 +85,36 @@ open class KEventEmitterWrapper(
 
   override fun emit(eventName: String, eventBody: Record?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
     val context = reactContextHolder.get() ?: return
     UIManagerHelper.getEventDispatcherForReactTag(context, viewId)
-      ?.dispatchEvent(UIEvent(viewId, eventName, eventBody, coalescingKey))
+      ?.dispatchEvent(UIEvent(surfaceId = -1, viewId, eventName, eventBody, coalescingKey))
+  }
+
+  override fun emit(view: View, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
+    val context = reactContextHolder.get() ?: return
+    val surfaceId = UIManagerHelper.getSurfaceId(view)
+    val viewId = view.id
+    UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+      ?.dispatchEvent(UIEvent(surfaceId, viewId, eventName, eventBody, coalescingKey))
   }
 
   private class UIEvent(
+    surfaceId: Int,
     viewId: Int,
-    private val eventName: String,
+    private val eventNameInternal: String,
     private val eventBody: WritableMap?,
     private val coalescingKey: Short?
-  ) : com.facebook.react.uimanager.events.Event<UIEvent>(viewId) {
-    override fun getEventName(): String = normalizeEventName(eventName)
+  ) : com.facebook.react.uimanager.events.Event<UIEvent>(surfaceId, viewId) {
+    override fun getEventName(): String = normalizeEventName(eventNameInternal)
     override fun canCoalesce(): Boolean = coalescingKey != null
     override fun getCoalescingKey(): Short = coalescingKey ?: 0
     override fun getEventData(): WritableMap = eventBody ?: Arguments.createMap()
@@ -102,5 +128,7 @@ open class KEventEmitterWrapper(
 fun normalizeEventName(eventName: String): String {
   return if (eventName.startsWith("on")) {
     "top" + eventName.substring(2)
-  } else eventName
+  } else {
+    eventName
+  }
 }

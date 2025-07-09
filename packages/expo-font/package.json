@@ -1,6 +1,6 @@
 {
   "name": "expo-font",
-  "version": "11.2.0",
+  "version": "13.3.1",
   "description": "Load fonts at runtime and use them in React Native components.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -10,9 +10,22 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "build:plugin": "expo-module build plugin",
+    "test:plugin": "expo-module test plugin",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
+  },
+  "exports": {
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json",
+    ".": {
+      "react-server": "./build/index.server.js",
+      "default": "./build/index.js"
+    },
+    "./build/server": "./build/server.js"
   },
   "keywords": [
     "react-native",
@@ -37,9 +50,12 @@
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "@testing-library/react-native": "^13.1.0",
+    "@types/fontfaceobserver": "^2.1.3",
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*"
   }
 }

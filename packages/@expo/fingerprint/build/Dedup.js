@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeSourceWithReasons = exports.dedupSources = void 0;
+exports.dedupSources = dedupSources;
+exports.mergeSourceWithReasons = mergeSourceWithReasons;
 const assert_1 = __importDefault(require("assert"));
 const path_1 = __importDefault(require("path"));
 const debug = require('debug')('expo:fingerprint:Dedup');
@@ -16,7 +17,7 @@ function dedupSources(sources, projectRoot) {
         const [duplicatedItemIndex, shouldSwapSource] = findDuplicatedSourceIndex(newSources, source, projectRoot);
         if (duplicatedItemIndex >= 0) {
             const duplicatedItem = newSources[duplicatedItemIndex];
-            debug(`Skipping duplicated source: ${source}`);
+            debug(`Skipping duplicated source: ${JSON.stringify(source)}`);
             if (shouldSwapSource) {
                 newSources[duplicatedItemIndex] = {
                     ...source,
@@ -24,7 +25,7 @@ function dedupSources(sources, projectRoot) {
                 };
             }
             else {
-                duplicatedItem.reasons.push(...source.reasons);
+                duplicatedItem.reasons = [...duplicatedItem.reasons, ...source.reasons];
             }
         }
         else {
@@ -33,14 +34,12 @@ function dedupSources(sources, projectRoot) {
     }
     return newSources;
 }
-exports.dedupSources = dedupSources;
 /**
  * When two sources are duplicated, merge `src`'s reasons into `dst`
  */
 function mergeSourceWithReasons(dst, src) {
     return dst;
 }
-exports.mergeSourceWithReasons = mergeSourceWithReasons;
 /**
  * Find the duplicated `source` in `newSources`
  * @return tuple of [duplicatedItemIndexInNewSources, shouldSwapSource]

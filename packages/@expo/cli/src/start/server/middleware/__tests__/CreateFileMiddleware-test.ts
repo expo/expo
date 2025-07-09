@@ -25,21 +25,21 @@ function createMockResponse() {
   } as unknown as ServerResponse;
 }
 
-describe('_shouldHandleRequest', () => {
+describe('shouldHandleRequest', () => {
   const { middleware } = createMiddleware();
 
   it(`returns false when the middleware should not handle`, () => {
     for (const req of [
       asReq({}),
-      asReq({ url: 'http://localhost:19000' }),
-      asReq({ url: 'http://localhost:19000/' }),
+      asReq({ url: 'http://localhost:8081' }),
+      asReq({ url: 'http://localhost:8081/' }),
     ]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(false);
+      expect(middleware.shouldHandleRequest(req)).toBe(false);
     }
   });
   it(`returns true when the middleware should handle`, () => {
-    for (const req of [asReq({ url: 'http://localhost:19000/_expo/touch' })]) {
-      expect(middleware._shouldHandleRequest(req)).toBe(true);
+    for (const req of [asReq({ url: 'http://localhost:8081/_expo/touch' })]) {
+      expect(middleware.shouldHandleRequest(req)).toBe(true);
     }
   });
 });
@@ -51,12 +51,12 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
       }),
       response
     );
     expect(response.statusCode).toBe(405);
-    expect(response.end).toBeCalledWith('Method Not Allowed');
+    expect(response.end).toHaveBeenCalledWith('Method Not Allowed');
   });
   it('creates a basic file', async () => {
     const { middleware } = createMiddleware();
@@ -64,7 +64,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
         body: JSON.stringify({
           contents: 'hello world',
@@ -74,7 +74,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
+    expect(response.end).toHaveBeenCalledWith('OK');
     expect(vol.readFileSync('/hello.txt', 'utf8')).toBe('hello world');
   });
   it('creates a TypeScript file when added to a project with a tsconfig', async () => {
@@ -85,7 +85,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
         body: JSON.stringify({
           contents: 'hello world',
@@ -95,7 +95,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
+    expect(response.end).toHaveBeenCalledWith('OK');
     expect(vol.readFileSync('/hello.tsx', 'utf8')).toBe('hello world');
   });
   it('creates a basic JavaScript file', async () => {
@@ -104,7 +104,7 @@ describe('handleRequestAsync', () => {
     const response = createMockResponse();
     await middleware.handleRequestAsync(
       asReq({
-        url: 'http://localhost:19000/_expo/touch',
+        url: 'http://localhost:8081/_expo/touch',
         method: 'POST',
         body: JSON.stringify({
           contents: 'hello world',
@@ -114,7 +114,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('OK');
+    expect(response.end).toHaveBeenCalledWith('OK');
     expect(vol.readFileSync('/hello.js', 'utf8')).toBe('hello world');
   });
 });

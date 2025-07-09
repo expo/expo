@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 import ExpoSMS from './ExpoSMS';
 function processAttachments(attachments) {
@@ -84,6 +83,6 @@ export async function sendSMSAsync(addresses, message, options) {
  * ```
  */
 export async function isAvailableAsync() {
-    return ExpoSMS.isAvailableAsync();
+    return ExpoSMS.isAvailableAsync?.() ?? false;
 }
 //# sourceMappingURL=SMS.js.map

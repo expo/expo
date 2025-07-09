@@ -8,7 +8,6 @@
 import Debug from 'debug';
 import { Socket } from 'net';
 
-import { CommandError } from '../../../../utils/errors';
 import {
   ProtocolClient,
   ProtocolReader,
@@ -16,6 +15,7 @@ import {
   ProtocolReaderFactory,
   ProtocolWriter,
 } from './AbstractProtocol';
+import { CommandError } from '../../../../utils/errors';
 
 const debug = Debug('expo:apple-device:protocol:gdb');
 const ACK_SUCCESS = '+'.charCodeAt(0);

@@ -9,10 +9,10 @@ import plist from '@expo/plist';
 import Debug from 'debug';
 import { Socket, connect } from 'net';
 
+import { ResponseError, ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
 import { parsePlistBuffer } from '../../../../utils/plist';
 import { UsbmuxProtocolClient } from '../protocol/UsbmuxProtocol';
-import { ResponseError, ServiceClient } from './ServiceClient';
 
 const debug = Debug('expo:apple-device:client:usbmuxd');
 
@@ -190,7 +190,8 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
       const BPLIST_MAGIC = Buffer.from('bplist00');
       if (BPLIST_MAGIC.compare(resp.PairRecordData, 0, 8) === 0) {
         debug('Binary plist pair record detected.');
-        return parsePlistBuffer(resp.PairRecordData)[0];
+        const pairRecords = parsePlistBuffer(resp.PairRecordData);
+        return Array.isArray(pairRecords) ? pairRecords[0] : pairRecords;
       } else {
         // TODO: use parsePlistBuffer
         return plist.parse(resp.PairRecordData.toString()) as any; // TODO: type guard

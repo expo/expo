@@ -22,7 +22,7 @@ function _withMod() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = (0, _debug().default)('expo:config-plugins:base-mods');
 function createBaseMod({
   methodName,
@@ -34,13 +34,12 @@ function createBaseMod({
   isIntrospective
 }) {
   const withUnknown = (config, _props) => {
-    var _props$skipEmptyMod, _props$saveToInternal;
     const props = _props || {};
     return (0, _withMod().withBaseMod)(config, {
       platform,
       mod: modName,
-      skipEmptyMod: (_props$skipEmptyMod = props.skipEmptyMod) !== null && _props$skipEmptyMod !== void 0 ? _props$skipEmptyMod : true,
-      saveToInternal: (_props$saveToInternal = props.saveToInternal) !== null && _props$saveToInternal !== void 0 ? _props$saveToInternal : false,
+      skipEmptyMod: props.skipEmptyMod ?? true,
+      saveToInternal: props.saveToInternal ?? false,
       isProvider: true,
       isIntrospective,
       async action({
@@ -86,7 +85,7 @@ function assertModResults(results, platformName, modName) {
   const ensuredResults = results;
 
   // Sanity check to help locate non compliant mods.
-  if (!ensuredResults || typeof ensuredResults !== 'object' || !(ensuredResults !== null && ensuredResults !== void 0 && ensuredResults.mods)) {
+  if (!ensuredResults || typeof ensuredResults !== 'object' || !ensuredResults?.mods) {
     throw new Error(`Mod \`mods.${platformName}.${modName}\` evaluated to an object that is not a valid project config. Instead got: ${JSON.stringify(ensuredResults)}`);
   }
   return ensuredResults;

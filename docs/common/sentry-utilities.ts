@@ -1,4 +1,4 @@
-import { Event } from '@sentry/types';
+import { ErrorEvent } from '@sentry/react';
 /*
  * Error logging filtering - prevent users from submitting errors we do not care about,
  * eg: specific error messages that are caused by extensions or other scripts
@@ -6,7 +6,7 @@ import { Event } from '@sentry/types';
  */
 
 // These exact error messages may be different depending on the browser!
-const ERRORS_TO_DISCARD = [
+const ERRORS_TO_DISCARD = new Set([
   // Filter out errors from extensions
   'chrome-extension://',
   'moz-extension://',
@@ -15,18 +15,18 @@ const ERRORS_TO_DISCARD = [
   "undefined is not an object (evaluating 'window.__pad.performLoop')",
   // This error appears in Firefox related to local storage and flooded our Sentry bandwidth
   'SecurityError: The operation is insecure.',
-];
+]);
 
 const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';
 const TIMESTAMP_KEY = 'sentry:errorReportingInit';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const HALF_HOUR_MS = 0.5 * 60 * 60 * 1000;
 
-export function preprocessSentryError(event: Event) {
+export function preprocessSentryError(event: ErrorEvent) {
   const message = getMessage(event);
 
   // Check if it's rate limited to avoid sending the same error over and over
-  if (isRateLimited(message || 'empty')) {
+  if (isRateLimited(message ?? 'empty')) {
     return null;
   }
 
@@ -36,7 +36,7 @@ export function preprocessSentryError(event: Event) {
   }
 
   // Discard any errors that we know we do not care about
-  if (ERRORS_TO_DISCARD.includes(message)) {
+  if (ERRORS_TO_DISCARD.has(message)) {
     return null;
   }
 
@@ -62,7 +62,7 @@ export function preprocessSentryError(event: Event) {
 }
 
 // https://gist.github.com/paulirish/5558557
-function isLocalStorageAvailable(): boolean {
+export function isLocalStorageAvailable(): boolean {
   try {
     if (!window.localStorage || localStorage === null || typeof localStorage === 'undefined') {
       return false;
@@ -91,12 +91,12 @@ function isRateLimited(message: string) {
 }
 
 // Extract a stable event error message out of the Sentry event object
-function getMessage(event: Event) {
+function getMessage(event: ErrorEvent) {
   if (event.message) {
     return event.message;
   }
 
-  if (event.exception && event.exception.values) {
+  if (event.exception?.values) {
     const value = event.exception.values[0].value;
     if (value) {
       return value;
@@ -107,11 +107,11 @@ function getMessage(event: Event) {
 }
 
 function maybeResetReportedErrorsCache() {
-  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY) || '', 10);
-  const now = new Date().getTime();
+  const timestamp = parseInt(localStorage.getItem(TIMESTAMP_KEY) ?? '', 10);
+  const now = Date.now();
 
   if (!timestamp) {
-    localStorage.setItem(TIMESTAMP_KEY, new Date().getTime().toString());
+    localStorage.setItem(TIMESTAMP_KEY, Date.now().toString());
   } else if (now - timestamp >= ONE_DAY_MS) {
     localStorage.removeItem(REPORTED_ERRORS_KEY);
     localStorage.removeItem(TIMESTAMP_KEY);
@@ -120,11 +120,7 @@ function maybeResetReportedErrorsCache() {
 
 function userHasReportedErrorMessage(message: string) {
   const messages = getReportedErrorMessages();
-  if (messages.includes(message)) {
-    return true;
-  } else {
-    return false;
-  }
+  return messages.includes(message);
 }
 
 function saveReportedErrorMessage(message: string) {

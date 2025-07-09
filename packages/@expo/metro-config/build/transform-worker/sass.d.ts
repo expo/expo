@@ -1,4 +1,3 @@
-/// <reference types="source-map-js" />
 export declare function matchSass(filename: string): import('sass').Syntax | null;
 export declare function compileSass(projectRoot: string, { filename, src }: {
     filename: string;

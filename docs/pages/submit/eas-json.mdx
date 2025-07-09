@@ -1,17 +1,21 @@
 ---
-title: Configuring EAS Submit with eas.json
-sidebar_title: Configuration with eas.json
+title: Configure EAS Submit with eas.json
+sidebar_title: Configure with eas.json
 description: Learn how to configure your project for EAS Submit with eas.json.
 ---
 
-import { EasJsonPropertiesTable } from '~/components/plugins/EasJsonPropertiesTable';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 
-import submitAndroidSchema from '~/public/static/schemas/unversioned/eas-json-submit-android-schema.js';
-import submitIosSchema from '~/public/static/schemas/unversioned/eas-json-submit-ios-schema.js';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
 
-**eas.json** is your go-to place for configuring EAS Submit (and [EAS Build](/build/eas-json)). It is located at the root of your project next to your **package.json**. Even though **eas.json** is not mandatory for using EAS Submit, it makes your life easier if you'll need to switch between different configurations.
+**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Even though **eas.json** is not mandatory for using EAS Submit, it makes your life easier if you need to switch between different configurations.
 
-**eas.json** looks something like this:
+## Production profile
+
+Running `eas submit` without specifying a profile name will use the `production` profile if it is already defined in **eas.json** to configure the submission. If no values exist in the `production` profile, EAS CLI will prompt you to provide the values interactively.
+
+The `production` profile shown below is required to run Android and iOS submissions in a CI/CD process, like with [EAS Workflows](/eas/workflows/get-started/):
 
 ```json eas.json
 {
@@ -25,30 +29,30 @@ import submitIosSchema from '~/public/static/schemas/unversioned/eas-json-submit
         "track": "internal"
       },
       "ios": {
-        "appleId": "john@turtle.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "AB12XYZ34S"
+        "ascAppId": "your-app-store-connect-app-id"
       }
     }
   }
 }
 ```
 
-The JSON object under the `submit` key can contain multiple submit profiles. Every submit profile can have an arbitrary name. If you run `eas submit` without a profile name specified and you have the `production` profile defined in **eas.json**, it'll be used to configure your submission. If you'd like EAS CLI to pick up another submit profile, you need to specify it with a parameter, for example: `eas submit --platform ios --profile foobar`.
+Learn more about the values you can set with the [Android specific options](/eas/json/#android-specific-options) and the [iOS specific options](/eas/json/#ios-specific-options). You can also learn how to submit to the [Apple App Store](/submit/ios) and the [Google Play Store](/submit/android).
 
-The schema of this file looks like this:
+## Multiple profiles
+
+The JSON object under `submit` can contain multiple submit profiles. Each profile under `submit` can have an arbitrary name as shown in the example below:
 
 {/* prettier-ignore */}
 ```json eas.json
 {
   "cli": {
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
-    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defults to false. */boolean/* @end */
+    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */
   },
   "build": {
     // EAS Build configuration
     /* @hide ... */ /* @end */
-  }
+  },
   "submit": {
     /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_1"/* @end */: {
       "android": {
@@ -69,16 +73,31 @@ The schema of this file looks like this:
 }
 ```
 
-If you're also using EAS Build, [see how to use **eas.json** to configure your builds](/build/eas-json).
+When you select a build for submission, it chooses the profile that is used for the selected build. If the profile does not exist, it selects the default `production` profile.
 
-### Sharing configuration between profiles
+You can also use EAS CLI to pick up another `submit` profile by specifying it with a parameter, for example:
 
-Submit profiles can extend another submit profile using the `"extends"` key. For example, in the `preview` profile you may have `"extends": "production"`; this would make the `preview` profile inherit the configuration of the `production` profile.
+<Terminal
+  cmd={[
+    '# Replace the <profile-name> with a submit profile from the eas.json',
+    '$ eas submit --platform ios --profile <profile-name>',
+  ]}
+  cmdCopy="eas submit --platform ios --profile"
+/>
 
-## Android-specific options
+## Share configuration between `submit` profiles
 
-<EasJsonPropertiesTable schema={submitAndroidSchema} />
+A `submit` profile can extend another profile using the `extends` key.
 
-## iOS-specific options
+For example, in the `preview` profile you may have `"extends": "production"`. This makes the `preview` profile inherit the configuration of the `production` profile.
 
-<EasJsonPropertiesTable schema={submitIosSchema} />
+You can keep chaining profile extensions up to the depth of 5 as long as you avoid making circular dependencies.
+
+## Next step
+
+<BoxLink
+  title="EAS Submit schema reference"
+  description="Learn about available properties  for EAS Submit to configure and override their default behavior from within your project."
+  href="/eas/json/#eas-submit"
+  Icon={EasSubmitIcon}
+/>

@@ -1,6 +1,6 @@
 # expo-json-utils
 
-Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).
+Utilities for reading JSONObjects (Android) and NSDictionaries (iOS) for React Native and Expo apps.
 
 ## Contributing
 

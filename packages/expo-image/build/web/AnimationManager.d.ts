@@ -32,6 +32,6 @@ export default function AnimationManager({ children: renderFunction, initial, tr
     initial: AnimationManagerNode | null;
     transition: ImageTransition | null | undefined;
     recyclingKey?: string | null | undefined;
-}): JSX.Element;
+}): React.JSX.Element;
 export {};
 //# sourceMappingURL=AnimationManager.d.ts.map

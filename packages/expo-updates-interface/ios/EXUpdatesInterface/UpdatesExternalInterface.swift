@@ -1,10 +1,10 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 import Foundation
+import ExpoModulesCore
 
 public typealias UpdatesErrorBlock = (_ error: Error) -> Void
 public typealias UpdatesUpdateSuccessBlock = (_ manifest: [String: Any]?) -> Void
-public typealias UpdatesQuerySuccessBlock = (_ updateIds: [UUID]) -> Void
 public typealias UpdatesProgressBlock = (_ successfulAssetCount: UInt, _ failedAssetCount: UInt, _ totalAssetCount: UInt) -> Void
 
 /**
@@ -20,8 +20,11 @@ public typealias UpdatesManifestBlock = (_ manifest: [String: Any]) -> Bool
  */
 @objc(EXUpdatesExternalInterface)
 public protocol UpdatesExternalInterface {
-  @objc weak var bridge: AnyObject? { get set }
+  @objc weak var updatesExternalInterfaceDelegate: (any UpdatesExternalInterfaceDelegate)? { get set }
   @objc var launchAssetURL: URL? { get }
+
+  @objc var runtimeVersion: String? { get }
+  @objc var updateURL: URL? { get }
 
   @objc func reset()
 
@@ -33,13 +36,13 @@ public protocol UpdatesExternalInterface {
     error errorBlock: @escaping UpdatesErrorBlock
   )
 
-  /**
-   * Obtains a list of UUIDs for updates already in the updates DB that are in the READY state.
-   * The success block will pass in the array of UUIDs
-   */
-  @objc func storedUpdateIds(
-    withConfiguration configuration: [String: Any],
-    success successBlock: @escaping UpdatesQuerySuccessBlock,
-    error errorBlock: @escaping UpdatesErrorBlock
-  )
+  @objc func isValidUpdatesConfiguration(_ configuration: [String: Any]) -> Bool
+}
+
+/**
+ * Protocol for communication/delegation back to the host dev client for functionality.
+ */
+@objc(EXUpdatesExternalInterfaceDelegate)
+public protocol UpdatesExternalInterfaceDelegate {
+  @objc func updatesExternalInterfaceDidRequestRelaunch(_ updatesExternalInterface: UpdatesExternalInterface)
 }

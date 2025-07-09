@@ -1,9 +1,9 @@
-import { NotificationTriggerInput as NativeNotificationTriggerInput } from './NotificationScheduler.types';
+import { NativeNotificationTriggerInput } from './NotificationScheduler.types';
 import { NotificationRequestInput, NotificationTriggerInput } from './Notifications.types';
 /**
  * Schedules a notification to be triggered in the future.
- * > **Note:** Please note that this does not mean that the notification will be presented when it is triggered.
- * For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#notificationssetnotificationhandlerhandler)
+ * > **Note:** This does not mean that the notification will be presented when it is triggered.
+ * For the notification to be presented you have to set a notification handler with [`setNotificationHandler`](#setnotificationhandlerhandler)
  * that will return an appropriate notification behavior. For more information see the example below.
  * @param request An object describing the notification to be triggered.
  * @return Returns a Promise resolving to a string which is a notification identifier you can later use to cancel the notification or to identify an incoming notification.
@@ -18,6 +18,7 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  *     body: 'Change sides!',
  *   },
  *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60,
  *   },
  * });
@@ -32,6 +33,7 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  *     title: 'Remember to drink water!',
  *   },
  *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
  *     seconds: 60 * 20,
  *     repeats: true,
  *   },
@@ -42,15 +44,18 @@ import { NotificationRequestInput, NotificationTriggerInput } from './Notificati
  * ```ts
  * import * as Notifications from 'expo-notifications';
  *
- * const trigger = new Date(Date.now() + 60 * 60 * 1000);
- * trigger.setMinutes(0);
- * trigger.setSeconds(0);
+ * const date = new Date(Date.now() + 60 * 60 * 1000);
+ * date.setMinutes(0);
+ * date.setSeconds(0);
  *
  * Notifications.scheduleNotificationAsync({
  *   content: {
  *     title: 'Happy new hour!',
  *   },
- *   trigger,
+ *   trigger: {
+ *     type: Notifications.SchedulableTriggerInputTypes.DATE,
+ *     date
+ *   },
  * });
  * ```
  * @header schedule

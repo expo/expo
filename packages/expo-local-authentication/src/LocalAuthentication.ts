@@ -7,9 +7,18 @@ import {
   AuthenticationType,
   LocalAuthenticationResult,
   SecurityLevel,
+  BiometricsSecurityLevel,
+  LocalAuthenticationError,
 } from './LocalAuthentication.types';
 
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel };
+export {
+  LocalAuthenticationOptions,
+  AuthenticationType,
+  LocalAuthenticationResult,
+  SecurityLevel,
+  BiometricsSecurityLevel,
+  LocalAuthenticationError,
+};
 
 // @needsAudit
 /**
@@ -29,7 +38,7 @@ export async function hasHardwareAsync(): Promise<boolean> {
  * Determine what kinds of authentications are available on the device.
  * @return Returns a promise which fulfils to an array containing [`AuthenticationType`s](#authenticationtype).
  *
- * Devices can support multiple authentication methods- i.e. `[1,2]` means the device supports both
+ * Devices can support multiple authentication methods - i.e. `[1,2]` means the device supports both
  * fingerprint and facial recognition. If none are supported, this method returns an empty array.
  */
 export async function supportedAuthenticationTypesAsync(): Promise<AuthenticationType[]> {
@@ -92,7 +101,12 @@ export async function authenticateAsync(
   }
 
   const promptMessage = options.promptMessage || 'Authenticate';
-  const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+  const cancelLabel = options.cancelLabel || 'Cancel';
+  const result = await ExpoLocalAuthentication.authenticateAsync({
+    ...options,
+    promptMessage,
+    cancelLabel,
+  });
 
   return result;
 }

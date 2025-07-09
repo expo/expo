@@ -3,7 +3,7 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class FunctionSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
     let appContext = AppContext.create()
     let functionName = "test function name"
 
@@ -103,7 +103,7 @@ class FunctionSpec: ExpoSpec {
 
               expect(value).notTo(beNil())
               expect(value).to(beAKindOf(String.self))
-              expect(value).to(be(dict["property"]))
+              expect(value as? String).to(equal(dict["property"]!))
               done()
             }
           }
@@ -120,7 +120,7 @@ class FunctionSpec: ExpoSpec {
               let value = try! result.get()
               expect(value).notTo(beNil())
               expect(value).to(beAKindOf(String.self))
-              expect(value).to(be(dict["propertyWithCustomKey"]))
+              expect(value as? String).to(equal(dict["propertyWithCustomKey"]))
               done()
             }
           }
@@ -190,13 +190,13 @@ class FunctionSpec: ExpoSpec {
           return returnedValue
         }
 
-        expect({ try fn.call(by: nil, withArguments: ["test"], appContext: appContext) })
+        expect({ (try fn.call(by: nil, withArguments: ["test"], appContext: appContext)) as? String })
           .notTo(throwError())
-          .to(be(returnedValue))
+          .to(equal(returnedValue))
 
-        expect({ try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext) })
+        expect({ (try fn.call(by: nil, withArguments: ["test", 3], appContext: appContext)) as? String })
           .notTo(throwError())
-          .to(be(returnedValue))
+          .to(equal(returnedValue))
       }
 
       it("throws when called without required arguments") {
@@ -241,6 +241,10 @@ class FunctionSpec: ExpoSpec {
     context("JavaScript") {
       let runtime = try! appContext.runtime
 
+      struct TestRecord: Record {
+        @Field var property: String = "expo"
+      }
+
       beforeSuite {
         appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
           Name("TestModule")
@@ -249,6 +253,10 @@ class FunctionSpec: ExpoSpec {
 
           Function("returnNull") { () -> Double? in
             return nil
+          }
+
+          Function("returnUndefined") { () -> JavaScriptValue in
+            return .undefined
           }
 
           Function("isArgNull") { (arg: Double?) -> Bool in
@@ -269,12 +277,47 @@ class FunctionSpec: ExpoSpec {
           Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
             return try fn.call("foo", "bar")
           }
+
+          Function("withCGFloat") { (f: CGFloat) in
+            return "\(f)"
+          }
+
+          Function("withRecord") { (f: TestRecord) in
+            return "\(f.property)"
+          }
+
+          Function("withOptionalRecord") { (f: TestRecord?) in
+            return "\(f?.property ?? "no value")"
+          }
+          
+          Function("withSharedObject") {
+            return SharedString("Test")
+          }
+
+          AsyncFunction("withSharedObjectAsync") {
+            return SharedString("Test")
+          }
+
+          AsyncFunction("withArrayOfSharedObjectsAsync") {
+            return [SharedString("Test1"), SharedString("Test2"), SharedString("Test3")]
+          }
+
+          AsyncFunction("withSharedObjectPromise") { (p: Promise) in
+            p.resolve(SharedString("Test with Promise"))
+          }
+          
+          Class("Shared", SharedString.self) {
+            Property("value") { shared in
+              return shared.ref
+            }
+          }
         })
       }
 
       it("returns values") {
         expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
         expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull()) == true
+        expect(try runtime.eval("expo.modules.TestModule.returnUndefined()").isUndefined()) == true
       }
 
       it("accepts optional arguments") {
@@ -301,6 +344,109 @@ class FunctionSpec: ExpoSpec {
         expect(value.kind) == .string
         expect(value.getString()) == "foobar"
       }
+
+      it("accepts CGFloat argument") {
+        expect(try runtime.eval("expo.modules.TestModule.withCGFloat(20.23)").asString()) == "20.23"
+      }
+
+      it("accepts record") {
+        expect(try runtime.eval("expo.modules.TestModule.withRecord({property: \"123\"})").asString()) == "123"
+      }
+
+      it("accepts no optional record") {
+        expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord()").asString()) == "no value"
+      }
+
+      it("accepts optional record") {
+        expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
+      }
+      
+      it("returns a SharedObject (sync)") {
+        let object = try runtime.eval("expo.modules.TestModule.withSharedObject()")
+        
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("value")) == true
+        expect(object.getObject().getProperty("value").getString()) == "Test"
+      }
+      
+      it("returns a SharedObject (async)") {
+        try runtime
+          .eval(
+            "expo.modules.TestModule.withSharedObjectAsync().then((result) => { globalThis.result = result; })"
+          )
+
+        expect(safeBoolEval("globalThis.result != null")).toEventually(beTrue(), timeout: .milliseconds(4000))
+        let object = try runtime.eval("object = globalThis.result")
+        
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("value")) == true
+        
+        let result = try runtime.eval("object.value")
+        expect(result.kind) == .string
+        expect(result.getString()) == "Test"
+      }
+      
+      it("returns an Array of SharedObjects (async)") {
+        try runtime
+          .eval(
+            "expo.modules.TestModule.withArrayOfSharedObjectsAsync().then((result) => { globalThis.resultArray = result; })"
+          )
+
+        expect(safeBoolEval("globalThis.resultArray != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
+        let object = try runtime.eval("object = globalThis.resultArray")
+        
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("length")) == true
+
+        let result = object.getArray()
+        try result.enumerated().forEach { index, element in
+          expect(element.kind) == .object
+          expect(element.getObject().hasProperty("value")) == true
+          let value = try runtime.eval("object[\(index)].value")
+          expect(value.kind) == .string
+          expect(value.getString()) == "Test\(index + 1)"
+        }
+      }
+      
+      it("returns a SharedObject with Promise") {
+        try runtime
+          .eval(
+            "expo.modules.TestModule.withSharedObjectPromise().then((result) => { globalThis.promiseResult = result; })"
+          )
+
+        expect(safeBoolEval("globalThis.promiseResult != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
+        let object = try runtime.eval("object = globalThis.promiseResult")
+        
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("value")) == true
+        
+        let result = try runtime.eval("object.value")
+        expect(result.kind) == .string
+        expect(result.getString()) == "Test with Promise"
+      }
+      
+      // For async tests, this is a safe way to repeatedly evaluate JS
+      // and catch both Swift and ObjC exceptions
+      func safeBoolEval(_ js: String) -> Bool {
+        var result = false
+        do {
+          try EXUtilities.catchException {
+            guard let jsResult = try? runtime.eval(js) else {
+              return
+            }
+            result = jsResult.getBool()
+          }
+        } catch {
+          return false
+        }
+        return result
+      }
     }
+  }
+}
+
+private class SharedString: SharedRef<String> {
+  override var nativeRefType: String {
+    "string"
   }
 }

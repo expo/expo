@@ -1,43 +1,21 @@
 package expo.modules.core.logging
 
-import android.content.Context
 import android.util.Log
 import expo.modules.BuildConfig
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 /**
- * Native Android logging class for Expo, with options to direct logs
+ * Logging class for Expo, with options to direct logs
  * to different destinations.
  */
 class Logger(
   /**
-   * String that defines the tag used with the Android native logger, and
-   * also used to derive the file name for logging to a file
+   * LogHandler instances to which logs should be send
    */
-  category: String,
-  /**
-   * Android context is required if logging to a file
-   */
-  context: Context? = null,
-  /**
-   * One of the predefined LoggerOptions values
-   */
-  options: LoggerOptions
+  private val logHandlers: List<LogHandler>
 ) {
-
-  private val handlers = mutableListOf<LogHandler>().apply {
-    if (options.contains(LoggerOptions.logToOS)) {
-      this.add(OSLogHandler(category))
-    }
-    if (options.contains(LoggerOptions.logToFile)) {
-      this.add(
-        PersistentFileLogHandler(
-          category,
-          requireNotNull(context) { "You have to provide the `Context` to create a file logger" }
-        )
-      )
-    }
-  }.toList()
-
   private val minOSLevel = when (BuildConfig.DEBUG) {
     true -> Log.DEBUG
     else -> Log.INFO
@@ -92,9 +70,25 @@ class Logger(
     log(LogType.Fatal, message, cause)
   }
 
+  /**
+   * Starts a timer that can be used to compute the duration of an operation. Upon calling
+   * `stop` on the returned object, a timer entry will be logged.
+   */
+  fun startTimer(logFormatter: (duration: Long) -> String): LoggerTimer {
+    val start = System.currentTimeMillis()
+    return object : LoggerTimer {
+      override fun stop(): Duration {
+        val end = System.currentTimeMillis()
+        val duration = end - start
+        log(LogType.Timer, logFormatter(duration))
+        return duration.toDuration(DurationUnit.MILLISECONDS)
+      }
+    }
+  }
+
   private fun log(type: LogType, message: String, cause: Throwable? = null) {
     if (LogType.toOSLogType(type) >= minOSLevel) {
-      handlers.forEach { handler ->
+      logHandlers.forEach { handler ->
         handler.log(type, message, cause)
       }
     }

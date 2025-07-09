@@ -1,9 +1,9 @@
 {
   "name": "expo-contacts",
-  "version": "12.1.0",
+  "version": "14.2.4",
   "description": "Provides access to the phone's system contacts.",
-  "main": "build/Contacts.js",
-  "types": "build/Contacts.d.ts",
+  "main": "src/index.ts",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
@@ -33,14 +33,12 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "uuid": "^3.4.0"
-  },
   "devDependencies": {
-    "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

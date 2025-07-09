@@ -1,6 +1,5 @@
 import * as Crypto from 'expo-crypto';
 import { CryptoDigestAlgorithm, CryptoEncoding } from 'expo-crypto';
-import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import FunctionDemo, { FunctionDescription } from '../components/FunctionDemo';
@@ -66,7 +65,6 @@ const DIGEST_STRING: FunctionDescription = {
       name: 'algorithm',
       type: 'string',
       values: [
-        CryptoDigestAlgorithm.MD2,
         CryptoDigestAlgorithm.MD5,
         CryptoDigestAlgorithm.SHA1,
         CryptoDigestAlgorithm.SHA256,

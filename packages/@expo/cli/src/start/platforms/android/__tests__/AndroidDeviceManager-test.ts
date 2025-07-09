@@ -1,4 +1,4 @@
-import { asMock } from '../../../../__tests__/asMock';
+import { shellDumpsysPackage } from './fixtures/adb-output';
 import { CommandError } from '../../../../utils/errors';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import {
@@ -8,7 +8,6 @@ import {
   openAppIdAsync,
   openUrlAsync,
 } from '../adb';
-import { shellDumpsysPackage } from './fixtures/adb-output';
 
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
@@ -29,12 +28,12 @@ function createDevice() {
 describe('getAppVersionAsync', () => {
   it(`gets the version from an installed app`, async () => {
     const device = createDevice();
-    asMock(getPackageInfoAsync).mockResolvedValueOnce(shellDumpsysPackage);
+    jest.mocked(getPackageInfoAsync).mockResolvedValueOnce(shellDumpsysPackage);
     await expect(device.getAppVersionAsync('foobar')).resolves.toBe('2.23.2');
   });
   it(`returns null when the app is not installed`, async () => {
     const device = createDevice();
-    asMock(getPackageInfoAsync).mockResolvedValueOnce('');
+    jest.mocked(getPackageInfoAsync).mockResolvedValueOnce('');
     await expect(device.getAppVersionAsync('foobar')).resolves.toBe(null);
   });
 });
@@ -42,17 +41,33 @@ describe('getAppVersionAsync', () => {
 describe('launchActivityAsync', () => {
   it(`asserts that the app is not installed`, async () => {
     const device = createDevice();
-    asMock(launchActivityAsync).mockImplementationOnce(() => {
+    jest.mocked(launchActivityAsync).mockImplementationOnce(() => {
       throw new CommandError('APP_NOT_INSTALLED', '...');
     });
     await expect(device.launchActivityAsync).rejects.toThrow(/run:android/);
   });
   it(`asserts that an unexpected error occurred`, async () => {
     const device = createDevice();
-    asMock(launchActivityAsync).mockImplementationOnce(() => {
+    jest.mocked(launchActivityAsync).mockImplementationOnce(() => {
       throw new Error('...');
     });
     await expect(device.launchActivityAsync).rejects.toThrow(/\.\.\./);
+  });
+  it(`launches activity with provided props`, async () => {
+    const device = createDevice();
+    await expect(
+      device.launchActivityAsync(
+        'dev.expo.test/.MainActivity',
+        'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081'
+      )
+    ).resolves.toBeUndefined();
+    expect(launchActivityAsync).toHaveBeenCalledWith(
+      expect.anything(), // Device context
+      expect.objectContaining({
+        launchActivity: 'dev.expo.test/.MainActivity',
+        url: 'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081',
+      })
+    );
   });
 });
 
@@ -60,14 +75,17 @@ describe('openUrlAsync', () => {
   it('opens Expo Go before launching into Expo Go', async () => {
     const device = createDevice();
     await device.openUrlAsync('exp://foobar');
-    expect(openAppIdAsync).toBeCalledWith({ pid: '123' }, { applicationId: 'host.exp.exponent' });
-    expect(openUrlAsync).toBeCalledWith({ pid: '123' }, { url: 'exp://foobar' });
+    expect(openAppIdAsync).toHaveBeenCalledWith(
+      { pid: '123' },
+      { applicationId: 'host.exp.exponent' }
+    );
+    expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'exp://foobar' });
   });
   it('opens a URL on a device', async () => {
     const device = createDevice();
     await device.openUrlAsync('http://foobar');
-    expect(openAppIdAsync).not.toBeCalled();
-    expect(openUrlAsync).toBeCalledWith({ pid: '123' }, { url: 'http://foobar' });
+    expect(openAppIdAsync).not.toHaveBeenCalled();
+    expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'http://foobar' });
   });
   it('launches nonstandard URL', async () => {
     const device = createDevice();

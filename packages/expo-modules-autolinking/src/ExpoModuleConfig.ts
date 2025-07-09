@@ -1,10 +1,32 @@
-import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, SupportedPlatform } from './types';
+import {
+  AndroidGradleAarProjectDescriptor,
+  AndroidGradlePluginDescriptor,
+  AndroidPublication,
+  RawExpoModuleConfig,
+  RawModuleConfigApple,
+  SupportedPlatform,
+} from './types';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
     return value;
   }
   return value != null ? [value] : [];
+}
+
+export class ExpoAndroidProjectConfig {
+  constructor(
+    public name: string,
+    public path: string,
+    public modules?: string[],
+    public publication?: AndroidPublication,
+    public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
+    public shouldUsePublicationScriptPath?: string,
+    /**
+     * Whether this project is the root one.
+     */
+    public isDefault: boolean = false
+  ) {}
 }
 
 /**
@@ -17,69 +39,100 @@ export class ExpoModuleConfig {
    * Whether the module supports given platform.
    */
   supportsPlatform(platform: SupportedPlatform): boolean {
-    return this.rawConfig.platforms?.includes(platform) ?? false;
+    const supportedPlatforms = this.rawConfig.platforms ?? [];
+
+    if (platform === 'apple') {
+      // Apple platform is supported when any of iOS, macOS and tvOS is supported.
+      return supportedPlatforms.some((supportedPlatform) => {
+        return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
+      });
+    }
+    return supportedPlatforms.includes(platform);
+  }
+
+  /**
+   * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.
+   */
+  getAppleConfig(): RawModuleConfigApple | null {
+    return this.rawConfig.apple ?? this.rawConfig.ios ?? null;
   }
 
   /**
    * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
    */
-  iosModules() {
-    const iosConfig = this.rawConfig.ios;
-
-    // `modulesClassNames` is a legacy name for the same config.
-    return iosConfig?.modules ?? iosConfig?.modulesClassNames ?? [];
+  appleModules() {
+    const appleConfig = this.getAppleConfig();
+    return appleConfig?.modules ?? [];
   }
 
   /**
    * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
    */
-  iosAppDelegateSubscribers(): string[] {
-    return this.rawConfig.ios?.appDelegateSubscribers ?? [];
+  appleAppDelegateSubscribers(): string[] {
+    return this.getAppleConfig()?.appDelegateSubscribers ?? [];
   }
 
   /**
    * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
    */
-  iosReactDelegateHandlers(): string[] {
-    return this.rawConfig.ios?.reactDelegateHandlers ?? [];
+  appleReactDelegateHandlers(): string[] {
+    return this.getAppleConfig()?.reactDelegateHandlers ?? [];
   }
 
   /**
    * Returns podspec paths defined by the module author.
    */
-  iosPodspecPaths(): string[] {
-    return arrayize(this.rawConfig.ios?.podspecPath);
+  applePodspecPaths(): string[] {
+    return arrayize(this.getAppleConfig()?.podspecPath);
   }
 
   /**
    * Returns the product module names, if defined by the module author.
    */
-  iosSwiftModuleNames(): string[] {
-    return arrayize(this.rawConfig.ios?.swiftModuleName);
+  appleSwiftModuleNames(): string[] {
+    return arrayize(this.getAppleConfig()?.swiftModuleName);
   }
 
   /**
    * Returns whether this module will be added only to the debug configuration
    */
-  iosDebugOnly(): boolean {
-    return this.rawConfig.ios?.debugOnly ?? false;
+  appleDebugOnly(): boolean {
+    return this.getAppleConfig()?.debugOnly ?? false;
   }
 
   /**
-   * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+   * Returns information about Android projects defined by the module author.
    */
-  androidModules() {
-    const androidConfig = this.rawConfig.android;
+  androidProjects(defaultProjectName: string): ExpoAndroidProjectConfig[] {
+    const androidProjects: ExpoAndroidProjectConfig[] = [];
 
-    // `modulesClassNames` is a legacy name for the same config.
-    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
-  }
+    // Adding the "root" Android project - it might not be valide.
+    androidProjects.push(
+      new ExpoAndroidProjectConfig(
+        this.rawConfig.android?.name ?? defaultProjectName,
+        this.rawConfig.android?.path ?? 'android',
+        this.rawConfig.android?.modules,
+        this.rawConfig.android?.publication,
+        this.rawConfig.android?.gradleAarProjects,
+        this.rawConfig.android?.shouldUsePublicationScriptPath,
+        !this.rawConfig.android?.path // it's default project because path is not defined
+      )
+    );
 
-  /**
-   * Returns build.gradle file paths defined by the module author.
-   */
-  androidGradlePaths(): string[] {
-    return arrayize(this.rawConfig.android?.gradlePath ?? []);
+    this.rawConfig.android?.projects?.forEach((project) => {
+      androidProjects.push(
+        new ExpoAndroidProjectConfig(
+          project.name,
+          project.path,
+          project.modules,
+          project.publication,
+          project.gradleAarProjects,
+          project.shouldUsePublicationScriptPath
+        )
+      );
+    });
+
+    return androidProjects;
   }
 
   /**
@@ -87,6 +140,27 @@ export class ExpoModuleConfig {
    */
   androidGradlePlugins(): AndroidGradlePluginDescriptor[] {
     return arrayize(this.rawConfig.android?.gradlePlugins ?? []);
+  }
+
+  /**
+   * Returns gradle projects containing AAR files defined by the module author.
+   */
+  androidGradleAarProjects(): AndroidGradleAarProjectDescriptor[] {
+    return arrayize(this.rawConfig.android?.gradleAarProjects ?? []);
+  }
+
+  /**
+   * Returns the publication config for Android.
+   */
+  androidPublication(): AndroidPublication | undefined {
+    return this.rawConfig.android?.publication;
+  }
+
+  /**
+   * Returns core features required by the module author.
+   */
+  coreFeatures(): string[] {
+    return arrayize(this.rawConfig.coreFeatures ?? []);
   }
 
   /**

@@ -12,7 +12,7 @@ namespace jsi = facebook::jsi;
 
 class JavaScriptRuntime;
 
-class JSIInteropModuleRegistry;
+class JSIContext;
 
 /**
  * A convenient class to access underlying jni::Runtime and hold a weak reference to expo::JavaScriptRuntime.
@@ -33,7 +33,7 @@ public:
    */
   jsi::Runtime &getJSRuntime();
 
-  JSIInteropModuleRegistry *getModuleRegistry();
+  JSIContext *getJSIContext();
 
   void ensureRuntimeIsValid();
 };

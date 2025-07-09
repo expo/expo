@@ -1,6 +1,8 @@
-import { ImageProps } from 'expo-image';
+import { Image, ImageProps } from 'expo-image';
 import React from 'react';
-import { Animated, ImageProps as RNImageProps } from 'react-native';
+import { Animated, ImageProps as RNImageProps, Image as RNImage } from 'react-native';
+
+import { anyAnimationDriver, jsOnlyAnimationDriver } from './tests/constants';
 
 export type ImageTestEventHandler = (...args: any) => void;
 
@@ -15,17 +17,20 @@ export type ImageTestPropsFn = (input: ImageTestPropsFnInput) => ImageTestProps;
 
 export type ImageTestComponent =
   | React.ComponentType<ImageProps>
-  | React.ComponentType<RNImageProps>;
+  | React.ComponentType<RNImageProps>
+  | Animated.AnimatedComponent<typeof Image>
+  | Animated.AnimatedComponent<typeof RNImage>;
 
 export interface ImageTest {
   name: string;
   props: ImageTestProps | ImageTestPropsFn;
   loadOnDemand?: boolean;
   testInformation?: string;
+  animationDriver?: typeof jsOnlyAnimationDriver | typeof anyAnimationDriver;
 }
 
 export interface ImageTestGroup {
   name: string;
-  tests: (ImageTest | ImageTestGroup)[];
+  tests: ImageTest[];
   description?: string;
 }

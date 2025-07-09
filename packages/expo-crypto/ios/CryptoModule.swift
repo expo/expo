@@ -20,7 +20,7 @@ public class CryptoModule: Module {
     Function("digest", digest)
 
     Function("randomUUID") {
-      UUID().uuidString
+      UUID().uuidString.lowercased()
     }
   }
 }
@@ -69,18 +69,17 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
 }
 
 private func digest(algorithm: DigestAlgorithm, output: TypedArray, data: TypedArray) {
-  let length = Int(algorithm.digestLength)
   let outputPtr = output.rawPointer.assumingMemoryBound(to: UInt8.self)
-  algorithm.digest(data.rawPointer, UInt32(data.byteLength), outputPtr)
+  _ = algorithm.digest(data.rawPointer, UInt32(data.byteLength), outputPtr)
 }
 
-private class LossyConversionException: Exception {
+private final class LossyConversionException: Exception {
   override var reason: String {
     "Unable to convert given string without losing some information"
   }
 }
 
-private class FailedGeneratingRandomBytesException: GenericException<OSStatus> {
+private final class FailedGeneratingRandomBytesException: GenericException<OSStatus> {
   override var reason: String {
     "Generating random bytes has failed with OSStatus code: \(param)"
   }

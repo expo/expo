@@ -19,7 +19,7 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // Add a trailing slash if there is not one
-  if (redirectPath[redirectPath.length - 1] !== '/') {
+  if (!redirectPath.endsWith('/')) {
     redirectPath = `${redirectPath}/`;
   }
 
@@ -47,14 +47,19 @@ export function getRedirectPath(redirectPath: string): string {
   }
 
   // Catch any redirects to sdk paths without versions and send to the latest version
-  if (redirectPath.startsWith('/sdk/')) {
-    redirectPath = `/versions/latest${redirectPath}`;
+  if (redirectPath.startsWith('/sdk')) {
+    const hasDestination = !/^\/sdk\/?$/.test(redirectPath);
+    if (hasDestination) {
+      redirectPath = `/versions/latest${redirectPath}`;
+    } else {
+      redirectPath = `/versions/latest`;
+    }
   }
 
   // If a page is missing for react-native paths we redirect to react-native docs
-  if (redirectPath.match(/\/versions\/.*\/react-native\//)) {
+  if (/\/versions\/.*\/react-native\//.test(redirectPath)) {
     const pathParts = redirectPath.split('/');
-    const page = pathParts[pathParts.length - 2];
+    const page = pathParts.at(-2);
     redirectPath = `https://reactnative.dev/docs/${page}`;
   }
 
@@ -73,19 +78,19 @@ function getVersionFromPath(path: string) {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = versions.VERSIONS.filter(v => v.match(/^v/));
+const supportedVersions = new Set(versions.VERSIONS.filter(v => v.match(/^v/)));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path: string) {
-  return supportedVersions.includes(getVersionFromPath(path));
+  return supportedVersions.has(getVersionFromPath(path));
 }
 
 function pathIncludesHtmlExtension(path: string) {
-  return !!path.match(/\.html$/);
+  return !!path.endsWith('.html');
 }
 
 function pathIncludesIndexHtml(path: string) {
-  return !!path.match(/index\.html$/);
+  return !!path.endsWith('index.html');
 }
 
 const VERSION_PART_PATTERN = `(latest|unversioned|v\\d+\\.\\d+.\\d+)`;
@@ -95,7 +100,7 @@ const REACT_NATIVE_PATH_PATTERN = `${VERSIONED_PATH_PATTERN}/react-native`;
 
 // Check if path is valid (matches /versions/some-valid-version-here/)
 function isVersionedPath(path: string) {
-  return !!path.match(new RegExp(VERSIONED_PATH_PATTERN));
+  return new RegExp(VERSIONED_PATH_PATTERN).test(path);
 }
 
 // Replace an unsupported SDK version with latest
@@ -118,7 +123,7 @@ function pathRequiresVersioning(path: string) {
   const isExpoSdkIndexPage = path.match(new RegExp(VERSIONED_PATH_PATTERN + '/$'));
   const isReactNativeApiPage = path.match(new RegExp(REACT_NATIVE_PATH_PATTERN));
 
-  return isExpoSdkIndexPage || isExpoSdkPage || isReactNativeApiPage;
+  return isExpoSdkIndexPage ?? isExpoSdkPage ?? isReactNativeApiPage;
 }
 
 function removeVersionFromPath(path: string) {
@@ -127,31 +132,23 @@ function removeVersionFromPath(path: string) {
 
 // Not sure why this happens but sometimes the URL ends in /null
 function endsInNull(path: string) {
-  return !!path.match(/\/null$/);
+  return path.endsWith('/null');
 }
 
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
-  // Redirects after creating /home route
+  // Redirects after creating Home pages and route
   '/next-steps/additional-resources/': '/additional-resources/',
-  // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
-  '/workflow/debugging/': '/debugging/runtime-issue/',
-  '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
-  '/introduction/expo/': '/core-concepts/',
+  '/workflow/debugging/': '/debugging/runtime-issues/',
   '/introduction/why-not-expo/': '/faq/#limitations',
-  '/introduction/faq/': '/faq/',
   '/next-steps/community/': '/',
-  '/introduction/managed-vs-bare/': '/archive/managed-vs-bare/',
-  '/workflow/expo-go/': '/get-started/expo-go/',
+  '/workflow/expo-go/': '/get-started/set-up-your-environment/',
   '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
-  '/guides/using-custom-fonts/': '/develop/user-interface/fonts/',
   '/development/introduction/': '/develop/development-builds/introduction/',
   '/development/create-development-builds/': '/develop/development-builds/create-a-build/',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
@@ -161,28 +158,25 @@ const RENAMED_PAGES: Record<string, string> = {
   '/debugging/': '/debugging/runtime-issues/',
   '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
-  '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
-  '/development/installation/': '/develop/development-builds/installation/',
-  '/get-started/errors/': '/debugging/errors-and-warnings/',
+  '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
   // Old redirects
-  '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/build/setup/',
+  '/distribution/building-standalone-apps/': '/build/setup/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
-  '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/development/create-development-builds/',
-  '/development/getting-started/': '/development/create-development-builds/',
-  '/development/troubleshooting/': '/development/introduction/',
-  '/development/upgrading/': '/development/introduction/',
-  '/development/extensions/': '/development/development-workflows/',
-  '/development/develop-your-project': '/development/use-development-builds',
+  '/development/build/': '/develop/development-builds/create-a-build/',
+  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/troubleshooting/': '/develop/development-builds/introduction/',
+  '/development/upgrading/': '/develop/development-builds/introduction/',
+  '/development/extensions/': '/develop/development-builds/development-workflows/',
+  '/development/develop-your-project': '/develop/development-builds/use-development-builds/',
 
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
@@ -192,9 +186,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
-  '/guides/linking/': '/workflow/linking/',
-  '/guides/up-and-running/': '/get-started/installation/',
-  '/guides/debugging/': '/workflow/debugging/',
+  '/guides/up-and-running/': '/get-started/create-a-project/',
+  '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
@@ -202,21 +195,28 @@ const RENAMED_PAGES: Record<string, string> = {
     'https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36',
 
   // Changes from redoing the getting started workflow, SDK35+
-  '/workflow/up-and-running/': '/get-started/installation/',
-  '/introduction/additional-resources/': '/next-steps/additional-resources/',
-  '/introduction/already-used-react-native/': '/workflow/already-used-react-native/',
+  '/workflow/up-and-running/': '/get-started/create-a-project/',
+  '/introduction/already-used-react-native/':
+    '/faq/#what-is-the-difference-between-expo-and-react-native',
   '/introduction/community/': '/next-steps/community/',
-  '/introduction/installation/': '/get-started/installation/',
+  '/introduction/installation/': '/get-started/create-a-project/',
   '/versions/latest/overview/': '/versions/latest/',
-  '/versions/latest/introduction/installation/': '/get-started/installation/',
+  '/versions/latest/introduction/installation/': '/get-started/create-a-project/',
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
-  // Move overview to index
-  '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
+  // Redirects after Expo Router docs reorganization from Home to Guides
+  '/routing/next-steps/': '/router/introduction/',
+  '/routing/introduction/': '/router/introduction/',
+  '/routing/installation/': '/router/installation/',
+  '/routing/create-pages/': '/router/create-pages/',
+  '/routing/navigating-pages/': '/router/navigating-pages/',
+  '/routing/layouts/': '/router/basics/layout/',
+  '/routing/appearance/': '/router/introduction/',
+  '/routing/error-handling/': '/router/error-handling/',
 
   // Errors and debugging is better suited for getting started than tutorial
-  '/tutorial/errors/': '/get-started/errors/',
+  '/tutorial/errors/': '/debugging/errors-and-warnings/',
 
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
@@ -225,46 +225,80 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/account-permissions/': '/accounts/personal/',
 
   // Redirects based on Sentry reports
-  '/next-steps/installation/': '/get-started/installation/',
+  '/next-steps/installation/': '/get-started/create-a-project/',
   '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
-  '/guides/using-fcm/': '/push-notifications/using-fcm/',
   '/push-notifications/': '/push-notifications/overview/',
-  '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
-  '/get-started/': '/get-started/installation/',
+  '/get-started/': '/get-started/create-a-project/',
   '/guides/detach/': '/archive/glossary/#detach',
+  '/workflow/snack/': '/more/glossary-of-terms/#snack',
+  '/eas/submit/': '/submit/introduction/',
+  '/development/tools/expo-dev-client/':
+    '/develop/development-builds/introduction/#what-is-expo-dev-client',
+  '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
+  '/accounts/teams-and-accounts/': '/accounts/account-types/',
+  '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
   '/submit/submit-android': '/submit/android/',
 
   // Fundamentals had too many things
-  '/workflow/linking/': '/guides/linking/',
-  '/workflow/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
-  '/guides/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
+  '/workflow/linking/': '/linking/overview/',
+  '/workflow/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
+  '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
-  '/guides/notification-channels/': '/archived/notification-channels/',
-
-  // Migrated FAQ pages
-  '/faq/image-background/': '/ui-programming/image-background/',
-  '/faq/react-native-styling-buttons/': '/ui-programming/react-native-styling-buttons/',
-  '/faq/react-native-version-mismatch/': '/troubleshooting/react-native-version-mismatch/',
-  '/faq/clear-cache-windows/': '/troubleshooting/clear-cache-windows/',
-  '/faq/clear-cache-macos-linux/': '/troubleshooting/clear-cache-macos-linux/',
-  '/faq/application-has-not-been-registered/':
-    '/troubleshooting/application-has-not-been-registered/',
+  '/guides/notification-channels/': '/archive/notification-channels/',
 
   // Permissions API is moved to guide
-  '/versions/v40.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
-  '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
-  // Redirect Gatsby guide to index guides page
-  '/guides/using-gatsby/': '/guides/',
+  // Random API replaced with Crypto
+  '/versions/latest/sdk/random/': '/versions/latest/sdk/crypto/',
+
+  // Redirect bare guides to unified workflow guides
+  '/bare/using-libraries/': '/workflow/using-libraries/',
+  '/bare/exploring-bare-workflow/': '/bare/overview/',
+  '/bare/existing-apps/': '/bare/installing-expo-modules/',
+  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
+  '/bare/using-web/': '/workflow/web/',
+  '/guides/running-in-the-browser/': '/workflow/web/',
+  '/bare/unimodules-full-list/': '/bare/overview/',
+  '/bare/updating-your-app/': '/eas-update/getting-started/',
+
+  // Consolidate distribution
+  '/distribution/security/': '/app-signing/security/',
+
+  // Redirects for removed/archived pages or guides
+  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/expokit/': '/archive/glossary/#expokit',
+  '/submit/classic-builds/': '/submit/introduction/',
+  '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
+  '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
+  '/archive/expokit/overview/': '/archive/glossary/',
+  '/expokit/overview/': '/archive/glossary/',
+  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
+  '/workflow/already-used-react-native/': '/workflow/overview/',
+  '/development/installation/': '/develop/development-builds/create-a-build/',
+  '/guides/routing-and-navigation/': '/routing/introduction/',
+  '/build-reference/custom-build-config/': '/custom-builds/get-started/',
+  '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
+  '/guides/testing-on-devices': '/build/internal-distribution/',
+  '/bare/hello-world/': '/bare/overview/',
+  '/guides/errors/': '/debugging/runtime-issues/',
+  '/guides/using-graphql/': '/guides/overview/',
+  '/guides/using-styled-components/': '/guides/overview/',
+  '/build/automating-submissions/': '/build/automate-submissions/',
+  '/workflow/run-on-device/': '/build/internal-distribution/',
+  '/guides/': '/guides/overview/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/versions/latest/sdk/in-app-purchases/': '/guides/in-app-purchases/',
+  '/guides/web-performance/': '/guides/analyzing-bundles/',
+  '/guides/assets/': '/develop/user-interface/assets/',
+  '/router/reference/search-parameters/': '/router/reference/url-parameters/',
 
   // Classic updates moved to archive
   '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
@@ -272,46 +306,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
   '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
   '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
-  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
   '/guides/offline-support/': '/archive/classic-updates/offline-support/',
   '/guides/preloading-and-caching-assets/':
     '/archive/classic-updates/preloading-and-caching-assets/',
-  '/eas-update/bare-react-native/': '/bare/updating-your-app/',
+  '/eas-update/bare-react-native/': '/eas-update/getting-started/',
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
-  '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
-  '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/classic/building-standalone-apps/': '/build/setup/',
+  '/classic/turtle-cli/': '/build/setup/',
   '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
-
-  // Redirect bare guides to unified workflow guides
-  '/bare/using-libraries/': '/workflow/using-libraries/',
-  '/bare/exploring-bare-workflow/': '/bare/hello-world/',
-  '/bare/existing-apps/': '/bare/installing-expo-modules/',
-  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
-  '/bare/using-web/': '/workflow/web/',
-  '/guides/running-in-the-browser/': '/workflow/web/',
-  '/bare/unimodules-full-list/': '/bare/hello-world/',
-
-  // Consolidate distribution
-  '/distribution/security/': '/app-signing/security/',
-  '/distribution/uploading-apps/': '/submit/introduction/',
-  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
-
-  // Deleted or removed guides
-  '/guides/setup-native-firebase/': '/guides/using-firebase/',
-  '/guides/using-clojurescript/': '/guides/',
-
-  // Redirects from old to new tutorial
-  '/tutorial/planning/': '/tutorial/introduction/',
-  '/tutorial/sharing/': '/tutorial/introduction/',
-  '/tutorial/text/': '/tutorial/introduction/',
-
-  // Redirects for removed /archived pages
-  '/archived/': '/archive/',
-  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/expokit/': '/archive/glossary/#expokit',
-  '/submit/classic-builds/': '/submit/introduction/',
-  '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
+  '/archive/classic-updates/building-standalone-apps/': '/build/setup/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -330,18 +333,193 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/firebase-recaptcha/': '/guides/using-firebase/',
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
   '/versions/latest/sdk/util/': '/versions/latest/',
-  // Push notifications
-  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
+  '/guides/using-preact/': '/guides/overview/',
+  '/versions/latest/sdk/shared-element/': '/versions/latest/',
+  '/workflow/hermes/': '/guides/using-hermes/',
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
   '/archive/expokit/eject/': '/archive/glossary/#eject',
-  '/versions/latest/sdk/admob/': '/versions/latest/',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
-  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
-  '/tutorial/': '/tutorial/introduction/',
-  // Note (@aman): The following redirect is temporary until Guides section has an overview
-  '/guides/': '/workflow/customizing/',
-  '/archive/workflow/customizing/': '/workflow/customizing/',
-  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
+  '/tutorial/': '/tutorial/overview/',
+
+  // EAS Update
+  '/eas-update/developing-with-eas-update/': '/eas-update/develop-faster/',
+  '/eas-update/eas-update-with-local-build/': '/eas-update/standalone-service/',
+  '/eas-update/eas-update-and-eas-cli/': '/eas-update/eas-cli/',
+  '/eas-update/debug-updates/': '/eas-update/debug/',
+  '/eas-update/known-issues/': '/eas-update/introduction/',
+  '/eas-update/how-eas-update-works/': '/eas-update/how-it-works/',
+  '/eas-update/migrate-to-eas-update/': '/eas-update/migrate-from-classic-updates/',
+  '/eas-update/custom-updates-server/': '/versions/latest/sdk/updates/',
+  '/distribution/custom-updates-server/': '/versions/latest/sdk/updates/',
+  '/distribution/runtime-versions/': '/eas-update/runtime-versions/',
+  '/bare/error-recovery/': '/eas-update/error-recovery/',
+  '/deploy/instant-updates/': '/deploy/send-over-the-air-updates/',
+  '/eas-update/build-locally/': '/eas-update/standalone-service/',
+  '/eas-update/updating-your-app/': '/eas-update/getting-started/',
+  '/eas-update/develop-faster/': '/eas-update/preview/',
+  '/eas-update/continuous-deployment/': '/eas/workflows/examples/',
+
+  // Expo Router Advanced guides
+  '/router/advance/root-layout': '/router/basics/layout/#root-layout',
+  '/router/advance/stack': '/router/advanced/stack/',
+  '/router/advance/tabs': '/router/advanced/tabs/',
+  '/router/advance/drawer': '/router/advanced/drawer/',
+  '/router/advance/nesting-navigators': '/router/advanced/nesting-navigators/',
+  '/router/advance/modal': '/router/advanced/modals/',
+  '/router/advance/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/reference/platform-specific-modules': '/router/advanced/platform-specific-modules/',
+  '/router/advance/shared-routes': '/router/advanced/shared-routes/',
+  '/router/advance/router-settings': '/router/advanced/router-settings/',
+  '/router/appearance/': '/router/introduction/',
+
+  // Redirects as per Algolia 404 report
+  '/workflow/build/building-on-ci': '/build/building-on-ci/',
+  'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
+  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
+  '/versions/v51.0.0/sdk/taskmanager': '/versions/v51.0.0/sdk/task-manager/',
+  '/task-manager/': '/versions/latest/sdk/task-manager',
+
+  // Deprecated Webpack support
+  '/guides/customizing-webpack': '/archive/customizing-webpack',
+
+  // May 2024 home / get started section
+  '/overview/': '/get-started/introduction/',
+  '/get-started/installation/': '/get-started/create-a-project/',
+  '/get-started/expo-go/': '/get-started/set-up-your-environment/',
+
+  // Redirect for /learn URL
+  '/learn/': '/tutorial/introduction/',
+
+  // May 2024 home / develop section
+  '/develop/user-interface/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
+  '/develop/user-interface/splash-screen/': '/develop/user-interface/splash-screen-and-app-icon/',
+
+  // Preview section
+  '/preview/support/': '/preview/introduction/',
+  '/preview/react-compiler/': '/guides/react-compiler/',
+
+  // Troubleshooting section
+  '/guides/troubleshooting-proxies/': '/troubleshooting/proxies/',
+
+  // Based on SEO tool reports
+  '/build-reference/eas-json/': '/eas/json/',
+  '/build-reference/custom-builds/schema/': '/custom-builds/schema/',
+
+  // After adding "Linking" (/linking/**) section
+  '/guides/linking/': '/linking/overview/',
+  '/guides/deep-linking/': '/linking/into-your-app/',
+
+  // After adding /sdk/router/ API reference
+  '/router/reference/hooks/': '/versions/latest/sdk/router/#hooks',
+
+  // After moving custom tabs under Expo Router > Navigation patterns
+  '/router/ui/tabs/': '/router/advanced/custom-tabs/',
+
+  // After deleting deprecated docs from archive section
+  '/guides/using-flipper/': '/debugging/devtools-plugins/',
+
+  // After revamping notification guides
+  '/push-notifications/obtaining-a-device-token-for-fcm-or-apns/':
+    '/push-notifications/sending-notifications-custom/',
+
+  // After new environment variables guide
+  '/build-reference/variables/': '/eas/environment-variables/',
+  '/eas-update/environment-variables/': '/eas/environment-variables/#eas-update',
+
+  // After moving common questions from Expo Router FAQ to Introduction
+  '/router/reference/faq/': '/router/introduction/',
+
+  // After migrating Prebuild page info to CNG page
+  '/workflow/prebuild/': '/workflow/continuous-native-generation/',
+
+  // After removing UI programming section
+  '/ui-programming/image-background/': '/tutorial/overview/',
+  '/ui-programming/implementing-a-checkbox/': '/versions/latest/sdk/checkbox/',
+  '/ui-programming/z-index/': '/tutorial/overview',
+  '/ui-programming/using-svgs/': '/versions/latest/sdk/svg/',
+  '/ui-programming/react-native-toast/': '/tutorial/overview/',
+  '/ui-programming/react-native-styling-buttons/': '/tutorial/overview/',
+  '/ui-programming/user-interface-libraries/': '/tutorial/overview/',
+
+  // After renaming "workflows" to "eas-workflows"
+  // Since Next.js considers workflow/... and workflows/... as the same directory names
+  '/workflows/get-started/': '/eas-workflows/get-started/',
+  '/workflows/triggers/': '/eas-workflows/triggers/',
+  '/workflows/jobs/': '/eas-workflows/jobs/',
+  '/workflows/control-flow/': '/eas-workflows/control-flow/',
+  '/workflows/variables/': '/eas-workflows/variables/',
+
+  // After adding distribution section under EAS
+  '/distribution/publishing-websites/': '/guides/publishing-websites/',
+
+  // Based on Google Search Console not found report 2025-01-02
+  '/versions/latest/sdk/sqlite-next/': '/versions/latest/sdk/sqlite/',
+  '/versions/latest/sdk/camera-next/': '/versions/latest/sdk/camera/',
+  '/home/overview/': '/',
+  '/develop/project-structure/': '/get-started/start-developing/',
+  '/versions/latest/sdk/bar-code-scanner/': '/versions/latest/sdk/camera/',
+  '/bare/using-expo-client/': '/bare/install-dev-builds-in-bare/',
+  '/versions/latest/sdk/sqlite-legacy/': '/versions/latest/sdk/sqlite/',
+  '/versions/latest/config/app/name/': '/versions/latest/config/app/#name',
+  '/bare/': '/bare/overview/',
+  '/accounts/working-together/': '/accounts/account-types/',
+
+  // After consolidating the "Internal distribution" information
+  '/guides/sharing-preview-releases/': '/build/internal-distribution/',
+
+  // After moving from eas-workflows to eas/workflows
+  '/eas-workflows/get-started/': '/eas/workflows/get-started/',
+  '/eas-workflows/triggers/': '/eas/workflows/syntax/#on',
+  '/eas-workflows/jobs/': '/eas/workflows/syntax/#jobs',
+  '/eas-workflows/control-flow/': '/eas/workflows/syntax/#control-flow',
+  '/eas-workflows/variables/': '/eas/workflows/syntax/#jobsjob_idoutputs',
+  '/eas-workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+  '/eas/workflows/upgrade/': '/eas/workflows/automating-eas-cli/',
+
+  // After moving eas/workflows/examples to eas/workflows/examples/*
+  '/eas/workflows/examples/': '/eas/workflows/examples/introduction/',
+  '/eas/workflows/examples/#development-builds-workflow/':
+    '/eas/workflows/examples/create-development-builds/',
+  '/eas/workflows/examples/#preview-updates-workflow/':
+    '/eas/workflows/examples/publish-preview-update/',
+  '/eas/workflows/examples/#deploy-to-production-workflow/':
+    '/eas/workflows/examples/deploy-to-production/',
+  '/eas/workflows/reference/e2e-tests/': '/eas/workflows/examples/e2e-tests/',
+
+  // After moving e2e-tests to eas/workflows/reference
+  '/build-reference/e2e-tests/': '/eas/workflows/examples/e2e-tests/',
+
+  // After merging EAS environment variables guides
+  '/eas/using-environment-variables/': '/eas/environment-variables/',
+
+  // After Expo Router Getting Started Guide
+  '/router/reference/authentication/': '/router/advanced/authentication/',
+  '/router/advanced/root-layout/': '/router/basics/layout/#root-layout/',
+  '/router/reference/not-found/': '/router/error-handling/',
+  '/router/navigating-pages/': '/router/basics/navigation/',
+  '/router/create-pages/': '/router/basics/core-concepts/',
+  '/router/layouts/': '/router/basics/layout/',
+
+  // After updating config plugin section
+  '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
+
+  // After merging registerRootComponent info in `expo` API reference
+  '/versions/v53.0.0/sdk/register-root-component/':
+    '/versions/v53.0.0/sdk/expo/#registerrootcomponentcomponent',
+  '/versions/latest/sdk/register-root-component/':
+    '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
+  '/versions/v53.0.0/sdk/url/': '/versions/v53.0.0/sdk/expo/#url-api',
+  '/versions/v53.0.0/sdk/encoding/': '/versions/v53.0.0/sdk/expo/#encoding-api',
+
+  // Temporary redirects
+  '/router/advanced/singular/': '/preview/singular/',
+
+  // After adding System bars
+  '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',
+
+  // After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
+  '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 };

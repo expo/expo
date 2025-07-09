@@ -2,8 +2,8 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import android.view.ViewGroup
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.ReactStylesDiffMap
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.getBackingMap
@@ -34,10 +34,20 @@ class GroupViewManagerWrapper(
     viewWrapperDelegate.onViewDidUpdateProps(view)
   }
 
+  override fun updateState(
+    view: ViewGroup,
+    props: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
+  ): Any? {
+    val view = view as? ExpoView ?: return null
+    view.stateWrapper = stateWrapper
+    return super.updateState(view, props, stateWrapper)
+  }
+
   override fun getNativeProps(): MutableMap<String, String> {
     val props = super.getNativeProps()
     viewWrapperDelegate.props.forEach { (key, prop) ->
-      props[key] = prop.type.kType.toString()
+      props[key] = prop.type.kType.classifier.toString()
     }
     return props
   }
@@ -48,19 +58,8 @@ class GroupViewManagerWrapper(
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    viewWrapperDelegate.getExportedCustomDirectEventTypeConstants()?.let {
-      val directEvents = super.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
-      val builder = MapBuilder.builder<String, Any>()
-      directEvents.forEach { event ->
-        builder.put(event.key, event.value)
-      }
-      it.forEach { event ->
-        builder.put(event.key, event.value)
-      }
-      return builder.build()
-    }
-
-    return super.getExportedCustomDirectEventTypeConstants()
+    val expoEvent = viewWrapperDelegate.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
+    return super.getExportedCustomDirectEventTypeConstants()?.plus(expoEvent) ?: expoEvent
   }
 
   override fun addView(parent: ViewGroup, child: View, index: Int) {

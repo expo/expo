@@ -58,7 +58,7 @@ class ClipboardModule : Module() {
       return@AsyncFunction true
     }
 
-    AsyncFunction("hasStringAsync") {
+    AsyncFunction<Boolean>("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
         ?.hasTextContent
@@ -102,7 +102,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("hasImageAsync") {
+    AsyncFunction<Boolean>("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion
@@ -218,12 +218,8 @@ class ClipboardModule : Module() {
 }
 
 private fun plainTextFromHtml(htmlContent: String): String {
-  val styledText: Spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+  val styledText: Spanned =
     Html.fromHtml(htmlContent, FROM_HTML_MODE_LEGACY)
-  } else {
-    @Suppress("DEPRECATION")
-    Html.fromHtml(htmlContent)
-  }
   val chars = CharArray(styledText.length)
   TextUtils.getChars(styledText, 0, styledText.length, chars, 0)
   return String(chars)

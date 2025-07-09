@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import fs from 'fs';
 import { vol } from 'memfs';
 
 import { updateTSConfigAsync } from '../updateTSConfig';
@@ -17,10 +17,9 @@ describe(updateTSConfigAsync, () => {
 
     await updateTSConfigAsync({
       tsConfigPath: '/tsconfig.json',
-      isBootstrapping: true,
     });
 
-    expect(JSON.parse(await fs.readFile('/tsconfig.json', 'utf8'))).toStrictEqual({
+    expect(JSON.parse(await fs.promises.readFile('/tsconfig.json', 'utf8'))).toStrictEqual({
       compilerOptions: {},
       extends: 'expo/tsconfig.base',
     });
@@ -33,10 +32,9 @@ describe(updateTSConfigAsync, () => {
 
     await updateTSConfigAsync({
       tsConfigPath: '/tsconfig.json',
-      isBootstrapping: false,
     });
 
-    expect(JSON.parse(await fs.readFile('/tsconfig.json', 'utf8'))).toStrictEqual({
+    expect(JSON.parse(await fs.promises.readFile('/tsconfig.json', 'utf8'))).toStrictEqual({
       extends: 'foobar',
       compilerOptions: {
         strict: true,

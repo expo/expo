@@ -6,23 +6,20 @@ import android.content.Intent
 import android.net.Uri
 import expo.modules.core.utilities.FileUtilities
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 
 private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val currentActivity
-    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var pendingPromise: Promise? = null
   private var copyToCacheDirectory = true
 
@@ -45,7 +42,7 @@ class DocumentPickerModule : Module() {
           options.type[0]
         }
       }
-      currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
+      appContext.throwingActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
     }
 
     OnActivityResult { _, (requestCode, resultCode, intent) ->
@@ -62,8 +59,8 @@ class DocumentPickerModule : Module() {
           } else {
             handleSingleSelection(intent)
           }
-        } catch (e: CodedException) {
-          promise.resolve(e)
+        } catch (e: Exception) {
+          promise.reject(e.toCodedException())
         }
       } else {
         promise.resolve(
@@ -75,31 +72,26 @@ class DocumentPickerModule : Module() {
     }
   }
 
-  private fun copyDocumentToCacheDirectory(documentUri: Uri, name: String): String? {
+  private fun copyDocumentToCacheDirectory(documentUri: Uri, name: String): Uri {
     val outputFilePath = FileUtilities.generateOutputPath(
       context.cacheDir,
       "DocumentPicker",
       FilenameUtils.getExtension(name)
     )
     val outputFile = File(outputFilePath)
-    try {
-      context.contentResolver.openInputStream(documentUri).use { inputStream ->
-        FileOutputStream(outputFile).use { outputStream ->
-          IOUtils.copy(inputStream, outputStream)
-        }
+    context.contentResolver.openInputStream(documentUri).use { inputStream ->
+      FileOutputStream(outputFile).use { outputStream ->
+        IOUtils.copy(inputStream, outputStream)
       }
-    } catch (e: IOException) {
-      e.printStackTrace()
-      return null
     }
-    return Uri.fromFile(outputFile).toString()
+    return Uri.fromFile(outputFile)
   }
 
   private fun handleSingleSelection(intent: Intent?) {
     intent?.data?.let { uri ->
       val details = readDocumentDetails(uri)
       val result = DocumentPickerResult(
-        assets = listOf(details),
+        assets = listOf(details)
       )
       pendingPromise?.resolve(result)
     } ?: throw FailedToReadDocumentException()
@@ -122,22 +114,13 @@ class DocumentPickerModule : Module() {
   private fun readDocumentDetails(uri: Uri): DocumentInfo {
     val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
 
-    val details = if (!copyToCacheDirectory || originalDocumentDetails == null) {
+    val details = if (!copyToCacheDirectory) {
       originalDocumentDetails
     } else {
       val copyPath = copyDocumentToCacheDirectory(uri, originalDocumentDetails.name)
-      copyPath?.let {
-        originalDocumentDetails.copy(uri = it)
-      } ?: throw FailedToCopyToCacheException()
+      originalDocumentDetails.copy(uri = copyPath)
     }
 
-    return details?.let { it ->
-      DocumentInfo(
-        uri = it.uri,
-        name = it.name,
-        mimeType = it.mimeType,
-        size = it.size
-      )
-    } ?: throw FailedToReadDocumentException()
+    return details
   }
 }

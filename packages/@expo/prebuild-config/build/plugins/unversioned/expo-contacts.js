@@ -25,8 +25,7 @@ const withAccessesContactNotes = config => {
   });
 };
 function setAccessesContactNotes(config, entitlementsPlist) {
-  var _config$ios;
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.accessesContactNotes) {
+  if (config.ios?.accessesContactNotes) {
     return {
       ...entitlementsPlist,
       'com.apple.developer.contacts.notes': true
@@ -34,9 +33,8 @@ function setAccessesContactNotes(config, entitlementsPlist) {
   }
   return entitlementsPlist;
 }
-var _default = (0, _createLegacyPlugin().createLegacyPlugin)({
+var _default = exports.default = (0, _createLegacyPlugin().createLegacyPlugin)({
   packageName: 'expo-contacts',
   fallback: withAccessesContactNotes
 });
-exports.default = _default;
 //# sourceMappingURL=expo-contacts.js.map

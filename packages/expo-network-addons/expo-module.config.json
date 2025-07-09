@@ -1,0 +1,12 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "gradlePlugins": [
+      {
+        "id": "expo-network-addons-gradle-plugin",
+        "group": "expo.modules",
+        "sourceDir": "expo-network-addons-gradle-plugin"
+      }
+    ]
+  }
+}

@@ -1,3 +1,9 @@
+import type { NativeModule } from 'expo';
+import { SharedRef } from 'expo-modules-core/types';
+
+import type { ImageManipulatorContext } from './ImageManipulatorContext';
+import ImageRef from './ImageRef';
+
 // @needsAudit
 export type ImageResult = {
   /**
@@ -70,16 +76,30 @@ export type ActionCrop = {
   };
 };
 
+// @needsAudit
+export type ActionExtent = {
+  /**
+   * Set the image size and offset. If the image is enlarged, unfilled areas are set to the `backgroundColor`.
+   * To position the image, use `originX` and `originY`.
+   *
+   * @platform web
+   */
+  extent: {
+    backgroundColor?: string | null;
+    originX?: number;
+    originY?: number;
+    width: number;
+    height: number;
+  };
+};
+
 // @docsMissing
-export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
+export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop | ActionExtent;
 
 // @docsMissing
 export enum SaveFormat {
   JPEG = 'jpeg',
   PNG = 'png',
-  /**
-   * @platform web
-   */
   WEBP = 'webp',
 }
 
@@ -104,3 +124,20 @@ export type SaveOptions = {
    */
   format?: SaveFormat;
 };
+
+export declare class ImageManipulator extends NativeModule {
+  /**
+   * @hidden
+   */
+  Context: typeof ImageManipulatorContext;
+
+  /**
+   * @hidden
+   */
+  Image: typeof ImageRef;
+
+  /**
+   * Loads an image from the given URI and creates a new image manipulation context.
+   */
+  manipulate(source: string | SharedRef<'image'>): ImageManipulatorContext;
+}

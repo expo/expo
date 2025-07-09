@@ -1,15 +1,13 @@
 import * as Haptics from 'expo-haptics';
-import React from 'react';
-import { SectionList, SectionListData, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { AndroidHaptics } from 'expo-haptics';
+import { Platform, SectionList, SectionListData, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
 type SectionData =
-  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  | {}
+  | object
   | {
       accessor: string;
       value: any;
@@ -50,6 +48,14 @@ const sections: SectionListData<SectionData>[] = [
         accessor: 'Haptics.ImpactFeedbackStyle.Heavy',
         value: Haptics.ImpactFeedbackStyle.Heavy,
       },
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Soft',
+        value: Haptics.ImpactFeedbackStyle.Soft,
+      },
+      {
+        accessor: 'Haptics.ImpactFeedbackStyle.Rigid',
+        value: Haptics.ImpactFeedbackStyle.Rigid,
+      },
     ],
   },
   {
@@ -59,12 +65,93 @@ const sections: SectionListData<SectionData>[] = [
   },
 ];
 
-export default class HapticsScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Haptics Feedback',
-  };
+if (Platform.OS === 'android') {
+  sections.push({
+    methodName: 'performAndroidHapticsAsync',
+    method: Haptics.performAndroidHapticsAsync,
+    data: [
+      {
+        accessor: 'Haptics.AndroidHaptics.Confirm',
+        value: AndroidHaptics.Confirm,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Reject',
+        value: Haptics.AndroidHaptics.Reject,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Gesture_Start',
+        value: Haptics.AndroidHaptics.Gesture_Start,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Gesture_End',
+        value: Haptics.AndroidHaptics.Gesture_End,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Toggle_On',
+        value: AndroidHaptics.Toggle_On,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Toggle_Off',
+        value: Haptics.AndroidHaptics.Toggle_Off,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Clock_Tick',
+        value: Haptics.AndroidHaptics.Clock_Tick,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Context_Click',
+        value: Haptics.AndroidHaptics.Context_Click,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Drag_Start',
+        value: Haptics.AndroidHaptics.Drag_Start,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Keyboard_Tap',
+        value: Haptics.AndroidHaptics.Keyboard_Tap,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Keyboard_Press',
+        value: Haptics.AndroidHaptics.Keyboard_Press,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Keyboard_Release',
+        value: Haptics.AndroidHaptics.Keyboard_Release,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Long_Press',
+        value: Haptics.AndroidHaptics.Long_Press,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Virtual_Key',
+        value: Haptics.AndroidHaptics.Virtual_Key,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Virtual_Key_Release',
+        value: Haptics.AndroidHaptics.Virtual_Key_Release,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.No_Haptics',
+        value: Haptics.AndroidHaptics.No_Haptics,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Segment_Tick',
+        value: Haptics.AndroidHaptics.Segment_Tick,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Segment_Frequent_Tick',
+        value: Haptics.AndroidHaptics.Segment_Frequent_Tick,
+      },
+      {
+        accessor: 'Haptics.AndroidHaptics.Text_Handle_Move',
+        value: Haptics.AndroidHaptics.Text_Handle_Move,
+      },
+    ],
+  });
+}
 
-  renderItem = ({
+export default function HapticsScreen() {
+  const renderItem = ({
     item,
     section: { method },
   }: {
@@ -72,76 +159,60 @@ export default class HapticsScreen extends React.Component {
     section: { method: (type: string) => void };
   }) => <Item method={method} type={item} />;
 
-  renderSectionHeader = ({ section: { methodName } }: { section: { methodName: string } }) => (
-    <Header title={methodName} />
+  const renderSectionHeader = ({
+    section: { methodName },
+  }: {
+    section: { methodName: string };
+  }) => (
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerText}>{methodName}</Text>
+    </View>
   );
 
-  keyExtractor = (data: SectionData) => {
-    if ('accessor' in data && 'value' in data) {
-      return `key-${data.accessor}-${data.value}`;
-    }
-    return 'key-undefined';
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <SectionList<SectionData>
-          style={styles.list}
-          sections={sections}
-          renderItem={this.renderItem as any}
-          renderSectionHeader={this.renderSectionHeader as any}
-          keyExtractor={this.keyExtractor}
-        />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <SectionList
+        style={styles.list}
+        sections={sections}
+        renderItem={renderItem as any}
+        renderSectionHeader={renderSectionHeader as any}
+        keyExtractor={(data: SectionData) => {
+          if ('accessor' in data && 'value' in data) {
+            return `key-${data.accessor}-${data.value}`;
+          }
+          return 'key-undefined';
+        }}
+      />
+    </View>
+  );
 }
 
-class Item extends React.Component<{
+HapticsScreen.navigationOptions = {
+  title: 'Haptics Feedback',
+};
+
+function Item({
+  method,
+  type: { value, accessor },
+}: {
   method: (type: string) => void;
   type: { accessor: string; value: any };
-}> {
-  get code() {
-    const {
-      method,
-      type: { accessor },
-    } = this.props;
-    return `Haptics.${method.name}(${accessor || ''})`;
-  }
-  render() {
-    const {
-      method,
-      type: { value },
-    } = this.props;
+}) {
+  return (
+    <View style={styles.itemContainer}>
+      <Button
+        onPress={() => {
+          method(value);
+        }}
+        style={styles.button}
+        title="Run"
+      />
 
-    return (
-      <View style={styles.itemContainer}>
-        <HapticButton style={styles.button} method={method} type={value} />
-        <MonoText containerStyle={styles.itemText}>{this.code}</MonoText>
-      </View>
-    );
-  }
-}
-
-const Header: React.FunctionComponent<{ title: string }> = ({ title }) => (
-  <View style={styles.headerContainer}>
-    <Text style={styles.headerText}>{title}</Text>
-  </View>
-);
-
-class HapticButton extends React.Component<{
-  method: (type: string) => void;
-  type: string;
-  style: ViewStyle;
-}> {
-  onPress = () => {
-    const { method, type } = this.props;
-    method(type);
-  };
-  render() {
-    return <Button onPress={this.onPress} style={this.props.style} title="Run" />;
-  }
+      <MonoText containerStyle={styles.itemText}>{`Haptics.${method.name}(${
+        accessor || ''
+      })`}</MonoText>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

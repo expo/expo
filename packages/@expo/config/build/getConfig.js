@@ -33,7 +33,7 @@ function _evalConfig() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 // We cannot use async config resolution right now because Next.js doesn't support async configs.
 // If they don't add support for async Webpack configs then we may need to pull support for Next.js.
 function readConfigFile(configFile, context) {

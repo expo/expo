@@ -1,110 +1,188 @@
 ---
 title: Submit to app stores
 description: Learn how to submit your app to Google Play Store and Apple App Store from the command line with EAS Submit.
+hasVideoLink: true
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
-import { Collapsible } from '~/ui/components/Collapsible';
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
-import { EasSubmitIcon, EasMetadataIcon } from '@expo/styleguide-icons';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **EAS Submit** is a hosted service that allows uploading and submitting app binaries to the app stores using EAS CLI. This guide describes how to submit your app to the Google Play Store and Apple App Store using EAS Submit.
 
-## Google Play Store
-
-### Prerequisites
-
-- A paid developer account is required — You can create a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
-- Create a [Google Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download its JSON private key.
-- Create an app on [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
-- Native app binary signed for Google Play Store submission using EAS Build. If you haven't followed the previous guide, see [Build your project for app stores](/deploy/build-project/) for more information.
-
-> Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory - that's where your [app configuration](/workflow/configuration) is defined.
-
-### Submit binary to Google Play Store
-
-To submit the app binary to Google Play Store, run the following command from inside your project's directory:
-
-<Terminal cmd={['$ eas submit -p android']} />
-
-The command will lead you through the process of submitting the app. It will perform the following steps:
-
-- Log in to your Expo account and ensure that your app project exists on EAS servers.
-- Prompt for the Android package name unless `android.package` is set in the app config.
-- Ask for which binary to submit. You can select one of the following:
-
-  - The latest finished Android build for the project on EAS servers.
-  - Specific build ID. It can be found on the [builds dashboard](https://expo.dev/builds).
-  - Path to an **.apk** or **.aab** archive on your local filesystem.
-  - URL to the app archive.
-
-  > This step can be skipped if one of the following CLI parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
-
-- Unless `serviceAccountKeyPath` is provided in **eas.json**, you will be prompted for the path to your Google Services JSON key.
-- The summary of provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
-- Your build should now be visible on Google Play Console. If something goes wrong, an appropriate message is displayed on the screen.
+<VideoBoxLink
+  videoId="-KZjr576tuE"
+  title="How to quickly publish to the App Store & Play Store with EAS Submit"
+  description="EAS Submit makes it easy to publish your apps to the App Store and Play Store with a simple command."
+/>
 
 ## Apple App Store
 
-### Prerequisites
+<Prerequisites numberOfRequirements={4}>
+  <Requirement number={1} title="Sign up for an Apple Developer account">
+    An Apple Developer account is required to submit your app to the Apple App Store. You can sign up for an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/).
+  </Requirement>
+  <Requirement number={2} title="Include a bundle identifier in app.json">
+    Include your app's bundle identifier in **app.json**:
 
-- A paid developer account is required to submit an app &mdash; you can create an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/).
-- Native app binary signed for Apple App Store submission using EAS Build. If you haven't followed the previous guide, see [Build your project for app stores](/deploy/build-project/) for more information.
+    ```json app.json
+    {
+      "ios": {
+        "bundleIdentifier": "com.yourcompany.yourapp"
+      }
+    }
+    ```
 
-### Submit binary to Apple App Store
+  </Requirement>
+  <Requirement number={3} title="Install EAS CLI and authenticate with your Expo account">
+    Install EAS CLI and login with your Expo account:
 
-> If you have not generated an App Store Connect API Key yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts. You can also upload your own [API Key](https://expo.fyi/creating-asc-api-key) or pass in an [Apple app-specific password](https://expo.fyi/apple-app-specific-password).
+    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
-To submit the binary to the App Store, run the following command from inside your project's directory:
+  </Requirement>
+  <Requirement number={4} title="Build a production app">
+    You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
 
-<Terminal cmd={['$ eas submit -p ios']} />
+    <Terminal cmd={['$ eas build --platform ios --profile production']} />
 
-The command will lead you through the process of submitting the app. It will perform the following steps:
+    Alternatively, you can build the app on your own computer with `eas build --platform ios --profile production --local` or with Xcode.
 
-- Log in to your Expo account and ensure that your app project exists on EAS servers.
-- Ensure that your app exists on App Store Connect and its [Bundle Identifier](https://expo.fyi/bundle-identifier) is registered on Apple Developer Portal:
+  </Requirement>
+</Prerequisites>
 
-  - You will be asked to log in to your Apple Developer account and select your team. You can also provide this information in **eas.json** by setting `appleId` and `appleTeamId` in the submit profile. The Apple ID password has to be set with the `EXPO_APPLE_PASSWORD` environment variable.
-  - The command will look for `ios.bundleIdentifier` in the app config.
-  - If you are submitting your app for the first time, it will be automatically created.
-    Unless `expo.name` in your app configuration is found or `appName` is provided in **eas.json**, you will be prompted for the app name.
-    You can also specify your app's language and SKU using `language` and `sku` keys in **eas.json**. If you have never submitted any app before, you may also have to specify your company name with `companyName`.
+Once you have completed all the prerequisites, you can start the submission process.
 
-  > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
+Run the following command to submit a build to the Apple App Store:
 
-- Ensure you have the proper credentials set up. If none can be found, you can let EAS CLI set some up for you.
+<Terminal cmd={['$ eas submit --platform ios']} />
 
-  <Collapsible summary="Do you want to use your own credentials?">
+The command will lead you step by step through the process of submitting the app.
 
-  **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
+## Google Play Store
 
-  **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
+<Prerequisites numberOfRequirements={7}>
+  <Requirement number={1} title="Sign up for a Google Play Developer account">
+    A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
+  </Requirement>
+  <Requirement number={2} title="Create a Google Service Account">
+    EAS requires you to upload and configure a Google Service Account Key to submit your Android app to the Google Play Store. You can create one with the [uploading a Google Service Account Key for Play Store submissions with EAS](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
+  </Requirement>
+  <Requirement number={3} title="Create an app on Google Play Console">
+    Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
+  </Requirement>
+  <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
+    Install EAS CLI and login with your Expo account:
 
-  </Collapsible>
+    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
-- Ask for which binary to submit. You can select one of the following:
+  </Requirement>
+  <Requirement number={5} title="Include a package name in app.json">
+    Include your app's package name in **app.json**:
 
-  - The latest successful iOS build for the project on EAS servers.
-  - Specific build ID. It can be found on the [builds dashboard](https://expo.dev/builds).
-  - Path to an **.ipa** archive on your local filesystem.
-  - URL to the app archive.
+    ```json app.json
+    {
+      "android": {
+        "package": "com.yourcompany.yourapp"
+      }
+    }
+    ```
 
-  > This step can be skipped if one of the following CLI parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
+  </Requirement>
+  <Requirement number={6} title="Build a production app">
+    You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
 
-- A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
-- Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
+    <Terminal cmd={['$ eas build --platform android --profile production']} />
 
-## Next steps
+    Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
+
+  </Requirement>
+  <Requirement number={7} title="Upload your app manually at least once">
+    You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
+
+    Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.
+
+  </Requirement>
+</Prerequisites>
+
+Once you have completed all the prerequisites, you can start the submission process.
+
+Run the following command to submit a build to the Google Play Store:
+
+<Terminal cmd={['$ eas submit --platform android']} />
+
+The command will lead you step by step through the process of submitting the app.
+
+## Build and submit automatically
+
+You can automatically create builds and submit them to the app stores with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/build-and-submit.yml** at the root of your project, then add the following workflow configuration:
+
+```yaml .eas/workflows/build-and-submit.yml
+name: Build and submit
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android app
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS app
+    type: build
+    params:
+      platform: ios
+      profile: production
+  submit_android:
+    name: Submit Android
+    type: submit
+    needs: [build_android]
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+  submit_ios:
+    name: Submit iOS
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+```
+
+The workflow above will create Android and iOS builds on every commit to your project's `main` branch, then submit them to the Google Play and Apple App Store respectively. You can also run this workflow manually with the following EAS CLI command:
+
+<Terminal cmd={['$ eas workflow:run build-and-submit.yml']} />
+
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
+
+## Manual submission to app stores
+
+You can also submit your app manually to the Google Play Store and Apple App Store.
 
 <BoxLink
-  title="App stores metadata"
-  description="Learn how to automate and maintain your app store presence from the command line with EAS Metadata."
-  Icon={EasMetadataIcon}
-  href="/deploy/app-stores-metadata/"
+  title="Manual Apple App Store submission"
+  description="Learn how to submit your app manually to Apple App Store."
+  href="/guides/local-app-production/#app-submission-using-app-store-connect"
+  Icon={AppleAppStoreIcon}
 />
 
 <BoxLink
-  title="EAS Submit configuration with eas.json"
+  title="Manual Google Play Store submission"
+  description="Follow the steps on manually submitting your app to Google Play Store."
+  href="https://expo.fyi/first-android-submission"
+  Icon={GoogleAppStoreIcon}
+/>
+
+## Next step
+
+<BoxLink
+  title="Configure EAS Submit with eas.json"
   description="Learn how to pre-configure your project using eas.json file with EAS Submit and more about Android or iOS specific options."
   Icon={EasSubmitIcon}
   href="/submit/eas-json/"

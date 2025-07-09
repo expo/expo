@@ -6,9 +6,9 @@ describe(getAndroidSplashConfig, () => {
       splash: { backgroundColor: 'red', image: 'a' },
       android: { splash: { mdpi: 'b' } },
     });
-    expect(config.mdpi).toBe('b');
+    expect(config?.mdpi).toBe('b');
     // ensure the background color from the general splash config is not used if the android splash config is defined.
-    expect(config.backgroundColor).toBe(null);
+    expect(config?.backgroundColor).toBe(undefined);
   });
 });
 describe(getAndroidDarkSplashConfig, () => {
@@ -17,8 +17,8 @@ describe(getAndroidDarkSplashConfig, () => {
       splash: { backgroundColor: 'red', image: 'a' },
       android: { splash: { mdpi: 'b', dark: { image: 'c' } } },
     });
-    expect(config.mdpi).toBe('c');
+    expect(config?.mdpi).toBe('c');
     // ensure the background color from the general splash config is not used if the android splash config is defined.
-    expect(config.backgroundColor).toBe(null);
+    expect(config?.backgroundColor).toBe(undefined);
   });
 });

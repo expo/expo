@@ -16,11 +16,11 @@ public final class VideoViewModule: Module {
 
     AsyncFunction("setFullscreen") { (viewTag: Int, value: Bool, promise: Promise) in
       self.runBlockForView(viewTag) { view in
-        view.setFullscreen(value, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        view.contentView.setFullscreen(value, resolver: promise.resolver, rejecter: promise.legacyRejecter)
       }
     }
 
-    View(EXVideoView.self) {
+    View(ExpoVideoView.self) {
       Events(
         "onStatusUpdate",
         "onLoadStart",
@@ -30,31 +30,33 @@ public final class VideoViewModule: Module {
         "onFullscreenUpdate"
       )
 
-      Prop("status") { (view: EXVideoView, status: [String: Any]) in
+      Prop("status") { (view: ExpoVideoView, status: [String: Any]) in
         view.status = status
       }
 
-      Prop("useNativeControls") { (view: EXVideoView, useNativeControls: Bool) in
+      Prop("useNativeControls") { (view: ExpoVideoView, useNativeControls: Bool) in
         view.useNativeControls = useNativeControls
       }
 
-      Prop("source") { (view: EXVideoView, source: [String: Any]) in
+      Prop("source") { (view: ExpoVideoView, source: [String: Any]) in
         view.source = source
       }
 
-      Prop("resizeMode") { (view: EXVideoView, resizeMode: String) in
+      Prop("resizeMode") { (view: ExpoVideoView, resizeMode: String) in
         view.nativeResizeMode = resizeMode
       }
     }
   }
 
-  private func runBlockForView(_ tag: Int, _ block: @escaping (EXVideoView) -> Void) {
+  private func runBlockForView(_ tag: Int, _ block: @escaping (ExpoVideoView) -> Void) {
     let uiManager: EXUIManager? = appContext?.legacyModule(implementing: EXUIManager.self)
 
     uiManager?.executeUIBlock({ (view: Any) in
-      if let view = view as? EXVideoView {
+      if let view = view as? ExpoVideoView {
         block(view)
       }
-    }, forView: tag, of: EXVideoView.self)
+    },
+    forView: tag,
+    of: ExpoVideoView.self)
   }
 }

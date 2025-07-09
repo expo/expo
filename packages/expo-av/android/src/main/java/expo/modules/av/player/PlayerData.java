@@ -19,6 +19,7 @@ import expo.modules.core.arguments.ReadableArguments;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.Objects;
 
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
@@ -215,7 +216,7 @@ public abstract class PlayerData implements AudioEventHandler {
     final Uri uri = Uri.parse(uriString);
 
     if (status.containsKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
-      && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
+      && Objects.equals(status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH), MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
       return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);

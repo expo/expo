@@ -11,7 +11,7 @@ describe(getTextFromChildren, () => {
     expect(getTextFromChildren(<span>Hello</span>)).toBe('Hello');
   });
 
-  it('returns text from miltiple child elements', () => {
+  it('returns text from multiple child elements', () => {
     expect(
       getTextFromChildren(
         <>

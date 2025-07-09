@@ -6,9 +6,333 @@
 
 ### 🎉 New features
 
+- Add total and available sizes, directory sizes. ([#37594](https://github.com/expo/expo/pull/37594) by [@aleqsio](https://github.com/aleqsio))
+- Add info method, modificationTime and creationTime properties to file-system/next. ([#37505](https://github.com/expo/expo/pull/37505) by [@Wenszel](https://github.com/Wenszel))
+- Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
+
 ### 🐛 Bug fixes
 
+- Update exists logic to align with documentation ([#37692](https://github.com/expo/expo/pull/37692) by [@Wenszel](https://github.com/Wenszel))
+- Fix memory usage issue in getInfoAsync ([#37417](https://github.com/expo/expo/pull/37417) by [@Wenszel](https://github.com/Wenszel))
+- Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37107](https://github.com/expo/expo/pull/37107) by [@hirbod](https://github.com/hirbod))
+- Added required modifiers in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37467](https://github.com/expo/expo/pull/37467)
+
 ### 💡 Others
+
+## 18.1.11 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 18.1.10 — 2025-05-08
+
+### 🐛 Bug fixes
+
+- Fix the `UploadTask.uploadAsync` method's return type did not indicate that the method could resolve to `null`. ([#36476](https://github.com/expo/expo/pull/36476) by [@DoctorJohn](https://github.com/DoctorJohn))
+
+## 18.1.9 — 2025-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.8 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.7 — 2025-04-28
+
+### 💡 Others
+
+- Remove `web-streams-polyfill` in favor of `expo` support. ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 18.1.6 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.5 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 18.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🎉 New features
+
+- [expo-file-system][next] Add options to the create function. ([#32909](https://github.com/expo/expo/pull/32909) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [next] Fix inconsistent behavior when using special chars in filenames. ([#35801](https://github.com/expo/expo/pull/35801) by [@aleqsio](https://github.com/aleqsio))
+- Fix expo-updates breaking filesystem on Android API 24 and 25. ([#33694](https://github.com/expo/expo/pull/33694) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 18.0.12 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.11 - 2025-02-19
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.10 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.9 - 2025-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.8 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- Fix types that are erroring in default template. ([#34520](https://github.com/expo/expo/pull/34520) by [@aleqsio](https://github.com/aleqsio))
+- [Android] fixed issue with deleting a directory with children ([#34550](https://github.com/expo/expo/pull/34550) by [@chrfalch](https://github.com/chrfalch))
+
+## 18.0.7 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.6 - 2024-12-16
+
+### 🎉 New features
+
+- [next] Add blob support and `.blob()` function. ([#33152](https://github.com/expo/expo/pull/33152) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.5 - 2024-12-10
+
+### 🐛 Bug fixes
+
+- [macOS][next]: Add availability checks ([#33504](https://github.com/expo/expo/pull/33504) by [@hassankhan](https://github.com/hassankhan))
+
+## 18.0.4 — 2024-11-19
+
+### 🎉 New features
+
+- [next] Added `.bytes()` and writing a `Uint8Array`. ([#33020](https://github.com/expo/expo/pull/33020) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.3 — 2024-11-13
+
+### 🎉 New features
+
+- [next] Add file handles. ([#31738](https://github.com/expo/expo/pull/31738) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.2 — 2024-11-11
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.1 — 2024-11-07
+
+### 🐛 Bug fixes
+
+- [expo-file-system][next] Fix download function throwing an unexpected error if destination already exists. ([#32626](https://github.com/expo/expo/pull/32626) by [@aleqsio](https://github.com/aleqsio))
+
+## 18.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- [next] Disable module in Expo Go. ([#31938](https://github.com/expo/expo/pull/31938) by [@aleqsio](https://github.com/aleqsio))
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- [expo-file-system][next] Add file permissions for expo go ([#31594](https://github.com/expo/expo/pull/31594) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add better error handling to delete ([#31683](https://github.com/expo/expo/pull/31683) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Adjust copy/move functions to allow renaming folders. ([#31636](https://github.com/expo/expo/pull/31636) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Add name property to files and directories. ([#31545](https://github.com/expo/expo/pull/31545) by [@aleqsio](https://github.com/aleqsio))
+- Add path joining in `File` and `Directory` constructors. ([#31467](https://github.com/expo/expo/pull/31467) by [@aleqsio](https://github.com/aleqsio))
+- [expo-file-system][next] Make move operation change file url. ([#31544](https://github.com/expo/expo/pull/31544) by [@aleqsio](https://github.com/aleqsio))
+- Change `exists()` function to a property. ([#31522](https://github.com/expo/expo/pull/31522) by [@aleqsio](https://github.com/aleqsio))
+- Add path utilities and `parentDirectory`, `extension` fields to the new file system module. ([#31333](https://github.com/expo/expo/pull/31333) by [@aleqsio](https://github.com/aleqsio))
+- Add listing directory contents to the new file system module. ([#31121](https://github.com/expo/expo/pull/31121) by [@aleqsio](https://github.com/aleqsio))
+- Add `base64()` new file system module. ([#31357](https://github.com/expo/expo/pull/31357) by [@aleqsio](https://github.com/aleqsio))
+- Add size and md5 properties to the new file system module. ([#31301](https://github.com/expo/expo/pull/31301) by [@aleqsio](https://github.com/aleqsio))
+- Add downloading to the new file system module. ([#30841](https://github.com/expo/expo/pull/30841) by [@aleqsio](https://github.com/aleqsio))
+- Add copying and moving files to the new file system module. ([#30314](https://github.com/expo/expo/pull/30314) by [@aleqsio](https://github.com/aleqsio))
+- Add new file system module. ([#29995](https://github.com/expo/expo/pull/29995) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Added `Paths.appleSharedContainers` to get the paths to the Apple App Groups shared containers. ([#31525](https://github.com/expo/expo/pull/31525) by [@IgorKhramtsov](https://github.com/IgorKhramtsov) and [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- [iOS] fix: `getFreeDiskStorageAsync` returns result that's closer to the value reported by the system. ([#29732](https://github.com/expo/expo/pull/29732) by [@vonovak](https://github.com/vonovak))
+- Add NULL check before dereferencing pointer to error pointer in `EXFileSystemAssetLibraryHandler`. ([#29091](https://github.com/expo/expo/pull/29091) by [@hakonk](https://github.com/hakonk))
+- Add missing `react-native` peer dependencies for isolated modules. ([#30466](https://github.com/expo/expo/pull/30466) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- [iOS] Validate folder/file type when operating on File/Folder instances in the new FS module. ([#31316](https://github.com/expo/expo/pull/31316) by [@aleqsio](https://github.com/aleqsio))
+- Use the `src` folder as the Metro target. ([#31234](https://github.com/expo/expo/pull/31234) by [@aleqsio](https://github.com/aleqsio))
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+
+## 17.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 17.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- [Android] remove `CookieHandler` as it's no longer in the module registry and not necessary. ([#28145](https://github.com/expo/expo/pull/28145) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 16.0.8 - 2024-03-07
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.7 - 2024-02-27
+
+### 🐛 Bug fixes
+
+- [iOS] Fix downloadAsync for local files. ([#27187](https://github.com/expo/expo/pull/27187) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `iOS`, fix an issue with `copyAsync` where the copy fails if it is a photo library asset. ([#27208](https://github.com/expo/expo/pull/27208) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, resolve the promise manually after copying a PHAsset file. ([#27381](https://github.com/expo/expo/pull/27381) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.6 - 2024-02-06
+
+### 🐛 Bug fixes
+
+- On `iOS`, fix upload task requests. ([#26880](https://github.com/expo/expo/pull/26880) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.5 - 2024-01-23
+
+### 🐛 Bug fixes
+
+- On `iOS`, set `httpMethod` on upload requests. ([#26516](https://github.com/expo/expo/pull/26516) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.4 - 2024-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 - 2024-01-10
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#26253](https://github.com/expo/expo/pull/26253) by [@tsapeta](https://github.com/tsapeta))
+
+## 16.0.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2023-12-13
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- On `Android`, handle using files from `SAF` correctly. ([#25389](https://github.com/expo/expo/pull/25389) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed legacy `bundledAssets` constant that was used only in standalone apps. ([#25484](https://github.com/expo/expo/pull/25484) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added missing check for directory permissions in `deleteAsync` method. ([#25704](https://github.com/expo/expo/pull/25704) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.4.5 — 2023-11-20
+
+### 🐛 Bug fixes
+
+- On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.9.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.8.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- On `Android`, use `addInterceptor` instead of `addNetworkInterceptor` in `downloadResumableStartAsync`. ([#24702](https://github.com/expo/expo/pull/24702) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.7.0 — 2023-09-15
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#24329](https://github.com/expo/expo/pull/24329) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Migrated to Swift and Expo Modules API on iOS. ([#23943](https://github.com/expo/expo/pull/23943) by [@tsapeta](https://github.com/tsapeta))
+- Throw the correct error when we can't find the permissions modules. ([#24464](https://github.com/expo/expo/pull/24464) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 15.4.4 - 2023-08-29
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.3 - 2023-08-09
+
+### 🐛 Bug fixes
+
+- Fix regression in `copyAsync` on Android. ([#23892](https://github.com/expo/expo/pull/23892) by [@brentvatne](https://github.com/brentvatne))
+
+## 15.5.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 15.5.0 — 2023-07-28
+
+### 💡 Others
+
+- Fork `uuid@3.4.0` and move into `expo-modules-core`. Remove the original dependency. ([#23249](https://github.com/expo/expo/pull/23249) by [@alanhughes](https://github.com/alanjhughes))
+
+## 15.4.2 — 2023-06-28
+
+_This version does not introduce any user-facing changes._
+
+## 15.4.1 — 2023-06-27
+
+### 🐛 Bug fixes
+
+- Fixed hard crash on iOS when calling readDirectoryAsync. ([#23106](https://github.com/expo/expo/pull/23106) by [@aleqsio](https://github.com/aleqsio))
+
+## 15.4.0 — 2023-06-13
+
+### 🎉 New features
+
+- Migrated Android codebase to use Expo modules API. ([#22728](https://github.com/expo/expo/pull/22728) by [@alanhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 15.3.0 — 2023-05-08
 

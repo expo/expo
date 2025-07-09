@@ -2,9 +2,9 @@ import path from 'path';
 import send from 'send';
 import { parse } from 'url';
 
-import { env } from '../../../utils/env';
 import { parsePlatformHeader } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
+import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:middleware:serveStatic') as typeof console.log;
 

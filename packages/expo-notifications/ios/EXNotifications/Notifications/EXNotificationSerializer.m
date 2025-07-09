@@ -9,7 +9,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 
 @implementation EXNotificationSerializer
 
-+ (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationResponse:(UNNotificationResponse *)response
 {
   NSMutableDictionary *serializedResponse = [NSMutableDictionary dictionary];
   NSString *actionIdentifier = response.actionIdentifier;
@@ -25,7 +25,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedResponse;
 }
 
-+ (NSDictionary *)serializedNotification:(UNNotification *)notification
++ (NSDictionary<NSString *, NSObject *> *)serializedNotification:(UNNotification *)notification
 {
   NSMutableDictionary *serializedNotification = [NSMutableDictionary dictionary];
   serializedNotification[@"request"] = [self serializedNotificationRequest:notification.request];
@@ -33,16 +33,16 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedNotification;
 }
 
-+ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationRequest:(UNNotificationRequest *)request
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
   serializedRequest[@"content"] = [self serializedNotificationContent:request];
-  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request];
+  serializedRequest[@"trigger"] = request.trigger ? [self serializedNotificationTrigger:request] : [NSNull null];
   return serializedRequest;
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationContent:(UNNotificationRequest *)request
 {
   UNNotificationContent *content = request.content;
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
@@ -54,21 +54,29 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
   serializedContent[@"data"] = [self serializedNotificationData:request] ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
-
-  if (@available(iOS 12.0, *)) {
-    serializedContent[@"summaryArgument"] = content.summaryArgument ?: [NSNull null];
-    serializedContent[@"summaryArgumentCount"] = @(content.summaryArgumentCount);
-  }
   serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ? content.categoryIdentifier : [NSNull null];
   serializedContent[@"threadIdentifier"] = content.threadIdentifier ?: [NSNull null];
-  if (@available(iOS 13.0, *)) {
-    serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
-  }
+  serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
+  serializedContent[@"interruptionLevel"] = [EXNotificationSerializer serializedInterruptionLevel:content.interruptionLevel];
 
   return serializedContent;
 }
 
-+ (NSDictionary *)serializedNotificationData:(UNNotificationRequest *)request
++ (NSString *)serializedInterruptionLevel:(UNNotificationInterruptionLevel)interruptionLevel API_AVAILABLE(ios(15.0)) {
+  static NSDictionary<NSNumber *, NSString *> *interruptionLevelMap;
+  if (!interruptionLevelMap) {
+    interruptionLevelMap = @{
+      @(UNNotificationInterruptionLevelPassive): @"passive",
+      @(UNNotificationInterruptionLevelActive): @"active",
+      @(UNNotificationInterruptionLevelTimeSensitive): @"timeSensitive",
+      @(UNNotificationInterruptionLevelCritical): @"critical"
+    };
+  }
+  
+  return [interruptionLevelMap objectForKey:@(interruptionLevel)];
+}
+
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationData:(UNNotificationRequest *)request
 {
   BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
   return isRemote ? request.content.userInfo[@"body"] : request.content.userInfo;
@@ -81,10 +89,8 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     return nil;
   }
 
-  if (@available(iOS 12.0, *)) {
-    if ([[UNNotificationSound defaultCriticalSound] isEqual:sound]) {
-      return @"defaultCritical";
-    }
+  if ([[UNNotificationSound defaultCriticalSound] isEqual:sound]) {
+    return @"defaultCritical";
   }
 
   if ([[UNNotificationSound defaultSound] isEqual:sound]) {
@@ -103,7 +109,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachments;
 }
 
-+ (NSDictionary *)serializedNotificationAttachment:(UNNotificationAttachment *)attachment
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationAttachment:(UNNotificationAttachment *)attachment
 {
   NSMutableDictionary *serializedAttachment = [NSMutableDictionary dictionary];
   serializedAttachment[@"identifier"] = attachment.identifier ?: [NSNull null];
@@ -112,7 +118,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachment;
 }
 
-+ (NSDictionary *)serializedNotificationTrigger:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationTrigger:(UNNotificationRequest *)request
 {
   UNNotificationTrigger *trigger = request.trigger;
   NSMutableDictionary *serializedTrigger = [NSMutableDictionary dictionary];
@@ -143,7 +149,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedTrigger;
 }
 
-+ (NSDictionary *)serializedDateComponents:(NSDateComponents *)dateComponents
++ (NSDictionary<NSString *, NSObject *> *)serializedDateComponents:(NSDateComponents *)dateComponents
 {
   NSMutableDictionary *serializedComponents = [NSMutableDictionary dictionary];
   NSArray<NSNumber *> *autoConvertedUnits = [[self calendarUnitsConversionMap] allKeys];
@@ -191,7 +197,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return [self calendarUnitsConversionMap][@(calendarUnit)];
 }
 
-+ (NSDictionary *)serializedRegion:(CLRegion *)region
++ (NSDictionary<NSString *, NSObject *> *)serializedRegion:(CLRegion *)region
 {
   NSMutableDictionary *serializedRegion = [NSMutableDictionary dictionary];
   serializedRegion[@"identifier"] = region.identifier;
@@ -212,15 +218,13 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
     serializedRegion[@"notifyEntryStateOnDisplay"] = @(beaconRegion.notifyEntryStateOnDisplay);
     serializedRegion[@"major"] = beaconRegion.major ?: [NSNull null];
     serializedRegion[@"minor"] = beaconRegion.minor ?: [NSNull null];
-    if (@available(iOS 13.0, *)) {
-      serializedRegion[@"uuid"] = beaconRegion.UUID;
-      NSDictionary *serializedConstraint = @{
-        @"uuid": beaconRegion.beaconIdentityConstraint.UUID,
-        @"major": beaconRegion.beaconIdentityConstraint.major ?: [NSNull null],
-        @"minor": beaconRegion.beaconIdentityConstraint.minor ?: [NSNull null],
-      };
-      serializedRegion[@"beaconIdentityConstraint"] = serializedConstraint;
-    }
+    serializedRegion[@"uuid"] = beaconRegion.UUID;
+    NSDictionary *serializedConstraint = @{
+      @"uuid": beaconRegion.beaconIdentityConstraint.UUID,
+      @"major": beaconRegion.beaconIdentityConstraint.major ?: [NSNull null],
+      @"minor": beaconRegion.beaconIdentityConstraint.minor ?: [NSNull null],
+    };
+    serializedRegion[@"beaconIdentityConstraint"] = serializedConstraint;
   } else {
     serializedRegion[@"type"] = @"unknown";
   }

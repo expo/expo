@@ -1,5 +1,5 @@
-import { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel } from './LocalAuthentication.types';
-export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel };
+import { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel, BiometricsSecurityLevel, LocalAuthenticationError } from './LocalAuthentication.types';
+export { LocalAuthenticationOptions, AuthenticationType, LocalAuthenticationResult, SecurityLevel, BiometricsSecurityLevel, LocalAuthenticationError, };
 /**
  * Determine whether a face or fingerprint scanner is available on the device.
  * @return Returns a promise which fulfils with a `boolean` value indicating whether a face or
@@ -10,7 +10,7 @@ export declare function hasHardwareAsync(): Promise<boolean>;
  * Determine what kinds of authentications are available on the device.
  * @return Returns a promise which fulfils to an array containing [`AuthenticationType`s](#authenticationtype).
  *
- * Devices can support multiple authentication methods- i.e. `[1,2]` means the device supports both
+ * Devices can support multiple authentication methods - i.e. `[1,2]` means the device supports both
  * fingerprint and facial recognition. If none are supported, this method returns an empty array.
  */
 export declare function supportedAuthenticationTypesAsync(): Promise<AuthenticationType[]>;

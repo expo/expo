@@ -1,12 +1,19 @@
-import openBrowserAsync from 'better-opn';
 import { vol } from 'memfs';
 
+import { envIsWebcontainer } from '../../../utils/env';
+import { openBrowserAsync } from '../../../utils/open';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
+jest.mock(`../../../utils/env`, () => ({
+  ...jest.requireActual('../../../utils/env'),
+  envIsWebcontainer: jest.fn(() => false),
+}));
+jest.mock('../../../utils/open');
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
+jest.mock('../AsyncWsTunnel');
 jest.mock('../DevelopmentSession');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
   class ApplePlatformManager {
@@ -35,12 +42,13 @@ const originalEnv = process.env;
 
 beforeEach(() => {
   vol.reset();
+  jest.mocked(envIsWebcontainer).mockReset();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
 });
 
 afterAll(() => {
   process.chdir(originalCwd);
-  process.env = originalEnv;
+  process.env = { ...originalEnv };
 });
 
 class MockBundlerDevServer extends BundlerDevServer {
@@ -89,8 +97,8 @@ class MockBundlerDevServer extends BundlerDevServer {
   getPublicUrlCreator() {
     return this.urlCreator;
   }
-  getNgrok() {
-    return this.ngrok;
+  getTunnel() {
+    return this.tunnel;
   }
   getDevSession() {
     return this.devSession;
@@ -98,6 +106,10 @@ class MockBundlerDevServer extends BundlerDevServer {
 
   protected getConfigModuleIds(): string[] {
     return ['./fake.config.js'];
+  }
+
+  public startTypeScriptServices(): Promise<void> {
+    throw new Error('Unimplemented');
   }
 }
 
@@ -108,7 +120,10 @@ class MockMetroBundlerDevServer extends MockBundlerDevServer {
 }
 
 async function getRunningServer() {
-  const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
+  const devServer = new MockBundlerDevServer(
+    '/',
+    getPlatformBundlers('/', { web: { bundler: 'metro' } })
+  );
   await devServer.startAsync({ location: {} });
   return devServer;
 }
@@ -117,29 +132,51 @@ describe('broadcastMessage', () => {
   it(`sends a message`, async () => {
     const devServer = await getRunningServer();
     devServer.broadcastMessage('reload', { foo: true });
-    expect(devServer.getInstance()!.messageSocket.broadcast).toBeCalledWith('reload', {
+    expect(devServer.getInstance()!.messageSocket.broadcast).toHaveBeenCalledWith('reload', {
       foo: true,
     });
   });
 });
 
 describe('openPlatformAsync', () => {
-  it(`opens a project in the browser using tunnel with metro web`, async () => {
-    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+  it(`opens a project in the browser using ngrok tunnel with metro web`, async () => {
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     await devServer.startAsync({
       location: {
         hostType: 'tunnel',
       },
     });
     const { url } = await devServer.openPlatformAsync('desktop');
-    expect(url).toBe('http://exp.tunnel.dev/foobar');
-    expect(openBrowserAsync).toBeCalledWith('http://exp.tunnel.dev/foobar');
+    expect(url).toBe('http://exp.ngrok-tunnel.dev/foobar');
+    expect(openBrowserAsync).toHaveBeenCalledWith('http://exp.ngrok-tunnel.dev/foobar');
   });
+
+  it(`opens a project in the browser using ws tunnel with metro web`, async () => {
+    // Enable the auto-ws tunnel
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
+
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await devServer.startAsync({
+      location: {
+        hostType: 'tunnel',
+      },
+    });
+    const { url } = await devServer.openPlatformAsync('desktop');
+    expect(url).toBe('http://exp.ws-tunnel.dev/');
+    expect(openBrowserAsync).toHaveBeenCalledWith('http://exp.ws-tunnel.dev/');
+  });
+
   it(`opens a project in the browser`, async () => {
     const devServer = await getRunningServer();
     const { url } = await devServer.openPlatformAsync('desktop');
     expect(url).toBe('http://localhost:3000');
-    expect(openBrowserAsync).toBeCalledWith('http://localhost:3000');
+    expect(openBrowserAsync).toHaveBeenCalledWith('http://localhost:3000');
   });
 
   for (const platform of ['ios', 'android']) {
@@ -162,17 +199,20 @@ describe('openPlatformAsync', () => {
 
 describe('stopAsync', () => {
   it(`stops a running dev server`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     const instance = await server.startAsync({
       location: {
         hostType: 'tunnel',
       },
     });
-    const ngrok = server.getNgrok();
-    const devSession = server.getNgrok();
+    const tunnel = server.getTunnel();
+    const devSession = server.getTunnel();
 
     // Ensure services were started.
-    expect(ngrok?.startAsync).toHaveBeenCalled();
+    expect(tunnel?.startAsync).toHaveBeenCalled();
     expect(devSession?.startAsync).toHaveBeenCalled();
 
     // Invoke the stop function
@@ -180,7 +220,7 @@ describe('stopAsync', () => {
 
     // Ensure services were stopped.
     expect(instance.server.close).toHaveBeenCalled();
-    expect(ngrok?.stopAsync).toHaveBeenCalled();
+    expect(tunnel?.stopAsync).toHaveBeenCalled();
     expect(devSession?.stopAsync).toHaveBeenCalled();
     expect(server.getInstance()).toBeNull();
   });
@@ -206,9 +246,10 @@ describe('isRedirectPageEnabled', () => {
 
     const server = new MockBundlerDevServer(
       '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      {
+        isDevClient: false,
+      }
     );
     expect(server['isRedirectPageEnabled']()).toBe(true);
   });
@@ -220,9 +261,10 @@ describe('isRedirectPageEnabled', () => {
 
     const server = new MockBundlerDevServer(
       '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      {
+        isDevClient: false,
+      }
     );
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
@@ -232,9 +274,10 @@ describe('isRedirectPageEnabled', () => {
 
     const server = new MockBundlerDevServer(
       '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      true
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      {
+        isDevClient: true,
+      }
     );
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
@@ -242,9 +285,10 @@ describe('isRedirectPageEnabled', () => {
   it(`redirect is disabled when expo-dev-client is not installed in the project`, async () => {
     const server = new MockBundlerDevServer(
       '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      {
+        isDevClient: false,
+      }
     );
     expect(server['isRedirectPageEnabled']()).toBe(false);
   });
@@ -254,16 +298,20 @@ describe('getRedirectUrl', () => {
   it(`returns null when the redirect page functionality is disabled`, async () => {
     const server = new MockBundlerDevServer(
       '/',
-      getPlatformBundlers({}),
-      // is Dev Client
-      false
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      {
+        isDevClient: false,
+      }
     );
     server['isRedirectPageEnabled'] = () => false;
     expect(server['getRedirectUrl']()).toBe(null);
   });
 
   it(`gets the redirect page URL`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     server['isRedirectPageEnabled'] = () => true;
     await server.startAsync({
       location: {},
@@ -279,18 +327,24 @@ describe('getRedirectUrl', () => {
       'http://100.100.1.100:3000/_expo/loading?platform=ios'
     );
     expect(server.getRedirectUrl(null)).toBe('http://100.100.1.100:3000/_expo/loading');
-    expect(urlCreator.constructLoadingUrl).toBeCalledTimes(3);
+    expect(urlCreator.constructLoadingUrl).toHaveBeenCalledTimes(3);
   });
 });
 
 describe('getExpoGoUrl', () => {
   it(`asserts if the dev server has not been started yet`, () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     expect(() => server['getExpoGoUrl']()).toThrow('Dev server instance not found');
   });
 
   it(`gets the native Expo Go URL`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     await server.startAsync({
       location: {},
     });
@@ -301,7 +355,10 @@ describe('getExpoGoUrl', () => {
 
 describe('getNativeRuntimeUrl', () => {
   it(`gets the native runtime URL`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     await server.startAsync({
       location: {},
     });
@@ -310,7 +367,13 @@ describe('getNativeRuntimeUrl', () => {
     expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe('exp://100.100.1.100:3000');
   });
   it(`gets the native runtime URL for dev client`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), true);
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      {
+        isDevClient: true,
+      }
+    );
     await server.startAsync({
       location: {
         scheme: 'my-app',
@@ -329,15 +392,10 @@ describe('getNativeRuntimeUrl', () => {
 });
 
 describe('getManifestMiddlewareAsync', () => {
-  const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
-  it(`asserts invalid manifest type`, async () => {
-    await expect(
-      server['getManifestMiddlewareAsync']({
-        // @ts-expect-error
-        forceManifestType: 'foobar',
-      })
-    ).rejects.toThrow(/Manifest middleware for type 'foobar' not found/);
-  });
+  const server = new MockBundlerDevServer(
+    '/',
+    getPlatformBundlers('/', { web: { bundler: 'metro' } })
+  );
   it(`asserts server is not running`, async () => {
     await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
       /Dev server instance not found/
@@ -346,7 +404,10 @@ describe('getManifestMiddlewareAsync', () => {
 });
 
 describe('_startTunnelAsync', () => {
-  const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+  const server = new MockBundlerDevServer(
+    '/',
+    getPlatformBundlers('/', { web: { bundler: 'metro' } })
+  );
   it(`returns null when the server isn't running`, async () => {
     expect(await server._startTunnelAsync()).toEqual(null);
   });
@@ -354,20 +415,68 @@ describe('_startTunnelAsync', () => {
 
 describe('getJsInspectorBaseUrl', () => {
   it('should return http based url', async () => {
-    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     await devServer.startAsync({ location: {} });
     expect(devServer.getJsInspectorBaseUrl()).toBe('http://100.100.1.100:3000');
   });
 
-  it('should return tunnel url', async () => {
-    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+  it('should return ngrok tunnel url', async () => {
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     await devServer.startAsync({ location: { hostType: 'tunnel' } });
-    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.tunnel.dev');
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.ngrok-tunnel.dev');
+  });
+
+  it('should return ws tunnel url', async () => {
+    // Enable the auto-ws tunnel
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
+
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.ws-tunnel.dev');
   });
 
   it('should throw error for unsupported bundler', async () => {
-    const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    const devServer = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
     await devServer.startAsync({ location: {} });
     expect(() => devServer.getJsInspectorBaseUrl()).toThrow();
+  });
+});
+
+describe('getDevServerUrl', () => {
+  // We disable external access in Metro for some reason,
+  // because of that ngrok tunnels can't proxy web previews.
+  it('returns localhost for ngrok tunnel', async () => {
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    expect(devServer.getDevServerUrl()).toBe('http://localhost:3000');
+  });
+
+  it('returns proxy url for ws tunnel', async () => {
+    // Enable the auto-ws tunnel
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
+
+    const devServer = new MockMetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    expect(devServer.getDevServerUrl()).toBe('http://exp.ws-tunnel.dev');
+    // Also return the proxied URL for localhost types, as webcontainers can't connect through `http://localhost` URLs
+    expect(devServer.getDevServerUrl({ hostType: 'localhost' })).toBe('http://exp.ws-tunnel.dev');
   });
 });

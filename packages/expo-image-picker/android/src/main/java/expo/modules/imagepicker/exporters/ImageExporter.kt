@@ -28,7 +28,7 @@ interface ImageExporter {
 open class ImageExportResult(
   val width: Int,
   val height: Int,
-  private val imageFile: File,
+  private val imageFile: File
 ) {
   /**
    * Allows accessing the underlying byte data in a lazy manner.

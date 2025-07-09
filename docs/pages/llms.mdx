@@ -1,0 +1,14 @@
+---
+title: Documentation for LLMs
+sidebar_title: LLMs
+description: A list of Expo and EAS documentation files available for large language models (LLMs) and apps that use them.
+hideTOC: true
+hideFromSearch: true
+---
+
+At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide documentation for large language models (LLMs) and apps that use them. Below is a list of documentation files available:
+
+- [/llms.txt](/llms.txt): A list of all available documentation files
+- [/llms-full.txt](/llms-full.txt): Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more
+- [/llms-eas.txt](/llms-eas.txt): Complete documentation for the Expo Application Services (EAS)
+- [/llms-sdk.txt](/llms-sdk.txt): Complete documentation for the Expo SDK

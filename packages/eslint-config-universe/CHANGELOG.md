@@ -10,6 +10,70 @@
 
 ### 💡 Others
 
+## 15.0.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.2 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2025-04-23
+
+### 🐛 Bug fixes
+
+- Allow both eslint@8 and eslint@9 in peer deps ([#36200](https://github.com/expo/expo/pull/36200) by [@kadikraman](https://github.com/kadikraman))
+
+## 15.0.0 — 2025-04-23
+
+### 🎉 New features
+
+- Add support for flat config ([#36200](https://github.com/expo/expo/pull/36200) by [@kadikraman](https://github.com/kadikraman))
+
+## 14.2.0 — 2025-04-09
+
+### 💡 Others
+
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript. ([#36043](https://github.com/expo/expo/pull/36043) by [@Simek](https://github.com/Simek))
+- Update `prettier` dependency to new minor version. ([#36043](https://github.com/expo/expo/pull/36043) by [@Simek](https://github.com/Simek))
+- Update other packages patch version for various fixes. ([#36043](https://github.com/expo/expo/pull/36043) by [@Simek](https://github.com/Simek))
+
+## 14.1.0 — 2025-04-04
+
+### 💡 Others
+
+- Update `@typescript-eslint` dependencies for better compatibility with TypeScript. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
+- Update `eslint-plugin-react-hooks` dependency to new major version. ([#33849](https://github.com/expo/expo/pull/33849) by [@Simek](https://github.com/Simek))
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Update `@typescript-eslint` dependencies to new major version, migrate rule set. ([#31571](https://github.com/expo/expo/pull/31571) by [@Simek](https://github.com/Simek))
+
+### 🎉 New features
+
+- Bring over more lint rules from Expo server for typescript configs. ([#30491](https://github.com/expo/expo/pull/30491) by [@wschurman](https://github.com/wschurman))
+
+## 13.0.0 — 2024-05-30
+
+### 💡 Others
+
+- Update dependencies to support newer versions of TypeScript. ([#29160](https://github.com/expo/expo/pull/29160) by [@Simek](https://github.com/Simek))
+- Reflect in peer dependencies the fact that config does not support yet ESLint 9. ([#29160](https://github.com/expo/expo/pull/29160) by [@Simek](https://github.com/Simek))
+
+## 12.1.0 — 2024-04-18
+
+### 💡 Others
+
+- Update test snapshots. ([#26527](https://github.com/expo/expo/pull/26527) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.0.0 — 2023-08-11
+
+### 🛠 Breaking changes
+
+- Upgrade from Prettier 2.4+ to Prettier 3. Projects that use this ESLint config will need to upgrade the version of Prettier they use to 3.0.0+. See the Prettier 3 [changelog](https://prettier.io/blog/2023/07/05/3.0.0.html#breaking-changes). ([#23544](https://github.com/expo/expo/pull/23544) by [@ide](https://github.com/ide))
+
 ## 11.3.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

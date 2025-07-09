@@ -1,15 +1,13 @@
 import fs from 'fs-extra';
-import glob from 'glob-promise';
+import { glob } from 'glob';
 import path from 'path';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
-import AndroidUnversionablePackages from './versioning/android/unversionablePackages.json';
-import IosUnversionablePackages from './versioning/ios/unversionablePackages.json';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-const IOS_DIR = Directories.getIosDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
+const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
 
 /**
@@ -77,6 +75,12 @@ export type ExpoModuleConfig = {
   };
   android?: {
     subdirectory?: string;
+    name?: string;
+    publication?: any;
+    projects?: {
+      name?: string;
+      publication?: any;
+    }[];
   };
 };
 
@@ -86,17 +90,29 @@ export type ExpoModuleConfig = {
 export class Package {
   path: string;
   packageJson: PackageJson;
-  expoModuleConfig: ExpoModuleConfig;
+  expoModuleConfig?: ExpoModuleConfig;
   packageView?: Npm.PackageViewType | null;
 
   constructor(rootPath: string, packageJson?: PackageJson) {
     this.path = rootPath;
     this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
-    this.expoModuleConfig = readExpoModuleConfigJson(rootPath);
+    this.expoModuleConfig = readExpoModuleConfigJson(this.expoModulesConfigPath);
   }
 
   get hasPlugin(): boolean {
     return fs.pathExistsSync(path.join(this.path, 'plugin'));
+  }
+
+  get hasCli(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'cli'));
+  }
+
+  get hasUtils(): boolean {
+    return fs.pathExistsSync(path.join(this.path, 'utils'));
+  }
+
+  get hasReactServerComponents(): boolean {
+    return 'test:rsc' in this.packageJson.scripts;
   }
 
   get packageName(): string {
@@ -166,8 +182,24 @@ export class Package {
     return match?.[1] ?? null;
   }
 
+  get androidPackageNamespace(): string | null {
+    if (!this.isSupportedOnPlatform('android')) {
+      return null;
+    }
+    const buildGradle = fs.readFileSync(
+      path.join(this.path, this.androidSubdirectory, 'build.gradle'),
+      'utf8'
+    );
+    const match = buildGradle.match(/^\s+namespace\s*=?\s*['"]([\w.]+)['"]/m);
+    return match?.[1] ?? null;
+  }
+
   get changelogPath(): string {
     return path.join(this.path, 'CHANGELOG.md');
+  }
+
+  get expoModulesConfigPath(): string {
+    return path.join(this.path, 'expo-module.config.json');
   }
 
   isExpoModule() {
@@ -226,15 +258,6 @@ export class Package {
     );
   }
 
-  isVersionableOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (platform === 'ios') {
-      return this.podspecName != null && !IosUnversionablePackages.includes(this.packageName);
-    } else if (platform === 'android') {
-      return !AndroidUnversionablePackages.includes(this.packageName);
-    }
-    throw new Error(`'isVersionableOnPlatform' is not supported on '${platform}' platform yet.`);
-  }
-
   async getPackageViewAsync(): Promise<Npm.PackageViewType | null> {
     if (this.packageView !== undefined) {
       return this.packageView;
@@ -288,19 +311,6 @@ export class Package {
    */
   async hasChangelogAsync(): Promise<boolean> {
     return fs.pathExists(this.changelogPath);
-  }
-
-  /**
-   * Checks whether package has any native code (iOS, Android, C++).
-   */
-  async isNativeModuleAsync(): Promise<boolean> {
-    const dirs = ['ios', 'android', 'cpp'].map((dir) => path.join(this.path, dir));
-    for (const dir of dirs) {
-      if (await fs.pathExists(dir)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -367,7 +377,14 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**', '**/__tests__/**', '**/__mocks__/**'],
+      ignore: [
+        '**/example/**',
+        '**/node_modules/**',
+        '**/static/**',
+        '**/__tests__/**',
+        '**/__mocks__/**',
+        '**/__fixtures__/**',
+      ],
     });
     cachedPackages = paths
       .map((packageJsonPath) => {
@@ -382,12 +399,9 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   return cachedPackages;
 }
 
-function readExpoModuleConfigJson(dir: string) {
-  const expoModuleConfigJsonPath = path.join(dir, 'expo-module.config.json');
-  const expoModuleConfigJsonExists = fs.existsSync(expoModuleConfigJsonPath);
-  const unimoduleJsonPath = path.join(dir, 'unimodule.json');
+function readExpoModuleConfigJson(expoModuleConfigJsonPath: string) {
   try {
-    return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
+    return require(expoModuleConfigJsonPath);
   } catch {
     return null;
   }

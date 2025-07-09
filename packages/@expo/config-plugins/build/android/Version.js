@@ -52,9 +52,8 @@ function setMinBuildScriptExtVersion(buildGradle, {
   name,
   minVersion
 }) {
-  var _buildGradle$match;
   const regex = new RegExp(`(${name}\\s?=\\s?)(\\d+(?:\\.\\d+)?)`);
-  const currentVersion = (_buildGradle$match = buildGradle.match(regex)) === null || _buildGradle$match === void 0 ? void 0 : _buildGradle$match[2];
+  const currentVersion = buildGradle.match(regex)?.[2];
   if (!currentVersion) {
     (0, _warnings().addWarningAndroid)('withBuildScriptExtVersion', `Cannot set minimum buildscript.ext.${name} version because the property "${name}" cannot be found or does not have a numeric value.`);
     // TODO: Maybe just add the property...
@@ -64,8 +63,7 @@ function setMinBuildScriptExtVersion(buildGradle, {
   return buildGradle.replace(regex, `$1${Math.max(minVersion, currentVersionNum)}`);
 }
 function getVersionName(config) {
-  var _config$version;
-  return (_config$version = config.version) !== null && _config$version !== void 0 ? _config$version : null;
+  return config.android?.version ?? config.version ?? null;
 }
 function setVersionName(config, buildGradle) {
   const versionName = getVersionName(config);
@@ -76,8 +74,7 @@ function setVersionName(config, buildGradle) {
   return buildGradle.replace(pattern, `versionName "${versionName}"`);
 }
 function getVersionCode(config) {
-  var _config$android$versi, _config$android;
-  return (_config$android$versi = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.versionCode) !== null && _config$android$versi !== void 0 ? _config$android$versi : 1;
+  return config.android?.versionCode ?? 1;
 }
 function setVersionCode(config, buildGradle) {
   const versionCode = getVersionCode(config);

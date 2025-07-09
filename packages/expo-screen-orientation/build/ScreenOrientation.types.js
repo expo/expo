@@ -75,14 +75,14 @@ export var OrientationLock;
 })(OrientationLock || (OrientationLock = {}));
 // @needsAudit
 /**
- * Each iOS device has a default set of [size classes](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html)
+ * Each iOS device has a default set of [size classes](https://developer.apple.com/documentation/uikit/uiuserinterfacesizeclass)
  * that you can use as a guide when designing your interface.
  */
 export var SizeClassIOS;
 (function (SizeClassIOS) {
-    SizeClassIOS[SizeClassIOS["REGULAR"] = 0] = "REGULAR";
+    SizeClassIOS[SizeClassIOS["UNKNOWN"] = 0] = "UNKNOWN";
     SizeClassIOS[SizeClassIOS["COMPACT"] = 1] = "COMPACT";
-    SizeClassIOS[SizeClassIOS["UNKNOWN"] = 2] = "UNKNOWN";
+    SizeClassIOS[SizeClassIOS["REGULAR"] = 2] = "REGULAR";
 })(SizeClassIOS || (SizeClassIOS = {}));
 // @needsAudit
 /**

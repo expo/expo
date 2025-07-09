@@ -1,5 +1,6 @@
 import {
   ActionCrop,
+  ActionExtent,
   ActionFlip,
   ActionResize,
   ActionRotate,
@@ -54,6 +55,36 @@ describe(validateActions, () => {
         validateActions([
           {
             crop: {
+              originX: 10,
+              originY: 10,
+              width: 100,
+              height: 100,
+            },
+          },
+        ]);
+      }).not.toThrow();
+    });
+  });
+
+  describe('extent', () => {
+    test('invalid', () => {
+      expect(() => {
+        const action = {
+          extent: {
+            originY: 10,
+            width: true,
+            height: 'blah',
+          },
+        } as unknown as ActionExtent;
+        validateActions([action]);
+      }).toThrow(/Extent action must be an object of shape/);
+    });
+
+    test('valid', () => {
+      expect(() => {
+        validateActions([
+          {
+            extent: {
               originX: 10,
               originY: 10,
               width: 100,

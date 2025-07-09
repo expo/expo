@@ -1,0 +1,363 @@
+---
+title: Authentication in Expo Router
+sidebar_title: Authentication
+description: How to implement authentication and protect routes with Expo Router.
+hasVideoLink: true
+---
+
+> This guide requires SDK 53. For the previous version of this guide see [Authentication (redirects)](/router/advanced/authentication-rewrites/)
+
+import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
+import { LockUnlocked01Icon } from '@expo/styleguide-icons/outline/LockUnlocked01Icon';
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+With Expo Router, all routes are always defined and accessible. You can use runtime logic to redirect users away from specific screens depending on whether they are authenticated. There are two different techniques for authenticating users within routes. This guide provides an example that demonstrates the functionality of standard native apps.
+
+## Using Protected Routes
+
+[Protected routes](/router/advanced/protected/) allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, or if a screen becomes protected while it is active, they will be redirected to the anchor route (usually the index screen) or the first available screen in the stack. Consider the following project structure that has a `/sign-in` route that is always accessible and a `(app)` group that requires authentication:
+
+<FileTree
+  files={[
+    ['app/_layout.tsx', <span>Controls what is protected</span>],
+    [
+      'app/sign-in.tsx',
+      <span>
+        Always accessible <LockUnlocked01Icon className="mb-1 inline" />
+      </span>,
+    ],
+    [
+      'app/(app)/_layout.tsx',
+      <span>
+        Requires authorization <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
+    ['app/(app)/index.tsx', <span>Should be protected by the (app)/_layout</span>],
+  ]}
+/>
+
+<Step label="1">
+
+To follow the above example, set up a [React Context provider](https://react.dev/reference/react/createContext) that can expose an authentication session to the entire app. You can implement your custom authentication session provider or use the one from the **Example authentication context** below.
+
+<Collapsible summary="Example authentication context">
+
+This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
+
+```tsx ctx.tsx
+import { use, createContext, type PropsWithChildren } from 'react';
+import { useStorageState } from './useStorageState';
+
+const AuthContext = createContext<{
+  signIn: () => void;
+  signOut: () => void;
+  session?: string | null;
+  isLoading: boolean;
+}>({
+  signIn: () => null,
+  signOut: () => null,
+  session: null,
+  isLoading: false,
+});
+
+// This hook can be used to access the user info.
+export function useSession() {
+  const value = use(AuthContext);
+  if (!value) {
+    throw new Error('useSession must be wrapped in a <SessionProvider />');
+  }
+
+  return value;
+}
+
+export function SessionProvider({ children }: PropsWithChildren) {
+  const [[isLoading, session], setSession] = useStorageState('session');
+
+  return (
+    <AuthContext
+      value={{
+        signIn: () => {
+          // Perform sign-in logic here
+          setSession('xxx');
+        },
+        signOut: () => {
+          setSession(null);
+        },
+        session,
+        isLoading,
+      }}>
+      {children}
+    </AuthContext>
+  );
+}
+```
+
+The following code snippet is a basic hook that persists tokens securely on native with [`expo-secure-store`](/versions/latest/sdk/securestore) and in local storage on web.
+
+{/* prettier-ignore */}
+```tsx useStorageState.ts
+import  { useEffect, useCallback, useReducer } from 'react';
+import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
+
+function useAsyncState<T>(
+  initialValue: [boolean, T | null] = [true, null],
+): UseStateHook<T> {
+  return useReducer(
+    (state: [boolean, T | null], action: T | null = null): [boolean, T | null] => [false, action],
+    initialValue
+  ) as UseStateHook<T>;
+}
+
+export async function setStorageItemAsync(key: string, value: string | null) {
+  if (Platform.OS === 'web') {
+    try {
+      if (value === null) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, value);
+      }
+    } catch (e) {
+      console.error('Local storage is unavailable:', e);
+    }
+  } else {
+    if (value == null) {
+      await SecureStore.deleteItemAsync(key);
+    } else {
+      await SecureStore.setItemAsync(key, value);
+    }
+  }
+}
+
+export function useStorageState(key: string): UseStateHook<string> {
+  // Public
+  const [state, setState] = useAsyncState<string>();
+
+  // Get
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          setState(localStorage.getItem(key));
+        }
+      } catch (e) {
+        console.error('Local storage is unavailable:', e);
+      }
+    } else {
+      SecureStore.getItemAsync(key).then(value => {
+        setState(value);
+      });
+    }
+  }, [key]);
+
+  // Set
+  const setValue = useCallback(
+    (value: string | null) => {
+      setState(value);
+      setStorageItemAsync(key, value);
+    },
+    [key]
+  );
+
+  return [state, setValue];
+}
+```
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+Create a **SplashScreenController** to manage the splash screen. Because loading the authentication is asynchronous we can keep the splash screen visible until the authentication has loaded.
+
+```tsx splash.tsx
+import { SplashScreen } from 'expo-router';
+import { useSession } from './ctx';
+
+export function SplashScreenController() {
+  const { isLoading } = useSession();
+
+  if (!isLoading) {
+    SplashScreen.hideAsync();
+  }
+
+  return null;
+}
+```
+
+</Step>
+
+<Step label="3">
+
+Use the **SessionProvider** in the root layout to provide the authentication context to the entire app. Ensure the **SplashScreenController** is inside the **SessionProvider**
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { SessionProvider } from '../ctx';
+import { SplashScreenController } from '../splash';
+
+export default function Root() {
+  // Set up the auth context and render our layout inside of it.
+  return (
+    <SessionProvider>
+      <SplashScreenController />
+      <RootNavigator />
+    </SessionProvider>
+  );
+}
+
+// Separate this into a new component so it can access the SessionProvider context later
+function RootNavigator() {
+  return <Stack />;
+}
+```
+
+</Step>
+
+<Step label="4">
+
+Create the `/sign-in` screen. It can toggle the authentication using `signIn()`. Since this screen is outside the `(app)` group, the group's layout and authentication check do not run when rendering this screen. This lets logged-out users see this screen.
+
+```tsx app/sign-in.tsx|collapseHeight=480
+import { router } from 'expo-router';
+import { Text, View } from 'react-native';
+
+import { useSession } from '../ctx';
+
+export default function SignIn() {
+  const { signIn } = useSession();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text
+        onPress={() => {
+          signIn();
+          // Navigate after signing in. You may want to tweak this to ensure sign-in is
+          // successful before navigating.
+          router.replace('/');
+        }}>
+        Sign In
+      </Text>
+    </View>
+  );
+}
+```
+
+</Step>
+
+<Step label="5">
+
+Now we can modify the `<RootNavigator />` to protect routes based on our SessionProvider.
+
+```tsx app/_layout.tsx|collapseHeight=400
+/* Keep the code the same above, just edit the RootNavigator */
+
+function RootNavigator() {
+  const { session } = useSession();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={session}>
+        <Stack.Screen name="(app)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!session}>
+        <Stack.Screen name="sign-in" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+```
+
+</Step>
+
+<Step label="6">
+
+Implement an authenticated screen that lets users sign out.
+
+```tsx app/(app)/index.tsx|collapseHeight=480
+import { Text, View } from 'react-native';
+
+import { useSession } from '../../ctx';
+
+export default function Index() {
+  const { signOut } = useSession();
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text
+        onPress={() => {
+          // The `app/(app)/_layout.tsx` will redirect to the sign-in screen.
+          signOut();
+        }}>
+        Sign Out
+      </Text>
+    </View>
+  );
+}
+```
+
+</Step>
+
+You now have an app that will present the splash screen until the initial authentication state has loaded and will redirects to the sign-in screen if the user is not authenticated. If a user visits a deep link to any routes with the authentication check, they'll be redirected to the sign-in screen.
+
+## Modals and per-route authentication
+
+Another common pattern is to render a sign-in modal over the top of the app. This enables you to dismiss and partially preserve deep links when the authentication is complete. However, this pattern requires routes to be rendered in the background as these routes require handling data loading without authentication.
+
+<FileTree
+  files={[
+    ['app/_layout.tsx', 'Declares global session context'],
+    'app/(app)/_layout.tsx',
+    ['app/(app)/sign-in.tsx', <span>Modal presented over the root</span>],
+    ['app/(app)/(root)/_layout.tsx', <span>Protects child routes</span>],
+    [
+      'app/(app)/(root)/index.tsx',
+      <span>
+        Requires authorization <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
+  ]}
+/>
+
+```tsx app/(app)/_layout.tsx|collapseHeight=480
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  initialRouteName: '(root)',
+};
+
+export default function AppLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="(root)" />
+      <Stack.Screen
+        name="sign-in"
+        options={{
+          presentation: 'modal',
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+## More information
+
+For more information, read the [Protected routes documentation](/router/advanced/protected/) to learn more patterns
+
+<VideoBoxLink
+  videoId="XCTaMu0qnFY"
+  title="How to use Protected Routes in Expo Router V5 for smooth auth"
+  description="Learn how to use Protected Routes in Expo Router V5 to create an authentication flow"
+  className="mb-6"
+/>
+
+## Middleware
+
+Traditionally, websites may leverage some form of server-side redirection to protect routes. Expo Router on the web currently only supports build-time static generation and has no support for custom middleware or serving. This can be added in the future to provide a more optimal web experience. In the meantime, authentication can be implemented by using client-side redirects and a loading state.

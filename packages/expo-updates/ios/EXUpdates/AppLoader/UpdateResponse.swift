@@ -1,8 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-internal enum RemoteUpdateError: Error {
+import React
+
+internal enum RemoteUpdateError: Error, Sendable, LocalizedError {
   case directiveParsingError
-  case invalidDirectiveType
+  case invalidDirectiveType(messageType: String)
+
+  var errorDescription: String? {
+    switch self {
+    case .directiveParsingError:
+      return "Directive JSON could not be parsed"
+    case let .invalidDirectiveType(messageType):
+      return "Unsupported directive type: \(messageType)"
+    }
+  }
 }
 
 internal final class SigningInfo {
@@ -15,7 +26,8 @@ internal final class SigningInfo {
   }
 }
 
-internal class UpdateDirective {
+@objc(EXUpdatesUpdateDirective)
+public class UpdateDirective: NSObject {
   let signingInfo: SigningInfo?
 
   init(signingInfo: SigningInfo?) {
@@ -47,14 +59,15 @@ internal class UpdateDirective {
       }
       return RollBackToEmbeddedUpdateDirective(commitTime: commitTime, signingInfo: signingInfo)
     default:
-      throw RemoteUpdateError.invalidDirectiveType
+      throw RemoteUpdateError.invalidDirectiveType(messageType: messageType)
     }
   }
 }
 
-internal final class NoUpdateAvailableUpdateDirective: UpdateDirective {}
+public final class NoUpdateAvailableUpdateDirective: UpdateDirective {}
 
-internal final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
+@objc(EXUpdatesRollBackToEmbeddedUpdateDirective)
+public final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
   let commitTime: Date
 
   required init(commitTime: Date, signingInfo: SigningInfo?) {
@@ -63,9 +76,9 @@ internal final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
   }
 }
 
-internal class UpdateResponsePart {}
+public class UpdateResponsePart {}
 
-internal final class DirectiveUpdateResponsePart: UpdateResponsePart {
+public final class DirectiveUpdateResponsePart: UpdateResponsePart {
   let updateDirective: UpdateDirective
 
   required init(updateDirective: UpdateDirective) {
@@ -73,20 +86,20 @@ internal final class DirectiveUpdateResponsePart: UpdateResponsePart {
   }
 }
 
-internal final class ManifestUpdateResponsePart: UpdateResponsePart {
-  let updateManifest: Update
+public final class ManifestUpdateResponsePart: UpdateResponsePart {
+  public let updateManifest: Update
 
-  required init(updateManifest: Update) {
+  public required init(updateManifest: Update) {
     self.updateManifest = updateManifest
   }
 }
 
-internal final class UpdateResponse {
-  let responseHeaderData: ResponseHeaderData?
-  let manifestUpdateResponsePart: ManifestUpdateResponsePart?
-  let directiveUpdateResponsePart: DirectiveUpdateResponsePart?
+public final class UpdateResponse {
+  public let responseHeaderData: ResponseHeaderData?
+  public let manifestUpdateResponsePart: ManifestUpdateResponsePart?
+  public let directiveUpdateResponsePart: DirectiveUpdateResponsePart?
 
-  required init(
+  public required init(
     responseHeaderData: ResponseHeaderData?,
     manifestUpdateResponsePart: ManifestUpdateResponsePart?,
     directiveUpdateResponsePart: DirectiveUpdateResponsePart?

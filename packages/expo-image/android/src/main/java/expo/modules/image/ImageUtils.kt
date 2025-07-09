@@ -1,14 +1,6 @@
 package expo.modules.image
 
 import android.graphics.RectF
-import com.bumptech.glide.request.FutureTarget
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runInterruptible
-
-/**
- * Converts blocking [java.util.concurrent.Future] result into non-blocking suspend function.
- */
-internal suspend fun <T> FutureTarget<T>.awaitGet(): T = runInterruptible(Dispatchers.IO) { get() }
 
 fun calcXTranslation(
   value: Float,

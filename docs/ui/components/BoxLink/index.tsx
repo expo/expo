@@ -1,37 +1,43 @@
-import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
-import type { AnchorHTMLAttributes, ComponentType, ReactNode } from 'react';
+import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
+import type { AnchorHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from 'react';
 
-import { A, DEMI, P } from '~/ui/components/Text';
+import { DEMI, CALLOUT } from '~/ui/components/Text';
 
 type BoxLinkProps = AnchorHTMLAttributes<HTMLLinkElement> & {
   title: string;
-  description: ReactNode;
+  description?: ReactNode;
   testID?: string;
-  Icon?: ComponentType<any>;
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+  imageUrl?: string;
 };
 
-export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps) {
-  const isExternal = Boolean(href && href.startsWith('http'));
+export function BoxLink({ title, description, href, testID, Icon, imageUrl }: BoxLinkProps) {
+  const isExternal = Boolean(href?.startsWith('http'));
   const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
-    <A
+    <LinkBase
       href={href}
-      className="flex flex-row justify-between border border-solid border-default rounded-md py-3 px-4 mb-3 hocus:shadow-xs"
+      className={mergeClasses(
+        'group mb-3 flex flex-row justify-between rounded-md border border-solid border-default px-4 py-3 transition',
+        'hocus:bg-subtle hocus:shadow-xs'
+      )}
       data-testid={testID}
-      openInNewTab={isExternal}
-      isStyled>
+      openInNewTab={isExternal}>
       <div className="flex flex-row gap-4">
         {Icon && (
-          <div className="flex bg-element rounded-md self-center items-center justify-center min-w-[36px] h-9">
+          <div className="flex h-9 min-w-[36px] items-center justify-center self-center rounded-md bg-element transition group-hover:bg-hover">
             <Icon className="icon-lg text-icon-default" />
           </div>
         )}
-        <div>
+        {imageUrl && <img className="!h-9 !w-9 self-center" src={imageUrl} alt="Icon" />}
+        <div className="flex flex-col self-center">
           <DEMI>{title}</DEMI>
-          <P>{description}</P>
+          {description && <CALLOUT theme="secondary">{description}</CALLOUT>}
         </div>
       </div>
-      <ArrowIcon className="text-icon-secondary self-center content-end ml-3 min-w-[20px]" />
-    </A>
+      <ArrowIcon className="ml-3 min-w-[20px] content-end self-center text-icon-secondary" />
+    </LinkBase>
   );
 }

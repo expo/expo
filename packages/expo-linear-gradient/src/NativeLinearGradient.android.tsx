@@ -11,6 +11,7 @@ export default function NativeLinearGradient({
   endPoint,
   children,
   style,
+  dither,
   ...props
 }: NativeLinearGradientProps): React.ReactElement {
   // TODO: revisit whether we need to inherit the container's borderRadius since this issue has
@@ -40,6 +41,7 @@ export default function NativeLinearGradient({
         endPoint={endPoint}
         locations={locations}
         borderRadii={borderRadiiPerCorner}
+        dither={dither}
       />
       {children}
     </View>

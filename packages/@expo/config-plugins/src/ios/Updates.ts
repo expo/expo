@@ -1,72 +1,109 @@
-import * as path from 'path';
-import resolveFrom from 'resolve-from';
-import xcode from 'xcode';
+import { ExpoConfig } from '@expo/config-types';
 
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
+import { ExpoPlist } from './IosConfig.types';
 import { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
+import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
+  getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
-  getRuntimeVersionNullable,
-  getSDKVersion,
+  getRuntimeVersionNullableAsync,
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadata,
   getUpdatesRequestHeaders,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
 } from '../utils/Updates';
-import { ExpoPlist } from './IosConfig.types';
-
-const CREATE_MANIFEST_IOS_PATH = 'expo-updates/scripts/create-manifest-ios.sh';
+import { addWarningIOS } from '../utils/warnings';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
   CHECK_ON_LAUNCH = 'EXUpdatesCheckOnLaunch',
   LAUNCH_WAIT_MS = 'EXUpdatesLaunchWaitMs',
   RUNTIME_VERSION = 'EXUpdatesRuntimeVersion',
-  SDK_VERSION = 'EXUpdatesSDKVersion',
   UPDATE_URL = 'EXUpdatesURL',
-  RELEASE_CHANNEL = 'EXUpdatesReleaseChannel',
   UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY = 'EXUpdatesRequestHeaders',
+  UPDATES_HAS_EMBEDDED_UPDATE = 'EXUpdatesHasEmbeddedUpdate',
   CODE_SIGNING_CERTIFICATE = 'EXUpdatesCodeSigningCertificate',
   CODE_SIGNING_METADATA = 'EXUpdatesCodeSigningMetadata',
+  DISABLE_ANTI_BRICKING_MEASURES = 'EXUpdatesDisableAntiBrickingMeasures',
 }
 
-export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
-  config,
-  { expoUsername }
-) => {
-  return withExpoPlist(config, (config) => {
+// when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
+// Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
+
+export const withUpdates: ConfigPlugin = (config) => {
+  return withPlugins(config, [withUpdatesPlist, withUpdatesNativeDebugPodfileProps]);
+};
+
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+export const withUpdatesNativeDebugPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
+  [
+    {
+      propName: 'updatesNativeDebug',
+      propValueGetter: (config) => (config?.updates?.useNativeDebug === true ? 'true' : undefined),
+    },
+  ],
+  'withUpdatesNativeDebugPodfileProps'
+);
+
+const withUpdatesPlist: ConfigPlugin = (config) => {
+  return withExpoPlist(config, async (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
-    config.modResults = setUpdatesConfig(
+    config.modResults = await setUpdatesConfigAsync(
       projectRoot,
       config,
       config.modResults,
-      expoUsername,
       expoUpdatesPackageVersion
     );
     return config;
   });
 };
 
-export function setUpdatesConfig(
+export async function setUpdatesConfigAsync(
   projectRoot: string,
   config: ExpoConfigUpdates,
   expoPlist: ExpoPlist,
-  username: string | null,
   expoUpdatesPackageVersion?: string | null
-): ExpoPlist {
+): Promise<ExpoPlist> {
+  const checkOnLaunch = getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion);
+  const timeout = getUpdatesTimeout(config);
+  const useEmbeddedUpdate = getUpdatesUseEmbeddedUpdate(config);
+
+  // TODO: is there a better place for this validation?
+  if (!useEmbeddedUpdate && timeout === 0 && checkOnLaunch !== 'ALWAYS') {
+    addWarningIOS(
+      'updates.useEmbeddedUpdate',
+      `updates.checkOnLaunch should be set to "ON_LOAD" and updates.fallbackToCacheTimeout should be set to a non-zero value when updates.useEmbeddedUpdate is set to false. This is because an update must be fetched on the initial launch, when no embedded update is available.`
+    );
+  }
+
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: getUpdatesEnabled(config, username),
-    [Config.CHECK_ON_LAUNCH]: getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion),
-    [Config.LAUNCH_WAIT_MS]: getUpdatesTimeout(config),
+    [Config.ENABLED]: getUpdatesEnabled(config),
+    [Config.CHECK_ON_LAUNCH]: checkOnLaunch,
+    [Config.LAUNCH_WAIT_MS]: timeout,
   };
 
-  const updateUrl = getUpdateUrl(config, username);
+  // The native config name is "has embedded update", but we want to expose
+  // this to the user as "use embedded update", since this is more accurate.
+  // The field does not disable actually building and embedding the update,
+  // only whether it is actually used.
+  if (useEmbeddedUpdate) {
+    delete newExpoPlist[Config.UPDATES_HAS_EMBEDDED_UPDATE];
+  } else {
+    newExpoPlist[Config.UPDATES_HAS_EMBEDDED_UPDATE] = false;
+  }
+
+  const updateUrl = getUpdateUrl(config);
   if (updateUrl) {
     newExpoPlist[Config.UPDATE_URL] = updateUrl;
   } else {
@@ -94,145 +131,37 @@ export function setUpdatesConfig(
     delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
 
-  return setVersionsConfig(config, newExpoPlist);
+  const disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(config);
+  if (disableAntiBrickingMeasures) {
+    newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES] = disableAntiBrickingMeasures;
+  } else {
+    delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
+  }
+
+  return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }
 
-export function setVersionsConfig(config: ExpoConfigUpdates, expoPlist: ExpoPlist): ExpoPlist {
+export async function setVersionsConfigAsync(
+  projectRoot: string,
+  config: ExpoConfigUpdates,
+  expoPlist: ExpoPlist
+): Promise<ExpoPlist> {
   const newExpoPlist = { ...expoPlist };
 
-  const runtimeVersion = getRuntimeVersionNullable(config, 'ios');
+  const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'ios');
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
     throw new Error(
-      'A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.'
+      'A runtime version is set in your Expo.plist, but is missing from your Expo app config (app.json/app.config.js). Set runtimeVersion in your Expo app config or remove EXUpdatesRuntimeVersion from your Expo.plist.'
     );
   }
-  const sdkVersion = getSDKVersion(config);
+
   if (runtimeVersion) {
-    delete newExpoPlist[Config.SDK_VERSION];
+    delete newExpoPlist['EXUpdatesSDKVersion'];
     newExpoPlist[Config.RUNTIME_VERSION] = runtimeVersion;
-  } else if (sdkVersion) {
-    /**
-     * runtime version maybe null in projects using classic updates. In that
-     * case we use SDK version
-     */
-    delete newExpoPlist[Config.RUNTIME_VERSION];
-    newExpoPlist[Config.SDK_VERSION] = sdkVersion;
   } else {
-    delete newExpoPlist[Config.SDK_VERSION];
+    delete newExpoPlist['EXUpdatesSDKVersion'];
     delete newExpoPlist[Config.RUNTIME_VERSION];
   }
 
   return newExpoPlist;
-}
-
-function formatConfigurationScriptPath(projectRoot: string): string {
-  const buildScriptPath = resolveFrom.silent(projectRoot, CREATE_MANIFEST_IOS_PATH);
-
-  if (!buildScriptPath) {
-    throw new Error(
-      "Could not find the build script for iOS. This could happen in case of outdated 'node_modules'. Run 'npm install' to make sure that it's up-to-date."
-    );
-  }
-
-  const relativePath = path.relative(path.join(projectRoot, 'ios'), buildScriptPath);
-  return process.platform === 'win32' ? relativePath.replace(/\\/g, '/') : relativePath;
-}
-
-interface ShellScriptBuildPhase {
-  isa: 'PBXShellScriptBuildPhase';
-  name: string;
-  shellScript: string;
-  [key: string]: any;
-}
-
-export function getBundleReactNativePhase(project: xcode.XcodeProject): ShellScriptBuildPhase {
-  const shellScriptBuildPhase = project.hash.project.objects.PBXShellScriptBuildPhase as Record<
-    string,
-    ShellScriptBuildPhase
-  >;
-  const bundleReactNative = Object.values(shellScriptBuildPhase).find(
-    (buildPhase) => buildPhase.name === '"Bundle React Native code and images"'
-  );
-
-  if (!bundleReactNative) {
-    throw new Error(`Couldn't find a build phase "Bundle React Native code and images"`);
-  }
-
-  return bundleReactNative;
-}
-
-export function ensureBundleReactNativePhaseContainsConfigurationScript(
-  projectRoot: string,
-  project: xcode.XcodeProject
-): xcode.XcodeProject {
-  const bundleReactNative = getBundleReactNativePhase(project);
-  const buildPhaseShellScriptPath = formatConfigurationScriptPath(projectRoot);
-
-  if (!isShellScriptBuildPhaseConfigured(projectRoot, project)) {
-    // check if there's already another path to create-manifest-ios.sh
-    // this might be the case for monorepos
-    if (bundleReactNative.shellScript.includes(CREATE_MANIFEST_IOS_PATH)) {
-      bundleReactNative.shellScript = bundleReactNative.shellScript.replace(
-        new RegExp(`(\\\\n)(\\.\\.)+/node_modules/${CREATE_MANIFEST_IOS_PATH}`),
-        ''
-      );
-    }
-    bundleReactNative.shellScript = `${bundleReactNative.shellScript.replace(
-      /"$/,
-      ''
-    )}${buildPhaseShellScriptPath}\\n"`;
-  }
-  return project;
-}
-
-export function isShellScriptBuildPhaseConfigured(
-  projectRoot: string,
-  project: xcode.XcodeProject
-): boolean {
-  const bundleReactNative = getBundleReactNativePhase(project);
-  const buildPhaseShellScriptPath = formatConfigurationScriptPath(projectRoot);
-  return bundleReactNative.shellScript.includes(buildPhaseShellScriptPath);
-}
-
-export function isPlistConfigurationSet(expoPlist: ExpoPlist): boolean {
-  return Boolean(
-    expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion)
-  );
-}
-
-export function isPlistConfigurationSynced(
-  projectRoot: string,
-  config: ExpoConfigUpdates,
-  expoPlist: ExpoPlist,
-  username: string | null
-): boolean {
-  return (
-    getUpdateUrl(config, username) === expoPlist.EXUpdatesURL &&
-    getUpdatesEnabled(config, username) === expoPlist.EXUpdatesEnabled &&
-    getUpdatesTimeout(config) === expoPlist.EXUpdatesLaunchWaitMs &&
-    getUpdatesCheckOnLaunch(config) === expoPlist.EXUpdatesCheckOnLaunch &&
-    getUpdatesCodeSigningCertificate(projectRoot, config) ===
-      expoPlist.EXUpdatesCodeSigningCertificate &&
-    getUpdatesCodeSigningMetadata(config) === expoPlist.EXUpdatesCodeSigningMetadata &&
-    isPlistVersionConfigurationSynced(config, expoPlist)
-  );
-}
-
-export function isPlistVersionConfigurationSynced(
-  config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
-  expoPlist: ExpoPlist
-): boolean {
-  const expectedRuntimeVersion = getRuntimeVersionNullable(config, 'ios');
-  const expectedSdkVersion = getSDKVersion(config);
-
-  const currentRuntimeVersion = expoPlist.EXUpdatesRuntimeVersion ?? null;
-  const currentSdkVersion = expoPlist.EXUpdatesSDKVersion ?? null;
-
-  if (expectedRuntimeVersion !== null) {
-    return currentRuntimeVersion === expectedRuntimeVersion && currentSdkVersion === null;
-  } else if (expectedSdkVersion !== null) {
-    return currentSdkVersion === expectedSdkVersion && currentRuntimeVersion === null;
-  } else {
-    return true;
-  }
 }

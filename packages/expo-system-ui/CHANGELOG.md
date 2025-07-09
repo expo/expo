@@ -10,6 +10,206 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.0.10 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.9 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.8 - 2025-06-04
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.7 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 4.0.9 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.8 - 2025-02-06
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.6 - 2024-12-10
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.5 - 2024-11-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.4 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.3 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2024-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2024-10-24
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Add missing `react-native` peer dependencies for isolated modules. ([#30485](https://github.com/expo/expo/pull/30485) by [@byCedric](https://github.com/byCedric))
+- Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
+- Replaced the config-plugins deprecated `getAppThemeLightNoActionBarGroup` method with the new `getAppThemeGroup`. ([#30797](https://github.com/expo/expo/pull/30797) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.0.7 - 2024-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.6 - 2024-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.5 - 2024-06-05
+
+### 💡 Others
+
+- Pin @react-native subpackage versions to 0.74.83. ([#29441](https://github.com/expo/expo/pull/29441) by [@kudo](https://github.com/kudo))
+
+## 3.0.4 — 2024-05-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.1 — 2024-04-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.0 — 2024-04-18
+
+### 💡 Others
+
+- [iOS] Add privacy manifest describing required reason API usage. ([#27770](https://github.com/expo/expo/pull/27770) by [@aleqsio](https://github.com/aleqsio))
+- Use `typeof window` checks for removing server code. ([#27514](https://github.com/expo/expo/pull/27514) by [@EvanBacon](https://github.com/EvanBacon))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Migrated dependency from `@react-native/normalize-color` to `@react-native/normalize-colors`. ([#27736](https://github.com/expo/expo/pull/27736) by [@kudo](https://github.com/kudo))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 2.9.3 - 2024-01-10
+
+### 💡 Others
+
+- Replace deprecated `com.facebook.react:react-native:+` Android dependency with `com.facebook.react:react-android`. ([#26237](https://github.com/expo/expo/pull/26237) by [@kudo](https://github.com/kudo))
+
+## 2.9.2 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 2.9.1 — 2023-12-15
+
+### 🐛 Bug fixes
+
+- Fixed custom `backgroundColor` is broken on iOS. ([#25946](https://github.com/expo/expo/pull/25946) by [@kudo](https://github.com/kudo))
+
+## 2.9.0 — 2023-12-12
+
+_This version does not introduce any user-facing changes._
+
+## 2.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 2.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 2.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2023-06-21
+
+### 🎉 New features
+
+- Persist user selected background color and restore automatically on iOS. Added `restoreBackgroundColorAsync` to restore it on Android. ([#22773](https://github.com/expo/expo/pull/22773) by [@alanhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 2.3.0 — 2023-05-08
 
 ### 💡 Others

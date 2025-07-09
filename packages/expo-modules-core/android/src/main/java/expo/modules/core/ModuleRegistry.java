@@ -13,28 +13,15 @@ import java.util.Map;
 
 public class ModuleRegistry {
   private final Map<Class, InternalModule> mInternalModulesMap = new HashMap<>();
-  private final Map<String, ViewManager> mViewManagersMap = new HashMap<>();
-  private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
-  private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
   private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
   private volatile boolean mIsInitialized = false;
 
   public ModuleRegistry(
     Collection<InternalModule> internalModules,
-    Collection<ExportedModule> exportedModules,
-    Collection<ViewManager> viewManagers,
     Collection<SingletonModule> singletonModules) {
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
-    }
-
-    for (ExportedModule module : exportedModules) {
-      registerExportedModule(module);
-    }
-
-    for (ViewManager manager : viewManagers) {
-      registerViewManager(manager);
     }
 
     for (SingletonModule singleton : singletonModules) {
@@ -53,22 +40,7 @@ public class ModuleRegistry {
     return (T) mInternalModulesMap.get(interfaceClass);
   }
 
-  public ExportedModule getExportedModule(String name) {
-    return mExportedModulesMap.get(name);
-  }
-
-  public ExportedModule getExportedModuleOfClass(Class moduleClass) {
-    return mExportedModulesByClassMap.get(moduleClass);
-  }
-
-  public Collection<ViewManager> getAllViewManagers() {
-    return mViewManagersMap.values();
-  }
-
-  public Collection<ExportedModule> getAllExportedModules() {
-    return mExportedModulesMap.values();
-  }
-
+  @SuppressWarnings("unchecked")
   public <T> T getSingletonModule(String singletonName, Class<T> singletonClass) {
     return (T) mSingletonModulesMap.get(singletonName);
   }
@@ -87,17 +59,6 @@ public class ModuleRegistry {
 
   public InternalModule unregisterInternalModule(Class exportedInterface) {
     return mInternalModulesMap.remove(exportedInterface);
-  }
-
-  public void registerExportedModule(ExportedModule module) {
-    String moduleName = module.getName();
-    mExportedModulesMap.put(moduleName, module);
-    mExportedModulesByClassMap.put(module.getClass(), module);
-  }
-
-  public void registerViewManager(ViewManager manager) {
-    String managerName = manager.getName();
-    mViewManagersMap.put(managerName, manager);
   }
 
   public void registerSingletonModule(SingletonModule singleton) {
@@ -134,14 +95,12 @@ public class ModuleRegistry {
   }
 
   public void initialize() {
-    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
-    lifecycleListeners.addAll(mExportedModulesMap.values());
-    lifecycleListeners.addAll(mInternalModulesMap.values());
-    lifecycleListeners.addAll(mViewManagersMap.values());
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>(mInternalModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
-      if (ref.get() != null) {
-        lifecycleListeners.add(ref.get());
+      RegistryLifecycleListener listener = ref.get();
+      if (listener != null) {
+        lifecycleListeners.add(listener);
       }
     }
 
@@ -151,14 +110,12 @@ public class ModuleRegistry {
   }
 
   public void onDestroy() {
-    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
-    lifecycleListeners.addAll(mExportedModulesMap.values());
-    lifecycleListeners.addAll(mInternalModulesMap.values());
-    lifecycleListeners.addAll(mViewManagersMap.values());
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>(mInternalModulesMap.values());
 
     for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
-      if (ref.get() != null) {
-        lifecycleListeners.add(ref.get());
+      RegistryLifecycleListener listener = ref.get();
+      if (listener != null) {
+        lifecycleListeners.add(listener);
       }
     }
 

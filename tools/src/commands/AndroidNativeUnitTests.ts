@@ -6,27 +6,20 @@ import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 import { filterAsync } from '../Utils';
 
-const ANDROID_DIR = Directories.getAndroidDir();
-
 const BARE_EXPO_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'android');
 
 const excludedInTests = [
   'expo-module-template',
   'expo-module-template-local',
-  'expo-notifications',
-  'expo-in-app-purchases',
   'expo-splash-screen',
   'expo-modules-test-core',
   'expo-dev-client',
-];
-
-const packagesNeedToBeTestedUsingBareExpo = [
-  'expo-dev-menu',
   'expo-dev-launcher',
-  'expo-dev-menu-interface',
 ];
 
-type TestType = 'local' | 'instrumented';
+const testTypes = ['local', 'instrumented', 'spotless'] as const;
+const testTypeSet = new Set(testTypes);
+type TestType = (typeof testTypes)[number];
 
 function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
   const lines = output.trim().split(/\r\n?|\n/g);
@@ -42,11 +35,11 @@ export async function androidNativeUnitTests({
 }) {
   if (!type) {
     throw new Error(
-      'Must specify which type of unit test to run with `--type local` or `--type instrumented`.'
+      `Must specify which type of unit test to run. type must be one of ${testTypes.join(',')}`
     );
   }
-  if (type !== 'local' && type !== 'instrumented') {
-    throw new Error('Invalid type specified. Must use `--type local` or `--type instrumented`.');
+  if (!testTypeSet.has(type)) {
+    throw new Error(`Invalid type specified. type must be one of ${testTypes.join(',')}`);
   }
 
   const allPackages = await Packages.getListOfPackagesAsync();
@@ -57,7 +50,7 @@ export async function androidNativeUnitTests({
       return false;
     }
 
-    let includesTests;
+    let includesTests: boolean = false;
     if (pkg.isSupportedOnPlatform('android') && !excludedInTests.includes(pkg.packageSlug)) {
       if (type === 'instrumented') {
         includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
@@ -80,24 +73,12 @@ export async function androidNativeUnitTests({
     console.log(chalk.yellow(pkg.packageSlug));
   });
 
-  const partition = <T>(arr: T[], condition: (T) => boolean) => {
-    const trues = arr.filter((el) => condition(el));
-    const falses = arr.filter((el) => !condition(el));
-    return [trues, falses];
-  };
-
-  const [androidPackagesTestedUsingBareProject, androidPackagesTestedUsingExpoProject] = partition(
-    androidPackages,
-    (element) => packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
-  );
-
   if (type === 'instrumented') {
     const testCommand = 'connectedAndroidTest';
     const uninstallTestCommand = 'uninstallDebugAndroidTest';
 
     // TODO: remove this once avd cache saved to storage
-    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
-    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
+    await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
 
     // We should build and test expo-modules-core first
     // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
@@ -105,26 +86,30 @@ export async function androidNativeUnitTests({
     // will have duplicated fbjni.so when building expo-eas-client.
     const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
     const isNotExpoModulesCore = (pkg: Packages.Package) => pkg.packageName !== 'expo-modules-core';
-    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, ANDROID_DIR);
 
-    await runGradlew(
-      androidPackagesTestedUsingExpoProject.filter(isNotExpoModulesCore),
-      testCommand,
-      ANDROID_DIR
-    );
-    await runGradlew(
-      androidPackagesTestedUsingBareProject.filter(isNotExpoModulesCore),
-      testCommand,
-      BARE_EXPO_DIR
-    );
+    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, BARE_EXPO_DIR);
+
+    await runGradlew(androidPackages.filter(isNotExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
     // Cleanup installed test app
-    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
-    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
+    await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+  } else if (type === 'spotless') {
+    const spotlessApplyCommand = 'spotlessApply';
+    const spotlessCheckCommand = 'spotlessCheck';
+    try {
+      console.log(chalk.green('Running spotlessCheck...'));
+      await runGradlew(androidPackages, spotlessCheckCommand, BARE_EXPO_DIR);
+      console.log(chalk.green('spotlessCheck succeeded'));
+    } catch (e: any) {
+      console.log(
+        chalk.yellow(`spotlessCheck failed: ${e}. Attempting to fix with spotlessApply...`)
+      );
+      await runGradlew(androidPackages, spotlessApplyCommand, BARE_EXPO_DIR);
+      chalk.green('spotlessApply succeeded');
+    }
   } else {
     const testCommand = 'testDebugUnitTest';
-    await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);
-    await runGradlew(androidPackagesTestedUsingBareProject, testCommand, BARE_EXPO_DIR);
+    await runGradlew(androidPackages, testCommand, BARE_EXPO_DIR);
   }
 
   console.log(chalk.green('Finished android unit tests successfully.'));
@@ -156,7 +141,7 @@ async function runGradlew(packages: Packages.Package[], testCommand: string, cwd
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
-    .option('-t, --type <string>', 'Type of unit test to run: local or instrumented')
+    .option('-t, --type <string>', 'Type of unit test to run: local, instrumented, or spotless')
     .option(
       '--packages <string>',
       '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'

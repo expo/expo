@@ -62,7 +62,12 @@ export class TokenResponse {
     state;
     idToken;
     issuedAt;
-    constructor(response) {
+    /**
+     * Contains the unprocessed token response. Use it to access properties which aren't part of RFC 6749.
+     * */
+    rawResponse;
+    constructor(response, rawResponse) {
+        this.rawResponse = rawResponse;
         this.accessToken = response.accessToken;
         this.tokenType = response.tokenType ?? 'bearer';
         this.expiresIn = response.expiresIn;
@@ -111,7 +116,7 @@ export class TokenResponse {
         return !(TokenResponse.isTokenFresh(this) || !this.refreshToken);
     }
 }
-class Request {
+export class Request {
     request;
     constructor(request) {
         this.request = request;
@@ -129,7 +134,7 @@ class Request {
 /**
  * A generic token request.
  */
-class TokenRequest extends Request {
+export class TokenRequest extends Request {
     grantType;
     clientId;
     clientSecret;
@@ -176,7 +181,7 @@ class TokenRequest extends Request {
             scope: response.scope,
             idToken: response.id_token,
             issuedAt: response.issued_at,
-        });
+        }, response);
     }
     getQueryBody() {
         const queryBody = {

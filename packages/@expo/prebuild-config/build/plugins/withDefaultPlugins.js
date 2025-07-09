@@ -43,6 +43,20 @@ function _withIosIcons() {
   };
   return data;
 }
+function _ReactNative77CompatPlugin() {
+  const data = require("./sdk52/ReactNative77CompatPlugin");
+  _ReactNative77CompatPlugin = function () {
+    return data;
+  };
+  return data;
+}
+function _ReactNative78CompatPlugin() {
+  const data = require("./sdk52/ReactNative78CompatPlugin");
+  _ReactNative78CompatPlugin = function () {
+    return data;
+  };
+  return data;
+}
 function _expoAdsAdmob() {
   const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
   _expoAdsAdmob = function () {
@@ -53,13 +67,6 @@ function _expoAdsAdmob() {
 function _expoAppleAuthentication() {
   const data = _interopRequireDefault(require("./unversioned/expo-apple-authentication"));
   _expoAppleAuthentication = function () {
-    return data;
-  };
-  return data;
-}
-function _expoBranch() {
-  const data = _interopRequireDefault(require("./unversioned/expo-branch/expo-branch"));
-  _expoBranch = function () {
     return data;
   };
   return data;
@@ -85,13 +92,6 @@ function _expoNavigationBar() {
   };
   return data;
 }
-function _expoNotifications() {
-  const data = _interopRequireDefault(require("./unversioned/expo-notifications/expo-notifications"));
-  _expoNotifications = function () {
-    return data;
-  };
-  return data;
-}
 function _expoSplashScreen() {
   const data = _interopRequireDefault(require("./unversioned/expo-splash-screen/expo-splash-screen"));
   _expoSplashScreen = function () {
@@ -113,6 +113,13 @@ function _expoUpdates() {
   };
   return data;
 }
+function _withEdgeToEdge() {
+  const data = _interopRequireDefault(require("./unversioned/react-native-edge-to-edge/withEdgeToEdge"));
+  _withEdgeToEdge = function () {
+    return data;
+  };
+  return data;
+}
 function _reactNativeMaps() {
   const data = _interopRequireDefault(require("./unversioned/react-native-maps"));
   _reactNativeMaps = function () {
@@ -120,7 +127,7 @@ function _reactNativeMaps() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * These are the versioned first-party plugins with some of the future third-party plugins mixed in for legacy support.
  */
@@ -139,13 +146,13 @@ const withIosExpoPlugins = (config, {
   config.ios.bundleIdentifier = bundleIdentifier;
   return (0, _configPlugins().withPlugins)(config, [[_configPlugins().IOSConfig.BundleIdentifier.withBundleIdentifier, {
     bundleIdentifier
-  }], _configPlugins().IOSConfig.Swift.withSwiftBridgingHeader, _configPlugins().IOSConfig.Swift.withNoopSwiftFile, _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps,
+  }], _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps, _configPlugins().IOSConfig.BuildProperties.withNewArchEnabledPodfileProps,
   // Entitlements
   _configPlugins().IOSConfig.Entitlements.withAssociatedDomains,
   // XcodeProject
-  _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales,
+  _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales, _configPlugins().IOSConfig.DevelopmentTeam.withDevelopmentTeam,
   // Dangerous
-  _withIosIcons().withIosIcons]);
+  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
 };
 
 /**
@@ -159,7 +166,7 @@ const withAndroidExpoPlugins = (config, props) => {
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
   // gradle.properties
-  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps,
+  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps, _configPlugins().AndroidConfig.BuildProperties.withNewArchEnabledGradleProps,
   // settings.gradle
   _configPlugins().AndroidConfig.Name.withNameSettingsGradle,
   // project build.gradle
@@ -167,16 +174,16 @@ const withAndroidExpoPlugins = (config, props) => {
   // app/build.gradle
   _configPlugins().AndroidConfig.GoogleServices.withApplyPlugin, _configPlugins().AndroidConfig.Package.withPackageGradle, _configPlugins().AndroidConfig.Version.withVersion,
   // AndroidManifest.xml
-  _configPlugins().AndroidConfig.Package.withPackageManifest, _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
+  _configPlugins().AndroidConfig.AllowBackup.withAllowBackup, _configPlugins().AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
   // Note: The withAndroidIntentFilters plugin must appear before the withScheme
   // plugin or withScheme will override the output of withAndroidIntentFilters.
   _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions,
   // strings.xml
-  _configPlugins().AndroidConfig.Name.withName,
+  _configPlugins().AndroidConfig.Name.withName, _configPlugins().AndroidConfig.Locales.withLocales,
   // Dangerous -- these plugins run in reverse order.
-  _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile,
+  _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid, _ReactNative78CompatPlugin().withSdk52ReactNative78CompatAndroid,
   // Modify colors.xml and styles.xml
-  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withAndroidIcons().withAndroidIcons,
+  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, config => (0, _withEdgeToEdge().default)(config, props), _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
   // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
   _configPlugins().AndroidConfig.Package.withPackageRefactor]);
@@ -184,13 +191,9 @@ const withAndroidExpoPlugins = (config, props) => {
 
 // Must keep in sync with `withVersionedExpoSDKPlugins`
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
-const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-branch', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
-const withVersionedExpoSDKPlugins = (config, {
-  expoUsername
-}) => {
-  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, [_expoUpdates().default, {
-    expoUsername
-  }], _expoBranch().default, _expoDocumentPicker().default,
+const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
+const withVersionedExpoSDKPlugins = config => {
+  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoUpdates().default, _expoDocumentPicker().default,
   // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
   _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default]);
@@ -205,7 +208,7 @@ function getLegacyExpoPlugins() {
 
 // Expo managed packages that require extra update.
 // These get applied automatically to create parity with expo build in eas build.
-const legacyExpoPlugins = ['expo-app-auth', 'expo-av', 'expo-background-fetch', 'expo-barcode-scanner', 'expo-brightness', 'expo-calendar', 'expo-camera', 'expo-cellular', 'expo-dev-menu', 'expo-dev-launcher', 'expo-dev-client', 'expo-image-picker', 'expo-file-system', 'expo-location', 'expo-media-library', 'expo-screen-orientation', 'expo-sensors', 'expo-task-manager', 'expo-local-authentication'];
+const legacyExpoPlugins = ['expo-app-auth', 'expo-av', 'expo-background-fetch', 'expo-brightness', 'expo-calendar', 'expo-camera', 'expo-cellular', 'expo-dev-menu', 'expo-dev-launcher', 'expo-dev-client', 'expo-image-picker', 'expo-file-system', 'expo-location', 'expo-media-library', 'expo-screen-orientation', 'expo-sensors', 'expo-task-manager', 'expo-local-authentication'];
 
 // Plugins that need to be automatically applied, but also get applied by expo-cli if the versioned plugin isn't available.
 // These are split up because the user doesn't need to be prompted to setup these packages.

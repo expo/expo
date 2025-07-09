@@ -1,14 +1,22 @@
 {
   "name": "expo-linking",
-  "version": "4.1.0",
+  "version": "7.1.5",
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "react-server": "./build/Linking.server.js",
+      "default": "./build/Linking.js"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -30,14 +38,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
-    "@types/qs": "^6.9.7",
-    "expo-constants": "~14.3.0",
-    "invariant": "^2.2.4",
-    "qs": "^6.11.0",
-    "url-parse": "^1.5.9"
+    "expo-constants": "~17.1.6",
+    "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^3.0.0"
+    "expo-module-scripts": "^4.1.7"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   },
   "jest": {
     "preset": "expo-module-scripts"

@@ -1,0 +1,7 @@
+/src/__generated__/
+/src/graphql/types.ts
+**/*.generated.ts
+/.expo
+/android
+/ios
+/modules

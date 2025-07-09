@@ -79,8 +79,13 @@ export class TokenResponse implements TokenResponseConfig {
   state?: string;
   idToken?: string;
   issuedAt: number;
+  /**
+   * Contains the unprocessed token response. Use it to access properties which aren't part of RFC 6749.
+   * */
+  rawResponse?: unknown;
 
-  constructor(response: TokenResponseConfig) {
+  constructor(response: TokenResponseConfig, rawResponse?: unknown) {
+    this.rawResponse = rawResponse;
     this.accessToken = response.accessToken;
     this.tokenType = response.tokenType ?? 'bearer';
     this.expiresIn = response.expiresIn;
@@ -137,7 +142,7 @@ export class TokenResponse implements TokenResponseConfig {
   }
 }
 
-class Request<T, B> {
+export class Request<T, B> {
   constructor(protected request: T) {}
 
   async performAsync(discovery: ServiceConfig.DiscoveryDocument): Promise<B> {
@@ -156,13 +161,19 @@ class Request<T, B> {
 /**
  * A generic token request.
  */
-class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenResponse> {
+export class TokenRequest<T extends TokenRequestConfig>
+  extends Request<T, TokenResponse>
+  implements TokenRequestConfig
+{
   readonly clientId: string;
   readonly clientSecret?: string;
   readonly scopes?: string[];
   readonly extraParams?: Record<string, string>;
 
-  constructor(request, public grantType: GrantType) {
+  constructor(
+    request: T,
+    public grantType: GrantType
+  ) {
     super(request);
     this.clientId = request.clientId;
     this.clientSecret = request.clientSecret;
@@ -205,15 +216,18 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
       throw new TokenError(response);
     }
 
-    return new TokenResponse({
-      accessToken: response.access_token,
-      tokenType: response.token_type,
-      expiresIn: response.expires_in,
-      refreshToken: response.refresh_token,
-      scope: response.scope,
-      idToken: response.id_token,
-      issuedAt: response.issued_at,
-    });
+    return new TokenResponse(
+      {
+        accessToken: response.access_token,
+        tokenType: response.token_type,
+        expiresIn: response.expires_in,
+        refreshToken: response.refresh_token,
+        scope: response.scope,
+        idToken: response.id_token,
+        issuedAt: response.issued_at,
+      },
+      response
+    );
   }
 
   getQueryBody() {

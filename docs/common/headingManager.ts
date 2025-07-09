@@ -1,15 +1,16 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 import * as Utilities from './utilities';
+import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 
 /**
  * These types directly correspond to MDAST node types
  */
 export enum HeadingType {
-  Text = 'text',
-  InlineCode = 'inlineCode',
+  TEXT = 'text',
+  INLINE_CODE = 'inlineCode',
+  CODE_FILE_PATH = 'codeFilePath',
 }
 
 /**
@@ -41,7 +42,8 @@ export type AdditionalProps = {
   sidebarDepth?: number;
   sidebarType?: HeadingType;
   tags?: string[];
-  style?: React.CSSProperties;
+  className?: string;
+  iconSize?: 'sm' | 'xs';
 };
 
 type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };
@@ -65,8 +67,8 @@ export type Heading = {
  * This class uses Slugger instance to generate and manage unique slugs
  */
 export class HeadingManager {
-  private slugger: GithubSlugger;
-  private _headings: Heading[];
+  private readonly slugger: GithubSlugger;
+  private readonly _headings: Heading[];
   private readonly _meta: Metadata;
   private readonly _maxNestingLevel: number;
 
@@ -91,7 +93,8 @@ export class HeadingManager {
     this._meta = meta;
     this._headings = [];
 
-    const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
+    const maxHeadingDepth =
+      (meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT) + (meta.packageName ? 2 : 0);
     this._maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
   }
 
@@ -119,7 +122,7 @@ export class HeadingManager {
     const realTitle = Utilities.toString(title);
     const meta = this.findMetaForTitle(realTitle);
     const level = levelOverride ?? nestingLevel ?? meta?.depth ?? BASE_HEADING_LEVEL;
-    const type = sidebarType || (this.isCode(title) ? HeadingType.InlineCode : HeadingType.Text);
+    const type = sidebarType ?? (this.isCode(title) ? HeadingType.INLINE_CODE : HeadingType.TEXT);
 
     const heading = {
       title: sidebarTitle ?? realTitle,
@@ -165,6 +168,6 @@ export class HeadingManager {
       return false;
     }
     const { name, originalType, mdxType } = title.props;
-    return [name, originalType, mdxType].some(it => it === HeadingType.InlineCode);
+    return [name, originalType, mdxType].includes(HeadingType.INLINE_CODE);
   }
 }

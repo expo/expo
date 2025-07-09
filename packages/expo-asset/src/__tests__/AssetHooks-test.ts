@@ -1,11 +1,11 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
 import { Asset } from '../Asset';
 import { useAssets } from '../AssetHooks';
 
 describe('useAssets', () => {
-  const ASSETS = 0;
-  const ERROR = 1;
+  const RESULT_ASSETS = 0;
+  const RESULT_ERRORS = 1;
 
   // note: these are fake module ids from `require()`
   const STUB_MODULES = [1337, 2337];
@@ -17,41 +17,63 @@ describe('useAssets', () => {
   const loadAsyncSpy = jest.spyOn(Asset, 'loadAsync').mockResolvedValue(STUB_ASSETS);
 
   it('loads assets when mounted', async () => {
-    const hook = renderHook(useAssets, { initialProps: STUB_MODULES });
+    const { result } = renderHook(useAssets, { initialProps: STUB_MODULES });
 
-    expect(hook.result.current[ASSETS]).toBeUndefined();
-    await hook.waitForNextUpdate();
-    expect(hook.result.current[ASSETS]).toBe(STUB_ASSETS);
+    // Ensure the hook returns undefined when no assets are loaded
+    expect(result.current[RESULT_ASSETS]).toBeUndefined();
+
+    // Ensure the hook returns the loaded assets once resolved
+    await waitFor(() => {
+      expect(result.current[RESULT_ASSETS]).toBe(STUB_ASSETS);
+    });
   });
 
   it('skips new asset list when rerendered', async () => {
-    const hook = renderHook(useAssets, { initialProps: STUB_MODULES });
-    await hook.waitForNextUpdate();
-    expect(loadAsyncSpy).toBeCalledWith(STUB_MODULES);
-    expect(hook.result.current[ASSETS]).toBe(STUB_ASSETS);
+    const { result, rerender } = renderHook(useAssets, { initialProps: STUB_MODULES });
 
-    const partialModules = STUB_MODULES.slice(1);
-    hook.rerender(partialModules);
-    expect(loadAsyncSpy).not.toBeCalledWith(partialModules);
-    expect(hook.result.current[ASSETS]).toBe(STUB_ASSETS);
+    // Wait for the assets to load
+    await waitFor(() => {
+      expect(result.current[RESULT_ASSETS]).toBe(STUB_ASSETS);
+    });
+
+    // Rerender the hook with new modules
+    rerender([9999]);
+
+    // Ensure the assets are not reloaded
+    expect(loadAsyncSpy).not.toHaveBeenCalledWith([9999]);
+    // Ensure the assets are still the same
+    await waitFor(() => {
+      expect(result.current[RESULT_ASSETS]).toBe(STUB_ASSETS);
+    });
   });
 
   it('keeps assets loaded when unmounted', async () => {
-    const hook = renderHook(useAssets, { initialProps: STUB_MODULES });
-    await hook.waitForNextUpdate();
-    expect(hook.result.current[ASSETS]).toBe(STUB_ASSETS);
+    const { result, unmount } = renderHook(useAssets, { initialProps: STUB_MODULES });
 
-    hook.unmount();
-    expect(hook.result.current[ASSETS]).toBe(STUB_ASSETS);
+    // Wait for the assets to load
+    await waitFor(() => {
+      expect(result.current[RESULT_ASSETS]).toBe(STUB_ASSETS);
+    });
+
+    // Unmount the hook
+    unmount();
+
+    // Ensure the assets are still the same
+    await waitFor(() => {
+      expect(result.current[RESULT_ASSETS]).toBe(STUB_ASSETS);
+    });
   });
 
   it('returns error when encountered', async () => {
+    // Mock a fake thrown error
     const error = new Error('test');
     loadAsyncSpy.mockRejectedValue(error);
 
-    const hook = renderHook(useAssets, { initialProps: STUB_MODULES });
-    expect(hook.result.current[ERROR]).toBeUndefined();
-    await hook.waitForNextUpdate();
-    expect(hook.result.current[ERROR]).toBe(error);
+    const { result } = renderHook(useAssets, { initialProps: STUB_MODULES });
+
+    // Ensure the hook returns the error
+    await waitFor(() => {
+      expect(result.current[RESULT_ERRORS]).toBe(error);
+    });
   });
 });

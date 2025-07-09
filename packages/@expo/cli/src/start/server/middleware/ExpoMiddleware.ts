@@ -1,17 +1,20 @@
 import { parse } from 'url';
 
-import * as Log from '../../../log';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import * as Log from '../../../log';
 
 /** Base middleware creator for Expo dev servers. */
 export abstract class ExpoMiddleware {
-  constructor(protected projectRoot: string, protected supportedPaths: string[]) {}
+  constructor(
+    protected projectRoot: string,
+    protected supportedPaths: string[]
+  ) {}
 
   /**
    * Returns true when the middleware should handle the incoming server request.
    * Exposed for testing.
    */
-  _shouldHandleRequest(req: ServerRequest): boolean {
+  public shouldHandleRequest(req: ServerRequest): boolean {
     if (!req.url) {
       return false;
     }
@@ -55,7 +58,7 @@ export abstract class ExpoMiddleware {
       }
     };
     const middleware = async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!this._shouldHandleRequest(req)) {
+      if (!this.shouldHandleRequest(req)) {
         return next();
       }
       return internalMiddleware(req, res, next);

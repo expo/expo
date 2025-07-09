@@ -1,0 +1,21 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.9.3'
+
+android {
+  namespace "expo.modules.networkaddons"
+  defaultConfig {
+    versionCode 1
+    versionName "0.9.3"
+    consumerProguardFiles("proguard-rules.pro")
+  }
+}
+
+dependencies {
+  implementation("com.squareup.okhttp3:okhttp:4.9.2")
+  implementation("com.squareup.okhttp3:okhttp-brotli:4.9.2")
+}

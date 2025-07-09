@@ -1,35 +1,40 @@
 ---
 title: AV
+description: A universal library that provides separate APIs for Audio and Video playback.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 iconUrl: '/static/images/packages/expo-av.png'
+platforms: ['android', 'ios', 'tvos', 'web']
+isDeprecated: true
 ---
 
-import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
-import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import {
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
-import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+} from '~/ui/components/ConfigSection';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
-The [`Audio.Sound`](audio.mdx) objects and [`Video`](video.mdx) components share a unified imperative API for media playback.
+> **warning** **Deprecated:** The `Video` and `Audio` APIs from `expo-av` have now been deprecated and replaced by improved versions in [`expo-video`](video.mdx) and [`expo-audio`](audio.mdx). We recommend using those libraries instead. `expo-av` is not receiving patches and will be removed in SDK 54.
+
+The [`Audio.Sound`](audio.mdx) objects and [`Video`](video-av.mdx) components share a unified imperative API for media playback.
 
 Note that for `Video`, all of the operations are also available via props on the component. However, we recommend using this imperative playback API for most applications where finer control over the state of the video playback is needed.
 
-Try the [playlist example app](http://expo.dev/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the playback API for both `Audio.Sound` and `Video`.
+See the [playlist example app](https://github.com/expo/playlist-example) for an example on the playback API for both `Audio.Sound` and `Video`.
 
-<PlatformsSection android emulator ios simulator web />
+> **Info** Audio recording APIs are not available on tvOS (Apple TV).
 
 ## Installation
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration in app config
 
-You can configure `expo-av` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-av` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigPluginExample>
 
@@ -64,17 +69,30 @@ You can configure `expo-av` using its built-in [config plugin](/guides/config-pl
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-av` repository](https://github.com/expo/expo/tree/main/packages/expo-av#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.RECORD_AUDIO` permission to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  ```
+
+- For iOS, add `NSMicrophoneUsageDescription` to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+  ```
 
 </ConfigReactNative>
 
 ## Usage
 
-On this page, we reference operations on `playbackObject`s. Here is an example of obtaining access to the reference for both sound and video:
+On this page, we reference operations on `playbackObject`. Here is an example of obtaining access to the reference for both sound and video:
 
 ### Example: `Audio.Sound`
 
-```javascript
+```js
 await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
 
 const playbackObject = new Audio.Sound();
@@ -83,40 +101,35 @@ const { sound: playbackObject } = await Audio.Sound.createAsync(
   { uri: 'http://foo/bar.mp3' },
   { shouldPlay: true }
 );
-...
 ```
 
-See the [audio documentation](audio.mdx) for further information on `Audio.Sound.createAsync()`.
+See the [audio documentation](audio-av.mdx) for further information on `Audio.Sound.createAsync()`.
 
 ### Example: `Video`
 
-```javascript
-...
+```js
+/* @hide ... */ /* @end */
 _handleVideoRef = component => {
   const playbackObject = component;
   ...
 }
-
-...
+/* @hide ... */ /* @end */
 
 render() {
   return (
-    ...
       <Video
         ref={this._handleVideoRef}
-        ...
       />
-    ...
+      /* @hide ... */ /* @end */
   )
 }
-...
 ```
 
-See the [video documentation](video.mdx) for further information.
+See the [video documentation](video-av.mdx) for further information.
 
 ### Example: `setOnPlaybackStatusUpdate()`
 
-```javascript
+```js
 _onPlaybackStatusUpdate = playbackStatus => {
   if (!playbackStatus.isLoaded) {
     // Update your UI for the unloaded state
@@ -141,22 +154,21 @@ _onPlaybackStatusUpdate = playbackStatus => {
       // The player has just finished playing and will stop. Maybe you want to play something else?
     }
 
-    ... // etc
+    /* @hide ... */ /* @end */
   }
 };
 
-... // Load the playbackObject and obtain the reference.
+// Load the playbackObject and obtain the reference.
 playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
-...
 ```
 
 ### Example: Loop media exactly 20 times
 
-```javascript
+```js
 const N = 20;
-...
+/* @hide ... */ /* @end */
 
-_onPlaybackStatusUpdate = (playbackStatus) => {
+_onPlaybackStatusUpdate = playbackStatus => {
   if (playbackStatus.didJustFinish) {
     if (this.state.numberOfLoops == N - 1) {
       playbackObject.setIsLooping(false);
@@ -165,15 +177,14 @@ _onPlaybackStatusUpdate = (playbackStatus) => {
   }
 };
 
-...
+/* @hide ... */ /* @end */
 this.setState({ numberOfLoops: 0 });
-... // Load the playbackObject and obtain the reference.
+// Load the playbackObject and obtain the reference.
 playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 playbackObject.setIsLooping(true);
-...
 ```
 
-## What is seek tolerance and why would I want to use it [iOS only]
+## What is seek tolerance and why would I want to use it&ensp;<PlatformTags platforms={['ios']} />
 
 When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
 
@@ -191,7 +202,7 @@ import { Audio, Video } from 'expo-av';
 
 ### Android
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
 
 <AndroidPermissions permissions={['RECORD_AUDIO']} />
 

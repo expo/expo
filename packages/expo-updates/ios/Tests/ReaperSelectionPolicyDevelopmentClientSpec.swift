@@ -7,7 +7,7 @@ import ExpoModulesTestCore
 import EXManifests
 
 class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     var update1: Update!
     var update2: Update!
     var update3: Update!
@@ -22,8 +22,10 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       // test updates with different scopes to ensure this policy ignores scopes
       update1 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1"
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ]),
         database: database,
         updateId: UUID(),
@@ -37,8 +39,10 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update2 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope2"
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope2",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ]),
         database: database,
         updateId: UUID(),
@@ -52,8 +56,10 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update3 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope3"
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope3",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ]),
         database: database,
         updateId: UUID(),
@@ -67,8 +73,10 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update4 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope4"
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope4",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ]),
         database: database,
         updateId: UUID(),
@@ -82,8 +90,10 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       )
       update5 = Update(
         manifest: ManifestFactory.manifest(forManifestJSON: [:]),
-        config: UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope5"
+        config: try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope5",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
         ]),
         database: database,
         updateId: UUID(),

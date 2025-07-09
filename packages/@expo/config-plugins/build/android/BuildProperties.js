@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.createBuildGradlePropsConfigPlugin = createBuildGradlePropsConfigPlugin;
 exports.updateAndroidBuildPropertiesFromConfig = updateAndroidBuildPropertiesFromConfig;
 exports.updateAndroidBuildProperty = updateAndroidBuildProperty;
-exports.withJsEngineGradleProps = void 0;
+exports.withNewArchEnabledGradleProps = exports.withJsEngineGradleProps = void 0;
 function _androidPlugins() {
   const data = require("../plugins/android-plugins");
   _androidPlugins = function () {
@@ -31,7 +31,7 @@ function _androidPlugins() {
  */
 function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
   const withUnknown = (config, sourceConfig) => (0, _androidPlugins().withGradleProperties)(config, config => {
-    config.modResults = updateAndroidBuildPropertiesFromConfig(sourceConfig !== null && sourceConfig !== void 0 ? sourceConfig : config, config.modResults, configToPropertyRules);
+    config.modResults = updateAndroidBuildPropertiesFromConfig(sourceConfig ?? config, config.modResults, configToPropertyRules);
     return config;
   });
   if (name) {
@@ -45,14 +45,18 @@ function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
 /**
  * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
  */
-const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
-  propName: 'expo.jsEngine',
-  propValueGetter: config => {
-    var _ref, _config$android$jsEng, _config$android;
-    return (_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'hermes';
-  }
+const withJsEngineGradleProps = exports.withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
+  propName: 'hermesEnabled',
+  propValueGetter: config => ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString()
 }], 'withJsEngineGradleProps');
-exports.withJsEngineGradleProps = withJsEngineGradleProps;
+
+/**
+ * A config-plugin to update `android/gradle.properties` from the `newArchEnabled` in expo config
+ */
+const withNewArchEnabledGradleProps = exports.withNewArchEnabledGradleProps = createBuildGradlePropsConfigPlugin([{
+  propName: 'newArchEnabled',
+  propValueGetter: config => (config.android?.newArchEnabled ?? config.newArchEnabled)?.toString()
+}], 'withNewArchEnabledGradleProps');
 function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {
     const value = configToProperty.propValueGetter(config);
@@ -62,6 +66,7 @@ function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, config
 }
 function updateAndroidBuildProperty(gradleProperties, name, value, options) {
   const oldPropIndex = gradleProperties.findIndex(prop => prop.type === 'property' && prop.key === name);
+  const oldProp = oldPropIndex >= 0 ? gradleProperties[oldPropIndex] : null;
   if (value) {
     // found the matched value, add or merge new property
     const newProp = {
@@ -69,13 +74,27 @@ function updateAndroidBuildProperty(gradleProperties, name, value, options) {
       key: name,
       value
     };
-    if (oldPropIndex >= 0) {
-      gradleProperties[oldPropIndex] = newProp;
-    } else {
-      gradleProperties.push(newProp);
+    if (oldProp && oldProp.type === 'property') {
+      try {
+        const prevValue = JSON.parse(oldProp.value);
+        const newValue = JSON.parse(value);
+        if (Array.isArray(prevValue) && Array.isArray(newValue)) {
+          const prevArrayWithStringifiedValues = prevValue.map(v => JSON.stringify(v));
+          const newArrayWithStringifiedValues = newValue.map(v => JSON.stringify(v));
+          const mergedValues = [...new Set([...prevArrayWithStringifiedValues, ...newArrayWithStringifiedValues])].map(v => JSON.parse(v));
+          oldProp.value = JSON.stringify(mergedValues);
+          return gradleProperties;
+        }
+      } catch {}
+      oldProp.value = value;
+      return gradleProperties;
     }
-  } else if (options !== null && options !== void 0 && options.removePropWhenValueIsNull && oldPropIndex >= 0) {
+    gradleProperties.push(newProp);
+    return gradleProperties;
+  }
+  if (options?.removePropWhenValueIsNull && oldPropIndex >= 0) {
     gradleProperties.splice(oldPropIndex, 1);
+    return gradleProperties;
   }
   return gradleProperties;
 }

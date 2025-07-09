@@ -2,12 +2,16 @@ import {
   AndroidConfig,
   ConfigPlugin,
   History,
+  WarningAggregator,
+  withAndroidManifest,
+  withAndroidStyles,
   withDangerousMod,
-  withGradleProperties,
+  withSettingsGradle,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
+import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
 import type { PluginConfigType } from './pluginConfig';
 
@@ -17,7 +21,17 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
   [
     {
       propName: 'newArchEnabled',
-      propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+      propValueGetter: (config) => {
+        if (config.android?.newArchEnabled !== undefined) {
+          WarningAggregator.addWarningAndroid(
+            'withAndroidBuildProperties',
+            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
+            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
+          );
+        }
+
+        return config.android?.newArchEnabled?.toString();
+      },
     },
     {
       propName: 'android.minSdkVersion',
@@ -64,47 +78,48 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
     },
     {
+      propName: 'android.enablePngCrunchInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enablePngCrunchInReleaseBuilds?.toString(),
+    },
+    {
       propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
-      propValueGetter: (config) => config.android?.unstable_networkInspector?.toString(),
+      propValueGetter: (config) => (config.android?.networkInspector ?? true).toString(),
+    },
+    {
+      propName: 'expo.useLegacyPackaging',
+      propValueGetter: (config) => config.android?.useLegacyPackaging?.toString(),
+    },
+    {
+      propName: 'android.extraMavenRepos',
+      propValueGetter: (config) => {
+        const extraMavenRepos = (config.android?.extraMavenRepos ?? []).map((item) => {
+          if (typeof item === 'string') {
+            return { url: item };
+          }
+          return item;
+        });
+        return extraMavenRepos.length > 0 ? JSON.stringify(extraMavenRepos) : undefined;
+      },
+    },
+    {
+      propName: 'android.useDayNightTheme',
+      propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
+    },
+    {
+      propName: 'android.enableBundleCompression',
+      propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
+    },
+    {
+      propName: 'reactNativeArchitectures',
+      propValueGetter: (config) => config.android?.buildArchs?.join(','),
+    },
+    {
+      propName: 'exclusiveEnterpriseRepository',
+      propValueGetter: (config) => config.android?.exclusiveMavenMirror,
     },
   ],
   'withAndroidBuildProperties'
 );
-
-export const withAndroidFlipper: ConfigPlugin<PluginConfigType> = (config, props) => {
-  const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
-  const FLIPPER_FALLBACK = '0.125.0';
-
-  // when not set, make no changes
-  if (props.android?.flipper === undefined) {
-    return config;
-  }
-
-  return withGradleProperties(config, (c) => {
-    // check for Flipper version in package. If set, use that
-    let existing: string | undefined;
-
-    const found = c.modResults.find(
-      (item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY
-    );
-    if (found && found.type === 'property') {
-      existing = found.value;
-    }
-
-    // strip key and re-add based on setting
-    c.modResults = c.modResults.filter(
-      (item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY)
-    );
-
-    c.modResults.push({
-      type: 'property',
-      key: ANDROID_FLIPPER_KEY,
-      value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK) as string,
-    });
-
-    return c;
-  });
-};
 
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
@@ -205,5 +220,130 @@ export function updateAndroidProguardRules(
   if (newProguardRules !== '') {
     newContents = appendContents(newContents, newProguardRules, options);
   }
+  return newContents;
+}
+
+export const withAndroidCleartextTraffic: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.usesCleartextTraffic == null) {
+      return config;
+    }
+
+    config.modResults = setUsesCleartextTraffic(
+      config.modResults,
+      props.android?.usesCleartextTraffic
+    );
+
+    return config;
+  });
+};
+
+function setUsesCleartextTraffic(
+  androidManifest: AndroidConfig.Manifest.AndroidManifest,
+  value: boolean
+) {
+  const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(androidManifest);
+
+  if (mainApplication?.$) {
+    mainApplication.$['android:usesCleartextTraffic'] = String(
+      value
+    ) as AndroidConfig.Manifest.StringBoolean;
+  }
+
+  return androidManifest;
+}
+
+export const withAndroidQueries: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidManifest(config, (config) => {
+    if (props.android?.manifestQueries == null) {
+      return config;
+    }
+
+    const { manifestQueries } = props.android;
+
+    // Default template adds a single intent to the `queries` tag
+    const defaultIntents =
+      config.modResults.manifest.queries.map((q) => q.intent ?? []).flat() ?? [];
+    const defaultPackages =
+      config.modResults.manifest.queries.map((q) => q.package ?? []).flat() ?? [];
+    const defaultProviders =
+      config.modResults.manifest.queries.map((q) => q.provider ?? []).flat() ?? [];
+
+    const newQueries: AndroidConfig.Manifest.ManifestQuery = {
+      package: [...defaultPackages, ...renderQueryPackages(manifestQueries.package)],
+      intent: [...defaultIntents, ...renderQueryIntents(manifestQueries.intent)],
+      provider: [...defaultProviders, ...renderQueryProviders(manifestQueries.provider)],
+    };
+
+    config.modResults.manifest.queries = [newQueries];
+    return config;
+  });
+};
+
+export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withAndroidStyles(config, (config) => {
+    if (!props.android?.useDayNightTheme) {
+      return config;
+    }
+
+    const { style = [] } = config.modResults.resources;
+    if (!style.length) {
+      return config;
+    }
+
+    // Replace `AppTheme` and remove `ResetEditText`
+    const excludedStyles = ['AppTheme', 'ResetEditText'];
+    // Remove the hardcoded colors.
+    const excludedAttributes = ['android:textColor', 'android:editTextStyle'];
+
+    config.modResults.resources.style = [
+      {
+        $: {
+          name: 'AppTheme',
+          parent: 'Theme.AppCompat.DayNight.NoActionBar',
+        },
+        item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
+      },
+      ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
+    ];
+
+    return config;
+  });
+};
+
+export const withAndroidSettingsGradle: ConfigPlugin<PluginConfigType> = (config, props) => {
+  return withSettingsGradle(config, (config) => {
+    config.modResults.contents = updateAndroidSettingsGradle({
+      contents: config.modResults.contents,
+      buildFromSource: props.android?.buildFromSource,
+    });
+    return config;
+  });
+};
+
+export function updateAndroidSettingsGradle({
+  contents,
+  buildFromSource,
+}: {
+  contents: string;
+  buildFromSource?: boolean;
+}) {
+  let newContents = contents;
+  if (buildFromSource === true) {
+    const addCodeBlock = [
+      '', // new line
+      'includeBuild(expoAutolinking.reactNative) {',
+      '  dependencySubstitution {',
+      '    substitute(module("com.facebook.react:react-android")).using(project(":packages:react-native:ReactAndroid"))',
+      '    substitute(module("com.facebook.react:react-native")).using(project(":packages:react-native:ReactAndroid"))',
+      '    substitute(module("com.facebook.react:hermes-android")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
+      '    substitute(module("com.facebook.react:hermes-engine")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
+      '  }',
+      '}',
+      '', // new line
+    ];
+    newContents += addCodeBlock.join('\n');
+  }
+
   return newContents;
 }

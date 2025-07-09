@@ -1,67 +1,30 @@
-import { Platform } from 'expo-modules-core';
 import invariant from 'invariant';
 
-import { NativeURLListener, URLListener } from './Linking.types';
-
-const EventTypes = ['url'];
-
-const listeners: { listener: URLListener; nativeListener: NativeURLListener }[] = [];
+import { URLListener } from './Linking.types';
 
 export default {
-  addEventListener(type: 'url', listener: URLListener): { remove(): void } {
+  addListener(eventName: 'onURLReceived' | string, listener: URLListener): { remove(): void } {
+    invariant(
+      eventName === 'onURLReceived',
+      `Linking.addListener(): ${eventName} is not a valid event`
+    );
     // Do nothing in Node.js environments
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined') {
       return { remove() {} };
     }
 
-    invariant(
-      EventTypes.indexOf(type) !== -1,
-      `Linking.addEventListener(): ${type} is not a valid event`
-    );
-    const nativeListener: NativeURLListener = (nativeEvent) =>
+    const nativeListener = (nativeEvent: MessageEvent) =>
       listener({ url: window.location.href, nativeEvent });
-    listeners.push({ listener, nativeListener });
     window.addEventListener('message', nativeListener, false);
     return {
       remove: () => {
-        this.removeEventListener(type, listener);
+        window.removeEventListener('message', nativeListener);
       },
     };
   },
 
-  removeEventListener(type: 'url', listener: URLListener): void {
-    // Do nothing in Node.js environments
-    if (!Platform.isDOMAvailable) {
-      return;
-    }
-    invariant(
-      EventTypes.indexOf(type) !== -1,
-      `Linking.removeEventListener(): ${type} is not a valid event.`
-    );
-    const listenerIndex = listeners.findIndex((pair) => pair.listener === listener);
-    invariant(
-      listenerIndex !== -1,
-      'Linking.removeEventListener(): cannot remove an unregistered event listener.'
-    );
-    const nativeListener = listeners[listenerIndex].nativeListener;
-    window.removeEventListener('message', nativeListener, false);
-    listeners.splice(listenerIndex, 1);
-  },
-
-  async canOpenURL(url: string): Promise<boolean> {
-    // In reality this should be able to return false for links like `chrome://` on chrome.
-    return true;
-  },
-
-  async getInitialURL(): Promise<string> {
-    if (!Platform.isDOMAvailable) return '';
+  getLinkingURL(): string {
+    if (typeof window === 'undefined') return '';
     return window.location.href;
-  },
-
-  async openURL(url: string): Promise<void> {
-    if (Platform.isDOMAvailable) {
-      // @ts-ignore
-      window.location = new URL(url, window.location).toString();
-    }
   },
 };

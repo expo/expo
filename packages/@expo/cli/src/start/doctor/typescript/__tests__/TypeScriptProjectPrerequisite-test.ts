@@ -64,4 +64,16 @@ describe('_getSetupRequirements', () => {
     const prerequisite = new TypeScriptProjectPrerequisite('/');
     expect(await prerequisite._getSetupRequirements()).toStrictEqual({ isBootstrapping: false });
   });
+
+  it(`returns null when glob times out`, async () => {
+    // Fake a glob that hit the timeout of 5s
+    jest.spyOn(AbortSignal, 'timeout').mockImplementationOnce(() => {
+      const controller = new AbortController();
+      controller.abort(new DOMException('Fake test timeout', 'TimeoutError'));
+      return controller.signal;
+    });
+
+    const prerequisite = new TypeScriptProjectPrerequisite('/');
+    expect(await prerequisite._getSetupRequirements()).toBe(null);
+  });
 });

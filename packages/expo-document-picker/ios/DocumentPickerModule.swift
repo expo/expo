@@ -1,6 +1,6 @@
 import ExpoModulesCore
-import UIKit
 import MobileCoreServices
+import UIKit
 
 struct PickingContext {
   let promise: Promise
@@ -49,7 +49,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
 
   func didPickDocumentsAt(urls: [URL]) {
     guard let options = self.pickingContext?.options,
-    let promise = self.pickingContext?.promise else {
+      let promise = self.pickingContext?.promise else {
       log.error("Picking context has been lost.")
       return
     }
@@ -101,40 +101,49 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       return 0
     }
 
-    let folderSize = contents.reduce(0) { currentSize, file in
+    return contents.reduce(0) { currentSize, file in
       let fileSize = getFileSize(path: path.appendingPathComponent(file)) ?? 0
       return currentSize + fileSize
     }
-
-    return folderSize
   }
 
   private func readDocumentDetails(documentUrl: URL, copy: Bool) throws -> DocumentInfo {
-    let pathExtension = documentUrl.pathExtension
     var newUrl = documentUrl
 
     guard let fileSystem = self.appContext?.fileSystem else {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
-    guard let fileSize = try? getFileSize(path: documentUrl) else {
+    guard let fileSize = getFileSize(path: documentUrl) else {
       throw InvalidFileException()
     }
 
     if copy {
-      let directory = fileSystem.cachesDirectory.appending("DocumentPicker")
-      let path = fileSystem.generatePath(inDirectory: directory, withExtension: pathExtension)
+      let cacheDirURL = URL(fileURLWithPath: fileSystem.cachesDirectory)
+      let directory = cacheDirURL.appendingPathComponent("DocumentPicker", isDirectory: true).path
+      let fileExtension = "." + documentUrl.pathExtension
+      let path = fileSystem.generatePath(inDirectory: directory, withExtension: fileExtension)
       newUrl = URL(fileURLWithPath: path)
+
       try FileManager.default.copyItem(at: documentUrl, to: newUrl)
     }
 
-    let mimeType = self.getMimeType(from: pathExtension)
+    let mimeType = self.getMimeType(from: documentUrl.pathExtension) ?? "application/octet-stream"
+
+    // Get last modified date or use current date if not available.
+    // This follows the Web API spec.
+    // https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified
+    let lastModified = try? documentUrl.resourceValues(forKeys: [.contentModificationDateKey])
+      .contentModificationDate?.timeIntervalSince1970
+    // Convert to milliseconds and ensure integer value to match the Web API spec.
+    let lastModifiedMs = Int64((lastModified ?? Date().timeIntervalSince1970) * 1000)
 
     return DocumentInfo(
       uri: newUrl.absoluteString,
       name: documentUrl.lastPathComponent,
       size: fileSize,
-      mimeType: mimeType
+      mimeType: mimeType,
+      lastModified: lastModifiedMs
     )
   }
 
@@ -154,15 +163,61 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
   }
 
+  @available(iOS 14.0, *)
+  private func toUTType(mimeType: String) -> UTType? {
+    switch mimeType {
+    case "*/*":
+      return UTType.item
+    case "image/*":
+      return UTType.image
+    case "video/*":
+      return UTType.movie
+    case "audio/*":
+      return UTType.audio
+    case "text/*":
+      return UTType.text
+    default:
+      return UTType(mimeType: mimeType)
+    }
+  }
+
+  private func toUTI(mimeType: String) -> String {
+    var uti: CFString
+
+    switch mimeType {
+    case "*/*":
+      uti = kUTTypeItem
+    case "image/*":
+      uti = kUTTypeImage
+    case "video/*":
+      uti = kUTTypeVideo
+    case "audio/*":
+      uti = kUTTypeAudio
+    case "text/*":
+      uti = kUTTypeText
+    default:
+      if let ref = UTTypeCreatePreferredIdentifierForTag(
+        kUTTagClassMIMEType,
+        mimeType as CFString,
+        nil
+      )?.takeRetainedValue() {
+        uti = ref
+      } else {
+        uti = kUTTypeItem
+      }
+    }
+    return uti as String
+  }
+
   private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
     if #available(iOS 14.0, *) {
-      let utTypes = options.type.compactMap { $0.toUTType() }
+      let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
       return UIDocumentPickerViewController(
         forOpeningContentTypes: utTypes,
         asCopy: true
       )
     } else {
-      let utiTypes = options.type.map { $0.toUTI() }
+      let utiTypes = options.type.map { toUTI(mimeType: $0) }
       return UIDocumentPickerViewController(
         documentTypes: utiTypes,
         in: .import

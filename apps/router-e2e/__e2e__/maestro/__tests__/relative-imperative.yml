@@ -1,0 +1,24 @@
+appId: host.exp.Exponent
+name: Relative link
+---
+- stopApp: host.exp.Exponent
+- openLink:
+    link: ${MAESTRO_APP_URL}/(relative-link)/apple
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/apple'
+- tapOn:
+    id: 'e2e-goto-banana'
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/banana'
+- tapOn: # Pressing again doesn't change
+    id: 'e2e-goto-banana'
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/banana'
+- tapOn:
+    id: 'e2e-goto-banana-relative-directory'
+- assertVisible:
+    id: 'e2e-pathname'
+    text: '/banana/banana'

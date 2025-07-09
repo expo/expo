@@ -1,7 +1,8 @@
 /* eslint-env jest */
 import fs from 'fs/promises';
 
-import { execute, getLoadedModulesAsync, projectRoot } from './utils';
+import { getLoadedModulesAsync, projectRoot } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -22,12 +23,6 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/run/android').expoRunAndroid`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/run/android/index.js',
     '@expo/cli/build/src/utils/args.js',
@@ -36,7 +31,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo run:android --help`', async () => {
-  const results = await execute('run:android', '--help');
+  const results = await executeExpoAsync(projectRoot, ['run:android', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Description
@@ -49,7 +44,9 @@ it('runs `npx expo run:android --help`', async () => {
         --no-build-cache       Clear the native build cache
         --no-install           Skip installing dependencies
         --no-bundler           Skip starting the bundler
-        --variant <name>       Build variant. Default: debug
+        --app-id <appId>       Custom Android application ID to launch.
+        --variant <name>       Build variant or product flavor and build variant. Default: debug
+        --binary <path>        Path to existing .apk or .aab to install.
         -d, --device [device]  Device name to run the app on
         -p, --port <port>      Port to start the dev server on. Default: 8081
         -h, --help             Output usage information

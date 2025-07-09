@@ -1,6 +1,8 @@
 {
-  "name": "expo-media-library",
-  "platforms": ["ios", "android"],
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["MediaLibraryModule"]
+  },
   "android": {
     "modules": ["expo.modules.medialibrary.MediaLibraryModule"]
   }

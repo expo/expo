@@ -1,10 +1,11 @@
 import JsonFile from '@expo/json-file';
+import spawnAsync, { SpawnOptions } from '@expo/spawn-async';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
-import { findYarnOrNpmWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeWorkspaces';
-import { createPendingSpawnAsync } from '../utils/spawn';
 import { BasePackageManager } from './BasePackageManager';
+import { resolveWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeManagers';
+import { createPendingSpawnAsync } from '../utils/spawn';
 
 export class NpmPackageManager extends BasePackageManager {
   readonly name = 'npm';
@@ -12,7 +13,7 @@ export class NpmPackageManager extends BasePackageManager {
   readonly lockFile = NPM_LOCK_FILE;
 
   workspaceRoot() {
-    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    const root = resolveWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
     if (root) {
       return new NpmPackageManager({
         ...this.options,
@@ -82,6 +83,11 @@ export class NpmPackageManager extends BasePackageManager {
     return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
   }
 
+  runBinAsync(command: string[], options: SpawnOptions = {}) {
+    this.log?.(`> npx ${command.join(' ')}`);
+    return spawnAsync('npx', command, { ...this.options, ...options });
+  }
+
   /**
    * Parse all package specifications from the names or flag list.
    * The result from this method can be used for `.updatePackageFileAsync`.
@@ -105,7 +111,8 @@ export class NpmPackageManager extends BasePackageManager {
       .forEach((spec) => {
         // When using a dist-tag version of a library, we need to consider it as "unversioned".
         // Doing so will install that version with `npm install --save(-dev)`, and resolve the dist-tag properly.
-        if (spec && spec.rawSpec && spec.type !== 'tag') {
+        const hasExactSpec = !!spec && spec.rawSpec !== '' && spec.rawSpec !== '*';
+        if (spec && hasExactSpec && spec.type !== 'tag') {
           result.versioned.push(spec);
         } else if (spec) {
           result.unversioned.push(spec);
@@ -129,9 +136,8 @@ export class NpmPackageManager extends BasePackageManager {
     }
 
     const pkgPath = path.join(this.options.cwd?.toString() || '.', 'package.json');
-    const pkg = await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(
-      pkgPath
-    );
+    const pkg =
+      await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(pkgPath);
 
     packageSpecs.forEach((spec) => {
       pkg[packageType] = pkg[packageType] || {};

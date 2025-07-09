@@ -1,8 +1,8 @@
-import upstreamTransformer, { JsTransformOptions } from 'metro-transform-worker';
-
+import * as upstreamTransformer from '../metro-transform-worker';
+import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
 
-jest.mock('metro-transform-worker', () => ({
+jest.mock('../metro-transform-worker', () => ({
   transform: jest.fn(),
 }));
 
@@ -18,13 +18,12 @@ const doTransformForOutput = async (
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
     dependencies: [],
     output: [
-      {
-        data: {},
-      },
+      // @ts-expect-error
+      {},
     ],
   });
   const output = await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toBeCalledTimes(1);
+  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
   return {
     input: jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8'),
     output,
@@ -37,7 +36,7 @@ const doTransformForInput = async (
   options: Partial<JsTransformOptions>
 ): Promise<string> => {
   await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toBeCalledTimes(1);
+  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
   return jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8');
 };
 const doTransform = async (filename: string, src: string, options: Partial<JsTransformOptions>) => {
@@ -84,6 +83,47 @@ it(`transforms a global CSS file in dev for native`, async () => {
   ).toMatchInlineSnapshot(`""`);
 });
 
+describe('Global CSS', () => {
+  it(`automatically strips redundant vendor prefixes`, async () => {
+    const fixture = `
+      .button {
+        -webkit-border-radius: 10px; /* Chrome, Safari, Edge (WebKit) */
+        -moz-border-radius: 10px;    /* Firefox */
+        -ms-border-radius: 10px;     /* Internet Explorer */
+        border-radius: 10px;         /* Standard, unprefixed property */
+      }
+      `;
+
+    const css = (
+      await doTransformForOutput('acme.css', fixture, {
+        dev: true,
+        minify: true,
+        platform: 'web',
+      })
+    ).output.output[0].data.css.code;
+
+    expect(css).not.toMatch(/-webkit-transition/);
+    expect(css).toEqual('.button{-ms-border-radius:10px;border-radius:10px}');
+  });
+  it(`automatically injects vendor prefixes`, async () => {
+    const fixture = `
+      .button {
+         background: image-set("image1.jpg" 1x, "image2.jpg" 2x);
+      }
+      `;
+
+    const css = (
+      await doTransformForOutput('acme.css', fixture, {
+        dev: true,
+        minify: true,
+        platform: 'web',
+      })
+    ).output.output[0].data.css.code;
+
+    expect(css).toMatch(/-webkit-image-set/);
+  });
+});
+
 describe('CSS Modules', () => {
   describe('ios', () => {
     it(`transforms for dev, minified`, async () => {
@@ -93,7 +133,7 @@ describe('CSS Modules', () => {
           minify: true,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
@@ -102,7 +142,7 @@ describe('CSS Modules', () => {
           minify: false,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, minified`, async () => {
@@ -112,7 +152,7 @@ describe('CSS Modules', () => {
           minify: true,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
 
     it(`transforms for prod, not minified`, async () => {
@@ -122,7 +162,7 @@ describe('CSS Modules', () => {
           minify: false,
           platform: 'ios',
         })
-      ).toMatchInlineSnapshot(`"module.exports={};"`);
+      ).toMatchInlineSnapshot(`"module.exports={ unstable_styles: {} };"`);
     });
   });
   describe('web', () => {
@@ -134,6 +174,28 @@ describe('CSS Modules', () => {
           platform: 'web',
         })
       ).toMatchSnapshot();
+    });
+
+    it(`automatically strips redundant vendor prefixes`, async () => {
+      const fixture = `
+      .button {
+        -webkit-border-radius: 10px; /* Chrome, Safari, Edge (WebKit) */
+        -moz-border-radius: 10px;    /* Firefox */
+        -ms-border-radius: 10px;     /* Internet Explorer */
+        border-radius: 10px;         /* Standard, unprefixed property */
+      }
+      `;
+
+      const css = (
+        await doTransformForOutput('acme.module.css', fixture, {
+          dev: true,
+          minify: true,
+          platform: 'web',
+        })
+      ).output.output[0].data.css.code;
+
+      expect(css).not.toMatch(/-webkit-transition/);
+      expect(css).toEqual('._R_BGG_button{-ms-border-radius:10px;border-radius:10px}');
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
@@ -169,9 +231,11 @@ describe('CSS Modules', () => {
               // Required CSS metadata for static export
               css: {
                 code: '._R_BGG_container{background:red}',
+                externalImports: [],
                 functionMap: null,
                 lineCount: 1,
                 map: [],
+                skipCache: false,
               },
             },
             type: 'js/module',
@@ -205,9 +269,11 @@ describe('CSS Modules', () => {
               css: {
                 // Not minified, formatted actually.
                 code: ['._R_BGG_container {', '  background: red;', '}', ''].join('\n'),
+                externalImports: [],
                 functionMap: null,
                 lineCount: 4,
                 map: [],
+                skipCache: false,
               },
             },
             type: 'js/module',
@@ -215,5 +281,94 @@ describe('CSS Modules', () => {
         ],
       });
     });
+  });
+});
+
+// TODO: Test +api files to ensure all extensions work
+describe('Expo Router server files (+html, +api)', () => {
+  const matchable = /> The server-only file was removed from the client JS bundle by Expo CLI/;
+  it(`strips +html file from client bundles`, async () => {
+    for (const file of [
+      'app/+html.js',
+      'app/+html.ts',
+      'app/+html.tsx',
+      'app/+html.web.jsx',
+      'app/+html.web.ts',
+    ]) {
+      jest.mocked(upstreamTransformer.transform).mockReset();
+
+      expect(
+        (
+          await doTransformForOutput(file, 'REMOVE ME!', {
+            dev: true,
+            minify: false,
+            customTransformOptions: {
+              __proto__: null,
+              environment: 'client',
+            },
+            platform: 'web',
+          })
+        ).input
+      ).toMatch(matchable);
+    }
+
+    // Ensure the server code doesn't leak into the client on any platform.
+    for (const platform of ['ios', 'android', 'web']) {
+      jest.mocked(upstreamTransformer.transform).mockReset();
+      expect(
+        (
+          await doTransformForOutput('app/+html.js', 'REMOVE ME!', {
+            dev: true,
+            minify: false,
+            customTransformOptions: {
+              __proto__: null,
+              environment: 'client',
+            },
+            platform,
+          })
+        ).input
+      ).toMatch(matchable);
+    }
+  });
+  it(`strips without warning when minify is enabled`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: false,
+          minify: true,
+          customTransformOptions: {
+            __proto__: null,
+            environment: 'client',
+          },
+          platform: 'web',
+        })
+      ).input
+    ).toMatch('');
+  });
+  it(`modifies server files even if no server indication is provided`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: true,
+          minify: false,
+          platform: 'web',
+        })
+      ).input
+    ).toMatch(matchable);
+  });
+  it(`preserves when bundling for Node.js environments`, async () => {
+    expect(
+      (
+        await doTransformForOutput('app/+html.js', 'KEEP', {
+          dev: true,
+          minify: false,
+          customTransformOptions: {
+            __proto__: null,
+            environment: 'node',
+          },
+          platform: 'ios',
+        })
+      ).input
+    ).toMatch('KEEP');
   });
 });

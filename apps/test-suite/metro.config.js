@@ -1,34 +1,24 @@
-const { createMetroConfiguration } = require('expo-yarn-workspaces');
+/* eslint-env node */
+// Learn more https://docs.expo.dev/guides/customizing-metro/
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('node:path');
 
-/* global __dirname */
-const baseConfig = createMetroConfiguration(__dirname);
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+const monorepoRoot = path.join(__dirname, '../..');
 
-module.exports = {
-  ...baseConfig,
+// Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
+// Note, omitting folders disables Metro from resolving files within these folders
+// This also happens when symlinks falls within these folders, but the real location doesn't.
+config.watchFolders = [
+  __dirname, // Allow Metro to resolve all files within this project
+  path.join(monorepoRoot, 'packages'), // Allow Metro to resolve all workspace files of the monorepo
+  path.join(monorepoRoot, 'node_modules'), // Allow Metro to resolve "shared" `node_modules` of the monorepo
+  path.join(monorepoRoot, 'react-native-lab'), // Allow Metro to resolve `react-native-lab/react-native` files
+  path.join(monorepoRoot, 'apps/common'), // Allow Metro to resolve common ThemeProvider
+];
 
-  // NOTE(brentvatne): This can be removed when
-  // https://github.com/facebook/metro/issues/290 is fixed.
-  server: {
-    ...baseConfig.server,
-    enhanceMiddleware: (middleware) => {
-      return (req, res, next) => {
-        // When an asset is imported outside the project root, it has wrong path on Android
-        // This happens for the back button in stack, so we fix the path to correct one
-        const assets = '/node_modules/@react-navigation/stack/src/views/assets';
+// Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
+config.transformer.enableBabelRCLookup = false;
 
-        if (req.url.startsWith(assets)) {
-          req.url = req.url.replace(assets, `/assets/../..${assets}`);
-        }
-
-        // Same as above when testing anything required via Asset.downloadAsync() in test-suite
-        const testSuiteAssets = '/test-suite/assets/';
-
-        if (req.url.startsWith(testSuiteAssets)) {
-          req.url = req.url.replace(testSuiteAssets, '/assets/../test-suite/assets/');
-        }
-
-        return middleware(req, res, next);
-      };
-    },
-  },
-};
+module.exports = config;

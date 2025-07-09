@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 
 export const name = 'Contacts';
+const isAndroid = Platform.OS !== 'ios';
 
 async function sortContacts(contacts, sortField, expect) {
   for (let i = 1; i < contacts.length; i++) {
@@ -37,6 +38,10 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       if (prop === Contacts.Fields.Image || prop === 'lookupKey' || prop === 'id') {
         continue;
       }
+      if (prop === Contacts.Fields.IsFavorite && !isAndroid) {
+        continue;
+      }
+
       if (Array.isArray(object[prop])) {
         if (!compareArrays(object[prop], expected[prop])) {
           return false;
@@ -55,8 +60,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
   }
 
   describeWithPermissions('Contacts', () => {
-    const isAndroid = Platform.OS !== 'ios';
-
     it('Contacts.requestPermissionsAsync', async () => {
       const results = await Contacts.requestPermissionsAsync();
 
@@ -70,15 +73,15 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(results.status).toBe('granted');
     });
 
-    const createdContactIds = [];
+    const createdContacts = [];
     const createContact = async (contact) => {
       const id = await Contacts.addContactAsync(contact);
-      createdContactIds.push({ id, contact });
+      createdContacts.push({ id, contact });
       return id;
     };
 
     afterAll(async () => {
-      await Promise.all(createdContactIds.map(async ({ id }) => Contacts.removeContactAsync(id)));
+      await Promise.all(createdContacts.map(({ id }) => Contacts.removeContactAsync(id)));
     });
 
     it('Contacts.createContactsAsync()', async () => {
@@ -135,7 +138,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       await image.downloadAsync();
 
       const fields = {
-        [Contacts.Fields.Image]: image.localUri,
+        [Contacts.Fields.Image]: { uri: image.localUri },
         [Contacts.Fields.FirstName]: 'Kenny',
         [Contacts.Fields.LastName]: 'McCormick',
       };
@@ -143,13 +146,140 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       return createContact(fields);
     }
 
-    it('Contacts.createContactAsync() with image', async () => {
-      const contactId = await createContactWithImage();
+    async function createContactAsFavorite() {
+      const fields = {
+        [Contacts.Fields.IsFavorite]: true,
+        [Contacts.Fields.FirstName]: 'My',
+        [Contacts.Fields.LastName]: 'Best Friend',
+      };
+
+      return createContact(fields);
+    }
+
+    it('Contacts.createContactAsync() with isFavorite', async () => {
+      const contactId = await createContactAsFavorite();
       expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.IsFavorite]);
+      expect(contact.isFavorite).toBe(isAndroid ? true : undefined);
+    });
+
+    it('Contacts.createContactAsync() with birthday', async () => {
+      const originalBirthday = {
+        day: 30,
+        month: 0,
+      };
+
+      const contactId = await createContact({
+        [Contacts.Fields.Birthday]: originalBirthday,
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.LastName]: 'Bday guy',
+      });
+      expect(typeof contactId).toBe('string');
+
+      const contact = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.Birthday]);
+
+      expect(contact.birthday).toEqual({
+        ...originalBirthday,
+        format: 'gregorian',
+      });
+      const newBirthday = {
+        day: 1,
+        month: 8,
+        year: 2024,
+      };
+      const modifiedId = await Contacts.updateContactAsync({
+        id: contactId,
+        [Contacts.Fields.Birthday]: newBirthday,
+      });
+      const modifiedContact = await Contacts.getContactByIdAsync(modifiedId, [
+        Contacts.Fields.Birthday,
+      ]);
+      expect(modifiedContact.birthday).toEqual({
+        ...newBirthday,
+        format: 'gregorian',
+      });
+
+      // this is needed to make sure the entry in `createdContacts` corresponds to the actual contact
+      await Contacts.updateContactAsync({
+        id: contactId,
+        [Contacts.Fields.Birthday]: originalBirthday,
+      });
+    });
+
+    // https://github.com/expo/expo/issues/36863
+    it('Contacts.updateContactAsync() does not delete birthday', async () => {
+      const birthday = {
+        day: 30,
+        month: 2,
+        year: 1990,
+      };
+      const contactId = await createContact({
+        [Contacts.Fields.Birthday]: birthday,
+        [Contacts.Fields.FirstName]: 'Theman',
+        [Contacts.Fields.LastName]: 'Batholamew',
+      });
+
+      const contact = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.Birthday]);
+      expect(contact.birthday).toBeDefined();
+
+      const modifiedId = await Contacts.updateContactAsync({
+        id: contactId,
+        [Contacts.Fields.IsFavorite]: false,
+      });
+      const modifiedContact = await Contacts.getContactByIdAsync(modifiedId, [
+        Contacts.Fields.Birthday,
+      ]);
+
+      expect(modifiedContact.birthday).toEqual({
+        format: 'gregorian',
+        ...birthday,
+      });
+      await Contacts.removeContactAsync(contactId);
+    });
+
+    it('Contacts.updateContactAsync() with multiple urls / remove url', async () => {
+      const contactId = await Contacts.addContactAsync({
+        [Contacts.Fields.FirstName]: 'Ken',
+        [Contacts.Fields.UrlAddresses]: [
+          { url: 'https://react-dev.com' },
+          { url: 'https://expo.com' },
+        ],
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      expect(contact.urlAddresses.length).toBe(2);
+
+      const modifiedId = await Contacts.updateContactAsync({
+        ...contact,
+        [Contacts.Fields.UrlAddresses]: [],
+      });
+      expect(typeof modifiedId).toBe('string');
+      const contactModified = await Contacts.getContactByIdAsync(modifiedId);
+      expect(contactModified.urlAddresses).toBe(undefined);
+    });
+
+    it('Contacts.updateContactAsync() with multiple urls / add url', async () => {
+      const contactId = await Contacts.addContactAsync({
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.UrlAddresses]: [{ url: 'https://react-dev.com', label: 'home' }],
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      expect(contact.urlAddresses.length).toBe(1);
+      const modifiedId = await Contacts.updateContactAsync({
+        ...contact,
+        [Contacts.Fields.UrlAddresses]: [
+          { url: 'https://react-dev.com', label: 'work' },
+          { url: 'https://expo.com', label: 'home' },
+        ],
+      });
+      expect(typeof modifiedId).toBe('string');
+      const contactModified = await Contacts.getContactByIdAsync(modifiedId);
+      expect(contactModified.urlAddresses.length).toBe(2);
     });
 
     it('Contacts.writeContactToFileAsync() returns uri', async () => {
-      createdContactIds.map(async ({ id }) => {
+      createdContacts.map(async ({ id }) => {
         const localUri = await Contacts.writeContactToFileAsync({ id });
         expect(typeof localUri).toBe('string');
       });
@@ -167,11 +297,12 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       });
 
       expect(contacts.data.length > 0).toBe(true);
-      contacts.data.forEach(({ id, name, phoneNumbers, emails }) => {
+      contacts.data.forEach(({ id, name, phoneNumbers, emails, isFavorite }) => {
         expect(typeof id === 'string' || typeof id === 'number').toBe(true);
         expect(typeof name === 'string' || typeof name === 'undefined').toBe(true);
         expect(Array.isArray(phoneNumbers) || typeof phoneNumbers === 'undefined').toBe(true);
         expect(Array.isArray(emails) || typeof emails === 'undefined').toBe(true);
+        expect(isFavorite).toBe(isAndroid ? false : undefined);
       });
     });
 
@@ -293,7 +424,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(contacts.data.length).toBeLessThan(3);
     });
 
-    if (Platform.OS === 'android') {
+    if (isAndroid) {
       it('Contacts.getContactsAsync() sorts contacts by first name', async () => {
         const { data: contacts } = await Contacts.getContactsAsync({
           fields: [Contacts.SortTypes.FirstName],
@@ -304,7 +435,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
 
         await sortContacts(contacts, Contacts.SortTypes.FirstName, expect);
       });
-      it('Contacts.getContactsAsync()sorts contacts by last name', async () => {
+      it('Contacts.getContactsAsync() sorts contacts by last name', async () => {
         const { data: contacts } = await Contacts.getContactsAsync({
           fields: [Contacts.SortTypes.LastName],
           sort: Contacts.SortTypes.LastName,
@@ -313,6 +444,13 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
         });
 
         await sortContacts(contacts, Contacts.SortTypes.LastName, expect);
+      });
+      it('Contacts.getContactsAsync() returns Favorite contacts', async () => {
+        const { data: contacts } = await Contacts.getContactsAsync({
+          fields: [Contacts.Fields.IsFavorite],
+        });
+        const filteredContacts = contacts.filter((contact) => contact.isFavorite);
+        expect(filteredContacts.length).toBe(1);
       });
     }
 
@@ -380,7 +518,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       expect(contact).toEqual(
         jasmine.objectContaining({
           contactType: jasmine.any(String),
-          name: jasmine.any(String),
+          firstName: jasmine.any(String),
           id: jasmine.any(String),
         })
       );
@@ -389,10 +527,10 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
     });
 
     it('Contacts.getContactByIdAsync() checks shape of the inserted contacts', async () => {
-      expect(createdContactIds.length).toBeGreaterThan(0);
+      expect(createdContacts.length).toBeGreaterThan(0);
 
       await Promise.all(
-        createdContactIds.map(async ({ id, contact: expectedContact }) => {
+        createdContacts.map(async ({ id, contact: expectedContact }) => {
           const contact = await Contacts.getContactByIdAsync(id);
           if (contact) {
             expect(contact).toBeDefined();
@@ -418,6 +556,27 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
       const result = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.FirstName]);
       expect(result[Contacts.Fields.FirstName]).toEqual('Andy');
     });
+
+    if (isAndroid) {
+      it('Contacts.updateContactAsync() and toggle isFavorite', async () => {
+        const contacts = await Contacts.getContactsAsync({
+          fields: [Contacts.Fields.IsFavorite],
+        });
+        const favoriteContact = contacts.data.find((contact) => contact.isFavorite);
+        expect(favoriteContact).toBeDefined();
+        expect(typeof favoriteContact.isFavorite).toBe('boolean');
+        expect(favoriteContact.isFavorite).toBe(true);
+        await Contacts.updateContactAsync({
+          id: favoriteContact.id,
+          [Contacts.Fields.IsFavorite]: false,
+        });
+        const modifiedContact = await Contacts.getContactByIdAsync(favoriteContact.id, [
+          Contacts.Fields.IsFavorite,
+        ]);
+        expect(typeof modifiedContact.isFavorite).toBe('boolean');
+        expect(modifiedContact.isFavorite).toBe(false);
+      });
+    }
 
     it('Contacts.removeContactAsync() finishes successfully', async () => {
       const contactId = await createSimpleContact('Hi', 'Joe');
@@ -581,6 +740,17 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
           expect(typeof defaultContainerId).toBe('string');
         }
       }
+    });
+
+    it('Contacts.updateContactAsync() with image', async () => {
+      const contactId = await createContactWithImage({
+        [Contacts.Fields.FirstName]: 'Kenny',
+        [Contacts.Fields.LastName]: 'Bday guy',
+      });
+      expect(typeof contactId).toBe('string');
+      const contact = await Contacts.getContactByIdAsync(contactId);
+      const modifiedId = await Contacts.updateContactAsync(contact);
+      expect(typeof modifiedId).toBe('string');
     });
   });
 }

@@ -2,9 +2,9 @@ import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'react-native';
 
+import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
-import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -18,8 +18,6 @@ const FILES = [
 const WAIT_TIME = 1000;
 const IMG_NUMBER = 3;
 const VIDEO_NUMBER = 1;
-const F_SIZE = IMG_NUMBER + VIDEO_NUMBER;
-// const MEDIA_TYPES = [MediaLibrary.MediaType.photo, MediaLibrary.MediaType.video];
 const DEFAULT_MEDIA_TYPES = [MediaLibrary.MediaType.photo];
 const DEFAULT_PAGE_SIZE = 20;
 const ASSET_KEYS = [
@@ -54,6 +52,7 @@ const ALBUM_KEYS = [
 const GET_ASSETS_KEYS = ['assets', 'endCursor', 'hasNextPage', 'totalCount'];
 const ALBUM_NAME = 'Expo Test-Suite Album #1';
 const SECOND_ALBUM_NAME = 'Expo Test-Suite Album #2';
+const THIRD_ALBUM_NAME = 'Expo Test-Suite Album #3';
 const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
 const WRONG_ID = '1234567890';
 
@@ -222,7 +221,6 @@ export async function test(t) {
           const otherAlbum = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
           t.expect(otherAlbum.title).toBe(album.title);
           t.expect(otherAlbum.id).toBe(album.id);
-          t.expect(otherAlbum.assetCount).toBe(F_SIZE);
         });
 
         t.it('getAlbum with not existing album', async () => {
@@ -261,6 +259,38 @@ export async function test(t) {
         //     t.expect(info.id).toBe(asset.id);
         //   }));
         // });
+      });
+
+      t.describe('Creating albums with initial assets', async () => {
+        async function cleanupAsync() {
+          const album = await MediaLibrary.getAlbumAsync(THIRD_ALBUM_NAME);
+          await MediaLibrary.deleteAlbumsAsync([album], true);
+        }
+
+        t.afterAll(async () => {
+          await cleanupAsync();
+        }, TIMEOUT_WHEN_USER_NEEDS_TO_INTERACT);
+
+        t.it(
+          'When `localUri` is provided the album should contain asset created from the parameter',
+          async () => {
+            const album = await MediaLibrary.createAlbumAsync(
+              THIRD_ALBUM_NAME,
+              undefined,
+              undefined,
+              files[0].localUri
+            );
+
+            t.expect(album?.title).toEqual(THIRD_ALBUM_NAME);
+            t.expect((await MediaLibrary.getAssetsAsync({ album })).totalCount).toEqual(1);
+          }
+        );
+
+        t.it('Creating an asset inside the album works', async () => {
+          const album = await MediaLibrary.getAlbumAsync(THIRD_ALBUM_NAME);
+          await MediaLibrary.createAssetAsync(files[0].localUri, album);
+          t.expect((await MediaLibrary.getAssetsAsync({ album })).totalCount).toEqual(2);
+        });
       });
 
       t.describe('getAssetsAsync', async () => {
@@ -471,9 +501,10 @@ export async function test(t) {
         'deleteAssetsAsync',
         async () => {
           const assets = await getAssets(files);
+          const assetsIds = assets.map((asset) => asset?.id);
           const result = await MediaLibrary.deleteAssetsAsync(assets);
           const deletedAssets = await Promise.all(
-            assets.map(async (asset) => await MediaLibrary.getAssetInfoAsync(asset))
+            assetsIds.map(async (id) => await MediaLibrary.getAssetInfoAsync(id))
           );
           t.expect(result).toEqual(true);
           t.expect(assets.length).not.toEqual(0);

@@ -1,5 +1,4 @@
-import { ConfigPlugin } from '@expo/config-plugins';
-import { XcodeProject } from 'xcode';
+import { ConfigPlugin, type XcodeProject } from '@expo/config-plugins';
 export declare const withIosSplashXcodeProject: ConfigPlugin;
 /**
  * Modifies `.pbxproj` by:

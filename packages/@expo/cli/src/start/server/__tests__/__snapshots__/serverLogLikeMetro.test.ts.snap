@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`formatStackLikeMetro formats stack trace: ERROR_IN_ROUTER_GLOBAL_SCOPE 1`] = `
+"  factory (app/index.tsx:5:16)
+  map (../../packages/expo-router/build/getRoutes.js:213:32)
+  contextModuleToFileNodes (../../packages/expo-router/build/getRoutes.js:205:25)
+  contextModuleToTree (../../packages/expo-router/build/getRoutes.js:395:19)
+  getExactRoutesInternal (../../packages/expo-router/build/getRoutes.js:377:23)
+  getRoutes (../../packages/expo-router/build/getRoutes.js:284:19)
+  RouterStore.initialize (../../packages/expo-router/build/global-state/router-store.js:73:51)
+  nextCreate (../../packages/expo-router/build/global-state/router-store.js:209:46)"
+`;
+
+exports[`formatStackLikeMetro formats stack trace: ERROR_IN_ROUTER_GLOBAL_SCOPE_PRODUCTION 1`] = `"  factory (app/index.tsx:5:16)"`;
+
+exports[`formatStackLikeMetro formats stack trace: REACT_NAVIGATION_RNW_WARNING 1`] = `""`;
+
+exports[`formatStackLikeMetro formats stack trace: SAFE_AREA_CONTEXT_RNW_WARNING 1`] = `""`;
+
+exports[`formatStackLikeMetro formats stack trace: WARN_IN_ROUTER_COMPONENT_FIXTURE 1`] = `"  Component (app/index.tsx:6:11)"`;

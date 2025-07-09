@@ -6,9 +6,126 @@
 
 ### 🎉 New features
 
+- Implemented `useScreenshotListener` hook. ([#37411](https://github.com/expo/expo/pull/37411) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix permissions on Android 13.
+
 ### 💡 Others
+
+## 7.1.5 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 7.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- Standardize platform key ordering in `expo-module.config.json`. ([#35003](https://github.com/expo/expo/pull/35003) by [@reichhartd](https://github.com/reichhartd))
+
+## 7.0.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Make permissions auto-grant on Android 14+. ([#31865](https://github.com/expo/expo/pull/31865) by [@aleqsio](https://github.com/aleqsio))
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `ScreenCaptureModule` was crashing in the dev-client when going back to the home screen. ([#29694](https://github.com/expo/expo/pull/29694) by [@lukmccall](https://github.com/lukmccall))
+- Add missing `react` peer dependencies for isolated modules. ([#30480](https://github.com/expo/expo/pull/30480) by [@byCedric](https://github.com/byCedric))
+- [Android] Fix Screen capture callback was not called on Android 14 when API methods was not being called. ([#31702](https://github.com/expo/expo/pull/31702) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Updated hook from `useScreenCapturePermissions` to `usePermissions` in the example. ([#30076](https://github.com/expo/expo/pull/30076) by [@mrakesh0608](https://github.com/mrakesh0608))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 🐛 Bug fixes
+
+- Reverse api level constraint on the `DETECT_SCREEN_CAPTURE` permission. ([#27148](https://github.com/expo/expo/pull/27148) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fixes memory leaks caused by the event emitter. ([#28161](https://github.com/expo/expo/pull/28161) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix accessing activity too early on bridgeless. ([#28244](https://github.com/expo/expo/pull/28244) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Native module on iOS is now written in Swift using the Sweet API. ([#26103](https://github.com/expo/expo/pull/26103) by [@fobos531](https://github.com/fobos531))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+- Replaced `@testing-library/react-hooks` with `@testing-library/react-native`. ([#30742](https://github.com/expo/expo/pull/30742) by [@byCedric](https://github.com/byCedric))
+
+## 5.8.1 - 2024-01-23
+
+### 🐛 Bug fixes
+
+- Fix screenshot listener not being called on Android 34. ([#26549](https://github.com/expo/expo/pull/26549) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.8.0 — 2023-12-15
+
+### 🎉 New features
+
+- Added `getPermissionsAsync` and `requestPermissionsAsync` methods. ([#25849](https://github.com/expo/expo/pull/25849) by [@behenate](https://github.com/behenate))
+
+## 5.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 5.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 5.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 5.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.3.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 5.2.0 — 2023-05-08
 

@@ -6,7 +6,7 @@ description: Learn about different ways to configure EAS Metadata.
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-> **warning** EAS Metadata is in beta and subject to breaking changes.
+> **important** **EAS Metadata** is in preview and subject to breaking changes.
 
 EAS Metadata is configured by a **store.config.json** file at the _root of your project_.
 
@@ -18,9 +18,9 @@ Besides the default JSON format, EAS Metadata also supports more dynamic config 
 The default store config type for EAS Metadata is a simple JSON file.
 The code snippet below shows an example store config with basic App Store information written in English (U.S.).
 
-You can find all configuration options in the [store config schema](./schema.mdx).
+You can find all configuration options in the [store config schema](/eas/metadata/schema/).
 
-> If you have the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) installed, you get auto-complete, suggestions, and warnings for **store.config.json** files.
+> If you have the [VS Code Expo Tools extension](https://github.com/expo/vscode-expo#readme) installed, you get auto-complete, suggestions, and warnings for **store.config.json** files.
 
 ```json store.config.json
 {
@@ -30,7 +30,7 @@ You can find all configuration options in the [store config schema](./schema.mdx
       "en-US": {
         "title": "Awesome App",
         "subtitle": "Your self-made awesome app",
-        "description": "The most awesome app you've ever seen",
+        "description": "The most awesome app you have ever seen",
         "keywords": ["awesome", "app"],
         "marketingUrl": "https://example.com/en/promo",
         "supportUrl": "https://example.com/en/support",
@@ -45,7 +45,7 @@ You can find all configuration options in the [store config schema](./schema.mdx
 
 At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with EAS Metadata.
 
-To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](../../submit/eas-json.mdx#metadatapath) property in the **eas.json** file to pick the JS config file.
+To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](/eas/json/#metadatapath) property in the **eas.json** file to pick the JS config file.
 
 > `eas metadata:pull` can't update dynamic store config files. Instead, it creates a JSON file with the same name as the configured file. You can import the JSON file to reuse the data from `eas metadata:pull`.
 

@@ -3,17 +3,11 @@ import {
   PermissionStatus,
   PermissionHookOptions,
   createPermissionHook,
-  EventEmitter,
-  Subscription,
+  LegacyEventEmitter,
+  type EventSubscription,
   Platform,
 } from 'expo-modules-core';
 
-import {
-  _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
-  AVPlaybackStatus,
-  AVPlaybackStatusToSet,
-} from '../AV';
-import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import {
   RecordingInput,
@@ -23,13 +17,21 @@ import {
 } from './Recording.types';
 import { RecordingOptionsPresets } from './RecordingConstants';
 import { Sound, SoundObject } from './Sound';
+import {
+  _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
+} from '../AV';
+import ExponentAV from '../ExponentAV';
 
 let _recorderExists: boolean = false;
-const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+const eventEmitter = Platform.OS === 'android' ? new LegacyEventEmitter(ExponentAV) : null;
 
 /**
  * Checks user's permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.getPermissionsAsync();
@@ -38,6 +40,8 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 /**
  * Asks the user to grant permissions for audio recording.
  * @return A promise that resolves to an object of type `PermissionResponse`.
+ * @platform android
+ * @platform ios
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.requestPermissionsAsync();
@@ -59,6 +63,8 @@ export const usePermissions = createPermissionHook({
 
 // @needsAudit
 /**
+ * > **warning** **Warning**: Experimental for web.
+ *
  * This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync`
  * must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that
  * only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync`
@@ -82,9 +88,11 @@ export const usePermissions = createPermissionHook({
  * ```
  *
  * @return A newly constructed instance of `Audio.Recording`.
+ * @platform android
+ * @platform ios
  */
 export class Recording {
-  _subscription: Subscription | null = null;
+  _subscription: EventSubscription | null = null;
   _canRecord: boolean = false;
   _isDoneRecording: boolean = false;
   _finalDurationMillis: number = 0;
@@ -210,7 +218,11 @@ export class Recording {
       const status = await recording.startAsync();
       return { recording, status };
     } catch (err) {
-      recording.stopAndUnloadAsync();
+      recording.stopAndUnloadAsync().catch((_e) => {
+        // Since there was an issue with starting, when trying calling stopAndUnloadAsync
+        // the promise is rejected which is unhandled
+        // lets catch it since its expected
+      });
       throw err;
     }
   };
@@ -409,7 +421,7 @@ export class Recording {
     let stopError: Error | undefined;
     try {
       stopResult = await ExponentAV.stopAudioRecording();
-    } catch (err) {
+    } catch (err: any) {
       stopError = err;
     }
 
@@ -468,13 +480,7 @@ export class Recording {
     if (this._uri == null || !this._isDoneRecording) {
       throw new Error('Cannot create sound when the Recording has not finished!');
     }
-    return Sound.createAsync(
-      // $FlowFixMe: Flow can't distinguish between this literal and Asset
-      { uri: this._uri },
-      initialStatus,
-      onPlaybackStatusUpdate,
-      false
-    );
+    return Sound.createAsync({ uri: this._uri }, initialStatus, onPlaybackStatusUpdate, false);
   }
 }
 

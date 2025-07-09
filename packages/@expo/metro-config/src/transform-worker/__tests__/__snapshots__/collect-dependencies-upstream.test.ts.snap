@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Evaluating static arguments throws on tagged template literals 1`] = `"Invalid call at line 1: require(tag\`left-pad\`)"`;
+
+exports[`Evaluating static arguments throws template literals with dyncamic interpolations 1`] = `"Invalid call at line 1: require(\`left\${foo}pad\`)"`;
+
+exports[`Evaluating static arguments throws when requiring non-strings 1`] = `"Invalid call at line 1: require(1)"`;

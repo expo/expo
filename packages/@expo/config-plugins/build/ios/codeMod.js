@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.addObjcImports = addObjcImports;
+exports.addSwiftImports = addSwiftImports;
 exports.findObjcFunctionCodeBlock = findObjcFunctionCodeBlock;
 exports.findObjcInterfaceCodeBlock = findObjcInterfaceCodeBlock;
 exports.findSwiftFunctionCodeBlock = findSwiftFunctionCodeBlock;
@@ -38,6 +39,25 @@ function addObjcImports(source, imports) {
   for (const importElement of imports) {
     if (!source.includes(importElement)) {
       const importStatement = `#import ${importElement}`;
+      lines.splice(lineIndexWithFirstImport + 1, 0, importStatement);
+    }
+  }
+  return lines.join('\n');
+}
+
+/**
+ * Add Swift import
+ * @param source source contents
+ * @param imports array of imports, e.g. ['Expo']
+ * @returns updated contents
+ */
+function addSwiftImports(source, imports) {
+  const lines = source.split('\n');
+  // Try to insert statements after first import where would probably not in #if block
+  const lineIndexWithFirstImport = lines.findIndex(line => line.match(/^import .*$/));
+  for (const importElement of imports) {
+    if (!source.includes(importElement)) {
+      const importStatement = `import ${importElement}`;
       lines.splice(lineIndexWithFirstImport + 1, 0, importStatement);
     }
   }
@@ -239,7 +259,6 @@ function insertContentsInsideSwiftFunctionBlock(srcContents, selector, insertion
   return insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, 'swift');
 }
 function insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, language) {
-  var _options$indent;
   const codeBlock = language === 'objc' ? findObjcFunctionCodeBlock(srcContents, selector) : findSwiftFunctionCodeBlock(srcContents, selector);
   if (!codeBlock) {
     return srcContents;
@@ -247,7 +266,7 @@ function insertContentsInsideFunctionBlock(srcContents, selector, insertion, opt
   const {
     position
   } = options;
-  const indent = ' '.repeat((_options$indent = options.indent) !== null && _options$indent !== void 0 ? _options$indent : 2);
+  const indent = ' '.repeat(options.indent ?? 2);
   if (position === 'head') {
     srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, `\n${indent}${insertion}`, codeBlock.start + 1);
   } else if (position === 'tail') {

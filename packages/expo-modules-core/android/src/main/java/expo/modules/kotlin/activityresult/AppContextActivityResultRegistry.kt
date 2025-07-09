@@ -25,10 +25,15 @@ import androidx.lifecycle.LifecycleOwner
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.safeGetParcelable
+import expo.modules.kotlin.safeGetParcelableExtra
 import java.io.Serializable
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import java.util.Random
+
+private const val TAG = "ActivityResultRegistry"
+
+// Use upper 16 bits for request codes
+private const val INITIAL_REQUEST_CODE_VALUE = 0x00010000
 
 /**
  * A registry that stores activity result callbacks ([ActivityResultCallback]) for
@@ -60,10 +65,6 @@ import kotlin.collections.HashMap
 class AppContextActivityResultRegistry(
   private val currentActivityProvider: CurrentActivityProvider
 ) {
-  private val LOG_TAG = "ActivityResultRegistry"
-
-  // Use upper 16 bits for request codes
-  private val INITIAL_REQUEST_CODE_VALUE = 0x00010000
   private var random: Random = Random()
 
   private val requestCodeToKey: MutableMap<Int, String> = HashMap()
@@ -97,7 +98,7 @@ class AppContextActivityResultRegistry(
   fun <I : Serializable, O> onLaunch(
     requestCode: Int,
     contract: AppContextActivityResultContract<I, O>,
-    @SuppressLint("UnknownNullness") input: I,
+    @SuppressLint("UnknownNullness") input: I
   ) {
     // Start activity path
     val intent = contract.createIntent(activity, input)
@@ -115,25 +116,33 @@ class AppContextActivityResultRegistry(
           ?: arrayOfNulls(0)
         ActivityCompat.requestPermissions(activity, permissions, requestCode)
       }
+
       StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST -> {
-        val request: IntentSenderRequest = intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
+        val request = intent.safeGetParcelableExtra<IntentSenderRequest>(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
         try {
           // startIntentSenderForResult path
           ActivityCompat.startIntentSenderForResult(
-            activity, request.intentSender,
-            requestCode, request.fillInIntent, request.flagsMask,
-            request.flagsValues, 0, optionsBundle
+            activity,
+            request.intentSender,
+            requestCode,
+            request.fillInIntent,
+            request.flagsMask,
+            request.flagsValues,
+            0,
+            optionsBundle
           )
         } catch (e: IntentSender.SendIntentException) {
           Handler(Looper.getMainLooper()).post {
             dispatchResult(
-              requestCode, Activity.RESULT_CANCELED,
+              requestCode,
+              Activity.RESULT_CANCELED,
               Intent().setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
                 .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e)
             )
           }
         }
       }
+
       else -> {
         // startActivityForResult path
         ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle)
@@ -174,10 +183,14 @@ class AppContextActivityResultRegistry(
 
           // 1. No callbacks registered yet, other path would take care of the results
           @Suppress("UNCHECKED_CAST")
-          val callbacksAndContract: CallbacksAndContract<I, O> = (keyToCallbacksAndContract[key] ?: return@LifecycleEventObserver) as CallbacksAndContract<I, O>
+          val callbacksAndContract: CallbacksAndContract<I, O> = (
+            keyToCallbacksAndContract[key]
+              ?: return@LifecycleEventObserver
+            ) as CallbacksAndContract<I, O>
 
           // 2. There are results to be delivered to the callbacks
-          pendingResults.getParcelable<ActivityResult>(key)?.let {
+          val activityResult = pendingResults.safeGetParcelable<ActivityResult>(key)
+          activityResult?.let {
             pendingResults.remove(key)
 
             @Suppress("UNCHECKED_CAST")
@@ -193,9 +206,11 @@ class AppContextActivityResultRegistry(
             }
           }
         }
+
         Lifecycle.Event.ON_DESTROY -> {
           unregister(key)
         }
+
         else -> Unit
       }
     }
@@ -209,7 +224,6 @@ class AppContextActivityResultRegistry(
         val requestCode = keyToRequestCode[key]
           ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input. You must ensure the ActivityResultLauncher is registered before calling launch()")
 
-        @Suppress("UNCHECKED_CAST")
         keyToCallbacksAndContract[key] = CallbacksAndContract(fallbackCallback, callback, contract)
         keyToInputParam[key] = input
         launchedKeys.add(key)
@@ -268,7 +282,7 @@ class AppContextActivityResultRegistry(
     }
     keyToCallbacksAndContract.remove(key)
     if (pendingResults.containsKey(key)) {
-      Log.w(LOG_TAG, "Dropping pending result for request $key : ${pendingResults.getParcelable<ActivityResult>(key)}")
+      Log.w(TAG, "Dropping pending result for request $key : ${pendingResults.safeGetParcelable<ActivityResult>(key)}")
       pendingResults.remove(key)
     }
     keyToLifecycleContainers[key]?.let {
@@ -339,7 +353,7 @@ class AppContextActivityResultRegistry(
      * Main callback that might not be available, because the app might be re-created
      */
     val mainCallback: ActivityResultCallback<O>?,
-    val contract: AppContextActivityResultContract<I, O>,
+    val contract: AppContextActivityResultContract<I, O>
   )
 
   class LifecycleContainer internal constructor(val lifecycle: Lifecycle) {

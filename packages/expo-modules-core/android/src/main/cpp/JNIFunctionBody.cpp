@@ -10,7 +10,29 @@ namespace react = facebook::react;
 namespace expo {
 
 jni::local_ref<jni::JObject>
-JNIFunctionBody::invoke(jobjectArray args) {
+JNINoArgsFunctionBody::invoke(
+  jobject self
+) {
+  // Do NOT use getClass here!
+  // Method obtained from `getClass` will point to the overridden version of the method.
+  // Because of that, it can't be cached - we will try to invoke the nonexistent method
+  // if we receive an object of a different class than the one used to obtain the method id.
+  // The only cacheable method id can be obtain from the base class.
+  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNINoArgsFunctionBody")
+    ->getMethod<jni::local_ref<jni::JObject>()>(
+      "invoke"
+    );
+
+  auto result = jni::Environment::current()->CallObjectMethod(self, method.getId());
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<jni::JniType<jni::JObject>>(result));
+}
+
+jni::local_ref<jni::JObject>
+JNIFunctionBody::invoke(
+  jobject self,
+  jobjectArray args
+) {
   // Do NOT use getClass here!
   // Method obtained from `getClass` will point to the overridden version of the method.
   // Because of that, it can't be cached - we will try to invoke the nonexistent method
@@ -22,12 +44,13 @@ JNIFunctionBody::invoke(jobjectArray args) {
       "([Ljava/lang/Object;)Ljava/lang/Object;"
     );
 
-  auto result = jni::Environment::current()->CallObjectMethod(this->self(), method.getId(), args);
+  auto result = jni::Environment::current()->CallObjectMethod(self, method.getId(), args);
   throwPendingJniExceptionAsCppException();
   return jni::adopt_local(static_cast<jni::JniType<jni::JObject>>(result));
 }
 
 void JNIAsyncFunctionBody::invoke(
+  jobject self,
   jobjectArray args,
   jobject promise
 ) {
@@ -44,7 +67,7 @@ void JNIAsyncFunctionBody::invoke(
       "([Ljava/lang/Object;Lexpo/modules/kotlin/jni/PromiseImpl;)V"
     );
 
-  jni::Environment::current()->CallVoidMethod(this->self(), method.getId(), args, promise);
+  jni::Environment::current()->CallVoidMethod(self, method.getId(), args, promise);
   throwPendingJniExceptionAsCppException();
 }
 

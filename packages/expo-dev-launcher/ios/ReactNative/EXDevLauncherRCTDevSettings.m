@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXDevLauncherRCTDevSettings.h"
+#import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 
 @implementation EXDevLauncherRCTDevSettings
 
@@ -15,11 +15,6 @@
 }
 
 - (BOOL)isHotLoadingAvailable
-{
-  return NO;
-}
-
-- (BOOL)isRemoteDebuggingAvailable
 {
   return NO;
 }
@@ -41,8 +36,6 @@
 - (void)onFastRefresh {}
 
 - (void)setHotLoadingEnabled:(BOOL)isHotLoadingEnabled {}
-
-- (void)setIsDebuggingRemotely:(BOOL)isDebuggingRemotelyEnabled {}
 
 - (void)setProfilingEnabled:(BOOL)isProfilingEnabled {}
 

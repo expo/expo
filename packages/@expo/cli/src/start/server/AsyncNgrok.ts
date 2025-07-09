@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import * as path from 'path';
 import slugify from 'slugify';
 
-import UserSettings from '../../api/user/UserSettings';
+import { getSettingsDirectory } from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
@@ -29,7 +29,10 @@ export class AsyncNgrok {
   /** Info about the currently running instance of ngrok. */
   private serverUrl: string | null = null;
 
-  constructor(private projectRoot: string, private port: number) {
+  constructor(
+    private projectRoot: string,
+    private port: number
+  ) {
     this.resolver = new NgrokResolver(projectRoot);
   }
 
@@ -48,7 +51,8 @@ export class AsyncNgrok {
     return [
       // NOTE: https://github.com/expo/expo/pull/16556#discussion_r822944286
       await this.getProjectRandomnessAsync(),
-      slugify(username),
+      // Strip out periods from the username to avoid subdomain issues with SSL certificates.
+      slugify(username, { remove: /\./ }),
       // Use the port to distinguish between multiple tunnels (webpack, metro).
       String(this.port),
     ];
@@ -56,7 +60,7 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync(): Promise<string> {
-    return [...(await this._getIdentifyingUrlSegmentsAsync()), NGROK_CONFIG.domain].join('.');
+    return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${NGROK_CONFIG.domain}`;
   }
 
   /** Exposed for testing. */
@@ -154,21 +158,20 @@ export class AsyncNgrok {
   ): Promise<string | false> {
     try {
       // Global config path.
-      const configPath = path.join(UserSettings.getDirectory(), 'ngrok.yml');
+      const configPath = path.join(getSettingsDirectory(), 'ngrok.yml');
       debug('Global config path:', configPath);
       const urlProps = await this._getConnectionPropsAsync();
 
       const url = await instance.connect({
         ...urlProps,
         authtoken: NGROK_CONFIG.authToken,
-        proto: 'http',
         configPath,
         onStatusChange(status) {
           if (status === 'closed') {
             Log.error(
               chalk.red(
                 'Tunnel connection has been closed. This is often related to intermittent connection issues between the dev server and ngrok. Restart the dev server to try connecting to ngrok again.'
-              )
+              ) + chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
             );
           } else if (status === 'connected') {
             Log.log('Tunnel connected.');
@@ -182,10 +185,20 @@ export class AsyncNgrok {
         if (isNgrokClientError(error)) {
           throw new CommandError(
             'NGROK_CONNECT',
-            [error.body.msg, error.body.details?.err].filter(Boolean).join('\n\n')
+            [
+              error.body.msg,
+              error.body.details?.err,
+              chalk.gray('Check the Ngrok status page for outages: https://status.ngrok.com/'),
+            ]
+              .filter(Boolean)
+              .join('\n\n')
           );
         }
-        throw new CommandError('NGROK_CONNECT', error.toString());
+        throw new CommandError(
+          'NGROK_CONNECT',
+          error.toString() +
+            chalk.gray('\nCheck the Ngrok status page for outages: https://status.ngrok.com/')
+        );
       };
 
       // Attempt to connect 3 times
@@ -211,14 +224,18 @@ export class AsyncNgrok {
 
   private async getProjectRandomnessAsync() {
     const { urlRandomness: randomness } = await ProjectSettings.readAsync(this.projectRoot);
-    if (randomness) {
+    if (randomness && /^[A-Za-z0-9]/.test(randomness)) {
       return randomness;
     }
     return await this._resetProjectRandomnessAsync();
   }
 
   async _resetProjectRandomnessAsync() {
-    const randomness = crypto.randomBytes(5).toString('base64url');
+    let randomness: string;
+    do {
+      randomness = crypto.randomBytes(5).toString('base64url');
+    } while (randomness.startsWith('_')); // _ is an invalid character for a hostname
+
     await ProjectSettings.setAsync(this.projectRoot, { urlRandomness: randomness });
     debug('Resetting project randomness:', randomness);
     return randomness;

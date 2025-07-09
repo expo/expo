@@ -6,7 +6,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -36,6 +35,7 @@ public class EventEmitterModule implements EventEmitter, InternalModule {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void emit(final int viewId, final String eventName, final Bundle eventBody) {
     final EventDispatcher dispatcher = UIManagerHelper.getEventDispatcherForReactTag(mReactContext, viewId);
     dispatcher.dispatchEvent(new com.facebook.react.uimanager.events.Event(viewId) {
@@ -66,6 +66,7 @@ public class EventEmitterModule implements EventEmitter, InternalModule {
     return Collections.singletonList((Class) EventEmitter.class);
   }
 
+  @SuppressWarnings("deprecation")
   private static com.facebook.react.uimanager.events.Event getReactEventFromEvent(final int viewId, final Event event) {
     return new com.facebook.react.uimanager.events.Event(viewId) {
       @Override

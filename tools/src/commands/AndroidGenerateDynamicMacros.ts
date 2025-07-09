@@ -5,7 +5,7 @@ import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMac
 import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
-const ANDROID_DIR = Directories.getAndroidDir();
+const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const GENERATED_DIR = path.join(ANDROID_DIR, 'expoview/src/main/java/host/exp/exponent/generated');
 const TEMPLATE_FILES_DIR = path.join(EXPO_DIR, 'template-files');
 
@@ -19,7 +19,6 @@ async function generateAction(options): Promise<void> {
     platform: 'android',
     expoKitPath: EXPO_DIR,
     templateFilesPath: TEMPLATE_FILES_DIR,
-    bareExpo: options.bare,
     configuration,
   });
 }
@@ -35,7 +34,6 @@ export default (program: Command) => {
       '--configuration [string]',
       'Build configuration. Defaults to `process.env.CONFIGURATION` or "debug".'
     )
-    .option('--bare', 'Generate macros only for the bare-expo project.')
     .description('Generates dynamic macros for Android client.')
     .asyncAction(generateAction);
 };

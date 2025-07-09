@@ -8,9 +8,6 @@ const noPermissionResponse: PermissionResponse = {
 };
 
 export default {
-  get name(): string {
-    return 'ExpoBrightness';
-  },
   async getPermissionsAsync(): Promise<PermissionResponse> {
     return noPermissionResponse;
   },

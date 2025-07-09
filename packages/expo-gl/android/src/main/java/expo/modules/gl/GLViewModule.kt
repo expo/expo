@@ -9,6 +9,9 @@ class GLViewModule : Module() {
 
     View(GLView::class) {
       Events("onSurfaceCreate")
+      Prop("enableExperimentalWorkletSupport") { view: GLView, enableExperimentalWorkletSupport: Boolean? ->
+        view.enableExperimentalWorkletSupport = enableExperimentalWorkletSupport ?: false
+      }
     }
   }
 }

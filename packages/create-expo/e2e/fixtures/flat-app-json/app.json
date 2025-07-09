@@ -1,0 +1,8 @@
+{
+  "android": {
+    "package": "com.example.minimal"
+  },
+  "ios": {
+    "bundleIdentifier": "com.example.minimal"
+  }
+}

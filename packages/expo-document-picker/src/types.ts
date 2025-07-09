@@ -12,6 +12,8 @@ export type DocumentPickerOptions = {
    * which allows other Expo APIs to read the file immediately. This may impact performance for
    * large files, so you should consider setting this to `false` if you expect users to pick
    * particularly large files and your app does not need immediate read access.
+   * @platform ios
+   * @platform android
    * @default true
    */
   copyToCacheDirectory?: boolean;
@@ -21,6 +23,13 @@ export type DocumentPickerOptions = {
    *
    */
   multiple?: boolean;
+  /**
+   * If `true`, asset url is base64 from the file
+   * If `false`, asset url is the file url parameter
+   * @platform web
+   * @default true
+   */
+  base64?: boolean;
 };
 
 export type DocumentPickerAsset = {
@@ -41,77 +50,63 @@ export type DocumentPickerAsset = {
    */
   mimeType?: string;
   /**
-   * Timestamp of last document modification.
+   * Timestamp of last document modification. [Web API specs](https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified)
+   * The lastModified provides the last modified date of the file as the number
+   * of milliseconds since the Unix epoch (January 1, 1970 at midnight). Files
+   * without a known last modified date return the current date.
    */
-  lastModified?: number;
+  lastModified: number;
   /**
    * `File` object for the parity with web File API.
    * @platform web
    */
   file?: File;
   /**
-   * `FileList` object for the parity with web File API.
+   * Base64 string of the file.
    * @platform web
    */
-  output?: FileList | null;
+  base64?: string;
 };
 
-// @needsAudit @docsMissing
-export type DocumentPickerResult = {
-  /**
-   * Boolean flag which shows if request was canceled. If asset data have been returned this should
-   * always be `false`.
-   */
-  canceled: boolean;
-  type?: string;
-  /**
-   * Document original name.
-   */
-  name?: string;
-  /**
-   * Document size in bytes.
-   */
-  size?: number;
-  /**
-   * An array of picked assets or `null` when the request was canceled.
-   */
-  assets: DocumentPickerAsset[] | null;
-  /**
-   * An URI to the local document file.
-   */
-  uri?: string;
-  /**
-   * Document MIME type.
-   */
-  mimeType?: string;
-  /**
-   * Timestamp of last document modification.
-   */
-  lastModified?: number;
-  /**
-   * `File` object for the parity with web File API.
-   * @platform web
-   */
-  file?: File;
-  /**
-   * `FileList` object for the parity with web File API.
-   * @platform web
-   */
-  output?: FileList | null;
-} & (DocumentPickerSuccessResult | DocumentPickerCanceledResult);
+/**
+ * Type representing successful and canceled document pick result.
+ */
+export type DocumentPickerResult = DocumentPickerSuccessResult | DocumentPickerCanceledResult;
 
 /**
- * @hidden
+ * Type representing successful pick result.
  */
 export type DocumentPickerSuccessResult = {
+  /**
+   * If asset data have been returned this should always be `false`.
+   */
   canceled: false;
+  /**
+   * An array of picked assets.
+   */
   assets: DocumentPickerAsset[];
+  /**
+   * `FileList` object for the parity with web File API.
+   * @platform web
+   */
+  output?: FileList;
 };
 
 /**
- * @hidden
+ * Type representing canceled pick result.
  */
 export type DocumentPickerCanceledResult = {
+  /**
+   *  Always `true` when the request was canceled.
+   */
   canceled: true;
+  /**
+   *  Always `null` when the request was canceled.
+   */
   assets: null;
+  /**
+   * Always `null` when the request was canceled.
+   * @platform web
+   */
+  output?: null;
 };

@@ -1,7 +1,8 @@
-import { EventEmitter, Subscription, Platform } from 'expo-modules-core';
+import { type EventSubscription, Platform } from 'expo-modules-core';
 
 import PushTokenManager from './PushTokenManager';
 import { DevicePushToken } from './Tokens.types';
+import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
@@ -11,7 +12,6 @@ import { DevicePushToken } from './Tokens.types';
 export type PushTokenListener = (token: DevicePushToken) => void;
 
 // Web uses SyntheticEventEmitter
-const tokenEmitter = new EventEmitter(PushTokenManager);
 const newTokenEventName = 'onDevicePushToken';
 
 /**
@@ -19,7 +19,7 @@ const newTokenEventName = 'onDevicePushToken';
  * When a token is rolled, the old one becomes invalid and sending notifications to it will fail.
  * A push token listener will let you handle this situation gracefully by registering the new token with your backend right away.
  * @param listener A function accepting a push token as an argument, it will be called whenever the push token changes.
- * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
+ * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @header fetch
  * @example Registering a push token listener using a React hook.
  * ```jsx
@@ -40,17 +40,23 @@ const newTokenEventName = 'onDevicePushToken';
  * }
  * ```
  */
-export function addPushTokenListener(listener: PushTokenListener): Subscription {
-  const wrappingListener = ({ devicePushToken }) =>
-    listener({ data: devicePushToken, type: Platform.OS });
-  return tokenEmitter.addListener(newTokenEventName, wrappingListener);
+export function addPushTokenListener(listener: PushTokenListener): EventSubscription {
+  warnOfExpoGoPushUsage();
+  return PushTokenManager.addListener(newTokenEventName, ({ devicePushToken }) =>
+    listener({ data: devicePushToken, type: Platform.OS })
+  );
 }
 
 /**
+ * @deprecated call `remove()` on the subscription object instead.
+ *
  * Removes a push token subscription returned by an `addPushTokenListener` call.
  * @param subscription A subscription returned by `addPushTokenListener` method.
  * @header fetch
  */
-export function removePushTokenSubscription(subscription: Subscription) {
-  tokenEmitter.removeSubscription(subscription);
+export function removePushTokenSubscription(subscription: EventSubscription) {
+  console.warn(
+    '`removePushTokenSubscription` is deprecated. Call `subscription.remove()` instead.'
+  );
+  subscription.remove();
 }

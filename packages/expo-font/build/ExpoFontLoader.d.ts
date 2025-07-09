@@ -1,3 +1,3 @@
-declare const _default: import("expo-modules-core").ProxyNativeModule;
-export default _default;
+declare const m: any;
+export default m;
 //# sourceMappingURL=ExpoFontLoader.d.ts.map

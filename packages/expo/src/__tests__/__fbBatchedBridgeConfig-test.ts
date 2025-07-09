@@ -2,16 +2,7 @@ import 'react-native';
 import '../Expo.fx';
 import { Platform } from 'expo-modules-core';
 
-jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => {
-  return {
-    __esModule: true,
-    default() {
-      return {
-        url: 'http://localhost:8081/',
-      };
-    },
-  };
-});
+jest.mock('../async-require/getDevServer');
 
 if (Platform.OS === 'web') {
   it('provides a helpful error message on web', () => {

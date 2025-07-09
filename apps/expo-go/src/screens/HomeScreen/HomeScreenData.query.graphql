@@ -1,0 +1,18 @@
+query HomeScreenData($accountName: String!, $platform: AppPlatform!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      ownerUserActor {
+        ...CurrentUserActorData
+      }
+      apps(limit: 5, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: 5, offset: 0) {
+        ...CommonSnackData
+      }
+      appCount
+    }
+  }
+}

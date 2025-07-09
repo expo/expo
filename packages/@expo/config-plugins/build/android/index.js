@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.BuildProperties = exports.AllowBackup = void 0;
+exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.Locales = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.CodeMod = exports.BuildProperties = exports.AllowBackup = void 0;
 function AllowBackup() {
   const data = _interopRequireWildcard(require("./AllowBackup"));
   AllowBackup = function () {
@@ -93,6 +93,19 @@ Object.defineProperty(exports, "IntentFilters", {
   enumerable: true,
   get: function () {
     return IntentFilters();
+  }
+});
+function Locales() {
+  const data = _interopRequireWildcard(require("./Locales"));
+  Locales = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "Locales", {
+  enumerable: true,
+  get: function () {
+    return Locales();
   }
 });
 function Manifest() {
@@ -303,6 +316,19 @@ Object.defineProperty(exports, "WindowSoftInputMode", {
     return WindowSoftInputMode();
   }
 });
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function CodeMod() {
+  const data = _interopRequireWildcard(require("./codeMod"));
+  CodeMod = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "CodeMod", {
+  enumerable: true,
+  get: function () {
+    return CodeMod();
+  }
+});
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 //# sourceMappingURL=index.js.map

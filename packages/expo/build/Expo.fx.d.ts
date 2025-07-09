@@ -1,4 +1,5 @@
-import './environment/validate.fx';
-import './environment/logging.fx';
+import './winter';
+import './async-require';
 import 'expo-asset';
+import 'expo/virtual/rsc';
 //# sourceMappingURL=Expo.fx.d.ts.map

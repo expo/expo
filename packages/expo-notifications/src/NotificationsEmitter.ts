@@ -1,14 +1,16 @@
-import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
+import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NotificationsEmitterModule);
+const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+const didClearNotificationResponseEventName = 'onDidClearNotificationResponse';
 
 // @docsMissing
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
@@ -16,7 +18,7 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
 /**
  * Listeners registered by this method will be called whenever a notification is received while the app is running.
  * @param listener A function accepting a notification ([`Notification`](#notification)) as an argument.
- * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
+ * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @example Registering a notification listener using a React hook:
  * ```jsx
  * import React from 'react';
@@ -39,8 +41,14 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
  */
 export function addNotificationReceivedListener(
   listener: (event: Notification) => void
-): Subscription {
-  return emitter.addListener<Notification>(didReceiveNotificationEventName, listener);
+): EventSubscription {
+  return emitter.addListener<Notification>(
+    didReceiveNotificationEventName,
+    (notification: Notification) => {
+      const mappedNotification = mapNotification(notification);
+      listener(mappedNotification);
+    }
+  );
 }
 
 /**
@@ -48,17 +56,17 @@ export function addNotificationReceivedListener(
  * Applicable only to Firebase Cloud Messaging which we use as a notifications service on Android. It corresponds to `onDeletedMessages()` callback.
  * More information can be found in [Firebase docs](https://firebase.google.com/docs/cloud-messaging/android/receive#override-ondeletedmessages).
  * @param listener A callback function.
- * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
+ * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @header listen
  */
-export function addNotificationsDroppedListener(listener: () => void): Subscription {
+export function addNotificationsDroppedListener(listener: () => void): EventSubscription {
   return emitter.addListener<void>(didDropNotificationsEventName, listener);
 }
 
 /**
  * Listeners registered by this method will be called whenever a user interacts with a notification (for example, taps on it).
  * @param listener A function accepting notification response ([`NotificationResponse`](#notificationresponse)) as an argument.
- * @return A [`Subscription`](#subscription) object represents the subscription of the provided listener.
+ * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @example Register a notification responder listener:
  * ```jsx
  * import React from 'react';
@@ -83,29 +91,98 @@ export function addNotificationsDroppedListener(listener: () => void): Subscript
  */
 export function addNotificationResponseReceivedListener(
   listener: (event: NotificationResponse) => void
-): Subscription {
+): EventSubscription {
   return emitter.addListener<NotificationResponse>(
     didReceiveNotificationResponseEventName,
-    listener
+    (response: NotificationResponse) => {
+      const mappedResponse = mapNotificationResponse(response);
+      listener(mappedResponse);
+    }
   );
 }
 
 /**
+ * @deprecated call `remove()` on the subscription object instead.
+ *
  * Removes a notification subscription returned by an `addNotificationListener` call.
  * @param subscription A subscription returned by `addNotificationListener` method.
  * @header listen
  */
-export function removeNotificationSubscription(subscription: Subscription) {
-  emitter.removeSubscription(subscription);
+export function removeNotificationSubscription(subscription: EventSubscription) {
+  console.warn(
+    '`removeNotificationSubscription` is deprecated. Call `subscription.remove()` instead.'
+  );
+  if (typeof subscription?.remove === 'function') {
+    subscription.remove();
+  } else {
+    throw new Error(
+      `removeNotificationSubscription: Provided value is not a subscription: ${subscription}`
+    );
+  }
 }
 
-// @docsMissing
 /**
- * @header listen
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
  */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
-  if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
-    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+  return getLastNotificationResponse();
+}
+
+/**
+ * Gets the notification response that was received most recently
+ * (a notification response designates an interaction with a notification, such as tapping on it).
+ *
+ * - `null` - if no notification response has been received yet
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received
+ */
+export function getLastNotificationResponse(): NotificationResponse | null {
+  if (!NotificationsEmitterModule.getLastNotificationResponse) {
+    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponse');
   }
-  return await NotificationsEmitterModule.getLastNotificationResponseAsync();
+  const response = NotificationsEmitterModule.getLastNotificationResponse();
+  const mappedResponse = response ? mapNotificationResponse(response) : response;
+  return mappedResponse;
+}
+
+/**
+ * Clears the notification response that was received most recently. May be used
+ * when an app selects a route based on the notification response, and it is undesirable
+ * to continue selecting the route after the response has already been handled.
+ *
+ * If a component is using the [`useLastNotificationResponse`](#uselastnotificationresponse) hook,
+ * this call will also clear the value returned by the hook.
+ *
+ * @return A promise that resolves if the native call was successful.
+ */
+export async function clearLastNotificationResponseAsync(): Promise<void> {
+  clearLastNotificationResponse();
+}
+
+/**
+ * Clears the notification response that was received most recently. May be used
+ * when an app selects a route based on the notification response, and it is undesirable
+ * to continue selecting the route after the response has already been handled.
+ *
+ * If a component is using the [`useLastNotificationResponse`](#uselastnotificationresponse) hook,
+ * this call will also clear the value returned by the hook.
+ *
+ */
+export function clearLastNotificationResponse(): void {
+  if (!NotificationsEmitterModule.clearLastNotificationResponse) {
+    throw new UnavailabilityError('ExpoNotifications', 'clearLastNotificationResponse');
+  }
+  NotificationsEmitterModule.clearLastNotificationResponse();
+  // Emit event to clear any useLastNotificationResponse hooks, after native call succeeds
+  emitter.emit(didClearNotificationResponseEventName, []);
+}
+
+/**
+ * @hidden
+ */
+export function addNotificationResponseClearedListener(listener: () => void): EventSubscription {
+  return emitter.addListener<void>(didClearNotificationResponseEventName, listener);
 }

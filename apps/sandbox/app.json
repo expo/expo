@@ -2,9 +2,8 @@
   "expo": {
     "name": "sandbox",
     "slug": "sandbox",
-    "privacy": "public",
     "sdkVersion": "UNVERSIONED",
-    
+    "scheme": "sandbox",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,15 +15,32 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
     },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "origin": "https://naviloop.netlify.app/",
+          "asyncRoutes": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "output": "server"
     }
   }
 }

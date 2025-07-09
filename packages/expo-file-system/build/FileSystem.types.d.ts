@@ -184,7 +184,7 @@ export type FileInfo =
      */
     uri: string;
     /**
-     * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
+     * The size of the file in bytes.
      */
     size: number;
     /**
@@ -199,11 +199,11 @@ export type FileInfo =
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */
     md5?: string;
-} | 
+}
 /**
  * Object returned when file do not exist.
  */
-{
+ | {
     exists: false;
     uri: string;
     isDirectory: false;
@@ -257,15 +257,10 @@ export type InfoOptions = {
      * @default false
      */
     md5?: boolean;
-    /**
-     * Explicitly specify that the file size should be included. For example, skipping this can prevent downloading the file if it's stored in iCloud.
-     * The size is always returned for `file://` locations.
-     */
-    size?: boolean;
 };
 export type RelocatingOptions = {
     /**
-     * URI or [SAF](#saf-uri) URI to the asset, file, or directory. See [supported URI schemes](#supported-uri-schemes-1).
+     * URI or [SAF](#saf-uri) URI to the asset, file, or directory. See [supported URI schemes](#supported-uri-schemes).
      */
     from: string;
     /**
@@ -290,11 +285,11 @@ export type FileSystemRequestDirectoryPermissionsResult =
  */
 {
     granted: false;
-} | 
+}
 /**
  * If the permissions were granted.
  */
-{
+ | {
     granted: true;
     /**
      * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.

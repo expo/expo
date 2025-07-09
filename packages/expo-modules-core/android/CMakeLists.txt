@@ -3,10 +3,9 @@ cmake_minimum_required(VERSION 3.4.1)
 project(expo-modules-core)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR} ${BOOST_VERSION}")
 
 string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
@@ -20,6 +19,7 @@ set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
+file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/decorators/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
@@ -66,19 +66,12 @@ target_compile_options(CommonSettings INTERFACE
   ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
 )
 
-# Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
-file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}/${ANDROID_ABI}")
-if (NOT LIBRN_DIR)
-    # If /${ANDROID_ABI} dir not found, then ${REACT_NATIVE_SO_DIR} is probably:
-    # ReactAndroid/build/react-ndk/exported
-    file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}")
-endif ()
-
 # tests
 
 if(${UNIT_TEST})
   if(${USE_HERMES})
-    set(JSEXECUTOR_LIB ReactAndroid::hermes_executor)
+    find_package(hermes-engine REQUIRED CONFIG)
+    set(JSEXECUTOR_LIB hermes-engine::libhermes)
   else()
     set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()
@@ -96,18 +89,25 @@ find_package(fbjni REQUIRED CONFIG)
 
 # includes
 
-get_target_property(INCLUDE_reactnativejni
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+  get_target_property(INCLUDE_reactnativejni
+       ReactAndroid::reactnative
+       INTERFACE_INCLUDE_DIRECTORIES)
+else()
+  get_target_property(INCLUDE_reactnativejni
         ReactAndroid::reactnativejni
         INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+
 target_include_directories(
-        ${PACKAGE_NAME}
-        PRIVATE
-        ${INCLUDE_reactnativejni}/react
+       ${PACKAGE_NAME}
+       PRIVATE
+       ${INCLUDE_reactnativejni}/react
 
         # header only imports from turbomodule, e.g. CallInvokerHolder.h
-        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-        "${COMMON_DIR}"
-        "${SRC_DIR}/fabric"
+       "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+       "${COMMON_DIR}"
+       "${SRC_DIR}/fabric"
 )
 
 # linking
@@ -121,15 +121,26 @@ target_compile_options(
 )
 
 target_link_libraries(
-        ${PACKAGE_NAME}
-        CommonSettings
-        ${LOG_LIB}
-        fbjni::fbjni
-        ReactAndroid::jsi
-        ReactAndroid::reactnativejni
-        ReactAndroid::folly_runtime
-        ReactAndroid::react_nativemodule_core
-        android
-        ${JSEXECUTOR_LIB}
-        ${NEW_ARCHITECTURE_DEPENDENCIES}
+  ${PACKAGE_NAME}
+  CommonSettings
+  ${LOG_LIB}
+  fbjni::fbjni
+  ReactAndroid::jsi
+  android
+  ${JSEXECUTOR_LIB}
+  ${NEW_ARCHITECTURE_DEPENDENCIES}
 )
+
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+   target_link_libraries(
+    ${PACKAGE_NAME}
+    ReactAndroid::reactnative
+   )
+else()
+  target_link_libraries(
+    ${PACKAGE_NAME}
+    ReactAndroid::reactnativejni
+    ReactAndroid::folly_runtime
+    ReactAndroid::react_nativemodule_core
+  )
+endif()

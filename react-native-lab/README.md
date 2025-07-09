@@ -1,6 +1,6 @@
 # React Native Lab
 
-React Native Lab is where we put our latest copy of React Native (as a Git submodule) and scripts and modules to help use it in our projects.
+React Native Lab is where we put our latest copy of React Native (as a Git submodule) and scripts and modules to help use it in Expo Go.
 
 ## React Native submodule
 

@@ -3,27 +3,18 @@ package expo.modules.imageloader
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.os.AsyncTask
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.facebook.common.references.CloseableReference
-import com.facebook.datasource.DataSource
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
-import com.facebook.imagepipeline.image.CloseableImage
-import com.facebook.imagepipeline.request.ImageRequest
-import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.core.interfaces.InternalModule
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 
 class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInterface {
 
-  override fun getExportedInterfaces(): List<Class<*>>? {
+  override fun getExportedInterfaces(): List<Class<*>> {
     return listOf(ImageLoaderInterface::class.java)
   }
 
@@ -34,50 +25,53 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInter
       object : ImageLoaderInterface.ResultListener {
         override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
 
-        override fun onFailure(@Nullable cause: Throwable?) = future.setException(ExecutionException(cause))
+        override fun onFailure(cause: Throwable?) =
+          future.setException(ExecutionException(cause))
       }
     )
     return future
   }
 
-  override fun loadImageForDisplayFromURL(url: String, resultListener: ImageLoaderInterface.ResultListener) {
-    val imageRequest = ImageRequest.fromUri(url)
-    val imagePipeline = Fresco.getImagePipeline()
-    val dataSource = imagePipeline.fetchDecodedImage(imageRequest, context)
-
-    dataSource.subscribe(
-      object : BaseBitmapDataSubscriber() {
-        override fun onNewResultImpl(bitmap: Bitmap?) {
-          bitmap?.let {
-            resultListener.onSuccess(bitmap)
-            return
-          }
-
-          resultListener.onFailure(Exception("Loaded bitmap is null"))
+  override fun loadImageForDisplayFromURL(
+    url: String,
+    resultListener: ImageLoaderInterface.ResultListener
+  ) {
+    Glide.with(context)
+      .asBitmap()
+      .load(url)
+      .into(object : CustomTarget<Bitmap>() {
+        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+          resultListener.onSuccess(resource)
         }
 
-        override fun onFailureImpl(@NonNull dataSource: DataSource<CloseableReference<CloseableImage>>) {
-          resultListener.onFailure(dataSource.failureCause)
+        override fun onLoadCleared(placeholder: Drawable?) {
+          // no op
         }
-      },
-      AsyncTask.THREAD_POOL_EXECUTOR
-    )
+
+        override fun onLoadFailed(errorDrawable: Drawable?) {
+          super.onLoadFailed(errorDrawable)
+          resultListener.onFailure(Exception("Loading bitmap failed"))
+        }
+      })
   }
 
-  override fun loadImageForManipulationFromURL(@NonNull url: String): Future<Bitmap> {
+  override fun loadImageForManipulationFromURL(url: String): Future<Bitmap> {
     val future = SimpleSettableFuture<Bitmap>()
     loadImageForManipulationFromURL(
       url,
       object : ImageLoaderInterface.ResultListener {
         override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
 
-        override fun onFailure(@NonNull cause: Throwable?) = future.setException(ExecutionException(cause))
+        override fun onFailure(cause: Throwable?) = future.setException(ExecutionException(cause))
       }
     )
     return future
   }
 
-  override fun loadImageForManipulationFromURL(url: String, resultListener: ImageLoaderInterface.ResultListener) {
+  override fun loadImageForManipulationFromURL(
+    url: String,
+    resultListener: ImageLoaderInterface.ResultListener
+  ) {
     val normalizedUrl = normalizeAssetsUrl(url)
 
     Glide.with(context)
@@ -85,12 +79,17 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInter
       .diskCacheStrategy(DiskCacheStrategy.NONE)
       .skipMemoryCache(true)
       .load(normalizedUrl)
-      .into(object : SimpleTarget<Bitmap>() {
+      .into(object : CustomTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
           resultListener.onSuccess(resource)
         }
 
+        override fun onLoadCleared(placeholder: Drawable?) {
+          // no op
+        }
+
         override fun onLoadFailed(errorDrawable: Drawable?) {
+          super.onLoadFailed(errorDrawable)
           resultListener.onFailure(Exception("Loading bitmap failed"))
         }
       })

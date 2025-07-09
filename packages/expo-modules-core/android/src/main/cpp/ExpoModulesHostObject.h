@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "JSIInteropModuleRegistry.h"
+#include "JSIContext.h"
 
 #include <jsi/jsi.h>
 
@@ -22,7 +22,7 @@ using UniqueJSIObject = std::unique_ptr<jsi::Object>;
  */
 class ExpoModulesHostObject : public jsi::HostObject {
 public:
-  ExpoModulesHostObject(JSIInteropModuleRegistry *installer);
+  ExpoModulesHostObject(JSIContext *installer);
 
   ~ExpoModulesHostObject() override;
 
@@ -33,7 +33,7 @@ public:
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
 private:
-  JSIInteropModuleRegistry *installer;
+  JSIContext *installer;
   std::unordered_map<std::string, UniqueJSIObject> modulesCache;
 };
 } // namespace expo

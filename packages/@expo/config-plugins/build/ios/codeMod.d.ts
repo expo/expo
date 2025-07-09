@@ -11,6 +11,13 @@ interface InsertContentFunctionOptions {
  */
 export declare function addObjcImports(source: string, imports: string[]): string;
 /**
+ * Add Swift import
+ * @param source source contents
+ * @param imports array of imports, e.g. ['Expo']
+ * @returns updated contents
+ */
+export declare function addSwiftImports(source: string, imports: string[]): string;
+/**
  * Find code block of Objective-C interface or implementation
  *
  * @param contents source contents

@@ -40,6 +40,11 @@ export function _processAndroidXML(manifest: any): XMLObject {
       if (string.$.translatable === 'false' || string.$.translatable === false) {
         continue;
       }
+
+      if (!('_' in string)) {
+        throw new Error(`Empty string resource not supported: ${JSON.stringify(string)}`);
+      }
+
       string._ = unescapeAndroidString(string._);
     }
   }

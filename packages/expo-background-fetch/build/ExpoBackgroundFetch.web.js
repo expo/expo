@@ -1,8 +1,5 @@
 import { BackgroundFetchStatus } from './BackgroundFetch.types';
 export default {
-    get name() {
-        return 'ExpoBackgroundFetch';
-    },
     async getStatusAsync() {
         return BackgroundFetchStatus.Restricted;
     },

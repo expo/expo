@@ -1,1 +1,0 @@
-{"version":3,"file":"resolveAssetSource.js","sourceRoot":"","sources":["../../src/utils/resolveAssetSource.tsx"],"names":[],"mappings":"AAAA,OAAO,kBAAkB,MAAM,iDAAiD,CAAC;AAEjF,eAAe,kBAAkB,CAAC","sourcesContent":["import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';\n\nexport default resolveAssetSource;\n"]}

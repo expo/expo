@@ -10,7 +10,7 @@ data class GetAssetsQuery(
   val selection: String,
   val order: String,
   val limit: Double,
-  val offset: Int,
+  val offset: Int
 )
 
 @Throws(IllegalArgumentException::class)

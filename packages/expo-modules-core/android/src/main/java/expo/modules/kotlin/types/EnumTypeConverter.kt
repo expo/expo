@@ -1,6 +1,8 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.ExpectedType
@@ -8,14 +10,11 @@ import expo.modules.kotlin.logger
 import expo.modules.kotlin.toKType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
-  private val enumClass: KClass<Enum<*>>,
-  isOptional: Boolean
-) : DynamicAwareTypeConverters<Enum<*>>(isOptional) {
+  private val enumClass: KClass<Enum<*>>
+) : DynamicAwareTypeConverters<Enum<*>>() {
   private val enumConstants = requireNotNull(enumClass.java.enumConstants) {
     "Passed type is not an enum type"
   }.also {
@@ -29,8 +28,8 @@ class EnumTypeConverter(
   }
 
   init {
-    if (!enumClass.isSubclassOf(Enumerable::class)) {
-      logger.warn("Enum '$enumClass' should inherit from ${Enumerable::class}.")
+    if (!Enumerable::class.java.isAssignableFrom(enumClass.java)) {
+      logger.error("Enum '$enumClass' should inherit from ${Enumerable::class}.")
     }
   }
 
@@ -38,9 +37,9 @@ class EnumTypeConverter(
 
   override fun isTrivial() = false
 
-  override fun convertFromDynamic(value: Dynamic): Enum<*> {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(value.asString(), enumConstants)
+      return convertEnumWithoutParameter(value.asString() ?: throw DynamicCastException(String::class), enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
         value,
@@ -52,7 +51,7 @@ class EnumTypeConverter(
     throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
   }
 
-  override fun convertFromAny(value: Any): Enum<*> {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value as String, enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
@@ -87,22 +86,20 @@ class EnumTypeConverter(
     enumConstants: Array<out Enum<*>>,
     parameterName: String
   ): Enum<*> {
-    // To obtain the value of parameter, we have to find a property that is connected with this parameter.
-    @Suppress("UNCHECKED_CAST")
-    val parameterProperty = enumClass
-      .declaredMemberProperties
-      .find { it.name == parameterName }
-    requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
+    val filed = enumClass.java.getDeclaredField(parameterName)
+    requireNotNull(filed) { "Cannot find a property for $parameterName parameter" }
 
-    val parameterType = parameterProperty.returnType.classifier
+    filed.isAccessible = true
+
+    val parameterType = filed.type
     val jsUnwrapValue = if (jsValue is Dynamic) {
-      if (parameterType == String::class) {
+      if (parameterType == String::class.java) {
         jsValue.asString()
       } else {
         jsValue.asInt()
       }
     } else {
-      if (parameterType == String::class) {
+      if (parameterType == String::class.java) {
         jsValue as String
       } else {
         if (jsValue is Double) {
@@ -115,7 +112,7 @@ class EnumTypeConverter(
 
     return requireNotNull(
       enumConstants.find {
-        parameterProperty.get(it) == jsUnwrapValue
+        filed.get(it) == jsUnwrapValue
       }
     ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
   }

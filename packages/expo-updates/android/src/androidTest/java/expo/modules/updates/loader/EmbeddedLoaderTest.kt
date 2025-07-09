@@ -4,15 +4,16 @@ import android.net.Uri
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
-import expo.modules.manifests.core.BareManifest
+import expo.modules.manifests.core.EmbeddedManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.Loader.LoaderCallback
-import expo.modules.updates.manifest.BareUpdateManifest
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.manifest.EmbeddedUpdate
+import expo.modules.updates.manifest.Update
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -30,8 +31,10 @@ import java.security.NoSuchAlgorithmException
 class EmbeddedLoaderTest {
   private lateinit var db: UpdatesDatabase
   private lateinit var configuration: UpdatesConfiguration
-  private lateinit var manifest: UpdateManifest
+  private lateinit var logger: UpdatesLogger
+  private lateinit var manifest: Update
   private lateinit var loader: EmbeddedLoader
+  private lateinit var loaderWithCopyAssets: EmbeddedLoader
   private lateinit var mockLoaderFiles: LoaderFiles
   private lateinit var mockCallback: LoaderCallback
 
@@ -44,21 +47,33 @@ class EmbeddedLoaderTest {
     )
     configuration = UpdatesConfiguration(null, configMap)
     val context = InstrumentationRegistry.getInstrumentation().targetContext
+    logger = UpdatesLogger(context.filesDir)
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
     mockLoaderFiles = mockk(relaxed = true)
     loader = EmbeddedLoader(
       context,
       configuration,
+      logger,
       db,
       File("testDirectory"),
-      mockLoaderFiles
+      mockLoaderFiles,
+      shouldCopyEmbeddedAssets = false
     )
-    manifest = BareUpdateManifest.fromBareManifest(
-      BareManifest(JSONObject("{\"id\":\"c3c47024-0e03-4cb4-8e8b-1a0ba2260be6\",\"commitTime\":1630374791665,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
+    loaderWithCopyAssets = EmbeddedLoader(
+      context,
+      configuration,
+      logger,
+      db,
+      File("testDirectory"),
+      mockLoaderFiles,
+      shouldCopyEmbeddedAssets = true
+    )
+    manifest = EmbeddedUpdate.fromEmbeddedManifest(
+      EmbeddedManifest(JSONObject("{\"id\":\"c3c47024-0e03-4cb4-8e8b-1a0ba2260be6\",\"commitTime\":1630374791665,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
       configuration
     )
 
-    every { mockLoaderFiles.readEmbeddedManifest(any(), any()) } returns manifest
+    every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns manifest
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } answers { callOriginal() } // test for exception cases
 
     mockCallback = mockk(relaxUnitFun = true)
@@ -72,7 +87,6 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
@@ -83,11 +97,57 @@ class EmbeddedLoaderTest {
   }
 
   @Test
-  @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_FailureToCopyAssets() {
-    every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
+  @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoader_MultipleScales() {
+    val multipleScalesManifest: Update = EmbeddedUpdate.fromEmbeddedManifest(
+      EmbeddedManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2,3],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2,3],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
+      configuration
+    )
+
+    every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns multipleScalesManifest
 
     loader.start(mockCallback)
+
+    verify { mockCallback.onSuccess(any()) }
+    verify(exactly = 0) { mockCallback.onFailure(any()) }
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    val assets = db.assetDao().loadAllAssets()
+    Assert.assertEquals(3, assets.size.toLong())
+  }
+
+  @Test
+  @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoader_MultipleScales_ReverseOrder() {
+    val multipleScalesManifest: Update = EmbeddedUpdate.fromEmbeddedManifest(
+      EmbeddedManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
+      configuration
+    )
+
+    every { mockLoaderFiles.readEmbeddedUpdate(any(), any()) } returns multipleScalesManifest
+
+    loader.start(mockCallback)
+
+    verify { mockCallback.onSuccess(any()) }
+    verify(exactly = 0) { mockCallback.onFailure(any()) }
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    val assets = db.assetDao().loadAllAssets()
+    Assert.assertEquals(3, assets.size.toLong())
+  }
+
+  @Test
+  @Throws(IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoaderWithCopyAssets_FailureToCopyAssets() {
+    every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
+
+    loaderWithCopyAssets.start(mockCallback)
 
     verify(exactly = 0) { mockCallback.onSuccess(any()) }
     verify { mockCallback.onFailure(any()) }
@@ -103,66 +163,18 @@ class EmbeddedLoaderTest {
   }
 
   @Test
-  @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_MultipleScales() {
-    val multipleScalesManifest: UpdateManifest = BareUpdateManifest.fromBareManifest(
-      BareManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
-      configuration
-    )
-
-    every { mockLoaderFiles.readEmbeddedManifest(any(), any()) } returns multipleScalesManifest
-
-    loader.start(mockCallback)
-
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
-
-    val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
-
-    val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
-  }
-
-  @Test
-  @Throws(JSONException::class, IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_MultipleScales_ReverseOrder() {
-    val multipleScalesManifest: UpdateManifest = BareUpdateManifest.fromBareManifest(
-      BareManifest(JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
-      configuration
-    )
-
-    every { mockLoaderFiles.readEmbeddedManifest(any(), any()) } returns multipleScalesManifest
-
-    loader.start(mockCallback)
-
-    verify { mockCallback.onSuccess(any()) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
-
-    val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(1, updates.size.toLong())
-    Assert.assertEquals(UpdateStatus.EMBEDDED, updates[0].status)
-
-    val assets = db.assetDao().loadAllAssets()
-    Assert.assertEquals(2, assets.size.toLong())
-  }
-
-  @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_AssetExists_BothDbAndDisk() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_BothDbAndDisk() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    every { mockLoaderFiles.fileExists(any()) } answers {
-      firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
+      thirdArg<String>().contains("54da1e9816c77e30ebc5920e256736f2")
     }
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
-    db.assetDao()._insertAsset(existingAsset)
+    db.assetDao().insertAssetForTest(existingAsset)
 
-    loader.start(mockCallback)
+    loaderWithCopyAssets.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
@@ -180,15 +192,15 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_AssetExists_DbOnly() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DbOnly() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    every { mockLoaderFiles.fileExists(any()) } returns false
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } returns false
 
     val existingAsset = AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png")
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png"
-    db.assetDao()._insertAsset(existingAsset)
+    db.assetDao().insertAssetForTest(existingAsset)
 
-    loader.start(mockCallback)
+    loaderWithCopyAssets.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
@@ -208,15 +220,15 @@ class EmbeddedLoaderTest {
 
   @Test
   @Throws(IOException::class, NoSuchAlgorithmException::class)
-  fun testEmbeddedLoader_AssetExists_DiskOnly() {
+  fun testEmbeddedLoaderWithCopyAssets_AssetExists_DiskOnly() {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    every { mockLoaderFiles.fileExists(any()) } answers {
-      firstArg<File>().toString().contains("54da1e9816c77e30ebc5920e256736f2")
+    every { mockLoaderFiles.fileExists(any(), any(), any()) } answers {
+      thirdArg<String>().contains("54da1e9816c77e30ebc5920e256736f2")
     }
 
     Assert.assertEquals(0, db.assetDao().loadAllAssets().size.toLong())
 
-    loader.start(mockCallback)
+    loaderWithCopyAssets.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
@@ -240,7 +252,8 @@ class EmbeddedLoaderTest {
       manifest.updateEntity!!.id,
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
-      manifest.updateEntity!!.scopeKey
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
@@ -263,7 +276,8 @@ class EmbeddedLoaderTest {
       manifest.updateEntity!!.id,
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
-      manifest.updateEntity!!.scopeKey
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest
     )
     update.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(update)
@@ -272,9 +286,6 @@ class EmbeddedLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-
-    // missing assets should still be copied
-    verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())

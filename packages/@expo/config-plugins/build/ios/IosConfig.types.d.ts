@@ -34,12 +34,16 @@ export type InfoPlist = Record<string, JSONValue | undefined> & {
 export type ExpoPlist = {
     EXUpdatesCheckOnLaunch?: string;
     EXUpdatesEnabled?: boolean;
+    EXUpdatesHasEmbeddedUpdate?: boolean;
     EXUpdatesLaunchWaitMs?: number;
-    EXUpdatesReleaseChannel?: string;
     EXUpdatesRuntimeVersion?: string;
     EXUpdatesRequestHeaders?: Record<string, string>;
+    /**
+     * @deprecated removed, but kept in types so that it can be mutated (deleted) from existing plists
+     */
     EXUpdatesSDKVersion?: string;
     EXUpdatesURL?: string;
     EXUpdatesCodeSigningCertificate?: string;
     EXUpdatesCodeSigningMetadata?: Record<string, string>;
+    EXUpdatesDisableAntiBrickingMeasures?: boolean;
 };

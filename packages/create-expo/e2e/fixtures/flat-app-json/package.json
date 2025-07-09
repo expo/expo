@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "name": "flat-app-json",
+  "version": "0.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "dependencies": {
+    "expo": "^50",
+    "react": "18.2.0",
+    "react-native": "0.73.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  }
+}

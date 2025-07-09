@@ -5,7 +5,7 @@ import ExpoModulesTestCore
 @testable import EXUpdates
 
 class CodeSigningConfigurationSpec : ExpoSpec {
-  override func spec() {
+  override class func spec() {
     it("works with spearate certificate chain") {
       let leafCert = getTestCertificate(TestCertificate.chainLeaf)
       let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)
@@ -89,6 +89,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
     describe("validateSignature") {
       it("works for valid case") {
         let cert = getTestCertificate(TestCertificate.test)
+        let logger = UpdatesLogger()
         let configuration = try CodeSigningConfiguration(
           embeddedCertificateString: cert,
           metadata: [:],
@@ -96,8 +97,9 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
-          signature: CertificateFixtures.testNewManifestBodySignature,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          logger: logger,
+          signature: CertificateFixtures.testExpoUpdatesManifestBodySignature,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.valid
@@ -106,6 +108,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
 
       it("returns false when signature is invalid") {
         let cert = getTestCertificate(TestCertificate.test)
+        let logger = UpdatesLogger()
         let configuration = try CodeSigningConfiguration(
           embeddedCertificateString: cert,
           metadata: [:],
@@ -113,8 +116,9 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
+          logger: logger,
           signature: "sig=\"aGVsbG8=\"",
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.invalid
@@ -122,6 +126,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
       }
 
       it("throws when key does not match") {
+        let logger = UpdatesLogger()
         let cert = getTestCertificate(TestCertificate.test)
         let configuration = try CodeSigningConfiguration(
           embeddedCertificateString: cert,
@@ -131,14 +136,16 @@ class CodeSigningConfigurationSpec : ExpoSpec {
         )
         expect {
           try configuration.validateSignature(
+            logger: logger,
             signature: "sig=\"aGVsbG8=\", keyid=\"other\"",
-            signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+            signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
             manifestResponseCertificateChain: nil
           )
         }.to(throwError(CodeSigningError.KeyIdMismatchError))
       }
 
       it("does not use chain in manifest response if flag is false") {
+        let logger = UpdatesLogger()
         let testCert = getTestCertificate(TestCertificate.test)
         let leafCert = getTestCertificate(TestCertificate.chainLeaf)
         let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)
@@ -149,8 +156,9 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
-          signature: CertificateFixtures.testNewManifestBodySignature,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          logger: logger,
+          signature: CertificateFixtures.testExpoUpdatesManifestBodySignature,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: leafCert + intermediateCert
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.valid
@@ -158,6 +166,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
       }
 
       it("does use chain in manifest response if flag is true") {
+        let logger = UpdatesLogger()
         let leafCert = getTestCertificate(TestCertificate.chainLeaf)
         let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)
         let rootCert = getTestCertificate(TestCertificate.chainRoot)
@@ -168,8 +177,9 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: false
         )
         let signatureValidationResult = try configuration.validateSignature(
-          signature: CertificateFixtures.testNewManifestBodyValidChainLeafSignature,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          logger: logger,
+          signature: CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: leafCert + intermediateCert
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.valid
@@ -180,6 +190,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
       }
 
       it("AllowsUnsignedManifestIfAllowUnsignedFlagIsTrue") {
+        let logger = UpdatesLogger()
         let testCert = getTestCertificate(TestCertificate.test)
         let configuration = try CodeSigningConfiguration(
           embeddedCertificateString: testCert,
@@ -188,8 +199,9 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: true
         )
         let signatureValidationResult = try configuration.validateSignature(
+          logger: logger,
           signature: nil,
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.skipped
@@ -197,6 +209,7 @@ class CodeSigningConfigurationSpec : ExpoSpec {
       }
 
       it("ChecksSignedManifestIfAllowUnsignedFlagIsTrueButSignatureIsProvided") {
+        let logger = UpdatesLogger()
         let testCert = getTestCertificate(TestCertificate.test)
         let configuration = try CodeSigningConfiguration(
           embeddedCertificateString: testCert,
@@ -205,8 +218,9 @@ class CodeSigningConfigurationSpec : ExpoSpec {
           allowUnsignedManifests: true
         )
         let signatureValidationResult = try configuration.validateSignature(
+          logger: logger,
           signature: "sig=\"aGVsbG8=\"",
-          signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
+          signedData: CertificateFixtures.testExpoUpdatesManifestBody.data(using: .utf8)!,
           manifestResponseCertificateChain: nil
         )
         expect(signatureValidationResult.validationResult) == ValidationResult.invalid

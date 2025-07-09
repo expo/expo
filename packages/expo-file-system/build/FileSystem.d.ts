@@ -11,11 +11,14 @@ export declare const documentDirectory: string | null;
  * Example uses are for downloaded or generated files that the app just needs for one-time usage.
  */
 export declare const cacheDirectory: string | null;
-export declare const bundledAssets: string | null, bundleDirectory: string | null;
+/**
+ * URI to the directory where assets bundled with the application are stored.
+ */
+export declare const bundleDirectory: string | null;
 /**
  * Get metadata information about a file, directory or external content/asset.
  * @param fileUri URI to the file or directory. See [supported URI schemes](#supported-uri-schemes).
- * @param options A map of options represented by [`GetInfoAsyncOptions`](#getinfoasyncoptions) type.
+ * @param options A map of options represented by [`InfoOptions`](#infooptions) type.
  * @return A Promise that resolves to a `FileInfo` object. If no item exists at this URI,
  * the returned Promise resolves to `FileInfo` object in form of `{ exists: false, isDirectory: false }`.
  */
@@ -85,14 +88,12 @@ export declare function makeDirectoryAsync(fileUri: string, options?: MakeDirect
 export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
 /**
  * Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to the number of bytes available on the internal disk, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * @return Returns a Promise that resolves to the number of bytes available on the internal disk.
  */
 export declare function getFreeDiskStorageAsync(): Promise<number>;
 /**
  * Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
- * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER)
- * if the capacity is greater than 2<sup>53</sup> - 1 bytes.
+ * @return Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
  */
 export declare function getTotalDiskCapacityAsync(): Promise<number>;
 /**
@@ -142,7 +143,7 @@ export declare function downloadAsync(uri: string, fileUri: string, options?: Do
  *
  * **Server**
  *
- * Please refer to the "[Server: Handling multipart requests](#server-handling-multipart-requests)" example - there is code for a simple Node.js server.
+ * Refer to the "[Server: Handling multipart requests](#server-handling-multipart-requests)" example - there is code for a simple Node.js server.
  * @return Returns a Promise that resolves to `FileSystemUploadResult` object.
  */
 export declare function uploadAsync(url: string, fileUri: string, options?: FileSystemUploadOptions): Promise<FileSystemUploadResult>;
@@ -167,7 +168,6 @@ export declare function createUploadTask(url: string, fileUri: string, options?:
 export declare abstract class FileSystemCancellableNetworkTask<T extends DownloadProgressData | UploadProgressData> {
     private _uuid;
     protected taskWasCanceled: boolean;
-    private emitter;
     private subscription?;
     cancelAsync(): Promise<void>;
     protected isTaskCancelled(): boolean;
@@ -185,7 +185,7 @@ export declare class UploadTask extends FileSystemCancellableNetworkTask<UploadP
     constructor(url: string, fileUri: string, options?: FileSystemUploadOptions, callback?: FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined);
     protected getEventName(): string;
     protected getCallback(): FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined;
-    uploadAsync(): Promise<FileSystemUploadResult | undefined>;
+    uploadAsync(): Promise<FileSystemUploadResult | undefined | null>;
 }
 export declare class DownloadResumable extends FileSystemCancellableNetworkTask<DownloadProgressData> {
     private url;
@@ -306,6 +306,7 @@ export declare namespace StorageAccessFramework {
      * `StorageAccessFramework.requestDirectoryPermissionsAsync()` when you trying to migrate an album. In that case, the name of the album is the folder name.
      * @param folderName The name of the folder which is located in the Android root directory.
      * @return Returns a [SAF URI](#saf-uri) to a folder.
+     * @platform Android
      */
     function getUriForDirectoryInRoot(folderName: string): string;
     /**
@@ -320,6 +321,7 @@ export declare namespace StorageAccessFramework {
      * Enumerate the contents of a directory.
      * @param dirUri [SAF](#saf-uri) URI to the directory.
      * @return A Promise that resolves to an array of strings, each containing the full [SAF URI](#saf-uri) of a file or directory contained in the directory at `fileUri`.
+     * @platform Android
      */
     function readDirectoryAsync(dirUri: string): Promise<string[]>;
     /**
@@ -327,6 +329,7 @@ export declare namespace StorageAccessFramework {
      * @param parentUri The [SAF](#saf-uri) URI to the parent directory.
      * @param dirName The name of new directory.
      * @return A Promise that resolves to a [SAF URI](#saf-uri) to the created directory.
+     * @platform Android
      */
     function makeDirectoryAsync(parentUri: string, dirName: string): Promise<string>;
     /**
@@ -335,6 +338,7 @@ export declare namespace StorageAccessFramework {
      * @param fileName The name of new file **without the extension**.
      * @param mimeType The MIME type of new file.
      * @return A Promise that resolves to a [SAF URI](#saf-uri) to the created file.
+     * @platform Android
      */
     function createFileAsync(parentUri: string, fileName: string, mimeType: string): Promise<string>;
     /**

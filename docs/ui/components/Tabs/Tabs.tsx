@@ -1,58 +1,71 @@
-import { css } from '@emotion/react';
-import { shadows, theme } from '@expo/styleguide';
-import { borderRadius, spacing } from '@expo/styleguide-base';
+import { mergeClasses } from '@expo/styleguide';
 import { TabList, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
-import * as React from 'react';
+import {
+  Children,
+  PropsWithChildren,
+  isValidElement,
+  useState,
+  useContext,
+  ReactNode,
+  useMemo,
+} from 'react';
 
 import { TabButton } from './TabButton';
+import { SharedTabsContext } from './TabsGroup';
 
-type Props = React.PropsWithChildren<TabsProps> & {
+type Props = PropsWithChildren<TabsProps> & {
   tabs: string[];
 };
 
-const generateTabLabels = (children: React.ReactNode) => {
-  return React.Children.map(children, child =>
-    React.isValidElement(child) ? child?.props?.label : child || '[untitled]'
+const generateTabLabels = (children: ReactNode) => {
+  return Children.map(children, child =>
+    isValidElement<{ label: string }>(child) ? child?.props?.label : (child ?? '[untitled]')
   );
 };
 
-export const Tabs = ({ children, tabs }: Props) => {
-  const tabTitles = tabs || generateTabLabels(children);
-  const [tabIndex, setTabIndex] = React.useState(0);
+export const Tabs = (props: Props) => {
+  const context = useContext(SharedTabsContext);
+  const [tabIndex, setTabIndex] = useState(0);
+
+  if (context) {
+    return <InnerTabs {...props} {...context} />;
+  }
+
+  return <InnerTabs {...props} index={tabIndex} setIndex={setTabIndex} />;
+};
+
+const InnerTabs = ({
+  children,
+  tabs,
+  index: tabIndex,
+  setIndex,
+}: Props & { index: number; setIndex: (index: number) => void }) => {
+  const tabTitles = tabs ?? generateTabLabels(children);
+
+  const layoutId = useMemo(
+    () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).slice(5)}-`),
+    []
+  );
 
   return (
-    <ReachTabs index={tabIndex} onChange={setTabIndex} css={tabsWrapperStyle}>
-      <TabList css={tabsListStyle}>
+    <ReachTabs
+      index={tabIndex}
+      onChange={setIndex}
+      className="my-4 rounded-md border border-default shadow-xs">
+      <TabList className="flex flex-wrap gap-1 border-b border-secondary px-4 py-3">
         {tabTitles.map((title, index) => (
-          <TabButton key={index} selected={index === tabIndex}>
-            {title}
-          </TabButton>
+          <TabButton key={index} active={index === tabIndex} label={title} layoutId={layoutId} />
         ))}
       </TabList>
-      <TabPanels css={tabsPanelStyle}>{children}</TabPanels>
+      <TabPanels
+        className={mergeClasses(
+          'px-5 py-4',
+          '[&_ul]:mb-3',
+          'first:[&_figure]:mt-1 first:[&_pre]:mt-1',
+          'last:[&>div>*]:!mb-0'
+        )}>
+        {children}
+      </TabPanels>
     </ReachTabs>
   );
 };
-
-const tabsWrapperStyle = css({
-  border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.sm,
-  boxShadow: shadows.xs,
-  margin: `${spacing[4]}px 0`,
-});
-
-const tabsPanelStyle = css({
-  padding: `${spacing[4]}px ${spacing[5]}px ${spacing[1]}px`,
-
-  'pre:first-child': {
-    marginTop: spacing[1],
-  },
-
-  ul: {
-    marginBottom: spacing[3],
-  },
-});
-
-const tabsListStyle = css({
-  borderBottom: `1px solid ${theme.border.default}`,
-});

@@ -1,0 +1,189 @@
+/**
+ * Test app that shows some features of the Updates API
+ */
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import * as Updates from 'expo-updates';
+import React, { useEffect } from 'react';
+import {
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  Text,
+  View,
+} from 'react-native';
+import { useFonts } from 'expo-font';
+
+SplashScreen.preventAutoHideAsync();
+
+export default function App() {
+  const {
+    currentlyRunning,
+    isUpdateAvailable,
+    isUpdatePending,
+    availableUpdate,
+  } = Updates.useUpdates();
+
+  const [fontLoaded, fontError] = useFonts({
+    Abel_400Regular: require('./embeddedAssets/Abel_400Regular.ttf'),
+    HankenGrotesk_300Light: require('./embeddedAssets/HankenGrotesk_300Light.ttf'),
+    // Roboto_700Bold: require('./assets/Roboto_700Bold.ttf'),
+  });
+
+  useEffect(() => {
+    if (fontError || fontLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontError, fontLoaded]);
+
+  // Displays a message showing whether or not the app is running
+  // a downloaded update
+  const runTypeMessage =
+    __DEV__ && Updates.channel === null
+      ? 'This app is running in dev mode '
+      : currentlyRunning.isEmbeddedLaunch
+      ? 'This app is running from built-in code'
+      : 'This app is running an update';
+
+  const updateMessage = isUpdateAvailable
+    ? `checkForUpdateAsync found a new update: manifest = \n${manifestToString(
+        availableUpdate?.manifest,
+      )}...`
+    : 'No new update available';
+
+  const handleCheckButtonPress = () => {
+    Updates.checkForUpdateAsync().catch((_error) => {});
+  };
+
+  const handleDownloadButtonPress = () => {
+    Updates.fetchUpdateAsync().catch((_error) => {});
+  };
+
+  const handleRunButtonPress = () => {
+    Updates.reloadAsync().catch((_error) => {});
+  };
+
+  if (!fontError && !fontLoaded) {
+    return null;
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Image
+        source={require('./embeddedAssets/dougheadshot.jpg')}
+        height={100}
+        width={100}
+        style={{ height: 100, width: 100 }}
+      />
+      <Image
+        source={require('./assetsInUpdates/coffee-prep.jpg')}
+        height={100}
+        width={100}
+        style={{ height: 100, width: 100 }}
+      />
+      <Text style={styles.titleText}>Updates JS API test</Text>
+      <Text> </Text>
+      <Text>{`App.tsx.update2: ${runTypeMessage}`}</Text>
+      <Text> </Text>
+      {fontError ? (
+        <Text>{`Font error: ${fontError}`}</Text>
+      ) : (
+        <View>
+          <Text style={styles.abelText}>Abel success</Text>
+          <Text style={styles.hankenText}>Hanken success</Text>
+          {/* <Text style={styles.robotoText}>Roboto success</Text> */}
+        </View>
+      )}
+      <Text style={styles.titleText}>Status</Text>
+      <Text style={styles.updateMessageText}>{updateMessage}</Text>
+      <Pressable style={styles.button} onPress={handleCheckButtonPress}>
+        <Text style={styles.buttonText}>Check manually for updates</Text>
+      </Pressable>
+      {isUpdateAvailable ? (
+        <Pressable style={styles.button} onPress={handleDownloadButtonPress}>
+          <Text style={styles.buttonText}>Download update</Text>
+        </Pressable>
+      ) : null}
+      {isUpdatePending ? (
+        <Pressable style={styles.button} onPress={handleRunButtonPress}>
+          <Text style={styles.buttonText}>Run update</Text>
+        </Pressable>
+      ) : null}
+      <StatusBar style="auto" />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#4630EB',
+  },
+  buttonText: {
+    color: 'white',
+  },
+  updateMessageText: {
+    margin: 10,
+    height: 100,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    width: '90%',
+    borderColor: '#4630EB',
+    borderWidth: 1,
+    borderRadius: 4,
+  },
+  titleText: {
+    fontWeight: 'bold',
+  },
+  abelText: {
+    fontFamily: 'Abel_400Regular',
+    alignSelf: 'center',
+  },
+  hankenText: {
+    fontFamily: 'HankenGrotesk_300Light',
+    alignSelf: 'center',
+  },
+  robotoText: {
+    fontFamily: 'Roboto_700Bold',
+    alignSelf: 'center',
+  },
+});
+
+///////////////////////////
+
+/**
+ * Promise wrapper for setTimeout()
+ * @param {delay} timeout Timeout in ms
+ * @returns a Promise that resolves after the timeout has elapsed
+ */
+const delay = (timeout: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+};
+
+const manifestToString = (manifest?: any) => {
+  return manifest
+    ? JSON.stringify(
+        {
+          id: manifest.id,
+          createdAt: manifest.createdAt,
+        },
+        null,
+        2,
+      )
+    : 'null';
+};

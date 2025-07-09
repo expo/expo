@@ -1,18 +1,15 @@
 import {
   createPermissionHook,
+  type EventSubscription,
   PermissionExpiration,
   PermissionHookOptions,
   PermissionResponse,
   PermissionStatus,
   UnavailabilityError,
-  Subscription,
-  EventEmitter,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoBrightness from './ExpoBrightness';
-
-const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 
 // @needsAudit
 export enum BrightnessMode {
@@ -101,8 +98,7 @@ export async function getSystemBrightnessAsync(): Promise<number> {
 
 // @needsAudit
 /**
- * > __WARNING:__ This method is experimental.
- *
+ * @experimental
  * Sets the global system screen brightness and changes the brightness mode to
  * `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
  * @param brightnessValue A number between `0` and `1`, inclusive, representing the desired screen
@@ -190,7 +186,7 @@ export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMod
 // @needsAudit
 /**
  * Checks user's permissions for accessing system brightness.
- * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
+ * @return A promise that fulfils with an object of type [PermissionResponse](#permissionresponse).
  */
 export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return ExpoBrightness.getPermissionsAsync();
@@ -199,7 +195,7 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing system brightness.
- * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
+ * @return A promise that fulfils with an object of type [PermissionResponse](#permissionresponse).
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExpoBrightness.requestPermissionsAsync();
@@ -231,6 +227,8 @@ export const usePermissions = createPermissionHook({
  * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
  * @platform ios
  */
-export function addBrightnessListener(listener: (event: BrightnessEvent) => void): Subscription {
-  return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+export function addBrightnessListener(
+  listener: (event: BrightnessEvent) => void
+): EventSubscription {
+  return ExpoBrightness.addListener('Expo.brightnessDidChange', listener);
 }

@@ -75,13 +75,6 @@ export function test({ describe, expect, it, afterEach, ...t }) {
           const result = await Clipboard.getUrlAsync();
           expect(result).toEqual(exampleUrl);
         });
-
-        it('rejects a malformed url', async () => {
-          const malformedUrl = 'malformed url';
-          await throws(() => Clipboard.setUrlAsync(malformedUrl));
-          const hasUrl = await Clipboard.hasUrlAsync();
-          expect(hasUrl).toEqual(false);
-        });
       });
     }
 

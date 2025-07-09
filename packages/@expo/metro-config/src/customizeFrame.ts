@@ -24,8 +24,6 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     'node_modules/react-native/Libraries/Utilities/HMRClient.js$',
     'node_modules/eventemitter3/index.js',
     'node_modules/event-target-shim/dist/.+\\.js$',
-    // Ignore the log forwarder used in the expo package.
-    '/expo/build/logs/RemoteConsole.js$',
     // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
     'node_modules/invariant/.+\\.js$',
     // Remove babel runtime additions
@@ -40,6 +38,31 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     `\\[native code\\]`,
     // Hide react-dom (web)
     'node_modules/react-dom/.+\\.js$',
+    // Hide node.js evaluation code
+    'node_modules/require-from-string/.+\\.js$',
+    // Block expo's metro-runtime
+    '@expo/metro-runtime/.+\\.ts',
+    '@expo/server/.+\\.ts',
+    // Block upstream metro-runtime
+    '/metro-runtime/.+\\.js$',
+    // Expo's metro-runtime require patch:
+    '@expo/metro-config/require/.+',
+
+    // Block all whatwg polyfills
+    'node_modules/whatwg-.+\\.js$',
+    // Hide expo-router warnings which are often wrapping all routes and imports.
+    'node_modules/expo-router/build/',
+    // No Expo CLI logs
+    '/@expo/cli/.+',
+    // No context modules as these are virtual
+    '.+?ctx=[a-zA-Z0-9]+$',
+    // Hide react-native-web warning wrappers. These are most likely related to style deprecations.
+    '/react-native-web/dist/.+\\.js$',
+    // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
+    'node_modules/react-server-dom-webpack/.+\\.js$',
+
+    // Block all node modules.
+    'node_modules/.+/',
   ].join('|')
 );
 
@@ -78,8 +101,29 @@ export function getDefaultCustomizeFrame(): CustomizeFrameFunc {
       // The URL will also be unactionable in the app and therefore not very useful to the developer.
       if (
         frame.column === 3 &&
-        frame.methodName === 'global code' &&
+        frame.methodName &&
+        ['global', 'global code'].includes(frame.methodName) &&
         frame.file?.match(/^https?:\/\//g)
+      ) {
+        collapse = true;
+      } else if (frame.file === '<native>') {
+        collapse = true;
+      } else if (
+        // Some internal component stacks often don't have a file name.
+        frame.file === '<anonymous>' &&
+        frame.methodName &&
+        [
+          // React
+          'Suspense',
+          // React Native
+          'RCTView',
+          'RCTScrollView',
+          'RCTScrollContentView',
+          // React Native Screens
+          'RNSScreen',
+          'RNSScreenContentWrapper',
+          'RNSScreenNavigationContainer',
+        ].includes(frame.methodName)
       ) {
         collapse = true;
       }

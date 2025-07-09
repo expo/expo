@@ -5,11 +5,8 @@ import java.util.*
 
 val USES_IMPERIAL = listOf("US", "LR", "MM")
 
-val ISOCurrencyCodes: Array<String> by lazy {
-  Currency.getAvailableCurrencies().map { it.currencyCode as String }.toTypedArray()
-}
-
-fun getLocaleNames(locales: List<Locale>) = locales.map { it.toLanguageTag() }.toTypedArray()
+// https://wisevoter.com/country-rankings/countries-that-use-fahrenheit/
+val USES_FAHRENHEIT = listOf("AG", "BZ", "VG", "FM", "MH", "MS", "KN", "BS", "CY", "TC", "US", "LR", "PW", "KY")
 
 fun getCountryCode(locale: Locale): String? {
   return runCatching {
@@ -26,9 +23,14 @@ fun getSystemProperty(key: String): String {
   }.getOrNull() ?: ""
 }
 
-fun getCurrencyCode(locale: Locale): String? {
-  return runCatching {
-    val currency = Currency.getInstance(locale)
-    currency?.currencyCode
-  }.getOrNull()
+fun getRegionCode(locale: Locale): String? {
+  val miuiRegion = getSystemProperty("ro.miui.region")
+  return miuiRegion.ifEmpty {
+    getCountryCode(locale)
+  }
+}
+
+fun getTemperatureUnit(locale: Locale): String? {
+  val countryCode = getRegionCode(locale) ?: return null
+  return if (USES_FAHRENHEIT.contains(countryCode)) "fahrenheit" else "celsius"
 }

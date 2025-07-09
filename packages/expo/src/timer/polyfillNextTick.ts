@@ -4,7 +4,7 @@
  */
 
 if (!process.nextTick) {
-  process.nextTick = (callback, ...args) => {
+  process.nextTick = (callback: (...args: any[]) => any, ...args: any[]) => {
     setTimeout(() => callback(...args), 0);
   };
 }

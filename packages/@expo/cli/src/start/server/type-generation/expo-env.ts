@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const template = `/// <reference types="expo-router/types" />
+const template = `/// <reference types="expo/types" />
 
 // NOTE: This file should not be edited and should be in your git ignore`;
 

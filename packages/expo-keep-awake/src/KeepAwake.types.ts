@@ -10,6 +10,9 @@ export enum KeepAwakeEventState {
 }
 
 // @needsAudit
+/**
+ * @platform web
+ */
 export type KeepAwakeListener = (event: KeepAwakeEvent) => void;
 
 export type KeepAwakeOptions = {

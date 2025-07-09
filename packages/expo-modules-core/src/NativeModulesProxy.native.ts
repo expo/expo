@@ -1,8 +1,13 @@
+// Copyright © 2024 650 Industries.
+// NOTE: Forcing this to be a client boundary so the errors are a bit clearer. In the future we can
+// make this a shim on the server by ignoring the globals that are missing in React Server contexts (Node.js).
+'use client';
+
 import { NativeModules } from 'react-native';
 
-import { ProxyNativeModule } from './NativeModulesProxy.types';
+import type { ProxyNativeModule } from './NativeModulesProxy.types';
 
-const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
+const LegacyNativeProxy = NativeModules?.NativeUnimoduleProxy;
 // Fixes `cannot find name 'global'.` in tests
 // @ts-ignore
 const ExpoNativeProxy = global.expo?.modules?.NativeModulesProxy;
@@ -10,7 +15,11 @@ const ExpoNativeProxy = global.expo?.modules?.NativeModulesProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 
-const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
+/**
+ * @deprecated `NativeModulesProxy` is deprecated and might be removed in the future releases.
+ * Use `requireNativeModule` or `requireOptionalNativeModule` instead.
+ */
+const NativeModulesProxy: Record<string, ProxyNativeModule> = {};
 
 if (LegacyNativeProxy) {
   // use JSI proxy if available, fallback to legacy RN proxy
@@ -21,7 +30,8 @@ if (LegacyNativeProxy) {
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
 
     // copy methods
-    NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
+    // TODO(@kitten): Annotate `NativeProxy` with abstract types to avoid implicit `any`
+    NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo: any) => {
       NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
         // Use the new proxy to call methods on legacy modules, if possible.
         if (ExpoNativeProxy?.callMethod) {
@@ -45,7 +55,7 @@ if (LegacyNativeProxy) {
     });
 
     // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)
-    // only on iOS and they use iOS-specific native module, EXReactNativeEventEmitter.
+    // only on iOS, and they use iOS-specific native module, EXReactNativeEventEmitter.
     //
     // On Android only {start,stop}Observing are called on the native module
     // and these should be exported as Expo methods.

@@ -2,10 +2,6 @@
 
 ## Unpublished
 
-### 📚 3rd party library updates
-
-- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -13,6 +9,135 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 7.1.5 - 2025-07-01
+
+### 💡 Others
+
+- [iOS] Refactor deprecated code ([#36714](https://github.com/expo/expo/pull/36714) by [@hirbod](https://github.com/hirbod))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 7.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2025-04-04
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 7.0.1 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840), [#30860](https://github.com/expo/expo/pull/30860) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [iOS] fix ClipboardPasteButton asking for paste permission ([#30623](https://github.com/expo/expo/pull/30623) by [@vonovak](https://github.com/vonovak))
+- Fixed issue when copying PNG images on Android. ([#29629](https://github.com/expo/expo/pull/29629) by [@weslley75](https://github.com/weslley75))
+- Add missing `react`/`react-native` peer dependencies for isolated modules. ([#30463](https://github.com/expo/expo/pull/30463) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
+- Standardized Babel configuration to use `expo-module-scripts`. ([#31915](https://github.com/expo/expo/pull/31915) by [@reichhartd](https://github.com/reichhartd))
+
+## 6.0.3 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.2 — 2024-04-24
+
+### 💡 Others
+
+- Update mocks for SDK51. ([#28424](https://github.com/expo/expo/pull/28424) by [@aleqsio](https://github.com/aleqsio))
+
+## 6.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2024-04-18
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Rename `CornerStyle` and `DisplayMode` types to include `Type` suffix in name. ([#27190](https://github.com/expo/expo/pull/27190) by [@simek](https://github.com/simek))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 5.0.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2023-12-12
+
+### 🐛 Bug fixes
+
+- [Android] Fix path traversal vulnerability in `getFileForUri` function. ([#25549](https://github.com/expo/expo/pull/25549) by [@behenate](https://github.com/behenate))
+
+## 4.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 4.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.6.0 — 2023-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 4.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 4.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.3.0 — 2023-06-21
+
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`. ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🎉 New features
+
+- On iOS, added native `ClipboardPasteButton` view that uses `UIPasteControl`. ([#22823](https://github.com/expo/expo/pull/22823) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 4.2.0 — 2023-05-08
 

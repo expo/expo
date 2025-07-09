@@ -1,6 +1,6 @@
 package expo.modules.core.logging
 
-import android.content.Context
+import java.io.File
 
 /**
  * Log handler that writes all logs to a file using PersistentFileLog
@@ -8,17 +8,15 @@ import android.content.Context
  */
 internal class PersistentFileLogHandler(
   category: String,
-  context: Context
-) : LogHandler(
-  category
-) {
+  filesDirectory: File
+) : LogHandler() {
 
-  private val persistentFileLog = PersistentFileLog(category, context)
+  private val persistentFileLog = PersistentFileLog(category, filesDirectory)
 
   override fun log(type: LogType, message: String, cause: Throwable?) {
     persistentFileLog.appendEntry(message)
     cause?.let {
-      persistentFileLog.appendEntry("${cause.localizedMessage}\n${cause.stackTraceToString()}")
+      persistentFileLog.appendEntry("${cause.localizedMessageWithCauseLocalizedMessage()}\n${cause.stackTraceToString()}")
     }
   }
 }

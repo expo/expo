@@ -6,16 +6,16 @@ import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
   beforeAll(() => {
-    mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
+    mockProperty(Constants.manifest as any, 'hostUri', 'exp.host/@test/test');
   });
   afterAll(() => {
     unmockAllProperties();
   });
 
   test.each<string>([
-    'exp://127.0.0.1:19000/',
-    'exp://127.0.0.1:19000/--/test/path?query=param',
-    'exp://127.0.0.1:19000?query=param',
+    'exp://127.0.0.1:8081/',
+    'exp://127.0.0.1:8081/--/test/path?query=param',
+    'exp://127.0.0.1:8081?query=param',
     'exp://exp.host/@test/test/--/test/path?query=param',
     'exp://exp.host/@test/test/--/test/path',
     'https://example.com/test/path?query=param',
@@ -46,8 +46,8 @@ describe(Linking.createURL, () => {
         beforeEach(() => {
           console.warn = jest.fn();
           Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-          mockProperty(Constants.manifest, 'hostUri', hostUri);
-          mockProperty(Constants.manifest, 'scheme', 'demo');
+          mockProperty(Constants.manifest as any, 'hostUri', hostUri);
+          mockProperty(Constants.manifest as any, 'scheme', 'demo');
         });
 
         afterEach(() => {
@@ -77,8 +77,8 @@ describe(Linking.createURL, () => {
     beforeEach(() => {
       console.warn = jest.fn();
       Constants.executionEnvironment = ExecutionEnvironment.Bare;
-      mockProperty(Constants.manifest, 'hostUri', null);
-      mockProperty(Constants.manifest, 'scheme', 'demo');
+      mockProperty(Constants.manifest as any, 'hostUri', null);
+      mockProperty(Constants.manifest as any, 'scheme', 'demo');
     });
 
     afterEach(() => {

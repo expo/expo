@@ -9,9 +9,6 @@ import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
 
 object DevLauncherPackageDelegate {
-  @JvmField
-  var enableAutoSetup: Boolean? = null
-
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> = emptyList()
   fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> = emptyList()
   fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> = emptyList()

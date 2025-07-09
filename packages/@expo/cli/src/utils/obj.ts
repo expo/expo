@@ -37,10 +37,13 @@ export function pickBy<T>(
   obj: { [key: string]: T },
   predicate: (value: T, key: string) => boolean | undefined
 ) {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    if (predicate(value, key)) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as { [key: string]: T });
+  return Object.entries(obj).reduce(
+    (acc, [key, value]) => {
+      if (predicate(value, key)) {
+        acc[key] = value;
+      }
+      return acc;
+    },
+    {} as { [key: string]: T }
+  );
 }

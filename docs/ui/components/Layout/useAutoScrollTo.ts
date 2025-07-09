@@ -13,7 +13,9 @@ export function useAutoScrollTo<T extends HTMLElement = HTMLDivElement>(selector
 
   useEffect(
     function onMaybeScroll() {
-      if (!selector || !ref.current) return;
+      if (!selector || !ref.current) {
+        return;
+      }
       const target = ref.current.querySelector<HTMLElement>(selector);
       if (target) {
         const bounds = ref.current.getBoundingClientRect();

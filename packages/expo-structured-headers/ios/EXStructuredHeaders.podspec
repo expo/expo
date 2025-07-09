@@ -10,7 +10,11 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '13.0'
+  s.platforms      = {
+    :ios => '15.1',
+    :tvos => '15.1',
+    :osx => '11.0'
+  }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 

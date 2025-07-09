@@ -6,23 +6,22 @@
 
 @interface EXUserFacingNotificationsPermissionsRequester ()
 
-@property (nonatomic, assign) dispatch_queue_t methodQueue;
+@property (nonatomic, strong) dispatch_queue_t methodQueue;
 
 @end
 
 @implementation EXUserFacingNotificationsPermissionsRequester
-
-static NSDictionary *_requestedPermissions;
 
 + (NSString *)permissionType
 {
   return @"userFacingNotifications";
 }
 
-- (instancetype)initWithMethodQueue:(dispatch_queue_t)methodQueue
+- (instancetype)init
 {
   if (self = [super init]) {
-    _methodQueue = methodQueue;
+    self.methodQueue = dispatch_queue_create("EXUserFacingNotificationsPermissionRequester", DISPATCH_QUEUE_SERIAL);
+    self.authorizationOptions = UNAuthorizationOptionNone;
   }
   return self;
 }
@@ -51,20 +50,11 @@ static NSDictionary *_requestedPermissions;
     status[@"allowsAlert"] = [self notificationSettingToNumber:settings.alertSetting] ?: [NSNull null];
     status[@"allowsBadge"] = [self notificationSettingToNumber:settings.badgeSetting] ?: [NSNull null];
     status[@"allowsSound"] = [self notificationSettingToNumber:settings.soundSetting] ?: [NSNull null];
-
-    if (@available(iOS 12.0, *)) {
-      status[@"allowsCriticalAlerts"] = [self notificationSettingToNumber:settings.criticalAlertSetting] ?: [NSNull null];
-    }
-
+    status[@"allowsCriticalAlerts"] = [self notificationSettingToNumber:settings.criticalAlertSetting] ?: [NSNull null];
     status[@"alertStyle"] = [self alertStyleToEnum:settings.alertStyle];
     status[@"allowsPreviews"] = [self showPreviewsSettingToEnum:settings.showPreviewsSetting];
-    if (@available(iOS 12.0, *)) {
-      status[@"providesAppNotificationSettings"] = @(settings.providesAppNotificationSettings);
-    }
-
-    if (@available(iOS 13.0, *)) {
-      status[@"allowsAnnouncements"] = [self notificationSettingToNumber:settings.announcementSetting] ?: [NSNull null];
-    }
+    status[@"providesAppNotificationSettings"] = @(settings.providesAppNotificationSettings);
+    status[@"allowsAnnouncements"] = [self notificationSettingToNumber:settings.announcementSetting] ?: [NSNull null];
 
     dispatch_semaphore_signal(sem);
   }];
@@ -79,55 +69,14 @@ static NSDictionary *_requestedPermissions;
 
 - (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  if (!_requestedPermissions || [_requestedPermissions count] == 0) {
-    _requestedPermissions = @{
-                              @"allowAlert": @(YES),
-                              @"allowBadge": @(YES),
-                              @"allowSound": @(YES)
-                            };
-  }
-  [self requestPermissions:_requestedPermissions withResolver:resolve rejecter:reject];
-}
-
-- (void)requestPermissions:(NSDictionary *)permissions withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
-{
-  UNAuthorizationOptions options = UNAuthorizationOptionNone;
-  if ([permissions[@"allowAlert"] boolValue]) {
-    options |= UNAuthorizationOptionAlert;
-  }
-  if ([permissions[@"allowBadge"] boolValue]) {
-    options |= UNAuthorizationOptionBadge;
-  }
-  if ([permissions[@"allowSound"] boolValue]) {
-    options |= UNAuthorizationOptionSound;
-  }
-  if ([permissions[@"allowDisplayInCarPlay"] boolValue]) {
-    options |= UNAuthorizationOptionCarPlay;
-  }
-  if (@available(iOS 12.0, *)) {
-    if ([permissions[@"allowCriticalAlerts"] boolValue]) {
-        options |= UNAuthorizationOptionCriticalAlert;
-    }
-    if ([permissions[@"provideAppNotificationSettings"] boolValue]) {
-        options |= UNAuthorizationOptionProvidesAppNotificationSettings;
-    }
-    if ([permissions[@"allowProvisional"] boolValue]) {
-        options |= UNAuthorizationOptionProvisional;
-    }
-  }
-  if (@available(iOS 13.0, *)) {
-    if ([permissions[@"allowAnnouncements"] boolValue]) {
-      options |= UNAuthorizationOptionAnnouncement;
-    }
-  }
-  [self requestAuthorizationOptions:options withResolver:resolve rejecter:reject];
+  [self requestAuthorizationOptions:self.authorizationOptions withResolver:resolve rejecter:reject];
 }
 
 - (void)requestAuthorizationOptions:(UNAuthorizationOptions)options withResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   EX_WEAKIFY(self);
   [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    EX_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     // getPermissions blocks method queue on which this callback is being executed
     // so we have to dispatch to another queue.
     dispatch_async(self.methodQueue, ^{
@@ -192,11 +141,6 @@ static NSDictionary *_requestedPermissions;
     case UNNotificationSettingNotSupported:
       return nil;
   }
-}
-
-+ (void)setRequestedPermissions:(NSDictionary *)permissions
-{
-  _requestedPermissions = permissions;
 }
 
 @end

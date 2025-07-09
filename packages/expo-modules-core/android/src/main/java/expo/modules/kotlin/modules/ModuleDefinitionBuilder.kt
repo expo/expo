@@ -16,17 +16,35 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.mergeWithDefault
+import expo.modules.kotlin.types.toAnyType
+import expo.modules.kotlin.views.ModuleDefinitionBuilderWithCompose
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
+import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 
+const val DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
+
+class ModuleDefinitionBuilder(
+  module: Module? = null
+) : ModuleDefinitionBuilderWithCompose(module)
+
 @DefinitionMarker
-class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
-  private var name: String? = null
+open class InternalModuleDefinitionBuilder(
+  @PublishedApi internal val module: Module? = null,
+  converters: TypeConverterProvider? = module?.converters()?.mergeWithDefault()
+) : ObjectDefinitionBuilder(
+  converters
+) {
+  @PublishedApi
+  internal var name: String? = null
 
   @PublishedApi
-  internal var viewManagerDefinition: ViewManagerDefinition? = null
+  internal var viewManagerDefinitions = mutableMapOf<String, ViewManagerDefinition>()
 
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
@@ -43,7 +61,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     return ModuleDefinitionData(
       requireNotNull(moduleName),
       buildObject(),
-      viewManagerDefinition,
+      viewManagerDefinitions,
       eventListeners,
       registerContracts,
       classData
@@ -57,15 +75,32 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     this.name = name
   }
 
+  @PublishedApi
+  internal fun registerViewDefinition(definition: ViewManagerDefinition) {
+    // For backwards compatibility, the first View is also added to viewManagerDefinitions under the `DEFAULT` key
+    if (definition.name != null) {
+      require(!viewManagerDefinitions.contains(definition.name)) { "The module definition defines more than one view with name ${definition.name}." }
+      viewManagerDefinitions[definition.name] = definition
+    }
+    if (!viewManagerDefinitions.contains(DEFAULT_MODULE_VIEW)) {
+      viewManagerDefinitions[DEFAULT_MODULE_VIEW] = definition
+    }
+  }
+
   /**
    * Creates the view manager definition that scopes other view-related definitions.
    */
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
-    require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
+    val viewDefinitionBuilder = ViewDefinitionBuilder(
+      viewClass,
+      LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }),
+      converters
+    )
 
-    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, typeOf<T>())
+    viewDefinitionBuilder.UseCSSProps()
+
     body.invoke(viewDefinitionBuilder)
-    viewManagerDefinition = viewDefinitionBuilder.build()
+    registerViewDefinition(viewDefinitionBuilder.build())
   }
 
   /**
@@ -104,6 +139,13 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   /**
+   * Creates module's lifecycle listener that is called right before user leaves the activity.
+   */
+  inline fun OnUserLeavesActivity(crossinline body: () -> Unit) {
+    eventListeners[EventName.ON_USER_LEAVES_ACTIVITY] = BasicEventListener(EventName.ON_USER_LEAVES_ACTIVITY) { body() }
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the activity is destroyed.
    */
   inline fun OnActivityDestroys(crossinline body: () -> Unit) {
@@ -126,16 +168,44 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name, Unit::class, typeOf<Unit>())
+    val clazzBuilder = ClassComponentBuilder(
+      requireNotNull(module).appContext,
+      name,
+      Unit::class,
+      toAnyType<Unit>(),
+      converters
+    )
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
 
   inline fun <reified SharedObjectType : SharedObject> Class(
-    sharedObjectClass: KClass<SharedObjectType>,
+    name: String,
+    sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(
+      requireNotNull(module).appContext,
+      name,
+      sharedObjectClass,
+      toAnyType<SharedObjectType>(),
+      converters
+    )
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
+  }
+
+  inline fun <reified SharedObjectType : SharedObject> Class(
+    sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
+    body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
+  ) {
+    val clazzBuilder = ClassComponentBuilder(
+      requireNotNull(module).appContext,
+      sharedObjectClass.java.simpleName,
+      sharedObjectClass,
+      toAnyType<SharedObjectType>(),
+      converters
+    )
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }

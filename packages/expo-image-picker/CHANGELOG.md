@@ -4,11 +4,242 @@
 
 ### 🛠 Breaking changes
 
+- [Web] Changed web `uri` to use blob URLs instead of base64 data URLs for better performance. The `uri` property will now be a blob URL instead of a base64 data URL, while the `base64` property behavior remains unchanged. ([#37447](https://github.com/expo/expo/pull/37447) by [@hirbod](https://github.com/hirbod))
+- [ios] The default for `preferredAssetRepresentationMode` is now `.current` instead of `.automatic`. This keeps the asset in its original container/codec (e.g. HEIC instead of JPEG) and is required for the new fast-path. Apps that relied on `.automatic` re-encoded output can pass `preferredAssetRepresentationMode: '.automatic'` to restore the old behaviour. ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
+
 ### 🎉 New features
+
+- [android] Introduce customizable cropping UI with light and dark theme support ([#37573](https://github.com/expo/expo/pull/37573) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
 
+- Prevent external applications from accessing the CropImageActivity ([#37223](https://github.com/expo/expo/pull/37223) by [@aladine](https://github.com/aladine))
+- [Web] Corrected camera capture attributes on web where front camera was using 'environment' and back camera was using 'user'. Reversed the values to ensure proper camera selection. ([#37447](https://github.com/expo/expo/pull/37447) by [@hirbod](https://github.com/hirbod))
+- [ios]: Enhance image reading logic to prioritize cropped images and improve orientation handling ([#37846](https://github.com/expo/expo/pull/37846) by [@hirbod](https://github.com/hirbod))
+- [android] Adjust video metadata extraction to account for rotation ([#37849](https://github.com/expo/expo/pull/37849) by [@hirbod](https://github.com/hirbod))
+
 ### 💡 Others
+
+- [ios] Images now use a _fast-path_ if possible: the original file is copied once and its size is read from the header (no full decode / re-encode). This requires `quality: 1`, `allowsEditing: false` and `preferredAssetRepresentationMode: .current` (new default) ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
+- [ios] Videos picked with `VideoExportPreset.Passthrough` are no longer transcoded and are copied only once. ([#37569](https://github.com/expo/expo/pull/37569) by [@hirbod](https://github.com/hirbod))
+
+## 16.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 — 2025-04-04
+
+### 🎉 New features
+
+- Added support for ordered selection and default tab selection on Android. ([#34223](https://github.com/expo/expo/pull/34223) by [@fobos531](https://github.com/fobos531))
+- Add support for cameraType in web implementation ([#35221](https://github.com/expo/expo/pull/35221) by [@RyogaK](https://github.com/RyogaK))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `getPendingResultAsync` incorrect return type ([#35791](https://github.com/expo/expo/pull/35791) by [@sorenfrederiksen](https://github.com/sorenfrederiksen))
+- [iOS] Use preferred representation mode to support heic ([#35840](https://github.com/expo/expo/pull/35840) by [@jakex7](https://github.com/jakex7))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+- [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 16.0.6 - 2025-02-10
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.5 - 2025-01-31
+
+### 🐛 Bug fixes
+
+- [ios] fixed concurrency freeze on low-end iOS devices when selecting multiple images. ([#34585](https://github.com/expo/expo/pull/34585) by [@chrfalch](https://github.com/chrfalch))
+- [android] fixed removal of temporary file after picking image using camera ([#34797](https://github.com/expo/expo/pull/34797) by [@chrfalch](https://github.com/chrfalch))
+
+## 16.0.4 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 — 2024-11-22
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.2 — 2024-11-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2024-11-04
+
+### 🐛 Bug fixes
+
+- Fix incorrect width/height reported with EXIF tags 5 and 7 ([#32534](https://github.com/expo/expo/pull/32534) by [@gaearon](https://github.com/gaearon))
+
+## 16.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Remove `READ_MEDIA_IMAGES` and `READ_MEDIA_VIDEO` permissions. ([#31902](https://github.com/expo/expo/pull/31902) by [@aleqsio](https://github.com/aleqsio))
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+- The default value for `quality` option has been changed from `0.2` to `1.0` for better performance and to match the most common expectation. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
+- `ImagePicker.MediaTypeOptions` have been deprecated. Use a single MediaType or an array of MediaTypes instead. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- [web] Include `file` object from input for server uploads. ([#31788](https://github.com/expo/expo/pull/31788) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Add support for picking live photos from the library. ([#30957](https://github.com/expo/expo/pull/30957) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] Provide more image metadata in the result object. ([#29648](https://github.com/expo/expo/pull/29648) by [@vonovak](https://github.com/vonovak))
+- Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
+- [web] Return missing values from video selection. ([#30966](https://github.com/expo/expo/pull/30966) by [@entiendoNull](https://github.com/entiendoNull))
+- [Android] Fix permissions on devices running Android 11 and 12. ([#31396](https://github.com/expo/expo/pull/31396) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Refactored the code on iOS and made promise resolution faster. ([#30896](https://github.com/expo/expo/pull/30896) by [@tsapeta](https://github.com/tsapeta))
+
+## 15.0.7 - 2024-07-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fix an issue where the app will crash when using the popover presentation style on iPad. ([#29892](https://github.com/expo/expo/pull/29892) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.6 - 2024-06-20
+
+### 🐛 Bug fixes
+
+- Support removing microphone permissions through config plugin. ([#29749](https://github.com/expo/expo/pull/29749) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 15.0.5 — 2024-05-15
+
+### 🐛 Bug fixes
+
+- [Android] Add support for granular permissions. ([#28897](https://github.com/expo/expo/pull/28897) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.0.4 — 2024-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.3 — 2024-04-29
+
+### 🎉 New features
+
+- Add new `legacy` option to `ImagePickerOptions` to allow using the legacy image picker on android. ([#28514](https://github.com/expo/expo/pull/28514) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed type exports for isolatedModules option in typescript ([#28499](https://github.com/expo/expo/pull/28499) by [@megacherry](https://github.com/megacherry))
+- On Android, fixed an issue where multiple pickers could be opened, causing a crash. ([#28509](https://github.com/expo/expo/pull/28509) by [@haileyok](https://github.com/haileyok))
+
+## 15.0.2 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-04-22
+
+### 🐛 Bug fixes
+
+- Fixed an issue where cropped images were not returning file size and file name on Android. ([#28352](https://github.com/expo/expo/pull/28352) by [@fobos531](https://github.com/fobos531))
+
+## 15.0.0 — 2024-04-18
+
+### 🎉 New features
+
+- Add ability to disable permissions in config plugin by passing `false` instead of permission messages. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- On Android `fileSize` was named `filesize` which did not match the docs & typescript definition. ([#27293](https://github.com/expo/expo/pull/27293) by [@WookieFPV](https://github.com/wookieFPV))
+- Fixed cancelled picker dialog not resolving with expected result on web. ([#11847](https://github.com/expo/expo/pull/27454) by [@raqso](https://github.com/raqso))
+
+### 💡 Others
+
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Convert WEBP to PNG instead JPEG when selecting an item in the Media Library with editing enabled. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+- Receiving a correct file extension for WEBP files instead `.jpeg` in the ImagePicker result. ([#26419](https://github.com/expo/expo/pull/26419) by [@NikitaDudin](https://github.com/NikitaDudin))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 14.7.1 - 2023-12-19
+
+_This version does not introduce any user-facing changes._
+
+## 14.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- On Android, support `fileName` and `filesize` in the returned assets. ([#24524](https://github.com/expo/expo/pull/24524) by [@alanjhughes](https://github.com/alanjhughes))
+- Support returning the mime type of the returned assets. ([#24659](https://github.com/expo/expo/pull/24659) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- On Android, the `Uri` type is not serializable and causes a crash when recreating the activity. ([#23768](https://github.com/expo/expo/pull/23768) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Remove deprecation warnings on `ImagePickerResult`. ([#24226](https://github.com/expo/expo/pull/24226) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.4.1 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 14.4.0 — 2023-07-28
+
+_This version does not introduce any user-facing changes._
+
+## 14.3.2 - 2023-07-23
+
+### 💡 Others
+
+- On Android, restore behavior from [#22658](https://github.com/expo/expo/pull/22658). ([#23617](https://github.com/expo/expo/pull/23617) by [@alanhughes](https://github.com/alanjhughes)) ([#22658](https://github.com/expo/expo/pull/22658), [#23617](https://github.com/expo/expo/pull/23617) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 14.3.1 - 2023-07-04
+
+### 🐛 Bug fixes
+
+- Fix manifest merger build fail on Android. ([#23191](https://github.com/expo/expo/pull/23191) by [@alexandrius](https://github.com/alexandrius))
+- [Android] Fix backported photo picker crashing with null intent. ([#23224](https://github.com/expo/expo/pull/23224) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+## 14.3.0 — 2023-06-13
+
+### 🎉 New features
+
+- Added ability to choose the preferred asset representation mode on iOS 14+. ([#22456](https://github.com/expo/expo/pull/22456) by [@thespacemanatee](https://github.com/thespacemanatee))
+- Updated the Android image picker to use a [more streamlined and modern interface](https://developer.android.com/training/data-storage/shared/photopicker), closely resembling the one on iOS. [#22658](https://github.com/expo/expo/pull/22658) by [@fobos531](https://github.com/fobos531)
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+- Fixed an issue that allowed picking non-image/video files when passing `MediaTypeOptions.All` ([#22606](https://github.com/expo/expo/pull/22606) by [@fobos531](https://github.com/fobos531))
 
 ## 14.2.0 — 2023-05-08
 
@@ -22,6 +253,7 @@
 - Fix issue where the array of permissions could end up empty causing an exception. ([#21589](https://github.com/expo/expo/pull/21589) by [@alanhughes](https://github.com/alanjhughes))
 - Fix rotated videos returning incorrect width/height. [#12573](https://github.com/expo/expo/issues/12573) ([#21758](https://github.com/expo/expo/pull/21758) by [@mmmulani](https://github.com/mmmulani))
 - Fix NullPointerException for launchCameraAsync on Android 13. ([#22123](https://github.com/expo/expo/pull/22123) by [@witheroux](https://github.com/witheroux))
+- [Android] Fix image picker returning inverted dimensions when selecting vertical images without editing. ([#22383](https://github.com/expo/expo/pull/22383) by [@behenate](https://github.com/behenate))
 
 ## 14.1.1 — 2023-02-09
 

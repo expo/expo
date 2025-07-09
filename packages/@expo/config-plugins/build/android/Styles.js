@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.assignStylesValue = assignStylesValue;
+exports.getAppThemeGroup = getAppThemeGroup;
 exports.getAppThemeLightNoActionBarGroup = getAppThemeLightNoActionBarGroup;
 exports.getProjectStylesXMLPathAsync = getProjectStylesXMLPathAsync;
 exports.getStyleParent = getStyleParent;
@@ -46,9 +47,8 @@ async function getProjectStylesXMLPathAsync(projectRoot, {
   });
 }
 function ensureDefaultStyleResourceXML(xml) {
-  var _xml, _xml$resources;
   xml = (0, _Resources().ensureDefaultResourceXML)(xml);
-  if (!Array.isArray((_xml = xml) === null || _xml === void 0 ? void 0 : (_xml$resources = _xml.resources) === null || _xml$resources === void 0 ? void 0 : _xml$resources.style)) {
+  if (!Array.isArray(xml?.resources?.style)) {
     xml.resources.style = [];
   }
   return xml;
@@ -86,7 +86,11 @@ function setStylesItem({
   xml = ensureDefaultStyleResourceXML(xml);
   let appTheme = getStyleParent(xml, parent);
   if (!appTheme) {
-    appTheme = (0, _Resources().buildResourceGroup)(parent);
+    appTheme = (0, _Resources().buildResourceGroup)({
+      parent: 'Theme.AppCompat.Light.NoActionBar',
+      // Default AppTheme parent
+      ...parent
+    });
     xml.resources.style.push(appTheme);
   }
   if (appTheme.item) {
@@ -113,7 +117,7 @@ function removeStylesItem({
 }) {
   xml = ensureDefaultStyleResourceXML(xml);
   const appTheme = getStyleParent(xml, parent);
-  if (appTheme !== null && appTheme !== void 0 && appTheme.item) {
+  if (appTheme?.item) {
     const index = appTheme.item.findIndex(({
       $: head
     }) => head.name === name);
@@ -124,11 +128,22 @@ function removeStylesItem({
   return xml;
 }
 
-// This is a very common theme so make it reusable.
+/**
+ * @deprecated Use `getAppThemeGroup` instead.
+ * Matching on both style name and parent leads to prebuild issues, as `AppTheme`
+ * style parent might be changed (when edge-to-edge is enabled, for example).
+ */
 function getAppThemeLightNoActionBarGroup() {
   return {
     name: 'AppTheme',
     parent: 'Theme.AppCompat.Light.NoActionBar'
+  };
+}
+
+// This is a very common theme so make it reusable.
+function getAppThemeGroup() {
+  return {
+    name: 'AppTheme'
   };
 }
 function assignStylesValue(xml, {
@@ -165,6 +180,6 @@ function assignStylesValue(xml, {
  */
 function getStylesGroupAsObject(xml, group) {
   const xmlGroup = getStyleParent(xml, group);
-  return xmlGroup !== null && xmlGroup !== void 0 && xmlGroup.item ? (0, _Resources().getResourceItemsAsObject)(xmlGroup.item) : null;
+  return xmlGroup?.item ? (0, _Resources().getResourceItemsAsObject)(xmlGroup.item) : null;
 }
 //# sourceMappingURL=Styles.js.map

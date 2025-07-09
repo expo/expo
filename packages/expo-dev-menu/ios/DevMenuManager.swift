@@ -5,18 +5,19 @@ import EXDevMenuInterface
 import EXManifests
 import CoreGraphics
 import CoreMedia
+import Combine
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
       return closure()
-    } else {
-      var result: T?
-      DispatchQueue.main.sync {
-        result = closure()
-      }
-      return result!
     }
+  var result: T?
+  DispatchQueue.main.sync {
+    result = closure()
+  }
+  // swiftlint:disable:next force_unwrapping
+  return result!
   }
 }
 
@@ -31,21 +32,6 @@ class DevMenuCacheContainer<T> {
     self.items = items
   }
 }
-
-/**
- A hash map storing an array of dev menu items for specific extension.
- */
-private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, DevMenuItemsContainerProtocol>.weakToStrongObjects()
-
-/**
- A hash map storing an array of dev menu screens for specific extension.
- */
-private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuScreen>>.weakToStrongObjects()
-
-/**
- A hash map storing an array of dev menu screens for specific extension.
- */
-private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuDataSourceProtocol>>.weakToStrongObjects()
 
 /**
  Manages the dev menu and provides most of the public API.
@@ -63,7 +49,6 @@ open class DevMenuManager: NSObject {
   }
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
-  lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
 
   static public var wasInitilized = false
@@ -82,11 +67,6 @@ open class DevMenuManager: NSObject {
    */
   var window: DevMenuWindow?
 
-  /**
-   `DevMenuAppInstance` instance that is responsible for initializing and managing React Native context for the dev menu.
-   */
-  lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
-
   var currentScreen: String?
 
   /**
@@ -99,17 +79,14 @@ open class DevMenuManager: NSObject {
   @objc
   public var currentBridge: RCTBridge? {
     didSet {
-      guard self.canLaunchDevMenuOnStart && (DevMenuPreferences.showsAtLaunch || self.shouldShowOnboarding()), let bridge = currentBridge else {
-        return
-      }
+      updateAutoLaunchObserver()
 
-      if bridge.isLoading {
-        NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.ContentDidAppearNotification, object: nil)
-      } else {
-        autoLaunch()
+      if let currentBridge {
+        disableRNDevMenuHoykeys(for: currentBridge)
       }
     }
   }
+
   @objc
   public var currentManifest: Manifest?
 
@@ -125,6 +102,33 @@ open class DevMenuManager: NSObject {
     }
   }
 
+  func updateAutoLaunchObserver() {
+    // swiftlint:disable notification_center_detachment
+    NotificationCenter.default.removeObserver(self)
+    // swiftlint:enable notification_center_detachment
+
+    if canLaunchDevMenuOnStart && currentBridge != nil && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
+      NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
+    }
+  }
+
+  private func disableRNDevMenuHoykeys(for bridge: RCTBridge) {
+    if let devMenu = bridge.devMenu {
+      devMenu.hotkeysEnabled = false
+
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        if DevMenuPreferences.keyCommandsEnabled {
+          DevMenuKeyCommandsInterceptor.isInstalled = false
+          DevMenuKeyCommandsInterceptor.isInstalled = true
+        }
+      }
+    } else {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        self.disableRNDevMenuHoykeys(for: bridge)
+      }
+    }
+  }
+
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
@@ -132,6 +136,10 @@ open class DevMenuManager: NSObject {
     self.packagerConnectionHandler?.setup()
     DevMenuPreferences.setup()
     self.readAutoLaunchDisabledState()
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 
   /**
@@ -154,7 +162,6 @@ open class DevMenuManager: NSObject {
   @objc
   @discardableResult
   public func openMenu() -> Bool {
-    appInstance.sendOpenEvent()
     return openMenu(nil)
   }
 
@@ -163,13 +170,13 @@ open class DevMenuManager: NSObject {
    */
   @objc
   @discardableResult
-  public func closeMenu() -> Bool {
+  public func closeMenu(completion: (() -> Void)? = nil) -> Bool {
     if isVisible {
       if Thread.isMainThread {
-        window?.closeBottomSheet()
+        window?.closeBottomSheet(completion)
       } else {
         DispatchQueue.main.async { [self] in
-          window?.closeBottomSheet()
+          window?.closeBottomSheet(completion)
         }
       }
       return true
@@ -207,109 +214,9 @@ open class DevMenuManager: NSObject {
       return
     }
 
-    let args = data == nil ? [eventName] : [eventName, data!]
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: args)
+    let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? RCTEventDispatcher
+    eventDispatcher?.sendDeviceEvent(withName: eventName, body: data)
   }
-
-  // MARK: internals
-
-  func dispatchCallable(withId id: String, args: [String: Any]?) {
-    for callable in devMenuCallable {
-      if callable.id == id {
-        switch callable {
-          case let action as DevMenuExportedAction:
-            if args != nil {
-              NSLog("[DevMenu] Action $@ was called with arguments.", id)
-            }
-            action.call()
-          case let function as DevMenuExportedFunction:
-            function.call(args: args)
-          default:
-            NSLog("[DevMenu] Callable $@ has unknown type.", id)
-        }
-      }
-    }
-  }
-
-  /**
-   Returns an array of modules conforming to `DevMenuExtensionProtocol`.
-   Bridge may register multiple modules with the same name – in this case it returns only the one that overrides the others.
-   */
-  var extensions: [DevMenuExtensionProtocol]? {
-    guard let bridge = currentBridge else {
-      return nil
-    }
-    let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
-
-    let uniqueExtensionNames = Set(
-      allExtensions
-        .map { type(of: $0).moduleName!() }
-        .compactMap { $0 } // removes nils
-    ).sorted()
-
-    return uniqueExtensionNames
-      .map({ bridge.module(forName: DevMenuUtils.stripRCT($0)) })
-      .filter({ $0 is DevMenuExtensionProtocol }) as? [DevMenuExtensionProtocol]
-  }
-
-  /**
-   Gathers `DevMenuItem`s from all dev menu extensions and returns them as an array.
-   */
-  var devMenuItems: [DevMenuScreenItem] {
-    return extensions?.map { loadDevMenuItems(forExtension: $0)?.getAllItems() ?? [] }.flatMap { $0 } ?? []
-  }
-
-  /**
-   Gathers root `DevMenuItem`s (elements on the main screen) from all dev menu extensions and returns them as an array.
-   */
-  var devMenuRootItems: [DevMenuScreenItem] {
-    return extensions?.map { loadDevMenuItems(forExtension: $0)?.getRootItems() ?? [] }.flatMap { $0 } ?? []
-  }
-
-  /**
-   Gathers `DevMenuScreen`s from all dev menu extensions and returns them as an array.
-   */
-  var devMenuScreens: [DevMenuScreen] {
-    return extensions?.map { loadDevMenuScreens(forExtension: $0) ?? [] }.flatMap { $0 } ?? []
-  }
-
-  /**
-   Gathers `DevMenuDataSourceProtocol`s from all dev menu extensions and returns them as an array.
-   */
-  var devMenuDataSources: [DevMenuDataSourceProtocol] {
-    return extensions?.map { loadDevMenuDataSources(forExtension: $0) ?? [] }.flatMap { $0 } ?? []
-  }
-
-  /**
-   Returns an array of `DevMenuExportedCallable`s returned by the dev menu extensions.
-   */
-  var devMenuCallable: [DevMenuExportedCallable] {
-    let providers = currentScreen == nil ?
-      devMenuItems.filter { $0 is DevMenuCallableProvider } :
-      (devMenuScreens.first { $0.screenName == currentScreen }?.getAllItems() ?? []).filter { $0 is DevMenuCallableProvider }
-
-    // We use compactMap here to remove nils
-    return (providers as! [DevMenuCallableProvider]).compactMap { $0.registerCallable?() }
-  }
-
-  /**
-   Returns an array of dev menu items serialized to the dictionary.
-   */
-  func serializedDevMenuItems() -> [[String: Any]] {
-    return devMenuRootItems
-      .sorted(by: { $0.importance > $1.importance })
-      .map({ $0.serialize() })
-  }
-
-  /**
-   Returns an array of dev menu screens serialized to the dictionary.
-   */
-  func serializedDevMenuScreens() -> [[String: Any]] {
-    return devMenuScreens
-      .map({ $0.serialize() })
-  }
-
-  // MARK: delegate stubs
 
   /**
    Returns a bool value whether the dev menu can change its visibility.
@@ -317,6 +224,12 @@ open class DevMenuManager: NSObject {
    */
   func canChangeVisibility(to visible: Bool) -> Bool {
     if isVisible == visible {
+      return false
+    }
+
+    // Don't allow dev menu to open when there's no active React Native bridge
+    // This prevents the menu from appearing when the dev-launcher UI is visible
+    if visible && currentBridge == nil {
       return false
     }
 
@@ -340,53 +253,8 @@ open class DevMenuManager: NSObject {
     }
   }
 
-  @available(iOS 12.0, *)
   var userInterfaceStyle: UIUserInterfaceStyle {
     return UIUserInterfaceStyle.unspecified
-  }
-
-
-  // MARK: private
-
-  private func loadDevMenuItems(forExtension ext: DevMenuExtensionProtocol) -> DevMenuItemsContainerProtocol? {
-    if let itemsContainer = extensionToDevMenuItemsMap.object(forKey: ext) {
-      return itemsContainer
-    }
-
-    if let itemsContainer = ext.devMenuItems?(extensionSettings) {
-      extensionToDevMenuItemsMap.setObject(itemsContainer, forKey: ext)
-      return itemsContainer
-    }
-
-    return nil
-  }
-
-  private func loadDevMenuScreens(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuScreen]? {
-    if let screenContainer = extensionToDevMenuScreensMap.object(forKey: ext) {
-      return screenContainer.items
-    }
-
-    if let screens = ext.devMenuScreens?(extensionSettings) {
-      let container = DevMenuCacheContainer<DevMenuScreen>(items: screens)
-      extensionToDevMenuScreensMap.setObject(container, forKey: ext)
-      return screens
-    }
-
-    return nil
-  }
-
-  private func loadDevMenuDataSources(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuDataSourceProtocol]? {
-    if let dataSourcesContainer = extensionToDevMenuDataSourcesMap.object(forKey: ext) {
-      return dataSourcesContainer.items
-    }
-
-    if let dataSources = ext.devMenuDataSources?(extensionSettings) {
-      let container = DevMenuCacheContainer<DevMenuDataSourceProtocol>(items: dataSources)
-      extensionToDevMenuDataSourcesMap.setObject(container, forKey: ext)
-      return dataSources
-    }
-
-    return nil
   }
 
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
@@ -394,14 +262,10 @@ open class DevMenuManager: NSObject {
       return false
     }
     if visible {
-      guard currentBridge != nil else {
-        debugPrint("DevMenuManager: There is no bridge to render DevMenu.")
-        return false
-      }
       setCurrentScreen(screen)
       DispatchQueue.main.async { self.window?.makeKeyAndVisible() }
     } else {
-      DispatchQueue.main.async { self.window?.isHidden = true }
+      DispatchQueue.main.async { self.window?.closeBottomSheet(nil) }
     }
     return true
   }
@@ -416,39 +280,55 @@ open class DevMenuManager: NSObject {
     return EXDevMenuDevSettings.getDevSettings()
   }
 
-  private static var fontsWereLoaded = false
-
-  @objc
-  public func loadFonts() {
-    if DevMenuManager.fontsWereLoaded {
-       return
-    }
-    DevMenuManager.fontsWereLoaded = true
-
-    let fonts = [
-      "Inter-Black",
-      "Inter-ExtraBold",
-      "Inter-Bold",
-      "Inter-SemiBold",
-      "Inter-Medium",
-      "Inter-Regular",
-      "Inter-Light",
-      "Inter-ExtraLight",
-      "Inter-Thin"
-    ]
-
-    for font in fonts {
-      let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "otf")
-      let data = FileManager.default.contents(atPath: path!)
-      let provider = CGDataProvider(data: data! as CFData)
-      let font = CGFont(provider!)
-      var error: Unmanaged<CFError>?
-      CTFontManagerRegisterGraphicsFont(font!, &error)
-    }
-  }
-
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
-  public var registeredCallbacks: [Callback] = []
+  private let callbacksSubject = PassthroughSubject<[Callback], Never>()
+  public var callbacksPublisher: AnyPublisher<[Callback], Never> {
+    callbacksSubject.eraseToAnyPublisher()
+  }
+
+  public var registeredCallbacks: [Callback] = [] {
+    didSet {
+      callbacksSubject.send(registeredCallbacks)
+    }
+  }
+
+  func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
+    guard let currentBridge else {
+      return nil
+    }
+
+    let devDelegate = DevMenuDevOptionsDelegate(forBridge: currentBridge)
+    guard devDelegate.devSettings != nil else {
+      return nil
+    }
+
+    return devDelegate
+  }
+
+  func reload() {
+    let devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.reload()
+  }
+
+  func togglePerformanceMonitor() {
+    let devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.togglePerformanceMonitor()
+  }
+
+  func toggleInspector() {
+    let devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.toggleElementInsector()
+  }
+
+  func openJSInspector() {
+    let devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.openJSInspector()
+  }
+
+  func toggleFastRefresh() {
+    let devToolsDelegate = getDevToolsDelegate()
+    devToolsDelegate?.toggleFastRefresh()
+  }
 }

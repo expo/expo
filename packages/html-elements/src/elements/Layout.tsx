@@ -1,12 +1,12 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React, { ComponentType } from 'react';
 import { Platform } from 'react-native';
 
 import View, { ViewProps } from '../primitives/View';
 
 function createView(nativeProps: ViewProps = {}): ComponentType<ViewProps> {
-  return forwardRef((props: ViewProps, ref) => {
-    return <View {...nativeProps} {...props} ref={ref} />;
-  }) as ComponentType<ViewProps>;
+  return function Dom(props: ViewProps) {
+    return <View {...nativeProps} {...props} />;
+  };
 }
 
 export const Div = createView();
@@ -14,28 +14,28 @@ export const Div = createView();
 export const Nav = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'navigation',
+      role: 'navigation',
     },
   })
 );
 export const Footer = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'contentinfo',
+      role: 'contentinfo',
     },
   })
 );
 export const Aside = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'complementary',
+      role: 'complementary',
     },
   })
 );
 export const Header = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'banner',
+      role: 'banner',
     },
     default: {
       accessibilityRole: 'header',
@@ -45,17 +45,28 @@ export const Header = createView(
 export const Main = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'main',
+      role: 'main',
     },
   })
 );
 export const Article = createView(
   Platform.select({
     web: {
-      accessibilityRole: 'article',
+      role: 'article',
     },
   })
 );
 export const Section = createView({
-  accessibilityRole: 'summary', // region?
+  role: 'summary', // region?
 });
+
+if (__DEV__) {
+  Div.displayName = 'Div';
+  Nav.displayName = 'Nav';
+  Footer.displayName = 'Footer';
+  Aside.displayName = 'Aside';
+  Header.displayName = 'Header';
+  Main.displayName = 'Main';
+  Article.displayName = 'Article';
+  Section.displayName = 'Section';
+}

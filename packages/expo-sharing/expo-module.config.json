@@ -1,7 +1,6 @@
 {
-  "name": "expo-sharing",
-  "platforms": ["ios", "android"],
-  "ios": {
+  "platforms": ["apple", "android"],
+  "apple": {
     "modules": ["SharingModule"]
   },
   "android": {

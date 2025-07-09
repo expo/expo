@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNpmProxy = exports.isYarnOfflineAsync = void 0;
+exports.isYarnOfflineAsync = isYarnOfflineAsync;
+exports.getNpmProxy = getNpmProxy;
 const child_process_1 = require("child_process");
 const dns_1 = __importDefault(require("dns"));
 const url_1 = __importDefault(require("url"));
@@ -22,7 +23,6 @@ async function isYarnOfflineAsync() {
     }
     return !(await isUrlAvailableAsync(hostname));
 }
-exports.isYarnOfflineAsync = isYarnOfflineAsync;
 /** Exposed for testing */
 function getNpmProxy() {
     if (process.env.https_proxy) {
@@ -36,7 +36,6 @@ function getNpmProxy() {
         return null;
     }
 }
-exports.getNpmProxy = getNpmProxy;
 function isUrlAvailableAsync(url) {
     return new Promise((resolve) => {
         dns_1.default.lookup(url, (err) => {

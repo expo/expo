@@ -1,29 +1,75 @@
 import type { RecordingOptions } from './Recording.types';
+/**
+ * Defines the output format.
+ * @platform android
+ */
 export declare enum AndroidOutputFormat {
     DEFAULT = 0,
+    /**
+     * 3GPP media file format.
+     */
     THREE_GPP = 1,
+    /**
+     * MPEG4 media file format.
+     */
     MPEG_4 = 2,
+    /**
+     * AMR NB file format.
+     */
     AMR_NB = 3,
+    /**
+     * AMR WB file format.
+     */
     AMR_WB = 4,
     AAC_ADIF = 5,
+    /**
+     * AAC ADTS file format.
+     */
     AAC_ADTS = 6,
     RTP_AVP = 7,
+    /**
+     * H.264/AAC data encapsulated in MPEG2/TS.
+     */
     MPEG2TS = 8,
+    /**
+     * VP8/VORBIS data in a WEBM container.
+     */
     WEBM = 9
 }
+/**
+ * Defines the audio encoding.
+ * @platform android
+ */
 export declare enum AndroidAudioEncoder {
     DEFAULT = 0,
+    /**
+     * AMR (Narrowband) audio codec.
+     */
     AMR_NB = 1,
+    /**
+     * AMR (Wideband) audio codec.
+     */
     AMR_WB = 2,
+    /**
+     * AAC Low Complexity (AAC-LC) audio codec.
+     */
     AAC = 3,
+    /**
+     * High Efficiency AAC (HE-AAC) audio codec.
+     */
     HE_AAC = 4,
+    /**
+     * Enhanced Low Delay AAC (AAC-ELD) audio codec.
+     */
     AAC_ELD = 5
 }
 /**
- * > **Note** Not all of the iOS formats included in this list of constants are currently supported by iOS,
+ * > **Note:** Not all of the iOS formats included in this list of constants are currently supported by iOS,
  * > in spite of appearing in the Apple source code. For an accurate list of formats supported by iOS, see
  * > [Core Audio Codecs](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html)
  * > and [iPhone Audio File Formats](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html).
+ *
+ * @platform ios
  */
 export declare enum IOSOutputFormat {
     LINEARPCM = "lpcm",
@@ -61,6 +107,9 @@ export declare enum IOSOutputFormat {
     AES3 = "aes3",
     ENHANCEDAC3 = "ec-3"
 }
+/**
+ * @platform ios
+ */
 export declare enum IOSAudioQuality {
     MIN = 0,
     LOW = 32,
@@ -68,6 +117,9 @@ export declare enum IOSAudioQuality {
     HIGH = 96,
     MAX = 127
 }
+/**
+ * @platform ios
+ */
 export declare enum IOSBitRateStrategy {
     CONSTANT = 0,
     LONG_TERM_AVERAGE = 1,

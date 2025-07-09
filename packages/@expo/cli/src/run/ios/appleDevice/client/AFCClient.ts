@@ -11,6 +11,7 @@ import { Socket } from 'net';
 import * as path from 'path';
 import { promisify } from 'util';
 
+import { ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
 import {
   AFC_FILE_OPEN_FLAGS,
@@ -20,7 +21,6 @@ import {
   AFCProtocolClient,
   AFCResponse,
 } from '../protocol/AFCProtocol';
-import { ServiceClient } from './ServiceClient';
 
 const debug = Debug('expo:apple-device:client:afc');
 const MAX_OPEN_FILES = 240;

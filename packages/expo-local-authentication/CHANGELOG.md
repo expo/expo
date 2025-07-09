@@ -6,9 +6,121 @@
 
 ### 🎉 New features
 
+- [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync`. ([#35335](https://github.com/expo/expo/pull/35335) by [@filipejuan](https://github.com/filipejuan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 16.0.5 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 16.0.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 15.0.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.1 — 2024-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Added support for macOS platform. ([#29185](https://github.com/expo/expo/pull/29185) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- [iOS] `isEnrolledAsync()` returns correct value when biometry is locked out. ([#30565](https://github.com/expo/expo/pull/30565) by [@vonovak](https://github.com/vonovak))
+- [Android] Fix `authenticateAsync` crash when `disableDeviceFallback` is `true`. ([#32076](https://github.com/expo/expo/pull/32076) by [@dcangulo](https://github.com/dcangulo))
+
+## 14.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-04-18
+
+### 🛠 Breaking changes
+
+- `SecurityLevel.BIOMETRIC` has been deprecated in favour of `SecurityLevel.BIOMETRIC_STRONG` and `SecurityLevel.BIOMETRIC_WEAK`. Using `SecurityLevel.BIOMETRIC` might lead to unexpected behaviour. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
+- [Android] Add support for `weak` and `strong` biometric authentication. ([#26768](https://github.com/expo/expo/pull/26768) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Prevent config plugin from writing permissions until prebuild. ([#28107](https://github.com/expo/expo/pull/28107) by [@EvanBacon](https://github.com/EvanBacon))
+- drop unused web `name` property. ([#27437](https://github.com/expo/expo/pull/27437) by [@EvanBacon](https://github.com/EvanBacon))
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 13.8.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 13.7.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+## 13.6.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Migrate to use Expo Modules API. ([#24083](https://github.com/expo/expo/pull/24083) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.5.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.4.1 — 2023-06-13
+
+### 🐛 Bug fixes
+
+- [Android] Fixed device credentials fallback when biometric sensors are unavailable ([#22388](https://github.com/expo/expo/pull/22388) by [@hubastard](https://github.com/hubastard))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ## 13.4.0 — 2023-05-08
 

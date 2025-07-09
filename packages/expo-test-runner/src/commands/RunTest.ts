@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { CommanderStatic } from 'commander';
-import * as fs from 'fs-extra';
+import fs from 'fs';
 
 import { Application, Config } from '../Config';
 import TemplateProject from '../TemplateProject';
@@ -43,7 +43,7 @@ async function runTestAsync(config: Config, options: RunTestOptions) {
 
     if (options.shouldBeCleaned) {
       console.log(`Cleaning.`);
-      await fs.remove(options.path);
+      await fs.promises.rm(options.path, { recursive: true, force: true });
     }
   } else {
     throw new Error(`Unknown preset: ${app.preset}`);

@@ -1,16 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import { getWorkspaceGlobs, resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import { getConfig } from '../Config';
-import { ProjectConfig } from '../Config.types';
+import { env } from './env';
 import { getBareExtensions } from './extensions';
+import { getPackageJson } from '../Config';
+import { PackageJSONConfig } from '../Config.types';
+import { ConfigError } from '../Errors';
 
 // https://github.com/facebook/create-react-app/blob/9750738cce89a967cc71f28390daf5d4311b193c/packages/react-scripts/config/paths.js#L22
 export function ensureSlash(inputPath: string, needsSlash: boolean): string {
   const hasSlash = inputPath.endsWith('/');
   if (hasSlash && !needsSlash) {
-    return inputPath.substr(0, inputPath.length - 1);
+    return inputPath.substring(0, inputPath.length - 1);
   } else if (!hasSlash && needsSlash) {
     return `${inputPath}/`;
   } else {
@@ -24,67 +27,45 @@ export function getPossibleProjectRoot(): string {
 
 const nativePlatforms = ['ios', 'android'];
 
+/** @returns the absolute entry file for an Expo project. */
 export function resolveEntryPoint(
   projectRoot: string,
-  { platform, projectConfig }: { platform: string; projectConfig?: Partial<ProjectConfig> }
-) {
-  const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
-  return getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
-}
-
-export function getEntryPoint(
-  projectRoot: string,
-  entryFiles: string[],
-  platforms: string[],
-  projectConfig?: Partial<ProjectConfig>
-): string | null {
-  const extensions = getBareExtensions(platforms);
-  return getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig);
-}
-
-// Used to resolve the main entry file for a project.
-export function getEntryPointWithExtensions(
-  projectRoot: string,
-  entryFiles: string[],
-  extensions: string[],
-  projectConfig?: Partial<ProjectConfig>
+  {
+    platform,
+    pkg = getPackageJson(projectRoot),
+  }: {
+    platform?: string;
+    pkg?: PackageJSONConfig;
+  } = {}
 ): string {
-  if (!projectConfig) {
-    // drop all logging abilities
-    const original = process.stdout.write;
-    process.stdout.write = () => true;
-    try {
-      projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-    } finally {
-      process.stdout.write = original;
+  const platforms = !platform
+    ? []
+    : nativePlatforms.includes(platform)
+      ? [platform, 'native']
+      : [platform];
+  const extensions = getBareExtensions(platforms);
+
+  // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
+  const { main } = pkg;
+  if (main && typeof main === 'string') {
+    // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
+    let entry = getFileWithExtensions(projectRoot, main, extensions);
+    if (!entry) {
+      // Allow for paths like: `{ "main": "expo/AppEntry" }`
+      entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
+      if (!entry)
+        throw new ConfigError(
+          `Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`,
+          'ENTRY_NOT_FOUND'
+        );
     }
+    return entry;
   }
 
-  const { pkg } = projectConfig;
-
-  if (pkg) {
-    // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
-    const { main } = pkg;
-    if (main && typeof main === 'string') {
-      // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
-      let entry = getFileWithExtensions(projectRoot, main, extensions);
-      if (!entry) {
-        // Allow for paths like: `{ "main": "expo/AppEntry" }`
-        entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
-        if (!entry)
-          throw new Error(
-            `Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to a non-existent path.`
-          );
-      }
-      return entry;
-    }
-  }
-
-  // Now we will start looking for a default entry point using the provided `entryFiles` argument.
-  // This will add support for create-react-app (src/index.js) and react-native-cli (index.js) which don't define a main.
-  for (const fileName of entryFiles) {
-    const entry = resolveFromSilentWithExtensions(projectRoot, fileName, extensions);
-    if (entry) return entry;
+  // Check for a root index.* file in the project root.
+  const entry = resolveFromSilentWithExtensions(projectRoot, './index', extensions);
+  if (entry) {
+    return entry;
   }
 
   try {
@@ -95,21 +76,22 @@ export function getEntryPointWithExtensions(
     // TODO(Bacon): We may want to do a check against `./App` and `expo` in the `package.json` `dependencies` as we can more accurately ensure that the project is expo-min without needing the modules installed.
     return resolveFrom(projectRoot, 'expo/AppEntry');
   } catch {
-    throw new Error(
-      `The project entry file could not be resolved. Please define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`
+    throw new ConfigError(
+      `The project entry file could not be resolved. Define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`,
+      'ENTRY_NOT_FOUND'
     );
   }
 }
 
 // Resolve from but with the ability to resolve like a bundler
-export function resolveFromSilentWithExtensions(
+function resolveFromSilentWithExtensions(
   fromDirectory: string,
   moduleId: string,
   extensions: string[]
 ): string | null {
   for (const extension of extensions) {
     const modulePath = resolveFrom.silent(fromDirectory, `${moduleId}.${extension}`);
-    if (modulePath && modulePath.endsWith(extension)) {
+    if (modulePath?.endsWith(extension)) {
       return modulePath;
     }
   }
@@ -135,3 +117,42 @@ export function getFileWithExtensions(
   }
   return null;
 }
+
+/** Get the Metro server root, when working in monorepos */
+export function getMetroServerRoot(projectRoot: string): string {
+  if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
+    return projectRoot;
+  }
+
+  return resolveWorkspaceRoot(projectRoot) ?? projectRoot;
+}
+
+/**
+ * Get the workspace globs for Metro's watchFolders.
+ * @note This does not traverse the monorepo, and should be used with `getMetroServerRoot`
+ */
+export function getMetroWorkspaceGlobs(monorepoRoot: string): string[] | null {
+  return getWorkspaceGlobs(monorepoRoot);
+}
+
+/**
+ * Convert an absolute entry point to a server or project root relative filepath.
+ * This is useful on Android where the entry point is an absolute path.
+ */
+export function convertEntryPointToRelative(projectRoot: string, absolutePath: string) {
+  // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
+  // We need to make sure to get the non-symlinked path to the server or project root.
+  return path.relative(
+    fs.realpathSync(getMetroServerRoot(projectRoot)),
+    fs.realpathSync(absolutePath)
+  );
+}
+
+/**
+ * Resolve the entry point relative to either the server or project root.
+ * This relative entry path should be used to pass non-absolute paths to Metro,
+ * accounting for possible monorepos and keeping the cache sharable (no absolute paths).
+ */
+export const resolveRelativeEntryPoint: typeof resolveEntryPoint = (projectRoot, options) => {
+  return convertEntryPointToRelative(projectRoot, resolveEntryPoint(projectRoot, options));
+};

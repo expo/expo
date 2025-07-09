@@ -257,7 +257,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
         CGSize presentationSize = _data.player.currentItem.presentationSize;
         naturalSize = @{@"width": @(presentationSize.width),
                         @"height": @(presentationSize.height),
-                        @"orientation": @"landscape"};
+                        @"orientation": presentationSize.width < presentationSize.height ? @"portrait" : @"landscape"};
       }
       
       _onReadyForDisplay(@{@"naturalSize": naturalSize,

@@ -4,8 +4,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.importExpoModulesAutolinking = importExpoModulesAutolinking;
-// NOTE: Keep these types in-sync with expo-modules-autolinking
-
+function _resolveFrom() {
+  const data = _interopRequireDefault(require("resolve-from"));
+  _resolveFrom = function () {
+    return data;
+  };
+  return data;
+}
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Imports the `expo-modules-autolinking` package installed in the project at the given path.
  */
@@ -15,14 +21,12 @@ function importExpoModulesAutolinking(projectRoot) {
   return autolinking;
 }
 function tryRequireExpoModulesAutolinking(projectRoot) {
-  try {
-    const resolvedAutolinkingPath = require.resolve('expo-modules-autolinking/build/autolinking', {
-      paths: [projectRoot]
-    });
-    return require(resolvedAutolinkingPath);
-  } catch {
+  const expoPackageRoot = _resolveFrom().default.silent(projectRoot, 'expo/package.json');
+  const autolinkingExportsPath = _resolveFrom().default.silent(expoPackageRoot ?? projectRoot, 'expo-modules-autolinking/exports');
+  if (!autolinkingExportsPath) {
     throw new Error("Cannot find 'expo-modules-autolinking' package in your project, make sure that you have 'expo' package installed");
   }
+  return require(autolinkingExportsPath);
 }
 function assertAutolinkingCompatibility(autolinking) {
   if ('resolveSearchPathsAsync' in autolinking && 'findModulesAsync' in autolinking) {

@@ -10,6 +10,127 @@
 
 ### 💡 Others
 
+## 14.1.5 - 2025-06-05
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.1.0 — 2025-04-04
+
+### 🐛 Bug fixes
+
+- Fix adaptive color support for `PlatformColor` and add corresponding types ([#34214](https://github.com/expo/expo/pull/34214) by [@dlindenkreuz](https://github.com/dlindenkreuz))
+
+### 💡 Others
+
+- [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
+- [apple] Migrate remaining `expo-module.config.json` to unified platform syntax. ([#34445](https://github.com/expo/expo/pull/34445) by [@reichhartd](https://github.com/reichhartd))
+
+## 14.0.2 - 2025-01-10
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2024-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2024-10-22
+
+### 🛠 Breaking changes
+
+- stricter TS type of the `colors` prop. It now requires providing an array of least two values. Passing an empty array or an array with one value will fail to typecheck. ([#27820](https://github.com/expo/expo/pull/27820) by [@navignaw](https://github.com/navignaw))
+- Bumped iOS and tvOS deployment target to 15.1. ([#30840](https://github.com/expo/expo/pull/30840) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Add experimental support for React Server Components. ([#29404](https://github.com/expo/expo/pull/29404) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30471](https://github.com/expo/expo/pull/30471) by [@byCedric](https://github.com/byCedric))
+
+## 13.0.2 — 2024-05-01
+
+### 💡 Others
+
+- Changed type of `colors` and `locations` array to readonly ([#28450](https://github.com/expo/expo/pull/28450) by [@kowczarz](https://github.com/kowczarz))
+
+## 13.0.1 — 2024-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2024-04-18
+
+- Added support for Paint dithering on Android. ([#27153](https://github.com/expo/expo/pull/27153) by [@alexandrius](https://github.com/alexandrius))
+
+### 🎉 New features
+
+- Mark React client components with "use client" directives. ([#27300](https://github.com/expo/expo/pull/27300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Removed deprecated backward compatible Gradle settings. ([#28083](https://github.com/expo/expo/pull/28083) by [@kudo](https://github.com/kudo))
+
+## 12.7.2 - 2024-02-16
+
+### 🎉 New features
+
+- Added support for Apple tvOS. ([#26965](https://github.com/expo/expo/pull/26965) by [@douglowder](https://github.com/douglowder))
+
+## 12.7.1 - 2024-01-23
+
+### 💡 Others
+
+- On `Android`, remove type annotation on `View`. ([#26545](https://github.com/expo/expo/pull/26545) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.7.0 — 2023-11-14
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.4. ([#25063](https://github.com/expo/expo/pull/25063) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On `Android` bump `compileSdkVersion` and `targetSdkVersion` to `34`. ([#24708](https://github.com/expo/expo/pull/24708) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 12.6.0 — 2023-10-17
+
+### 🛠 Breaking changes
+
+- Dropped support for Android SDK 21 and 22. ([#24201](https://github.com/expo/expo/pull/24201) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Ship untranspiled JSX to support custom handling of `jsx` and `createElement`. ([#24889](https://github.com/expo/expo/pull/24889) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.5.0 — 2023-09-04
+
+### 🎉 New features
+
+- Added support for React Native 0.73. ([#24018](https://github.com/expo/expo/pull/24018) by [@kudo](https://github.com/kudo))
+
+## 12.4.0 — 2023-08-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.0 — 2023-06-21
+
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
+
 ## 12.2.0 — 2023-05-08
 
 _This version does not introduce any user-facing changes._

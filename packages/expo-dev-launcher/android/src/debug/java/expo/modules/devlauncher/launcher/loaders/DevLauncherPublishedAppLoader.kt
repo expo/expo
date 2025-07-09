@@ -1,7 +1,7 @@
 package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
-import com.facebook.react.ReactNativeHost
+import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.injectLocalBundleLoader
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.manifests.core.Manifest
@@ -13,7 +13,7 @@ import expo.modules.manifests.core.Manifest
 class DevLauncherPublishedAppLoader(
   manifest: Manifest,
   private val localBundlePath: String,
-  private val appHost: ReactNativeHost,
+  private val appHost: ReactHostWrapper,
   context: Context,
   controller: DevLauncherControllerInterface
 ) : DevLauncherExpoAppLoader(manifest, appHost, context, controller) {

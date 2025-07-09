@@ -12,7 +12,7 @@ add_library(fabric STATIC
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
 
 target_compile_options(fabric PRIVATE
-  "-std=c++17"
+  "-std=c++20"
   ${folly_FLAGS}
 )
 
@@ -20,9 +20,15 @@ find_package(ReactAndroid REQUIRED CONFIG)
 
 find_package(fbjni REQUIRED CONFIG)
 
-get_target_property(INCLUDE_fabricjni
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+  get_target_property(INCLUDE_fabricjni
+        ReactAndroid::reactnative
+        INTERFACE_INCLUDE_DIRECTORIES)
+else()
+  get_target_property(INCLUDE_fabricjni
         ReactAndroid::fabricjni
         INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 
 target_include_directories(fabric PRIVATE
   "${REACT_NATIVE_DIR}/ReactCommon"
@@ -33,17 +39,25 @@ target_include_directories(fabric PRIVATE
 target_link_libraries(fabric
   CommonSettings
   fbjni::fbjni
-  ReactAndroid::fabricjni
-  ReactAndroid::folly_runtime
-  ReactAndroid::glog
   ReactAndroid::jsi
-  ReactAndroid::react_debug
-  ReactAndroid::react_render_componentregistry
-  ReactAndroid::react_render_core
-  ReactAndroid::react_render_debug
-  ReactAndroid::react_render_graphics
-  ReactAndroid::react_render_mapbuffer
-  ReactAndroid::rrc_view
-  ReactAndroid::runtimeexecutor
-  ReactAndroid::yoga
 )
+
+if (ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+   target_link_libraries(fabric ReactAndroid::reactnative)
+else()
+  target_link_libraries(fabric
+    ReactAndroid::fabricjni
+    ReactAndroid::folly_runtime
+    ReactAndroid::glog
+    ReactAndroid::react_debug
+    ReactAndroid::react_render_componentregistry
+    ReactAndroid::react_render_core
+    ReactAndroid::react_render_debug
+    ReactAndroid::react_render_graphics
+    ReactAndroid::react_render_mapbuffer
+    ReactAndroid::react_utils
+    ReactAndroid::rrc_view
+    ReactAndroid::runtimeexecutor
+    ReactAndroid::yoga
+  )
+endif()

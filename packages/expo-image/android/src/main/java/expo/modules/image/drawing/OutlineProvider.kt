@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Outline
 import android.graphics.Path
 import android.graphics.RectF
+import android.os.Build
 import android.view.View
 import android.view.ViewOutlineProvider
 import com.facebook.react.modules.i18nmanager.I18nUtil
@@ -15,11 +16,22 @@ import expo.modules.image.ifYogaUndefinedUse
 
 class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   enum class BorderRadiusConfig {
-    ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT, TOP_START, TOP_END, BOTTOM_START, BOTTOM_END
+    ALL,
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_RIGHT,
+    BOTTOM_LEFT,
+    TOP_START,
+    TOP_END,
+    BOTTOM_START,
+    BOTTOM_END
   }
 
   enum class CornerRadius {
-    TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_RIGHT,
+    BOTTOM_LEFT
   }
 
   private var mLayoutDirection = View.LAYOUT_DIRECTION_LTR
@@ -40,7 +52,7 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     }
 
     val isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL
-    val isRTLSwap = I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)
+    val isRTLSwap = I18nUtil.instance.doLeftAndRightSwapInRTL(mContext)
     updateCornerRadius(
       CornerRadius.TOP_LEFT,
       BorderRadiusConfig.TOP_LEFT,
@@ -186,7 +198,12 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
       // shadow is. For the particular case, we fallback to canvas clipping in the view
       // which is supposed to call `clipCanvasIfNeeded` in its `draw` method.
       updateConvexPathIfNeeded()
-      outline.setConvexPath(mConvexPath)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        outline.setPath(mConvexPath)
+      } else {
+        @Suppress("DEPRECATION")
+        outline.setConvexPath(mConvexPath)
+      }
     }
   }
 

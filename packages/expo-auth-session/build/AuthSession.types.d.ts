@@ -1,35 +1,11 @@
 import { AuthError } from './Errors';
 import { TokenResponse } from './TokenRequest';
-export type AuthSessionOptions = {
-    /**
-     * The URL that points to the sign in page that you would like to open the user to.
-     */
-    authUrl: string;
-    /**
-     * The URL to return to the application. In managed apps, it's optional and defaults to output of [`Linking.createURL('expo-auth-session', params)`](./linking/#linkingcreateurlpath-namedparameters)
-     * call with `scheme` and `queryParams` params. However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response.
-     * Hence, this method will throw an exception, if you don't provide `returnUrl`.
-     */
-    returnUrl?: string;
-    /**
-     * A boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view.
-     * @default false
-     * @platform android
-     */
-    showInRecents?: boolean;
-    /**
-     * Project name to use for the `auth.expo.io` proxy.
-     */
-    projectNameForProxy?: string;
-};
 /**
  * Object returned after an auth request has completed.
  * - If the user cancelled the authentication session by closing the browser, the result is `{ type: 'cancel' }`.
  * - If the authentication is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
  * - If the authentication flow is successful, the result is `{ type: 'success', params: Object, event: Object }`.
  * - If the authentication flow is returns an error, the result is `{ type: 'error', params: Object, error: string, event: Object }`.
- * - If you call `AuthSession.startAsync()` more than once before the first call has returned, the result is `{ type: 'locked' }`,
- *   because only one `AuthSession` can be in progress at any time.
  */
 export type AuthSessionResult = {
     /**
@@ -72,33 +48,18 @@ export type AuthSessionRedirectUriOptions = {
     path?: string;
     /**
      * URI protocol `<scheme>://` that must be built into your native app.
-     * Passed to `Linking.createURL()` when `useProxy` is `false`.
      */
     scheme?: string;
     /**
-     * Optional native scheme to use when proxy is disabled.
+     * Optional native scheme
      * URI protocol `<scheme>://` that must be built into your native app.
-     * Passed to `Linking.createURL()` when `useProxy` is `false`.
      */
     queryParams?: Record<string, string | undefined>;
     /**
      * Should the URI be triple slashed `scheme:///path` or double slashed `scheme://path`.
      * Defaults to `false`.
-     * Passed to `Linking.createURL()` when `useProxy` is `false`.
      */
     isTripleSlashed?: boolean;
-    /**
-     * Should use the \`auth.expo.io\` proxy.
-     * This is useful for testing managed native apps that require a custom URI scheme.
-     *
-     * @default false
-     * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
-     */
-    useProxy?: boolean;
-    /**
-     * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
-     */
-    projectNameForProxy?: string;
     /**
      * Attempt to convert the Expo server IP address to localhost.
      * This is useful for testing when your IP changes often, this will only work for iOS simulator.

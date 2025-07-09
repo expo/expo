@@ -3,73 +3,102 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class PersistentFileLogSpec: ExpoSpec {
-  override func spec() {
+  override class func spec() {
+    let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
+
     beforeEach {
-      self.clearEntriesSync()
+      self.clearEntriesSync(log: log)
     }
 
     it("cleared file has 0 entries") {
-      let entries = self.log.readEntries()
-      expect(entries.count).to(be(0))
+      let entries = log.readEntries()
+      expect(entries.count).to(equal(0))
     }
 
     it("append one entry works") {
-      self.appendEntrySync(entry: "Test string 1")
-      let entries = self.log.readEntries()
+      appendEntrySync(log: log, entry: "Test string 1")
+      let entries = log.readEntries()
       expect(entries).notTo(beNil())
-      expect(entries.count).to(be(1))
+      expect(entries.count).to(equal(1))
       expect(entries[0]).to(equal("Test string 1"))
     }
 
     it("append three entries works") {
-      self.appendEntrySync(entry: "Test string 1")
-      self.appendEntrySync(entry: "Test string 2")
-      self.appendEntrySync(entry: "Test string 3")
-      let entries = self.log.readEntries()
-      expect(entries.count).to(be(3))
+      appendEntrySync(log: log, entry: "Test string 1")
+      appendEntrySync(log: log, entry: "Test string 2")
+      appendEntrySync(log: log, entry: "Test string 3")
+      let entries = log.readEntries()
+      expect(entries.count).to(equal(3))
       expect(entries[0]).to(equal("Test string 1"))
       expect(entries[1]).to(equal("Test string 2"))
     }
 
     it("filter entries works") {
-      self.appendEntrySync(entry: "Test string 1")
-      self.appendEntrySync(entry: "Test string 2")
-      self.appendEntrySync(entry: "Test string 3")
-      self.filterEntriesSync { entry in
+      appendEntrySync(log: log, entry: "Test string 1")
+      appendEntrySync(log: log, entry: "Test string 2")
+      appendEntrySync(log: log, entry: "Test string 3")
+      filterEntriesSync(log: log) { entry in
         entry.contains("2")
       }
-      let entries = self.log.readEntries()
+      let entries = log.readEntries()
       expect(entries).notTo(beNil())
-      expect(entries.count).to(be(1))
+      expect(entries.count).to(equal(1))
       expect(entries[0]).to(equal("Test string 2"))
     }
   }
 
-  // Private fields and methods
-
-  let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
-
-  func clearEntriesSync() {
-    let expectation = self.expectation(description: "entries cleared")
+  static func clearEntriesSync(log: PersistentFileLog) {
+    let didClear = Synchronized(false)
     log.clearEntries { _ in
-      expectation.fulfill()
+      didClear.value = true
     }
-    wait(for: [expectation], timeout: 0.5)
+    expect(didClear.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
-  func filterEntriesSync(filter: @escaping PersistentFileLogFilter) {
-    let expectation = self.expectation(description: "entries filtered")
+  static func filterEntriesSync(log: PersistentFileLog, filter: @escaping PersistentFileLogFilter) {
+    let didPurge = Synchronized(false)
     log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
-      expectation.fulfill()
+      didPurge.value = true
     }
-    wait(for: [expectation], timeout: 0.5)
+    expect(didPurge.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
 
-  func appendEntrySync(entry: String) {
-    let expectation = self.expectation(description: "entry appended")
+  static func appendEntrySync(log: PersistentFileLog, entry: String) {
+    let didAppend = Synchronized(false)
     log.appendEntry(entry: entry) { _ in
-      expectation.fulfill()
+      didAppend.value = true
     }
-    wait(for: [expectation], timeout: 0.5)
+    expect(didAppend.value).toEventually(beTrue(), timeout: .milliseconds(500))
   }
+}
+
+/// Allows for synchronization pertaining to the file scope.
+private final class Synchronized<T> {
+  private var _storage: T
+  private let lock = NSLock()
+
+  /// Thread safe access here.
+  var value: T {
+    get {
+      return lockAround {
+        _storage
+      }
+    }
+    set {
+      lockAround {
+        _storage = newValue
+      }
+    }
+  }
+
+  init(_ storage: T) {
+    self._storage = storage
+  }
+
+  private func lockAround<U>(_ closure: () -> U) -> U {
+    lock.lock()
+    defer { lock.unlock() }
+    return closure()
+  }
+
 }

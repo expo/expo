@@ -1,33 +1,26 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide-base';
+import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
+import { Language, Prism } from 'prism-react-renderer';
+
+import { CODE } from '~/ui/components/Text';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 import { CopyAction } from '../actions/CopyAction';
 
-import { CODE } from '~/ui/components/Text';
-
 type TerminalProps = {
   cmd: string[];
   cmdCopy?: string;
   hideOverflow?: boolean;
-  includeMargin?: boolean;
   title?: string;
 };
 
-export const Terminal = ({
-  cmd,
-  cmdCopy,
-  hideOverflow,
-  includeMargin = true,
-  title = 'Terminal',
-}: TerminalProps) => (
-  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
-    <SnippetHeader alwaysDark title={title}>
+export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
+  <Snippet className="terminal-snippet [li_&]:mt-4">
+    <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
-    <SnippetContent alwaysDark hideOverflow={hideOverflow}>
+    <SnippetContent alwaysDark hideOverflow={hideOverflow} className="flex flex-col">
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>
@@ -46,7 +39,7 @@ function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
 }
 
 function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
-  const copyText = cmdCopy || getDefaultCmdCopy(cmd);
+  const copyText = cmdCopy ?? getDefaultCmdCopy(cmd);
   return copyText && <CopyAction alwaysDark text={copyText} />;
 }
 
@@ -67,41 +60,37 @@ function cmdMapper(line: string, index: number) {
 
   if (line.startsWith('#')) {
     return (
-      <div key={key} className="dark-theme">
-        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none !leading-snug select-none !text-palette-gray10">
-          {line}
-        </CODE>
-      </div>
+      <CODE
+        key={key}
+        className="select-none whitespace-pre !border-none !bg-transparent !text-palette-gray10">
+        {line}
+      </CODE>
     );
   }
 
   if (line.startsWith('$')) {
     return (
-      <div key={key} className="dark-theme">
-        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none !leading-snug select-none !text-secondary">
+      <div key={key}>
+        <CODE className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
           -&nbsp;
         </CODE>
-        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none text-default !leading-snug">
-          {line.substring(1).trim()}
-        </CODE>
+        <CODE
+          className="whitespace-pre !border-none !bg-transparent text-default"
+          dangerouslySetInnerHTML={{
+            __html: Prism.highlight(
+              line.slice(1).trim(),
+              Prism.languages['bash'],
+              'bash' as Language
+            ),
+          }}
+        />
       </div>
     );
   }
 
   return (
-    <div key={key} className="dark-theme">
-      <CODE
-        css={[{ display: 'inherit' }]}
-        className="whitespace-pre inline-block !bg-[transparent] !border-none text-default !leading-snug">
-        {line}
-      </CODE>
-    </div>
+    <CODE key={key} className="whitespace-pre !border-none !bg-transparent text-default">
+      {line}
+    </CODE>
   );
 }
-
-const wrapperStyle = css`
-  li & {
-    margin-top: ${spacing[4]}px;
-    display: flex;
-  }
-`;

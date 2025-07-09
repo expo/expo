@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = getDefaultScheme;
 /*
  * Converts the slug from app configuration to a string that's a valid URI scheme.
  * From RFC3986 Section 3.1.
@@ -16,11 +17,10 @@ function getDefaultScheme(config) {
     let scheme = config.slug.replace(/[^A-Za-z0-9+\-.]/g, '');
     // Edge case: if the slug didn't include any allowed characters we may end up with an empty string.
     if (scheme.length === 0) {
-        throw new Error('Could not autogenerate a scheme. Please make sure the "slug" property in app config consists of URL friendly characters.');
+        throw new Error(`Unable to generate a scheme based on the "slug" (${config.slug}), because it does not contain any URL-friendly characters.`);
     }
     // Lowercasing might not be strictly necessary, but let's do it for stylistic purposes.
     scheme = scheme.toLowerCase();
     // Add a prefix to avoid leading digits and to distinguish from user-defined schemes.
     return `exp+${scheme}`;
 }
-exports.default = getDefaultScheme;

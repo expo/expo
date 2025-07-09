@@ -13,7 +13,7 @@ function _fs() {
   };
   return data;
 }
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * A non-failing version of async FS stat.
  *
@@ -27,12 +27,10 @@ async function statAsync(file) {
   }
 }
 async function fileExistsAsync(file) {
-  var _await$statAsync$isFi, _await$statAsync;
-  return (_await$statAsync$isFi = (_await$statAsync = await statAsync(file)) === null || _await$statAsync === void 0 ? void 0 : _await$statAsync.isFile()) !== null && _await$statAsync$isFi !== void 0 ? _await$statAsync$isFi : false;
+  return (await statAsync(file))?.isFile() ?? false;
 }
 async function directoryExistsAsync(file) {
-  var _await$statAsync$isDi, _await$statAsync2;
-  return (_await$statAsync$isDi = (_await$statAsync2 = await statAsync(file)) === null || _await$statAsync2 === void 0 ? void 0 : _await$statAsync2.isDirectory()) !== null && _await$statAsync$isDi !== void 0 ? _await$statAsync$isDi : false;
+  return (await statAsync(file))?.isDirectory() ?? false;
 }
 function fileExists(file) {
   try {

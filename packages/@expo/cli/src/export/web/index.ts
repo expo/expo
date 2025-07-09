@@ -21,7 +21,7 @@ export const expoExportWeb: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Export the static files of the web app for hosting on a web server`,
+      `(Deprecated) Bundle the static files of the web app with Webpack for hosting on a web server`,
       chalk`npx expo export:web {dim <dir>}`,
       [
         chalk`<dir>                         Directory of the Expo project. {dim Default: Current working directory}`,
@@ -33,9 +33,9 @@ export const expoExportWeb: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
-  const { resolveOptionsAsync } = await import('./resolveOptions');
+  const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(args).catch(logCmdError);
 
-  const { exportWebAsync } = await import('./exportWebAsync');
+  const { exportWebAsync } = await import('./exportWebAsync.js');
   return exportWebAsync(projectRoot, options).catch(logCmdError);
 };

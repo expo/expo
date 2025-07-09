@@ -18,6 +18,7 @@ exports.getExpoPlistPath = getExpoPlistPath;
 exports.getFileInfo = getFileInfo;
 exports.getInfoPlistPath = getInfoPlistPath;
 exports.getPBXProjectPath = getPBXProjectPath;
+exports.getPodfilePath = getPodfilePath;
 exports.getSourceRoot = getSourceRoot;
 exports.getSupportingPath = getSupportingPath;
 exports.getXcodeProjectPath = getXcodeProjectPath;
@@ -42,9 +43,23 @@ function path() {
   };
   return data;
 }
+function Entitlements() {
+  const data = _interopRequireWildcard(require("./Entitlements"));
+  Entitlements = function () {
+    return data;
+  };
+  return data;
+}
 function _errors() {
   const data = require("../utils/errors");
   _errors = function () {
+    return data;
+  };
+  return data;
+}
+function _glob2() {
+  const data = require("../utils/glob");
+  _glob2 = function () {
     return data;
   };
   return data;
@@ -56,22 +71,15 @@ function _warnings() {
   };
   return data;
 }
-function Entitlements() {
-  const data = _interopRequireWildcard(require("./Entitlements"));
-  Entitlements = function () {
-    return data;
-  };
-  return data;
-}
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 function getAppDelegateHeaderFilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob().sync)('ios/*/AppDelegate.h', {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/AppDelegate.h', {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
-  });
+  }));
   if (!using) {
     throw new (_errors().UnexpectedError)(`Could not locate a valid AppDelegate header at root: "${projectRoot}"`);
   }
@@ -87,11 +95,11 @@ function getAppDelegateHeaderFilePath(projectRoot) {
   return using;
 }
 function getAppDelegateFilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob().sync)('ios/*/AppDelegate.@(m|mm|swift)', {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/AppDelegate.@(m|mm|swift)', {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
-  });
+  }));
   if (!using) {
     throw new (_errors().UnexpectedError)(`Could not locate a valid AppDelegate at root: "${projectRoot}"`);
   }
@@ -107,11 +115,11 @@ function getAppDelegateFilePath(projectRoot) {
   return using;
 }
 function getAppDelegateObjcHeaderFilePath(projectRoot) {
-  const [using, ...extra] = (0, _glob().sync)('ios/*/AppDelegate.h', {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/AppDelegate.h', {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
-  });
+  }));
   if (!using) {
     throw new (_errors().UnexpectedError)(`Could not locate a valid AppDelegate.h at root: "${projectRoot}"`);
   }
@@ -126,8 +134,31 @@ function getAppDelegateObjcHeaderFilePath(projectRoot) {
   }
   return using;
 }
+function getPodfilePath(projectRoot) {
+  const [using, ...extra] = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/Podfile', {
+    absolute: true,
+    cwd: projectRoot,
+    ignore: ignoredPaths
+  }));
+  if (!using) {
+    throw new (_errors().UnexpectedError)(`Could not locate a valid Podfile at root: "${projectRoot}"`);
+  }
+  if (extra.length) {
+    warnMultipleFiles({
+      tag: 'podfile',
+      fileName: 'Podfile',
+      projectRoot,
+      using,
+      extra
+    });
+  }
+  return using;
+}
 function getLanguage(filePath) {
   const extension = path().extname(filePath);
+  if (!extension && path().basename(filePath) === 'Podfile') {
+    return 'rb';
+  }
   switch (extension) {
     case '.mm':
       return 'objcpp';
@@ -156,11 +187,11 @@ function getSourceRoot(projectRoot) {
   return path().dirname(appDelegate.path);
 }
 function findSchemePaths(projectRoot) {
-  return (0, _glob().sync)('ios/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', {
+  return (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
-  });
+  }));
 }
 function findSchemeNames(projectRoot) {
   const schemePaths = findSchemePaths(projectRoot);
@@ -168,12 +199,12 @@ function findSchemeNames(projectRoot) {
 }
 function getAllXcodeProjectPaths(projectRoot) {
   const iosFolder = 'ios';
-  const pbxprojPaths = (0, _glob().sync)('ios/**/*.xcodeproj', {
+  const pbxprojPaths = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/**/*.xcodeproj', {
     cwd: projectRoot,
     ignore: ignoredPaths
-  }).filter(project => !/test|example|sample/i.test(project) || path().dirname(project) === iosFolder)
-  // sort alphabetically to ensure this works the same across different devices (Fail in CI (linux) without this)
-  .sort().sort((a, b) => {
+  })
+  // Drop leading `/` from glob results to mimick glob@<9 behavior
+  .map(filePath => filePath.replace(/^\//, '')).filter(project => !/test|example|sample/i.test(project) || path().dirname(project) === iosFolder)).sort((a, b) => {
     const isAInIos = path().dirname(a) === iosFolder;
     const isBInIos = path().dirname(b) === iosFolder;
     // preserve previous sort order
@@ -226,11 +257,11 @@ function getPBXProjectPath(projectRoot) {
   return using;
 }
 function getAllInfoPlistPaths(projectRoot) {
-  const paths = (0, _glob().sync)('ios/*/Info.plist', {
+  const paths = (0, _glob2().withSortedGlobResult)((0, _glob().globSync)('ios/*/Info.plist', {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths
-  }).sort(
+  })).sort(
   // longer name means more suffixes, we want the shortest possible one to be first.
   (a, b) => a.length - b.length);
   if (!paths.length) {
@@ -252,7 +283,7 @@ function getInfoPlistPath(projectRoot) {
   return using;
 }
 function getAllEntitlementsPaths(projectRoot) {
-  const paths = (0, _glob().sync)('ios/*/*.entitlements', {
+  const paths = (0, _glob().globSync)('ios/*/*.entitlements', {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths

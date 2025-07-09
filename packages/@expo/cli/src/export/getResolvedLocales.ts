@@ -4,7 +4,7 @@ import path from 'path';
 
 import { CommandError } from '../utils/errors';
 
-type LocaleMap = Record<string, JSONObject>;
+export type LocaleMap = Record<string, JSONObject>;
 
 // Similar to how we resolve locales in `@expo/config-plugins`
 export async function getResolvedLocalesAsync(

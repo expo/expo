@@ -3,10 +3,9 @@ title: FAQ
 description: A list of common questions and limitations about Expo and related services.
 ---
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BuildIcon, EasMetadataIcon, UpdateIcon, BellRinging04Icon } from '@expo/styleguide-icons';
+import { latestSdkVersionValues } from '~/ui/components/SDKTables';
 
-This page lists some of the common questions and answers about Expo and related services. If you have a question that is not answered here, see [ Forums](https://forums.expo.io) for more common questions.
+This page lists some of the common questions and answers about Expo and related services. If you have a question that is not answered here, see [Forums](https://chat.expo.dev/) for more common questions.
 
 ## What is Expo used for?
 
@@ -22,7 +21,7 @@ When Expo was first created, React Native had yet to be publicly released. This 
 
 The Expo SDK is well-tested, written in TypeScript, documented, and built for Android, iOS, and the web. Every module in the Expo SDK works together to ensure versioning always matches. This creates a nice upgrading experience.
 
-The Expo SDK is also written with the [Expo native API](/modules) to make contributing, maintaining, and understanding easier.
+The Expo SDK is also written with the [Expo Modules API](/modules) to make contributing, maintaining, and understanding easier.
 
 ## What is the difference between Expo and React Native?
 
@@ -34,9 +33,9 @@ No, the `expo` npm package and CLI work with any React Native app. [Expo Applica
 
 ## How much does Expo cost?
 
-The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-free-as-in-and-as-in-1d6d948a60dc). This includes the libraries that make up the [Expo SDK](/versions/latest) and the [Expo CLI](/workflow/expo-cli) used for development. The Expo Go app, the easiest way to get started, is also free from the app stores.
+The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-free-as-in-and-as-in-1d6d948a60dc). This includes the libraries that make up the [Expo SDK](/versions/latest) and the [Expo CLI](/more/expo-cli/) used for development. The Expo Go app, the easiest way to get started, is also free from the app stores.
 
-[Expo Application Services (EAS)](/eas) is an optional suite of cloud services for React Native apps, from the Expo team. EAS makes it easier to build your app, submit it to the stores, keep it updated, send push notifications, and more. You can use EAS for free if the [Free tier](https://expo.dev/pricing) quotas are sufficient for your app. More information is available on the [pricing page](https://expo.dev/pricing).
+[Expo Application Services (EAS)](/eas) is an optional suite of cloud services for React Native apps, from the Expo team. EAS makes it easier to build your app, submit it to the stores, keep it updated, send push notifications, and more. You can use EAS for free if the [Free plan](https://expo.dev/pricing) quotas are sufficient for your app. More information is available on the [pricing page](https://expo.dev/pricing).
 
 ## How do I add custom native code to my Expo project?
 
@@ -44,11 +43,11 @@ Expo supports adding custom native code and customizing that native code (Androi
 
 ## Can I use Expo in the app that is created with React Native CLI?
 
-Yes! All Expo tools and services work great in any React Native app. For example, you can use any part of the [Expo SDK](/versions/latest), [`expo-dev-client`](/development/installation) and EAS Build, Submit, and Update &mdash; they work great! Learn more about [installing `expo` in your project](/bare/installing-expo-modules), [adopting prebuild](/guides/adopting-prebuild), and [setting up EAS Build](/build/introduction).
+Yes! All Expo tools and services work great in any React Native app. For example, you can use any part of the [Expo SDK](/versions/latest), [`expo-dev-client`](/develop/development-builds/installation/) and EAS Build, Submit, and Update &mdash; they work great! Learn more about [installing `expo` in your project](/bare/installing-expo-modules), [adopting prebuild](/guides/adopting-prebuild), and [setting up EAS Build](/build/introduction).
 
 ## How do I share my Expo project? Can I submit it to the app stores?
 
-The fastest way to share your project is to publish with [EAS Update](/eas-update/introduction) and launch in a [development build](/development/introduction). This gives your app a URL; you can share this URL with anybody who has the [development build](/development/introduction) for Android or iOS. URLs can also be opened in Expo Go for Android.
+The fastest way to share your project is to publish with [EAS Update](/eas-update/introduction) and launch in a [development build](/develop/development-builds/introduction/). This gives your app a URL; you can share this URL with anybody who has the [development build](/develop/development-builds/introduction/) for Android or iOS. URLs can also be opened in Expo Go for Android.
 
 When ready, you can create a production build (**.aab** and **.ipa**) to submit to the app stores. You can build your app in a single command with [EAS Build](/build/introduction) and submit it to the stores with [EAS Submit](/submit/introduction).
 
@@ -56,11 +55,11 @@ You can also use [internal distribution](/build/internal-distribution) to share 
 
 ## Can I develop iOS apps on a Windows computer?
 
-Traditionally you needed a macOS to develop iOS apps, however, you can use [EAS Build](/build/introduction) to build your app in the cloud. You can also use [EAS Submit](/submit/introduction) to submit your app to the stores. Testing can be done on a physical iOS device using [Expo Go](https://expo.dev/expo-go) or a [development build](/development/introduction).
+Traditionally you needed a macOS to develop iOS apps, however, you can use [EAS Build](/build/introduction) to build your app in the cloud. You can also use [EAS Submit](/submit/introduction) to submit your app to the stores. Testing can be done on a physical iOS device using [Expo Go](https://expo.dev/go) or a [development build](/develop/development-builds/introduction/).
 
 ## What versions of Android and iOS are supported by the Expo SDK?
 
-Expo SDK supports Android 5+ and iOS 13+. For more information, see [Support for Android and iOS versions](/versions/latest/#support-for-android-and-ios-versions).
+Currently, Expo SDK supports Android {latestSdkVersionValues.android} and iOS {latestSdkVersionValues.ios}. For more information, see [Support for Android and iOS versions](/versions/latest/#support-for-android-and-ios-versions).
 
 ## What is the minimal size of a "hello world" expo app?
 
@@ -86,73 +85,66 @@ Expo is an [open-source framework](https://github.com/expo/expo) for apps that r
 
 In the same way React.js frameworks help users create larger websites with ease, Expo helps users create larger apps with ease. Expo provides a suite of well-tested React Native modules that run on Android, iOS, and the web. Expo also provides a [suite of tools](/eas) for building, deploying, and updating your app.
 
-## Should I use Expo CLI or React Native CLI?
+## What are the store policies regarding interpreted code?
 
-Expo CLI can be used simultaneously with React Native CLI. Expo CLI provides the same core functionality as React Native CLI, and additional functionality like automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/workflow/expo-cli#install), [improved native build commands](/workflow/expo-cli#compiling), [tunneling](/workflow/expo-cli#tunneling), [prebuild](/workflow/prebuild), [and more](/workflow/expo-cli).
+React Native uses a JavaScript interpreter (JSC, V8, or Hermes) to run your application code. Refer to the [Google Play Policy Center](https://play.google/developer-content-policy/) and [Apple Developer Program License Agreement](https://developer.apple.com/support/terms/apple-developer-program-license-agreement) directly for the most up-to-date policy information.
 
-Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas) with your project.
+_The following are excerpts of related policies, as of April 25, 2024._
+
+### Google Play Store
+
+```text
+...an app may not download executable code (such as dex, JAR, .so files) from a
+source other than Google Play. This restriction does not apply to code that runs
+in a virtual machine or an interpreter where either provides indirect access to
+Android APIs (such as JavaScript in a webview or browser).
+
+Apps or third-party code, like SDKs, with interpreted languages (JavaScript,
+Python, Lua, etc.) loaded at run time (for example, not packaged with the app)
+must not allow potential violations of Google Play policies.
+```
+
+Source: [Google Play Policy Center](https://support.google.com/googleplay/android-developer/answer/9888379?hl=en).
+
+### Apple App Store
+
+```text
+...Interpreted code may be downloaded to an Application but only so long as such code:
+(a) does not change the primary purpose of the Application by providing features
+    or functionality that are inconsistent with the intended and advertised purpose
+    of the Application as submitted to the App Store,
+(b) does not create a store or storefront for other code or applications, and
+(c) does not bypass signing, sandbox, or other security features of the OS.
+```
+
+Source: [3.3.1 APIs and Functionality - B. Executable Code](https://developer.apple.com/support/terms/apple-developer-program-license-agreement#b331).
+
+## Should I use Expo CLI or React Native Community CLI?
+
+Expo CLI offers the same core functionality as React Native Community CLI (also known as "React Native CLI") with additional features such as automatic [TypeScript setup](/guides/typescript), [web support](/workflow/web), [auto installing compatible libraries](/more/expo-cli/#install), [improved native build commands](/more/expo-cli#compiling), [tunneling](/more/expo-cli#tunneling), [Prebuild](/workflow/prebuild), and [more](/more/expo-cli).
+
+It can be used simultaneously with React Native Community. Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas) with your project. For more information, see:
+
+- Learn how you can migrate to use Expo CLI in an [existing React Native project](/bare/using-expo-cli/).
+- Learn about the benefits of [using a framework to build React Native apps](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps).
+- Learn about the benefits of migrating to Expo CLI such as improved app performance, expedites release, and fostering stronger collaboration across you team in [this blog post](https://expo.dev/blog/from-rnc-cli-to-expo).
+
+> **Note:** EAS Build is compatible with existing React Native projects (where native directories are checked into version control). When these directories are present, EAS Build does not run the prebuild step, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
 ## Is Expo Go open source?
 
-Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](https://github.com/expo/expo) in the `home`, `android`, and `ios` directories. The Expo Go app is also built with Expo and React Native.
+Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](https://github.com/expo/expo) in the **apps/expo-go** directory. The Expo Go app is also built with Expo and React Native.
 
-## Is Expo eject deprecated?
+## What can I do or cannot do with Expo Go?
 
-Yes, Expo eject is a deprecated term and is no longer necessary. It was replaced by the [`npx expo prebuild`](/workflow/prebuild) command which continuously generates native projects for you based on the libraries in your project and the Expo config (**app.json**). Learn more in the [Expo Prebuild documentation](/workflow/prebuild).
+[Expo Go](/get-started/set-up-your-environment/?redirected=#how-would-you-like-to-develop) is a sandbox that can help you get started quickly with React Native development in order to learn, prototype, or experiment. It allows you to use libraries included in the Expo SDK and libraries that don't require custom native code.
 
-Unlike the `expo eject` library, authors can configure their libraries to work with Expo Prebuild by creating a [config plugin](/guides/config-plugins). This means you can use any library with Expo Prebuild. You can also use any custom native code with Expo Prebuild by creating a [development build](/development/introduction).
+Expo Go cannot use third-party libraries that require custom native code and you cannot edit native code directly in Expo Go. It cannot be used for production apps.
 
-## Limitations
+**We strongly recommend any projects that require additional libraries with native code to migrate to [development builds](/develop/development-builds/introduction/). It's like creating a version of Expo Go that is specifically customized to your app's needs.**
 
-**Previously**, Expo had large native binary sizes and didn't support custom native code without "ejecting". These issues went away in December 2020 when we released [EAS Build](/build/index) which supports any React Native app. The concept of "ejecting" was replaced by the popular [Expo Prebuild](/workflow/prebuild) feature which has been around since SDK 41 (April 2021). The [`expo eject` command was fully deprecated](#is-expo-eject-deprecated) in Expo SDK 46 (August 2022).
+## Is ejecting deprecated?
 
-We believe Expo tools are a great option for anyone looking to create amazing cross-platform apps quickly. Nonetheless, everyone's project is unique, and there may be reasons Expo is not the right choice for what you're building. Reasons, why you may **not** want to use certain Expo tools with your project, are listed below:
+Yes, eject is a deprecated term and is no longer necessary. When Expo was first released, apps had larger native binary sizes and didn't support custom native code without "ejecting". This changed in December 2020 with the release of [EAS Build](/build/introduction) which supports any React Native app. The concept of "ejecting" was replaced by the [`npx expo prebuild`](/workflow/prebuild) command in SDK 41 (April 2021), which continuously generates native projects based on the libraries in your project and the app config (**app.json**). The `expo eject` command was fully deprecated in SDK 46 (August 2022).
 
-### EAS
-
-For more information on what current limitations exist with EAS, see the following:
-
-<BoxLink
-  title="EAS Build"
-  description="EAS Build is designed to work for any React Native project, whether or not you also use Expo Prebuild or manage your own native files. In some situations, you may need to change your project configuration, or it may be incompatible with your app. Learn more."
-  href="/build-reference/limitations"
-  Icon={BuildIcon}
-/>
-
-<BoxLink
-  title="EAS Update"
-  description="EAS Update is a hosted service that serves updates for projects using the expo-updates library. You can use it to fix small bugs and push quick fixes a snap in between app store submissions. In some situations, not be the right fit for a project. Learn more."
-  href="/eas-update/known-issues"
-  Icon={UpdateIcon}
-/>
-
-<BoxLink
-  title="EAS Metadata"
-  description="EAS Metadata helps create or maintain an app in the stores as easily as possible by using one configuration file. In some situations, not be the right fit for a project. Learn more."
-  href="/eas/metadata/faq/#anti-pitch"
-  Icon={EasMetadataIcon}
-/>
-
-<BoxLink
-  title="Notifications"
-  description="Push Notifications are an important feature, no matter what kind of app you're building. In some situations, you might want to know about common issues when setting up push notifications with Expo. Learn more."
-  href="/push-notifications/faq"
-  Icon={BellRinging04Icon}
-/>
-
-#### Bare workflow
-
-Similar to [development builds](/development/introduction), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android** and **ios** directories rather than continuously generating them on demand using the [Expo config and prebuild](/workflow/prebuild).
-
-EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you've made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
-
-### Expo Go
-
-[Expo Go](/get-started/expo-go/) provides a quick way to get started with your app development. It comes with a pre-configured set of libraries known as the Expo SDK. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
-
-Like any other tool, it too has its limitations:
-
-- Using a third-party library that requires native code
-- Using a third-party push notification service
-
-**We strongly recommend any projects that require additional libraries with native code to migrate to [development builds](/development/introduction). It's like creating a version of Expo Go that is specifically customized to your app's needs.**
+Unlike the previous eject workflow, authors can configure their libraries to work with Expo Prebuild by creating a [config plugin](/config-plugins/introduction/). This means you can use any library with Expo Prebuild. You can also use any custom native code with Expo Prebuild by creating a [development build](/develop/development-builds/introduction/). Learn more in the [Expo Prebuild documentation](/workflow/prebuild).

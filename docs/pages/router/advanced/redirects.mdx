@@ -1,0 +1,164 @@
+---
+title: Redirects and rewrites
+description: Learn how to create redirects for routes that may no longer exist.
+---
+
+> **warning** Static redirects are available from Expo Router `4.x.x`.
+
+## Redirect component
+
+To use `<Redirect />` component, import it from the `expo-router` and specify the `href` prop with the desired destination route.
+
+```tsx
+import { Redirect } from 'expo-router';
+
+export default function Index() {
+  return <Redirect href="/home" />;
+}
+```
+
+In the above example, when the app user visits this page, they will be automatically redirected to `/home` route.
+
+You can use `<Redirect />` within a component that checks for conditions before navigating.
+
+```tsx
+import { Redirect } from 'expo-router';
+import { useState, useEffect } from 'react';
+
+export default function ProtectedPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Simulate checking authentication status
+    setTimeout(() => setIsAuthenticated(true), 2000);
+  }, []);
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />;
+  }
+
+  return <Text>Welcome to the protected page!</Text>;
+}
+```
+
+In this case, if the user is not authenticated, they will be redirected to the `/login` page.
+
+## Static redirects
+
+Static redirects allow you to specify a redirect configuration in your [app config](/workflow/configuration/) using the `expo-router` config plugin. This allows you to specify redirects for routes that may no longer exist in your **app** directory. When you navigate to a screen, Expo Router simulates a `GET` request to a local server, which responds with the screen's content. This ensures that Expo Router behaves consistently on native, web, and when fetching React Server Components. As such, this configuration is based upon **server requests** and is based upon the request URL, not the screen name.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/from/here",
+            "destination": "/to/this/route"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+Each redirect configuration should have the following properties:
+
+- **source**: The incoming request path pattern
+- **destination**: The path you want to route to
+
+Redirect configuration can have the following optional property:
+
+- **permanent**: Accepts `true` or `false`. If `true`, will use the 308 status code, which instructs clients/search engines to cache the redirect forever. If `false`, will use the 307 status code, which is temporary and is not cached.
+
+Unlike routes within the **app** directory, you do not need to add the `/index` suffix for a directory route or `+api` to for API routes. You cannot create redirects for **\_layout** files.
+
+### Dynamic routes
+
+The `source` and `destination` routes can use the [dynamic route syntax](/develop/dynamic-routes/) to create redirects for dynamic routes. You can define them in **app.json** using the `expo-router` config plugin.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[slug]",
+            "destination": "/target/[slug]"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+The variable names will be matched when performing the redirection, if available. Any unmatched variables will be passed as query params.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/redirect/[fruit]/[vegetable]/[meat]",
+            "destination": "/target/[vegetable]/[fruit]"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```
+
+Using the configuration above, `/redirect/apple/carrot/beef` will redirect to `/target/carrot/apple?meat=beef`
+
+### HTTP methods
+
+To redirect only certain HTTP methods, provide the methods as a string inside an array. Remember that screens are considered a `GET` request.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "redirects": [{
+          "source": "/redirect/[slug]",
+          "destination": "/target/[slug]"
+          "methods": ["POST"]
+        }]
+      }
+    ]
+  ]
+}
+```
+
+## Rewrites
+
+Rewrites are only possible through static configuration. They are different from redirects as they act as a URL proxy and hide the destination URL. While redirects will return back an HTTP status code and reroute the request, a rewrite will render the new destination without changing the URL.
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-router",
+      {
+        "rewrites": [
+          {
+            "source": "/redirect/from/here",
+            "destination": "/to/this/route"
+          }
+        ]
+      }
+    ]
+  ]
+}
+```

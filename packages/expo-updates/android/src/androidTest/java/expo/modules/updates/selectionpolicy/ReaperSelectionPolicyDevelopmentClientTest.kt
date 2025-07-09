@@ -2,6 +2,7 @@ package expo.modules.updates.selectionpolicy
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.db.entity.UpdateEntity
+import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,11 +13,11 @@ class ReaperSelectionPolicyDevelopmentClientTest {
   private val runtimeVersion = "1.0"
 
   // test updates with different scopes to ensure this policy ignores scopes
-  private val update1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), runtimeVersion, "scope1")
-  private val update2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), runtimeVersion, "scope2")
-  private val update3 = UpdateEntity(UUID.randomUUID(), Date(1608667857776L), runtimeVersion, "scope3")
-  private val update4 = UpdateEntity(UUID.randomUUID(), Date(1608667857777L), runtimeVersion, "scope4")
-  private val update5 = UpdateEntity(UUID.randomUUID(), Date(1608667857778L), runtimeVersion, "scope5")
+  private val update1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), runtimeVersion, "scope1", JSONObject("{}"))
+  private val update2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), runtimeVersion, "scope2", JSONObject("{}"))
+  private val update3 = UpdateEntity(UUID.randomUUID(), Date(1608667857776L), runtimeVersion, "scope3", JSONObject("{}"))
+  private val update4 = UpdateEntity(UUID.randomUUID(), Date(1608667857777L), runtimeVersion, "scope4", JSONObject("{}"))
+  private val update5 = UpdateEntity(UUID.randomUUID(), Date(1608667857778L), runtimeVersion, "scope5", JSONObject("{}"))
 
   // for readability/writability, test with a policy that keeps only 3 updates;
   // the actual functionality is independent of the number

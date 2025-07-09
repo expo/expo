@@ -1,7 +1,8 @@
 /* eslint-env jest */
 import fs from 'fs/promises';
 
-import { execute, getLoadedModulesAsync, projectRoot } from './utils';
+import { getLoadedModulesAsync, projectRoot } from './utils';
+import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -20,12 +21,6 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/run/ios').expoRunIos`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
-    '../node_modules/arg/index.js',
-    '../node_modules/chalk/source/index.js',
-    '../node_modules/chalk/source/util.js',
-    '../node_modules/has-flag/index.js',
-    '../node_modules/supports-color/index.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/run/ios/index.js',
     '@expo/cli/build/src/utils/args.js',
@@ -34,7 +29,7 @@ it('loads expected modules by default', async () => {
 });
 
 it('runs `npx expo run:ios --help`', async () => {
-  const results = await execute('run:ios', '--help');
+  const results = await executeExpoAsync(projectRoot, ['run:ios', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`
     "
       Info
@@ -48,6 +43,7 @@ it('runs `npx expo run:ios --help`', async () => {
         --no-install                     Skip installing dependencies
         --no-bundler                     Skip starting the Metro bundler
         --scheme [scheme]                Scheme to build
+        --binary <path>                  Path to existing .app or .ipa to install.
         --configuration <configuration>  Xcode configuration to use. Debug or Release. Default: Debug
         -d, --device [device]            Device name or UDID to build the app on
         -p, --port <port>                Port to start the Metro bundler on. Default: 8081

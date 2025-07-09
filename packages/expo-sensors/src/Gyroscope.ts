@@ -3,21 +3,25 @@ import type { Listener, Subscription } from './DeviceSensor';
 import ExponentGyroscope from './ExponentGyroscope';
 
 /**
- * Each of these keys represents the rotation along that particular axis measured in degrees per second (°/s).
+ * Each of these keys represents the rotation along that particular axis measured in radians per second (rad/s).
  */
 export type GyroscopeMeasurement = {
   /**
-   * Value of rotation in degrees per second device reported in X axis.
+   * Value of rotation in radians per second device reported in X axis.
    */
   x: number;
   /**
-   * Value of rotation in degrees per second device reported in Y axis.
+   * Value of rotation in radians per second device reported in Y axis.
    */
   y: number;
   /**
-   * Value of rotation in degrees per second device reported in Z axis.
+   * Value of rotation in radians per second device reported in Z axis.
    */
   z: number;
+  /**
+   * Timestamp of the measurement in seconds.
+   */
+  timestamp: number;
 };
 
 export class GyroscopeSensor extends DeviceSensor<GyroscopeMeasurement> {
@@ -40,9 +44,9 @@ export class GyroscopeSensor extends DeviceSensor<GyroscopeMeasurement> {
   }
 
   /**
-   * Subscribe for updates to the accelerometer.
+   * Subscribe for updates to the gyroscope.
    *
-   * @param listener A callback that is invoked when an accelerometer update is available. When invoked,
+   * @param listener A callback that is invoked when a gyroscope update is available. When invoked,
    * the listener is provided a single argument that is an `GyroscopeMeasurement` object.
    *
    * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.

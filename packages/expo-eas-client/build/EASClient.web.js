@@ -1,6 +1,2 @@
-export default {
-    get name() {
-        return 'EASClient';
-    },
-};
+export default {};
 //# sourceMappingURL=EASClient.web.js.map

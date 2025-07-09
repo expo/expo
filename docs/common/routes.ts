@@ -1,7 +1,8 @@
 import * as Utilities from '~/common/utilities';
+import { stripVersionFromPath } from '~/common/utilities';
 import { PageApiVersionContextType } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
-import { NavigationRoute } from '~/types/common';
+import { NavigationRoute, NavigationRouteWithSection } from '~/types/common';
 
 export const getRoutes = (
   path: string,
@@ -46,6 +47,10 @@ export const isLearnPath = (path: string) => {
   return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
+export const isEasPath = (path: string) => {
+  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, path));
+};
+
 export const getPageSection = (path: string) => {
   if (isReferencePath(path)) {
     return 'reference';
@@ -61,7 +66,48 @@ export const getPageSection = (path: string) => {
     return 'learn';
   } else if (isHomePath(path)) {
     return 'home';
+  } else if (isEasPath(path)) {
+    return 'eas';
   }
 
   return 'home';
 };
+
+export const getCanonicalUrl = (path: string) => {
+  if (isReferencePath(path)) {
+    return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}/`;
+  } else if (path !== `/`) {
+    return `https://docs.expo.dev${path}/`;
+  } else {
+    return `https://docs.expo.dev`;
+  }
+};
+
+export const isRouteActive = (
+  info?: NavigationRoute | NavigationRouteWithSection,
+  asPath?: string,
+  pathname?: string
+) => {
+  // Special case for root url
+  if (info?.name === 'Introduction') {
+    if (asPath?.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
+      return true;
+    }
+  }
+
+  const linkUrl = stripVersionFromPath(info?.as ?? info?.href);
+  return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
+};
+
+export function appendSectionToRoute(route?: NavigationRouteWithSection) {
+  if (route?.children) {
+    return route.children.map((entry: NavigationRouteWithSection) =>
+      route.type !== 'page'
+        ? Object.assign(entry, {
+            section: route.section ? `${route.section} - ${route.name}` : route.name,
+          })
+        : route
+    );
+  }
+  return route;
+}

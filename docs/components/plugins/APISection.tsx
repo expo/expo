@@ -1,4 +1,11 @@
-import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import { useEffect } from 'react';
+
+import { listMissingHashLinkTargets } from '~/common/utilities';
+import {
+  ClassDefinitionData,
+  GeneratedData,
+  TypeDocKind,
+} from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
@@ -10,23 +17,21 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
   getCommentContent,
-  getComponentName,
-  TypeDocKind,
+  getPossibleComponentPropsNames,
 } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
+import { WithTestRequire } from '~/types/common';
 import { P } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
 
 type Props = {
-  packageName: string;
+  packageName?: string | string[];
   apiName?: string;
   forceVersion?: string;
-  strictTypes?: boolean;
-  testRequire?: any;
   headersMapping?: Record<string, string>;
-};
+} & WithTestRequire;
 
 const filterDataByKind = (
   entries: GeneratedData[] = [],
@@ -39,7 +44,7 @@ const filterDataByKind = (
       additionalCondition(entry)
   );
 
-const isHook = ({ name }: GeneratedData) =>
+const isHook = ({ name }: { name: string }) =>
   name.startsWith('use') &&
   // note(simek): hardcode this exception until the method will be renamed
   name !== 'useSystemBrightnessAsync';
@@ -47,18 +52,24 @@ const isHook = ({ name }: GeneratedData) =>
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
-const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+const isProp = ({ name }: GeneratedData) =>
+  name.includes('Props') &&
+  name !== 'ErrorRecoveryProps' &&
+  name !== 'WebAnchorProps' &&
+  name !== 'ScreenProps';
+
+const componentTypeNames = new Set(['React.FC', 'ForwardRefExoticComponent', 'ComponentType']);
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
-  if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
+  if (type?.name && componentTypeNames.has(type?.name)) {
     return true;
-  } else if (extendedTypes && extendedTypes.length) {
+  } else if (extendedTypes?.length) {
     return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
-  } else if (signatures && signatures.length) {
+  } else if (signatures?.length) {
+    const mainSignature = signatures[0];
     if (
-      signatures[0].type.name === 'Element' ||
-      (signatures[0].type.types && signatures[0].type.types.map(t => t.name).includes('Element')) ||
-      (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
+      (mainSignature.parameters && mainSignature.parameters[0].name === 'props') ||
+      (mainSignature.parameters && mainSignature.parameters[0].name === '__namedParameters')
     ) {
       return true;
     }
@@ -67,14 +78,13 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter'].includes(name) &&
-  !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
+  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
+  !(type?.name && componentTypeNames.has(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
-  (signatures &&
-    signatures[0].comment?.blockTags &&
+  (signatures?.[0].comment?.blockTags &&
     signatures[0].comment.blockTags.length > 0 &&
-    signatures[0].comment.blockTags.filter(tag => tag?.tag === '@header').length > 0) ??
+    signatures[0].comment.blockTags.some(tag => tag?.tag === '@header')) ??
   false;
 
 const groupByHeader = (entries: GeneratedData[]) => {
@@ -92,17 +102,33 @@ const groupByHeader = (entries: GeneratedData[]) => {
 };
 
 const renderAPI = (
-  packageName: string,
-  version: string = 'unversioned',
-  apiName?: string,
-  strictTypes: boolean = false,
-  testRequire: any = undefined,
-  headersMapping: Record<string, string> = {}
-): JSX.Element => {
+  sdkVersion: string,
+  {
+    packageName,
+    apiName,
+    testRequire = undefined,
+    headersMapping = {},
+  }: Omit<Props, 'forceVersion'>
+) => {
   try {
-    const { children: data } = testRequire
-      ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
-      : require(`~/public/static/data/${version}/${packageName}.json`);
+    let data;
+
+    if (Array.isArray(packageName)) {
+      data = packageName
+        .map(name => {
+          const { children } = testRequire
+            ? testRequire(`~/public/static/data/${sdkVersion}/${name}.json`)
+            : require(`~/public/static/data/${sdkVersion}/${name}.json`);
+          return children;
+        })
+        .flat()
+        .sort((a: GeneratedData, b: GeneratedData) => a.name.localeCompare(b.name));
+    } else {
+      const { children } = testRequire
+        ? testRequire(`~/public/static/data/${sdkVersion}/${packageName}.json`)
+        : require(`~/public/static/data/${sdkVersion}/${packageName}.json`);
+      data = children;
+    }
 
     const methods = filterDataByKind(
       data,
@@ -128,25 +154,25 @@ const renderAPI = (
 
     const types = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
         !isProp(entry) &&
+        !(entry?.variant === 'reference') &&
         !!(
-          entry.type.declaration ||
-          entry.type.types ||
-          entry.type.type ||
+          entry.type.declaration ??
+          entry.type.types ??
+          entry.type.type ??
           entry.type.typeArguments
-        ) &&
-        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
+        )
     );
 
     const props = filterDataByKind(
       data,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
       entry =>
         isProp(entry) &&
-        (entry.kind === TypeDocKind.TypeAlias
-          ? !!(entry.type.types || entry.type.declaration?.children)
+        ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
+          ? !!(entry.type.types ?? entry.type.declaration?.children)
           : true)
     );
     const defaultProps = filterDataByKind(
@@ -171,13 +197,14 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(
-      ({ name, children }) => `${getComponentName(name, children)}Props`
+    const componentsPropNames = new Set(
+      components.map(({ name, children }) => getPossibleComponentPropsNames(name, children)).flat()
     );
+
     const componentsProps = filterDataByKind(
       props,
-      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
-      entry => componentsPropNames.includes(entry.name)
+      [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy, TypeDocKind.Interface],
+      entry => componentsPropNames.has(entry.name)
     );
 
     const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
@@ -201,14 +228,14 @@ const renderAPI = (
       )
       .flat();
 
-    const methodsNames = methods.map(method => method.name);
+    const methodsNames = new Set(methods.map(method => method.name));
     const staticMethods = componentsChildren.filter(
       // note(simek): hide duplicate exports from class components
       method =>
         method?.kind === TypeDocKind.Method &&
         method?.flags?.isStatic === true &&
-        !methodsNames.includes(method.name) &&
-        !isHook(method as GeneratedData)
+        !methodsNames.has(method.name) &&
+        !isHook(method)
     );
     const componentMethods = componentsChildren
       .filter(
@@ -234,50 +261,68 @@ const renderAPI = (
                   data={categorizedMethods[key]}
                   header={header}
                   key={`${header}-${index}`}
+                  sdkVersion={sdkVersion}
                 />
               ))
             : Object.entries(categorizedMethods).map(([key, data], index) => (
-                <APISectionMethods data={data} header={key} key={`${key}-${index}`} />
+                <APISectionMethods
+                  data={data}
+                  header={key}
+                  key={`${key}-${index}`}
+                  sdkVersion={sdkVersion}
+                />
               )))}
-        <APISectionComponents data={components} componentsProps={componentsProps} />
-        <APISectionMethods data={staticMethods} header="Static Methods" />
-        <APISectionMethods data={componentMethods} header="Component Methods" />
-        <APISectionConstants data={constants} apiName={apiName} />
-        <APISectionMethods data={hooks} header="Hooks" />
-        <APISectionClasses data={classes} />
-        {props && !componentsProps.length ? (
-          <APISectionProps data={props} defaultProps={defaultProps} />
+        <APISectionComponents
+          data={components}
+          sdkVersion={sdkVersion}
+          componentsProps={componentsProps}
+        />
+        <APISectionMethods data={staticMethods} header="Static Methods" sdkVersion={sdkVersion} />
+        <APISectionMethods
+          data={componentMethods}
+          header="Component Methods"
+          sdkVersion={sdkVersion}
+        />
+        <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
+        <APISectionMethods data={hooks} header="Hooks" sdkVersion={sdkVersion} />
+        <APISectionClasses data={classes} sdkVersion={sdkVersion} />
+        {props && componentsProps.length === 0 ? (
+          <APISectionProps data={props} sdkVersion={sdkVersion} defaultProps={defaultProps} />
         ) : null}
-        <APISectionMethods data={methods} apiName={apiName} />
+        <APISectionMethods data={methods} apiName={apiName} sdkVersion={sdkVersion} />
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
           header="Event Subscriptions"
+          sdkVersion={sdkVersion}
         />
-        <APISectionNamespaces data={namespaces} />
-        <APISectionInterfaces data={interfaces} />
-        <APISectionTypes data={types} />
+        <APISectionNamespaces data={namespaces} sdkVersion={sdkVersion} />
+        <APISectionInterfaces data={interfaces} sdkVersion={sdkVersion} />
+        <APISectionTypes data={types} sdkVersion={sdkVersion} />
         <APISectionEnums data={enums} />
       </>
     );
-  } catch {
+  } catch (error) {
+    console.error(error);
     return <P>No API data file found, sorry!</P>;
   }
 };
 
-const APISection = ({
-  packageName,
-  apiName,
-  forceVersion,
-  strictTypes = false,
-  testRequire = undefined,
-  headersMapping = {},
-}: Props) => {
+const isDevMode = process.env.NODE_ENV === 'development';
+
+const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
-    forceVersion ||
+    forceVersion ??
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire, headersMapping);
+
+  useEffect(() => {
+    if (isDevMode) {
+      listMissingHashLinkTargets(restProps.apiName);
+    }
+  }, []);
+
+  return renderAPI(resolvedVersion, restProps);
 };
 
 export default APISection;

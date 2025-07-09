@@ -9,103 +9,107 @@ import ExpoModulesCore
  * RCTBridge and RCTRootView objects to return to the ReactDelegate, replacing them with the real
  * objects when expo-updates is ready.
  */
-public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate, RCTBridgeDelegate {
+public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
-  private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable: Any]?
   private var deferredRootView: EXDeferredRCTRootView?
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
-  private lazy var shouldEnableAutoSetup: Bool = {
-    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
-      return false
-    }
-    // if Expo.plist not found or its content is invalid, disable the auto setup
-    guard
-      let configPath = Bundle.main.path(forResource: UpdatesConfig.PlistName, ofType: "plist"),
-      let config = NSDictionary(contentsOfFile: configPath)
-    else {
-      return false
-    }
 
-    // if `EXUpdatesAutoSetup` is false, disable the auto setup
-    let enableAutoSetupValue = config[UpdatesConfig.EXUpdatesConfigEnableAutoSetupKey]
-    if let enableAutoSetup = enableAutoSetupValue as? NSNumber, enableAutoSetup.boolValue == false {
-      return false
+  public override func createReactRootView(
+    reactDelegate: ExpoReactDelegate,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> UIView? {
+    if UpdatesUtils.isUsingCustomInitialization() {
+      return nil
     }
 
-    // Backward compatible if main AppDelegate already has expo-updates setup,
-    // we just skip in this case.
-    if AppController.sharedInstance.isStarted {
-      return false
-    }
-
-    return true
-  }()
-
-  public override func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable: Any]?) -> RCTBridge? {
-    if !shouldEnableAutoSetup {
+    AppController.initializeWithoutStarting()
+    let controller = AppController.sharedInstance
+    if !controller.isActiveController {
       return nil
     }
 
     self.reactDelegate = reactDelegate
-    let controller = AppController.sharedInstance
-    controller.delegate = self
-
-    // TODO: launch screen should move to expo-splash-screen
-    // or assuming expo-splash-screen KVO will make it works even we don't show it explicitly.
-    // controller.startAndShowLaunchScreen(UIApplication.shared.delegate!.window!!)
-    controller.start()
-
-    self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
     self.launchOptions = launchOptions
-
-    return EXDeferredRCTBridge(delegate: self.bridgeDelegate!, launchOptions: self.launchOptions)
-  }
-
-  public override func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable: Any]?) -> RCTRootView? {
-    if !shouldEnableAutoSetup {
-      return nil
-    }
+    controller.delegate = self
+    controller.start()
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
-    self.deferredRootView = EXDeferredRCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
+    self.deferredRootView = EXDeferredRCTRootView()
+
+#if os(iOS) || os(tvOS)
+    // This view can potentially be displayed for a while.
+    // We should use the splashscreens view here, otherwise a black view appears in the middle of the launch sequence.
+    if let view = createSplashScreenview(), let rootView = self.deferredRootView {
+      view.translatesAutoresizingMaskIntoConstraints = false
+      // The deferredRootView needs to be dark mode aware so we set the color to be the same as the splashscreen background.
+      let backgroundColor = view.backgroundColor ?? UIColor(named: "SplashScreenBackground")
+      rootView.backgroundColor = backgroundColor ?? .white
+      rootView.addSubview(view)
+
+      NSLayoutConstraint.activate([
+        view.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
+        view.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
+        view.topAnchor.constraint(equalTo: rootView.topAnchor),
+        view.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
+      ])
+    }
+#endif
     return self.deferredRootView
+  }
+
+  public override func bundleURL(reactDelegate: ExpoReactDelegate) -> URL? {
+    AppController.sharedInstance.launchAssetUrl()
   }
 
   // MARK: AppControllerDelegate implementations
 
-  public func appController(_ appController: AppController, didStartWithSuccess success: Bool) {
+  public func appController(_ appController: AppControllerInterface, didStartWithSuccess success: Bool) {
+    if UpdatesUtils.isUsingCustomInitialization() {
+      return
+    }
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }
 
-    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: self.launchOptions)
-    appController.bridge = bridge
+    guard let appDelegate = (UIApplication.shared.delegate as? (any ReactNativeFactoryProvider)) ??
+      ((UIApplication.shared.delegate as? NSObject)?.value(forKey: "_expoAppDelegate") as? (any ReactNativeFactoryProvider)) else {
+      fatalError("`UIApplication.shared.delegate` must be an `ExpoAppDelegate` or `EXAppDelegateWrapper`")
+    }
 
-    let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
-    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
-    let window = UIApplication.shared.delegate!.window!!
+    let rootView = appDelegate.recreateRootView(
+      withBundleURL: AppController.sharedInstance.launchAssetUrl(),
+      moduleName: self.rootViewModuleName,
+      initialProps: self.rootViewInitialProperties,
+      launchOptions: self.launchOptions
+    )
+
+    let window = getWindow()
     let rootViewController = reactDelegate.createRootViewController()
+#if os(iOS) || os(tvOS)
+    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     rootViewController.view = rootView
     window.rootViewController = rootViewController
     window.makeKeyAndVisible()
+#else
+    rootViewController.view = rootView
+    rootView.frame = window.frame
+    window.contentViewController = rootViewController
+    window.makeKeyAndOrderFront(self)
+    window.center()
+#endif
 
     self.cleanup()
-  }
-
-  // MARK: RCTBridgeDelegate implementations
-
-  public func sourceURL(for bridge: RCTBridge!) -> URL! {
-    return AppController.sharedInstance.launchAssetUrl()
   }
 
   // MARK: Internals
 
   /**
-   Cleanup unused resources after `RCTBridge` created.
-   We should keep `bridgeDelegate` alive because it's a wrapper of `RCTBridgeDelegate` from `AppDelegate` and somehow bridge may access it after.
+   Cleanup unused resources after react instance created.
    */
   private func cleanup() {
     self.reactDelegate = nil
@@ -113,5 +117,39 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.deferredRootView = nil
     self.rootViewModuleName = nil
     self.rootViewInitialProperties = nil
+  }
+
+#if os(iOS) || os(tvOS)
+  private func createSplashScreenview() -> UIView? {
+    var view: UIView?
+    let mainBundle = Bundle.main
+    let launchScreen = mainBundle.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "LaunchScreen"
+
+    if mainBundle.path(forResource: launchScreen, ofType: "storyboard") != nil ||
+      mainBundle.path(forResource: launchScreen, ofType: "storyboardc") != nil {
+      let launchScreenStoryboard = UIStoryboard(name: launchScreen, bundle: nil)
+      let viewController = launchScreenStoryboard.instantiateInitialViewController()
+      view = viewController?.view
+      viewController?.view = nil
+    } else if mainBundle.path(forResource: launchScreen, ofType: "nib") != nil {
+      let views = mainBundle.loadNibNamed(launchScreen, owner: self)
+      view = views?.first as? UIView
+    }
+
+    return view
+  }
+#endif
+
+  private func getWindow() -> UIWindow {
+    #if os(macOS)
+    guard let window = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? NSApplication.shared.mainWindow else {
+      fatalError("Cannot find the current window.")
+    }
+    #else
+    guard let window = UIApplication.shared.windows.filter(\.isKeyWindow).first ?? UIApplication.shared.delegate?.window as? UIWindow else {
+      fatalError("Cannot find the current window.")
+    }
+    #endif
+    return window
   }
 }

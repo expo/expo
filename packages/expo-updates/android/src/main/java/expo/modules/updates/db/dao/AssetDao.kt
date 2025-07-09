@@ -1,9 +1,11 @@
 package expo.modules.updates.db.dao
 
+import androidx.annotation.VisibleForTesting
 import androidx.room.*
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateAssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import java.util.*
 
 /**
@@ -11,22 +13,17 @@ import java.util.*
  */
 @Dao
 abstract class AssetDao {
-  /**
-   * for private use only
-   * must be marked public for Room
-   * so we use the underscore to discourage use
-   */
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  abstract fun _insertAsset(asset: AssetEntity): Long
+  protected abstract fun insertAssetInternal(asset: AssetEntity): Long
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  abstract fun _insertUpdateAsset(updateAsset: UpdateAssetEntity)
+  protected abstract fun insertUpdateAssetInternal(updateAsset: UpdateAssetEntity)
 
   @Query("UPDATE updates SET launch_asset_id = :assetId WHERE id = :updateId;")
-  abstract fun _setUpdateLaunchAsset(assetId: Long, updateId: UUID)
+  protected abstract fun setUpdateLaunchAssetInternal(assetId: Long, updateId: UUID)
 
   @Query("UPDATE assets SET marked_for_deletion = 1;")
-  abstract fun _markAllAssetsForDeletion()
+  protected abstract fun markAllAssetsForDeletionInternal()
 
   @Query(
     "UPDATE assets SET marked_for_deletion = 0 WHERE id IN (" +
@@ -35,7 +32,15 @@ abstract class AssetDao {
       " INNER JOIN updates ON updates_assets.update_id = updates.id" +
       " WHERE updates.keep);"
   )
-  abstract fun _unmarkUsedAssetsFromDeletion()
+  protected abstract fun unMarkUsedAssetsFromDeletionInternal()
+
+  @Query(
+    "UPDATE assets SET marked_for_deletion = 0 WHERE id IN (" +
+      " SELECT launch_asset_id" +
+      " FROM updates" +
+      " WHERE updates.keep);"
+  )
+  protected abstract fun unMarkUsedLaunchAssetsFromDeletionInternal()
 
   @Query(
     "UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (" +
@@ -43,16 +48,16 @@ abstract class AssetDao {
       " FROM assets" +
       " WHERE marked_for_deletion = 0);"
   )
-  abstract fun _unmarkDuplicateUsedAssetsFromDeletion()
+  protected abstract fun unMarkDuplicateUsedAssetsFromDeletionInternal()
 
   @Query("SELECT * FROM assets WHERE marked_for_deletion = 1;")
-  abstract fun _loadAssetsMarkedForDeletion(): List<AssetEntity>
+  protected abstract fun loadAssetsMarkedForDeletionInternal(): List<AssetEntity>
 
   @Query("DELETE FROM assets WHERE marked_for_deletion = 1;")
-  abstract fun _deleteAssetsMarkedForDeletion()
+  protected abstract fun deleteAssetsMarkedForDeletionInternal()
 
   @Query("SELECT * FROM assets WHERE `key` = :key LIMIT 1;")
-  abstract fun _loadAssetWithKey(key: String?): List<AssetEntity>
+  protected abstract fun loadAssetWithKeyInternal(key: String?): List<AssetEntity>
 
   /**
    * for public use
@@ -75,19 +80,26 @@ abstract class AssetDao {
   @Transaction
   open fun insertAssets(assets: List<AssetEntity>, update: UpdateEntity) {
     for (asset in assets) {
-      val assetId = _insertAsset(asset)
-      _insertUpdateAsset(UpdateAssetEntity(update.id, assetId))
+      val assetId = insertAssetInternal(asset)
+      insertUpdateAssetInternal(UpdateAssetEntity(update.id, assetId))
       if (asset.isLaunchAsset) {
-        _setUpdateLaunchAsset(assetId, update.id)
+        setUpdateLaunchAssetInternal(assetId, update.id)
       }
     }
   }
 
   fun loadAssetWithKey(key: String?): AssetEntity? {
-    val assets = _loadAssetWithKey(key)
-    return if (assets.isNotEmpty()) {
-      assets[0]
-    } else null
+    val asset = loadAssetWithKeyInternal(key).firstOrNull() ?: return null
+
+    // Load some properties not stored in database but can be computed from other fields
+    asset.relativePath?.let {
+      val (embeddedAssetFilename, resourceFolder, resourceFilename) =
+        AndroidResourceAssetUtils.parseAndroidResponseAssetFromPath(it)
+      asset.embeddedAssetFilename = embeddedAssetFilename
+      asset.resourcesFolder = resourceFolder
+      asset.resourcesFilename = resourceFilename
+    }
+    return asset
   }
 
   fun mergeAndUpdateAsset(existingEntity: AssetEntity, newEntity: AssetEntity) {
@@ -113,11 +125,11 @@ abstract class AssetDao {
     // we need to keep track of whether the calling class expects this asset to be the launch asset
     existingEntity.isLaunchAsset = newEntity.isLaunchAsset
     // some fields on the asset entity are not stored in the database but might still be used by application code
-    existingEntity.embeddedAssetFilename = newEntity.embeddedAssetFilename
-    existingEntity.resourcesFilename = newEntity.resourcesFilename
-    existingEntity.resourcesFolder = newEntity.resourcesFolder
-    existingEntity.scale = newEntity.scale
-    existingEntity.scales = newEntity.scales
+    newEntity.embeddedAssetFilename?.let { existingEntity.embeddedAssetFilename = it }
+    newEntity.resourcesFilename?.let { existingEntity.resourcesFilename = it }
+    newEntity.resourcesFolder?.let { existingEntity.resourcesFolder = it }
+    newEntity.scale?.let { existingEntity.scale = it }
+    newEntity.scales?.let { existingEntity.scales = it }
   }
 
   @Transaction
@@ -128,9 +140,9 @@ abstract class AssetDao {
   ): Boolean {
     val existingAssetEntry = loadAssetWithKey(asset.key) ?: return false
     val assetId = existingAssetEntry.id
-    _insertUpdateAsset(UpdateAssetEntity(update.id, assetId))
+    insertUpdateAssetInternal(UpdateAssetEntity(update.id, assetId))
     if (isLaunchAsset) {
-      _setUpdateLaunchAsset(assetId, update.id)
+      setUpdateLaunchAssetInternal(assetId, update.id)
     }
     return true
   }
@@ -138,15 +150,26 @@ abstract class AssetDao {
   @Transaction
   open fun deleteUnusedAssets(): List<AssetEntity> {
     // the simplest way to mark the assets we want to delete
-    // is to mark all assets for deletion, then go back and unmark
+    // is to mark all assets for deletion, then go back and un-mark
     // those assets in updates we want to keep
     // this is safe since this is a transaction and will be rolled back upon failure
-    _markAllAssetsForDeletion()
-    _unmarkUsedAssetsFromDeletion()
+    markAllAssetsForDeletionInternal()
+    unMarkUsedAssetsFromDeletionInternal()
+    unMarkUsedLaunchAssetsFromDeletionInternal()
     // check for duplicate rows representing a single file on disk
-    _unmarkDuplicateUsedAssetsFromDeletion()
-    val deletedAssets = _loadAssetsMarkedForDeletion()
-    _deleteAssetsMarkedForDeletion()
+    unMarkDuplicateUsedAssetsFromDeletionInternal()
+    val deletedAssets = loadAssetsMarkedForDeletionInternal()
+    deleteAssetsMarkedForDeletionInternal()
     return deletedAssets
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  internal fun insertAssetForTest(asset: AssetEntity): Long {
+    return insertAssetInternal(asset)
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+  internal fun insertUpdateAssetForTest(updateAsset: UpdateAssetEntity) {
+    insertUpdateAssetInternal(updateAsset)
   }
 }

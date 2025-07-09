@@ -6,37 +6,45 @@
   </a>
 </p>
 
-<p align="center">The fastest way to build and run universal React Native apps for iOS, Android, and the web</p>
-
-<p align="center">
-
-  <a aria-label="Join the Expo Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
-    <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=flat-square&labelColor=000000&color=000000&logo=discord&logoColor=FFFFFF&label=" />
-  </a>
-  <a aria-label="Browse the Expo forums" href="https://forums.expo.dev" target="_blank">
-    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-000.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=000000">
-  </a>
-
-</p>
+<p align="center">The fastest way to build and run universal React Native apps for Android, iOS, and the web</p>
 
 <p align="center">
   <a aria-label="expo documentation" href="https://docs.expo.dev/more/expo-cli/">📚 Read the Documentation</a>
-  |
-  <a aria-label="Contribute to Expo CLI" href="#contributing"><b>Contribute to Expo CLI</b></a>
+  &ensp;•&ensp;
+  <a aria-label="expo documentation" href="https://expo.dev/blog">Learn more on our blog</a>
+  &ensp;•&ensp;
+  <a aria-label="Contribute to Expo CLI" href="#contributing">Contribute to Expo CLI</a>
 </p>
 
-<p>
-  <a aria-label="Follow @expo on Twitter" href="https://twitter.com/intent/follow?screen_name=expo" target="_blank">
-    <img  alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?style=flat-square&label=Follow%20%40expo&logo=TWITTER&logoColor=FFFFFF&labelColor=00aced&logoWidth=15&color=lightgray" target="_blank" />
+<p align="center">
+  <a aria-label="Join the Expo Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
+    <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=for-the-badge&color=5865F2&logo=discord&logoColor=FFFFFF" />
   </a>
-  <a aria-label="Follow Expo on Medium" href="https://blog.expo.dev">
-    <img align="right" alt="Medium: exposition" src="https://img.shields.io/badge/Learn%20more%20on%20our%20blog-lightgray.svg?style=flat-square" target="_blank" />
+</p>
+
+<p align="center">
+  <a aria-label="Follow @expo on X" href="https://x.com/intent/follow?screen_name=expo" target="_blank">
+    <img alt="Expo on X" src="https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white" target="_blank" />
+  </a>&nbsp;
+  <a aria-label="Follow @expo on GitHub" href="https://github.com/expo" target="_blank">
+    <img alt="Expo on GitHub" src="https://img.shields.io/badge/GitHub-222222?style=for-the-badge&logo=github&logoColor=white" target="_blank" />
+  </a>&nbsp;
+  <a aria-label="Follow @expo on Reddit" href="https://www.reddit.com/r/expo/" target="_blank">
+    <img alt="Expo on Reddit" src="https://img.shields.io/badge/Reddit-FF4500?style=for-the-badge&logo=reddit&logoColor=white" target="_blank" />
+  </a>&nbsp;
+  <a aria-label="Follow @expo on Bluesky" href="https://bsky.app/profile/expo.dev" target="_blank">
+    <img alt="Expo on LinkedIn" src="https://img.shields.io/badge/Bluesky-1DA1F2?style=for-the-badge&logo=bluesky&logoColor=white" target="_blank" />
+  </a>&nbsp;
+  <a aria-label="Follow @expo on LinkedIn" href="https://www.linkedin.com/company/expo-dev" target="_blank">
+    <img alt="Expo on LinkedIn" src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=LinkedIn&logoColor=white" target="_blank" />
   </a>
+
+  <p align="center">⭐️ Be sure to star the Expo GitHub repo if you enjoy using the project! ⭐️</p>
 </p>
 
 ---
 
-The `@expo/cli` package is a CLI binary that should be used via `expo` like `npx expo start`.
+The `@expo/cli` package is a CLI binary that should be used via the `expo` package, like `npx expo start` (or `npx expo` for short).
 
 ```
 npx expo
@@ -49,9 +57,9 @@ npx expo
 This CLI has the following purposes:
 
 - Be a minimal interface for starting a local development server that emulates a production EAS Updates server. The development server is the proxy between a native runtime (Expo Go, Dev Client) and a JS Bundler (Metro, Webpack).
-  - To accomplish secure manifest signing (think https/TSL/SSL for web (required for sandboxing AsyncStorage, Permissions, etc.)) we need an authenticated Expo user account. This is the only reason we include the authentication commands `login`, `logout`, `whoami`, `register`. Standard web CLIs don't have authentication commands because they either don't set up https or they use emulation via packages like `devcert`.
+  - To accomplish secure manifest signing for the web, like AsyncStorage or Permissions where both require https/SSL, we need an authenticated Expo account. This is the only reason we include the authentication commands `login`, `logout`, `whoami`, `register`. Standard web CLIs don't have authentication commands because they either don't set up https or they use emulation via packages like `devcert`.
 - Orchestrating various native tools like Xcode, `Simulator.app`, Android Studio, ADB, etc. to make native builds as painless as possible. `run:ios`, `run:android` commands.
-- Implementing a versioned `prebuild` command that can reliably work with a project for long periods of time. Prebuild is like a bundler for native code, it generates the `ios`, `android` folders based on the project Expo config (`app.json`).
+- Implementing a versioned `prebuild` command that can reliably work with a project for long periods of time. Prebuild is like a bundler for native code, it generates the **android** and **ios** folders based on the project Expo config (**app.json**).
   - `npx expo config` is auxiliary to `npx expo prebuild` and used for debugging/introspection.
 - Installing versioned libraries with `npx expo install` this is a minimal utility born out of pure necessity since versioning in React Native is hard to get right.
 
@@ -63,7 +71,7 @@ To develop the CLI run (defaults to watch mode):
 yarn build
 ```
 
-We highly recommend setting up an alias for the Expo CLI so you can try it in projects all around your computer. Open your `.zshrc` or other config file and add:
+We highly recommend setting up an alias for the Expo CLI so you can try it in projects all around your computer. Open your **.zshrc** or other config file and add:
 
 ```
 alias nexpo="/path/to/expo/packages/@expo/cli/build/bin/cli"
@@ -75,7 +83,7 @@ Then use it with `nexpo` like `nexpo config`. You can also set up a debug versio
 alias expo-inspect="node --inspect /path/to/expo/packages/@expo/cli/build/bin/cli"
 ```
 
-Then you can run it and visit `chrome://inspect/#devices` in Chrome, and press "Open dedicated DevTools for Node" to get a debugger attached to your process. When debugging the CLI, you'll want to disable workers whenever possible, this will make all code run on the same thread, this is mostly applicable to the `start` command, i.e. `expo-inspect start --max-workers 0`.
+Then you can run it and visit `chrome://inspect/#devices` in Chrome, and press **"Open dedicated DevTools for Node"** to get a debugger attached to your process. When debugging the CLI, you'll want to disable workers whenever possible, this will make all code run on the same thread, this is mostly applicable to the `start` command, i.e. `expo-inspect start --max-workers 0`.
 
 ## Format
 
@@ -97,7 +105,7 @@ Then you can run it and visit `chrome://inspect/#devices` in Chrome, and press "
 - Unlike the legacy global Expo CLI, this CLI is shipped with `expo` meaning the SDK Version is always present.
   - Reduce SDK specific tasks since only one SDK should be accounted for in a single version of `@expo/cli`.
   - The `@expo/config` method `getConfig` does not need the `skipSDKVersionRequirement` in any case since `expo` should always be installed. Ex: `getConfig('...', { skipSDKVersionRequirement: true });` shouldn't be used.
-- Also unlike the global Expo CLI we can assume that node modules are always installed since this CLI should be used via a project's local `node_modules` folder.
+- Also unlike the global Expo CLI we can assume that node modules are always installed since this CLI should be used via a project's local **node_modules** folder.
   - This means we can't perform operations that upgrade the `expo` package as these may kill the running process. Features that need this pattern (like `expo upgrade`) should live in standalone global tools.
 
 ## Testing
@@ -105,7 +113,7 @@ Then you can run it and visit `chrome://inspect/#devices` in Chrome, and press "
 There are two testing scripts:
 
 - `yarn test`: Controlled unit and integration tests.
-- `yarn test:e2e`: End to end testing for CLI commands. This requires the files to be built with `yarn build`
+- `yarn test:e2e`: End to end testing for CLI commands. This requires the files to be built with `yarn build`.
 
 ---
 
@@ -126,7 +134,8 @@ There are two testing scripts:
 ### E2E Testing Guidelines
 
 - E2E tests should be resilient and reliable, be sure to give them plenty of time for network requests.
-- When testing locally you should attempt to reuse node modules for faster results. In the `npx expo prebuild` and `npx expo start` commands for instance, we utilize a helper method that will default to reusing a project + node_modules when run locally. This can be [toggled off](https://github.com/expo/expo/blob/11a5a4d27b7e1c8e4d6ddf0401397d789d89f52a/packages/%40expo/cli/e2e/__tests__/utils.ts#L174) to bootstrap a fresh project every time.
+- When testing locally you had to have [Bun installed](https://bun.sh/docs/installation).
+- When testing locally you should attempt to reuse node modules for faster results. In the `npx expo prebuild` and `npx expo start` commands for instance, we utilize a helper method that will default to reusing a project + **node_modules** when run locally. This can be [toggled off](https://github.com/expo/expo/blob/11a5a4d27b7e1c8e4d6ddf0401397d789d89f52a/packages/%40expo/cli/e2e/__tests__/utils.ts#L174) to bootstrap a fresh project every time.
 - When bootstrapping test projects, utilize the temporary folder `os.tmpdir()` as this folder is automatically cleaned up when the computer restarts.
 
 ## Coming from Expo CLI
@@ -139,6 +148,6 @@ The legacy global `expo-cli` package was deprecated in favor of this versioned `
 - `expo-cli` worked for almost all versions of the `expo` package, meaning it was getting more complex with every release.
 - `expo-cli` combined service commands (like the legacy `build`, `submit`, `publish`) with project-level commands like `expo start`. We've since divided services into `eas-cli` and project commands into `npx expo` (`@expo/cli`). This structure is more optimal/faster for developers since they can install/update commands when they need them.
 - This CLI utilizes more Node.js standard features like `$EDITOR` instead of the custom `$EXPO_EDITOR` environment variable. Also transitioning away from `$EXPO_DEBUG` and more towards `$DEBUG=expo:*`. These types of changes make Expo CLI play nicer with existing tooling.
-- The DevTools UI has been deprecated to reduce the net install size, minimize complexity, and make room for future debugging UIs (Hermes/v8 Chrome debugger).
+- The DevTools UI has been deprecated to reduce the net installation size, minimize complexity, and make room for future debugging UIs (Hermes/v8 Chrome debugger).
 - The `expo start:web` and `expo web` commands have been rolled into `npx expo start` as we now lazily load platforms until the device requests them.
 - Other missing or beta features from `expo-cli` may still be getting migrated over to this new CLI. For a more comprehensive breakdown see the [start command PR](https://github.com/expo/expo/pull/16160).

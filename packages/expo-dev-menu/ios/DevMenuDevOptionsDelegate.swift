@@ -24,7 +24,9 @@ class DevMenuDevOptionsDelegate {
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
 
-    bridge?.requestReload()
+    DispatchQueue.main.async {
+      RCTTriggerReloadCommandListeners("Dev menu - reload")
+    }
   }
 
   internal func toggleElementInsector() {
@@ -37,7 +39,7 @@ class DevMenuDevOptionsDelegate {
     }
     let port = bundleURL.port ?? Int(RCT_METRO_PORT)
     let host = bundleURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/inspector?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
+    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
     guard let url = URL(string: openURL) else {
       NSLog("[DevMenu] Invalid openJSInspector URL: $@", openURL)
       return
@@ -45,19 +47,6 @@ class DevMenuDevOptionsDelegate {
     let request = NSMutableURLRequest(url: url)
     request.httpMethod = "PUT"
     URLSession.shared.dataTask(with: request as URLRequest).resume()
-  }
-
-  internal func toggleRemoteDebugging() {
-    guard let devSettings = devSettings else {
-      return
-    }
-
-    DevMenuManager.shared.hideMenu()
-    
-    DispatchQueue.main.async {
-      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
-      (DevMenuManager.shared.window?.rootViewController as? DevMenuViewController)?.updateProps() // We have to force props to reflect changes on the UI
-    }
   }
 
   internal func togglePerformanceMonitor() {
@@ -71,7 +60,23 @@ class DevMenuDevOptionsDelegate {
     }
 
     DispatchQueue.main.async {
-      devSettings.isPerfMonitorShown ? perfMonitor.hide() : perfMonitor.show()
+      if devSettings.isPerfMonitorShown {
+        perfMonitor.hide()
+      } else {
+        let devMenuManager = DevMenuManager.shared
+        let devMenuWindow = devMenuManager.window
+        let menuWasVisible = devMenuManager.isVisible
+
+        if menuWasVisible {
+          devMenuWindow?.isHidden = true
+        }
+
+        perfMonitor.show()
+
+        if menuWasVisible {
+          devMenuWindow?.isHidden = false
+        }
+      }
       devSettings.isPerfMonitorShown = !devSettings.isPerfMonitorShown
     }
     #endif
