@@ -50,13 +50,13 @@ enum MediaSubtype: String, Enumerable {
       (.photoScreenshot, .screenshot),
       (.videoStreamed, .stream),
       (.videoTimelapse, .timelapse),
-      (.videoCinematic, .videoCinematic),
+      (.videoCinematic, .videoCinematic)
     ]
     if #available(iOS 16.0, *) {
       mapping.append((.spatialMedia, .spatialMedia))
     }
 
-    return mapping.compactMap { (phSubtype, mediaSubtype) in
+    return mapping.compactMap { phSubtype, mediaSubtype in
       mediaSubtypes.contains(phSubtype) ? mediaSubtype.rawValue : nil
     }
   }
