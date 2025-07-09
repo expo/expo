@@ -111,7 +111,8 @@ const styles = StyleSheet.create({
 ```jsx
 import { useState, useEffect } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
-import { useAudioRecorder, AudioModule, RecordingPresets, setAudioModeAsync } from 'expo-audio';
+import { useAudioRecorder, AudioModule, RecordingPresets, setAudioModeAsync,
+  useAudioRecorderState } from 'expo-audio';
 
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
