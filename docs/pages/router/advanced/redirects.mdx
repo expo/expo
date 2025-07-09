@@ -147,6 +147,10 @@ To redirect only certain HTTP methods, provide the methods as a string inside an
 
 ## Rewrites
 
+> **warning** Static URL rewrites are only supported in server environments,
+> and are **not** available in static exports or native apps. For client-side
+> navigation, consider using [redirects](#redirect-component) instead.
+
 Rewrites are only possible through static configuration. They are different from redirects as they act as a URL proxy and hide the destination URL. While redirects will return back an HTTP status code and reroute the request, a rewrite will render the new destination without changing the URL.
 
 ```json app.json
