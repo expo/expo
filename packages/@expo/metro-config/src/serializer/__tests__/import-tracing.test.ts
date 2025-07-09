@@ -44,6 +44,35 @@ console.log(run);
         data: {
           asyncType: null,
           exportNames: ['*'],
+          imports: 2,
+          isESMImport: true,
+          key: '5fes4Bo7aGIJwD57FkocPfA5U68=',
+          locs: [AnyPosition, AnyPosition],
+        },
+        name: './b',
+      },
+    }),
+  ]);
+});
+
+xit(`traces multiple imports with namespace export to the same module`, async () => {
+  const [[, , graph]] = await serializeOptimizeAsync({
+    'index.js': `
+import {run} from "./b";
+export * as bar from "./b";
+console.log(run);
+            `,
+    'b.js': ``,
+  });
+
+  expectCollectDeps(graph, '/app/index.js').toEqual([
+    expect.objectContaining({
+      absolutePath: '/app/b.js',
+      data: {
+        data: {
+          asyncType: null,
+          exportNames: ['*'],
+          imports: 2,
           isESMImport: true,
           key: '5fes4Bo7aGIJwD57FkocPfA5U68=',
           locs: [AnyPosition, AnyPosition],
