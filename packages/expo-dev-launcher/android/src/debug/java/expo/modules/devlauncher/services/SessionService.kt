@@ -25,7 +25,8 @@ sealed interface UserState {
 
 class SessionService(
   val sessionStore: SharedPreferences,
-  private val apolloClientService: ApolloClientService
+  private val apolloClientService: ApolloClientService,
+  private val httpClientService: HttpClientService
 ) {
   data class User(
     val isFetching: Boolean = false,
@@ -73,6 +74,7 @@ class SessionService(
   fun setSession(newSession: Session?) {
     newSession.saveToPreferences(sessionStore)
     apolloClientService.setSession(newSession?.sessionSecret)
+    httpClientService.setSession(newSession?.sessionSecret)
     _session.update { newSession }
   }
 
@@ -95,6 +97,7 @@ class SessionService(
   private fun restoreSession(): Session? {
     val newSession = Session.loadFromPreferences(sessionStore)
     apolloClientService.setSession(newSession?.sessionSecret)
+    httpClientService.setSession(newSession?.sessionSecret)
     return newSession
   }
 

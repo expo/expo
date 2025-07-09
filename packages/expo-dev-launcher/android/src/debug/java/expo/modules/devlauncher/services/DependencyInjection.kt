@@ -46,13 +46,14 @@ object DependencyInjection {
       httpClientService = httpClient
     )
 
-    val apolloClient = ApolloClientService()
+    val apolloClient = ApolloClientService(httpClient)
 
     apolloClientService = apolloClient
 
     sessionService = SessionService(
       sessionStore = context.applicationContext.getSharedPreferences("expo.modules.devlauncher.session", Context.MODE_PRIVATE),
-      apolloClientService = apolloClient
+      apolloClientService = apolloClient,
+      httpClientService = httpClient
     )
   }
 }

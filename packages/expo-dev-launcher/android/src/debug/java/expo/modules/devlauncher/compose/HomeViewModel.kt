@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 
 sealed interface HomeAction {
   class OpenApp(val url: String) : HomeAction
+  object RefetchRunningApps : HomeAction
 }
 
 typealias HomeActionHandler = (HomeAction) -> Unit
@@ -26,6 +27,7 @@ typealias HomeActionHandler = (HomeAction) -> Unit
 data class HomeState(
   val appName: String = "BareExpo",
   val runningPackagers: Set<PackagerInfo> = emptySet(),
+  val isFetchingPackagers: Boolean = false,
   val currentAccount: MeQuery.Account? = null
 )
 
@@ -34,7 +36,7 @@ class HomeViewModel() : ViewModel() {
   val devLauncherController = inject<DevLauncherController>()
   val sessionService = inject<SessionService>()
 
-  val packagerService = PackagerService(httpClientService.httpClient, viewModelScope)
+  val packagerService = PackagerService(httpClientService, viewModelScope)
 
   private var _state = mutableStateOf(
     HomeState(
@@ -67,6 +69,12 @@ class HomeViewModel() : ViewModel() {
         )
       }
     }.launchIn(viewModelScope)
+
+    packagerService.isLoading.onEach { isLoading ->
+      _state.value = _state.value.copy(
+        isFetchingPackagers = isLoading
+      )
+    }.launchIn(viewModelScope)
   }
 
   fun onAction(action: HomeAction) {
@@ -79,6 +87,7 @@ class HomeViewModel() : ViewModel() {
             Log.e("DevLauncher", "Failed to open app: ${action.url}", e)
           }
         }
+      HomeAction.RefetchRunningApps -> packagerService.refetchedPackager()
     }
   }
 }
