@@ -13,6 +13,7 @@ internal class ImagePickerAsset(
   @Field val height: Int = 0,
   @Field val fileName: String? = null,
   @Field val fileSize: Long? = null,
+  @Field val fileDate: Long? = null,
   @Field val mimeType: String? = null,
   @Field val base64: String? = null,
   @Field val exif: Bundle? = null,
