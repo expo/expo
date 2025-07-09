@@ -97,6 +97,13 @@ export async function getOptionalDevClientSchemeAsync(
 
   // Allow managed projects
   if (!hasIos && !hasAndroid) {
+    // First check if the expo config has a scheme defined
+    const { exp } = getConfig(projectRoot);
+    if (exp.scheme) {
+      const scheme = Array.isArray(exp.scheme) ? exp.scheme[0] : exp.scheme;
+      return { scheme, resolution: 'config' };
+    }
+    // Fall back to the default managed dev client scheme
     return { scheme: await getManagedDevClientSchemeAsync(projectRoot), resolution: 'config' };
   }
 
