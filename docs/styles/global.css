@@ -342,3 +342,7 @@ div.tippy-box {
 .react-player > video {
   outline: none;
 }
+
+.result-container {
+  padding: 16px 12px !important;
+}
