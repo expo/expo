@@ -318,7 +318,7 @@ redirects[eas/workflows/examples/#deploy-to-production-workflow]=eas/workflows/e
 redirects[eas/workflows/reference/e2e-tests/]=eas/workflows/examples/e2e-tests
 
 # After moving e2e-tests to eas/workflows/reference
-redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
+redirects[build-reference/e2e-tests]=eas/workflows/examples/e2e-tests
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
+
 ### 💡 Others
 
 - Export types using the `export type` syntax. ([#37396](https://github.com/expo/expo/pull/37396) by [@behenate](https://github.com/behenate))
