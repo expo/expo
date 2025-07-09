@@ -254,7 +254,7 @@ class VideoModule : Module() {
         }
 
       Property("isExternalPlaybackActive")
-        .get {ref: VideoPlayer ->
+        .get { ref: VideoPlayer ->
           // isExternalPlaybackActive is not supported on Android as of now. Return false.
           false
         }
