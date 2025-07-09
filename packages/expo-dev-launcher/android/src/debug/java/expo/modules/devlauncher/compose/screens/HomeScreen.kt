@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.composeunstyled.Button
 import com.composeunstyled.TextField
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.DevLauncherAction
-import expo.modules.devlauncher.compose.DevLauncherState
+import expo.modules.devlauncher.compose.HomeAction
+import expo.modules.devlauncher.compose.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.RunningAppCard
@@ -33,10 +33,18 @@ import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
-fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
+fun HomeScreen(
+  state: HomeState,
+  onAction: (HomeAction) -> Unit,
+  onProfileClick: () -> Unit
+) {
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
-      AppHeader(state.appName, onProfileClick = onProfileClick)
+      AppHeader(
+        appName = state.appName,
+        currentAccount = state.currentAccount,
+        onProfileClick = onProfileClick
+      )
     }
 
     Column(
@@ -73,7 +81,7 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
             RunningAppCard(
               appIp = packager.url
             ) {
-              state.onAction(DevLauncherAction.OpenApp(packager.url))
+              onAction(HomeAction.OpenApp(packager.url))
             }
             Divider()
           }
@@ -109,7 +117,7 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
               Spacer(Theme.spacing.tiny)
 
               Button(onClick = {
-                state.onAction(DevLauncherAction.OpenApp(url.value))
+                onAction(HomeAction.OpenApp(url.value))
               }, modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.padding(vertical = Theme.spacing.small)) {
                   Text("Connect")
@@ -130,5 +138,5 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(state = DevLauncherState(), onProfileClick = {})
+  HomeScreen(state = HomeState(), onAction = {}, onProfileClick = {})
 }

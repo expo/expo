@@ -7,7 +7,7 @@ import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.manifests.core.ExpoUpdatesManifest
 
 object AppInfo {
-  data class Native (
+  data class Native(
     val appName: String,
     val appVersion: String? = null
   )
@@ -17,9 +17,9 @@ object AppInfo {
     val packageName = context.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
-    var appVersion = packageInfo.versionName
+    val appVersion = packageInfo.versionName
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    var appName = packageManager.getApplicationLabel(applicationInfo).toString()
+    val appName = packageManager.getApplicationLabel(applicationInfo).toString()
 
     return Native(
       appName = appName,

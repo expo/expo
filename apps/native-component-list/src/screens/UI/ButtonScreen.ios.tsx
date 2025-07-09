@@ -69,6 +69,7 @@ export default function ButtonScreen() {
           <Button style={styles.button} systemImage="heart">
             Heart
           </Button>
+          <Button style={styles.button} systemImage="gear" variant="glass" />
         </Section>
         <Section title="Tinted Buttons">
           <Button style={styles.button} color="#f00f0f">
