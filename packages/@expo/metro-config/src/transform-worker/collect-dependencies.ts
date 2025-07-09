@@ -755,7 +755,7 @@ function registerDependency(
 
   const loc = getNearestLocFromPath(path);
   if (loc != null) {
-    // Locations are used as dependant counter during tree shaking.
+    // Locations are used as reference (dependant) counter during tree shaking.
     dependency.locs.push(loc);
   }
 
