@@ -28,6 +28,9 @@ object DependencyInjection {
   var devLauncherController: DevLauncherController? = null
     private set
 
+  var packagerService: PackagerService? = null
+    private set
+
   fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
     if (wasInitialized) {
       return
@@ -55,6 +58,8 @@ object DependencyInjection {
       apolloClientService = apolloClient,
       httpClientService = httpClient
     )
+
+    packagerService = PackagerService(httpClient)
   }
 }
 
@@ -66,6 +71,7 @@ internal inline fun <reified T> injectService(): T {
     ImageLoaderService::class -> DependencyInjection.imageLoaderService
     HttpClientService::class -> DependencyInjection.httpClientService
     DevLauncherController::class -> DependencyInjection.devLauncherController
+    PackagerService::class -> DependencyInjection.packagerService
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
 }

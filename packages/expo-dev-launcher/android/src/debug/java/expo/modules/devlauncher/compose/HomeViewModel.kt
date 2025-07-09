@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.MeQuery
-import expo.modules.devlauncher.services.HttpClientService
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
 import expo.modules.devlauncher.services.SessionService
@@ -32,11 +31,9 @@ data class HomeState(
 )
 
 class HomeViewModel() : ViewModel() {
-  val httpClientService = inject<HttpClientService>()
   val devLauncherController = inject<DevLauncherController>()
   val sessionService = inject<SessionService>()
-
-  val packagerService = PackagerService(httpClientService, viewModelScope)
+  val packagerService = inject<PackagerService>()
 
   private var _state = mutableStateOf(
     HomeState(
@@ -52,6 +49,10 @@ class HomeViewModel() : ViewModel() {
     get() = _state.value
 
   init {
+    viewModelScope.launch {
+      packagerService.refetchedPackager()
+    }
+
     packagerService.runningPackagers.onEach { newPackagers ->
       _state.value = _state.value.copy(
         runningPackagers = newPackagers
@@ -87,7 +88,8 @@ class HomeViewModel() : ViewModel() {
             Log.e("DevLauncher", "Failed to open app: ${action.url}", e)
           }
         }
-      HomeAction.RefetchRunningApps -> packagerService.refetchedPackager()
+
+      HomeAction.RefetchRunningApps -> viewModelScope.launch { packagerService.refetchedPackager() }
     }
   }
 }
