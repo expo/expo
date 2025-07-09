@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,10 +34,8 @@ fun RunningAppCard(
     onClick = { onClick(appIp) },
     backgroundColor = Theme.colors.background.default
   ) {
-    Column {
+    Column(modifier = Modifier.padding(Theme.spacing.medium)) {
       RowLayout(
-        modifier = Modifier
-          .padding(Theme.spacing.medium),
         leftComponent = {
           val iconColor = Theme.colors.status.success
 
@@ -65,8 +64,10 @@ fun RunningAppCard(
       }
 
       if (description != null) {
+        Spacer(Theme.spacing.tiny)
+
         Row {
-          Spacer(Theme.spacing.small + Theme.sizing.icon.extraSmall)
+          Spacer(modifier = Modifier.width(Theme.sizing.icon.extraSmall))
 
           Text(
             text = description,

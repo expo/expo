@@ -31,6 +31,7 @@ import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.ui.MenuButton
 
 @Composable
 fun HomeScreen(
@@ -79,12 +80,25 @@ fun HomeScreen(
         Column {
           for (packager in state.runningPackagers) {
             RunningAppCard(
-              appIp = packager.url
+              appIp = packager.url,
+              appName = packager.description
             ) {
               onAction(HomeAction.OpenApp(packager.url))
             }
             Divider()
           }
+
+          MenuButton(
+            onClick = {
+              onAction(HomeAction.RefetchRunningApps)
+            },
+            enabled = !state.isFetchingPackagers,
+            label = if (state.isFetchingPackagers) {
+              "Searching for development servers..."
+            } else {
+              "Fetch development servers"
+            }
+          )
 
           Accordion("Enter URL manually", initialState = false) {
             val url = remember { mutableStateOf("") }
