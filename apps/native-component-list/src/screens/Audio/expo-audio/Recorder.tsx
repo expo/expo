@@ -80,7 +80,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
         audioRecorder.record();
       }
     } catch (error) {
-      Alert.alert('Error', error);
+      Alert.alert('Error', error.message);
     }
   };
 
