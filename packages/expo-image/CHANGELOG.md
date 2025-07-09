@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add a new prop - `enforceEarlyResizing` to reduce the memory usage of the image view.
+- [iOS] Add a new prop - `enforceEarlyResizing` to reduce the memory usage of the image view. ([#37909](https://github.com/expo/expo/pull/37909) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
