@@ -92,4 +92,9 @@ export interface CommonViewModifierProps {
    * Padding properties for the view.
    */
   padding?: PaddingProps;
+
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: string;
 }
