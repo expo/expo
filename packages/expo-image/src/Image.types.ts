@@ -362,6 +362,16 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * @platform ios
    */
   useAppleWebpCodec?: boolean;
+
+  /**
+   * Force early resizing of the image to match the container size.
+   * This option helps to reduce the memory usage of the image view, especially when the image is larger than the container.
+   * It may affect the `resizeType` and `contentPosition` properties when the image view is resized dynamically.
+   *
+   * @default false
+   * @platform ios
+   */
+  enforceEarlyResizing?: boolean;
 }
 
 /**

@@ -60,6 +60,8 @@ public final class ImageView: ExpoView {
 
   var lockResource: Bool = false
 
+  var enforceEarlyResizing: Bool = false
+
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
@@ -163,7 +165,8 @@ public final class ImageView: ExpoView {
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    if imageTintColor != nil {
+    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing
+    if shouldEarlyResize {
       context[.imagePreserveAspectRatio] = true
       context[.imageThumbnailPixelSize] = CGSize(
         width: sdImageView.bounds.size.width * screenScale,
