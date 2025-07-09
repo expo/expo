@@ -11,6 +11,8 @@
 
 - [android] Introduce customizable cropping UI with light and dark theme support ([#37573](https://github.com/expo/expo/pull/37573) by [@hirbod](https://github.com/hirbod))
 
+- [android][ios] Retrieve the fileDate coming from the system photo library on Android and iOS. ([#34223](https://github.com/expo/expo/pull/37933) by [@ldalzottomp](https://github.com/ldalzottomp))
+
 ### 🐛 Bug fixes
 
 - Prevent external applications from accessing the CropImageActivity ([#37223](https://github.com/expo/expo/pull/37223) by [@aladine](https://github.com/aladine))
