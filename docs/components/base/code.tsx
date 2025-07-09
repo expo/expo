@@ -3,7 +3,7 @@ import { FileCode01Icon } from '@expo/styleguide-icons/outline/FileCode01Icon';
 import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon';
 import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import tippy, { roundArrow, type Instance } from 'tippy.js';
+import tippy, { roundArrow } from 'tippy.js';
 
 import {
   cleanCopyValue,
@@ -23,6 +23,7 @@ import { TextTheme } from '~/ui/components/Text/types';
 
 // @ts-expect-error Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
+const tippyFunc = testTippy ?? tippy;
 
 const attributes = {
   'data-text': true,
@@ -48,121 +49,42 @@ export function Code({ className, children, title }: CodeProps) {
   const [isExpanded, setExpanded] = useState(false);
   const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined);
-
+  const [didMount, setDidMount] = useState(false);
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
   const highlightedHtml = getCodeData(value, language);
 
   useEffect(() => {
-    const tippyFunc = testTippy ?? tippy;
-    let codeAnnotationInstances: Instance | Instance[] | null = null;
-    let tutorialAnnotationInstances: Instance | Instance[] | null = null;
-    let observer: MutationObserver | null = null;
-
-    function initializeTippy() {
-      if (codeAnnotationInstances) {
-        if (Array.isArray(codeAnnotationInstances)) {
-          codeAnnotationInstances.forEach((instance: Instance) => {
-            instance.destroy();
-          });
-        } else {
-          codeAnnotationInstances.destroy();
-        }
-      }
-
-      if (tutorialAnnotationInstances) {
-        if (Array.isArray(tutorialAnnotationInstances)) {
-          tutorialAnnotationInstances.forEach((instance: Instance) => {
-            instance.destroy();
-          });
-        } else {
-          tutorialAnnotationInstances.destroy();
-        }
-      }
-
-      const codeAnnotationElements = document.querySelectorAll('.code-annotation.with-tooltip');
-      const tutorialAnnotationElements = document.querySelectorAll(
-        '.tutorial-code-annotation.with-tooltip'
-      );
-
-      if (codeAnnotationElements.length > 0) {
-        codeAnnotationInstances = tippyFunc('.code-annotation.with-tooltip', {
-          allowHTML: true,
-          theme: 'expo',
-          placement: 'top',
-          arrow: roundArrow,
-          interactive: true,
-          offset: [0, 20],
-          appendTo: document.body,
-        });
-      }
-
-      if (tutorialAnnotationElements.length > 0) {
-        tutorialAnnotationInstances = tippyFunc('.tutorial-code-annotation.with-tooltip', {
-          allowHTML: true,
-          theme: 'expo',
-          placement: 'top',
-          arrow: roundArrow,
-          interactive: true,
-          offset: [0, 20],
-          appendTo: document.body,
-        });
-      }
-    }
-
-    initializeTippy();
-
-    if (contentRef.current) {
-      observer = new MutationObserver(mutations => {
-        let shouldReinitialize = false;
-        mutations.forEach(mutation => {
-          if (mutation.type === 'childList' || mutation.type === 'attributes') {
-            shouldReinitialize = true;
-          }
-        });
-
-        if (shouldReinitialize) {
-          setTimeout(initializeTippy, 50);
-        }
-      });
-
-      observer.observe(contentRef.current, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style'],
-      });
-    }
-
     if (contentRef?.current?.clientHeight) {
       setBlockHeight(contentRef.current.clientHeight);
       if (contentRef.current.clientHeight > collapseHeight) {
         setCollapseBound(collapseHeight);
       }
     }
+    setDidMount(true);
+  }, []);
 
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
+  useEffect(() => {
+    tippyFunc('.code-annotation.with-tooltip', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: () => document.body,
+    });
 
-      if (Array.isArray(codeAnnotationInstances)) {
-        codeAnnotationInstances.forEach((instance: Instance) => {
-          instance.destroy();
-        });
-      } else if (codeAnnotationInstances) {
-        codeAnnotationInstances.destroy();
-      }
-
-      if (Array.isArray(tutorialAnnotationInstances)) {
-        tutorialAnnotationInstances.forEach((instance: Instance) => {
-          instance.destroy();
-        });
-      } else if (tutorialAnnotationInstances) {
-        tutorialAnnotationInstances.destroy();
-      }
-    };
-  }, [highlightedHtml, collapseHeight]);
+    tippyFunc('.tutorial-code-annotation.with-tooltip', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: () => document.body,
+    });
+  }, [didMount, isExpanded]);
 
   function expandCodeBlock() {
     setExpanded(true);
