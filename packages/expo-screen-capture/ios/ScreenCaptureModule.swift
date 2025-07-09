@@ -33,10 +33,8 @@ public final class ScreenCaptureModule: Module {
     }
 
     AsyncFunction("preventScreenCapture") {
-      DispatchQueue.main.async {
-        self.preventScreenRecording()
-        self.preventScreenshots()
-      }
+      self.preventScreenRecording()
+      self.preventScreenshots()
 
       NotificationCenter.default.addObserver(
         self,
@@ -44,19 +42,17 @@ public final class ScreenCaptureModule: Module {
         name: UIScreen.capturedDidChangeNotification,
         object: nil
       )
-    }
+    }.runOnQueue(.main)
 
     AsyncFunction("allowScreenCapture") {
-      DispatchQueue.main.async {
-        self.allowScreenshots()
-      }
+      self.allowScreenshots()
 
       NotificationCenter.default.removeObserver(
         self,
         name: UIScreen.capturedDidChangeNotification,
         object: nil
       )
-    }
+    }.runOnQueue(.main)
   }
 
   private func setIsBeing(observed: Bool) {
