@@ -225,7 +225,9 @@ class VideoModule : Module() {
 
       Property("loop")
         .get { ref: VideoPlayer ->
-          ref.player.repeatMode == REPEAT_MODE_ONE
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.player.repeatMode == REPEAT_MODE_ONE
+          }
         }
         .set { ref: VideoPlayer, loop: Boolean ->
           appContext.mainQueue.launch {
