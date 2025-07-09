@@ -610,8 +610,11 @@ export const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
-    makePage('preview/singular.mdx'),
-    { expanded: true },
+    makeGroup('Expo Router', [
+      makePage('preview/singular.mdx'),
+      makePage('preview/web-modals.mdx'),
+      { expanded: true },
+    ]),
   ]),
 ];
 
