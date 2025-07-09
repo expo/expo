@@ -8,16 +8,22 @@ enum MediaType: String, Enumerable {
   case all
   case unknown
 
+  init(fromPHAssetMediaType mediaType: PHAssetMediaType) {
+    let result: MediaType = switch mediaType {
+    case .audio: .audio
+    case .image: .photo
+    case .video: .video
+    default: .unknown
+    }
+    self = result
+  }
+
   func toPHMediaType() -> PHAssetMediaType {
     switch self {
-    case .audio:
-      return .audio
-    case .photo:
-      return .image
-    case .video:
-      return .video
-    default:
-      return .unknown
+    case .audio: .audio
+    case .photo: .image
+    case .video: .video
+    default: .unknown
     }
   }
 }
@@ -31,27 +37,47 @@ enum MediaSubtype: String, Enumerable {
   case screenshot
   case stream
   case timelapse
+  case spatialMedia
+  case videoCinematic
+
+  static func stringify(_ mediaSubtypes: PHAssetMediaSubtype) -> [MediaSubtype.RawValue] {
+    var mapping: [(PHAssetMediaSubtype, MediaSubtype)] = [
+      (.photoDepthEffect, .depthEffect),
+      (.photoHDR, .hdr),
+      (.videoHighFrameRate, .highFrameRate),
+      (.photoLive, .livePhoto),
+      (.photoPanorama, .panorama),
+      (.photoScreenshot, .screenshot),
+      (.videoStreamed, .stream),
+      (.videoTimelapse, .timelapse),
+      (.videoCinematic, .videoCinematic),
+    ]
+    if #available(iOS 16.0, *) {
+      mapping.append((.spatialMedia, .spatialMedia))
+    }
+
+    return mapping.compactMap { (phSubtype, mediaSubtype) in
+      mediaSubtypes.contains(phSubtype) ? mediaSubtype.rawValue : nil
+    }
+  }
 
   func toPHAssetMediaSubtype() -> PHAssetMediaSubtype {
     switch self {
-    case .depthEffect:
-      return .photoDepthEffect
-    case .hdr:
-      return .photoHDR
-    case .highFrameRate:
-      return .videoHighFrameRate
-    case .livePhoto:
-      return .photoLive
-    case .panorama:
-      return .photoPanorama
-    case .screenshot:
-      return .photoScreenshot
-    case .stream:
-      return .videoStreamed
-    case .timelapse:
-      return .videoTimelapse
-    default:
-      return []
+    case .depthEffect: .photoDepthEffect
+    case .hdr: .photoHDR
+    case .highFrameRate: .videoHighFrameRate
+    case .livePhoto: .photoLive
+    case .panorama: .photoPanorama
+    case .screenshot: .photoScreenshot
+    case .stream: .videoStreamed
+    case .timelapse: .videoTimelapse
+    case .spatialMedia:
+      if #available(iOS 16, *) {
+        .spatialMedia
+      } else {
+        []
+      }
+    case .videoCinematic: .videoCinematic
     }
   }
 }
@@ -70,7 +96,7 @@ struct AssetWithOptions: Record {
   @Field var album: String?
   @Field var sortBy: [String] = []
   @Field var mediaType: [MediaType]
-  @Field var mediaSubtypes: [MediaSubtype] = []
+  @Field var mediaSubtypes: [MediaSubtype]
   @Field var createdAfter: Double?
   @Field var createdBefore: Double?
 }

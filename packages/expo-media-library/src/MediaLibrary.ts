@@ -168,7 +168,8 @@ export type AssetInfo = Asset & {
 
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
- * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * and time-lapse or high-frame-rate video. Maps to [`PHAssetMediaSubtype`](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * @platform ios
  * */
 export type MediaSubtype =
   | 'depthEffect'
@@ -178,7 +179,9 @@ export type MediaSubtype =
   | 'panorama'
   | 'screenshot'
   | 'stream'
-  | 'timelapse';
+  | 'timelapse'
+  | 'spatialMedia'
+  | 'videoCinematic';
 
 // @needsAudit
 export type MediaLibraryAssetInfoQueryOptions = {
@@ -824,7 +827,8 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
   }
 
-  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
+  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore, mediaSubtypes } =
+    assetsOptions;
 
   const options = {
     first: first == null ? 20 : first,
@@ -832,6 +836,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     album: getId(album),
     sortBy: arrayize(sortBy),
     mediaType: arrayize(mediaType || [MediaType.photo]),
+    mediaSubtypes: arrayize(mediaSubtypes),
     createdAfter: dateToNumber(createdAfter),
     createdBefore: dateToNumber(createdBefore),
   };
