@@ -120,8 +120,8 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func allowScreenshots() {
-    guard let textField = protectionTextField else { 
-      return 
+    guard let textField = protectionTextField else {
+      return
     }
 
     if let protectedLayer = textField.layer.sublayers?.first?.sublayers?.first {
