@@ -34,8 +34,6 @@ class FullscreenActivityOrientationHelper(val context: Context, val options: Ful
           0
         )
         rotationStatus == 1
-      } catch (e: Settings.SettingNotFoundException) {
-        false
       } catch (e: Exception) {
         false
       }
@@ -54,15 +52,19 @@ class FullscreenActivityOrientationHelper(val context: Context, val options: Ful
           (orientation >= 0 && orientation <= 10) || (orientation >= 350 && orientation < 360) -> {
             Configuration.ORIENTATION_PORTRAIT
           }
+
           (orientation >= 80 && orientation <= 100) -> {
             Configuration.ORIENTATION_LANDSCAPE
           }
+
           (orientation >= 170 && orientation <= 190) -> {
             Configuration.ORIENTATION_PORTRAIT
           }
+
           (orientation >= 260 && orientation <= 280) -> {
             Configuration.ORIENTATION_LANDSCAPE
           }
+
           else -> {
             Configuration.ORIENTATION_UNDEFINED
           }
@@ -72,9 +74,10 @@ class FullscreenActivityOrientationHelper(val context: Context, val options: Ful
           return
         }
 
-        if ((newPhysicalOrientation == Configuration.ORIENTATION_PORTRAIT && isLockedToLandscape && userHasRotatedToVideoOrientation) ||
-          (newPhysicalOrientation == Configuration.ORIENTATION_LANDSCAPE && isLockedToPortrait && userHasRotatedToVideoOrientation)
-        ) {
+        val canReleaseFromLandscape = newPhysicalOrientation == Configuration.ORIENTATION_PORTRAIT && isLockedToLandscape && userHasRotatedToVideoOrientation
+        val canReleaseFromPortrait = newPhysicalOrientation == Configuration.ORIENTATION_LANDSCAPE && isLockedToPortrait && userHasRotatedToVideoOrientation
+
+        if (canReleaseFromPortrait || canReleaseFromLandscape) {
           if (!isAutoRotationEnabled) {
             return
           }
@@ -82,9 +85,10 @@ class FullscreenActivityOrientationHelper(val context: Context, val options: Ful
           this@FullscreenActivityOrientationHelper.stopOrientationEventListener()
         }
 
-        if ((newPhysicalOrientation == Configuration.ORIENTATION_PORTRAIT && isLockedToPortrait && !userHasRotatedToVideoOrientation) ||
-          (newPhysicalOrientation == Configuration.ORIENTATION_LANDSCAPE && isLockedToLandscape && !userHasRotatedToVideoOrientation)
-        ) {
+        val hasRotatedToVideoOrientationPortrait = newPhysicalOrientation == Configuration.ORIENTATION_PORTRAIT && isLockedToPortrait && !userHasRotatedToVideoOrientation
+        val hasRotatedToVideoOrientationLandscape = newPhysicalOrientation == Configuration.ORIENTATION_LANDSCAPE && isLockedToLandscape && !userHasRotatedToVideoOrientation
+
+        if (hasRotatedToVideoOrientationPortrait || hasRotatedToVideoOrientationLandscape) {
           userHasRotatedToVideoOrientation = true
         }
       }
@@ -109,6 +113,7 @@ class FullscreenActivityOrientationHelper(val context: Context, val options: Ful
       orientationEventListener.enable()
     }
   }
+
   fun stopOrientationEventListener() {
     orientationEventListener.disable()
   }
