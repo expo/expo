@@ -130,9 +130,12 @@ fun HomeScreen(
 
               Spacer(Theme.spacing.tiny)
 
-              Button(onClick = {
-                onAction(HomeAction.OpenApp(url.value))
-              }, modifier = Modifier.fillMaxWidth()) {
+              Button(
+                onClick = {
+                  onAction(HomeAction.OpenApp(url.value))
+                },
+                modifier = Modifier.fillMaxWidth()
+              ) {
                 Row(modifier = Modifier.padding(vertical = Theme.spacing.small)) {
                   Text("Connect")
                 }
