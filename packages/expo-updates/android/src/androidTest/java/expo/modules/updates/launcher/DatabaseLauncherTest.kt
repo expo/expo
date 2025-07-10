@@ -76,7 +76,7 @@ class DatabaseLauncherTest {
       TestScope()
     )
     val spyLauncher = spyk(launcher)
-    every { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
+    coEvery { spyLauncher.getLaunchableUpdate(any()) } returns db.updateDao().loadUpdateWithId(testUpdate.id)
 
     val mockedFile = File(context.cacheDir, "test")
     coEvery { spyLauncher.ensureAssetExists(any(), any(), any(), any()) } returns mockedFile

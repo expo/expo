@@ -543,7 +543,7 @@ class FileDownloader(
   }
 
   companion object {
-    suspend fun getExtraHeadersForRemoteUpdateRequest(
+    fun getExtraHeadersForRemoteUpdateRequest(
       database: UpdatesDatabase,
       configuration: UpdatesConfiguration,
       launchedUpdate: UpdateEntity?,
