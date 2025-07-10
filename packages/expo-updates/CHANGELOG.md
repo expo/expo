@@ -21,7 +21,7 @@
 - [CI] Removed Detox testing workaround code on Android. ([#37707](https://github.com/expo/expo/pull/37707) by [@kudo](https://github.com/kudo))
 - [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
-- [Android] Migrate loaders and file downloader to coroutines.
+- [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.28.16 - 2025-07-03
 

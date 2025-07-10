@@ -118,7 +118,7 @@ class DatabaseLauncher(
 
     localAssetFiles = embeddedAssetFileMap().apply {
       val downloadJobs = mutableListOf<Deferred<Pair<AssetEntity, File?>>>()
-      
+
       for (asset in assetEntities) {
         if (asset.id == launchAsset.id) {
           // we took care of this one above
@@ -135,7 +135,7 @@ class DatabaseLauncher(
           this[asset] = filename
         }
       }
-      
+
       downloadJobs.awaitAll().forEach { (asset, assetFile) ->
         if (assetFile != null) {
           this[asset] = Uri.fromFile(assetFile).toString()

@@ -372,11 +372,11 @@ class FileDownloader(
 
   private suspend fun downloadData(request: Request): Response = suspendCancellableCoroutine { continuation ->
     val call = client.newCall(request)
-    
+
     continuation.invokeOnCancellation {
       call.cancel()
     }
-    
+
     try {
       val response = call.execute()
       continuation.resume(response)
