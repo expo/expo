@@ -97,7 +97,7 @@ To use this API inside Reanimated worklet, you need to pass the GL context ID to
 ```jsx
 import { View } from 'react-native';
 import { runOnUI } from 'react-native-reanimated';
-import { GLView } from 'expo-gl';
+import { GLView, getWorkletContext } from 'expo-gl';
 
 function render(gl) {
   'worklet';
@@ -107,7 +107,7 @@ function render(gl) {
 function onContextCreate(gl) {
   runOnUI((contextId: number) => {
     'worklet';
-    const gl = GLView.getWorkletContext(contextId);
+    const gl = getWorkletContext(contextId);
     render(gl);
   })(gl.contextId);
 }
