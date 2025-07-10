@@ -1,0 +1,73 @@
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+# HTML template with Suliman's personal info
+html_template = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suliman's Mobile App</title>
+    <style>
+        /* (سټایلونه هماغه دي — ټول موبایل‌فرینډلی دی، دلته لنډ کړل شوي) */
+        body { font-family: sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: 24px; }
+        .content { padding: 30px 20px; }
+        .card { background: #f8f9fa; border-radius: 15px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #667eea; }
+        a { text-decoration: none; color: #667eea; font-weight: bold; }
+        img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Suliman's App</h1>
+            <p>Optimized for your mobile</p>
+        </div>
+
+        <div class="content">
+
+            <div class="card">
+                <h3>👋 Welcome, Suliman!</h3>
+                <p>This app is fully optimized for mobile devices with touch-friendly controls and responsive design.</p>
+            </div>
+
+            <div class="card">
+                <h3>🧑‍💻 About Suliman</h3>
+                <img src="https://sulimanapp.web.app/profile.jpg" alt="Suliman Profile">
+                <p>My name is <strong>Suliman Shirzad</strong>. I'm a passionate web & mobile developer from Jalalabad, Afghanistan 🇦🇫.</p>
+                <p>I want to grow my life, move abroad, and build a bright future with tech 💻. This app is one small step in that direction 🚀.</p>
+            </div>
+
+            <div class="card">
+                <h3>🧳 Portfolio</h3>
+                <p>Projects I've worked on:</p>
+                <ul>
+                    <li><a href="https://sulimanapp.web.app" target="_blank">🌐 SulimanApp</a></li>
+                    <li><a href="https://sulimanwebcreator.com" target="_blank">💼 Suliman Web Creator</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📬 Contact Info</h3>
+                <p><strong>Email:</strong> <a href="mailto:sk7601514@gmail.com">sk7601514@gmail.com</a></p>
+                <p><strong>Location:</strong> Jalalabad, Afghanistan</p>
+                <p><strong>Website:</strong> <a href="https://sulimanapp.web.app" target="_blank">sulimanapp.web.app</a></p>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+@app.route('/')
+def index():
+    return render_template_string(html_template)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
