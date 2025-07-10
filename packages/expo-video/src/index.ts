@@ -11,6 +11,7 @@ export type { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.t
 export type { VideoThumbnail } from './VideoThumbnail';
 
 export { createVideoPlayer } from './VideoPlayer';
+export { default as VideoAirPlayButton } from './VideoAirPlayButton';
 
 export type {
   VideoPlayer,
@@ -30,14 +31,5 @@ export type {
   ContentType,
 } from './VideoPlayer.types';
 
-export type {
-  VideoPlayerEvents,
-  StatusChangeEventPayload,
-  PlayingChangeEventPayload,
-  PlaybackRateChangeEventPayload,
-  VolumeChangeEventPayload,
-  MutedChangeEventPayload,
-  TimeUpdateEventPayload,
-  SourceChangeEventPayload,
-  SourceLoadEventPayload,
-} from './VideoPlayerEvents.types';
+export type * from './VideoPlayerEvents.types';
+export type * from './VideoAirPlayButton.types';
