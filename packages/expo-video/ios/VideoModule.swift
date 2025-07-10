@@ -65,6 +65,14 @@ public final class VideoModule: Module {
         #endif
       }
 
+      Prop("fullscreenOptions") {(view, options: FullscreenOptions?) in
+        view.playerViewController.fullscreenOrientation = options?.orientation.toUIInterfaceOrientationMask() ?? .all
+        view.playerViewController.autoExitOnRotate = options?.autoExitOnRotate ?? false
+        #if !os(tvOS)
+        view.playerViewController.setValue(options?.enable ?? true, forKey: "allowsEnteringFullScreen")
+        #endif
+      }
+
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
         #if !os(tvOS)
         view.playerViewController.showsTimecodes = showsTimecodes ?? true

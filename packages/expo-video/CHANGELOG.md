@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add fullscreen orientation and auto-exit functionality. ([#36910](https://github.com/expo/expo/pull/36910) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
