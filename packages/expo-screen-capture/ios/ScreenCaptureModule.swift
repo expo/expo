@@ -97,7 +97,7 @@ public final class ScreenCaptureModule: Module {
 
   private func preventScreenshots() {
     guard let keyWindow = UIApplication.shared.keyWindow,
-          let visibleView = keyWindow.subviews.first else { return }
+      let visibleView = keyWindow.subviews.first else { return }
 
     let textField = UITextField()
     textField.isSecureTextEntry = true
@@ -120,7 +120,9 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func allowScreenshots() {
-    guard let textField = protectionTextField else { return }
+    guard let textField = protectionTextField else { 
+      return 
+    }
 
     if let protectedLayer = textField.layer.sublayers?.first?.sublayers?.first {
       protectedLayer.removeFromSuperlayer()
