@@ -2,7 +2,6 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
-import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -23,6 +22,7 @@ import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import com.zoontek.rnedgetoedge.EdgeToEdgeModule
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -130,6 +130,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNGestureHandlerModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
+        nativeModules.add(EdgeToEdgeModule(reactContext))
         nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
@@ -167,7 +168,6 @@ class ExponentPackage : ReactPackage {
       listOf(
         SvgPackage(),
         MapsPackage(),
-        LottiePackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
         RNCWebViewPackage(),

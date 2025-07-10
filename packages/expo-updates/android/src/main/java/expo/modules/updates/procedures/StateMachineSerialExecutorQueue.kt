@@ -6,6 +6,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -27,9 +28,10 @@ class StateMachineSerialExecutorQueue(
 
   private val procedureChannel = Channel<ProcedureHolder>(Channel.UNLIMITED)
   private val mutex = Mutex()
+  private val executorJob: Job
 
   init {
-    scope.launch {
+    executorJob = scope.launch {
       for (holder in procedureChannel) {
         executeProcedure(holder)
       }
@@ -82,5 +84,10 @@ class StateMachineSerialExecutorQueue(
         procedureChannel.send(ProcedureHolder(stateMachineProcedure, completableDeferred))
       }
     }
+  }
+
+  fun cancel() {
+    executorJob.cancel()
+    procedureChannel.close()
   }
 }

@@ -20,6 +20,10 @@ export declare function resolveExpoAutolinkingCliPath(projectRoot: string): stri
  */
 export declare function resolveExpoAutolinkingVersion(projectRoot: string): string | null;
 /**
+ * Resolve the package root of `expo/config-plugins` package in the project.
+ */
+export declare function resolveExpoConfigPluginsPackagePath(projectRoot: string): string | null;
+/**
  * Resolve the `expo` package version and check if it satisfies the provided semver range.
  * @returns `null` if the `expo` package is not found in the project.
  */

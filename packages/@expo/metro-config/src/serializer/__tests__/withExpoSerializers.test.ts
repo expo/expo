@@ -32,8 +32,8 @@ describe(withSerializerPlugins, () => {
     // @ts-expect-error
     await config.serializer.customSerializer('a', 'b', 'c', options);
 
-    expect(customProcessor).toBeCalledWith('a', 'b', 'c', options);
-    expect(customSerializer).toBeCalledWith('a', 'b', 'c', options);
+    expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', options);
+    expect(customSerializer).toHaveBeenCalledWith('a', 'b', 'c', options);
   });
 
   it('does not lose the original config object reference', async () => {
@@ -357,13 +357,13 @@ describe('serializes', () => {
       const filenames = artifacts.map(({ filename }) => filename);
 
       expect(filenames).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure no directive to include them is added.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]{32}\.js\.map/
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
       // Debug ID annotation is included at the end.
       expect(artifacts[0].source).toMatch(/\/\/# debugId=295379f8-3d45-4ee7-8da9-c63d70ba75f3/);
@@ -398,13 +398,13 @@ describe('serializes', () => {
       const filenames = artifacts.map(({ filename }) => filename);
 
       expect(filenames).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/),
       ]);
 
       // Ensure no directive to include them is added.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]{32}\.hbc\.map/
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/
       );
       // Debug ID annotation is included at the end.
       expect(artifacts[0].source).toMatch(/\/\/# debugId=295379f8-3d45-4ee7-8da9-c63d70ba75f3/);
@@ -439,7 +439,7 @@ describe('serializes', () => {
       const filenames = artifacts.map(({ filename }) => filename);
 
       expect(filenames).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
       ]);
 
       // Ensure no directive to include them is added.
@@ -479,7 +479,7 @@ describe('serializes', () => {
 
       // Ensure no source maps exist
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
       ]);
 
       // Ensure no directive to include them is added.
@@ -499,14 +499,14 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/),
       ]);
 
       // Ensure the annotation is included and uses the .hbc.map. We make this modification as
       // a string before passing to Hermes.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/
       );
     });
     it(`serializes with relative base url in production`, async () => {
@@ -523,13 +523,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/subdomain\/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/subdomain\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
     it(`serializes source maps in production for web`, async () => {
@@ -545,13 +545,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -569,13 +569,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=\/subdomain\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=\/subdomain\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -593,13 +593,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -617,13 +617,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -1317,7 +1317,7 @@ describe('serializes', () => {
       );
 
       expect(artifacts.map((art) => art.filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]{32}\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
       ]);
 
       // Split bundle

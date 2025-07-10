@@ -1,5 +1,5 @@
-export * from './Image';
 export * from './Image.types';
-export * from './ImageBackground';
+export { Image } from './Image';
+export { ImageBackground } from './ImageBackground';
 export { useImage } from './useImage';
 //# sourceMappingURL=index.d.ts.map

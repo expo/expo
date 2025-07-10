@@ -108,37 +108,53 @@ describe('exports with single-page', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link');
     expect(links.length).toBe(
-      // Global CSS and CSS Module
-      4
+      // Global CSS, CSS Module, Vaul Modal CSS (and entry point)
+      6
     );
 
-    links.forEach((link) => {
-      // Linked to the expected static location
-      expect(link.attributes.href).toMatch(/^\/_expo\/static\/css\/.*\.css$/);
-    });
+    const linkStrings = links.map((l) => l.toString());
 
-    expect(links[0].toString()).toMatch(
-      /<link rel="preload" href="\/_expo\/static\/css\/global-[\d\w]+\.css" as="style">/
-    );
-    expect(links[1].toString()).toMatch(
-      /<link rel="stylesheet" href="\/_expo\/static\/css\/global-[\d\w]+\.css">/
-    );
-    // CSS Module
-    expect(links[2].toString()).toMatch(
-      /<link rel="preload" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css" as="style">/
-    );
-    expect(links[3].toString()).toMatch(
-      /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[\d\w]+\.css">/
+    expect(linkStrings).toEqual(
+      expect.arrayContaining([
+        // Global CSS
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+        // Modal CSS
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+        // Test CSS module
+        expect.stringMatching(
+          /<link rel="preload" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
+        ),
+        expect.stringMatching(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
+        ),
+      ])
     );
 
-    expect(
-      fs.readFileSync(path.join(outputDir, links[0].attributes.href), 'utf-8')
-    ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
+    const globalPreload = links.find((l) => /global-.*\.css/.test(l.attributes.href!));
+    expect(globalPreload).toBeDefined();
+    if (globalPreload) {
+      expect(
+        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href), 'utf-8')
+      ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
+    }
 
-    // CSS Module
-    expect(
-      fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
-    ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+    const testPreload = links.find((l) => /test\.module-.*\.css/.test(l.attributes.href!));
+    expect(testPreload).toBeDefined();
+    if (testPreload) {
+      expect(
+        fs.readFileSync(path.join(outputDir, testPreload.attributes.href), 'utf-8')
+      ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+    }
   });
 
   it('does not statically render the head', async () => {

@@ -27,7 +27,7 @@ export async function checkPackagesAsync(
   {
     packages,
     packageManager,
-    options: { fix },
+    options: { fix, json },
     packageManagerArguments,
   }: {
     /**
@@ -39,7 +39,7 @@ export async function checkPackagesAsync(
     packageManager: PackageManager.NodePackageManager;
 
     /** How the check should resolve */
-    options: Pick<Options, 'fix'>;
+    options: Pick<Options, 'fix' | 'json'>;
     /**
      * Extra parameters to pass to the `packageManager` when installing versioned packages.
      * @example ['--no-save']
@@ -54,7 +54,7 @@ export async function checkPackagesAsync(
     skipPlugins: true,
   });
 
-  if (pkg.expo?.install?.exclude?.length) {
+  if (pkg.expo?.install?.exclude?.length && !json) {
     Log.log(
       chalk`Skipped ${fix ? 'fixing' : 'checking'} dependencies: ${joinWithCommasAnd(
         pkg.expo.install.exclude
@@ -82,13 +82,26 @@ export async function checkPackagesAsync(
         })
       );
     } catch (error) {
-      Log.log(`Skipped checking expo-router dependencies: expo-router/doctor.js not found.`);
+      if (!json) {
+        Log.log(`Skipped checking expo-router dependencies: expo-router/doctor.js not found.`);
+      }
       debug('expo-router/doctor error:', error);
     }
   }
 
   if (!dependencies.length) {
-    Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
+    if (json) {
+      console.log(JSON.stringify({ dependencies: [], upToDate: true }));
+    } else {
+      Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
+    }
+    return;
+  }
+
+  if (json) {
+    console.log(JSON.stringify({ dependencies, upToDate: false }, null, 2));
+    // Exit with non-zero exit code to indicate outdated dependencies
+    process.exit(1);
   }
 
   logIncorrectDependencies(dependencies);

@@ -38,7 +38,7 @@ describe(startAdbReverseAsync, () => {
     ]);
     await expect(startAdbReverseAsync([3000])).resolves.toBe(true);
 
-    expect(getServer().runAsync).toBeCalledTimes(2);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [
       '-s',
       'FA8251A00720',
@@ -59,7 +59,7 @@ describe(startAdbReverseAsync, () => {
     ]);
     await expect(startAdbReverseAsync([3000, 3001])).resolves.toBe(true);
 
-    expect(getServer().runAsync).toBeCalledTimes(2);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [
       '-s',
       'emulator-5554',
@@ -80,8 +80,8 @@ describe(startAdbReverseAsync, () => {
       },
     ]);
     await expect(startAdbReverseAsync([3000])).resolves.toBe(false);
-    expect(getServer().runAsync).toBeCalledTimes(0);
-    expect(Log.warn).toBeCalledTimes(1);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(0);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
   });
 
   it(`returns false when reversing a device fails`, async () => {
@@ -96,8 +96,8 @@ describe(startAdbReverseAsync, () => {
     ]);
     jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error('test'));
     await expect(startAdbReverseAsync([3000])).resolves.toBe(false);
-    expect(getServer().runAsync).toBeCalledTimes(1);
-    expect(Log.warn).toBeCalledTimes(1);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -121,7 +121,7 @@ describe(stopAdbReverseAsync, () => {
       },
     ]);
     await stopAdbReverseAsync([3000]);
-    expect(getServer().runAsync).toBeCalledTimes(2);
+    expect(getServer().runAsync).toHaveBeenCalledTimes(2);
     expect(getServer().runAsync).toHaveBeenNthCalledWith(1, [
       '-s',
       'FA8251A00720',

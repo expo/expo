@@ -1,73 +1,38 @@
 name: Updates E2E (custom init)
 
 on:
-# For now, disable this workflow on push
-# Reenable once full paths support is ready for both push and pull_request
-#  push:
-#    branches:
-#      - main
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/updates-e2e-custom-init.yml
+      - packages/expo-asset/**
+      - packages/expo-manifests/**
+      - packages/expo-updates-interface/**
+      - packages/expo-updates/**
+      - templates/expo-template-bare-minimum/**
   pull_request:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/updates-e2e-custom-init.yml
+      - packages/expo-asset/**
+      - packages/expo-manifests/**
+      - packages/expo-updates-interface/**
+      - packages/expo-updates/**
+      - templates/expo-template-bare-minimum/**
   schedule:
     - cron: '0 19 * * SUN' # 22:00 UTC every Sunday
 
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
 jobs:
-  check_paths:
-    outputs:
-      result: ${{ steps.changed_paths.outputs.result }}
-    runs_on: linux-medium
-    image: latest
-    steps:
-      - uses: eas/checkout
-      - name: Check changed paths
-        id: changed_paths
-        working_directory: ../..
-        outputs: [result, error]
-        env:
-          GIT_AUTHOR_NAME: "Douglas Lowder"
-          GIT_AUTHOR_EMAIL: "douglowder@mac.com"
-        run: >
-          node ./packages/expo-updates/bin/check-for-changed-paths/index.js
-          ${{ github.event_name }}
-          main
-          apps/expo-workflow-testing/.eas/workflows/updates-e2e-custom-init.yml
-          'packages/@expo/cli/**'
-          'packages/@expo/config-plugins/**'
-          'packages/@expo/env/**'
-          'packages/@expo/metro-config/**'
-          'packages/@expo/prebuild-config/**'
-          'packages/expo/**'
-          'packages/expo-asset/**'
-          'packages/expo-font/**'
-          'packages/expo-json-utils/**'
-          'packages/expo-manifests/**'
-          'packages/expo-modules-autolinking/**'
-          'packages/expo-modules-core/**'
-          'packages/expo-splash-screen/**'
-          'packages/expo-structured-headers/**'
-          'packages/expo-updates-interface/**'
-          'packages/expo-updates/**'
-          'templates/expo-template-bare-minimum/**'
-          packages/expo-updates/e2e/setup/create-eas-project-custom-init.ts
-          packages/expo-updates/e2e/setup/project.ts
-      - name: Print result
-        run: |
-          echo ${{ steps.changed_paths.outputs.result }}
   ios:
     runs_on: macos-large
-    needs: [check_paths]
-    if: ${{ needs.check_paths.outputs.result == 'true' }}
     image: latest
     steps:
-      - name: Install applesimutils
-        id: ios_simulator
-        env:
-          HOMEBREW_NO_AUTO_UPDATE: "1"
-        run: |
-          /opt/homebrew/bin/brew tap wix/brew
-          /opt/homebrew/bin/brew install applesimutils
-          xcrun simctl list
+      - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
@@ -84,27 +49,36 @@ jobs:
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
-          yarn generate-test-update-bundles
+          yarn generate-test-update-bundles ios
           npx pod-install
-      - name: Build E2E project (debug and release)
-        id: build
+      - name: Build E2E test app (debug)
+        id: builddebug
         working_directory: ../../../updates-e2e
         run: |
-          npx detox build -c ios.debug
-          npx detox build -c ios.release
-      - name: Test E2E project (debug and release)
-        id: test
-        env:
-          UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+          yarn maestro:ios:debug:build
+      - name: Build E2E test app (release)
+        id: buildrelease
         working_directory: ../../../updates-e2e
         run: |
-          npx detox test -c ios.debug          
-          npx detox test -c ios.release
+          yarn maestro:ios:release:build
+      - uses: eas/start_ios_simulator
+        with:
+          device_identifier: iPhone 16
+      - name: Run Maestro tests (debug)
+        id: testdebug
+        working_directory: ../../../updates-e2e
+        run: |
+          # run same tests as the updates E2E enabled tests
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
+      - name: Run Maestro tests (release)
+        id: testrelease
+        working_directory: ../../../updates-e2e
+        run: |
+          # run same tests as the updates E2E enabled tests
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios release
   android:
     runs_on: linux-large-nested-virtualization
-    needs: [check_paths]
-    if: ${{ needs.check_paths.outputs.result == 'true' }}
+    image: latest
     steps:
       - name: Set up JDK 17 and Android dependencies
         id: setuptools
@@ -113,10 +87,11 @@ jobs:
         run: |
           sudo apt-get --quiet update --yes
           sudo apt-get --quiet install openjdk-17-jdk openjdk-17-jre libc6 libdbus-1-3 libfontconfig1 libgcc1 libpulse0 libtinfo5 libx11-6 libxcb1 libxdamage1 libnss3 libxcomposite1 libxcursor1 libxi6 libxext6 libxfixes3 zlib1g libgl1 pulseaudio socat --yes
+      - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E custom init project
+      - name: Set up Updates E2E enabled project
         id: setup
         working_directory: ../..        
         env:
@@ -131,26 +106,37 @@ jobs:
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
-          yarn generate-test-update-bundles
+          yarn generate-test-update-bundles android
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4
-      - name: Build E2E project (debug and release)
-        id: build
+      - name: Build E2E test app (debug)
+        id: builddebug
         working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
-          npx detox build -c android.debug
-          npx detox build -c android.release
-      - name: Test E2E project (debug and release)
-        id: test
+          yarn maestro:android:debug:build
+      - name: Build E2E test app (release)
+        id: buildrelease
+        working_directory: ../../../updates-e2e
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
-          UPDATES_HOST: localhost
-          UPDATES_PORT: "4747"
+        run: |
+          yarn maestro:android:release:build
+      - name: Run Maestro tests (debug)
+        id: testdebug
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         working_directory: ../../../updates-e2e
         run: |
-          yarn check-android-emulator
-          npx detox test -c android.debug
-          npx detox test -c android.release
+          # run same tests as the updates E2E enabled tests
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
+      - name: Run Maestro tests (release)
+        id: testrelease
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        working_directory: ../../../updates-e2e
+        run: |
+          # run same tests as the updates E2E enabled tests
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release

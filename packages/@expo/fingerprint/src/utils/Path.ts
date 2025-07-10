@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import { Minimatch, type MinimatchOptions } from 'minimatch';
 import process from 'node:process';
 import path from 'path';
@@ -22,6 +23,17 @@ export function buildPathMatchObjects(
   minimatchOptions: MinimatchOptions = { dot: true }
 ): Minimatch[] {
   return paths.map((filePath) => new Minimatch(filePath, minimatchOptions));
+}
+
+/**
+ * Append a new ignore path to the given `matchObjects`.
+ */
+export function appendIgnorePath(
+  matchObjects: Minimatch[],
+  path: string,
+  minimatchOptions: MinimatchOptions = { dot: true }
+) {
+  matchObjects.push(new Minimatch(path, minimatchOptions));
 }
 
 /**
@@ -121,4 +133,16 @@ const REGEXP_REPLACE_SLASHES = /\\/g;
  */
 export function toPosixPath(filePath: string): string {
   return process.platform === 'win32' ? filePath.replace(REGEXP_REPLACE_SLASHES, '/') : filePath;
+}
+
+/**
+ * Check if the given `filePath` exists.
+ */
+export async function pathExistsAsync(filePath: string): Promise<boolean> {
+  try {
+    const stat = await fs.stat(filePath);
+    return stat.isFile() || stat.isDirectory();
+  } catch {
+    return false;
+  }
 }

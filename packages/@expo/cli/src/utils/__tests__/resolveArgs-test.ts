@@ -73,7 +73,7 @@ describe(_resolveStringOrBooleanArgs, () => {
 
 describe(assertUnknownArgs, () => {
   it(`asserts unknown arguments`, () => {
-    expect(() => assertUnknownArgs({}, ['--foo', '--bar'])).toThrowError(
+    expect(() => assertUnknownArgs({}, ['--foo', '--bar'])).toThrow(
       `Unknown arguments: --foo, --bar`
     );
   });

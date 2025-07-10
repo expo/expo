@@ -195,6 +195,11 @@ int NativeDatabaseBinding::libsql_sync() {
   return 0;
 }
 
+std::string NativeDatabaseBinding::convertSqlLiteErrorToSTLString() {
+  jni::throwNewJavaException(UnsupportedOperationException::create().get());
+  return nullptr;
+}
+
 jni::local_ref<jni::JString>
 NativeDatabaseBinding::convertSqlLiteErrorToString() {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());

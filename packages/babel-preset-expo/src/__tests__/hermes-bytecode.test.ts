@@ -309,6 +309,28 @@ const LANGUAGE_SAMPLES: {
     },
   },
   {
+    // https://babeljs.io/docs/babel-plugin-transform-class-static-block
+    name: `plugin-transform-class-static-block`,
+    code: `class C {
+  static #x = 42;
+  static y;
+  static {
+    try {
+      this.y = doSomethingWith(this.#x);
+    } catch {
+      this.y = "unknown";
+    }
+  }
+}`,
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
+      }
+      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");var C=(0,_createClass2.default)(function C(){(0,_classCallCheck2.default)(this,C);});_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
+    },
+    hermesError: /private properties are not supported/,
+  },
+  {
     // https://babeljs.io/docs/babel-plugin-transform-arrow-functions
     // This works with Hermes but we seem to transpile it out anyways, presumably for fast refresh?
     // https://github.com/facebook/react-native/blob/b1047d49ff45f0f795c9e336e18deb9e09c34887/packages/react-native-babel-preset/src/configs/main.js#L89
@@ -360,7 +382,7 @@ LANGUAGE_SAMPLES.forEach((sample) => {
 
     if (sample.hermesError) {
       it(`Hermes does not have native support`, async () => {
-        await expect(compileToHermesBytecodeAsync({ code: sample.code })).rejects.toThrowError(
+        await expect(compileToHermesBytecodeAsync({ code: sample.code })).rejects.toThrow(
           sample.hermesError
         );
       });

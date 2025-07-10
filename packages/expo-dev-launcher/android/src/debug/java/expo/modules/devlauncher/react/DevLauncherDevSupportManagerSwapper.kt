@@ -86,14 +86,14 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
     currentDevSupportManager: DevSupportManager
   ): DevLauncherBridgeDevSupportManager {
     return DevLauncherBridgeDevSupportManager(
-      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mApplicationContext"),
+      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "applicationContext"),
       reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
-      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mJSAppBundleName"),
+      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "jsAppBundleName"),
       enableOnCreate = true,
-      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mRedBoxHandler"),
-      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mBundleDownloadListener"),
+      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),
+      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "devBundleDownloadListener"),
       minNumShakes = 1,
-      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mCustomPackagerCommandHandlers")
+      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "customPackagerCommandHandlers")
     )
   }
 
@@ -102,14 +102,14 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
     currentDevSupportManager: DevSupportManager
   ): DevLauncherBridgelessDevSupportManager {
     return DevLauncherBridgelessDevSupportManager(
-      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mApplicationContext"),
+      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "applicationContext"),
       reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
-      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mJSAppBundleName"),
+      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "jsAppBundleName"),
       enableOnCreate = true,
-      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mRedBoxHandler"),
-      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mBundleDownloadListener"),
+      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),
+      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "devBundleDownloadListener"),
       minNumShakes = 1,
-      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mCustomPackagerCommandHandlers")
+      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "customPackagerCommandHandlers")
     )
   }
 
@@ -128,30 +128,21 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
 
           val devServerHelper: DevServerHelper = devManagerClass.getProtectedFieldValue(
             devSupportManager,
-            "mDevServerHelper"
+            "devServerHelper"
           )
 
           try {
-            val packagerConnectionLock: Boolean = DevServerHelper::class.java.getProtectedFieldValue(
-              devServerHelper,
-              "mPackagerConnectionLock"
-            )
-
-            if (!packagerConnectionLock) {
-              devServerHelper.closePackagerConnection()
-              return@launch
-            }
-          } catch (_: NoSuchFieldException) {
-            // mPackagerConnectionLock was removed from the React Native in v0.63.4
             val packagerClient: JSPackagerClient? = DevServerHelper::class.java.getProtectedFieldValue(
               devServerHelper,
-              "mPackagerClient"
+              "packagerClient"
             )
 
             if (packagerClient != null) {
               devServerHelper.closePackagerConnection()
               return@launch
             }
+          } catch (e: NoSuchFieldException) {
+            Log.w("DevLauncher", "Couldn't close the packager connection", e)
           }
 
           delay(50)
@@ -167,7 +158,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
       val shakeDetector: ShakeDetector =
         DevSupportManagerBase::class.java.getProtectedFieldValue(
           currentDevSupportManager,
-          "mShakeDetector"
+          "shakeDetector"
         )
       shakeDetector.stop()
     } catch (e: Exception) {

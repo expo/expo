@@ -2,8 +2,15 @@
   "name": "expo-keep-awake",
   "version": "14.1.4",
   "description": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
-  "main": "build/index.js",
+  "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
@@ -34,7 +41,7 @@
   "dependencies": {},
   "devDependencies": {
     "@testing-library/react-native": "^13.1.0",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*",

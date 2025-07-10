@@ -25,6 +25,10 @@ function install(name: string, getValue: () => any) {
 
 // https://encoding.spec.whatwg.org/#textdecoder
 install('TextDecoder', () => require('./TextDecoder').TextDecoder);
+// https://encoding.spec.whatwg.org/#interface-textdecoderstream
+install('TextDecoderStream', () => require('./TextDecoderStream').TextDecoderStream);
+// https://encoding.spec.whatwg.org/#interface-textencoderstream
+install('TextEncoderStream', () => require('./TextDecoderStream').TextEncoderStream);
 // https://url.spec.whatwg.org/#url
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams

@@ -3,6 +3,8 @@ export type PrintOptions = {
      * URI of a PDF file to print. Remote, local (ex. selected via `DocumentPicker`) or base64 data URI
      * starting with `data:application/pdf;base64,`. This only supports PDF, not other types of
      * document (e.g. images).
+     * @platform android
+     * @platform ios
      */
     uri?: string;
     /**

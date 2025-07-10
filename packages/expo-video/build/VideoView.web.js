@@ -156,7 +156,7 @@ export const VideoView = forwardRef((props, ref) => {
             detachAudioNodes();
         };
     }, [props.player]);
-    return (<video controls={props.nativeControls ?? true} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin="anonymous" style={{
+    return (<video controls={props.nativeControls ?? true} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin={props.crossOrigin} style={{
             ...mapStyles(props.style),
             objectFit: props.contentFit,
         }} onPlay={() => {

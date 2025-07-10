@@ -146,7 +146,7 @@ const withMapsCocoaPods: ConfigPlugin<{ useGoogleMaps: boolean }> = (config, { u
       } catch (error: any) {
         if (error.code === 'ERR_NO_MATCH') {
           throw new Error(
-            `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`
+            `Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Report this with a copy of your project Podfile: https://github.com/expo/expo/issues`
           );
         }
         throw error;
@@ -197,7 +197,7 @@ const withGoogleMapsAppDelegate: ConfigPlugin<{ apiKey: string | null }> = (conf
     } catch (error: any) {
       if (error.code === 'ERR_NO_MATCH') {
         throw new Error(
-          `Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`
+          `Cannot add Google Maps to the project's AppDelegate because it's malformed. Report this with a copy of your project AppDelegate: https://github.com/expo/expo/issues`
         );
       }
       throw error;

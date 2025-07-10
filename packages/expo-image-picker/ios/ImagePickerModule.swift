@@ -49,7 +49,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       self.handlePermissionRequest(requesterClass: self.getMediaLibraryPermissionRequester(writeOnly), operationType: .ask, promise: promise)
     })
 
-    AsyncFunction("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) -> Void in
+    AsyncFunction("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) in
       guard let permissions = self.appContext?.permissions else {
         return promise.reject(PermissionsModuleNotFoundException())
       }

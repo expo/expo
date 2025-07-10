@@ -94,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants;
 
+- (UIViewController *)createRootViewController;
+
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
+
 @end
 
 NS_ASSUME_NONNULL_END

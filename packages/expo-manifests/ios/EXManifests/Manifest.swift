@@ -4,8 +4,10 @@
 // swiftlint:disable unavailable_function
 
 import Foundation
-import UIKit
 
+#if os(iOS) || os(tvOS)
+import UIKit
+#endif
 /**
  Uses objective-c NSExceptions for field validation. This is to maintain
  backwards compatibility with the previous objective-c implementation so that we don't need to do
@@ -274,13 +276,17 @@ public class Manifest: NSObject {
   }
 
   public func iosSplashImageUrl() -> String? {
+    var paths = [["ios", "splash", "imageUrl"], ["splash", "imageUrl"]]
+#if os(iOS) || os(tvOS)
+    if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+      paths.insert(contentsOf: [
+        ["ios", "splash", "tabletImageUrl"],
+        ["splash", "tabletImageUrl"]
+      ], at: 0)
+    }
+#endif
     return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
-          ? ["ios", "splash", "tabletImageUrl"] : [],
-        ["ios", "splash", "imageUrl"],
-        ["splash", "imageUrl"]
-      ])
+      Manifest.string(fromManifest: it, atPaths: paths)
     }
   }
 

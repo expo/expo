@@ -6,11 +6,11 @@ exports[`createURL bare makes url "path/into/app" 1`] = `"demo://path/into/app"`
 
 exports[`createURL bare makes url {"emptyParam": ""} 1`] = `"demo://some/path?emptyParam="`;
 
-exports[`createURL bare makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"demo://some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`createURL bare makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"demo://some/path?escapePluses=email%2Bwith%2Bplus%40whatever.com"`;
 
-exports[`createURL bare makes url {"lotsOfSlashes": "/////"} 1`] = `"demo://some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`createURL bare makes url {"lotsOfSlashes": "/////"} 1`] = `"demo://some/path?lotsOfSlashes=%2F%2F%2F%2F%2F"`;
 
-exports[`createURL bare makes url {"shouldEscape": "%2b%20"} 1`] = `"demo://some/path?shouldEscape=%25252b%252520"`;
+exports[`createURL bare makes url {"shouldEscape": "%2b%20"} 1`] = `"demo://some/path?shouldEscape=%252b%2520"`;
 
 exports[`createURL bare makes url {"undefinedParam": undefined} 1`] = `"demo://some/path"`;
 
@@ -22,11 +22,11 @@ exports[`createURL queries for hostUri "exp.host/@test/test" makes url "path/int
 
 exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"emptyParam": ""} 1`] = `"exp://exp.host/@test/test/--/some/path?emptyParam="`;
 
-exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://exp.host/@test/test/--/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://exp.host/@test/test/--/some/path?escapePluses=email%2Bwith%2Bplus%40whatever.com"`;
 
-exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://exp.host/@test/test/--/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://exp.host/@test/test/--/some/path?lotsOfSlashes=%2F%2F%2F%2F%2F"`;
 
-exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://exp.host/@test/test/--/some/path?shouldEscape=%25252b%252520"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://exp.host/@test/test/--/some/path?shouldEscape=%252b%2520"`;
 
 exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"undefinedParam": undefined} 1`] = `"exp://exp.host/@test/test/--/some/path"`;
 
@@ -36,11 +36,11 @@ exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url "
 
 exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"emptyParam": ""} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?emptyParam="`;
 
-exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?escapePluses=email%2Bwith%2Bplus%40whatever.com"`;
 
-exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"lotsOfSlashes": "/////"} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?lotsOfSlashes=%2F%2F%2F%2F%2F"`;
 
-exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?shouldEscape=%25252b%252520"`;
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"shouldEscape": "%2b%20"} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path?shouldEscape=%252b%2520"`;
 
 exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"undefinedParam": undefined} 1`] = `"exp://u.expo.dev/update/some-guid/--/some/path"`;
 

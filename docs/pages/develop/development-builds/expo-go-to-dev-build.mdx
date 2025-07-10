@@ -1,0 +1,142 @@
+---
+title: Convert from Expo Go to a development build
+sidebar_title: Expo Go to development build
+description: How to migrate your Expo Go project to use development builds.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+To migrate from Expo Go to a development build, you'll need to follow the steps below:
+
+<Step label="1">
+
+## Install the `expo-dev-client`
+
+The Expo Dev Client library includes the launcher UI (shown in the screenshots below), dev menu, extensions to test over-the-air updates, and more. The Expo Go app has the dev menu built in, and that's why you need to install it separately for a development build.
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+<ContentSpotlight
+  alt="expo-dev-client launcher and menu UIs on Android and iOS."
+  src="/static/images/dev-client/preview.png"
+  caption={`When you run a development build it will look like this, only with your app name and icon included rather than "Microfoam". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
+/>
+
+> We recommend using the `expo-dev-client` for the best development experience, but it is possible to use development builds without installing this library. If not using the dev client, in [Step 3](/develop/development-builds/expo-go-to-dev-build/#start-the-dev-client), start the bundler with `--dev-client`. Otherwise, it will default to opening in Expo Go.
+
+</Step>
+
+<Step label="2">
+
+## Build your native app
+
+With Expo Go, you only needed to build the JavaScript bundle, but with development builds you also need to compile the native app. With Expo, there are two parts to building your native app:
+
+1. Generate the native **android** and/or **ios** directories ([read more](/develop/development-builds/expo-go-to-dev-build/#cng-and-prebuild) on when and how you'll need to do this)
+2. Use native build tools to compile the native app(s)
+
+Once you've built your native app, you won't need to build it again unless you add or update a library with native code, or change any native code or configuration, such as the app name.
+
+> After generating your **android** and/or **ios** directories, make sure you add them to **.gitignore** instead of checking them into Git. This ensures you can always regenerate the code locally or on CI when needed and never have to edit native code manually.
+
+### Option 1: Build on your local machine
+
+To build a native app on your local machine, follow the setup your environment guides for [Android](/workflow/android-studio-emulator/) and [iOS](/workflow/ios-simulator/) platforms. This involves setting up and configuring native build tools like Android Studio for Android and Xcode for iOS.
+
+Once you have everything set up, run the following command:
+
+<Tabs>
+
+<Tab label="Build for Android">
+
+<Terminal cmd={['$ npx expo run:android']} />
+
+</Tab>
+
+<Tab label="Build for iOS">
+
+<Terminal cmd={['$ npx expo run:ios']} />
+
+</Tab>
+</Tabs>
+
+By default, this will build and install the app on an Android Emulator/iOS Simulator. If you need to run the build on your phone, plug it into your computer (on Android, select trust device and allow USB debugging if prompted, and on iOS, enable [developer mode](/get-started/set-up-your-environment/?mode=development-build&buildEnv=local&platform=ios&device=physical#plug-in-your-device-via-usb-and-enable-developer-mode)) and run the above commands with the `--device` flag.
+
+### Option 2: Build on EAS
+
+Building on EAS servers is useful when:
+
+- You can't or don't want to set up your local development environment
+- You want to build an iOS app but don't own a Mac
+- You want to share the development builds with your team
+
+<BoxLink
+  title="Build on EAS"
+  description="How to create your Development Build on EAS"
+  href="/develop/development-builds/create-a-build/"
+  Icon={BookOpen02Icon}
+/>
+
+</Step>
+
+<Step label="3">
+
+## Start the bundler
+
+After building locally, `npx expo run:android|ios` will start the bundler automatically. But if you closed the bundler or are working on a dev client you built earlier, (re)start the Metro bundler with:
+
+<Terminal cmd={['$ npx expo start']} />
+
+When your project has `expo-dev-client` installed, the bundler will print out **Using development build**, and the QR code it shows will link into the development build you created instead of Expo Go.
+
+</Step>
+
+## Prebuild
+
+[**Prebuild** ](/workflow/continuous-native-generation/#prebuild) is a concept unique to Expo projects. It refers to the process of generating the **android** and **ios** directories based on your local configuration and properties.
+
+### When should you run prebuild
+
+You will need to run prebuild locally if you are building via `npx expo run:android|ios`, and change any native dependencies or configuration, such as:
+
+- Installing or updating a library containing native code
+- Changing [app config](/workflow/configuration/)(`app.json`)
+- Upgrading your Expo SDK version
+
+In these cases, you'll want to rebuild the native directories with:
+
+<Terminal cmd={['$ npx expo prebuild --clean']} />
+
+Then, rebuild your app with the updated native code, with:
+
+<Tabs>
+
+<Tab label="Build for Android">
+
+<Terminal cmd={['$ npx expo run:android']} />
+
+</Tab>
+
+<Tab label="Build for iOS">
+
+<Terminal cmd={['$ npx expo run:ios']} />
+
+</Tab>
+</Tabs>
+
+### When you don't need to run prebuild
+
+All Expo build tools (`npx expo run:android|ios` and `eas build`) will **prebuild** automatically if no existing native folders are found. This means that there is no need to run prebuild manually when you're running `npx expo run:android|ios` for the first time or `eas build`.
+
+<BoxLink
+  title="Continuous Native Generation (CNG)"
+  description="Learn about the philosophy and benefits of Continuous Native Generation (CNG) and Prebuild"
+  href="/workflow/continuous-native-generation/"
+  Icon={BookOpen02Icon}
+/>

@@ -29,7 +29,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/styleguide-native": "^1.0.1",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.1.0"

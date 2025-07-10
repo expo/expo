@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "14.2.3",
+  "version": "14.2.4",
   "description": "Provides access to the phone's system contacts.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -34,7 +34,7 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*",

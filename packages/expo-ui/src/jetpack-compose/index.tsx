@@ -6,3 +6,4 @@ export * from './Progress';
 export * from './Slider';
 export * from './Switch';
 export * from './TextInput';
+export * from './Shape';

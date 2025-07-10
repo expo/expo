@@ -68,7 +68,7 @@ describe(startBundlerAsync, () => {
         type: 'metro',
       },
     ]);
-    expect(manager.getDefaultDevServer).toBeCalled();
+    expect(manager.getDefaultDevServer).toHaveBeenCalled();
   });
 
   it(`starts a server`, async () => {
@@ -89,7 +89,7 @@ describe(startBundlerAsync, () => {
         type: 'metro',
       },
     ]);
-    expect(startInterfaceAsync).toBeCalled();
-    expect(manager.getDefaultDevServer).not.toBeCalled();
+    expect(startInterfaceAsync).toHaveBeenCalled();
+    expect(manager.getDefaultDevServer).not.toHaveBeenCalled();
   });
 });

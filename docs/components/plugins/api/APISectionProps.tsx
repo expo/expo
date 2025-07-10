@@ -53,7 +53,7 @@ const renderInheritedProps = (
   data: PropsDefinitionData | undefined,
   sdkVersion: string,
   exposeInSidebar?: boolean
-): JSX.Element | undefined => {
+) => {
   const inheritedData = data?.type?.types ?? data?.extendedTypes ?? [];
   const inheritedProps =
     inheritedData.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
@@ -86,7 +86,7 @@ const renderProps = (
   defaultValues?: DefaultPropsDefinitionData,
   parentPlatforms?: CommentTagData[],
   exposeInSidebar?: boolean
-): JSX.Element => {
+) => {
   const propsDeclarations = getPropsBaseTypes(def)
     .flat()
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);

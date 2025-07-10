@@ -75,6 +75,7 @@ export default function ExpoImage({
   style,
   nativeViewRef,
   accessibilityLabel,
+  alt,
   tintColor,
   containerViewRef,
   ...props
@@ -114,7 +115,7 @@ export default function ExpoImage({
               contentPosition={{ left: '50%', top: '50%' }}
               hashPlaceholderContentPosition={contentPosition}
               hashPlaceholderStyle={imageHashStyle}
-              accessibilityLabel={accessibilityLabel}
+              accessibilityLabel={accessibilityLabel ?? alt}
               cachePolicy={cachePolicy}
               priority={priority}
               tintColor={tintColor}

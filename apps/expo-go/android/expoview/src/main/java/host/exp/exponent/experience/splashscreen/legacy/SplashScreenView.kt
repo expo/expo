@@ -11,25 +11,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import host.exp.expoview.R
 
 // this needs to stay for versioning to work
@@ -80,32 +80,27 @@ fun SplashScreenView(
       verticalArrangement = Arrangement.spacedBy(30.dp),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
-      SplashScreenImage(
-        resizeMode = SplashScreenImageResizeMode.CONTAIN,
-        imageUrl
-      )
+      SplashScreenImage(imageUrl)
       Text(appName, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
     }
   }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SplashScreenImage(
-  resizeMode: SplashScreenImageResizeMode,
   imageUrl: String? = null
 ) {
-  val width = 200.dp
-  val height = 200.dp
-
-  GlideImage(
-    model = imageUrl,
+  AsyncImage(
+    model = ImageRequest.Builder(LocalContext.current)
+      .data(imageUrl)
+      .crossfade(true)
+      .build(),
     contentDescription = "Splash Screen Image",
-    contentScale = resizeMode.toContentScale(),
-    loading = placeholder(R.drawable.project_default_icon),
+    contentScale = ContentScale.Fit,
+    placeholder = painterResource(R.drawable.project_default_icon),
     modifier = Modifier
-      .width(width)
-      .height(height)
+      .size(200.dp)
+      .background(Color.White)
       .shadow(4.dp, RoundedCornerShape(30.dp))
   )
 }

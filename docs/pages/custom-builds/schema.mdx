@@ -743,7 +743,7 @@ All-in-one function that installs Maestro, prepares a testing environment (Andro
 
 | Input       | Type     | Description                                                                                                                                                                                                                        |
 | ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flow_path` | `string` | Path (or multiple paths, each in a separate line) to [Maestro flows](https://maestro.mobile.dev/getting-started/writing-your-first-flow) to run.                                                                                   |
+| `flow_path` | `string` | Path (or multiple paths, each in a separate line) to [Maestro flows](https://docs.maestro.dev/getting-started/writing-your-first-flow) to run.                                                                                     |
 | `app_path`  | `string` | Path (or regex pattern) to the emulator/simulator app that should be tested. If not provided, it defaults to **android/app/build/outputs/\*\*/\*.apk** for Android and to **ios/build/Build/Products/\*simulator/\*.app** for iOS. |
 
 ```yaml build-and-test.yml
@@ -1653,7 +1653,7 @@ build:
 
 #### `eas/install_maestro`
 
-Makes sure [Maestro](https://maestro.mobile.dev), the mobile UI testing framework, is installed along with all its dependencies.
+Makes sure [Maestro](https://maestro.dev/), the mobile UI testing framework, is installed along with all its dependencies.
 
 ```yaml build-and-test.yml
 build:

@@ -169,7 +169,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
   //region LifecycleEventListener
 
   override fun onHostResume() {
-    val activity = currentActivity
+    val activity = reactApplicationContext.currentActivity
 
     if (activity is ExperienceActivity) {
       devMenuManager.registerDevMenuModuleForActivity(this, activity)
@@ -188,7 +188,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * or null if no activity is currently attached to react context.
    */
   private fun getDevSupportManager(): DevSupportManager? {
-    val activity = currentActivity as? ReactNativeActivity?
+    val activity = reactApplicationContext.currentActivity as? ReactNativeActivity?
     return activity?.devSupportManager
   }
 
@@ -197,7 +197,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * Such permission is required for example to enable performance monitor.
    */
   private fun requestOverlaysPermission() {
-    val context = currentActivity ?: return
+    val context = reactApplicationContext.currentActivity ?: return
     // Get permission to show debug overlay in dev builds.
     if (!Settings.canDrawOverlays(context)) {
       val intent = Intent(

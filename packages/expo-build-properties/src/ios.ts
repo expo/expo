@@ -49,6 +49,10 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propValueGetter: (config) =>
         (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
     },
+    {
+      propName: 'ios.buildFromSource',
+      propValueGetter: (config) => config.ios?.buildFromSource?.toString(),
+    },
   ],
   'withIosBuildProperties'
 );

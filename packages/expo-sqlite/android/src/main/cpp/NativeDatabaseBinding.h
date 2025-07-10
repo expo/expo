@@ -21,7 +21,7 @@ public:
 
   // sqlite3 bindings
   int sqlite3_changes();
-  int sqlite3_finalize_all_statement();
+  void sqlite3_finalize_all_statement();
   int sqlite3_close();
   std::string sqlite3_db_filename(const std::string &databaseName);
   int sqlite3_enable_load_extension(int onoff);
@@ -56,6 +56,8 @@ private:
   explicit NativeDatabaseBinding(
       jni::alias_ref<NativeDatabaseBinding::jhybridobject> jThis)
       : javaPart_(jni::make_global(jThis)) {}
+
+  std::string convertSqlLiteErrorToSTLString();
 
 private:
   static jni::local_ref<jhybriddata>

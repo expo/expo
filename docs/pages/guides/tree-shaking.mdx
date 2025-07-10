@@ -138,9 +138,10 @@ The above code snippet is then minified, which removes the unused conditional:
 
 It's common to use `typeof window === 'undefined'` to conditionally enable or disable code for server and client environments.
 
-`babel-preset-expo` automatically transforms `typeof window === 'undefined'` to `true` when bundling for server environments and `false` when bundling for websites. The check remains unchanged when bundling for native client environments to support apps that polyfill `window`. This transform runs in both development and production but only removes conditional requires in production.
+`babel-preset-expo` will transform `typeof window === 'undefined'` to `true` when when bundling for server environments. By default, this check remains unchanged when bundling for web client environments. This transform runs in both development and production but only removes conditional requires in production.
 
-You can configure `babel-preset-expo` to skip the transform by passing `{ preserveTypeofWindow: false }`.
+You can configure `babel-preset-expo` to enable this transform by passing `{ minifyTypeofWindow: true }`.
+By default, this transform remains disabled even for web environments since web workers won't have a `window` global.
 
 <Step label="1">
 
@@ -162,15 +163,7 @@ if (true) {
 }
 ```
 
-Bundling client code for web browsers will change `typeof window` to `false`:
-
-```js Post babel-preset-expo
-if (false) {
-  console.log('Hello on the server!');
-}
-```
-
-Bundling client code for native apps will leave `typeof window` in place:
+Bundling client code for web or native apps will not replace `typeof window` unless `minifyTypeOfWindow: true` is set:
 
 ```js Post babel-preset-expo
 if (typeof window === 'undefined') {
@@ -182,13 +175,16 @@ if (typeof window === 'undefined') {
 
 <Step label="3">
 
-The above code snippet is then minified, which removes the unused conditional:
+For server environments, the above code snippet is then minified which removes the unused conditional:
 
 ```js Post minifier (server)
 console.log('Hello on the server!');
 ```
 
-```js Post minifier (client websites)
+```js Post minifier (client)
+if (typeof window === 'undefined') {
+  console.log('Hello on the server!');
+}
 // Empty file
 ```
 

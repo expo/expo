@@ -151,9 +151,7 @@ async function resolveAndDownloadRepoTemplateAsync(
     }
   }
   if (!repoUrl) {
-    oraInstance.fail(
-      `Invalid URL: ${chalk.red(`"${template}"`)}. Please use a valid URL and try again.`
-    );
+    oraInstance.fail(`Invalid URL: ${chalk.red(`"${template}"`)}. Try again with a valid URL.`);
     throw new AbortCommandError();
   }
 
@@ -161,7 +159,7 @@ async function resolveAndDownloadRepoTemplateAsync(
     oraInstance.fail(
       `Invalid URL: ${chalk.red(
         `"${template}"`
-      )}. Only GitHub repositories are supported. Please use a GitHub URL and try again.`
+      )}. Only GitHub repositories are supported. Try again with a valid GitHub URL.`
     );
     throw new AbortCommandError();
   }
@@ -170,7 +168,7 @@ async function resolveAndDownloadRepoTemplateAsync(
 
   if (!repoInfo) {
     oraInstance.fail(
-      `Found invalid GitHub URL: ${chalk.red(`"${template}"`)}. Please fix the URL and try again.`
+      `Found invalid GitHub URL: ${chalk.red(`"${template}"`)}. Fix the URL and try again.`
     );
     throw new AbortCommandError();
   }
@@ -181,7 +179,7 @@ async function resolveAndDownloadRepoTemplateAsync(
     oraInstance.fail(
       `Could not locate the repository for ${chalk.red(
         `"${template}"`
-      )}. Please check that the repository exists and try again.`
+      )}. Check that the repository exists and try again.`
     );
     throw new AbortCommandError();
   }

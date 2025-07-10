@@ -86,6 +86,8 @@ export async function isAvailableAsync() {
  * @param writeOnly
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(writeOnly = false, granularPermissions) {

@@ -7,13 +7,13 @@ import { Smartphone01Icon } from '@expo/styleguide-icons/custom/Smartphone01Icon
 import { BracketsXIcon } from '@expo/styleguide-icons/outline/BracketsXIcon';
 import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
-import { Dataflow01Icon } from '@expo/styleguide-icons/outline/Dataflow01Icon';
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { FileSearch02Icon } from '@expo/styleguide-icons/outline/FileSearch02Icon';
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
+import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
 export type ExpoItemType = {
@@ -59,9 +59,9 @@ export const entries: ExpoItemType[] = [
     Icon: DataIcon,
   },
   {
-    label: 'Project Deployments',
+    label: 'Project Native Deployments',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/deployments',
-    Icon: Dataflow03Icon,
+    Icon: Tag03Icon,
   },
   {
     label: 'Project Development Builds',
@@ -79,12 +79,12 @@ export const entries: ExpoItemType[] = [
     Icon: EasSubmitIcon,
   },
   {
-    label: 'Project Channels',
+    label: 'Project Update Channels',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/channels',
     Icon: Cube02Icon,
   },
   {
-    label: 'Project Branches',
+    label: 'Project Update Branches',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/branches',
     Icon: BranchIcon,
   },
@@ -101,7 +101,7 @@ export const entries: ExpoItemType[] = [
   {
     label: 'Project Workflows',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/workflows',
-    Icon: Dataflow01Icon,
+    Icon: Dataflow03Icon,
   },
   {
     label: 'Project Push Notifications',

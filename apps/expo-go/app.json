@@ -7,7 +7,6 @@
     "privacy": "unlisted",
     "sdkVersion": "53.0.0",
     "version": "53.0.0",
-    "orientation": "portrait",
     "platforms": [
       "ios",
       "android"

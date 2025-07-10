@@ -10,6 +10,7 @@ shopt -s dotglob
 # and its content contains the string `@generated`.
 OPTIONAL_TEMPLATE_FILES=(
   # add a relative file path from `templates/` for each new optional file
+  "eslint.config.js"
   "scripts/with-node.sh"
 )
 

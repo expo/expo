@@ -6,9 +6,42 @@
 
 ### 🎉 New features
 
+- Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 13.2.3 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.2 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.1 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 - 2025-06-04
+
+### 🎉 New features
+
+- Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
+
+### 🐛 Bug fixes
+
+- Disable `minifyTypeofWindow` for Web to prevent breaking Web Worker targets ([#36773](https://github.com/expo/expo/pull/36773) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 13.1.11 — 2025-05-01
 

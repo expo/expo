@@ -1,6 +1,7 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
+import { useRoute } from '@react-navigation/native';
 import { createURL } from 'expo-linking';
 import React from 'react';
 import { StyleSheet, Text, View, Platform, Image } from 'react-native';
@@ -8,9 +9,9 @@ import { StyleSheet, Text, View, Platform, Image } from 'react-native';
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
 import { useNavigation } from '../useNavigation';
+import { useSafeLayoutEffect } from './useSafeLayoutEffect';
+import { isRoutePreloadedInStack } from '../utils/stack';
 import { Pressable } from '../views/Pressable';
-
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
 
 /**
  * Default screen for unmatched routes.
@@ -21,6 +22,8 @@ export function Unmatched() {
   const [render, setRender] = React.useState(false);
 
   const router = useRouter();
+  const route = useRoute();
+
   const navigation = useNavigation();
   const pathname = usePathname();
   const url = createURL(pathname);
@@ -29,11 +32,15 @@ export function Unmatched() {
     setRender(true);
   }, []);
 
-  useLayoutEffect(() => {
+  const isFocused = navigation.isFocused();
+  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
+
+  /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
+  useSafeLayoutEffect(() => {
     navigation.setOptions({
       title: 'Not Found',
     });
-  }, [navigation]);
+  }, [isFocused, isPreloaded, navigation]);
 
   return (
     <View style={styles.container}>

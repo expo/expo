@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders Image 1`] = `
+"1:I["src/Image.tsx",[],"Image",1]
+0:["$","$L1",null,{},null]"
+`;

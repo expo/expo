@@ -6,14 +6,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unmatched = Unmatched;
+const native_1 = require("@react-navigation/native");
 const expo_linking_1 = require("expo-linking");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const Link_1 = require("../link/Link");
 const useNavigation_1 = require("../useNavigation");
+const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
+const stack_1 = require("../utils/stack");
 const Pressable_1 = require("../views/Pressable");
-const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
 /**
  * Default screen for unmatched routes.
  *
@@ -22,17 +24,21 @@ const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayou
 function Unmatched() {
     const [render, setRender] = react_1.default.useState(false);
     const router = (0, hooks_1.useRouter)();
+    const route = (0, native_1.useRoute)();
     const navigation = (0, useNavigation_1.useNavigation)();
     const pathname = (0, hooks_1.usePathname)();
     const url = (0, expo_linking_1.createURL)(pathname);
     react_1.default.useEffect(() => {
         setRender(true);
     }, []);
-    useLayoutEffect(() => {
+    const isFocused = navigation.isFocused();
+    const isPreloaded = (0, stack_1.isRoutePreloadedInStack)(navigation.getState(), route);
+    /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
+    (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
         navigation.setOptions({
             title: 'Not Found',
         });
-    }, [navigation]);
+    }, [isFocused, isPreloaded, navigation]);
     return (<react_native_1.View style={styles.container}>
       <NotFoundAsset />
       <react_native_1.Text role="heading" aria-level={1} style={styles.title}>

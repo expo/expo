@@ -38,8 +38,6 @@ jest.mock('../icons/withAndroidIcons', () => {
     setIconAsync() {},
   };
 });
-const NotificationsPlugin = require('../unversioned/expo-notifications/withAndroidNotifications');
-NotificationsPlugin.withNotificationIcons = jest.fn((config) => config);
 
 function getLargeConfig(): ExportedConfig {
   // A very extensive Expo Config.
@@ -47,7 +45,6 @@ function getLargeConfig(): ExportedConfig {
     name: 'my cool app',
     slug: 'mycoolapp',
     description: 'my app is great because it uses expo',
-    // owner?: string;
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
     runtimeVersion: '1.0',
@@ -385,6 +382,8 @@ describe('built-in plugins', () => {
         'android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp',
         'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp',
         'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp',
+        'android/app/src/main/res/values-b+en/strings.xml',
+        'android/app/src/main/res/values-b+es/strings.xml',
         'android/app/src/main/res/values/colors.xml',
         'android/app/src/main/res/values/strings.xml',
         'android/app/src/main/res/values/styles.xml',
@@ -516,6 +515,7 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/HelloWorld-Bridging-Header.h',
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
       'ios/HelloWorld/Images.xcassets/Contents.json',
+      'ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json',
       'ios/HelloWorld/Info.plist',
       'ios/HelloWorld/SplashScreen.storyboard',
       'ios/HelloWorld/Supporting/Expo.plist',

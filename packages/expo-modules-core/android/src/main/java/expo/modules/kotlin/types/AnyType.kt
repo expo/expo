@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import android.net.Uri
+import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.arguments.ReadableArguments
@@ -20,6 +21,7 @@ import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
+import expo.modules.kotlin.types.AnyTypeProvider.typesMap
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -138,12 +140,21 @@ object AnyTypeProvider {
       put((klass to true), AnyType(EmptyKType(klass, true)))
     }
   }
-
-  inline fun <reified T> cachedAnyType(): AnyType? {
-    val key = Pair(T::class, null is T)
-    return typesMap[key]
-  }
 }
+
+inline fun <reified T> AnyTypeProvider.cachedAnyType(): AnyType? {
+  val key = Pair(T::class, null is T)
+  return typesMap[key]
+}
+
+inline fun <reified T> lazyTypeOf() = { typeOf<T>() }.toLazyType<T>()
+
+inline fun <reified T> (() -> KType).toLazyType() =
+  LazyKType(
+    classifier = T::class,
+    isMarkedNullable = null is T,
+    kTypeProvider = this
+  )
 
 inline fun <reified T> (() -> KType).toAnyType(converterProvider: TypeConverterProvider? = null) =
   AnyType(
@@ -308,15 +319,21 @@ class AnyType(
     }
   }
 
-  fun convert(value: Any?, appContext: AppContext? = null): Any? =
-    converter.convert(value, appContext)
+  fun convert(value: Any?, appContext: AppContext? = null, forceConversion: Boolean = false): Any? {
+    // We can skip conversion if we already did it on the C++ side.
+    if (!forceConversion && converter.isTrivial() && value !is Dynamic) {
+      return value
+    }
+    return converter.convert(value, appContext, forceConversion)
+  }
 
   fun getCppRequiredTypes(): ExpectedType = converter.getCppRequiredTypes()
+}
 
-  internal inline fun <reified T> inheritFrom(): Boolean {
-    val kClass = kType.classifier as? KClass<*> ?: return false
-    val jClass = kClass.java
+inline fun <reified T> AnyType.inheritFrom(): Boolean {
+  return true
+  val kClass = kType.classifier as? KClass<*> ?: return false
+  val jClass = kClass.java
 
-    return T::class.java.isAssignableFrom(jClass)
-  }
+  return T::class.java.isAssignableFrom(jClass)
 }

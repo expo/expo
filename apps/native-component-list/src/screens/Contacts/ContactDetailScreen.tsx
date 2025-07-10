@@ -223,13 +223,6 @@ function ContactDetailView({
     return items;
   }, [contact]);
 
-  const onPressImage = async () => {
-    if (!isIos) {
-      return;
-    }
-    _selectPhoto();
-  };
-
   React.useEffect(() => {
     loadAsync();
   }, []);
@@ -239,8 +232,8 @@ function ContactDetailView({
     try {
       await Contacts.updateContactAsync({
         [Contacts.Fields.ID]: id,
-        [Contacts.Fields.Image]: uri,
-      } as any);
+        [Contacts.Fields.Image]: { uri },
+      });
     } catch ({ message }) {
       console.error(message);
     }
@@ -269,7 +262,7 @@ function ContactDetailView({
         <View style={{ alignItems: 'center', marginBottom: 8 }}>
           <ContactsAvatar
             style={styles.image}
-            onPress={onPressImage}
+            onPress={_selectPhoto}
             name={contact?.name ?? ''}
             image={contact?.image?.uri}
           />

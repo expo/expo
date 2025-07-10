@@ -34,7 +34,7 @@ export function setSplashInfoPlist(
     if (existing && existing !== 'automatic') {
       WarningAggregator.addWarningIOS(
         'userInterfaceStyle',
-        'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Please remove it or disable dark mode splash screens.'
+        'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Remove it or disable dark mode splash screens.'
       );
     }
     // assigning it to auto anyways, but this is fragile because the order of operations matter now

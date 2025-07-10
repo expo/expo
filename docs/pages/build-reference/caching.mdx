@@ -34,6 +34,10 @@ To disable using our npm cache server for your builds set the `EAS_BUILD_DISABLE
 }
 ```
 
+### Immutable lockfiles
+
+By default, Node packages will be installed with your preferred package manager's immutable lockfile flag/command (for example, `yarn --frozen-lockfile` or `npm ci`). If you would like to disable this, you can set the `EAS_NO_FROZEN_LOCKFILE` environment variable to `"1"` in **eas.json**.
+
 ## Android dependencies
 
 EAS Build runs a Maven cache server that can speed up downloading Android dependencies for your build jobs.

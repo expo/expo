@@ -3,8 +3,6 @@ import path from 'path';
 import * as Directories from './Directories';
 
 export const LOCAL_API_HOST = 'localhost:3000';
-export const STAGING_API_HOST = 'staging.exp.host';
-export const PRODUCTION_API_HOST = 'exp.host';
 
 export const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 export const EXPOTOOLS_DIR = Directories.getExpotoolsDir();
@@ -12,6 +10,7 @@ export const EXPO_GO_DIR = Directories.getExpoGoDir();
 export const EXPO_GO_IOS_DIR = Directories.getExpoGoIosDir();
 export const EXPO_GO_ANDROID_DIR = Directories.getExpoGoAndroidDir();
 export const EXPO_GO_LOCAL_MODULES_DIR = path.join(EXPO_GO_DIR, 'modules');
+export const EXPO_GO_DEV_SERVER_PORT = 80;
 export const TEMPLATES_DIR = Directories.getTemplatesDir();
 export const PACKAGES_DIR = Directories.getPackagesDir();
 export const VERSIONED_RN_IOS_DIR = Directories.getVersionedReactNativeIosDir();

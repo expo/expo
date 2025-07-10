@@ -1,4 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
+import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -20,9 +21,32 @@ export class Paths extends PathUtilities {
     const containers: Record<string, string> = ExpoFileSystem.appleSharedContainers ?? {};
     const result: Record<string, Directory> = {};
     for (const appGroupId in containers) {
-      result[appGroupId] = new Directory(containers[appGroupId]);
+      if (containers[appGroupId]) {
+        result[appGroupId] = new Directory(containers[appGroupId]);
+      }
     }
     return result;
+  }
+
+  /**
+   * A property that represents the total space on device's internal storage, represented in bytes.
+   */
+  static get totalDiskSpace() {
+    return ExpoFileSystem.totalDiskSpace;
+  }
+
+  /**
+   * A property that represents the available space on device's internal storage, represented in bytes.
+   */
+  static get availableDiskSpace() {
+    return ExpoFileSystem.availableDiskSpace;
+  }
+
+  /**
+   * Returns an object that indicates if the specified path represents a directory.
+   */
+  static info(...uris: string[]): PathInfo {
+    return ExpoFileSystem.info(uris.join('/'));
   }
 }
 
@@ -42,7 +66,7 @@ export class FileBlob extends Blob {
     this.file = file;
   }
 
-  get size(): number {
+  override get size(): number {
     return this.file.size ?? 0;
   }
 
@@ -53,15 +77,15 @@ export class FileBlob extends Blob {
     return this.file.name;
   }
 
-  get type(): string {
+  override get type(): string {
     return this.file.type ?? '';
   }
 
-  async arrayBuffer(): Promise<ArrayBuffer> {
+  override async arrayBuffer(): Promise<ArrayBuffer> {
     return this.file.bytes().buffer as ArrayBuffer;
   }
 
-  async text(): Promise<string> {
+  override async text(): Promise<string> {
     return this.file.text();
   }
 
@@ -69,11 +93,11 @@ export class FileBlob extends Blob {
     return this.file.bytes();
   }
 
-  stream(): ReadableStream<Uint8Array> {
+  override stream(): ReadableStream<Uint8Array> {
     return this.file.readableStream();
   }
 
-  slice(start?: number, end?: number, contentType?: string): Blob {
+  override slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.file.bytes().slice(start, end)], { type: contentType });
   }
 }
@@ -131,8 +155,12 @@ export class File extends ExpoFileSystem.FileSystemFile {
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.
-File.downloadFileAsync = async function downloadFileAsync(url: string, to: File | Directory) {
-  const outputPath = await ExpoFileSystem.downloadFileAsync(url, to);
+File.downloadFileAsync = async function downloadFileAsync(
+  url: string,
+  to: File | Directory,
+  options?: DownloadOptions
+) {
+  const outputPath = await ExpoFileSystem.downloadFileAsync(url, to, options);
   return new File(outputPath);
 };
 
@@ -167,7 +195,7 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
    * Calling this method if the parent directory does not exist will throw an error.
    * @returns An array of `Directory` and `File` instances.
    */
-  list(): (Directory | File)[] {
+  override list(): (Directory | File)[] {
     // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()

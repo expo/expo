@@ -17,6 +17,7 @@ import {
   getExpoConfigSourcesAsync,
   getExpoCNGPatchSourcesAsync,
 } from './Expo';
+import { getExpoConfigAsync } from '../ExpoConfig';
 import { resolveExpoAutolinkingVersion } from '../ExpoResolver';
 import { getDefaultPackageSourcesAsync } from './Packages';
 import { getPatchPackageSourcesAsync } from './PatchPackage';
@@ -29,6 +30,8 @@ export async function getHashSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
+  const { config: expoConfig, loadedModules } = await getExpoConfigAsync(projectRoot, options);
+
   const expoAutolinkingVersion = resolveExpoAutolinkingVersion(projectRoot) ?? '0.0.0';
   const useRNCoreAutolinkingFromExpo =
     // expo-modules-autolinking supports the `react-native-config` core autolinking from 1.11.2.
@@ -37,6 +40,18 @@ export async function getHashSourcesAsync(
     typeof options.useRNCoreAutolinkingFromExpo === 'boolean'
       ? options.useRNCoreAutolinkingFromExpo
       : semver.gte(expoAutolinkingVersion, '1.12.0');
+
+  // The expo package has a transitive dependency on `react-native-edge-to-edge` when the `android.edgeToEdgeEnabled`
+  // We add coreAutolinkingTransitiveDeps in this case. The `--transitive-linking-dependencies` option is added since expo-modules-autolinking 2.1.11.
+  let coreAutolinkingTransitiveDeps: string[] = [];
+  if (
+    options.useCNGForPlatforms.android &&
+    expoConfig?.exp.android?.edgeToEdgeEnabled &&
+    useRNCoreAutolinkingFromExpo &&
+    semver.gte(expoAutolinkingVersion, '2.1.11')
+  ) {
+    coreAutolinkingTransitiveDeps = ['react-native-edge-to-edge'];
+  }
 
   const results = await Promise.all([
     // expo
@@ -50,7 +65,7 @@ export async function getHashSourcesAsync(
       options,
       expoAutolinkingVersion
     ),
-    profile(options, getExpoConfigSourcesAsync)(projectRoot, options),
+    profile(options, getExpoConfigSourcesAsync)(projectRoot, expoConfig, loadedModules, options),
     profile(options, getEasBuildSourcesAsync)(projectRoot, options),
     profile(options, getExpoCNGPatchSourcesAsync)(projectRoot, options),
 
@@ -66,6 +81,7 @@ export async function getHashSourcesAsync(
     profile(options, getCoreAutolinkingSourcesFromExpoAndroid)(
       projectRoot,
       options,
+      coreAutolinkingTransitiveDeps,
       useRNCoreAutolinkingFromExpo
     ),
     profile(options, getCoreAutolinkingSourcesFromExpoIos)(

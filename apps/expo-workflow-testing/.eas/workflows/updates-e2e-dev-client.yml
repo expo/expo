@@ -1,0 +1,142 @@
+name: Updates E2E (dev client)
+
+on:
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/updates-e2e-dev-client.yml
+      - packages/expo-asset/**
+      - packages/expo-manifests/**
+      - packages/expo-updates-interface/**
+      - packages/expo-updates/**
+      - packages/expo-dev-client/**
+      - packages/expo-dev-menu/**
+      - packages/expo-dev-launcher/**
+      - templates/expo-template-bare-minimum/**
+  pull_request:
+    branches: [main]
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/updates-e2e-dev-client.yml
+      - packages/expo-asset/**
+      - packages/expo-manifests/**
+      - packages/expo-updates-interface/**
+      - packages/expo-updates/**
+      - packages/expo-dev-client/**
+      - packages/expo-dev-menu/**
+      - packages/expo-dev-launcher/**
+      - templates/expo-template-bare-minimum/**
+  schedule:
+    - cron: '0 19 * * SUN' # 18:00 UTC every Sunday
+
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
+jobs:
+  ios:
+    runs_on: macos-large
+    image: latest
+    steps:
+      - name: Install applesimutils
+        id: ios_simulator
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          /opt/homebrew/bin/brew tap wix/brew
+          /opt/homebrew/bin/brew install applesimutils
+          xcrun simctl list
+      - uses: eas/install_maestro
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Set up Updates E2E disabled project
+        id: setup
+        working_directory: ../..        
+        env:
+          UPDATES_HOST: localhost
+          UPDATES_PORT: "4747"
+        run: |
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-dev-client-eas-project.ts
+          ls -la ../updates-e2e
+      - name: Prepare E2E project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        run: |
+          yarn generate-test-update-bundles ios test-update-1
+          npx pod-install
+      - name: Build E2E test app (debug)
+        id: builddebug
+        working_directory: ../../../updates-e2e
+        run: |
+          yarn maestro:ios:debug:build
+      - uses: eas/start_ios_simulator
+        with:
+          device_identifier: iPhone 16
+      - name: Run Maestro tests (debug)
+        id: testdebug
+        working_directory: ../../../updates-e2e
+        run: |
+          # start packager
+          yarn start:dev-client
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-dev-client.yml ios debug
+  android:
+    runs_on: linux-large-nested-virtualization
+    image: latest
+    steps:
+      - name: Set up JDK 17 and Android dependencies
+        id: setuptools
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: |
+          sudo apt-get --quiet update --yes
+          sudo apt-get --quiet install openjdk-17-jdk openjdk-17-jre libc6 libdbus-1-3 libfontconfig1 libgcc1 libpulse0 libtinfo5 libx11-6 libxcb1 libxdamage1 libnss3 libxcomposite1 libxcursor1 libxi6 libxext6 libxfixes3 zlib1g libgl1 pulseaudio socat --yes
+      - uses: eas/install_maestro
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Set up Updates E2E disabled project
+        id: setup
+        working_directory: ../..        
+        env:
+          UPDATES_HOST: localhost
+          UPDATES_PORT: "4747"
+        run: |
+          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-dev-client-eas-project.ts
+          ls -la ../updates-e2e
+      - name: Prepare E2E project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: |
+          yarn generate-test-update-bundles android test-update-1
+      - uses: eas/start_android_emulator
+        with:
+          device_name: pixel_4
+      - name: Build E2E test app (debug)
+        id: builddebug
+        working_directory: ../../../updates-e2e
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        run: |
+          yarn maestro:android:debug:build
+      ###### This test works on Android in local testing, but not in Linux workers
+      # - name: Run Maestro test (debug) (load update through dev client)
+      #   id: testdebug1
+      #   env:
+      #     JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+      #   working_directory: ../../../updates-e2e
+      #   run: |
+      #     # start packager
+      #     yarn start:dev-client
+      #     ./maestro/maestro-test-executor.sh ./maestro/tests/devClient_runUpdate.yml android debug
+      - name: Run Maestro test (debug) (verify state)
+        id: testdebug2
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+        working_directory: ../../../updates-e2e
+        run: |
+          # start packager
+          yarn start:dev-client
+          ./maestro/maestro-test-executor.sh ./maestro/tests/devClient_verifyState.yml android debug

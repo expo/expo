@@ -17,6 +17,8 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.TypeConverterProvider
+import expo.modules.kotlin.types.mergeWithDefault
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ModuleDefinitionBuilderWithCompose
 import expo.modules.kotlin.views.ViewDefinitionBuilder
@@ -33,10 +35,10 @@ class ModuleDefinitionBuilder(
 
 @DefinitionMarker
 open class InternalModuleDefinitionBuilder(
-  @PublishedApi internal val module: Module? = null
+  @PublishedApi internal val module: Module? = null,
+  converters: TypeConverterProvider? = module?.converters()?.mergeWithDefault()
 ) : ObjectDefinitionBuilder(
-  module
-    ?.customConverterProvider()
+  converters
 ) {
   @PublishedApi
   internal var name: String? = null
@@ -89,7 +91,11 @@ open class InternalModuleDefinitionBuilder(
    * Creates the view manager definition that scopes other view-related definitions.
    */
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
-    val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }))
+    val viewDefinitionBuilder = ViewDefinitionBuilder(
+      viewClass,
+      LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }),
+      converters
+    )
 
     viewDefinitionBuilder.UseCSSProps()
 
@@ -162,7 +168,13 @@ open class InternalModuleDefinitionBuilder(
   }
 
   inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name, Unit::class, toAnyType<Unit>())
+    val clazzBuilder = ClassComponentBuilder(
+      requireNotNull(module).appContext,
+      name,
+      Unit::class,
+      toAnyType<Unit>(),
+      converters
+    )
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -172,7 +184,13 @@ open class InternalModuleDefinitionBuilder(
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(name, sharedObjectClass, toAnyType<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(
+      requireNotNull(module).appContext,
+      name,
+      sharedObjectClass,
+      toAnyType<SharedObjectType>(),
+      converters
+    )
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
@@ -181,7 +199,13 @@ open class InternalModuleDefinitionBuilder(
     sharedObjectClass: KClass<SharedObjectType> = SharedObjectType::class,
     body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
   ) {
-    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, toAnyType<SharedObjectType>())
+    val clazzBuilder = ClassComponentBuilder(
+      requireNotNull(module).appContext,
+      sharedObjectClass.java.simpleName,
+      sharedObjectClass,
+      toAnyType<SharedObjectType>(),
+      converters
+    )
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }

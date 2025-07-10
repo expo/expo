@@ -122,6 +122,47 @@ Your FCM server key can be found by making sure you've followed the [configurati
 
 Communicating with APNs is a little more complicated than with FCM. Some libraries wrap all of this functionality into one or two function calls such as [`node-apn`](https://github.com/node-apn/node-apn). However, in the examples below, a minimum set of libraries are used.
 
+### Client APNs entitlement
+
+Receiving push notifications only works if your iOS app has the APNs entitlement. For apps using [CNG](/workflow/continuous-native-generation/),
+the Expo config needs to be modified in one of two ways:
+
+- **Recommended**: Add the `expo-notifications` library to your app, and ensure that its plugin appears in the `plugins` array of your [app config](/workflow/configuration/):
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "plugins": [
+      /* @hide ... */ /* @end */
+      "expo-notifications"
+      ]
+  }
+}
+```
+
+- If you do not plan to use the `expo-notifications` library, then you should [add the `aps-environment` entitlement manually to the Expo configuration](/build-reference/ios-capabilities/#entitlements),
+  as in the example below:
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "ios": {
+      /* @hide ... */ /* @end */
+      "entitlements": {
+        "aps-environment": "development"
+      }
+    }
+  }
+}
+```
+
+If you are not using CNG, then you should [add the push notification entitlement in Xcode](https://developer.apple.com/documentation/usernotifications/registering-your-app-with-apns).
+
+> **Note**: If you are upgrading an Expo app from a version before SDK 51, you should refer to [this FYI document](https://expo.fyi/apns-entitlement-sdk-51).
+
 ### Authorization
 
 Initially, before sending requests to APNS, you need permission to send notifications to your app. This is granted via a JSON web token which is generated using iOS developer credentials:

@@ -75,7 +75,7 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof window === "undefined" ? require : () => null;`;
+          return `global.$$require_external = typeof require !== "undefined" ? require : () => null;`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
@@ -189,6 +189,14 @@ export function withExtendedResolver(
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
+
+  // The vendored canary modules live inside /static/canary-full/node_modules
+  // Adding the `index.js` allows us to add this path as `originModulePath` to
+  // resolve the nested `node_modules` folder properly.
+  const canaryModulesPath = path.join(
+    require.resolve('@expo/cli/package.json'),
+    '../static/canary-full/index.js'
+  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -715,9 +723,10 @@ export function withExtendedResolver(
         // Change the node modules path for react and react-dom to use the vendor in Expo CLI.
         /^(react|react\/.*|react-dom|react-dom\/.*)$/.test(moduleName)
       ) {
-        context.nodeModulesPaths = [
-          path.join(require.resolve('@expo/cli/package.json'), '../static/canary-full'),
-        ];
+        // Modifying the origin module path changes the starting Node module resolution path to this folder
+        context.originModulePath = canaryModulesPath;
+        // Hierarchical lookup has to be enabled for this to work
+        context.disableHierarchicalLookup = false;
       }
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {

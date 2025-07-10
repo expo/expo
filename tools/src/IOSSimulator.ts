@@ -1,6 +1,9 @@
+import { execAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 import { spawn } from 'child_process';
 import { Transform, TransformCallback, TransformOptions } from 'stream';
+
+type SimulatorUdid = string;
 
 /**
  * Starts an arbitrary iOS simulator so that simctl can reference a "booted" simulator.
@@ -22,6 +25,19 @@ export async function installSimulatorAppAsync(
 ): Promise<void> {
   try {
     await spawnAsync('xcrun', ['simctl', 'install', simulatorId, archivePath]);
+  } catch (e) {
+    const error = new Error(e.stderr);
+    (error as any).status = e.status;
+    throw error;
+  }
+}
+
+export async function uninstallAppFromSimulatorAsync(
+  simulator: SimulatorUdid,
+  appId: string
+): Promise<void> {
+  try {
+    await spawnAsync('xcrun', ['simctl', 'uninstall', simulator, appId]);
   } catch (e) {
     const error = new Error(e.stderr);
     (error as any).status = e.status;
@@ -79,4 +95,46 @@ export class IOSLogStream extends Transform {
     }
     callback();
   }
+}
+
+export async function isSimulatorInstalledAsync(): Promise<boolean> {
+  try {
+    const result = (await execAsync('id of app "Simulator"')).trim();
+    if (!result) {
+      return false;
+    }
+    if (
+      result !== 'com.apple.iphonesimulator' &&
+      result !== 'com.apple.CoreSimulator.SimulatorTrampoline'
+    ) {
+      console.warn(`Simulator is installed but is identified as '${result}'.`);
+      return false;
+    }
+    // Check if simctl is available
+    await spawnAsync('xcrun', ['simctl', 'help']);
+    return true;
+  } catch (e) {
+    console.error('Simulator is not installed or not configured correctly.', e);
+    return false;
+  }
+}
+
+export async function queryFirstBootedSimulatorAsync(): Promise<SimulatorUdid | null> {
+  const { stdout } = await spawnAsync('xcrun', [
+    'simctl',
+    'list',
+    'devices',
+    'iPhone',
+    'booted',
+    '--json',
+  ]);
+  const { devices: devicesWithRuntimes } = JSON.parse(stdout);
+
+  for (const devices of Object.values<{ udid: string }[]>(devicesWithRuntimes)) {
+    if (devices.length > 0) {
+      return devices[0].udid;
+    }
+  }
+
+  return null;
 }

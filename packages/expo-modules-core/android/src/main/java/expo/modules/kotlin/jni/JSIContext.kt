@@ -80,6 +80,13 @@ class JSIContext : Destructible, AutoCloseable {
   external fun evaluateScript(script: String): JavaScriptValue
 
   /**
+   * Evaluates given JavaScript source code.
+   * @throws JavaScriptEvaluateException if the input format is unknown or evaluation causes an error
+   */
+  @Throws(JavaScriptEvaluateException::class)
+  external fun evaluateVoidScript(script: String)
+
+  /**
    * Returns the runtime global object
    */
   external fun global(): JavaScriptObject

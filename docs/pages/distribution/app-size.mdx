@@ -42,9 +42,9 @@ Typically, what app developers care about the "download size" on the Play Store 
 
 The only truly accurate way to see what your final app size will be shipped to users is to upload your app to the stores and download it on a physical device. Google Play also provides a reliable estimate for the expected download size on your developer dashboard. You can find this under the **App size** page in **Android vitals** on the [Google Play Developer Console](https://play.google.com/console/). For more information, see [Optimize your app’s size and stay within Google Play app size limits](https://support.google.com/googleplay/android-developer/answer/9859372?hl=en).
 
-<Collapsible summary="Why did my APK size increase after upgrading to React Native 0.73?">
+<Collapsible summary="Why did my APK size increase after upgrading to React Native 0.73 and above?">
 
-React Native 0.73, which is used in Expo SDK 50, bumped the Android `minSdkVersion` to `23`. This had the side effect of changing the default value of [`extractNativeLibs`](https://developer.android.com/guide/topics/manifest/application-element#extractNativeLibs`) to `false`.
+React Native 0.73 bumped the Android `minSdkVersion` to `23`. This had the side effect of changing the default value of [`extractNativeLibs`](https://developer.android.com/guide/topics/manifest/application-element#extractNativeLibs`) to `false`.
 
 > If set to `false`, your native libraries are stored uncompressed in the APK. Although your APK might be larger, your application loads faster because the libraries load directly from the APK at runtime.
 

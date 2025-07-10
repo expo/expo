@@ -77,11 +77,17 @@ public struct Conversions {
   }
 
   /**
-   Converts hex string to `UIColor` or throws an exception if the string is corrupted.
+   Converts color string to `UIColor` or throws an exception if the string is corrupted.
    */
-  static func toColor(hexString hex: String) throws -> UIColor {
-    var hexStr = hex
-      .trimmingCharacters(in: .whitespacesAndNewlines)
+  static func toColor(colorString: String) throws -> UIColor {
+    let input = colorString.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    // Handle RGB format
+    if input.hasPrefix("rgb") {
+      return try fromRGBString(input)
+    }
+
+    var hexStr = input
       .replacingOccurrences(of: "#", with: "")
 
     // If just RGB, set alpha to maximum
@@ -103,11 +109,33 @@ public struct Conversions {
 
     guard hexStr.range(of: #"^[0-9a-fA-F]{8}$"#, options: .regularExpression) != nil,
           Scanner(string: hexStr).scanHexInt64(&rgba) else {
-      throw InvalidHexColorException(hex)
+      throw InvalidHexColorException(input)
     }
     return try toColor(rgba: rgba)
   }
 
+  private static func fromRGBString(_ rgbString: String) throws -> UIColor {
+    let components = rgbString
+      .replacingOccurrences(of: "rgba(", with: "")
+      .replacingOccurrences(of: "rgb(", with: "")
+      .replacingOccurrences(of: ")", with: "")
+      .split(separator: ",")
+      .compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
+
+    guard components.count >= 3,
+      components[0] >= 0 && components[0] <= 255,
+      components[1] >= 0 && components[1] <= 255,
+      components[2] >= 0 && components[2] <= 255 else {
+      throw InvalidRGBColorException(rgbString)
+    }
+
+    let alpha = components.count > 3 ? Double(components[3]) : 1.0
+    return UIColor(
+      red: CGFloat(components[0]) / 255.0,
+      green: CGFloat(components[1]) / 255.0,
+      blue: CGFloat(components[2]) / 255.0,
+      alpha: alpha)
+  }
   /**
    Converts an integer for ARGB color to `UIColor`. Since the alpha channel is represented by first 8 bits,
    it's optional out of the box. React Native converts colors to such format.
@@ -156,8 +184,15 @@ public struct Conversions {
     appContext: AppContext? = nil,
     dynamicType: AnyDynamicType? = nil
   ) -> Any {
-    if let appContext, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
-      return result
+    if let appContext {
+      // Dynamic type is provided
+      if dynamicType as? DynamicVoidType == nil, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
+        return result
+      }
+      // Dynamic type can be obtained from the value
+      if let value = value as? AnyArgument, let result = try? type(of: value).getDynamicType().convertResult(value as Any, appContext: appContext) {
+        return result
+      }
     }
     return convertFunctionResultInRuntime(value, appContext: appContext)
   }
@@ -278,6 +313,15 @@ public struct Conversions {
   internal class InvalidHexColorException: GenericException<String> {
     override var reason: String {
       "Provided hex color '\(param)' is invalid"
+    }
+  }
+
+  /**
+   An exception used when the rgb color string is invalid.
+   */
+  internal class InvalidRGBColorException: GenericException<String> {
+    override var reason: String {
+      "Provided rgb color string '\(param)' is invalid"
     }
   }
 

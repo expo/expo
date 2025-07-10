@@ -23,7 +23,7 @@ describe(installOnDeviceAsync, () => {
       udid: 'quux',
     });
 
-    expect(confirmAsync).not.toBeCalled();
+    expect(confirmAsync).not.toHaveBeenCalled();
   });
   it(`prompts to retry when the device is locked`, async () => {
     jest.mocked(runOnDevice).mockImplementationOnce(() => {
@@ -39,7 +39,7 @@ describe(installOnDeviceAsync, () => {
       udid: 'quux',
     });
 
-    expect(confirmAsync).toBeCalledTimes(1);
+    expect(confirmAsync).toHaveBeenCalledTimes(1);
   });
   it(`prompts to retry and throws on false`, async () => {
     jest.mocked(runOnDevice).mockImplementationOnce(() => {
@@ -57,7 +57,7 @@ describe(installOnDeviceAsync, () => {
       })
     ).rejects.toThrow('Cannot launch foo on qux because the device is locked.');
 
-    expect(confirmAsync).toBeCalledTimes(1);
+    expect(confirmAsync).toHaveBeenCalledTimes(1);
   });
   it(`surfaces rejections`, async () => {
     jest.mocked(runOnDevice).mockImplementationOnce(() => {
@@ -74,6 +74,6 @@ describe(installOnDeviceAsync, () => {
       })
     ).rejects.toThrow(/unknown/);
 
-    expect(confirmAsync).toBeCalledTimes(0);
+    expect(confirmAsync).toHaveBeenCalledTimes(0);
   });
 });

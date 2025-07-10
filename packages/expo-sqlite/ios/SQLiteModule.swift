@@ -371,6 +371,13 @@ public final class SQLiteModule: Module {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
+    // The statement with parameter bindings is stateful,
+    // we have to guard with a critical section for thread safety.
+    statement.lock.wait()
+    defer {
+      statement.lock.signal()
+    }
+
     exsqlite3_reset(statement.pointer)
     exsqlite3_clear_bindings(statement.pointer)
     for (key, param) in bindParams {
@@ -687,17 +694,13 @@ public final class SQLiteModule: Module {
     if stmt == nil {
       return
     }
-    var result = SQLITE_OK
     while let currentStmt = stmt {
       let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
       let ret = exsqlite3_finalize(currentStmt)
       if ret != SQLITE_OK {
-        result = ret
+        ExpoModulesCore.log.warn("sqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
-    }
-    if result != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
   }
 
@@ -737,7 +740,7 @@ public final class SQLiteModule: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     guard let buffer else {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      return Data()
     }
     defer { exsqlite3_free(buffer) }
     return Data(bytes: buffer, count: Int(size))
@@ -773,8 +776,7 @@ public final class SQLiteModule: Module {
 
   private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws -> Data {
     try maybeThrowForClosedDatabase(database)
-    var result: Data?
-    try changeset.withUnsafeBytes {
+    return try changeset.withUnsafeBytes {
       let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
       var outSize: Int32 = 0
       var outBuffer: UnsafeMutableRawPointer?
@@ -783,14 +785,10 @@ public final class SQLiteModule: Module {
         throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
       guard let outBuffer else {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        return Data()
       }
       defer { exsqlite3_free(outBuffer) }
-      result = Data(bytes: outBuffer, count: Int(outSize))
+      return Data(bytes: outBuffer, count: Int(outSize))
     }
-    guard let result else {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    return result
   }
 }

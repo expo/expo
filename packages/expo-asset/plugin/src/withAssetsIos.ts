@@ -22,7 +22,7 @@ export const withAssetsIos: ConfigPlugin<string[]> = (config, assets) => {
 function addAssetsToTarget(config: ExpoConfig, assets: string[]) {
   return withXcodeProject(config, async (config) => {
     const resolvedAssets = await resolveAssetPaths(assets, config.modRequest.projectRoot);
-    const validAssets = validateAssets(resolvedAssets);
+    const validAssets = validateAssets(resolvedAssets, 'ios');
     const project = config.modResults;
     const platformProjectRoot = config.modRequest.platformProjectRoot;
     IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');

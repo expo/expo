@@ -8,8 +8,8 @@ import kotlin.reflect.KType
 
 class JavaScriptFunctionTypeConverter<T : Any>(
   val type: KType
-) : NullAwareTypeConverter<JavaScriptFunction<T>>(type.isMarkedNullable) {
-  override fun convertNonOptional(value: Any, context: AppContext?): JavaScriptFunction<T> {
+) : NonNullableTypeConverter<JavaScriptFunction<T>>() {
+  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): JavaScriptFunction<T> {
     @Suppress("UNCHECKED_CAST")
     val jsFunction = value as JavaScriptFunction<T>
     jsFunction.returnType = requireNotNull(type.arguments.first().type)

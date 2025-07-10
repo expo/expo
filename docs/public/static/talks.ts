@@ -1,24 +1,42 @@
 export const TALKS = [
   {
+    title: 'Keynote: streamline React Native development',
+    event: 'App.js Conf 2025',
+    description: 'Charlie Cheever, Jon Samp',
+    videoId: 'lnxanzsP1rM',
+    home: true,
+  },
+  {
+    title: 'Deploy Everywhere with Expo Router',
+    event: 'App.js Conf 2025',
+    description: 'Evan Bacon',
+    videoId: 'GKQ_0VfYweg',
+    home: true,
+  },
+  {
+    title: 'Embracing Native Code and Capabilities',
+    event: 'App.js Conf 2025',
+    description: 'Keith Kurak',
+    videoId: 'TLoHua8bzPg',
+    home: true,
+  },
+  {
     title: 'Keynote: flexibility & iteration speed',
     event: 'App.js Conf 2024',
     description: 'Charlie Cheever, James Ide',
     videoId: 'StTYy9Duk3E',
-    home: true,
   },
   {
     title: 'Getting the most out of Expo Development Builds',
     event: 'App.js Conf 2024',
     description: 'Kadi Kraman',
     videoId: '7J8LRpja9_o',
-    home: true,
   },
   {
     title: 'Fetch Once, Render Everywhere',
     event: 'App.js Conf 2024',
     description: 'Evan Bacon',
     videoId: 'BK2xbPW2uUU',
-    home: true,
   },
   {
     title: 'Launching Desktop Apps to Orbit with React Native',
@@ -91,6 +109,13 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo Atlas with Cedric van Putten',
+    event: 'React Native Radio #333',
+    description: 'Cedric van Putten',
+    thumbnail: 'rnr-333.jpg',
+    link: 'https://infinite.red/react-native-radio/rnr-333-expo-atlas-with-cedric-van-putten',
+  },
+  {
     title: 'Expo Router, RSC & DOM Components',
     event: 'Rocket Ship #059',
     description: 'Evan Bacon',
@@ -116,21 +141,21 @@ export const PODCASTS = [
     event: 'React Native Radio #316',
     description: 'Cedric van Putten',
     thumbnail: 'rnr-316.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-316-debugging-the-debugger-with-cedric-van-putten-and-alex-hunt',
+    link: 'https://infinite.red/react-native-radio/rnr-316-debugging-the-debugger-with-cedric-van-putten-and-alex-hunt',
   },
   {
     title: 'What to do without App Center',
     event: 'React Native Radio #315',
     description: 'Quinlan Jung',
     thumbnail: 'rnr-315.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-315-what-to-do-without-app-center',
+    link: 'https://infinite.red/react-native-radio/rnr-315-what-to-do-without-app-center',
   },
   {
     title: 'Expo Workflows with Jon Samp',
     event: 'React Native Radio #314',
     description: 'Jon Samp',
     thumbnail: 'rnr-314.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-314-announcing-expo-workflows-with-jon-samp',
+    link: 'https://infinite.red/react-native-radio/rnr-314-announcing-expo-workflows-with-jon-samp',
   },
   {
     title: 'How to Handle App Center Retirement',
@@ -192,14 +217,14 @@ export const PODCASTS = [
     event: 'React Native Radio #277',
     description: 'Doug Lowder, Gabriel Donadel',
     thumbnail: 'rnr-277.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-277-expo-launch-party',
+    link: 'https://infinite.red/react-native-radio/rnr-277-expo-launch-party',
   },
   {
     title: 'Expo Router with Evan Bacon',
     event: 'React Native Radio #256',
     description: 'Evan Bacon',
     thumbnail: 'rnr-256.jpg',
-    link: 'https://reactnativeradio.com/episodes/rnr-256-expo-router-with-evan-bacon',
+    link: 'https://infinite.red/react-native-radio/rnr-256-expo-router-with-evan-bacon',
   },
   {
     title: 'Expo, Router & Debugging',
@@ -211,6 +236,11 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
+    event: 'Expo Live Stream',
+    videoId: 'XCTaMu0qnFY',
+  },
   {
     title: 'Best practices for using Unistyles 3.0 to style cross platform applications',
     event: 'Expo Live Stream',
@@ -326,6 +356,31 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Golden Workflow: Automate the creation of development builds',
+    event: 'EAS Tutorials',
+    videoId: 'u8MAJ0F18s0',
+  },
+  {
+    title: 'Golden Workflow: Share preview updates with your team',
+    event: 'EAS Tutorials',
+    videoId: 'v_rzRcVSQYQ',
+  },
+  {
+    title: 'Golden Workflow: Deploy your app to production with an automated workflow',
+    event: 'EAS Tutorials',
+    videoId: 'o-peODF6E2o',
+  },
+  {
+    title: 'How to publish your AI app to the app store | No code needed',
+    event: 'Expo Tutorials',
+    videoId: 'T1akm3DPNus',
+  },
+  {
+    title: 'Learn how to build with the new expo-maps library',
+    event: 'Expo Tutorials',
+    videoId: 'jDCuaIQ9vd0',
+  },
   {
     title: 'Building an Auth Flow with Expo Router',
     event: 'Expo Tutorials',

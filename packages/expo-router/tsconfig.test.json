@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "**/__tests__/",
+    "**/__rsc_tests__/"
+  ],
+  "exclude": [
+    "**/__mocks__/*",
+    "**/.expo/*",
+    "**/typed-routes/__tests__/*",
+    "./build/*",
+    "./node",
+    "./entry.js",
+    "./_ctx.d.ts"
+  ]
+}

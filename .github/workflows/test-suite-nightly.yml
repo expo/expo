@@ -27,7 +27,7 @@ jobs:
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 16.0
-        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -131,7 +131,7 @@ jobs:
           author_name: Test Suite Nightly (iOS)
 
   android-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -164,8 +164,9 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🛠️ Generate dynamic macros
-        run: expotools android-generate-dynamic-macros --configuration release --bare
+      - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
+        run: ./gradlew preBuild
+        working-directory: apps/bare-expo/android
       - name: 🤖 Build Android project
         run: ./scripts/start-android-e2e-test.js --build
         working-directory: apps/bare-expo
@@ -189,7 +190,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         api-level: [34]

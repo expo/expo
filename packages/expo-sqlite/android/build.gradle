@@ -45,19 +45,20 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '15.2.9'
+version = '15.2.10'
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "15.2.9"
+    versionName "15.2.10"
     buildConfigField "boolean", "USE_LIBSQL", project.ext.USE_LIBSQL.toString()
 
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
           "-DSQLITE3_SRC_DIR=${toPlatformIndependentPath(SQLITE3_SRC_DIR)}",
           "-DSQLITE_BUILDFLAGS=${getSQLiteBuildFlags()}",
           "-DUSE_SQLCIPHER=${project.ext.USE_SQLCIPHER}",

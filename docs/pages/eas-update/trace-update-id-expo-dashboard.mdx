@@ -1,15 +1,15 @@
 ---
-title: How to trace an update ID back to the Expo Dashboard
-description: Learn how to trace an update ID back to the Expo Dashboard when using EAS Update and expo-updates library.
-sidebar_title: Trace update ID back to the Expo Dashboard
+title: How to trace an update ID back to the EAS dashboard
+description: Learn how to trace an update ID back to the EAS dashboard when using EAS Update and expo-updates library.
+sidebar_title: Trace update ID back to the EAS dashboard
 hideTOC: true
 ---
 
-When working with [EAS Updates](/eas-update/introduction/), you might encounter a scenario where you need to trace an `updateId` back to the [Expo dashboard](https://expo.dev/accounts/[account]). This can be challenging because `Updates.updateId` always returns an ID, regardless of whether [`Updates.isEmbeddedLaunch`](/versions/latest/sdk/updates/#updatesisembeddedlaunch) is `true` or `false`. However, if the app is running an embedded update, attempting to look up the `updateId` in the [Expo dashboard](https://expo.dev/accounts/[account]) will result in an error. This happens because embedded updates are not tracked in the dashboard.
+When working with [EAS Updates](/eas-update/introduction/), you might encounter a scenario where you need to trace an `updateId` back to the [EAS dashboard](https://expo.dev/accounts/[account]). This can be challenging because `Updates.updateId` always returns an ID, regardless of whether [`Updates.isEmbeddedLaunch`](/versions/latest/sdk/updates/#updatesisembeddedlaunch) is `true` or `false`. However, if the app is running an embedded update, attempting to look up the `updateId` in the [EAS dashboard](https://expo.dev/accounts/[account]) will result in an error. This happens because embedded updates are not tracked in the dashboard.
 
 ## Determine if the update is embedded or downloaded
 
-To avoid this issue, you can use the `Updates.isEmbeddedLaunch` property to determine whether the app is running an embedded update or one downloaded from the server. If `Updates.isEmbeddedLaunch` is `true`, the currently running update is embedded in the build, which means it won't be available in the Expo dashboard.
+To avoid this issue, you can use the `Updates.isEmbeddedLaunch` property to determine whether the app is running an embedded update or one downloaded from the server. If `Updates.isEmbeddedLaunch` is `true`, the currently running update is embedded in the build, which means it won't be available in the EAS dashboard.
 
 Here's an example of how you can display whether the update is embedded or downloaded:
 
@@ -21,14 +21,14 @@ export default function UpdateStatus() {
   return (
     <Text>
       {Updates.isEmbeddedLaunch
-        ? '(Embedded) ❌ You cannot trace this update in the Expo dashboard.'
-        : '(Downloaded) ✅ You can trace this update in the Expo dashboard.'}
+        ? '(Embedded) ❌ You cannot trace this update in the EAS dashboard.'
+        : '(Downloaded) ✅ You can trace this update in the EAS dashboard.'}
     </Text>
   );
 }
 ```
 
-When you navigate to an update group in the Expo dashboard (open your project, select **Updates**, and click a specific update), the URL displays as:
+When you navigate to an update group in the EAS dashboard (open your project, select **Over-the-air updates**, and click a specific update), the URL displays as:
 
 ```text
 https://expo.dev/accounts/[accountName]/projects/[projectName]/updates/[updateGroupId]

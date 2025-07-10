@@ -9,6 +9,7 @@ export const expoInstall: Command = async (argv) => {
     {
       // Other options are parsed manually.
       '--help': Boolean,
+      '--json': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -32,6 +33,7 @@ export const expoInstall: Command = async (argv) => {
         chalk`--bun       Use bun to install dependencies. {dim Default when bun.lock or bun.lockb exists}`,
         chalk`--pnpm      Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
         `-h, --help  Usage info`,
+        `--json      Output dependency information in JSON format with --check flag`,
       ].join('\n'),
       [
         '',

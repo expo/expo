@@ -8,7 +8,7 @@ final class ListProps: ExpoSwiftUI.ViewProps {
   @Field var moveEnabled: Bool = false
   @Field var deleteEnabled: Bool = false
   @Field var selectEnabled: Bool = true
-  @Field var scrollEnabled: Bool = false
+  @Field var scrollEnabled: Bool = true
   @Field var editModeEnabled: Bool = false
   var onDeleteItem = EventDispatcher()
   var onMoveItem = EventDispatcher()

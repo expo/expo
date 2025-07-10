@@ -125,7 +125,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
       let errorMessage = `Couldn't open iOS app with ID "${appId}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         if (appId === EXPO_GO_BUNDLE_IDENTIFIER) {
-          errorMessage = `Couldn't open Expo Go app on device "${this.name}". Please install.`;
+          errorMessage = `Couldn't open Expo Go app on device "${this.name}". Install it: https://expo.dev/go.`;
         } else {
           errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
             `npx expo run:ios -d ${this.device.udid}`

@@ -54,7 +54,7 @@ describe(setSplashInfoPlist, () => {
     // Check if the warning was thrown
     expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
       'userInterfaceStyle',
-      'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Please remove it or disable dark mode splash screens.'
+      'The existing `userInterfaceStyle` property is preventing splash screen from working properly. Remove it or disable dark mode splash screens.'
     );
 
     // Ensure these values are set

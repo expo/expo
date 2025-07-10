@@ -1,48 +1,30 @@
 name: TV compile test
 
 on:
-# For now, disable this workflow on push
-# Reenable once full paths support is ready for both push and pull_request
-#  push:
-#    branches:
-#      - main
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
+      - packages/expo-modules-core/ios/Core/Views/SwiftUI/**
+      - packages/expo-ui/**
+      - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+      - packages/expo-updates/e2e/setup/project.ts
+      - templates/expo-template-bare-minimum/**
   pull_request:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
+      - packages/expo-modules-core/ios/Core/Views/SwiftUI/**
+      - packages/expo-ui/**
+      - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
+      - packages/expo-updates/e2e/setup/project.ts
+      - templates/expo-template-bare-minimum/**
   schedule:
     - cron: '0 17 * * SUN' # 22:00 UTC every Sunday
 
 jobs:
-  check_paths:
-    outputs:
-      result: ${{ steps.changed_paths.outputs.result }}
-    runs_on: linux-medium
-    image: latest
-    steps:
-      - uses: eas/checkout
-      - name: Check changed paths
-        id: changed_paths
-        working_directory: ../..
-        outputs: [result, error]
-        env:
-          GIT_AUTHOR_NAME: "Douglas Lowder"
-          GIT_AUTHOR_EMAIL: "douglowder@mac.com"
-        run: >
-          node ./packages/expo-updates/bin/check-for-changed-paths/index.js
-          ${{ github.event_name }}
-          main
-          apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
-          'packages/expo-modules-core/ios/Core/Views/SwiftUI/**'
-          'packages/expo-ui/**'
-          packages/expo-updates/e2e/setup/create-eas-project-tv.ts
-          packages/expo-updates/e2e/setup/project.ts
-      - name: Print result
-        run: |
-          echo ${{ steps.changed_paths.outputs.result }}
   ios:
     runs_on: macos-large
-    needs: [check_paths]
-    if: ${{ needs.check_paths.outputs.result == 'true' }}
     image: latest
     steps:
       - name: Install applesimutils
@@ -65,10 +47,13 @@ jobs:
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-tv.ts
           ls -la ../updates-e2e
+      - name: Prepare TV project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        run: |
+          npx pod-install
       - name: Compile TV project
         id: build
         working_directory: ../../../updates-e2e
         run: |
-          yarn generate-test-update-bundles
-          npx pod-install
-          npx detox build -c ios.debug
+          yarn tvos:build | npx @expo/xcpretty

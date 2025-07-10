@@ -14,6 +14,7 @@ const withBuildProperties = (config, props) => {
     config = (0, android_1.withAndroidBuildProperties)(config, pluginConfig);
     config = (0, android_1.withAndroidProguardRules)(config, pluginConfig);
     config = (0, android_1.withAndroidCleartextTraffic)(config, pluginConfig);
+    config = (0, android_1.withAndroidSettingsGradle)(config, pluginConfig);
     config = (0, android_1.withAndroidQueries)(config, pluginConfig);
     // Assuming `withBuildProperties` could be called multiple times from different config-plugins,
     // the `withAndroidProguardRules` always appends new rules by default.

@@ -24,12 +24,18 @@ const parameters: FunctionParameter[] = [
     type: 'boolean',
     initial: false,
   },
+  {
+    name: 'isMyLocationEnabled',
+    type: 'boolean',
+    initial: false,
+  },
 ];
 
 export default function MapsCameraControlsScreen() {
   const [args, updateArgument] = useArguments(parameters);
-  const [mapType, selectionEnabled, isTrafficEnabled] = args as [
+  const [mapType, selectionEnabled, isTrafficEnabled, isMyLocationEnabled] = args as [
     AppleMaps.MapType,
+    boolean,
     boolean,
     boolean,
   ];
@@ -49,6 +55,7 @@ export default function MapsCameraControlsScreen() {
             mapType,
             selectionEnabled,
             isTrafficEnabled,
+            isMyLocationEnabled,
           }}
         />
       </View>

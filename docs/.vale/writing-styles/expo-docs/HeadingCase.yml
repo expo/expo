@@ -76,6 +76,7 @@ exceptions:
   - '.*Developer Mode.*'
   - '.*Dynamic.*'
   - '.*detach.*'
+  - '.*DNS.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'
@@ -264,3 +265,4 @@ exceptions:
   - architecture?
   - index.tsx files
   - registerRootComponent
+  - browserslist

@@ -33,19 +33,19 @@ class DevLauncherDevServerHelper(
       .build()
   }
 
-  override fun getDevServerBundleURL(jsModulePath: String?): String {
+  override fun getDevServerBundleURL(jsModulePath: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getDevServerBundleURL(jsModulePath)
   }
 
-  override fun getDevServerSplitBundleURL(jsModulePath: String?): String {
+  override fun getDevServerSplitBundleURL(jsModulePath: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getDevServerSplitBundleURL(jsModulePath)
   }
 
-  override fun getSourceUrl(mainModuleName: String?): String {
+  override fun getSourceUrl(mainModuleName: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getSourceUrl(mainModuleName)
   }
 
-  override fun getSourceMapUrl(mainModuleName: String?): String {
+  override fun getSourceMapUrl(mainModuleName: String): String {
     val defaultValue = super.getSourceMapUrl(mainModuleName)
     val bundleURL = controller?.manifest?.getBundleURL()
       ?: return defaultValue

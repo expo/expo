@@ -1,12 +1,13 @@
 import { spacing } from '@expo/styleguide-native';
 import dedent from 'dedent';
-import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
 
 import PrimaryButton from '../../components/PrimaryButton';
 import { ProjectsListItem } from '../../components/ProjectsListItem';
 import { StyledText } from '../../components/Text';
+import { CappedWidthContainerView } from '../../components/Views';
 import SharedStyles from '../../constants/SharedStyles';
 import { CommonAppDataFragment } from '../../graphql/types';
 
@@ -45,15 +46,15 @@ export function ProjectList(props: Props) {
 
   if (!isReady) {
     return (
-      <RNView
+      <CappedWidthContainerView
+        wrapperStyle={{ backgroundColor: theme.background.screen }}
         style={{
           flex: 1,
           padding: 30,
           alignItems: 'center',
-          backgroundColor: theme.background.screen,
         }}>
         <ActivityIndicator color={theme.highlight.accent} />
-      </RNView>
+      </CappedWidthContainerView>
     );
   }
 
@@ -144,9 +145,8 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   );
 
   return (
-    <View
-      flex="1"
-      style={{
+    <CappedWidthContainerView
+      wrapperStyle={{
         backgroundColor: theme.background.screen,
       }}>
       <FlatList
@@ -158,6 +158,6 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
         onEndReachedThreshold={0.2}
         onEndReached={handleLoadMoreAsync}
       />
-    </View>
+    </CappedWidthContainerView>
   );
 }

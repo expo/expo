@@ -1,4 +1,4 @@
-import { getConfig } from '@expo/config';
+import { getConfig } from 'expo/config';
 import fs from 'fs';
 import path from 'path';
 

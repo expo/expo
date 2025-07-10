@@ -119,7 +119,9 @@ export function getEnvVarDevString(env: NodeJS.ProcessEnv = process.env) {
   const str =
     `process.env=Object.defineProperties(process.env, {` +
     Object.keys(getAllExpoPublicEnvVars(env))
-      .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(env[key])} }`)
+      .map(
+        (key) => `${JSON.stringify(key)}: { enumerable: true, value: ${JSON.stringify(env[key])} }`
+      )
       .join(',') +
     '});';
   const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + str;

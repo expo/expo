@@ -178,7 +178,7 @@ describe('reading X.509 certificates from PKCS#12 files', () => {
     const p12 = parsePKCS12(base64EncodedP12, password);
     expect(() => {
       getX509CertificateByFriendlyName(p12, alias);
-    }).toThrowError();
+    }).toThrow();
   });
   it('reads X.509 certificate serial numbers from conventional p12 files', async () => {
     const { base64EncodedP12, password, serialNumber: expectedSerialNumber } = conventionalP12;

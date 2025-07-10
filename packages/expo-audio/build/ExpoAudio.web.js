@@ -1,7 +1,7 @@
 import { useEvent } from 'expo';
 import { useEffect, useState, useMemo } from 'react';
+import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
 import * as AudioModule from './AudioModule.web';
-import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource } from './utils/resolveSource';
 export function createAudioPlayer(source = null, updateInterval = 500) {

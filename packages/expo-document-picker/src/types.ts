@@ -12,6 +12,8 @@ export type DocumentPickerOptions = {
    * which allows other Expo APIs to read the file immediately. This may impact performance for
    * large files, so you should consider setting this to `false` if you expect users to pick
    * particularly large files and your app does not need immediate read access.
+   * @platform ios
+   * @platform android
    * @default true
    */
   copyToCacheDirectory?: boolean;
@@ -48,14 +50,22 @@ export type DocumentPickerAsset = {
    */
   mimeType?: string;
   /**
-   * Timestamp of last document modification.
+   * Timestamp of last document modification. [Web API specs](https://developer.mozilla.org/en-US/docs/Web/API/File/lastModified)
+   * The lastModified provides the last modified date of the file as the number
+   * of milliseconds since the Unix epoch (January 1, 1970 at midnight). Files
+   * without a known last modified date return the current date.
    */
-  lastModified?: number;
+  lastModified: number;
   /**
    * `File` object for the parity with web File API.
    * @platform web
    */
   file?: File;
+  /**
+   * Base64 string of the file.
+   * @platform web
+   */
+  base64?: string;
 };
 
 /**

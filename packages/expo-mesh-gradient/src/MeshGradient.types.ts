@@ -1,4 +1,4 @@
-import type { ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
 
 export interface MeshGradientViewProps extends ViewProps {
   /**
@@ -23,7 +23,7 @@ export interface MeshGradientViewProps extends ViewProps {
    * An array of colors. Must contain `columns * rows` elements.
    * @default []
    */
-  colors?: string[];
+  colors?: ColorValue[];
 
   /**
    * Whether cubic (smooth) interpolation should be used for the colors in the mesh
@@ -35,6 +35,7 @@ export interface MeshGradientViewProps extends ViewProps {
   /**
    * Whether to ignore safe areas when positioning the view.
    * @default true
+   * @platform ios
    */
   ignoresSafeArea?: boolean;
 
@@ -42,6 +43,17 @@ export interface MeshGradientViewProps extends ViewProps {
    * Masks the gradient using the alpha channel of the given children views.
    * > **Note**: When this option is enabled, all user interactions (gestures) on children views are ignored.
    * @default false
+   * @platform ios
    */
   mask?: boolean;
+
+  /**
+   * Specifies how many points to sample on the path between points.
+   * @default { x: 1, y: 1 }
+   * @platform android
+   */
+  resolution?: {
+    x?: number;
+    y?: number;
+  };
 }

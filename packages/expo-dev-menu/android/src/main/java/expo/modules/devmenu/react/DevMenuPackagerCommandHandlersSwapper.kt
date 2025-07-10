@@ -28,7 +28,7 @@ class DevMenuPackagerCommandHandlersSwapper {
 
       val currentCommandHandlers: Map<String, RequestHandler>? =
         DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
-          "mCustomPackagerCommandHandlers",
+          "customPackagerCommandHandlers",
           devSupportManager
         )
 
@@ -36,7 +36,7 @@ class DevMenuPackagerCommandHandlersSwapper {
       newCommandHandlers.putAll(handlers)
 
       DevSupportManagerBase::class.java.setPrivateDeclaredFieldValue(
-        "mCustomPackagerCommandHandlers",
+        "customPackagerCommandHandlers",
         devSupportManager,
         newCommandHandlers
       )
@@ -70,27 +70,27 @@ class DevMenuPackagerCommandHandlersSwapper {
 
           val devServerHelper: DevServerHelper =
             DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
-              "mDevServerHelper",
+              "devServerHelper",
               devSupportManager
             )
 
           val jsPackagerClient: JSPackagerClient? =
             DevServerHelper::class.java.getPrivateDeclaredFieldValue(
-              "mPackagerClient",
+              "packagerClient",
               devServerHelper
             )
 
           if (jsPackagerClient != null) {
             val currentCommandHandlers: Map<String, RequestHandler>? =
               JSPackagerClient::class.java.getPrivateDeclaredFieldValue(
-                "mRequestHandlers",
+                "requestHandlers",
                 jsPackagerClient
               )
 
             val newCommandHandlers = currentCommandHandlers?.toMutableMap() ?: mutableMapOf()
             newCommandHandlers.putAll(handlers)
             JSPackagerClient::class.java.setPrivateDeclaredFieldValue(
-              "mRequestHandlers",
+              "requestHandlers",
               jsPackagerClient,
               newCommandHandlers
             )

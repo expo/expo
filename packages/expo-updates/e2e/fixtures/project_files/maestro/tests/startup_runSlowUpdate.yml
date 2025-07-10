@@ -1,0 +1,24 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# downloads and launches with new update when startup takes more time than fallbackToCacheTimeout
+- evalScript:
+    script:  ${output.api.restartUpdatesServer(10000)}
+    label: Restart the server with 10 second delay in update endpoint response
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle (update not applied on startup)
+- stopApp

@@ -16,8 +16,17 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
   }
 
   val exists: Boolean get() {
+    return if (checkPermission(Permission.READ)) {
+      file.isDirectory
+    } else {
+      false
+    }
+  }
+
+  val size: Long get() {
     validatePermission(Permission.READ)
-    return file.isDirectory
+    validateType()
+    return file.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
   }
 
   fun create(options: CreateOptions = CreateOptions()) {

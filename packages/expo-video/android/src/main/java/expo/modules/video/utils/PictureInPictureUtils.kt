@@ -5,11 +5,14 @@ import android.app.PictureInPictureParams
 import android.graphics.Rect
 import android.os.Build
 import android.util.Log
+import android.util.Rational
 import androidx.annotation.OptIn
+import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import expo.modules.video.PictureInPictureConfigurationException
 import expo.modules.video.VideoView.Companion.isPictureInPictureSupported
+import expo.modules.video.enums.ContentFit
 
 @OptIn(UnstableApi::class)
 internal fun calculateRectHint(playerView: PlayerView): Rect {
@@ -34,6 +37,25 @@ internal fun calculateRectHint(playerView: PlayerView): Rect {
   return hint
 }
 
+internal fun calculatePiPAspectRatio(videoSize: VideoSize, viewWidth: Int, viewHeight: Int, contentFit: ContentFit): Rational {
+  var aspectRatio = if (contentFit == ContentFit.CONTAIN) {
+    Rational(videoSize.width, videoSize.height)
+  } else {
+    Rational(viewWidth, viewHeight)
+  }
+  // AspectRatio for the activity in picture-in-picture, must be between 2.39:1 and 1:2.39 (inclusive).
+  // https://developer.android.com/reference/android/app/PictureInPictureParams.Builder#setAspectRatio(android.util.Rational)
+  val maximumRatio = Rational(239, 100)
+  val minimumRatio = Rational(100, 239)
+
+  if (aspectRatio.toFloat() > maximumRatio.toFloat()) {
+    aspectRatio = maximumRatio
+  } else if (aspectRatio.toFloat() < minimumRatio.toFloat()) {
+    aspectRatio = minimumRatio
+  }
+  return aspectRatio
+}
+
 internal fun applyRectHint(activity: Activity, rectHint: Rect) {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureSupported(activity)) {
     runWithPiPMisconfigurationSoftHandling {
@@ -54,10 +76,21 @@ internal fun runWithPiPMisconfigurationSoftHandling(shouldThrow: Boolean = false
   }
 }
 
-internal fun applyAutoEnterPiP(activity: Activity, autoEnterPiP: Boolean) {
-  if (Build.VERSION.SDK_INT >= 31 && isPictureInPictureSupported(activity)) {
+internal fun applyPiPParams(activity: Activity, autoEnterPiP: Boolean, aspectRatio: Rational? = null) {
+  // If the aspect ratio exceeds the limits, the app will crash
+  val safeAspectRatio = aspectRatio?.takeIf { it.toFloat() in 0.41841..2.39 }
+
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isPictureInPictureSupported(activity)) {
+    val paramsBuilder = PictureInPictureParams.Builder()
+
+    safeAspectRatio?.let {
+      paramsBuilder.setAspectRatio(it)
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      paramsBuilder.setAutoEnterEnabled(autoEnterPiP)
+    }
     runWithPiPMisconfigurationSoftHandling {
-      activity.setPictureInPictureParams(PictureInPictureParams.Builder().setAutoEnterEnabled(autoEnterPiP).build())
+      activity.setPictureInPictureParams(paramsBuilder.build())
     }
   }
 }

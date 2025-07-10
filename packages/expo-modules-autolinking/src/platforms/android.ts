@@ -87,7 +87,7 @@ export async function resolveModuleAsync(
     const projectPath = path.join(revision.path, project.path);
 
     const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
-      const projectName = aarProject.name;
+      const projectName = `${defaultProjectName}$${aarProject.name}`;
       const projectDir = path.join(projectPath, 'build', projectName);
       return {
         name: projectName,

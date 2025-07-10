@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoNavigationBar.android.js","sourceRoot":"","sources":["../src/ExpoNavigationBar.android.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AAExD,eAAe,mBAAmB,CAAC,mBAAmB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\n\nexport default requireNativeModule('ExpoNavigationBar');\n"]}

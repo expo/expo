@@ -1,3 +1,4 @@
+import { vol } from 'memfs';
 import process from 'node:process';
 
 import {
@@ -5,9 +6,11 @@ import {
   buildPathMatchObjects,
   isIgnoredPath,
   normalizeFilePath,
+  pathExistsAsync,
   toPosixPath,
 } from '../Path';
 
+jest.mock('fs/promises');
 jest.mock('node:process', () => ({
   platform: jest.requireActual('node:process').platform,
 }));
@@ -174,5 +177,29 @@ describe(toPosixPath, () => {
     it('should handle converted paths', () => {
       expect(toPosixPath('C:/path/to/file')).toBe('C:/path/to/file');
     });
+  });
+});
+
+describe(pathExistsAsync, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('should return true if the file exists', async () => {
+    vol.fromJSON({
+      '/app.json': '',
+    });
+    expect(await pathExistsAsync('/app.json')).toBe(true);
+  });
+
+  it('should return true if the directory exists', async () => {
+    vol.fromJSON({
+      '/dir/file.txt': '',
+    });
+    expect(await pathExistsAsync('/dir')).toBe(true);
+  });
+
+  it('should return false if the file does not exist', async () => {
+    expect(await pathExistsAsync('/app.json')).toBe(false);
   });
 });

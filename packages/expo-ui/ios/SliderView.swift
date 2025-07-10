@@ -49,7 +49,7 @@ struct SliderView: ExpoSwiftUI.View {
       value = sliderValue
     })
     #else
-    Text("Slider not supported on this platform")
+    Text("Slider is not supported on tvOS")
     #endif
   }
 }

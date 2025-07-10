@@ -37,7 +37,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         ],
         platforms: ['android'],
       },
-      { name: 'quality', type: 'number', values: [0, 0.2, 0.7, 1.0] },
+      { name: 'quality', type: 'number', values: [1.0, 0.7, 0.2, 0] },
       { name: 'exif', type: 'boolean', initial: false },
       { name: 'base64', type: 'boolean', initial: false },
       { name: 'legacy', type: 'boolean', initial: false },
@@ -150,6 +150,14 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       },
       { name: 'videoMaxDuration', type: 'number', values: [0, 10, 60] },
       {
+        name: 'cameraType',
+        type: 'enum',
+        values: [
+          { name: 'back', value: ImagePicker.CameraType.back },
+          { name: 'front', value: ImagePicker.CameraType.front },
+        ],
+      },
+      {
         name: 'presentationStyle',
         type: 'enum',
         platforms: ['ios'],
@@ -194,12 +202,12 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         platforms: ['ios'],
         values: [
           {
-            name: 'UIImagePickerPreferredAssetRepresentationMode.Automatic',
-            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic,
-          },
-          {
             name: 'UIImagePickerPreferredAssetRepresentationMode.Current',
             value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Current,
+          },
+          {
+            name: 'UIImagePickerPreferredAssetRepresentationMode.Automatic',
+            value: ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic,
           },
           {
             name: 'UIImagePickerPreferredAssetRepresentationMode.Compatible',

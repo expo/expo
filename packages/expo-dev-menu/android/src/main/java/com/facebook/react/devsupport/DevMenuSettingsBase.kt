@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.preference.PreferenceManager
 import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.devsupport.DevMenuSettingsBase.Listener
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 
 /**

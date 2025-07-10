@@ -221,7 +221,7 @@ it(`parses asset as client reference in react server environment`, async () => {
     []
   );
   expect(astString(results.ast)).toMatchInlineSnapshot(
-    `"module.exports = require('react-server-dom-webpack/server').createClientModuleProxy("file:///root/local/foo.png");"`
+    `"module.exports = require('react-server-dom-webpack/server').createClientModuleProxy("./local/foo.png");"`
   );
   expect(results.reactClientReference).toBe('file:///root/local/foo.png');
 });

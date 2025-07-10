@@ -17,10 +17,12 @@ index c50bf0c..8dd1626 100644
      }
      buildTypes {
          debug {
+             signingConfig signingConfigs.debug
+         }
+         release {
 @@ -110,6 +118,7 @@ android {
              // Caution! In production, you need to generate your own keystore file.
              // see https://reactnative.dev/docs/signed-apk-android.
-             signingConfig signingConfigs.debug
 +            signingConfig signingConfigs.release
              shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
              minifyEnabled enableProguardInReleaseBuilds

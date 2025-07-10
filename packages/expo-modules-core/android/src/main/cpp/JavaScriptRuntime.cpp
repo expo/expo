@@ -51,6 +51,27 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
   }
 }
 
+void JavaScriptRuntime::evaluateVoidScript(const std::string &script) {
+  auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
+  try {
+    runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>");
+  } catch (const jsi::JSError &error) {
+    jni::throwNewJavaException(
+      JavaScriptEvaluateException::create(
+        error.getMessage(),
+        error.getStack()
+      ).get()
+    );
+  } catch (const jsi::JSIException &error) {
+    jni::throwNewJavaException(
+      JavaScriptEvaluateException::create(
+        error.what(),
+        ""
+      ).get()
+    );
+  }
+}
+
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() noexcept {
   auto global = std::make_shared<jsi::Object>(runtime->global());
   return JavaScriptObject::newInstance(getJSIContext(get()), weak_from_this(), global);

@@ -1,0 +1,35 @@
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/EmbeddedPaymentElementViewManager.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/EmbeddedPaymentElementViewManager.kt
+index a9eb15d..1da033b 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/EmbeddedPaymentElementViewManager.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/EmbeddedPaymentElementViewManager.kt
+@@ -54,7 +54,7 @@ class EmbeddedPaymentElementViewManager :
+     view: EmbeddedPaymentElementView,
+     cfg: Dynamic,
+   ) {
+-    val elementConfig = parseElementConfiguration(cfg.asMap(), view.context)
++    val elementConfig = parseElementConfiguration(cfg.asMap() ?: throw NullPointerException(), view.context)
+     view.latestElementConfig = elementConfig
+     // if intentConfig is already set, configure immediately:
+     view.latestIntentConfig?.let { intentCfg ->
+@@ -71,7 +71,7 @@ class EmbeddedPaymentElementViewManager :
+     view: EmbeddedPaymentElementView,
+     cfg: Dynamic,
+   ) {
+-    val intentConfig = parseIntentConfiguration(cfg.asMap())
++    val intentConfig = parseIntentConfiguration(cfg.asMap() ?: throw NullPointerException())
+     view.latestIntentConfig = intentConfig
+     view.latestElementConfig?.let { elemCfg ->
+       view.configure(elemCfg, intentConfig)
+diff --git a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonManager.kt b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonManager.kt
+index 4e92f18..a477ce8 100644
+--- a/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonManager.kt
++++ b/node_modules/@stripe/stripe-react-native/android/src/main/java/com/reactnativestripesdk/pushprovisioning/AddToWalletButtonManager.kt
+@@ -64,7 +64,7 @@ class AddToWalletButtonManager(
+     view: AddToWalletButtonView,
+     ephemeralKey: Dynamic,
+   ) {
+-    view.setEphemeralKey(ephemeralKey.asMap())
++    view.setEphemeralKey(ephemeralKey.asMap() ?: throw NullPointerException())
+   }
+
+   @ReactProp(name = "token")

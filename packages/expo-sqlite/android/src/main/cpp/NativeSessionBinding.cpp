@@ -62,8 +62,11 @@ NativeSessionBinding::sqlite3session_changeset() {
   int size = 0;
   void *buffer = nullptr;
   int result = ::exsqlite3session_changeset(session, &size, &buffer);
-  if (result != SQLITE_OK || !buffer) {
+  if (result != SQLITE_OK) {
     return nullptr;
+  }
+  if (!buffer) {
+    return jni::JArrayByte::newArray(0);
   }
   auto byteArray = jni::JArrayByte::newArray(size);
   byteArray->setRegion(0, size, reinterpret_cast<const signed char *>(buffer));
@@ -76,16 +79,23 @@ NativeSessionBinding::sqlite3session_changeset_inverted() {
   int inSize = 0;
   void *inBuffer = nullptr;
   int result = ::exsqlite3session_changeset(session, &inSize, &inBuffer);
-  if (result != SQLITE_OK || !inBuffer) {
+  if (result != SQLITE_OK) {
     return nullptr;
+  }
+  if (!inBuffer) {
+    return jni::JArrayByte::newArray(0);
   }
 
   int outSize = 0;
   void *outBuffer = nullptr;
   result = ::exsqlite3changeset_invert(inSize, inBuffer, &outSize, &outBuffer);
-  if (result != SQLITE_OK || !outBuffer) {
+  if (result != SQLITE_OK) {
     ::exsqlite3_free(inBuffer);
     return nullptr;
+  }
+  if (!outBuffer) {
+    ::exsqlite3_free(inBuffer);
+    return jni::JArrayByte::newArray(0);
   }
   auto byteArray = jni::JArrayByte::newArray(outSize);
   byteArray->setRegion(0, outSize,
@@ -117,8 +127,11 @@ jni::local_ref<jni::JArrayByte> NativeSessionBinding::sqlite3changeset_invert(
 
   int result =
       ::exsqlite3changeset_invert(inSize, inBuffer.get(), &outSize, &outBuffer);
-  if (result != SQLITE_OK || !outBuffer) {
+  if (result != SQLITE_OK) {
     return nullptr;
+  }
+  if (!outBuffer) {
+    return jni::JArrayByte::newArray(0);
   }
   auto byteArray = jni::JArrayByte::newArray(outSize);
   byteArray->setRegion(0, outSize,

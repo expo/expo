@@ -26,13 +26,13 @@ describe(ensureEnvironmentSupportsTLSAsync, () => {
     process.env.SSL_CRT_FILE = 'foo';
     process.env.SSL_KEY_FILE = 'bar';
     await ensureEnvironmentSupportsTLSAsync('/');
-    expect(certificateFor).toBeCalledTimes(0);
+    expect(certificateFor).toHaveBeenCalledTimes(0);
   });
 
   it(`generates TLS if the environment variables are not set`, async () => {
     await ensureEnvironmentSupportsTLSAsync('/');
 
-    expect(certificateFor).toBeCalledTimes(1);
+    expect(certificateFor).toHaveBeenCalledTimes(1);
     expect(process.env.SSL_CRT_FILE).toBe('/.expo/tls/cert-localhost.pem');
     expect(process.env.SSL_KEY_FILE).toBe('/.expo/tls/key-localhost.pem');
   });

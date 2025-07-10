@@ -7,7 +7,7 @@ extension UIColor: Convertible {
       if let namedColorComponents = namedColors[value] {
         return uiColorWithComponents(namedColorComponents.map { $0 / 255 }) as! Self
       }
-      return try Conversions.toColor(hexString: value) as! Self
+      return try Conversions.toColor(colorString: value) as! Self
     }
     if let components = value as? [Double] {
       return uiColorWithComponents(components) as! Self

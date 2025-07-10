@@ -167,7 +167,7 @@ const withMapsCocoaPods = (config, {
         results = addMapsCocoaPods(config.modResults.contents);
       } catch (error) {
         if (error.code === 'ERR_NO_MATCH') {
-          throw new Error(`Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Please report this with a copy of your project Podfile.`);
+          throw new Error(`Cannot add react-native-maps to the project's ios/Podfile because it's malformed. Report this with a copy of your project Podfile: https://github.com/expo/expo/issues`);
         }
         throw error;
       }
@@ -198,7 +198,7 @@ const withGoogleMapsAppDelegate = (config, {
       config.modResults.contents = addGoogleMapsAppDelegateInit(config.modResults.contents, apiKey).contents;
     } catch (error) {
       if (error.code === 'ERR_NO_MATCH') {
-        throw new Error(`Cannot add Google Maps to the project's AppDelegate because it's malformed. Please report this with a copy of your project AppDelegate.`);
+        throw new Error(`Cannot add Google Maps to the project's AppDelegate because it's malformed. Report this with a copy of your project AppDelegate: https://github.com/expo/expo/issues`);
       }
       throw error;
     }

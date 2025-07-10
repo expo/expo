@@ -1,5 +1,5 @@
 import type { RouteNode } from './Route';
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+import { matchDynamicName } from './matchers';
 
 export type Screen =
   | string
@@ -20,18 +20,14 @@ function convertDynamicRouteToReactNavigation(segment: string): string {
   if (segment === '+not-found') {
     return '*not-found';
   }
-
-  const rest = matchDeepDynamicRouteName(segment);
-  if (rest != null) {
-    return '*' + rest;
-  }
   const dynamicName = matchDynamicName(segment);
-
-  if (dynamicName != null) {
-    return `:${dynamicName}`;
+  if (dynamicName && !dynamicName.deep) {
+    return `:${dynamicName.name}`;
+  } else if (dynamicName?.deep) {
+    return '*' + dynamicName.name;
+  } else {
+    return segment;
   }
-
-  return segment;
 }
 
 export function parseRouteSegments(segments: string): string {

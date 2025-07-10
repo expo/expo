@@ -13,9 +13,11 @@ def generate_or_remove_xcode_env_updates_file!()
       File.delete(xcode_env_file)
     end
     File.write(xcode_env_file, <<~EOS
+      # These force Xcode to build the JS bundle with DEV=false
       export FORCE_BUNDLING=1
       unset SKIP_BUNDLING
       export RCT_NO_LAUNCH_PACKAGER=1
+      export CONFIGURATION=Release
 EOS
     )
   else

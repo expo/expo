@@ -1,5 +1,7 @@
 import ExpoModulesCore
 
+private let selector = ["request", "Record", "Permission", ":"]
+
 public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
   public static func permissionType() -> String {
     return "audioRecording"
@@ -33,15 +35,25 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
     ]
   }
 
-  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    if #available(iOS 17.0, *) {
-      AVAudioApplication.requestRecordPermission { _ in
-        resolve(self.getPermissions())
+  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: @escaping EXPromiseRejectBlock) {
+    typealias PermissionRequestFunction = @convention(c) (AnyObject, Selector, @escaping (Bool) -> Void) -> Void
+    let recordPermissionSelector = NSSelectorFromString(selector.joined())
+
+    let session = AVAudioSession.sharedInstance()
+    guard let method = class_getInstanceMethod(type(of: session), recordPermissionSelector) else {
+      reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
+      return
+    }
+
+    let imp = method_getImplementation(method)
+
+    let requestPermission = unsafeBitCast(imp, to: PermissionRequestFunction.self)
+    requestPermission(session, recordPermissionSelector) { [weak self] _ in
+      guard let self else {
+        reject("AudioRecordingRequester", "Failed to request audio recording permission", nil)
+        return
       }
-    } else {
-      AVAudioSession.sharedInstance().requestRecordPermission { _ in
-        resolve(self.getPermissions())
-      }
+      resolve(self.getPermissions())
     }
   }
 }

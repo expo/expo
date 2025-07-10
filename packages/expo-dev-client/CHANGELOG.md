@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 5.2.4 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.3 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.2 - 2025-06-26
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.1 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.2.0 - 2025-06-04
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
 ## 5.1.8 — 2025-05-02
 
 _This version does not introduce any user-facing changes._

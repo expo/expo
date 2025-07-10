@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
 
-import { CameraPosition } from '../shared.types';
+import { CameraPosition, Coordinates } from '../shared.types';
 import type { AppleMapsViewProps, AppleMapsViewType } from './AppleMaps.types';
 
 let NativeView: React.ComponentType<AppleMapsViewProps> | null;
@@ -26,13 +26,28 @@ function useNativeEvent<T>(userHandler?: (data: T) => void) {
  */
 export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewProps>(
   (
-    { onMapClick, onMarkerClick, onCameraMove, onPolylineClick, annotations, polylines, ...props },
+    {
+      onMapClick,
+      onMarkerClick,
+      onCameraMove,
+      onPolylineClick,
+      onCircleClick,
+      onPolygonClick,
+      annotations,
+      polylines,
+      circles,
+      polygons,
+      ...props
+    },
     ref
   ) => {
     const nativeRef = React.useRef<AppleMapsViewType>(null);
     React.useImperativeHandle(ref, () => ({
       setCameraPosition(config?: CameraPosition) {
-        nativeRef.current?.setCameraPosition(config);
+        return nativeRef.current?.setCameraPosition(config);
+      },
+      async openLookAroundAsync(coordinates: Coordinates) {
+        return nativeRef.current?.openLookAroundAsync(coordinates);
       },
     }));
 
@@ -40,10 +55,24 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
+    const onNativePolygonClick = useNativeEvent(onPolygonClick);
+    const onNativeCircleClick = useNativeEvent(onCircleClick);
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
       color: processColor(polyline.color) ?? undefined,
+    }));
+
+    const parsedPolygons = polygons?.map((polygon) => ({
+      ...polygon,
+      color: processColor(polygon.color) ?? undefined,
+      lineColor: processColor(polygon.lineColor) ?? undefined,
+    }));
+
+    const parsedCircles = circles?.map((circle) => ({
+      ...circle,
+      color: processColor(circle.color) ?? undefined,
+      lineColor: processColor(circle.lineColor) ?? undefined,
     }));
 
     const parsedAnnotations = annotations?.map((annotation) => ({
@@ -61,11 +90,15 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
         {...props}
         ref={nativeRef}
         polylines={parsedPolylines}
+        polygons={parsedPolygons}
+        circles={parsedCircles}
         annotations={parsedAnnotations}
         onMapClick={onNativeMapClick}
         onMarkerClick={onNativeMarkerClick}
         onCameraMove={onNativeCameraMove}
         onPolylineClick={onNativePolylineClick}
+        onPolygonClick={onNativePolygonClick}
+        onCircleClick={onNativeCircleClick}
       />
     );
   }

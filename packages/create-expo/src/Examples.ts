@@ -107,7 +107,7 @@ export async function promptExamplesAsync() {
 
   if (!answer) {
     console.log();
-    console.log(chalk`Please specify the example, example: {cyan --example with-router}`);
+    console.log(chalk`Specify the example name, for example: {cyan --example with-router}`);
     console.log();
     process.exit(1);
   }

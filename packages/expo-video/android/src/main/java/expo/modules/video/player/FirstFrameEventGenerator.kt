@@ -64,7 +64,7 @@ internal class FirstFrameEventGenerator(
 
   private fun isPlayerSurfaceLayoutValid(): Boolean {
     // Sometimes the video size announced by the track will is 1px off the render size.
-    val epsilon = 0.01
+    val epsilon = 0.05
     val player = playerReference.get() ?: run {
       return false
     }
@@ -75,13 +75,14 @@ internal class FirstFrameEventGenerator(
     val surfaceHeight = player.surfaceSize.height
     val sourceWidth = player.videoSize.width
     val sourceHeight = player.videoSize.height
+    val sourcePixelWidthHeightRatio = player.videoSize.pixelWidthHeightRatio
 
     if (surfaceWidth == 0 || surfaceHeight == 0) {
       return false
     }
 
     val surfaceAspectRatio = surfaceWidth.toFloat() / surfaceHeight
-    val trackAspectRatio = sourceWidth.toFloat() / sourceHeight
+    val trackAspectRatio = sourceWidth.toFloat() / sourceHeight * sourcePixelWidthHeightRatio
 
     val videoSizeIsUnknown = sourceWidth == 0 || sourceHeight == 0
     val hasFillContentFit = currentPlayerView.resizeMode == ContentFit.FILL.toResizeMode()

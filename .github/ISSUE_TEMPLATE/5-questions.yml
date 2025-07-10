@@ -1,0 +1,14 @@
+name: '❓ Questions and discussions'
+description: 'You have a question about Expo or want to discuss some aspects of Expo'
+labels: ['invalid issue: question']
+body:
+  - type: markdown
+    attributes:
+      value: If you have a question about Expo or anything related, join our Discord at https://chat.expo.dev/ to chat with the community.
+  - type: dropdown
+    attributes:
+      label: Do you understand that any discussions or questions opened as issues in the core Expo repository will be closed?
+      options:
+        - 'Yes'
+    validations:
+      required: true

@@ -51,6 +51,7 @@ it('runs `npx expo install --help`', async () => {
         --bun       Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
+        --json      Output dependency information in JSON format with --check flag
 
       Additional options can be passed to the underlying install command by using --
         $ npx expo install react -- --verbose

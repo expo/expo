@@ -65,7 +65,7 @@ describe(platformSanityCheckAsync, () => {
         },
         platform: 'android',
       })
-    ).rejects.toThrowError(/Git is required to run this command/);
+    ).rejects.toThrow(/Git is required to run this command/);
   });
 
   it('should throw an error if missing config', async () => {
@@ -87,7 +87,7 @@ describe(platformSanityCheckAsync, () => {
         },
         platform: 'android',
       })
-    ).rejects.toThrowError(/android\.package is not defined/);
+    ).rejects.toThrow(/android\.package is not defined/);
 
     await expect(
       platformSanityCheckAsync({
@@ -98,7 +98,7 @@ describe(platformSanityCheckAsync, () => {
         },
         platform: 'ios',
       })
-    ).rejects.toThrowError(/ios\.bundleIdentifier is not defined/);
+    ).rejects.toThrow(/ios\.bundleIdentifier is not defined/);
   });
 
   it('should throw an error if platform directory does not exist', async () => {
@@ -115,7 +115,7 @@ describe(platformSanityCheckAsync, () => {
         },
         platform: 'android',
       })
-    ).rejects.toThrowError(/Platform directory does not exist/);
+    ).rejects.toThrow(/Platform directory does not exist/);
 
     vol.rmSync('/app/ios', { recursive: true, force: true });
     await expect(
@@ -130,6 +130,6 @@ describe(platformSanityCheckAsync, () => {
         },
         platform: 'ios',
       })
-    ).rejects.toThrowError(/Platform directory does not exist/);
+    ).rejects.toThrow(/Platform directory does not exist/);
   });
 });

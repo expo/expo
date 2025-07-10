@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 15.1.7 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+
+## 15.1.6 - 2025-06-05
+
+_This version does not introduce any user-facing changes._
+
 ## 15.1.5 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

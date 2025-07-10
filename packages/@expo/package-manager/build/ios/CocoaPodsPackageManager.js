@@ -107,8 +107,8 @@ class CocoaPodsPackageManager {
             }
             catch (error) {
                 !silent &&
-                    console.warn(chalk_1.default.yellow(`\u203A Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`));
-                throw new CocoaPodsError(`Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`, 'NO_CLI', error);
+                    console.warn(chalk_1.default.yellow(`\u203A Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`));
+                throw new CocoaPodsError(`Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`, 'NO_CLI', error);
             }
         }
     }

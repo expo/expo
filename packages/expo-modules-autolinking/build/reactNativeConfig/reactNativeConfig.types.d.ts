@@ -6,6 +6,7 @@ export interface RNConfigCommandOptions {
     platform: SupportedPlatform;
     projectRoot: string;
     searchPaths: string[];
+    transitiveLinkingDependencies: string[];
 }
 /**
  * Dependency configuration for Android platform.

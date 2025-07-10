@@ -22,7 +22,6 @@ import expo.modules.kotlin.modules.convertEnumToString
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.TypeConverterProvider
 import expo.modules.kotlin.types.enforceType
-import expo.modules.kotlin.types.mergeWithDefault
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
 import kotlin.reflect.full.declaredMemberProperties
@@ -31,10 +30,9 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * Base class for other definitions representing an object, such as `ModuleDefinition`.
  */
-open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = null) {
-  @PublishedApi
-  internal val converterProvider = customConverter.mergeWithDefault()
-
+open class ObjectDefinitionBuilder(
+  @PublishedApi internal val converters: TypeConverterProvider? = null
+) {
   private var legacyConstantsProvider = { emptyMap<String, Any?>() }
 
   @PublishedApi
@@ -126,7 +124,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0>(converterProvider = converterProvider), toReturnType<R>()) { (p0) ->
+    return SyncFunctionComponent(name, toArgsArray<P0>(converterProvider = converters), toReturnType<R>()) { (p0) ->
       enforceType<P0>(p0)
       body(p0)
     }.also {
@@ -138,7 +136,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1>(), toReturnType<R>()) { (p0, p1) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1>(converterProvider = converters), toReturnType<R>()) { (p0, p1) ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1)
     }.also {
@@ -150,7 +148,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2>(), toReturnType<R>()) { (p0, p1, p2) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2) ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2)
     }.also {
@@ -162,7 +160,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(), toReturnType<R>()) { (p0, p1, p2, p3) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3) ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3)
     }.also {
@@ -174,7 +172,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(), toReturnType<R>()) { (p0, p1, p2, p3, p4) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4) ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4)
     }.also {
@@ -186,7 +184,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5) ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5)
     }.also {
@@ -198,7 +196,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6)
     }.also {
@@ -210,7 +208,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
   ): SyncFunctionComponent {
-    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
+    return SyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(converterProvider = converters), toReturnType<R>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
       body(p0, p1, p2, p3, p4, p5, p6, p7)
     }.also {
@@ -245,7 +243,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     return if (P0::class.java == Promise::class.java) {
       AsyncFunctionWithPromiseComponent(name, arrayOf()) { _, promise -> body(promise as P0) }
     } else {
-      createAsyncFunctionComponent(name, toArgsArray<P0>()) { (p0) ->
+      createAsyncFunctionComponent(name, toArgsArray<P0>(converterProvider = converters)) { (p0) ->
         enforceType<P0>(p0)
         body(p0)
       }
@@ -258,7 +256,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1>()) { (p0, p1) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1>(converterProvider = converters)) { (p0, p1) ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1)
     }.also {
@@ -271,7 +269,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0>()) { (p0), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0>(converterProvider = converters)) { (p0), promise ->
       enforceType<P0>(p0)
       body(p0, promise)
     }.also {
@@ -283,7 +281,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters)) { (p0, p1, p2) ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2)
     }.also {
@@ -296,7 +294,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1>()) { (p0, p1), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1>(converterProvider = converters)) { (p0, p1), promise ->
       enforceType<P0, P1>(p0, p1)
       body(p0, p1, promise)
     }.also {
@@ -308,7 +306,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters)) { (p0, p1, p2, p3) ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3)
     }.also {
@@ -321,7 +319,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2>()) { (p0, p1, p2), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2>(converterProvider = converters)) { (p0, p1, p2), promise ->
       enforceType<P0, P1, P2>(p0, p1, p2)
       body(p0, p1, p2, promise)
     }.also {
@@ -333,7 +331,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters)) { (p0, p1, p2, p3, p4) ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4)
     }.also {
@@ -346,7 +344,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3>()) { (p0, p1, p2, p3), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3>(converterProvider = converters)) { (p0, p1, p2, p3), promise ->
       enforceType<P0, P1, P2, P3>(p0, p1, p2, p3)
       body(p0, p1, p2, p3, promise)
     }.also {
@@ -358,7 +356,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5) ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5)
     }.also {
@@ -371,7 +369,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4>()) { (p0, p1, p2, p3, p4), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4>(converterProvider = converters)) { (p0, p1, p2, p3, p4), promise ->
       enforceType<P0, P1, P2, P3, P4>(p0, p1, p2, p3, p4)
       body(p0, p1, p2, p3, p4, promise)
     }.also {
@@ -383,7 +381,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6)
     }.also {
@@ -396,7 +394,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>()) { (p0, p1, p2, p3, p4, p5), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5), promise ->
       enforceType<P0, P1, P2, P3, P4, P5>(p0, p1, p2, p3, p4, p5)
       body(p0, p1, p2, p3, p4, p5, promise)
     }.also {
@@ -408,7 +406,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
   ): AsyncFunctionComponent {
-    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>()) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
+    return createAsyncFunctionComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6, P7>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6, p7) ->
       enforceType<P0, P1, P2, P3, P4, P5, P6, P7>(p0, p1, p2, p3, p4, p5, p6, p7)
       body(p0, p1, p2, p3, p4, p5, p6, p7)
     }.also {
@@ -421,7 +419,7 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: Promise) -> R
   ): AsyncFunctionComponent {
-    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>()) { (p0, p1, p2, p3, p4, p5, p6), promise ->
+    return AsyncFunctionWithPromiseComponent(name, toArgsArray<P0, P1, P2, P3, P4, P5, P6>(converterProvider = converters)) { (p0, p1, p2, p3, p4, p5, p6), promise ->
       enforceType<P0, P1, P2, P3, P4, P5, P6>(p0, p1, p2, p3, p4, p5, p6)
       body(p0, p1, p2, p3, p4, p5, p6, promise)
     }.also {
@@ -431,13 +429,13 @@ open class ObjectDefinitionBuilder(customConverter: TypeConverterProvider? = nul
 
   fun AsyncFunction(
     name: String
-  ) = AsyncFunctionBuilder(name).also { asyncFunctionBuilders[name] = it }
+  ) = AsyncFunctionBuilder(name, converters).also { asyncFunctionBuilders[name] = it }
 
   /**
    * Defines event names that this module can send to JavaScript.
    */
   fun Events(vararg events: String) {
-    eventsDefinition = EventsDefinition(events)
+    eventsDefinition = EventsDefinition(events.asList().toTypedArray())
   }
 
   /**

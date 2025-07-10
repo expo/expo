@@ -1,0 +1,30 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# downloads and runs update
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from downloaded bundle
+- stopApp

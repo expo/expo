@@ -17,6 +17,7 @@ const defaultPlugins = [
     [require('babel-plugin-syntax-hermes-parser'), { parseLangTypes: 'flow' }],
     //
     [require('babel-plugin-transform-flow-enums')],
+    [require('@babel/plugin-transform-class-static-block'), { loose }],
     [require('@babel/plugin-transform-private-methods'), { loose }],
     [require('@babel/plugin-transform-private-property-in-object'), { loose }],
     [require('@babel/plugin-syntax-export-default-from')],

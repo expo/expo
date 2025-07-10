@@ -8,17 +8,22 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
   @Field var polylines: [ExpoAppleMapPolyline] = []
+  @Field var polygons: [Polygon] = []
+  @Field var circles: [Circle] = []
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
   let onPolylineClick = EventDispatcher()
+  let onPolygonClick = EventDispatcher()
+  let onCircleClick = EventDispatcher()
   let onCameraMove = EventDispatcher()
 }
 
 protocol AppleMapsViewProtocol: View {
   func setCameraPosition(config: CameraPosition?)
+  func openLookAround(coordinate: Coordinate) async throws
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, AppleMapsViewProtocol {
@@ -38,6 +43,10 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
 
   func setCameraPosition(config: CameraPosition?) {
     appleMapsView?.setCameraPosition(config: config)
+  }
+
+  func openLookAround(coordinate: Coordinate) async throws {
+    try await appleMapsView?.openLookAround(coordinate: coordinate)
   }
 
   var body: some View {

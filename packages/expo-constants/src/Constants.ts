@@ -1,6 +1,5 @@
 import type { ExpoConfig } from 'expo/config';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
-import type { Manifest as DevLauncherManifest } from 'expo-dev-launcher';
 import type {
   EmbeddedManifest,
   EASConfig,
@@ -25,6 +24,7 @@ import {
   WebManifest,
 } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
+type DevLauncherManifest = ExpoUpdatesManifest;
 
 export {
   AndroidManifest,

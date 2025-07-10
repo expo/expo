@@ -1,7 +1,8 @@
 ---
-title: 'Tutorial: Creating a native module'
+title: 'Tutorial: Create a native module'
 sidebar_title: Create a native module
 description: A tutorial on creating a native module that persists settings with Expo Modules API.
+hasVideoLink: true
 ---
 
 import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
@@ -39,31 +40,17 @@ First, create a new module. For this tutorial, the module is named `expo-setting
 Clean up the default module to start with a clean slate. Delete the view module since this guide does not use it.
 
 <Terminal
-  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts src/ExpoSettings.types.ts"
+  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts"
   cmd={[
     '$ cd expo-settings',
     '$ rm ios/ExpoSettingsView.swift',
     '$ rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt',
-    '$ rm src/ExpoSettingsView.tsx src/ExpoSettings.types.ts',
+    '$ rm src/ExpoSettingsView.tsx',
     '$ rm src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts',
   ]}
 />
 
 Locate the following files and replace their contents with the provided minimal boilerplate:
-
-```swift ios/ExpoSettingsModule.swift
-import ExpoModulesCore
-
-public class ExpoSettingsModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSettings")
-
-    Function("getTheme") { () -> String in
-      "system"
-    }
-  }
-}
-```
 
 ```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
@@ -80,6 +67,37 @@ class ExpoSettingsModule : Module() {
     }
   }
 }
+```
+
+```swift ios/ExpoSettingsModule.swift
+import ExpoModulesCore
+
+public class ExpoSettingsModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoSettings")
+
+    Function("getTheme") { () -> String in
+      "system"
+    }
+  }
+}
+```
+
+```ts src/ExpoSettings.types.ts
+export type ExpoSettingsModuleEvents = {};
+```
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  getTheme: () => string;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
 ```
 
 ```ts src/index.ts
@@ -202,6 +220,22 @@ public class ExpoSettingsModule: Module {
 
 ### TypeScript module
 
+Update the **ExpoSettingsModule.ts** to add a TypeScript interface for the `ExpoSettingsModule` native module to update the theme.
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  setTheme: (theme: string) => void;
+  getTheme: () => string;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
 Now, call your native modules from TypeScript.
 
 ```ts src/index.ts
@@ -313,13 +347,20 @@ public class ExpoSettingsModule: Module {
 
 ### TypeScript module
 
-```ts src/index.ts
-import { EventSubscription } from 'expo-modules-core';
-import ExpoSettingsModule from './ExpoSettingsModule';
-
+```ts src/ExpoSettings.types.ts
 export type ThemeChangeEvent = {
   theme: string;
 };
+
+export type ExpoSettingsModuleEvents = {
+  onChangeTheme: (params: ThemeChangeEvent) => void;
+};
+```
+
+```ts src/index.ts
+import { EventSubscription } from 'expo-modules-core';
+import ExpoSettingsModule from './ExpoSettingsModule';
+import { ThemeChangeEvent } from './ExpoSettings.types';
 
 export function addThemeListener(listener: (event: ThemeChangeEvent) => void): EventSubscription {
   return ExpoSettingsModule.addListener('onChangeTheme', listener);
@@ -448,16 +489,38 @@ public class ExpoSettingsModule: Module {
 
 ### TypeScript module
 
-```ts src/index.ts
-import { EventSubscription } from 'expo-modules-core';
-
-import ExpoSettingsModule from './ExpoSettingsModule';
-
+```ts src/ExpoSettings.types.ts
 export type Theme = 'light' | 'dark' | 'system';
 
 export type ThemeChangeEvent = {
   theme: Theme;
 };
+
+export type ExpoSettingsModuleEvents = {
+  onChangeTheme: (params: ThemeChangeEvent) => void;
+};
+```
+
+```ts src/ExpoSettingsModule.ts
+import { NativeModule, requireNativeModule } from 'expo';
+
+import { ExpoSettingsModuleEvents, Theme } from './ExpoSettings.types';
+
+declare class ExpoSettingsModule extends NativeModule<ExpoSettingsModuleEvents> {
+  setTheme: (theme: Theme) => void;
+  getTheme: () => Theme;
+}
+
+// This call loads the native module object from the JSI.
+export default requireNativeModule<ExpoSettingsModule>('ExpoSettings');
+```
+
+```ts src/index.ts
+import { EventSubscription } from 'expo-modules-core';
+
+import ExpoSettingsModule from './ExpoSettingsModule';
+
+import { Theme, ThemeChangeEvent } from './ExpoSettings.types';
 
 export function addThemeListener(listener: (event: ThemeChangeEvent) => void): EventSubscription {
   return ExpoSettingsModule.addListener('onChangeTheme', listener);

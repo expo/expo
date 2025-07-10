@@ -18,8 +18,8 @@ it(`detects that Simulator.app is installed`, async () => {
 
   await SimulatorAppPrerequisite.instance.assertImplementation();
 
-  expect(execAsync).toBeCalledWith('id of app "Simulator"');
-  expect(spawnAsync).toBeCalledWith('xcrun', ['simctl', 'help']);
+  expect(execAsync).toHaveBeenCalledWith('id of app "Simulator"');
+  expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
 });
 
 it(`asserts that Simulator.app is installed with invalid Simulator.app`, async () => {
@@ -28,7 +28,7 @@ it(`asserts that Simulator.app is installed with invalid Simulator.app`, async (
   jest.mocked(spawnAsync).mockReset();
 
   await expect(SimulatorAppPrerequisite.instance.assertImplementation()).rejects.toThrow(/\.bacon/);
-  expect(spawnAsync).not.toBeCalled();
+  expect(spawnAsync).not.toHaveBeenCalled();
 });
 
 it(`asserts that Simulator.app is installed but simctl doesn't work`, async () => {

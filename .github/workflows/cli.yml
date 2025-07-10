@@ -43,7 +43,7 @@ concurrency:
 
 jobs:
   jest-ubuntu:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -52,7 +52,7 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -116,6 +116,8 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
+          # NOTE(cedric): Node 20+ crashes on Windows when rendering async components through `expo export:embed` with RSC enabled
+          # We need to keep this on Node 18 in order for our tests to pass
           node-version: 18
 
       - name: 🏗️ Setup Bun
@@ -171,12 +173,12 @@ jobs:
         run: yarn test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   playwright-ubuntu:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -261,6 +263,8 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
+          # NOTE(cedric): Node 20+ crashes on Windows when rendering async components through `expo export:embed` with RSC enabled
+          # We need to keep this on Node 18 in order for our tests to pass
           node-version: 18
 
       - name: 🏗️ Setup Bun

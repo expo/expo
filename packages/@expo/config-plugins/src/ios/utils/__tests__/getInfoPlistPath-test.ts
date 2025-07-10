@@ -42,5 +42,5 @@ it('returns with custom target name', () => {
 it('throws on invalid target name', () => {
   expect(() =>
     getInfoPlistPathFromPbxproj(projectRoot, { targetName: 'shareextension-invalid' })
-  ).toThrowError(/Could not find target/);
+  ).toThrow(/Could not find target/);
 });

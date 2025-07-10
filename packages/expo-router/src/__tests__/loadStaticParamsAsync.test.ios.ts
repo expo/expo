@@ -284,10 +284,10 @@ describe(loadStaticParamsAsync, () => {
       route: '',
     });
 
-    expect(generateStaticParamsParent).toBeCalledTimes(1);
+    expect(generateStaticParamsParent).toHaveBeenCalledTimes(1);
     expect(generateStaticParamsParent).toHaveBeenNthCalledWith(1, { params: {} });
 
-    expect(generateStaticParams).toBeCalledTimes(2);
+    expect(generateStaticParams).toHaveBeenCalledTimes(2);
     expect(generateStaticParams).toHaveBeenNthCalledWith(1, { params: { color: 'red' } });
     expect(generateStaticParams).toHaveBeenNthCalledWith(2, { params: { color: 'blue' } });
   });

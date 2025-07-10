@@ -2,9 +2,15 @@ import { Children, isValidElement, ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
 import { ContextMenuElementBase, EventHandlers, Submenu, SubmenuProps } from './index';
-import { Button, ButtonProps, NativeButtonProps, transformButtonProps } from '../Button';
-import { Picker, PickerProps } from '../Picker';
-import { Switch, SwitchProps } from '../Switch';
+import {
+  Button,
+  ButtonPrimitive,
+  ButtonProps,
+  NativeButtonProps,
+  transformButtonProps,
+} from '../Button';
+import { Picker, PickerPrimitive, PickerProps } from '../Picker';
+import { Switch, SwitchPrimitive, SwitchProps } from '../Switch';
 
 // We use this slightly odd typing for the elements to make unpacking the elements easier on the native side
 type ButtonMenuElement = {
@@ -51,17 +57,17 @@ function processChildElement(
 
   const uuid = expo.uuidv4();
 
-  if (child.type === Button) {
+  if (child.type === Button || child.type === ButtonPrimitive) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createButtonElement(uuid, child.props, eventHandlersMap);
   }
 
-  if (child.type === Switch) {
+  if (child.type === Switch || child.type === SwitchPrimitive) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createSwitchElement(uuid, child.props, eventHandlersMap);
   }
 
-  if (child.type === Picker) {
+  if (child.type === Picker || child.type === PickerPrimitive) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createPickerElement(uuid, child.props, eventHandlersMap);
   }
@@ -83,10 +89,12 @@ function createButtonElement(
   if (props.onPress) {
     handlers[uuid] = { onPress: props.onPress };
   }
-
+  if (typeof props.children !== 'string') {
+    throw new Error('ContextMenu Button only supports string children');
+  }
   return {
     contextMenuElementID: uuid,
-    button: transformButtonProps(props),
+    button: transformButtonProps(props, props.children),
   };
 }
 
@@ -129,10 +137,13 @@ function createSubmenuElement(
   props: SubmenuProps,
   handlers: EventHandlers
 ): MenuElement {
+  if (typeof props.button.props.children !== 'string') {
+    throw new Error('ContextMenu Submenu Button only supports string children');
+  }
   return {
     contextMenuElementID: uuid,
     submenu: {
-      button: transformButtonProps(props.button.props),
+      button: transformButtonProps(props.button.props, props.button.props.children),
       elements: transformChildrenToElementArray(props.children, handlers),
     },
   };

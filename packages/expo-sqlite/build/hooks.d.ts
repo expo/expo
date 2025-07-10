@@ -70,7 +70,7 @@ export interface SQLiteProviderProps {
  * Context.Provider component that provides a SQLite database to all children.
  * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
  */
-export declare function SQLiteProvider({ children, onError, useSuspense, ...props }: SQLiteProviderProps): React.JSX.Element;
+export declare const SQLiteProvider: React.NamedExoticComponent<SQLiteProviderProps>;
 /**
  * A global hook for accessing the SQLite database across components.
  * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
@@ -100,4 +100,12 @@ export declare function useSQLiteContext(): SQLiteDatabase;
  * @hidden
  */
 export declare function importDatabaseFromAssetAsync(databaseName: string, assetSource: SQLiteProviderAssetSource, directory?: string): Promise<void>;
+/**
+ * Compares two objects deeply for equality.
+ */
+export declare function deepEqual(a: {
+    [key: string]: any;
+} | undefined, b: {
+    [key: string]: any;
+} | undefined): boolean;
 //# sourceMappingURL=hooks.d.ts.map

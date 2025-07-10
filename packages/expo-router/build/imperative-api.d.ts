@@ -80,4 +80,5 @@ export type Router = {
  * @hidden
  */
 export declare const router: Router;
+export declare function ImperativeApiEmitter(): null;
 //# sourceMappingURL=imperative-api.d.ts.map

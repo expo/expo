@@ -49,7 +49,7 @@ export const runServer = async (
   //   console.warn(
   //     chalk.inverse.yellow.bold(' DEPRECATED '),
   //     'The `secure`, `secureCert`, and `secureKey` options are now deprecated. ' +
-  //       'Please use the `secureServerOptions` object instead to pass options to ' +
+  //       'Use the `secureServerOptions` object instead to pass options to ' +
   //       "Metro's https development server.",
   //   );
   // }

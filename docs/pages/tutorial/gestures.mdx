@@ -1,6 +1,7 @@
 ---
 title: Add gestures
 description: In this tutorial, learn how to implement gestures from React Native Gesture Handler and Reanimated libraries.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -56,13 +57,12 @@ An `Animated` component looks at the `style` prop of the component and determine
 
 {/* prettier-ignore */}
 ```tsx components/EmojiSticker.tsx
-import { View } from 'react-native';
+import { ImageSourcePropType, View } from 'react-native';
 /* @tutinfo Import <CODE>Animated</CODE> from <CODE>react-native-reanimated</CODE>. */import Animated from 'react-native-reanimated';/* @end */
-import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
-  stickerSource: ImageSource;
+  stickerSource: ImageSourcePropType;
 };
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
@@ -145,14 +145,13 @@ Next, wrap the `<Animated.Image>` component with the `<GestureDetector>` and mod
 
 {/* prettier-ignore */}
 ```tsx components/EmojiSticker.tsx
-import { View } from 'react-native';
+import { ImageSourcePropType, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
-  stickerSource: ImageSource;
+  stickerSource: ImageSourcePropType;
 };
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
@@ -269,11 +268,11 @@ Next, inside the JSX code:
 ```tsx components/EmojiSticker.tsx
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { type ImageSource } from 'expo-image';
+import { ImageSourcePropType } from 'react-native';
 
 type Props = {
   imageSize: number;
-  stickerSource: ImageSource;
+  stickerSource: ImageSourcePropType;
 };
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {

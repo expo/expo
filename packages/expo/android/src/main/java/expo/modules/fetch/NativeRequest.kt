@@ -43,6 +43,6 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
   fun cancel() {
     val task = this.task ?: return
     task.cancel()
-    response.emitRequestCancelled()
+    response.emitRequestCanceled()
   }
 }

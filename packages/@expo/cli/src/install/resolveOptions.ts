@@ -12,6 +12,8 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   silent?: boolean;
   /** Should be installed as dev dependencies */
   dev?: boolean;
+  /** Should output in JSON format (use with --check) */
+  json?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
@@ -20,6 +22,9 @@ function resolveOptions(options: Options): Options {
   }
   if ([options.npm, options.pnpm, options.yarn, options.bun].filter(Boolean).length > 1) {
     throw new CommandError('BAD_ARGS', 'Specify at most one of: --npm, --pnpm, --yarn, --bun');
+  }
+  if (options.json && !options.check) {
+    throw new CommandError('BAD_ARGS', 'The --json flag can only be used with --check');
   }
   return {
     ...options,
@@ -32,7 +37,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun'],
+    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun', '--json'],
     { variadic, extras, flags },
     'npx expo install'
   );
@@ -48,6 +53,7 @@ export async function resolveArgsAsync(
       npm: !!flags['--npm'],
       pnpm: !!flags['--pnpm'],
       bun: !!flags['--bun'],
+      json: !!flags['--json'],
     }),
     extras,
   };

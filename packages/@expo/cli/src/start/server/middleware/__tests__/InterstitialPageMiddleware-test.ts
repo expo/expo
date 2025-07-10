@@ -69,8 +69,8 @@ describe('_getProjectOptionsAsync', () => {
         version: '123',
       },
     });
-    expect(getConfig).toBeCalled();
-    expect(getRuntimeVersionNullableAsync).toBeCalledWith(
+    expect(getConfig).toHaveBeenCalled();
+    expect(getRuntimeVersionNullableAsync).toHaveBeenCalledWith(
       '/',
       { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       'ios'
@@ -89,8 +89,8 @@ describe('_getProjectOptionsAsync', () => {
         version: '45.0.0',
       },
     });
-    expect(getConfig).toBeCalled();
-    expect(getRuntimeVersionNullableAsync).toBeCalledWith(
+    expect(getConfig).toHaveBeenCalled();
+    expect(getRuntimeVersionNullableAsync).toHaveBeenCalledWith(
       '/',
       { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       'ios'
@@ -171,7 +171,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('mock-value');
+    expect(response.end).toHaveBeenCalledWith('mock-value');
     expect(response.setHeader).toHaveBeenNthCalledWith(
       1,
       'Cache-Control',
@@ -214,7 +214,7 @@ describe('handleRequestAsync', () => {
       response
     );
     expect(response.statusCode).toBe(200);
-    expect(response.end).toBeCalledWith('mock-value');
+    expect(response.end).toHaveBeenCalledWith('mock-value');
     expect(response.setHeader).toHaveBeenNthCalledWith(
       1,
       'Cache-Control',

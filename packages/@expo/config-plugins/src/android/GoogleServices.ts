@@ -78,7 +78,7 @@ export async function setGoogleServicesFile(
   } catch (e) {
     console.log(e);
     throw new Error(
-      `Cannot copy google-services.json from ${completeSourcePath} to ${destinationPath}. Please make sure the source and destination paths exist.`
+      `Cannot copy google-services.json from ${completeSourcePath} to ${destinationPath}. Ensure the source and destination paths exist.`
     );
   }
   return true;

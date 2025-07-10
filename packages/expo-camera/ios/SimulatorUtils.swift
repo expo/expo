@@ -25,6 +25,15 @@ func takePictureForSimulator(
   }
 }
 
+func takePictureRefForSimulator(
+  _ appContext: AppContext?,
+  _ event: CameraEvent,
+  _ options: TakePictureOptions
+) throws -> PictureRef {
+  let generatedPhoto = ExpoCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
+  return PictureRef(generatedPhoto)
+}
+
 func generatePictureForSimulator(
   appContext: AppContext?,
   options: TakePictureOptions

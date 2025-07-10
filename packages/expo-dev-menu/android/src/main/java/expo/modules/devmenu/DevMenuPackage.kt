@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -16,6 +19,8 @@ import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.devmenu.compose.BindingView
+import expo.modules.devmenu.compose.DevMenuViewModel
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
@@ -57,7 +62,9 @@ class DevMenuPackage : Package, ReactPackage {
     return listOf(
       object : ReactActivityHandler {
         override fun createReactRootViewContainer(activity: Activity): ViewGroup {
-          return DevMenuReactRootViewContainer(activity as Context)
+          return FrameLayout(activity).apply {
+            addView(BindingView(activity, lazyViewModel = (activity as AppCompatActivity).viewModels<DevMenuViewModel>()))
+          }
         }
 
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

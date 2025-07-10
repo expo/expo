@@ -1,4 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
+import type { PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -10,6 +11,18 @@ export declare class Paths extends PathUtilities {
      */
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
+    /**
+     * A property that represents the total space on device's internal storage, represented in bytes.
+     */
+    static get totalDiskSpace(): number;
+    /**
+     * A property that represents the available space on device's internal storage, represented in bytes.
+     */
+    static get availableDiskSpace(): number;
+    /**
+     * Returns an object that indicates if the specified path represents a directory.
+     */
+    static info(...uris: string[]): PathInfo;
 }
 /**
  * @hidden

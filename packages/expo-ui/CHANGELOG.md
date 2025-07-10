@@ -6,9 +6,43 @@
 
 ### 🎉 New features
 
+- Add support for icon only button. ([#37899](https://github.com/expo/expo/pull/37899) by [@betomoedano](https://github.com/betomoedano))
+- [iOS] Added `ShareLink` component. ([#37125](https://github.com/expo/expo/pull/37125)) by [@pchalupa](https://github.com/pchalupa)
+- Add ios `glass` button variant. ([#37373](https://github.com/expo/expo/pull/37373) by [@aleqsio](https://github.com/aleqsio))
+- Added `jetpack-compose-primitives`. ([#36257](https://github.com/expo/expo/pull/36257) by [@kudo](https://github.com/kudo))
+- Add support for controlling the state of the DisclosureGroup. ([#37704](https://github.com/expo/expo/pull/37704) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
+- [Android] Add `autoCapitalize` property to `TextInput`. ([#37595](https://github.com/expo/expo/pull/37595) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ### 🐛 Bug fixes
 
+- [iOS] Add `placeholder` TextInput prop. ([#36590](https://github.com/expo/expo/pull/36590) by [@ramonfabrega](https://github.com/ramonfabrega))
+
 ### 💡 Others
+
+- Make `DateTimePicker` label hidden if empty. ([#37665](https://github.com/expo/expo/pull/37665) by [@aleqsio](https://github.com/aleqsio))
+- Fixed `ExpoComposeView` breaking change errors. ([#36256](https://github.com/expo/expo/pull/36256) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.10 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Fixed `BottomSheet` affecting layout outside. ([#37370](https://github.com/expo/expo/pull/37370) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.9 - 2025-06-08
+
+### 🎉 New features
+
+- Allowed custom children in SwiftUI Button. ([#37136](https://github.com/expo/expo/pull/37136) by [@kudo](https://github.com/kudo))
+
+## 0.1.1-alpha.8 - 2025-06-04
+
+### 🎉 New features
+
+- [android] Add shape component. ([#36964](https://github.com/expo/expo/pull/36964) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- Improved `@expo/ui/swift-ui-primitives` integrations. ([#36937](https://github.com/expo/expo/pull/36937), [#36938](https://github.com/expo/expo/pull/36938) by [@kudo](https://github.com/kudo))
 
 ## 0.1.1-alpha.7 — 2025-04-30
 

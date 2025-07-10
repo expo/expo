@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, memo, useContext, useEffect, useRef, useState } from 'react';
 
 import ExpoSQLite from './ExpoSQLite';
 import type { SQLiteOpenOptions } from './NativeDatabase';
@@ -90,26 +90,36 @@ const SQLiteContext = createContext<SQLiteDatabase | null>(null);
  * Context.Provider component that provides a SQLite database to all children.
  * All descendants of this component will be able to access the database using the [`useSQLiteContext`](#usesqlitecontext) hook.
  */
-export function SQLiteProvider({
-  children,
-  onError,
-  useSuspense = false,
-  ...props
-}: SQLiteProviderProps) {
-  if (onError != null && useSuspense) {
-    throw new Error('Cannot use `onError` with `useSuspense`, use error boundaries instead.');
-  }
+export const SQLiteProvider = memo(
+  function SQLiteProvider({
+    children,
+    onError,
+    useSuspense = false,
+    ...props
+  }: SQLiteProviderProps) {
+    if (onError != null && useSuspense) {
+      throw new Error('Cannot use `onError` with `useSuspense`, use error boundaries instead.');
+    }
 
-  if (useSuspense) {
-    return <SQLiteProviderSuspense {...props}>{children}</SQLiteProviderSuspense>;
-  }
+    if (useSuspense) {
+      return <SQLiteProviderSuspense {...props}>{children}</SQLiteProviderSuspense>;
+    }
 
-  return (
-    <SQLiteProviderNonSuspense {...props} onError={onError}>
-      {children}
-    </SQLiteProviderNonSuspense>
-  );
-}
+    return (
+      <SQLiteProviderNonSuspense {...props} onError={onError}>
+        {children}
+      </SQLiteProviderNonSuspense>
+    );
+  },
+  (prevProps: SQLiteProviderProps, nextProps: SQLiteProviderProps) =>
+    prevProps.databaseName === nextProps.databaseName &&
+    deepEqual(prevProps.options, nextProps.options) &&
+    deepEqual(prevProps.assetSource, nextProps.assetSource) &&
+    prevProps.directory === nextProps.directory &&
+    prevProps.onInit === nextProps.onInit &&
+    prevProps.onError === nextProps.onError &&
+    prevProps.useSuspense === nextProps.useSuspense
+);
 
 /**
  * A global hook for accessing the SQLite database across components.
@@ -320,6 +330,28 @@ export async function importDatabaseFromAssetAsync(
     path,
     asset.localUri,
     assetSource.forceOverwrite ?? false
+  );
+}
+
+/**
+ * Compares two objects deeply for equality.
+ */
+export function deepEqual(
+  a: { [key: string]: any } | undefined,
+  b: { [key: string]: any } | undefined
+): boolean {
+  if (a === b) {
+    return true;
+  }
+  if (a == null || b == null) {
+    return false;
+  }
+  if (typeof a !== 'object' || typeof b !== 'object') {
+    return false;
+  }
+  return (
+    Object.keys(a).length === Object.keys(b).length &&
+    Object.keys(a).every((key) => deepEqual(a[key], b[key]))
   );
 }
 

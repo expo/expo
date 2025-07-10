@@ -48,6 +48,8 @@ describe('ExponentImagePicker', () => {
           return element;
         };
       })(document.createElement);
+
+      globalThis.URL.createObjectURL = jest.fn(() => 'blob:http://localhost/nice-blob-url');
     });
 
     afterAll(() => {
@@ -76,13 +78,11 @@ describe('ExponentImagePicker', () => {
       await expect(pickerPromise).resolves.toMatchObject({
         canceled: false,
         assets: [
-          {
+          expect.objectContaining({
             fileName: 'hello.png',
-            height: 0,
-            width: 0,
             mimeType: 'image/png',
-            uri: 'data:image/png;base64,aGVsbG8=',
-          },
+            uri: expect.stringMatching(/^blob:/),
+          }),
         ],
       });
     });

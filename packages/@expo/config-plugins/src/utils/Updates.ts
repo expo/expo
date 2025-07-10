@@ -11,7 +11,7 @@ import * as IOSVersion from '../ios/Version';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
-  'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'
+  'sdkVersion' | 'runtimeVersion' | 'updates' | 'slug'
 >;
 
 export const FINGERPRINT_RUNTIME_VERSION_SENTINEL = 'file:fingerprint';

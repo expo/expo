@@ -41,7 +41,7 @@ try {
 ### Downloading files
 
 ```ts example.ts
-import { File, Paths } from 'expo-file-system/next';
+import { Directory, File, Paths } from 'expo-file-system/next';
 
 const url = 'https://pdfobject.com/pdf/sample.pdf';
 const destination = new Directory(Paths.cache, 'pdfs');
@@ -58,7 +58,7 @@ try {
 ### Moving and copying files
 
 ```ts example.ts
-import { File, Paths } from 'expo-file-system/next';
+import { Directory, File, Paths } from 'expo-file-system/next';
 
 try {
   const file = new File(Paths.document, 'example.txt');

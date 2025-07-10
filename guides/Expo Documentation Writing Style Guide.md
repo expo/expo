@@ -179,9 +179,9 @@ We, sometimes, have buttons that lead to an Expo Snack. Use title case for these
 - Correct: Try this example on Snack
 - Incorrect: Try This Example On Snack
 
-### File and directory names as bold text
+### File names, directory names, file extensions as bold text
 
-File and directory names are used as bold text in the markdown files.
+File names, directory names and file extensions are used as bold text in the markdown files.
 
 Example:
 
@@ -192,6 +192,11 @@ Example:
 
 - Correct: If you commit your **android** or **ios** directories, it won't work.
 - Incorrect: If you commit your `android` or `ios` directories, it won't work.
+
+Example:
+
+- Correct: This command should produce **.tar.gz** archive.
+- Incorrect: This command should produce .tar.gz archive.
 
 ### Capitalization
 

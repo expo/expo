@@ -37,7 +37,7 @@ export function sendWorkerResult({
     const { lockBuffer, resultBuffer } = syncTrait;
     const lock = new Int32Array(lockBuffer);
     const resultArray = new Uint8Array(resultBuffer);
-    const resultJson = result ? serialize({ result }) : serialize({ error });
+    const resultJson = error != null ? serialize({ error }) : serialize({ result });
     const resultBytes = new TextEncoder().encode(resultJson);
     const length = resultBytes.length;
     resultArray.set(new Uint32Array([length]), 0);
@@ -117,13 +117,23 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
   });
 
   let i = 0;
+  // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
+  const useAtomicsPause = typeof Atomics.pause === 'function';
   while (Atomics.load(lock, 0) === PENDING) {
-    // NOTE(kudo): Unfortunate busy loop,
-    // because we don't have a way for main thread to yield its execution to other callbacks.
-    // Maybe we can wait for [`Atomics.pause`](https://github.com/tc39/proposal-atomics-microwait) to be implemented.
     ++i;
-    if (i > 1000000000) {
-      throw new Error('Sync operation timeout');
+
+    if (useAtomicsPause) {
+      if (i > 1_000_000) {
+        throw new Error('Sync operation timeout');
+      }
+      // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
+      Atomics.pause();
+    } else {
+      // NOTE(kudo): Unfortunate for the busy loop,
+      // because we don't have a way for main thread to yield its execution to other callbacks.
+      if (i > 1000_000_000) {
+        throw new Error('Sync operation timeout');
+      }
     }
   }
 

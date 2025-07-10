@@ -20,6 +20,27 @@ function getHotReplaceTemplate(id) {
 }
 function wrapDevelopmentCSS(props) {
     const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
+    // Ensure we had HMR support to the CSS module in development.
+    // Why?
+    // -----
+    // • Metro recompiles *every* direct dependency of the file you edit. When you
+    //   change a component that imports a CSS-module, Metro re-emits the JS stub
+    //   that represents that `*.module.css` file, marking it "updated".
+    // • The stub exports a plain object (class-name strings) which React-Refresh
+    //   does **not** recognise as a component -> the stub itself cannot be a refresh
+    //   boundary.
+    // • If an UPDATED, NON-BOUNDARY module bubbles all the way up the dependency
+    //   graph without meeting another UPDATED boundary, React-Refresh falls
+    //   back to a full reload — wiping React state and breaking fast-refresh.
+    // • That is exactly what happened: `modal.module.css` changed, its parent
+    //   (ModalStack.web.tsx) *didn't* change, so refresh bailed out.
+    //
+    // Solution
+    // ---------
+    // We import the CSS here and immediately call `module.hot.accept()` so the
+    // update is consumed at this level. React-Refresh no longer has to walk past
+    // the stub, the rest of the graph (including the edited component) hot-swaps
+    // normally, and local state is preserved.
     const injectClientStyle = `const head = document.head || document.getElementsByTagName('head')[0];
 const style = document.createElement('style');
 ${getHotReplaceTemplate(props.filename)}
@@ -51,6 +72,8 @@ if (typeof window === 'undefined') {
   return
 }
 ${injectClientStyle}
+
+if (module.hot) module.hot.accept();
 })();`;
     return injectStyle;
 }

@@ -100,4 +100,21 @@ public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDeleg
       completionHandler(.performDefaultHandling, nil)
     }
   }
+
+  public func urlSession(
+    _ session: URLSession,
+    task: URLSessionTask,
+    didSendBodyData bytesSent: Int64,
+    totalBytesSent: Int64,
+    totalBytesExpectedToSend: Int64
+  ) {
+    if let delegate = getDelegate(task: task) {
+      delegate.urlSession?(
+        session,
+        task: task,
+        didSendBodyData: bytesSent,
+        totalBytesSent: totalBytesSent,
+        totalBytesExpectedToSend: totalBytesExpectedToSend)
+    }
+  }
 }

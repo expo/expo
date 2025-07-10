@@ -1,5 +1,5 @@
 import { PermissionStatus, Platform } from 'expo-modules-core';
-import { CameraType, MediaTypeOptions, } from './ImagePicker.types';
+import { CameraType, } from './ImagePicker.types';
 import { parseMediaTypes } from './utils';
 const MediaTypeInput = {
     images: 'image/*',
@@ -18,7 +18,7 @@ export default {
             base64,
         });
     },
-    async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, cameraType, }) {
+    async launchCameraAsync({ mediaTypes = ['images'], allowsMultipleSelection = false, base64 = false, cameraType, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
             return { canceled: true, assets: null };
@@ -58,6 +58,10 @@ function permissionGrantedResponse() {
         canAskAgain: true,
     };
 }
+/**
+ * Opens a file browser dialog or camera on supported platforms and returns the selected files.
+ * Handles both single and multiple file selection.
+ */
 function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, base64, }) {
     const parsedMediaTypes = parseMediaTypes(mediaTypes);
     const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
@@ -76,10 +80,10 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                 input.setAttribute('capture', 'camera');
                 break;
             case CameraType.front:
-                input.setAttribute('capture', 'environment');
+                input.setAttribute('capture', 'user');
                 break;
             case CameraType.back:
-                input.setAttribute('capture', 'user');
+                input.setAttribute('capture', 'environment');
         }
     }
     document.body.appendChild(input);
@@ -102,68 +106,105 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.dispatchEvent(event);
     });
 }
-function readFile(targetFile, options) {
+/**
+ * Gets metadata for an image file using a blob URL
+ * TODO (Hirbod): add exif support for feature parity with native
+ */
+async function getImageMetadata(blobUrl) {
+    return new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => {
+            resolve({
+                width: image.naturalWidth ?? image.width,
+                height: image.naturalHeight ?? image.height,
+            });
+        };
+        image.onerror = () => resolve({ width: 0, height: 0 });
+        image.src = blobUrl;
+    });
+}
+/**
+ * Gets metadata for a video file using a blob URL
+ */
+async function getVideoMetadata(blobUrl) {
+    return new Promise((resolve) => {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+            resolve({
+                width: video.videoWidth,
+                height: video.videoHeight,
+                duration: video.duration,
+            });
+        };
+        video.onerror = () => resolve({ width: 0, height: 0, duration: 0 });
+        video.src = blobUrl;
+    });
+}
+/**
+ * Reads a file as base64
+ */
+async function readFileAsBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = () => {
-            reject(new Error(`Failed to read the selected media because the operation failed.`));
+            reject(new Error('Failed to read the selected media because the operation failed.'));
         };
-        reader.onload = ({ target }) => {
-            const uri = target.result;
-            const returnRaw = () => resolve({ uri, width: 0, height: 0 });
-            const returnMediaData = (data) => {
-                resolve({
-                    ...data,
-                    ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
-                    file: targetFile,
-                });
-            };
-            if (typeof uri === 'string') {
-                if (targetFile.type.startsWith('image/')) {
-                    const image = new Image();
-                    image.src = uri;
-                    image.onload = () => {
-                        returnMediaData({
-                            uri,
-                            width: image.naturalWidth ?? image.width,
-                            height: image.naturalHeight ?? image.height,
-                            type: 'image',
-                            mimeType: targetFile.type,
-                            fileName: targetFile.name,
-                            fileSize: targetFile.size,
-                        });
-                    };
-                    image.onerror = () => returnRaw();
-                }
-                else if (targetFile.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.preload = 'metadata';
-                    video.src = uri;
-                    video.onloadedmetadata = () => {
-                        returnMediaData({
-                            uri,
-                            width: video.videoWidth,
-                            height: video.videoHeight,
-                            type: 'video',
-                            mimeType: targetFile.type,
-                            fileName: targetFile.name,
-                            fileSize: targetFile.size,
-                            duration: video.duration,
-                        });
-                    };
-                    video.onerror = () => returnRaw();
-                }
-                else {
-                    returnRaw();
-                }
+        reader.onload = (event) => {
+            const result = event.target?.result;
+            if (typeof result !== 'string') {
+                reject(new Error('Failed to read file as base64'));
+                return;
             }
-            else {
-                returnRaw();
-            }
+            // Remove the data URL prefix to get just the base64 data
+            resolve(result.split(',')[1]);
         };
-        reader.readAsDataURL(targetFile);
+        reader.readAsDataURL(file);
     });
 }
+/**
+ * Reads a file and returns its data as an ImagePickerAsset.
+ * Handles both base64 and blob URL modes, and extracts metadata for images and videos.
+ */
+async function readFile(targetFile, options) {
+    const mimeType = targetFile.type;
+    const baseUri = URL.createObjectURL(targetFile);
+    try {
+        let metadata;
+        let base64;
+        if (mimeType.startsWith('image/')) {
+            metadata = await getImageMetadata(baseUri);
+        }
+        else if (mimeType.startsWith('video/')) {
+            metadata = await getVideoMetadata(baseUri);
+        }
+        else {
+            throw new Error(`Unsupported file type: ${mimeType}. Only images and videos are supported.`);
+        }
+        if (options.base64) {
+            base64 = await readFileAsBase64(targetFile);
+        }
+        return {
+            uri: baseUri,
+            width: metadata.width,
+            height: metadata.height,
+            type: mimeType.startsWith('image/') ? 'image' : 'video',
+            mimeType,
+            fileName: targetFile.name,
+            fileSize: targetFile.size,
+            file: targetFile,
+            ...(metadata.duration !== undefined && { duration: metadata.duration }),
+            ...(base64 && { base64 }),
+        };
+    }
+    catch (error) {
+        throw error;
+    }
+}
+/**
+ * Creates the accept attribute value for the file input based on the requested media types.
+ * Filters out livePhotos as they're not supported on web.
+ */
 function createMediaTypeFormat(mediaTypes) {
     const filteredMediaTypes = mediaTypes.filter((mediaType) => mediaType !== 'livePhotos');
     if (filteredMediaTypes.length === 0) {

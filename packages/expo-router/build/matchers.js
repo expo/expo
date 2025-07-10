@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.matchDynamicName = matchDynamicName;
-exports.matchDeepDynamicRouteName = matchDeepDynamicRouteName;
 exports.testNotFound = testNotFound;
 exports.matchGroupName = matchGroupName;
 exports.matchLastGroupName = matchLastGroupName;
@@ -14,15 +13,20 @@ exports.removeFileSystemDots = removeFileSystemDots;
 exports.stripGroupSegmentsFromPath = stripGroupSegmentsFromPath;
 exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
 exports.isTypedRoute = isTypedRoute;
+/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+const dynamicNameRe = /^\[([^[\]]+?)\]$/;
 /** Match `[page]` -> `page` */
 function matchDynamicName(name) {
-    // Don't match `...` or `[` or `]` inside the brackets
-    // eslint-disable-next-line no-useless-escape
-    return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
-}
-/** Match `[...page]` -> `page` */
-function matchDeepDynamicRouteName(name) {
-    return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
+    const paramName = name.match(dynamicNameRe)?.[1];
+    if (paramName == null) {
+        return undefined;
+    }
+    else if (paramName.startsWith('...')) {
+        return { name: paramName.slice(3), deep: true };
+    }
+    else {
+        return { name: paramName, deep: false };
+    }
 }
 /** Test `/` -> `page` */
 function testNotFound(name) {
@@ -30,15 +34,15 @@ function testNotFound(name) {
 }
 /** Match `(page)` -> `page` */
 function matchGroupName(name) {
-    return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
+    return name.match(/^(?:[^\\()])*?\(([^\\/]+)\)/)?.[1];
 }
 /** Match `(app)/(page)` -> `page` */
 function matchLastGroupName(name) {
-    return name.match(/.*(?:\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+    return name.match(/.*(?:\/|^)\(([^\\/]+)\)[^\s]*$/)?.[1];
 }
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 function matchArrayGroupName(name) {
-    return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];
+    return name.match(/(?:[^\\()])*?\(([^\\/]+,[^\\/]+)\)/)?.[1];
 }
 function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));

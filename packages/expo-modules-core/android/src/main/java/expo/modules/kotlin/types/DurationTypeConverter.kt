@@ -9,15 +9,15 @@ import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class DurationTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Duration>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Duration {
+class DurationTypeConverter : DynamicAwareTypeConverters<Duration>() {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Duration {
     if (value.type != ReadableType.Number) {
       throw IllegalArgumentException("Expected a number, but received ${value.type}")
     }
     return value.asDouble().toDuration(DurationUnit.SECONDS)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Duration {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Duration {
     return (value as Double).toDuration(DurationUnit.SECONDS)
   }
 

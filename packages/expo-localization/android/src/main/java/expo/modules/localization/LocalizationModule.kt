@@ -6,14 +6,11 @@ import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.text.TextUtils
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
 import android.util.Log
-import android.view.View
 import androidx.core.os.LocaleListCompat
-import androidx.core.os.bundleOf
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
@@ -31,14 +28,6 @@ class LocalizationModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalization")
-
-    Constants {
-      bundledConstants.toShallowMap()
-    }
-
-    AsyncFunction<Bundle>("getLocalizationAsync") {
-      return@AsyncFunction bundledConstants
-    }
 
     Function("getLocales") {
       return@Function getPreferredLocales()
@@ -96,45 +85,6 @@ class LocalizationModule : Module() {
       }
     }
   }
-
-  // TODO: Bacon: add set language
-  private val bundledConstants: Bundle
-    get() {
-      val locale = Locale.getDefault()
-      val localeNames = getLocaleNames(locales)
-      val isRTL = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL
-      val region = getRegionCode(locale)
-      val symbols = DecimalFormatSymbols(locale)
-      return bundleOf(
-        "currency" to getCurrencyCode(locale),
-        "decimalSeparator" to symbols.decimalSeparator.toString(),
-        "digitGroupingSeparator" to symbols.groupingSeparator.toString(),
-        "isoCurrencyCodes" to ISOCurrencyCodes,
-        "isMetric" to !USES_IMPERIAL.contains(region),
-        "isRTL" to isRTL,
-        // TODO: (barthap) this can throw IndexOutOfBounds exception - handle this properly
-        "locale" to localeNames[0],
-        "locales" to localeNames,
-        "region" to region,
-        "timezone" to TimeZone.getDefault().id
-      )
-    }
-
-  private val locales: List<Locale>
-    get() {
-      val context = appContext.reactContext ?: return emptyList()
-      val configuration = context.resources.configuration
-      return if (VERSION.SDK_INT > VERSION_CODES.N) {
-        val locales = ArrayList<Locale>()
-        for (i in 0 until configuration.locales.size()) {
-          locales.add(configuration.locales[i])
-        }
-        locales
-      } else {
-        @Suppress("DEPRECATION")
-        listOf(configuration.locale)
-      }
-    }
 
   private fun getMeasurementSystem(locale: Locale): String? {
     return if (VERSION.SDK_INT >= VERSION_CODES.P) {

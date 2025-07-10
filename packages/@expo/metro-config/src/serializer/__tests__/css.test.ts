@@ -156,7 +156,7 @@ it(`supports url with abstract imports for style attributes in CSS module`, asyn
   // Ensure the HMR code contains the updates.
   expect(artifacts[0].source).toMatch('mask:url(\\"data:xxx\\")');
   expect(artifacts[1].source).toMatch(
-    '.EcQGha_appIcon{mask:url("data:xxx") 50%/100% 100% no-repeat}'
+    '.EcQGha_appIcon{-webkit-mask:url("data:xxx") 50%/100% 100% no-repeat;mask:url("data:xxx") 50%/100% 100% no-repeat}'
   );
 });
 

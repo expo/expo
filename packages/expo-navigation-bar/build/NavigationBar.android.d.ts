@@ -15,5 +15,4 @@ export declare function setBehaviorAsync(behavior: NavigationBarBehavior): Promi
 export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
 export declare function setStyle(style: NavigationBarStyle): void;
 export declare function useVisibility(): NavigationBarVisibility | null;
-export * from './NavigationBar.types';
 //# sourceMappingURL=NavigationBar.android.d.ts.map

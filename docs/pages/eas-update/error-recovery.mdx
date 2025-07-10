@@ -19,7 +19,7 @@ The important thing is to **publish a new update with a fix as soon as possible 
 
 The first thing to try is rolling back to an older update that you know was working. **However, this may not always be safe;** your broken update may, for example, have modified persistent state (such as data stored in AsyncStorage or on the device's file system) in a non-backwards-compatible way. It's important to test in a staging environment that emulates an end user's device state as closely as possible to load the broken update and then roll back.
 
-If you can identify an older update that is safe to roll back to, you can do so using EAS Update's `republish` option from [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/updates) or [EAS CLI](/eas-update/eas-cli/#republish-a-previous-update-within-a-branch).
+If you can identify an older update that is safe to roll back to, you can do so using EAS Update's `republish` option from [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/updates) or [EAS CLI](/eas-update/eas-cli/#republish-a-previous-update-within-a-branch).
 
 If you cannot identify an older update that is safe to roll back to, you'll need to fix it forward. While it's best to roll out a fix as quickly as possible, you should take the time to ensure your fix is solid, and know that even users who download your broken update in the meantime should be able to download your fix.
 

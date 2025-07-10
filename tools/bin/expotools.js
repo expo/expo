@@ -22,6 +22,17 @@ function createLogModifier(modifier) {
     }
   };
 }
+
+/**
+ * Extract the complete spawn output, by line.
+ * This is useful for outputting errors encountered in spawn commands.
+ *
+ * @param {import('@expo/spawn-async').SpawnResult} result
+ */
+function getSpawnOutputLines(result) {
+  return result.output.map((line) => line.split('\n')).flat();
+}
+
 /**
  * Importing chalk directly may lead to errors
  * if it's not yet available on the machine.
@@ -52,7 +63,14 @@ async function maybeRebuildAndRun() {
     try {
       await spawnAsync('yarn', ['install'], { cwd: ROOT_PATH });
     } catch (error) {
-      console.error(LogModifiers.error(` 💥 Yarning failed: ${error.stack}`));
+      console.error(LogModifiers.error(` 💥 Yarning failed:`));
+      console.error(
+        LogModifiers.error(
+          getSpawnOutputLines(error)
+            .map((line) => `    ${line}`)
+            .join('\n')
+        )
+      );
       process.exit(1);
     }
   }
@@ -66,7 +84,14 @@ async function maybeRebuildAndRun() {
       await spawnAsync('yarn', ['run', 'build'], { cwd: ROOT_PATH });
       state.schema = await getCommandsSchemaAsync();
     } catch (error) {
-      console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
+      console.error(LogModifiers.error(` 💥 Rebuilding failed:`));
+      console.error(
+        LogModifiers.error(
+          getSpawnOutputLines(error)
+            .map((line) => `    ${line}`)
+            .join('\n')
+        )
+      );
       process.exit(1);
     }
     console.log(` ✨ Successfully built ${LogModifiers.name('expotools')}\n`);

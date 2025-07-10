@@ -1,19 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
-import React
+import SwiftUI
 
 class DevMenuViewController: UIViewController {
-  static let JavaScriptDidLoadNotification = Notification.Name("RCTJavaScriptDidLoadNotification")
-  static let ContentDidAppearNotification = Notification.Name("RCTContentDidAppearNotification")
+  static let ContentDidAppearNotification = Notification.Name("DevMenuContentDidAppearNotification")
 
   private let manager: DevMenuManager
-  private var reactRootView: UIView?
+  private var hostingController: UIHostingController<DevMenuRootView>?
 
   init(manager: DevMenuManager) {
     self.manager = manager
-
     super.init(nibName: nil, bundle: nil)
+
     edgesForExtendedLayout = UIRectEdge.init(rawValue: 0)
     extendedLayoutIncludesOpaqueBars = true
   }
@@ -22,35 +21,18 @@ class DevMenuViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func updateProps() {
-    if let reactRootView = reactRootView as? RCTRootView {
-      reactRootView.appProperties = initialProps()
-    } else if let reactRootView = reactRootView as? RCTSurfaceHostingProxyRootView {
-      reactRootView.appProperties = initialProps()
-    }
-  }
-
-  // MARK: UIViewController
-
   override func viewDidLoad() {
     super.viewDidLoad()
-    rebuildRootView()
-  }
-
-  override func viewWillLayoutSubviews() {
-    super.viewWillLayoutSubviews()
-    reactRootView?.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.height)
+    setupSwiftUIView()
   }
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    reactRootView?.becomeFirstResponder()
+    NotificationCenter.default.post(name: DevMenuViewController.ContentDidAppearNotification, object: nil)
   }
 
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    get {
-      return UIInterfaceOrientationMask.all
-    }
+    return UIInterfaceOrientationMask.all
   }
 
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
@@ -60,40 +42,24 @@ class DevMenuViewController: UIViewController {
     set {}
   }
 
-  // MARK: private
+  private func setupSwiftUIView() {
+    let rootView = DevMenuRootView()
+    let hostingController = UIHostingController(rootView: rootView)
 
-  private func initialProps() -> [String: Any] {
-#if targetEnvironment(simulator)
-    let isSimulator = true
-#else
-    let isSimulator = false
-#endif
+    hostingController.view.backgroundColor = UIColor.clear
 
-    return [
-      "showOnboardingView": manager.shouldShowOnboarding(),
-      "appInfo": manager.getAppInfo(),
-      "devSettings": manager.getDevSettings(),
-      "menuPreferences": DevMenuPreferences.serialize(),
-      "uuid": UUID.init().uuidString,
-      "isDevice": !isSimulator,
-      "registeredCallbacks": manager.registeredCallbacks.map { $0.name }
-    ]
-  }
+    addChild(hostingController)
+    view.addSubview(hostingController.view)
+    hostingController.didMove(toParent: self)
 
-  private func rebuildRootView() {
-    reactRootView = manager.appInstance.reactNativeFactory?.rootViewFactory.view(withModuleName: "main", initialProperties: initialProps())
-    reactRootView?.frame = view.bounds
-    reactRootView?.backgroundColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
-      if traitCollection.userInterfaceStyle == .dark {
-        return  UIColor(red: 22 / 255.0, green: 27 / 255.0, blue: 34 / 255.0, alpha: 1)
-      }
+    hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+      hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+    ])
 
-      return UIColor.clear
-    }
-
-    if isViewLoaded, let reactRootView = reactRootView {
-      view.addSubview(reactRootView)
-      view.setNeedsLayout()
-    }
+    self.hostingController = hostingController
   }
 }

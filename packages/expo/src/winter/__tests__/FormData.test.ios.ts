@@ -98,7 +98,7 @@ describe('FormData', () => {
       a.append('c', 'd');
       const forEach = jest.fn();
       a.forEach(forEach);
-      expect(forEach).toBeCalledTimes(2);
+      expect(forEach).toHaveBeenCalledTimes(2);
     });
 
     it(`asserts getting too few arguments`, () => {
@@ -138,21 +138,21 @@ describe('FormData', () => {
         expect(key).toBe('a');
         expect(value).toBe('b');
       }
-      expect(fn).toBeCalledTimes(1);
+      expect(fn).toHaveBeenCalledTimes(1);
 
       const keysFn = jest.fn();
       for (const key of a.keys()) {
         keysFn(key);
         expect(key).toBe('a');
       }
-      expect(keysFn).toBeCalledTimes(1);
+      expect(keysFn).toHaveBeenCalledTimes(1);
 
       const valuesFn = jest.fn();
       for (const value of a.values()) {
         valuesFn(value);
         expect(value).toBe('b');
       }
-      expect(valuesFn).toBeCalledTimes(1);
+      expect(valuesFn).toHaveBeenCalledTimes(1);
 
       const entriesFn = jest.fn();
       for (const [key, value] of a.entries()) {
@@ -160,7 +160,7 @@ describe('FormData', () => {
         expect(key).toBe('a');
         expect(value).toBe('b');
       }
-      expect(entriesFn).toBeCalledTimes(1);
+      expect(entriesFn).toHaveBeenCalledTimes(1);
     });
   });
 });

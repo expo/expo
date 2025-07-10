@@ -290,7 +290,7 @@ describe(withExtendedResolver, () => {
           platform
         );
 
-        expect(getResolveFunc()).not.toBeCalled();
+        expect(getResolveFunc()).not.toHaveBeenCalled();
       });
     });
 
@@ -313,7 +313,7 @@ describe(withExtendedResolver, () => {
         'web'
       );
 
-      expect(getResolveFunc()).toBeCalled();
+      expect(getResolveFunc()).toHaveBeenCalled();
     });
 
     it(`resolves production react files normally when bundling for production`, async () => {
@@ -334,7 +334,7 @@ describe(withExtendedResolver, () => {
         'web'
       );
 
-      expect(getResolveFunc()).toBeCalled();
+      expect(getResolveFunc()).toHaveBeenCalled();
     });
   });
 

@@ -31,6 +31,12 @@ fun interface JSAssertion {
 
   class DoubleEqual(expectedValue: Double) :
     Equal<Double>(expectedValue, JavaScriptValue::getDouble)
+
+  class IsNull : JSAssertion {
+    override fun invoke(value: JavaScriptValue) {
+      Truth.assertThat(value.isNull()).isTrue()
+    }
+  }
 }
 
 internal class TestCase<T, R>(

@@ -13,6 +13,13 @@ internal class FileSystemPath: SharedObject {
     try ensurePathPermission(appContext, path: url.path, flag: flag)
   }
 
+  func checkPermission(_ flag: EXFileSystemPermissionFlags) -> Bool {
+    guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+      return false
+    }
+    return permissionsManager.getPathPermissions(url.path).contains(flag)
+  }
+
   func validateCanCreate(_ options: CreateOptions) throws {
     if try !options.overwrite && exists {
       throw FileAlreadyExistsException("File already exists")

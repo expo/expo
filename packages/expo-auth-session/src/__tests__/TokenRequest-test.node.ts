@@ -196,6 +196,11 @@ describe('TokenResponse', () => {
     const freshToken = new TokenResponse({ accessToken: '', issuedAt: tenMinsAgo });
     expect(TokenResponse.isTokenFresh(freshToken)).toBe(true);
   });
+  it(`supports reading non-spec fields via rawResponse`, () => {
+    const rawResponse = { access_token: 'access-token', refresh_token_expires_in: 525600 };
+    const response = new TokenResponse({ accessToken: rawResponse.access_token }, rawResponse);
+    expect(response.rawResponse).toBe(rawResponse);
+  });
   it(`knows a token isn't fresh`, () => {
     const fiveMins = 1800;
     const tenMinsAgo = getCurrentTimeInSeconds() - 3600;

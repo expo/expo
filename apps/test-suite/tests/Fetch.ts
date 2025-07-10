@@ -240,6 +240,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
+      expect(error.message).toContain('Fetch request has been canceled');
       expect(hasReceivedChunk).toBe(false);
     });
   });

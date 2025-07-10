@@ -1,6 +1,7 @@
 ---
 title: Take a screenshot
 description: In this tutorial, learn how to capture a screenshot using a third-party library and Expo Media Library.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -110,13 +111,12 @@ Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with t
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { View, StyleSheet } from 'react-native';
+import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState, useRef } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as MediaLibrary from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
-import { type ImageSource } from 'expo-image';
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -132,7 +132,7 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
   const [status, requestPermission] = MediaLibrary.usePermissions();
   const imageRef = useRef<View>(null);
 

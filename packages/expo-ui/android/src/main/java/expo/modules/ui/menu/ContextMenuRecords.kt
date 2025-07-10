@@ -42,7 +42,7 @@ class ContextMenuButtonProps(
   @Field val text: String = "",
   @Field val variant: ButtonVariant? = ButtonVariant.DEFAULT,
   @Field val elementColors: ButtonColors = ButtonColors(),
-  @Field val disabled: Boolean = false,
+  @Field val disabled: Boolean = false
 ) : Record, Serializable
 
 class ContextMenuSwitchProps(

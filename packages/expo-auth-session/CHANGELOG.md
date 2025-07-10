@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 6.2.1 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.0 - 2025-06-04
+
+### 🎉 New features
+
+- Added `rawResponse` to `TokenResponse`, allows reading fields that are not part of RFC 6749. ([#20284](https://github.com/expo/expo/pull/20284) by [@stefan-schweiger](https://github.com/stefan-schweiger))
+
+### 🐛 Bug fixes
+
+- Allow `preferEphemeralSession` in promptAsync method. ([#35489](https://github.com/expo/expo/pull/35489) by [@TJTorola](https://github.com/TJTorola))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
 ## 6.1.5 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

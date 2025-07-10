@@ -69,7 +69,7 @@ describe(assertUnexpectedVariadicFlags, () => {
         flags: { '-D': true },
         extras: [],
       })
-    ).toThrowError('Did you mean: chalk -- -D');
+    ).toThrow('Did you mean: chalk -- -D');
   });
 
   it(`splits unknown flags and combines existing extras`, () => {
@@ -79,7 +79,7 @@ describe(assertUnexpectedVariadicFlags, () => {
         flags: { '-D': true },
         extras: ['--ignore-scripts'],
       })
-    ).toThrowError('Did you mean: chalk -- --ignore-scripts -D');
+    ).toThrow('Did you mean: chalk -- --ignore-scripts -D');
   });
 
   it(`accepts empty variadic`, () => {
@@ -89,7 +89,7 @@ describe(assertUnexpectedVariadicFlags, () => {
         flags: { '--ignore-scripts': true, '-D': true },
         extras: [],
       })
-    ).toThrowError('Did you mean: -- --ignore-scripts -D');
+    ).toThrow('Did you mean: -- --ignore-scripts -D');
   });
 
   it('prepends command prefix', () => {
@@ -103,6 +103,6 @@ describe(assertUnexpectedVariadicFlags, () => {
         },
         'npx expo install'
       )
-    ).toThrowError('Did you mean: npx expo install chalk -- -D');
+    ).toThrow('Did you mean: npx expo install chalk -- -D');
   });
 });

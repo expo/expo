@@ -10,6 +10,45 @@
 
 ### 💡 Others
 
+## 0.13.4 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added support for ignoring the patches directory ([#37702](https://github.com/expo/expo/pull/37702) by [@huextrat](https://github.com/huextrat))
+- Fixed unstable fingerprint from packages with native binaries like `sharp`. ([#37733](https://github.com/expo/expo/pull/37733) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `sharp@~0.32.0`. ([#37758](https://github.com/expo/expo/pull/37758) by [@kudo](https://github.com/kudo))
+
+## 0.13.1 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Move `glob` from `devDependencies` to `dependencies` as its used outside test code. ([#37332](https://github.com/expo/expo/pull/37332) by [@byCedric](https://github.com/byCedric))
+
+## 0.13.0 - 2025-06-08
+
+### 🎉 New features
+
+- Ignored native directories for CNG projects. ([#37205](https://github.com/expo/expo/pull/37205) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+- Added `--transitive-linking-dependencies` for `react-native-edge-to-edge` autolinking. ([#37209](https://github.com/expo/expo/pull/37209) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Added `useCNGForPlatforms` to indicate project workflow. ([#37204](https://github.com/expo/expo/pull/37204) by [@kudo](https://github.com/kudo))
+- Refactored Expo config loading logic into **ExpoConfig.ts**. ([#37208](https://github.com/expo/expo/pull/37208) by [@kudo](https://github.com/kudo))
+
 ## 0.12.4 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

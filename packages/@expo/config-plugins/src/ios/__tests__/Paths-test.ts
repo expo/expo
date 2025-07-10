@@ -9,6 +9,7 @@ import {
   getAllInfoPlistPaths,
   getAppDelegate,
   getXcodeProjectPath,
+  getPBXProjectPath,
   getPodfilePath,
 } from '../Paths';
 
@@ -274,5 +275,18 @@ describe(getAllInfoPlistPaths, () => {
       '/app/ios/ExampleE2ETests/Info.plist',
       '/app/ios/ExampleE2E-tvOSTests/Info.plist',
     ]);
+  });
+});
+
+describe(getPBXProjectPath, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it(`gets the pbxproj path`, () => {
+    vol.fromJSON({
+      '/app/ios/app.xcodeproj/project.pbxproj': '',
+    });
+    expect(getPBXProjectPath('/app')).toBe('/app/ios/app.xcodeproj/project.pbxproj');
   });
 });

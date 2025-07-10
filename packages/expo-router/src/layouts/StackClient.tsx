@@ -16,9 +16,13 @@ import {
   NativeStackNavigationOptions,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
-import { ComponentProps } from 'react';
+import { nanoid } from 'nanoid/non-secure';
+import { ComponentProps, useMemo } from 'react';
+import { StackAnimationTypes } from 'react-native-screens';
 
 import { withLayoutContext } from './withLayoutContext';
+import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
+import { RouterModal } from '../modal/web/ModalStack.web';
 import { SingularOptions, getSingularId } from '../useScreens';
 import { Protected } from '../views/Protected';
 
@@ -26,24 +30,75 @@ type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
 
+/**
+ * We extend NativeStackNavigationOptions with our custom props
+ * to allow for several extra props to be used on web, like modalWidth
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+  webModalStyle?: {
+    /**
+     * Override the width of the modal (px or percentage). Only applies on web platform.
+     * @platform web
+     */
+    width?: number | string;
+    /**
+     * Override the height of the modal (px or percentage). Applies on web desktop.
+     * @platform web
+     */
+    height?: number | string;
+    /**
+     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+     * @platform web
+     */
+    minHeight?: number | string;
+    /**
+     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+     * @platform web
+     */
+    minWidth?: number | string;
+    /**
+     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+     * @platform web
+     */
+    border?: string;
+    /**
+     * Override the overlay background color (any valid CSS color or rgba/hsla value).
+     * @platform web
+     */
+    overlayBackground?: string;
+  };
+};
+
 const RNStack = withLayoutContext<
-  NativeStackNavigationOptions,
+  ExtendedStackNavigationOptions,
   typeof NativeStackNavigator,
   StackNavigationState<ParamListBase>,
   NativeStackNavigationEventMap
 >(NativeStackNavigator);
 
+type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
+type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;
+type ExpoNavigationAction = Omit<RNNavigationAction, 'payload'> & {
+  payload: RNNavigationAction['payload'] & {
+    previewKey?: string;
+  };
+};
+
 function isStackAction(
   action: NavigationAction
-): action is StackActionType | Extract<CommonNavigationAction, { type: 'NAVIGATE' }> {
+): action is StackActionType | RNPreloadAction | ExpoNavigationAction {
   return (
     action.type === 'PUSH' ||
     action.type === 'NAVIGATE' ||
     action.type === 'POP' ||
     action.type === 'POP_TO_TOP' ||
-    action.type === 'REPLACE'
+    action.type === 'REPLACE' ||
+    action.type === 'PRELOAD'
   );
 }
+
+const isPreviewAction = (action: NavigationAction): action is ExpoNavigationAction =>
+  !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
 
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
@@ -74,7 +129,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           : undefined;
 
       // Handle if 'getID' or 'singular' is set.
-      function getIdFunction(fn?: GetId): GetId | undefined {
+      function getIdFunction(): GetId | undefined {
         // Actions can be fired by the user, so we do need to validate their structure.
         if (
           !('payload' in action) ||
@@ -85,73 +140,271 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           return;
         }
 
-        const name = action.payload.name;
+        const actionName = action.payload.name;
 
         return (
           // The dynamic singular added to an action, `router.push('screen', { singular: () => 'id' })`
-          getActionSingularIdFn(actionSingularOptions, name) ||
+          getActionSingularIdFn(actionSingularOptions, actionName) ||
           // The static getId added as a prop to `<Screen singular />` or `<Screen getId={} />`
-          options.routeGetIdList[name] ||
-          // The custom singular added by Expo Router to support its concept of `navigate`
-          fn
+          options.routeGetIdList[actionName]
         );
       }
 
+      const { routeParamList } = options;
+
       switch (action.type) {
-        case 'PUSH': {
-          /**
-           * PUSH should always push
-           *
-           * If 'getID' or 'singular' is set and a match is found, instead of pushing a new screen,
-           * the existing screen will be moved to the HEAD of the stack. If there are multiple matches, the rest will be removed.
-           */
-          const nextState = original.getStateForAction(state, action, {
-            ...options,
-            routeGetIdList: {
-              ...options.routeGetIdList,
-              [action.payload.name]: getIdFunction(),
-            },
-          });
-
-          /**
-           * React Navigation doesn't support dynamic getId function on the action. Because of this,
-           * can you enter a state where the screen is pushed multiple times but the normal getStateForAction
-           * doesn't remove the duplicates. We need to filter the state to only have singular screens.
-           */
-          return actionSingularOptions
-            ? filterSingular(nextState, actionSingularOptions)
-            : nextState;
-        }
+        case 'PUSH':
         case 'NAVIGATE': {
-          /**
-           * NAVIGATE should push unless the current name & route params of the current and target screen match.
-           * Search params and hashes should be ignored.
-           *
-           * If the name, route params & search params match, no action is taken.
-           * If both the name and route params match, the screen is replaced.
-           * If the name / route params do not match, the screen is pushed.
-           *
-           * If 'getID' or 'singular' is set and a match is found, instead of pushing a new screen,
-           * the existing screen will be moved to the HEAD of the stack. If there are multiple matches, the rest will be removed.
-           */
-          const nextState = original.getStateForAction(state, action, {
-            ...options,
-            routeGetIdList: {
-              ...options.routeGetIdList,
-              [action.payload.name]: getIdFunction((options) => {
-                return getSingularId(action.payload.name, options);
-              }),
-            },
-          });
+          if (!state.routeNames.includes(action.payload.name)) {
+            return null;
+          }
 
-          /**
-           * React Navigation doesn't support dynamic getId function on the action. Because of this,
-           * can you enter a state where the screen is pushed multiple times but the normal getStateForAction
-           * doesn't remove the duplicates. We need to filter the state to only have singular screens.
-           */
-          return actionSingularOptions
-            ? filterSingular(nextState, actionSingularOptions)
-            : nextState;
+          // START FORK
+          const getId = getIdFunction();
+          // const getId = options.routeGetIdList[action.payload.name];
+          // END FORK
+          const id = getId?.({ params: action.payload.params });
+
+          let route: Route<string> | undefined;
+
+          if (id !== undefined) {
+            route = state.routes.findLast(
+              (route) =>
+                route.name === action.payload.name && id === getId?.({ params: route.params })
+            );
+          } else if (action.type === 'NAVIGATE') {
+            const currentRoute = state.routes[state.index];
+
+            // If the route matches the current one, then navigate to it
+            if (action.payload.name === currentRoute.name) {
+              route = currentRoute;
+            } else if (action.payload.pop) {
+              route = state.routes.findLast((route) => route.name === action.payload.name);
+            }
+          }
+
+          // START FORK
+          if (isPreviewAction(action)) {
+            route = state.preloadedRoutes.find(
+              (route) => route.name === action.payload.name && id === route.key
+            );
+          }
+          // END FORK
+
+          if (!route) {
+            route = state.preloadedRoutes.find(
+              (route) =>
+                route.name === action.payload.name && id === getId?.({ params: route.params })
+            );
+          }
+
+          let params;
+
+          if (action.type === 'NAVIGATE' && action.payload.merge && route) {
+            params =
+              action.payload.params !== undefined ||
+              routeParamList[action.payload.name] !== undefined
+                ? {
+                    ...routeParamList[action.payload.name],
+                    ...route.params,
+                    ...action.payload.params,
+                  }
+                : route.params;
+          } else {
+            params =
+              routeParamList[action.payload.name] !== undefined
+                ? {
+                    ...routeParamList[action.payload.name],
+                    ...action.payload.params,
+                  }
+                : action.payload.params;
+          }
+
+          let routes: Route<string>[];
+
+          if (route) {
+            if (action.type === 'NAVIGATE' && action.payload.pop) {
+              routes = [];
+
+              // Get all routes until the matching one
+              for (const r of state.routes) {
+                if (r.key === route.key) {
+                  routes.push({
+                    ...route,
+                    path: action.payload.path !== undefined ? action.payload.path : route.path,
+                    params,
+                  });
+                  break;
+                }
+
+                routes.push(r);
+              }
+            } else {
+              // START FORK
+              // If there is an id, then filter out the existing route with the same id.
+              // THIS ACTION IS DANGEROUS. This can cause React Native Screens to freeze
+              if (id !== undefined) {
+                routes = state.routes.filter((r) => r.key !== route.key);
+              } else if (action.type === 'NAVIGATE' && state.routes.length > 0) {
+                // The navigation action should only replace the last route if it has the same name and path params.
+                const lastRoute = state.routes[state.routes.length - 1];
+                if (
+                  getSingularId(lastRoute.name, { params: lastRoute.params }) ===
+                  getSingularId(route.name, { params })
+                ) {
+                  routes = state.routes.slice(0, -1);
+                } else {
+                  routes = [...state.routes];
+                }
+              } else {
+                routes = [...state.routes];
+              }
+
+              // If the routes length is the same as the state routes length, then we are navigating to a new route.
+              // Otherwise we are replacing an existing route.
+              const key =
+                routes.length === state.routes.length && !isPreviewAction(action)
+                  ? `${action.payload.name}-${nanoid()}`
+                  : route.key;
+
+              routes.push({
+                ...route,
+                key,
+                path:
+                  action.type === 'NAVIGATE' && action.payload.path !== undefined
+                    ? action.payload.path
+                    : route.path,
+                params,
+              });
+
+              // routes = state.routes.filter((r) => r.key !== route.key);
+              // routes.push({
+              //   ...route,
+              //   path:
+              //     action.type === 'NAVIGATE' && action.payload.path !== undefined
+              //       ? action.payload.path
+              //       : route.path,
+              //   params,
+              // });
+              // END FORK
+            }
+          } else {
+            routes = [
+              ...state.routes,
+              {
+                key: `${action.payload.name}-${nanoid()}`,
+                name: action.payload.name,
+                path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
+                params,
+              },
+            ];
+          }
+
+          // START FORK
+          // return filterSingular(
+          const result = {
+            ...state,
+            index: routes.length - 1,
+            preloadedRoutes: state.preloadedRoutes.filter(
+              (route) => routes[routes.length - 1].key !== route.key
+            ),
+            routes,
+          };
+
+          if (actionSingularOptions) {
+            return filterSingular(result, getId);
+          }
+
+          return result;
+          // return {
+          //   ...state,
+          //   index: routes.length - 1,
+          //   preloadedRoutes: state.preloadedRoutes.filter(
+          //     (route) => routes[routes.length - 1].key !== route.key
+          //   ),
+          //   routes,
+          // };
+          // END FORK
+        }
+        case 'PRELOAD': {
+          const getId = options.routeGetIdList[action.payload.name];
+          const id = getId?.({ params: action.payload.params });
+
+          let route: Route<string> | undefined;
+
+          if (id !== undefined) {
+            route = state.routes.find(
+              (route) =>
+                route.name === action.payload.name && id === getId?.({ params: route.params })
+            );
+          }
+
+          if (route) {
+            return {
+              ...state,
+              routes: state.routes.map((r) => {
+                if (r.key !== route?.key) {
+                  return r;
+                }
+                return {
+                  ...r,
+                  params:
+                    routeParamList[action.payload.name] !== undefined
+                      ? {
+                          ...routeParamList[action.payload.name],
+                          ...action.payload.params,
+                        }
+                      : action.payload.params,
+                };
+              }),
+            };
+          } else {
+            // START FORK
+            const currentPreloadedRoute: (typeof state)['preloadedRoutes'][number] = {
+              key: `${action.payload.name}-${nanoid()}`,
+              name: action.payload.name,
+              params:
+                routeParamList[action.payload.name] !== undefined
+                  ? {
+                      ...routeParamList[action.payload.name],
+                      ...action.payload.params,
+                    }
+                  : action.payload.params,
+            };
+            // END FORK
+            return {
+              ...state,
+              // START FORK
+              // Adding the current preloaded route to the beginning of the preloadedRoutes array
+              // This ensures that the preloaded route will be the next one after the visible route
+              // and when navigation will happen, there will be no reshuffling
+              // This is a workaround for the link preview navigation issue, when screen would freeze after navigation from native side
+              // and reshuffling from react-navigation
+              preloadedRoutes: [currentPreloadedRoute].concat(
+                state.preloadedRoutes.filter(
+                  (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
+                )
+              ),
+              // preloadedRoutes: state.preloadedRoutes
+              //   .filter(
+              //     (r) =>
+              //       r.name !== action.payload.name ||
+              //       id !== getId?.({ params: r.params })
+              //   )
+              //   .concat({
+              //     key: `${action.payload.name}-${nanoid()}`,
+              //     name: action.payload.name,
+              //     params:
+              //       routeParamList[action.payload.name] !== undefined
+              //         ? {
+              //             ...routeParamList[action.payload.name],
+              //             ...action.payload.params,
+              //           }
+              //         : action.payload.params,
+              //   }),
+              // END FORK
+            };
+          }
         }
         default: {
           return original.getStateForAction(state, action, options);
@@ -183,8 +436,8 @@ function filterSingular<
     | StackNavigationState<ParamListBase>
     | PartialState<StackNavigationState<ParamListBase>>
     | null,
->(state: T, singular: SingularOptions): T {
-  if (!state || !singular) {
+>(state: T, getId?: GetId): T {
+  if (!state) {
     return state;
   }
 
@@ -196,13 +449,7 @@ function filterSingular<
   const current = state.routes[currentIndex];
   const name = current.name;
 
-  const getId = getActionSingularIdFn(singular, name);
-
-  if (!getId) {
-    return state;
-  }
-
-  const id = getId({ params: current.params });
+  const id = getId?.({ params: current.params });
 
   if (!id) {
     return state;
@@ -217,7 +464,7 @@ function filterSingular<
     }
 
     // Remove all other routes with the same name and id.
-    return name !== route.name || id !== getId({ params: route.params });
+    return name !== route.name || id !== getId?.({ params: route.params });
   });
 
   return {
@@ -229,7 +476,28 @@ function filterSingular<
 
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
-    return <RNStack {...props} UNSTABLE_router={stackRouterOverride} />;
+    const isWeb = process.env.EXPO_OS === 'web';
+    const { isPreviewOpen } = useLinkPreviewContext();
+    const screenOptions = useMemo(() => {
+      if (isPreviewOpen) {
+        return disableAnimationInScreenOptions(props.screenOptions);
+      }
+      return props.screenOptions;
+    }, [props.screenOptions, isPreviewOpen]);
+
+    if (isWeb) {
+      return (
+        <RouterModal
+          {...props}
+          screenOptions={screenOptions}
+          UNSTABLE_router={stackRouterOverride}
+        />
+      );
+    } else {
+      return (
+        <RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={stackRouterOverride} />
+      );
+    }
   },
   {
     Screen: RNStack.Screen as (
@@ -238,6 +506,33 @@ const Stack = Object.assign(
     Protected,
   }
 );
+
+type NativeStackScreenOptions = ComponentProps<typeof RNStack>['screenOptions'];
+
+function disableAnimationInScreenOptions(
+  options: NativeStackScreenOptions | undefined
+): NativeStackScreenOptions {
+  const animationNone: StackAnimationTypes = 'none';
+  if (options) {
+    if (typeof options === 'function') {
+      const newOptions: typeof options = (...args) => {
+        const oldResult = options(...args);
+        return {
+          ...oldResult,
+          animation: animationNone,
+        };
+      };
+      return newOptions;
+    }
+    return {
+      ...options,
+      animation: animationNone,
+    };
+  }
+  return {
+    animation: animationNone,
+  };
+}
 
 export default Stack;
 

@@ -35,43 +35,69 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
   />
 </Tab>
 
-<Tab label="Code">
-```tsx
-import { BottomSheet } from '@expo/ui/swift-ui';
+  <Tab label="Code">
+    ```tsx
+    import { BottomSheet } from '@expo/ui/swift-ui';
 
-<BottomSheet isOpen={isOpen} onIsOpenedChange={e => setIsOpened(e)}>
-  <Text>Hello, world!</Text>
-</BottomSheet>
-```
-</Tab>
+    <BottomSheet isOpened={isOpened} onIsOpenedChange={e => setIsOpened(e)}>
+      <Text>Hello, world!</Text>
+    </BottomSheet>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:))*
+
+  </Tab>
 </Tabs>
 
 ### Button
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Button component on iOS."
-  src="/static/images/expo-ui/button/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Button } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Button component on iOS."
+      src="/static/images/expo-ui/button/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Button } from '@expo/ui/swift-ui';
 
-<Button
-  style={{ flex: 1 }}
-  onPress={() => {
-    setEditingProfile(true);
-  }}>
-  Edit profile
-</Button>
-```
-</Tab>
+    <Button
+      style={{ flex: 1 }}
+      variant="default"
+      onPress={() => {
+        setEditingProfile(true);
+      }}>
+      Edit profile
+    </Button>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/button)*
+
+  </Tab>
 </Tabs>
 
-### ColorPicker component
+### CircularProgress
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="CircularProgress component on iOS."
+      src="/static/images/expo-ui/circularprogress/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { CircularProgress } from '@expo/ui/swift-ui';
+
+    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/progressview)*
+
+  </Tab>
+</Tabs>
+
+### ColorPicker
 
 <Tabs>
 
@@ -83,202 +109,362 @@ import { Button } from '@expo/ui/swift-ui';
   />
 </Tab>
 
-<Tab label="Code">
-```tsx
-import { ColorPicker } from '@expo/ui/swift-ui';
+  <Tab label="Code">
+    ```tsx
+    import { ColorPicker } from '@expo/ui/swift-ui';
 
-<ColorPicker
-  label="Select a color"
-  selection={color}
-  onValueChanged={setColor}
-  style={{ width: 400, height: 200 }}
-/>
-```
-</Tab>
+    <ColorPicker
+      label="Select a color"
+      selection={color}
+      onValueChanged={setColor}
+      style={{ width: 400, height: 200 }}
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/colorpicker)*
+
+  </Tab>
 </Tabs>
 
-### DateTimePicker
+### ContextMenu
+
+> **Note:** Also known as **DropdownMenu**.
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="DateTimePicker component on iOS."
-  src="/static/images/expo-ui/datetimepicker/ios.png"
-  className="max-w-[240px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { DateTimePicker } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="ContextMenu component on iOS."
+      src="/static/images/expo-ui/contextMenu/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { ContextMenu } from '@expo/ui/swift-ui';
 
-<DateTimePicker
-  onDateSelected={date => {
-    setSelectedDate(date);
-  }}
-  displayedComponents='date'
-  initialDate={selectedDate.toISOString()}
-  variant='wheel'
-/>
-```
-</Tab>
+    <ContextMenu style={{ width: 150, height: 50 }}>
+      <ContextMenu.Items>
+        <Button
+          systemImage="person.crop.circle.badge.xmark"
+          onPress={() => console.log('Pressed1')}>
+          Hello
+        </Button>
+        <Button
+          variant="bordered"
+          systemImage="heart"
+          onPress={() => console.log('Pressed2')}>
+          Love it
+        </Button>
+        <Picker
+          label="Doggos"
+          options={['very', 'veery', 'veeery', 'much']}
+          variant="menu"
+          selectedIndex={selectedIndex}
+          onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
+        />
+      </ContextMenu.Items>
+      <ContextMenu.Trigger>
+        <Button variant="bordered" style={{ width: 150, height: 50 }}>
+          Show Menu
+        </Button>
+      </ContextMenu.Trigger>
+    </ContextMenu>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:))*
+
+  </Tab>
+</Tabs>
+
+### DateTimePicker (date)
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="DateTimePicker (date) component on iOS."
+      src="/static/images/expo-ui/datetimepicker/date/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/swift-ui';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='date'
+      initialDate={selectedDate.toISOString()}
+      variant='wheel'
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
+
+  </Tab>
+</Tabs>
+
+### DateTimePicker (time)
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="DateTimePicker (time) component on iOS."
+      src="/static/images/expo-ui/datetimepicker/time/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/swift-ui';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='hourAndMinute'
+      initialDate={selectedDate.toISOString()}
+      variant='wheel'
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/datepicker)*
+
+  </Tab>
 </Tabs>
 
 ### Gauge
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Gauge component on iOS."
-  src="/static/images/expo-ui/gauge/ios.png"
-  className="max-w-[240px]"
-/>
-</Tab>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Gauge component on iOS."
+      src="/static/images/expo-ui/gauge/ios.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
 
-<Tab label="Code">
-```tsx
-import { Gauge } from "@expo/ui/swift-ui";
+  <Tab label="Code">
+    ```tsx
+    import { Gauge } from "@expo/ui/swift-ui";
 
-<Gauge
-  max={{ value: 1, label: '1' }}
-  min={{ value: 0, label: '0' }}
-  current={{ value: 0.5 }}
-  color={[
-    PlatformColor('systemRed'),
-    PlatformColor('systemOrange'),
-    PlatformColor('systemYellow'),
-    PlatformColor('systemGreen'),
-  ]}
-  type="circular"
-/>
-```
-</Tab>
+    <Gauge
+      max={{ value: 1, label: '1' }}
+      min={{ value: 0, label: '0' }}
+      current={{ value: 0.5 }}
+      color={[
+        PlatformColor('systemRed'),
+        PlatformColor('systemOrange'),
+        PlatformColor('systemYellow'),
+        PlatformColor('systemGreen'),
+      ]}
+      type="circularCapacity"
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/gauge)*
+
+  </Tab>
 </Tabs>
 
 ### LinearProgress
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="LinearProgress component on iOS."
-  src="/static/images/expo-ui/linearprogress/ios.png"
-  className="max-w-[380px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { LinearProgress } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="LinearProgress component on iOS."
+      src="/static/images/expo-ui/linearprogress/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { LinearProgress } from '@expo/ui/swift-ui';
 
-<LinearProgress progress={0.5} style={{ width: 300 }} />
-```
-</Tab>
+    <LinearProgress progress={0.5} style={{ width: 300 }} color="red" />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/progressview)*
+
+  </Tab>
+</Tabs>
+
+### List
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="List component on iOS."
+      src="/static/images/expo-ui/list/ios.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { List } from '@expo/ui/swift-ui';
+
+    <List
+      scrollEnabled={false}
+      editModeEnabled={editModeEnabled}
+      onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
+      moveEnabled={moveEnabled}
+      onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
+      onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
+      style={{ flex: 1 }}
+      listStyle='automatic'
+      deleteEnabled={deleteEnabled}
+      selectEnabled={selectEnabled}>
+      {data.map((item, index) => (
+        <LabelPrimitive key={index} title={item.text} systemImage={item.systemImage} color={color} />
+      ))}
+    </List>
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/list)*
+
+  </Tab>
 </Tabs>
 
 ### Picker (segmented)
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/segmentedPicker/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Picker } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/segmentedPicker/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/swift-ui';
 
-<Picker
-  options={['$', '$$', '$$$', '$$$$']}
-  selectedIndex={selectedIndex}
-  onOptionSelected={({ nativeEvent: { index } }) => {
-    setSelectedIndex(index);
-  }}
-/>
-```
-</Tab>
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="segmented"
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/picker#Styling-pickers)*
+
+  </Tab>
 </Tabs>
 
 ### Picker (wheel)
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/menuPicker/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Picker } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/menuPicker/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/swift-ui';
 
-<Picker
-  options={['$', '$$', '$$$', '$$$$']}
-  selectedIndex={selectedIndex}
-  onOptionSelected={({ nativeEvent: { index } }) => {
-    setSelectedIndex(index);
-  }}
-  variant="wheel"
-  style={{
-    height: 100,
-  }}
-/>
-```
-</Tab>
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="wheel"
+      style={{
+        height: 100,
+      }}
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/pickerstyle/wheel)*
+
+  </Tab>
 </Tabs>
 
-### Switch
+### Slider
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Switch component on iOS."
-  src="/static/images/expo-ui/switch/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Switch } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Slider component on iOS."
+      src="/static/images/expo-ui/slider/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Slider } from '@expo/ui/swift-ui';
 
-<Switch
-  checked={checked}
-  onValueChange={checked => {
-    setChecked(checked);
-  }}
-  label="Play music"
-/>
-```
-</Tab>
+    <Slider
+      style={{ minHeight: 60 }}
+      value={value}
+      onValueChange={(value) => {
+        setValue(value);
+      }}
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/slider)*
+
+  </Tab>
 </Tabs>
 
-### Switch component (checkbox)
+### Switch (toggle)
+
+> **Note:** Also known as **Toggle**.
 
 <Tabs>
-<Tab label="iOS">
-<ContentSpotlight
-  alt="Picker component on iOS."
-  src="/static/images/expo-ui/checkbox/ios.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Switch } from '@expo/ui/swift-ui';
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Switch component on iOS."
+      src="/static/images/expo-ui/switch/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/swift-ui';
 
-<Switch
-  checked={checked}
-  onValueChange={checked => {
-    setChecked(checked);
-  }}
-  label="Play music"
-  variant="checkbox"
-/>
-```
-</Tab>
+    <Switch
+      checked={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      color="#ff0000"
+      label="Play music"
+      variant="switch"
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/toggle)*
+
+  </Tab>
 </Tabs>
 
-### TextInput component
+### Switch (checkbox)
+
+<Tabs>
+  <Tab label="iOS">
+    <ContentSpotlight
+      alt="Picker component on iOS."
+      src="/static/images/expo-ui/checkbox/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/swift-ui';
+
+    <Switch
+      checked={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      label="Play music"
+      variant="checkbox"
+    />
+    ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/toggle)*
+
+  </Tab>
+</Tabs>
+
+### TextInput
 
 <Tabs>
   <Tab label="iOS">
@@ -294,6 +480,7 @@ import { Switch } from '@expo/ui/swift-ui';
 
     <TextInput autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
     ```
+    *See also: [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/textfield)*
 
   </Tab>
 </Tabs>
@@ -303,77 +490,321 @@ import { Switch } from '@expo/ui/swift-ui';
 ### Button
 
 <Tabs>
-<Tab label="Android">
-<ContentSpotlight
-  alt="Button component on Android."
-  src="/static/images/expo-ui/button/android.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Button } from '@expo/ui/jetpack-compose';
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Button component on Android."
+      src="/static/images/expo-ui/button/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Button } from '@expo/ui/jetpack-compose';
 
-<Button
-  style={{ flex: 1 }}
-  onPress={() => {
-    setEditingProfile(true);
-  }}>
-  Edit profile
-</Button>
-```
-</Tab>
+    <Button
+      style={{ flex: 1 }}
+      variant="default"
+      onPress={() => {
+        setEditingProfile(true);
+      }}>
+      Edit profile
+    </Button>
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/button)*
+
+  </Tab>
 </Tabs>
 
-### DateTimePicker
+### CircularProgress
 
 <Tabs>
-<Tab label="Android">
-<ContentSpotlight
-  alt="DateTimePicker component on Android."
-  src="/static/images/expo-ui/datetimepicker/android.png"
-  className="max-w-[240px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { DateTimePicker } from '@expo/ui/jetpack-compose';
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="CircularProgress component on Android."
+      src="/static/images/expo-ui/circularprogress/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { CircularProgress } from '@expo/ui/jetpack-compose';
 
-<DateTimePicker
-  onDateSelected={date => {
-    setSelectedDate(date);
-  }}
-  displayedComponents='date'
-  initialDate={selectedDate.toISOString()}
-  variant='picker'
-/>
-```
-</Tab>
+    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" elementColors={{ trackColor: '#cccccc' }} />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+
+  </Tab>
 </Tabs>
 
-### Picker
+### ContextMenu
+
+> **Note:** Also known as **DropdownMenu**.
 
 <Tabs>
-<Tab label="Android">
-<ContentSpotlight
-  alt="Picker component on Android."
-  src="/static/images/expo-ui/segmentedPicker/android.png"
-  className="max-w-[480px]"
-/>
-</Tab>
-<Tab label="Code">
-```tsx
-import { Picker } from '@expo/ui/jetpack-compose';
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="ContextMenu component on Android."
+      src="/static/images/expo-ui/contextMenu/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { ContextMenu } from '@expo/ui/jetpack-compose';
 
-<Picker
-  options={['$', '$$', '$$$', '$$$$']}
-  selectedIndex={selectedIndex}
-  onOptionSelected={({ nativeEvent: { index } }) => {
-    setSelectedIndex(index);
-  }}
-/>
-```
-</Tab>
+    <ContextMenu style={{ width: 150, height: 50 }}>
+      <ContextMenu.Items>
+        <Button
+          elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
+          onPress={() => console.log('Pressed1')}>
+          Hello
+        </Button>
+        <Button
+          variant="bordered"
+          color="#ff0000"
+          onPress={() => console.log('Pressed2')}>
+          Love it
+        </Button>
+        <Picker
+          label="Doggos"
+          options={['very', 'veery', 'veeery', 'much']}
+          variant="menu"
+          selectedIndex={selectedIndex}
+          onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
+        />
+      </ContextMenu.Items>
+      <ContextMenu.Trigger>
+        <Button variant="bordered" style={{ width: 150, height: 50 }}>
+          Show Menu
+        </Button>
+      </ContextMenu.Trigger>
+    </ContextMenu>
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/menu)*
+
+  </Tab>
+</Tabs>
+
+### DateTimePicker (date)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="DateTimePicker component on Android."
+      src="/static/images/expo-ui/datetimepicker/date/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='date'
+      initialDate={selectedDate.toISOString()}
+      variant='picker'
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/datepickers)*
+
+  </Tab>
+</Tabs>
+
+### DateTimePicker (time)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="DateTimePicker (time) component on Android."
+      src="/static/images/expo-ui/datetimepicker/time/android.png"
+      className="max-w-[240px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { DateTimePicker } from '@expo/ui/jetpack-compose';
+
+    <DateTimePicker
+      onDateSelected={date => {
+        setSelectedDate(date);
+      }}
+      displayedComponents='hourAndMinute'
+      initialDate={selectedDate.toISOString()}
+      variant='picker'
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/time-pickers)*
+
+  </Tab>
+</Tabs>
+
+### LinearProgress
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="LinearProgress component on Android."
+      src="/static/images/expo-ui/linearprogress/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { LinearProgress } from '@expo/ui/jetpack-compose';
+
+    <LinearProgress progress={0.5} style={{ width: 300 }} color="red" />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress)*
+
+  </Tab>
+</Tabs>
+
+### Picker (radio)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Picker component (radio) on Android."
+      src="/static/images/expo-ui/radioPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/jetpack-compose';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="radio"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button)*
+
+  </Tab>
+</Tabs>
+
+### Picker (segmented)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Picker component on Android."
+      src="/static/images/expo-ui/segmentedPicker/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Picker } from '@expo/ui/jetpack-compose';
+
+    <Picker
+      options={['$', '$$', '$$$', '$$$$']}
+      selectedIndex={selectedIndex}
+      onOptionSelected={({ nativeEvent: { index } }) => {
+        setSelectedIndex(index);
+      }}
+      variant="segmented"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/segmented-button)*
+
+  </Tab>
+</Tabs>
+
+### Slider
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Slider component on Android."
+      src="/static/images/expo-ui/slider/android.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Slider } from '@expo/ui/jetpack-compose';
+
+    <Slider
+      style={{ minHeight: 60 }}
+      value={value}
+      onValueChange={(value) => {
+        setValue(value);
+      }}
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/slider)*
+
+  </Tab>
+</Tabs>
+
+### Switch (toggle)
+
+> **Note:** also known as **Toggle**.
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Switch component on Android."
+      src="/static/images/expo-ui/switch/android.png"
+      className="max-w-[480px]"
+    />
+
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/jetpack-compose';
+
+    <Switch
+      value={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      color="#ff0000"
+      label="Play music"
+      variant="switch"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch)*
+
+  </Tab>
+</Tabs>
+
+### Switch (checkbox)
+
+<Tabs>
+  <Tab label="Android">
+    <ContentSpotlight
+      alt="Switch (checkbox variant) component on Android."
+      src="/static/images/expo-ui/checkbox/android.png"
+      className="max-w-[480px]"
+    />
+
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Switch } from '@expo/ui/jetpack-compose';
+
+    <Switch
+      value={checked}
+      onValueChange={checked => {
+        setChecked(checked);
+      }}
+      label="Play music"
+      color="#ff0000"
+      variant="checkbox"
+    />
+    ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/checkbox)*
+
+  </Tab>
 </Tabs>
 
 ### TextInput
@@ -392,6 +823,7 @@ import { Picker } from '@expo/ui/jetpack-compose';
 
     <TextInput autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
     ```
+    *See also: [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/text/user-input)*
 
   </Tab>
 </Tabs>

@@ -12,14 +12,18 @@ import { ComponentType, Fragment, useEffect, useSyncExternalStore } from 'react'
 import { Platform } from 'react-native';
 
 import { RouteNode } from '../Route';
+import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import { ExpoLinkingOptions, LinkingConfigOptions, getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
 import { RedirectConfig } from '../getRoutesCore';
 import { defaultRouteInfo, getRouteInfoFromState, UrlObject } from './routeInfo';
-import { RequireContext } from '../types';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { RequireContext, type Href } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import { type LinkToOptions } from './routing';
+import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 import { shouldLinkExternally } from '../utils/url';
 import * as SplashScreen from '../views/Splash';
 
@@ -70,6 +74,12 @@ export const store = {
   },
   get rootComponent() {
     return storeRef.current.rootComponent;
+  },
+  getStateForHref(href: Href, options?: LinkToOptions) {
+    href = resolveHref(href);
+
+    href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+    return this.linking?.getStateFromPath!(href, this.linking.config);
   },
   get linking() {
     return storeRef.current.linking;
@@ -141,6 +151,7 @@ export function useStore(
     ...config,
     ignoreEntryPoints: true,
     platform: Platform.OS,
+    preserveRedirectAndRewrites: true,
   });
 
   const redirects: StoreRedirects[] = [config?.redirects, config?.rewrites]
@@ -168,7 +179,12 @@ export function useStore(
     // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
     const initialURL = linking?.getInitialURL?.();
     if (typeof initialURL === 'string') {
-      initialState = linking.getStateFromPath(initialURL, linking.config);
+      let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
+
+      // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
+      if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
+
+      initialState = linking.getStateFromPath(initialPath, linking.config);
       const initialRouteInfo = getRouteInfoFromState(initialState);
       routeInfoCache.set(initialState as any, initialRouteInfo);
     }
@@ -218,8 +234,25 @@ const routeInfoSubscribe = (callback: () => void) => {
   };
 };
 
-export function useRouteInfo() {
-  return useSyncExternalStore(routeInfoSubscribe, store.getRouteInfo, store.getRouteInfo);
+export function useRouteInfo(): UrlObject {
+  const routeInfo = useSyncExternalStore(
+    routeInfoSubscribe,
+    store.getRouteInfo,
+    store.getRouteInfo
+  );
+  const { isPreview, segments, params, pathname } = usePreviewInfo();
+  if (isPreview) {
+    return {
+      pathname: pathname ?? '',
+      segments: segments ?? [],
+      unstable_globalHref: '',
+      params: params ?? {},
+      searchParams: new URLSearchParams(),
+      pathnameWithParams: pathname ?? '',
+      isIndex: false,
+    };
+  }
+  return routeInfo;
 }
 
 function getCachedRouteInfo(state: ReactNavigationState) {

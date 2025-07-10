@@ -15,4 +15,19 @@ class ObjectDefinitionData(
 ) {
   val functions
     get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())
+
+  operator fun plus(other: ObjectDefinitionData?): ObjectDefinitionData {
+    if (other == null) {
+      return this
+    }
+
+    return ObjectDefinitionData(
+      legacyConstantsProvider = { legacyConstantsProvider() + other.legacyConstantsProvider() },
+      syncFunctions = syncFunctions + other.syncFunctions,
+      asyncFunctions = asyncFunctions + other.asyncFunctions,
+      eventsDefinition = eventsDefinition?.plus(other.eventsDefinition),
+      properties = properties + other.properties,
+      constants = constants + other.constants
+    )
+  }
 }

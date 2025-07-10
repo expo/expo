@@ -8,7 +8,7 @@ android {
   namespace "expo.modules.image"
   defaultConfig {
     versionCode 1
-    versionName "2.1.6"
+    versionName "2.1.7"
     consumerProguardFiles("proguard-rules.pro")
 
     buildConfigField("boolean", "ALLOW_GLIDE_LOGS", project.properties.get("EXPO_ALLOW_GLIDE_LOGS", "false"))
@@ -34,7 +34,7 @@ dependencies {
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
 
-  implementation "com.github.penfeizhou.android.animation:glide-plugin:3.0.3"
+  implementation "com.github.penfeizhou.android.animation:glide-plugin:3.0.5"
   implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'

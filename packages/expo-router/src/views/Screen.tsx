@@ -1,7 +1,10 @@
 'use client';
-import React, { isValidElement, ReactElement, ReactNode } from 'react';
+import { useRoute } from '@react-navigation/native';
+import { isValidElement, ReactElement, ReactNode } from 'react';
 
 import { useNavigation } from '../useNavigation';
+import { useSafeLayoutEffect } from './useSafeLayoutEffect';
+import { isRoutePreloadedInStack } from '../utils/stack';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /**
@@ -16,22 +19,22 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
   options?: TOptions;
 };
 
-const useLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : function () {};
-
 /** Component for setting the current screen's options dynamically. */
 export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {
+  const route = useRoute();
   const navigation = useNavigation(name);
+  const isFocused = navigation.isFocused();
+  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
 
-  useLayoutEffect(() => {
-    if (
-      options &&
+  useSafeLayoutEffect(() => {
+    if (options && Object.keys(options).length) {
       // React Navigation will infinitely loop in some cases if an empty object is passed to setOptions.
       // https://github.com/expo/router/issues/452
-      Object.keys(options).length
-    ) {
-      navigation.setOptions(options);
+      if (!isPreloaded || (isPreloaded && isFocused)) {
+        navigation.setOptions(options);
+      }
     }
-  }, [navigation, options]);
+  }, [isFocused, isPreloaded, navigation, options]);
 
   return null;
 }

@@ -6,6 +6,9 @@ import expo.modules.video.enums.DRMType
 internal class FullScreenVideoViewNotFoundException :
   CodedException("VideoView id wasn't passed to the activity")
 
+internal class FullScreenOptionsNotFoundException :
+  CodedException("Fullscreen options were not passed to the activity")
+
 internal class VideoViewNotFoundException(id: String) :
   CodedException("VideoView with id: $id not found")
 

@@ -13,6 +13,15 @@ function withDefaults({ watchPlugins, ...config }) {
     roots: ['src'],
     clearMocks: true,
     setupFilesAfterEnv: ['./build/testing-library/mocks.js'],
+    // Map CSS modules to a proxy object so Jest doesn't attempt to parse them.
+    moduleNameMapper: {
+      // Existing mappings (if any) should come first so users can override if needed.
+      ...(config.moduleNameMapper || {}),
+      // CSS Modules: treat class names as keys for predictable snapshots.
+      '^.+\\.module\\.css$': '<rootDir>/__mocks__/styleMock.js',
+      // Plain CSS (and other style files) can be stubbed with an empty object.
+      '^.+\\.(css|less|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
+    },
   };
 }
 

@@ -23,7 +23,7 @@ import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermedi
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { getExpoHomeDirectory } from '../api/user/UserSettings';
-import { ensureLoggedInAsync } from '../api/user/actions';
+import { tryGetUserAsync } from '../api/user/actions';
 import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
@@ -205,7 +205,20 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
   //    (overwriting existing dev cert in case projectId changed or it has expired)
   if (!env.EXPO_OFFLINE) {
     try {
-      return await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
+      const newCodeSigningInfo =
+        await fetchAndCacheNewDevelopmentCodeSigningInfoAsync(easProjectId);
+
+      if (newCodeSigningInfo) {
+        return newCodeSigningInfo;
+        // fall back to cached certificate if we couldn't fetch a new one
+      } else if (validatedCodeSigningInfo) {
+        Log.warn(
+          'Could not fetch new Expo development certificate, falling back to cached certificate'
+        );
+        return validatedCodeSigningInfo;
+      } else {
+        return null;
+      }
     } catch (e: any) {
       if (validatedCodeSigningInfo) {
         Log.warn(
@@ -385,7 +398,12 @@ function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: AppByIdQuer
 async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   easProjectId: string
 ): Promise<CodeSigningInfo | null> {
-  const actor = await ensureLoggedInAsync();
+  const actor = await tryGetUserAsync();
+
+  if (!actor) {
+    return null;
+  }
+
   let app: AppByIdQuery['app']['byId'];
   try {
     app = await AppQuery.byIdAsync(easProjectId);

@@ -41,7 +41,7 @@ internal struct ImagePickerOptions: Record {
   var presentationStyle: PresentationStyle = .automatic
 
   @Field
-  var preferredAssetRepresentationMode: PreferredAssetRepresentationMode = .automatic
+  var preferredAssetRepresentationMode: PreferredAssetRepresentationMode = .current
 
   @Field
   var cameraType: CameraType = .back

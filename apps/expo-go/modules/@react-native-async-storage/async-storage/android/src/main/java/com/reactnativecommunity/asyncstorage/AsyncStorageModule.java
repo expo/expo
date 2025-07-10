@@ -24,7 +24,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.common.ModuleDataCleaner;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -32,8 +31,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @ReactModule(name = AsyncStorageModule.NAME)
-public class AsyncStorageModule
-    extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable {
+public class AsyncStorageModule extends NativeAsyncStorageModuleSpec {
 
   // changed name to not conflict with AsyncStorage from RN repo
   public static final String NAME = "RNCAsyncStorage";
@@ -86,14 +84,6 @@ public class AsyncStorageModule
     mShuttingDown = true;
     // ensure we close database when activity is destroyed
     mReactDatabaseSupplier.closeDatabase();
-  }
-
-  @Override
-  public void clearSensitiveData() {
-    // Clear local storage. If fails, crash, since the app is potentially in a bad state and could
-    // cause a privacy violation. We're still not recovering from this well, but at least the error
-    // will be reported to the server.
-    mReactDatabaseSupplier.clearAndCloseDatabase();
   }
 
   /**

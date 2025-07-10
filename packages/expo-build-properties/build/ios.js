@@ -36,6 +36,10 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'apple.privacyManifestAggregationEnabled',
         propValueGetter: (config) => (config.ios?.privacyManifestAggregationEnabled ?? true).toString(),
     },
+    {
+        propName: 'ios.buildFromSource',
+        propValueGetter: (config) => config.ios?.buildFromSource?.toString(),
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;

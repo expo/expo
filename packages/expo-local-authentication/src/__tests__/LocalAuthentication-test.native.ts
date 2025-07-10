@@ -9,6 +9,8 @@ beforeEach(() => {
 it(`uses options`, async () => {
   const options = {
     promptMessage: 'Authentication is required',
+    promptSubtitle: 'We need to confirm your identity',
+    promptDescription: 'Use your fingerprint',
     cancelLabel: 'Abort',
     fallbackLabel: 'Use passcode',
     disableDeviceFallback: false,

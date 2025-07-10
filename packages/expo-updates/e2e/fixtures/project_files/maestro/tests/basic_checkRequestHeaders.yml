@@ -1,0 +1,19 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# initial request includes correct update-id headers
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updatestring
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- assertTrue:
+    condition:  ${output.api.lastRequestHeaders().host == 'localhost:' + MAESTRO_UPDATES_SERVER_PORT}
+    label: Check that request contains correct headers
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
+- stopApp

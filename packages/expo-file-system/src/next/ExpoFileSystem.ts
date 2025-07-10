@@ -1,13 +1,19 @@
 import { isRunningInExpoGo } from 'expo';
 import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import type { Directory, File } from './ExpoFileSystem.types';
+import type { Directory, File, DownloadOptions } from './ExpoFileSystem.types';
 import ExpoGoFileSystemNextStub from './ExpoGoFileSystemNextStub';
 
 declare class ExpoFileSystemNextModule extends NativeModule {
   FileSystemDirectory: typeof Directory;
   FileSystemFile: typeof File;
-  downloadFileAsync(url: string, destination: File | Directory): Promise<string>;
+  downloadFileAsync(
+    url: string,
+    destination: File | Directory,
+    options?: DownloadOptions
+  ): Promise<string>;
+  totalDiskSpace: number;
+  availableDiskSpace: number;
 }
 
 export default isRunningInExpoGo()

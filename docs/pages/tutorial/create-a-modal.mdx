@@ -1,6 +1,7 @@
 ---
 title: Create a modal
 description: In this tutorial, learn how to create a React Native modal to select an image.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -476,7 +477,7 @@ export default function Index() {
       )}
       /* @tutinfo Render the <CODE>EmojiPicker</CODE> component at the bottom of the <CODE>Index</CODE> component. */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        {/* A list of emoji component will go here */}
+        {/* Emoji list component will go here */}
       </EmojiPicker>
       /* @end */
     </View>
@@ -528,16 +529,16 @@ Create a **EmojiList.tsx** file inside the **components** directory and add the 
 {/* prettier-ignore */}
 ```tsx components/EmojiList.tsx
 import { useState } from 'react';
-import { StyleSheet, FlatList, Platform, Pressable } from 'react-native';
-import { Image, type ImageSource } from 'expo-image';
+import { ImageSourcePropType, StyleSheet, FlatList, Platform, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 
 type Props = {
-  onSelect: (image: ImageSource) => void;
+  onSelect: (image: ImageSourcePropType) => void;
   onCloseModal: () => void;
 };
 
 export default function EmojiList({ onSelect, onCloseModal }: Props) {
-  const [emoji] = useState<ImageSource[]>([
+  const [emoji] = useState<ImageSourcePropType[]>([
     require("../assets/images/emoji1.png"),
     require("../assets/images/emoji2.png"),
     require("../assets/images/emoji3.png"),
@@ -592,12 +593,9 @@ Now, update the **app/(tabs)/index.tsx** to import the `<EmojiList>` component a
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { View, StyleSheet } from 'react-native';
+import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-/* @tutinfo Import the type <CODE>ImageSource</CODE> from <CODE>expo-image</CODE>. */
-import { type ImageSource } from 'expo-image';
-/* @end */
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -615,7 +613,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   /* @tutinfo Define a state variable. */
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
   /* @end */
 
   const pickImageAsync = async () => {
@@ -720,12 +718,12 @@ Let's take a look at our app on Android, iOS and the web:
 Now, we'll put the emoji sticker on the image. Create a new file in the **components** directory and call it **EmojiSticker.tsx**. Then, add the following code:
 
 ```tsx components/EmojiSticker.tsx|collapseHeight=300
-import { View } from 'react-native';
-import { Image, type ImageSource } from 'expo-image';
+import { ImageSourcePropType, View } from 'react-native';
+import { Image } from 'expo-image';
 
 type Props = {
   imageSize: number;
-  stickerSource: ImageSource;
+  stickerSource: ImageSourcePropType;
 };
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
@@ -746,10 +744,9 @@ Import this component in the **app/(tabs)/index.tsx** file and update the `Index
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
-import { View, StyleSheet } from 'react-native';
+import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
-import { type ImageSource } from 'expo-image';
 
 
 import Button from '@/components/Button';
@@ -768,7 +765,7 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-   const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
 
 
   const pickImageAsync = async () => {

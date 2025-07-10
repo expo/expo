@@ -47,7 +47,7 @@ export function BottomSheetPrimitive(props: BottomSheetProps) {
 export function BottomSheet(props: BottomSheetProps) {
   const { width } = Dimensions.get('window');
   return (
-    <Host style={{ width }}>
+    <Host style={{ position: 'absolute', width }}>
       <BottomSheetPrimitive {...props} />
     </Host>
   );

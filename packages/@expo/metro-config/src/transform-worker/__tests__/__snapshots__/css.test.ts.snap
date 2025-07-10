@@ -28,6 +28,8 @@ if (style.styleSheet){
 } else {
   style.appendChild(document.createTextNode(css));
 }
+
+if (module.hot) module.hot.accept();
 })();"
 `;
 

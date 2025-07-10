@@ -28,7 +28,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -41,7 +41,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot, env: { ADBLOCK: '0' } });
       await npm.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -76,7 +76,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.runAsync(['install']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({ stdio: 'inherit' })
@@ -87,7 +87,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot, silent: true });
       await npm.runAsync(['install']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({ stdio: undefined })
@@ -106,7 +106,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.runAsync(['install', '--save-peer', '@babel/core']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save-peer', '@babel/core'],
         expect.objectContaining({ cwd: projectRoot })
@@ -117,7 +117,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.runAsync(['install', '--save-peer', '@babel/core', '@babel/runtime']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save-peer', '@babel/core', '@babel/runtime'],
         expect.objectContaining({ cwd: projectRoot })
@@ -134,7 +134,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
 
       expect(await npm.versionAsync()).toBe('7.0.0');
-      expect(spawnAsync).toBeCalledWith('npm', ['--version'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith('npm', ['--version'], expect.anything());
     });
   });
 
@@ -149,7 +149,11 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
 
       expect(await npm.getConfigAsync('registry')).toBe('https://custom.registry.org/');
-      expect(spawnAsync).toBeCalledWith('npm', ['config', 'get', 'registry'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npm',
+        ['config', 'get', 'registry'],
+        expect.anything()
+      );
     });
   });
 
@@ -158,7 +162,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -169,7 +173,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.installAsync(['--ignore-scripts']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--ignore-scripts'],
         expect.objectContaining({ cwd: projectRoot })
@@ -215,7 +219,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -234,7 +238,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addAsync(['expo']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save', 'expo'],
         expect.objectContaining({ cwd: projectRoot })
@@ -245,7 +249,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addAsync(['expo', 'react-native']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save', 'expo', 'react-native'],
         expect.objectContaining({ cwd: projectRoot })
@@ -266,7 +270,7 @@ describe('NpmPackageManager', () => {
         'dependencies',
         expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
       );
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -287,7 +291,7 @@ describe('NpmPackageManager', () => {
         'dependencies',
         expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
       );
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save', '--ignore-scripts', 'jest'],
         expect.objectContaining({ cwd: projectRoot })
@@ -308,7 +312,7 @@ describe('NpmPackageManager', () => {
         'dependencies',
         expect.objectContaining({ 'react-native': '0.69.3' })
       );
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save', 'expo@next'],
         expect.objectContaining({ cwd: projectRoot })
@@ -321,7 +325,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addDevAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -340,7 +344,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addDevAsync(['expo']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save-dev', 'expo'],
         expect.objectContaining({ cwd: projectRoot })
@@ -351,7 +355,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addDevAsync(['expo', 'react-native']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save-dev', 'expo', 'react-native'],
         expect.objectContaining({ cwd: projectRoot })
@@ -372,7 +376,7 @@ describe('NpmPackageManager', () => {
         'devDependencies',
         expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
       );
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -393,7 +397,7 @@ describe('NpmPackageManager', () => {
         'devDependencies',
         expect.objectContaining({ expo: '^46', 'react-native': '0.69.3' })
       );
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save-dev', '--ignore-scripts', 'jest'],
         expect.objectContaining({ cwd: projectRoot })
@@ -414,7 +418,7 @@ describe('NpmPackageManager', () => {
         'devDependencies',
         expect.objectContaining({ 'react-native': '0.69.3' })
       );
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--save-dev', 'expo@next'],
         expect.objectContaining({ cwd: projectRoot })
@@ -427,7 +431,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addGlobalAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -438,7 +442,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addGlobalAsync(['expo-cli@^5']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--global', 'expo-cli@^5'],
         expect.anything()
@@ -449,7 +453,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addGlobalAsync(['expo-cli@^5', 'eas-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['install', '--global', 'expo-cli@^5', 'eas-cli'],
         expect.anything()
@@ -462,7 +466,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.removeAsync(['metro']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['uninstall', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
@@ -473,7 +477,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.removeAsync(['metro', 'jest-haste-map']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['uninstall', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
@@ -486,7 +490,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.removeDevAsync(['metro']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['uninstall', '--save-dev', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
@@ -497,7 +501,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.removeDevAsync(['metro', 'jest-haste-map']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['uninstall', '--save-dev', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
@@ -510,7 +514,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.removeGlobalAsync(['expo-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['uninstall', '--global', 'expo-cli'],
         expect.objectContaining({ cwd: projectRoot })
@@ -521,7 +525,7 @@ describe('NpmPackageManager', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.removeGlobalAsync(['expo-cli', 'eas-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'npm',
         ['uninstall', '--global', 'expo-cli', 'eas-cli'],
         expect.objectContaining({ cwd: projectRoot })

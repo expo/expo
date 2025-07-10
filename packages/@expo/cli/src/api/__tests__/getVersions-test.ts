@@ -20,7 +20,7 @@ describe(getVersionsAsync, () => {
     const scope = nock(getExpoApiBaseUrl())
       .get('/v2/versions/latest')
       .reply(500, 'something went wrong');
-    await expect(getVersionsAsync()).rejects.toThrowError(/Expo server/);
+    await expect(getVersionsAsync()).rejects.toThrow(/Expo server/);
     expect(scope.isDone()).toBe(true);
   });
 });

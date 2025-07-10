@@ -19,7 +19,7 @@ exports.withAssetsIos = withAssetsIos;
 function addAssetsToTarget(config, assets) {
     return (0, config_plugins_1.withXcodeProject)(config, async (config) => {
         const resolvedAssets = await (0, utils_1.resolveAssetPaths)(assets, config.modRequest.projectRoot);
-        const validAssets = (0, utils_1.validateAssets)(resolvedAssets);
+        const validAssets = (0, utils_1.validateAssets)(resolvedAssets, 'ios');
         const project = config.modResults;
         const platformProjectRoot = config.modRequest.platformProjectRoot;
         config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');

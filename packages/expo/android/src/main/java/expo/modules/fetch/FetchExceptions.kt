@@ -7,8 +7,8 @@ import expo.modules.kotlin.exception.CodedException
 internal class FetchUnknownException :
   CodedException("Unknown error")
 
-internal class FetchRequestCancelledException :
-  CodedException("Cancelled request")
+internal class FetchRequestCanceledException :
+  CodedException("Fetch request has been canceled")
 
 internal class FetchAndroidContextLostException :
   CodedException("The Android context has been lost")

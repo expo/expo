@@ -168,7 +168,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
 
       if (pkg.exports) {
         throw new Error(
-          "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
+          "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Report an issue: https://github.com/expo/expo/issues"
         );
       }
     }
@@ -201,7 +201,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
 
   if (pkg.exports) {
     throw new Error(
-      "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
+      "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Report an issue: https://github.com/expo/expo/issues"
     );
   }
 

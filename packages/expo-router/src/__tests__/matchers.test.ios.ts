@@ -1,6 +1,5 @@
 import {
   matchDynamicName,
-  matchDeepDynamicRouteName,
   getNameFromFilePath,
   matchGroupName,
   stripGroupSegmentsFromPath,
@@ -39,6 +38,7 @@ describe(matchGroupName, () => {
     expect(matchGroupName('leading/(...foobar)/trailing')).toEqual('...foobar');
     expect(matchGroupName('leading/(foo,bar)/trailing)')).toEqual('foo,bar');
     expect(matchGroupName('leading/(foo,bar)/(fruit,apple)')).toEqual('foo,bar');
+    expect(matchGroupName('leading/(foo bar)/trailing')).toEqual('foo bar');
   });
 });
 describe(matchLastGroupName, () => {
@@ -70,25 +70,21 @@ describe(matchLastGroupName, () => {
     expect(matchLastGroupName('leading/(app)/(foo/,bar)')).toEqual('app');
     expect(matchLastGroupName('leading/(app)/(foo(,bar)')).toEqual('foo(,bar');
     expect(matchLastGroupName('leading/(app)/(foo(,bar)/trailing')).toEqual('foo(,bar');
+    expect(matchLastGroupName('leading/(foo bar)/trailing')).toEqual('foo bar');
   });
 });
 describe(matchDynamicName, () => {
-  it(`matches`, () => {
+  it(`matches dynamic names`, () => {
     expect(matchDynamicName('[[...foobar]]')).toEqual(undefined);
     expect(matchDynamicName('[[foobar]]')).toEqual(undefined);
-    expect(matchDynamicName('[...foobar]')).toEqual(undefined);
-    expect(matchDynamicName('[foobar]')).toEqual('foobar');
+    expect(matchDynamicName('[foobar]')).toEqual({ name: 'foobar', deep: false });
     expect(matchDynamicName('foobar')).toEqual(undefined);
   });
-});
 
-describe(matchDeepDynamicRouteName, () => {
-  it(`matches`, () => {
-    expect(matchDeepDynamicRouteName('[[...foobar]]')).toEqual(undefined);
-    expect(matchDeepDynamicRouteName('[[foobar]]')).toEqual(undefined);
-    expect(matchDeepDynamicRouteName('[...foobar]')).toEqual('foobar');
-    expect(matchDeepDynamicRouteName('[foobar]')).toEqual(undefined);
-    expect(matchDeepDynamicRouteName('foobar')).toEqual(undefined);
+  it(`matches deep dynamic names`, () => {
+    expect(matchDynamicName('[[...foobar]]')).toEqual(undefined);
+    expect(matchDynamicName('[[foobar]]')).toEqual(undefined);
+    expect(matchDynamicName('[...foobar]')).toEqual({ name: 'foobar', deep: true });
   });
 });
 

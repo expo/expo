@@ -33,7 +33,6 @@ describe('iOS Updates config', () => {
           policy: 'sdkVersion',
         },
         slug: 'my-app',
-        owner: 'owner',
         updates: {
           enabled: false,
           fallbackToCacheTimeout: 2000,

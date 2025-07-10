@@ -11,7 +11,6 @@ import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import {
-  shouldEnableAsyncImports,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
@@ -23,6 +22,7 @@ import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
@@ -239,7 +239,7 @@ export abstract class ManifestMiddleware<
       minify: this.options.minify,
       platform,
       mainModuleName,
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: !env.EXPO_NO_METRO_LAZY,
       engine,
       bytecode: engine === 'hermes',
       baseUrl,
@@ -286,11 +286,6 @@ export abstract class ManifestMiddleware<
       },
       // Indicates the name of the main bundle.
       mainModuleName,
-      // Add this string to make Flipper register React Native / Metro as "running".
-      // Can be tested by running:
-      // `METRO_SERVER_PORT=8081 open -a flipper.app`
-      // Where 8081 is the port where the Expo project is being hosted.
-      __flipperHack: 'React Native packager is running',
     };
   }
 
@@ -323,7 +318,7 @@ export abstract class ManifestMiddleware<
       platform,
       mainModuleName,
       minify: this.options.minify,
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: !env.EXPO_NO_METRO_LAZY,
       mode: this.options.mode ?? 'development',
       // Hermes doesn't support more modern JS features than most, if not all, modern browser.
       engine: 'hermes',

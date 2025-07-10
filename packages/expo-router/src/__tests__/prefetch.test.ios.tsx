@@ -1,7 +1,10 @@
 import React from 'react';
+import { Text } from 'react-native';
 
+import { Link } from '../exports';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import { screen, renderRouter, act } from '../testing-library';
 
 it('prefetch a sibling route', () => {
@@ -711,4 +714,86 @@ it('can prefetch a parent route', () => {
     stale: false,
     type: 'stack',
   });
+});
+
+it('can still use <Screen /> while prefetching in stack', () => {
+  const headerTitle = jest.fn(() => null);
+  renderRouter({
+    _layout: () => (
+      <Stack screenOptions={{ headerTitle }}>
+        <Stack.Screen name="index" options={{ title: 'index' }} />
+        <Stack.Screen name="second" options={{ title: 'custom-title' }} />
+      </Stack>
+    ),
+    index: () => <Link href="/second" prefetch />,
+    second: () => {
+      return (
+        <>
+          <Stack.Screen options={{ title: 'Should only change after focus' }} />
+          <Text testID="second">Second</Text>
+        </>
+      );
+    },
+  });
+
+  expect(headerTitle.mock.calls).toStrictEqual([
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+  ]);
+
+  // Check that it actually prefetched the screen
+  expect(screen.UNSAFE_getByProps({ title: 'custom-title' })).toBeDefined();
+
+  headerTitle.mockClear();
+  act(() => router.push('/second'));
+
+  expect(headerTitle.mock.calls).toStrictEqual([
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
+    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+  ]);
+});
+
+it('can still use <Screen /> while prefetching in tabs', () => {
+  const headerTitle = jest.fn(() => null);
+  renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ headerTitle }}>
+        <Tabs.Screen name="index" options={{ title: 'index' }} />
+        <Tabs.Screen name="second" options={{ title: 'custom-title' }} />
+      </Tabs>
+    ),
+    index: () => <Link href="/second" prefetch />,
+    second: () => {
+      return (
+        <>
+          <Stack.Screen options={{ title: 'Should only change after focus' }} />
+          <Text testID="second">Second</Text>
+        </>
+      );
+    },
+  });
+
+  expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
+    'index',
+    'index',
+    'custom-title',
+    'index',
+    'Should only change after focus',
+  ]);
+
+  headerTitle.mockClear();
+  act(() => router.push('/second'));
+
+  expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
+    'index',
+    'Should only change after focus',
+    'index',
+    'Should only change after focus',
+    'index',
+  ]);
 });

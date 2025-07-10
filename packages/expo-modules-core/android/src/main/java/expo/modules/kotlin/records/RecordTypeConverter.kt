@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.FieldCastException
 import expo.modules.kotlin.exception.FieldRequiredException
 import expo.modules.kotlin.exception.RecordCastException
@@ -26,7 +27,7 @@ import kotlin.reflect.jvm.javaField
 class RecordTypeConverter<T : Record>(
   private val converterProvider: TypeConverterProvider,
   val type: KType
-) : DynamicAwareTypeConverters<T>(type.isMarkedNullable) {
+) : DynamicAwareTypeConverters<T>() {
   private val objectConstructorFactory = ObjectConstructorFactory()
   private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> by lazy {
     (type.classifier as KClass<*>)
@@ -46,15 +47,15 @@ class RecordTypeConverter<T : Record>(
       .toMap()
   }
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): T =
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T =
     exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
-      val jsMap = value.asMap()
-      return convertFromReadableMap(jsMap, context)
+      val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
+      return convertFromReadableMap(jsMap, context, forceConversion)
     }
 
-  override fun convertFromAny(value: Any, context: AppContext?): T {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): T {
     if (value is ReadableMap) {
-      return convertFromReadableMap(value, context)
+      return convertFromReadableMap(value, context, forceConversion)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -65,7 +66,7 @@ class RecordTypeConverter<T : Record>(
 
   override fun isTrivial(): Boolean = false
 
-  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?): T {
+  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): T {
     val kClass = type.classifier as KClass<*>
     val instance = getObjectConstructor(kClass).construct()
 
@@ -85,7 +86,7 @@ class RecordTypeConverter<T : Record>(
           val javaField = property.javaField!!
 
           val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
-            descriptor.typeConverter.convert(this, context)
+            descriptor.typeConverter.convert(this, context, forceConversion)
           }
 
           if (casted != null) {

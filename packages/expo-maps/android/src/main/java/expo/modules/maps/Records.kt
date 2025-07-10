@@ -71,7 +71,7 @@ data class MarkerRecord(
 data class PolylineRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
-  
+
   @Field
   val coordinates: List<Coordinates> = emptyList(),
 
@@ -82,8 +82,25 @@ data class PolylineRecord(
   val color: Int = 0xFF0000FF.toInt(),
 
   @Field
-  val width: Float = 10f,
-): Record
+  val width: Float = 10f
+) : Record
+
+data class PolygonRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val coordinates: List<Coordinates> = emptyList(),
+
+  @Field
+  val lineColor: Int = 0xFF0000FF.toInt(),
+
+  @Field
+  val lineWidth: Float = 10f,
+
+  @Field
+  val color: Int = 0xFF0000FF.toInt()
+) : Record
 
 data class CameraPositionRecord(
   @Field
@@ -91,6 +108,26 @@ data class CameraPositionRecord(
 
   @Field
   val zoom: Float = 10f
+) : Record
+
+data class CircleRecord(
+  @Field
+  val id: String = UUID.randomUUID().toString(),
+
+  @Field
+  val center: Coordinates = Coordinates(),
+
+  @Field
+  val radius: Double = 200.0,
+
+  @Field
+  val color: Int = 0x7F0000FF,
+
+  @Field
+  val lineColor: Int? = null,
+
+  @Field
+  val lineWidth: Float? = null
 ) : Record
 
 data class UserLocationRecord(
@@ -221,6 +258,11 @@ data class CameraMoveEvent(
 
   @Field
   val bearing: Float
+) : Record
+
+data class MapClickEvent(
+  @Field
+  val coordinates: Coordinates
 ) : Record
 
 data class CameraPositionStreetViewRecord(

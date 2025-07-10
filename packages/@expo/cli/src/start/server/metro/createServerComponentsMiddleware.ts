@@ -555,7 +555,6 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          console.log('loadServerModuleRsc:', serverRoot, options.mainModuleName);
           return ssrLoadModule(
             path.join(serverRoot, options.mainModuleName),
 

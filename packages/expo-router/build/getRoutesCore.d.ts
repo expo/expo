@@ -16,11 +16,16 @@ export type Options = {
     rewrites?: RewriteConfig[];
     preserveRedirectAndRewrites?: boolean;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
-    getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'>, defaults?: RouteNode) => RouteNode;
+    getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'> & {
+        defaults?: RouteNode;
+        redirectConfig?: RedirectConfig;
+        rewriteConfig?: RewriteConfig;
+    }) => RouteNode;
 };
 export type RedirectConfig = {
     source: string;
     destination: string;
+    destinationContextKey: string;
     permanent?: boolean;
     methods?: string[];
     external?: boolean;
@@ -28,6 +33,7 @@ export type RedirectConfig = {
 export type RewriteConfig = {
     source: string;
     destination: string;
+    destinationContextKey: string;
     methods?: string[];
 };
 /**
@@ -43,7 +49,6 @@ export type RewriteConfig = {
  *      - If multiple routes have the same name, the most specific route is used
  */
 export declare function getRoutes(contextModule: RequireContext, options: Options): RouteNode | null;
-export declare function getIgnoreList(options?: Options): RegExp[];
 /**
  * Generates a set of strings which have the router array syntax extrapolated.
  *

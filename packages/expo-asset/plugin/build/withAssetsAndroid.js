@@ -14,7 +14,7 @@ const withAssetsAndroid = (config, assets) => {
         'android',
         async (config) => {
             const resolvedAssets = await (0, utils_1.resolveAssetPaths)(assets, config.modRequest.projectRoot);
-            const validAssets = (0, utils_1.validateAssets)(resolvedAssets);
+            const validAssets = (0, utils_1.validateAssets)(resolvedAssets, 'android');
             validAssets.forEach((asset) => {
                 const assetsDir = getAssetDir(asset, config.modRequest.platformProjectRoot);
                 fs_1.default.mkdirSync(assetsDir, { recursive: true });

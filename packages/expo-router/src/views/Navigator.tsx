@@ -3,6 +3,8 @@
 
 import { RouterFactory, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
+import { Fragment } from 'react';
+import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Screen } from './Screen';
@@ -156,14 +158,17 @@ function NavigatorSlot() {
   return descriptors[state.routes[state.index].key]?.render() ?? null;
 }
 
+const SlotNavigatorWrapper =
+  process.env.EXPO_OS === 'android' && isEdgeToEdge() ? Fragment : SafeAreaView;
+
 /**
  * The default navigator for the app when no root _layout is provided.
  */
 export function DefaultNavigator() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SlotNavigatorWrapper style={{ flex: 1 }}>
       <SlotNavigator />
-    </SafeAreaView>
+    </SlotNavigatorWrapper>
   );
 }
 

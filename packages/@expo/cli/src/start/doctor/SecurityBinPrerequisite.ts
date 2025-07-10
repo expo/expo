@@ -12,7 +12,7 @@ export class SecurityBinPrerequisite extends Prerequisite {
     } catch {
       throw new PrerequisiteCommandError(
         'SECURITY_BIN',
-        "Cannot code sign project because the CLI `security` is not available on your computer.\nPlease ensure it's installed and try again."
+        "Cannot code sign project because the CLI `security` is not available on your computer.\nEnsure it's installed and try again."
       );
     }
   }

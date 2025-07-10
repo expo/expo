@@ -1,6 +1,7 @@
 ---
 title: Tabs
 description: Learn how to use the Tabs layout in Expo Router.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -147,12 +148,12 @@ export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        {/* Name of the dynamic route.*/}
+        // Name of the dynamic route.
         name="[user]"
         options={{
-          {/* Ensure the tab always links to the same href.*/}
+          // Ensure the tab always links to the same href.
           href: '/evanbacon',
-          {/* OR you can use the href object.*/}
+          // OR you can use the href object.
           href: {
             pathname: '/[user]',
             params: {

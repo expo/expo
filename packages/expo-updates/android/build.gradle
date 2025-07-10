@@ -11,7 +11,10 @@ buildscript {
       // We can remove this path once we update the test environment
       // to use the same version of Kotlin as the `expo/expo` repo.
       def kotlinVersion = rootProject["kotlinVersion"]
-      if (kotlinVersion == "2.0.21") {
+      
+      if (kotlinVersion == "2.1.20") {
+        return "2.1.20-2.0.1"
+      } else if (kotlinVersion == "2.0.21") {
         return "2.0.21-1.0.28"
       } else if (kotlinVersion == "1.9.25") {
         return "1.9.25-1.0.20"
@@ -39,7 +42,7 @@ expoModule {
 }
 
 group = 'host.exp.exponent'
-version = '0.28.12'
+version = '0.28.13'
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -85,7 +88,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '0.28.12'
+    versionName '0.28.13'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

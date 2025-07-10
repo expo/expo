@@ -21,9 +21,6 @@ struct ImageSource: Record {
   @Field
   var cacheKey: String?
 
-  @Field
-  var useAppleWebpCodec: Bool = true
-
   var pixelCount: Double {
     return width * height * scale * scale
   }

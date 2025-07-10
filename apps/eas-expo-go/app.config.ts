@@ -1,9 +1,7 @@
 import { ExpoConfig } from '@expo/config';
 import assert from 'assert';
 
-const base = {
-  owner: 'expo-ci',
-};
+const base = {};
 
 const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
   'versioned-client-add-sdk': {

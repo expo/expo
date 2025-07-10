@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   publish-canaries:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
     steps:

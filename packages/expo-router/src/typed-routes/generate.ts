@@ -70,7 +70,7 @@ export function getTypedRoutesDeclarationFile(
       .map((param) => {
         const key = param.startsWith('...') ? param.slice(3) : param;
         const value = param.startsWith('...') ? '(string | number)[]' : 'string | number';
-        return `${key}: ${value};`;
+        return `${contextKeyToProperty(key)}: ${value};`;
       })
       .join('');
 
@@ -78,7 +78,7 @@ export function getTypedRoutesDeclarationFile(
       .map((param) => {
         const key = param.startsWith('...') ? param.slice(3) : param;
         const value = param.startsWith('...') ? 'string[]' : 'string';
-        return `${key}: ${value};`;
+        return `${contextKeyToProperty(key)}: ${value};`;
       })
       .join('');
 
@@ -86,7 +86,7 @@ export function getTypedRoutesDeclarationFile(
       contextKeyToType(
         dynamicRouteTemplate
           .replaceAll(CATCH_ALL, '${string}')
-          .replaceAll(SLUG, '${Router.SingleRoutePart<T>}'),
+          .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + urlParams,
         partialTypedGroups
       )
     );
@@ -196,6 +196,10 @@ function groupRouteNodes(
   }
 
   return groupedContextKeys;
+}
+
+function contextKeyToProperty(contextKey: string) {
+  return !/^(?!\d)[\w$]+$/.test(contextKey) ? JSON.stringify(contextKey) : contextKey;
 }
 
 function contextKeyToType(contextKey: string, partialTypedGroups: boolean) {

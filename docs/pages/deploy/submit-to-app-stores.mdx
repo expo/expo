@@ -1,6 +1,7 @@
 ---
 title: Submit to app stores
 description: Learn how to submit your app to Google Play Store and Apple App Store from the command line with EAS Submit.
+hasVideoLink: true
 ---
 
 import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
@@ -40,12 +41,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   </Requirement>
   <Requirement number={3} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
-    
+
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+
   </Requirement>
   <Requirement number={4} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-    
+
     <Terminal cmd={['$ eas build --platform ios --profile production']} />
 
     Alternatively, you can build the app on your own computer with `eas build --platform ios --profile production --local` or with Xcode.
@@ -75,8 +77,9 @@ The command will lead you step by step through the process of submitting the app
   </Requirement>
   <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
-    
+
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+
   </Requirement>
   <Requirement number={5} title="Include a package name in app.json">
     Include your app's package name in **app.json**:
@@ -92,7 +95,7 @@ The command will lead you step by step through the process of submitting the app
   </Requirement>
   <Requirement number={6} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-    
+
     <Terminal cmd={['$ eas build --platform android --profile production']} />
 
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.

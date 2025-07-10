@@ -9,7 +9,7 @@ import { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics } from '.
  * @param type A notification feedback type that on Android is simulated using [`Vibrator`](https://developer.android.com/reference/android/os/Vibrator)
  * and iOS is directly mapped to [`UINotificationFeedbackType`](https://developer.apple.com/documentation/uikit/uinotificationfeedbacktype).
  * You can use one of `Haptics.NotificationFeedbackType.{Success, Warning, Error}`.
- * @return A `Promise` which fulfils once native size haptics functionality is triggered.
+ * @return A `Promise` which fulfills once native size haptics functionality is triggered.
  */
 export async function notificationAsync(
   type: NotificationFeedbackType = NotificationFeedbackType.Success
@@ -25,7 +25,10 @@ export async function notificationAsync(
  * @param style A collision indicator that on Android is simulated using [`Vibrator`](https://developer.android.com/reference/android/os/Vibrator)
  * and on iOS, it is directly mapped to [`UIImpactFeedbackStyle`](https://developer.apple.com/documentation/uikit/uiimpactfeedbackgenerator/feedbackstyle).
  * You can use one of `Haptics.ImpactFeedbackStyle.{Light, Medium, Heavy, Rigid, Soft}`.
- * @return A `Promise` which fulfils once native size haptics functionality is triggered.
+ * @return A `Promise` which fulfills once native size haptics functionality is triggered.
+ * @see Android's `Vibrator` API is not recommended for implementing haptics feedback. **Instead, you should use
+ * [`performAndroidHapticsAsync`](#hapticsperformandroidhapticsasynctype), which is similar to iOS haptic feedback and does not require
+ * `VIBRATE` permission.**
  */
 export async function impactAsync(
   style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium
@@ -39,7 +42,7 @@ export async function impactAsync(
 // @needsAudit
 /**
  * Used to let a user know when a selection change has been registered.
- * @return A `Promise` which fulfils once native size haptics functionality is triggered.
+ * @return A `Promise` which fulfills once native size haptics functionality is triggered.
  */
 export async function selectionAsync(): Promise<void> {
   if (!ExpoHaptics?.selectionAsync) {

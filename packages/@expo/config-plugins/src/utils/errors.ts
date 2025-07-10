@@ -2,7 +2,7 @@ export class UnexpectedError extends Error {
   readonly name = 'UnexpectedError';
 
   constructor(message: string) {
-    super(`${message}\nPlease report this as an issue on https://github.com/expo/expo/issues`);
+    super(`${message}\nReport this issue: https://github.com/expo/expo/issues`);
   }
 }
 

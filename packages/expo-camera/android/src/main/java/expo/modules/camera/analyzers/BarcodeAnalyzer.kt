@@ -12,7 +12,6 @@ import expo.modules.camera.CameraViewHelper
 import expo.modules.camera.records.BarcodeType
 import expo.modules.camera.records.CameraType
 import expo.modules.camera.utils.BarCodeScannerResult
-import java.nio.ByteBuffer
 
 @OptIn(ExperimentalGetImage::class)
 class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
@@ -44,12 +43,15 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
           val barcode = barcodes.first()
           val raw = barcode.rawValue ?: barcode.rawBytes?.let { String(it) }
 
-          val cornerPoints = mutableListOf<Int>()
-          barcode.cornerPoints?.let { points ->
-            for (point in points) {
-              cornerPoints.addAll(listOf(point.x, point.y))
-            }
-          }
+          val cornerPoints = barcode.cornerPoints?.let { points ->
+            // Pre-allocate array
+            IntArray(points.size * 2).apply {
+              points.forEachIndexed { index, point ->
+                this[index * 2] = point.x
+                this[index * 2 + 1] = point.y
+              }
+            }.toMutableList()
+          } ?: mutableListOf()
 
           val extra = BarCodeScannerResultSerializer.parseExtraDate(barcode)
           onComplete(
@@ -59,8 +61,8 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
               raw,
               extra,
               cornerPoints,
-              image.width,
-              image.height
+              imageProxy.width,
+              imageProxy.height
             )
           )
         }
@@ -74,14 +76,17 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
   }
 }
 
-private fun ByteBuffer.toByteArray(): ByteArray {
-  rewind()
-  val data = ByteArray(remaining())
-  get(data)
-  return data
-}
+fun Array<ImageProxy.PlaneProxy>.toByteArray(): ByteArray {
+  val totalSize = this.sumOf { it.buffer.remaining() }
+  val result = ByteArray(totalSize)
+  var offset = 0
 
-fun Array<ImageProxy.PlaneProxy>.toByteArray() = this.fold(mutableListOf<Byte>()) { acc, plane ->
-  acc.addAll(plane.buffer.toByteArray().toList())
-  acc
-}.toByteArray()
+  for (plane in this) {
+    val buffer = plane.buffer
+    val size = buffer.remaining()
+    buffer.get(result, offset, size)
+    offset += size
+  }
+
+  return result
+}

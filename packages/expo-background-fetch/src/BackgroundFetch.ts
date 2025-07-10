@@ -27,7 +27,7 @@ function _validate(taskName: unknown) {
     if (!warnedAboutExpoGo) {
       const message =
         '`Background Fetch` functionality is not available in Expo Go:\n' +
-        'Please use a development build to avoid limitations. Learn more: https://expo.fyi/dev-client.';
+        'You can use this API, and all others, in a development build. Learn more: https://expo.fyi/dev-client.';
       console.warn(message);
       warnedAboutExpoGo = true;
     }

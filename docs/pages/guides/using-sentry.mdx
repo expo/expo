@@ -6,21 +6,30 @@ description: A guide on installing and configuring Sentry for crash reporting.
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with **real-time insight into production deployments with info to reproduce and fix crashes**.
 
 It notifies you of exceptions or errors that your users run into while using your app and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically. You can also provide additional context that is specific to your application such as the current route and user id.
 
+## What you'll learn
+
+This guide covers three main aspects of integrating Sentry with your Expo projects:
+
+- [Install and configure Sentry](#install-and-configure-sentry) in your React Native app
+
+- Using Sentry with EAS:
+
+  - [EAS Build](#usage-with-eas-build) for building your app
+  - [EAS Update](#usage-with-eas-update) for over-the-air updates
+
+- [Setting up the Sentry-Expo integration](#sentry-integration-with-eas-dashboard) to view crash reports and session replays directly in your EAS dashboard
+
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
 ## Install and configure Sentry
-
-> `sentry-expo` has been merged into `@sentry/react-native` and is now deprecated. We recommend upgrading to SDK 50 to use `@sentry/react-native` for the best experience. If you're already using `sentry-expo`, [learn how to migrate](https://expo.fyi/sentry-expo-migration).
 
 <Step label="1">
 
@@ -52,150 +61,26 @@ Once you have each of these: **organization slug**, **project name**, **DSN**, a
 
 <Step label="2">
 
-### Install @sentry/react-native
+### Use the Sentry wizard to set up your project
 
-Run the following command in your project directory to install the official React Native library from the Sentry team:
+The easiest way to set up Sentry in your Expo project is to use the Sentry wizard. This tool will automatically configure your project with the right settings.
 
-<Terminal cmd={['$ npx expo install @sentry/react-native']} />
+Run the following command in your project directory:
+
+<Terminal cmd={['$ npx @sentry/wizard@latest -i reactNative']} />
+
+The wizard will:
+
+- Install the required dependencies
+- Configure your project to use Sentry
+- Set up the Metro configuration automatically
+- Add the necessary initialization code to your app
+
+Follow the prompts in the wizard to complete the setup process. The wizard will guide you to log in to your Sentry account and fetch all the correct information regarding your project.
 
 </Step>
 
 <Step label="3">
-
-### App configuration
-
-Configuring `@sentry/react-native` can be done through the config plugin. Add the plugin to your project's [app config](/workflow/configuration/) file:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "@sentry/react-native/expo",
-        {
-          "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
-          "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable",
-          // If you are using a self-hosted instance, update the value of the url property
-          // to point towards your self-hosted instance. For example, https://self-hosted.example.com/.
-          "url": "https://sentry.io/"
-        }
-      ]
-    ]
-  }
-}
-```
-
-Next, in an environment where you want to create releases and upload sourcemaps to Sentry, you will need to set the `SENTRY_AUTH_TOKEN` environment variable to your [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). If you are using EAS Build, you can set the environment variable by [creating a secret named SENTRY_AUTH_TOKEN](/eas/using-environment-variables/).
-
-> **warning** The Sentry auth token should be stored securely. Do not commit it to a public repository, and treat it as you would any other sensitive API key.
-
-<ConfigReactNative>
-
-If you do not use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), then you should use the [`@sentry/wizard`](https://docs.sentry.io/platforms/react-native/#install).
-
-</ConfigReactNative>
-
-</Step>
-
-<Step label="4">
-
-### Update Metro configuration
-
-Sentry hooks into Metro to inject a "debug ID" into your source maps. This debug ID is used to associate source maps with releases. To enable this, you need to add the following to your **metro.config.js** (if you don't have the file yet, create it in the root of your project):
-
-```js metro.config.js
-// This replaces `const { getDefaultConfig } = require('expo/metro-config');`
-const { getSentryExpoConfig } = require('@sentry/react-native/metro');
-
-// This replaces `const config = getDefaultConfig(__dirname);`
-const config = getSentryExpoConfig(__dirname);
-
-module.exports = config;
-```
-
-</Step>
-
-<Step label="5">
-
-### Initialize Sentry
-
-<Tabs>
-
-<Tab label="Using Expo Router">
-
-If your app uses [Expo Router](/router/introduction), then you can configure Sentry automatically to capture the current route and pass it along with your error reports. To set this up, configure Sentry in the [Root Layout route](/router/basics/layout/#root-layout) and add the navigation integration.
-
-```tsx app/_layout.tsx
-import { Slot, useNavigationContainerRef } from 'expo-router';
-import { useEffect } from 'react';
-import * as Sentry from '@sentry/react-native';
-import { isRunningInExpoGo } from 'expo';
-
-// Construct a new integration instance. This is needed to communicate between the integration and React
-const navigationIntegration = Sentry.reactNavigationIntegration({
-  enableTimeToInitialDisplay: !isRunningInExpoGo(),
-});
-
-Sentry.init({
-  dsn: 'YOUR DSN HERE',
-  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-  tracesSampleRate: 1.0, // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. Adjusting this value in production.
-  integrations: [
-    // Pass integration
-    navigationIntegration,
-  ],
-  enableNativeFramesTracking: !isRunningInExpoGo(), // Tracks slow and frozen frames in the application
-});
-
-function RootLayout() {
-  // Capture the NavigationContainer ref and register it with the integration.
-  const ref = useNavigationContainerRef();
-
-  useEffect(() => {
-    if (ref?.current) {
-      navigationIntegration.registerNavigationContainer(ref);
-    }
-  }, [ref]);
-
-  return <Slot />;
-}
-
-// Wrap the Root Layout route component with `Sentry.wrap` to capture gesture info and profiling data.
-export default Sentry.wrap(RootLayout);
-```
-
-</Tab>
-
-<Tab label="Not using Expo Router">
-
-Add the following to your app's main file such as **App.js**:
-
-```js
-import * as Sentry from '@sentry/react-native';
-
-Sentry.init({
-  dsn: 'YOUR DSN HERE',
-  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
-});
-```
-
-Now wrap the root component of your app with Sentry. This may be **App.js** or **index.js** depending on your project.
-
-```js
-import * as Sentry from '@sentry/react-native';
-
-// Your App component here
-
-export default Sentry.wrap(App);
-```
-
-</Tab>
-
-</Tabs>
-
-</Step>
-
-<Step label="6">
 
 ### Verify the configuration
 
@@ -282,6 +167,36 @@ Once configured, information about the associated update will show up in an erro
 <ContentSpotlight alt="Sentry update tags" src="/static/images/guides/sentry-tags.png" />
 
 </Collapsible>
+
+## Sentry integration with EAS dashboard
+
+The Sentry integration with Expo allows you to view crash reports and Session Replays for your Expo app deployments directly within your EAS dashboard. This integration provides a direct link to Sentry stack traces with full context, session replays, and debugging capabilities.
+
+### Install
+
+> **info** Sentry owner, manager, or admin permissions are required to install this integration.
+
+1. Log in to you Expo account and open [**Account settings > Overview**](https://expo.dev/accounts/[your-account]/settings).
+2. Under **Connections** and click **Connect** next to Sentry.
+3. Log in to your Sentry account and accept the integration into your organization. You will be redirected back to **Account settings**.
+
+### Link your project
+
+After connecting your accounts, you need to link your EAS Project to your Sentry Project:
+
+1. Open **Projects > [Your Project] > Configuration > Project settings** in EAS.
+2. Click **Link** and select your Sentry Project from the dropdown.
+
+### Usage
+
+To see your Sentry data in EAS dashboard, open **Projects > [Your Project] > Updates > Deployments > [Deployment]** to view Sentry data from a Release.
+
+With this integration, you can:
+
+- View crash reports directly in your EAS dashboard
+- Access Session Replays to see exactly what happened before an error occurred
+- Get detailed stack traces with full context
+- Navigate seamlessly between EAS and Sentry for debugging
 
 ## Learn more about Sentry
 

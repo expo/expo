@@ -8,13 +8,10 @@ import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
 import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
-import {
-  resolveRemoteBuildCache,
-  uploadRemoteBuildCache,
-} from '../../utils/remote-build-cache-providers';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
@@ -33,7 +30,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   const props = await resolveOptionsAsync(projectRoot, options);
 
   if (!options.binary && props.buildCacheProvider) {
-    const localPath = await resolveRemoteBuildCache({
+    const localPath = await resolveBuildCache({
       projectRoot,
       platform: 'android',
       provider: props.buildCacheProvider,
@@ -124,7 +121,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   }
 
   if (options.binary && shouldUpdateBuildCache && props.buildCacheProvider) {
-    await uploadRemoteBuildCache({
+    await uploadBuildCache({
       projectRoot,
       platform: 'android',
       provider: props.buildCacheProvider,

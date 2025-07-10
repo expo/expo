@@ -186,7 +186,7 @@ export function resolveScheme(options: { scheme?: string; isSilent?: boolean }):
         nativeAppId,
       ]
         .filter(Boolean)
-        .join(', ')}.\nPlease supply the preferred URI scheme to the Linking API.`
+        .join(', ')}.\nProvide the preferred URI scheme to the Linking API.`
     );
   }
   return scheme;

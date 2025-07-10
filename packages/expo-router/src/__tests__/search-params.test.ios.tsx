@@ -13,7 +13,7 @@ describe('push', () => {
         page: () => null,
       },
       {
-        initialUrl: 'page',
+        initialUrl: '/page',
       }
     );
 

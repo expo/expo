@@ -26,6 +26,7 @@ A bare minimum structure of a custom tab layout would consist of a `TabList` (co
 
 ```tsx app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+import { Text } from 'react-native';
 
 // Defining the layout of the custom tab navigator
 export default function Layout() {
@@ -199,7 +200,7 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
 ```tsx TabButton.tsx
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { TabTriggerSlotProps } from 'expo-router/ui';
-import { ComponentProps, Ref, forwardRef } from 'react';
+import { ComponentProps, Ref } from 'react';
 import { Text, Pressable, View } from 'react-native';
 
 type Icon = ComponentProps<typeof FontAwesome>['name'];
@@ -236,6 +237,9 @@ export function TabButton({ icon, children, isFocused, ...props }: TabButtonProp
 In Expo SDK 52 and below (React 18), use the legacy `forwardRef` function to access the `ref` handle.
 
 ```diff
+- import { ComponentProps, Ref } from 'react';
++ import { ComponentProps, Ref, forwardRef } from 'react';
+
 - export function TabButton({ ref }) {
 + export const TabButton = forwardRef((props: TabButtonProps, ref: Ref<View>) => {
 ```

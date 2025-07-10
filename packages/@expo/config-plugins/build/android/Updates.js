@@ -167,7 +167,7 @@ async function setVersionsConfigAsync(projectRoot, config, androidManifest) {
   const mainApplication = (0, _Manifest().getMainApplicationOrThrow)(androidManifest);
   const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'android');
   if (!runtimeVersion && (0, _Manifest().findMetaDataItem)(mainApplication, Config.RUNTIME_VERSION) > -1) {
-    throw new Error('A runtime version is set in your AndroidManifest.xml, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove expo.modules.updates.EXPO_RUNTIME_VERSION from your AndroidManifest.xml.');
+    throw new Error('A runtime version is set in your AndroidManifest.xml, but is missing from your Expo app config (app.json/app.config.js). Either set runtimeVersion in your Expo app config or remove expo.modules.updates.EXPO_RUNTIME_VERSION from your AndroidManifest.xml.');
   }
   if (runtimeVersion) {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, 'expo.modules.updates.EXPO_SDK_VERSION');

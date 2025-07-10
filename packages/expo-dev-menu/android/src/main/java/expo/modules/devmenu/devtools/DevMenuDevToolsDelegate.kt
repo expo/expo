@@ -6,7 +6,6 @@ import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.devsupport.DevMenuInternalSettingsWrapper
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.DEV_MENU_TAG
@@ -30,12 +29,6 @@ class DevMenuDevToolsDelegate(
 
   val devSettings
     get() = reactDevManager?.devSettings
-
-  internal val devInternalSettings: DevMenuInternalSettingsWrapper?
-    get() {
-      val devSettings = this.devSettings ?: return null
-      return if (devSettings.javaClass.canonicalName == "com.facebook.react.devsupport.DevLauncherInternalSettings") DevMenuInternalSettingsWrapper(devSettings) else null
-    }
 
   val reactContext
     get() = _reactContext.get()
@@ -63,7 +56,7 @@ class DevMenuDevToolsDelegate(
   }
 
   fun openJSInspector() = runWithDevSupportEnabled {
-    val devSettings = devInternalSettings ?: return
+    val devSettings = devSettings ?: return
     val reactContext = reactContext ?: return
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 

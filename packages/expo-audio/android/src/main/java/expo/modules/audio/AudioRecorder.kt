@@ -18,7 +18,7 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
 import java.io.IOException
 import java.util.UUID
-import kotlin.math.ln
+import kotlin.math.log10
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
 
@@ -40,16 +40,16 @@ class AudioRecorder(
   var isRecording = false
   var isPaused = false
 
-  private fun getAudioRecorderLevels(): Int? {
+  private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
       return null
     }
 
     val amplitude: Int = recorder?.maxAmplitude ?: 0
     return if (amplitude == 0) {
-      -160
+      -160.0
     } else {
-      (20 * ln(amplitude.toDouble() / 32767.0)).toInt()
+      20 * log10(amplitude.toDouble() / 32767.0)
     }
   }
 
@@ -142,9 +142,10 @@ class AudioRecorder(
 
       val filename = "recording-${UUID.randomUUID()}${options.extension}"
       try {
-        val directory = File(context.cacheDir.toString() + File.separator + "Audio")
+        val directory = File(context.cacheDir, "Audio")
         ensureDirExists(directory)
-        filePath = "$directory${File.separator}$filename"
+        val file = File(directory, filename)
+        filePath = file.absolutePath
       } catch (e: IOException) {
         // This only occurs in the case that the scoped path is not in this experience's scope,
         // which is never true.
@@ -167,9 +168,12 @@ class AudioRecorder(
       putBoolean("isRecording", isRecording)
       putLong("durationMillis", getAudioRecorderDurationMillis())
       getAudioRecorderLevels()?.let {
-        putInt("metering", it)
+        putDouble("metering", it)
       }
-      putString("url", filePath)
+      filePath?.let {
+        val path = Uri.fromFile(File(it)).toString()
+        putString("url", path)
+      }
     }
   } else {
     Bundle().apply {

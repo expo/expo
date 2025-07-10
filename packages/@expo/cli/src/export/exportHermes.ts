@@ -66,7 +66,7 @@ export async function maybeThrowFromInconsistentEngineAsync(
       `JavaScript engine configuration is inconsistent between ${configFileName} and Android native project.\n` +
         `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
         `In Android native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
-        `Please check the following files for inconsistencies:\n` +
+        `Check the following files for inconsistencies:\n` +
         `  - ${configFilePath}\n` +
         `  - ${path.join(projectRoot, 'android', 'gradle.properties')}\n` +
         `  - ${path.join(projectRoot, 'android', 'app', 'build.gradle')}\n` +
@@ -79,7 +79,7 @@ export async function maybeThrowFromInconsistentEngineAsync(
       `JavaScript engine configuration is inconsistent between ${configFileName} and iOS native project.\n` +
         `In ${configFileName}: Hermes is ${isHermesManaged ? 'enabled' : 'not enabled'}\n` +
         `In iOS native project: Hermes is ${isHermesManaged ? 'not enabled' : 'enabled'}\n` +
-        `Please check the following files for inconsistencies:\n` +
+        `Check the following files for inconsistencies:\n` +
         `  - ${configFilePath}\n` +
         `  - ${path.join(projectRoot, 'ios', 'Podfile')}\n` +
         `  - ${path.join(projectRoot, 'ios', 'Podfile.properties.json')}\n` +

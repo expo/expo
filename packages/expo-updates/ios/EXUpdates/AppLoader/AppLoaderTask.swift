@@ -37,7 +37,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
   func appLoaderTaskDidFinishAllLoading(_: AppLoaderTask)
 }
 
-public enum RemoteCheckResultNotAvailableReason {
+public enum RemoteCheckResultNotAvailableReason: String {
   /**
    * No update manifest or rollback directive received from the update server.
    */

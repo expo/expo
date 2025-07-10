@@ -1,6 +1,7 @@
 ---
 title: Use an image picker
 description: In this tutorial, learn how to use Expo Image Picker.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -49,14 +50,13 @@ In **app/(tabs)/index.tsx**, import `expo-image-picker` library and create a `pi
 /* @tutinfo Import <CODE>ImagePicker</CODE>. */ import * as ImagePicker from 'expo-image-picker';/* @end */
 
 export default function Index() {
+  /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
   const pickImageAsync = async () => {
-    /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
-    /* @end */
 
     if (!result.canceled) {
       /* @tutinfo If the image is picked, print its information in terminal window. */
@@ -68,6 +68,7 @@ export default function Index() {
       /* @end */
     }
   };
+  /* @end */
 
   // ...rest of the code remains same
 }
@@ -371,11 +372,11 @@ Pass the `selectedImage` prop to the `ImageViewer` component to display the sele
 
 {/* prettier-ignore */}
 ```tsx components/ImageViewer.tsx
-import { StyleSheet } from 'react-native';
-import { Image, type ImageSource } from 'expo-image';
+import { ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 
 type Props = {
-  imgSource: ImageSource;
+  imgSource: ImageSourcePropType;
   /* @tutinfo */
   selectedImage?: string;
   /* @end */

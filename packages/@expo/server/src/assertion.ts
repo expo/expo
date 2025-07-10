@@ -17,7 +17,7 @@ export function _assertNodeFetchSupport({ Request, Response, process }: any = gl
       const majorVersion = parseInt(version.replace(/v/g, '').split('.')[0], 10);
       if (majorVersion < 18) {
         throw new Error(
-          `Node.js version ${majorVersion} is not supported. Please upgrade to Node.js 20 or newer.`
+          `Node.js version ${majorVersion} is not supported. Upgrade to Node.js 20 or newer.`
         );
       }
     }

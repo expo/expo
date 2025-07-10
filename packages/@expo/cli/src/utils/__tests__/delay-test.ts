@@ -44,10 +44,10 @@ describe(resolveWithTimeout, () => {
 
     const promise = resolveWithTimeout(fn, { timeout: 50, errorMessage: 'Timeout' });
     jest.advanceTimersByTime(50);
-    await expect(promise).rejects.toThrowError('Timeout');
+    await expect(promise).rejects.toThrow('Timeout');
 
     // Ensure the function was called.
-    expect(fn).toBeCalled();
+    expect(fn).toHaveBeenCalled();
   });
   it(`resolves in time`, async () => {
     jest.useFakeTimers();
@@ -58,6 +58,6 @@ describe(resolveWithTimeout, () => {
     jest.advanceTimersByTime(49);
     await expect(promise).resolves.toEqual('foobar');
     // Ensure the function was called.
-    expect(fn).toBeCalled();
+    expect(fn).toHaveBeenCalled();
   });
 });

@@ -144,7 +144,7 @@ describe(getDynamicConfig, () => {
   // config is used instead of defaulting to a valid substitution.
   it(`throws a useful error for dynamic configs with a syntax error`, () => {
     const paths = getConfigFilePaths('syntax-error');
-    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
+    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrow(
       /Error .* \(5:7\)/
     );
   });
@@ -152,7 +152,7 @@ describe(getDynamicConfig, () => {
   // config is used instead of defaulting to a valid substitution.
   it(`throws a useful error for dynamic configs with a missing import`, () => {
     const paths = getConfigFilePaths('missing-import-error');
-    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrowError(
+    expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrow(
       /Require stack/
     );
   });

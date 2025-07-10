@@ -5,6 +5,7 @@ import { loadConfigAsync, normalizeSourceSkips } from '../Config';
 import { SourceSkips } from '../sourcer/SourceSkips';
 
 jest.mock('fs/promises');
+jest.mock('../ProjectWorkflow');
 
 describe(loadConfigAsync, () => {
   afterEach(() => {

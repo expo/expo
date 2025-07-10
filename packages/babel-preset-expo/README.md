@@ -33,7 +33,7 @@ Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the
 
 ### `minifyTypeofWindow`
 
-Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your code, e.g. `if (typeof window === 'undefined')` -> `if (true)` in servers. This is useful when you're using libraries that mock the window object on native or in the server.
+Set `minifyTypeofWindow: true` to transform `typeof window` checks in your code, e.g. `if (typeof window === 'object')` -> `if (true)` in clients. This is useful when you're using libraries that mock the window object on native or in the server.
 
 ```js
 [
@@ -47,11 +47,15 @@ Set `minifyTypeofWindow: false` to preserve the `typeof window` check in your co
 ];
 ```
 
-Defaults to `false` for server environments and web, `true` for native platforms to support legacy browser polyfills.
+Defaults to `true` for server environments, and `false` for client environments to support legacy browser polyfills and web workers.
 
 ### `reanimated`
 
 `boolean`, defaults to `true`. Set `reanimated: false` to disable adding the `react-native-reanimated/plugin` when `react-native-reanimated` is installed.
+
+### `worklets`
+
+`boolean`, `boolean`, defaults to `true`. Set `worklets: false` to disable adding the `react-native-worklets/plugin` when `react-native-worklets` is installed. Applies only when using standalone `react-native-worklets` or `react-native-reanimated 4`.
 
 ### [`jsxRuntime`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#runtime)
 

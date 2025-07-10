@@ -1,5 +1,6 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import Constants from 'expo-constants';
+import { ExpoUpdatesManifest } from 'expo-manifests';
 import { requireNativeModule } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
@@ -33,7 +34,10 @@ function TestValue(props: { testID: string; value: string }) {
 
 function TestButton(props: { testID: string; onPress: () => void }) {
   return (
-    <Pressable testID={props.testID} style={styles.button} onPress={props.onPress}>
+    <Pressable
+      testID={props.testID}
+      style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+      onPress={props.onPress}>
       <Text style={styles.buttonText}>{props.testID}</Text>
     </Pressable>
   );
@@ -133,6 +137,18 @@ export default function App() {
   const handleReadLogEntries = runBlockAsync(async () => {
     const logEntries = await Updates.readLogEntriesAsync(60000);
     setLogs(logEntries);
+    const server_port = process.env.EXPO_PUBLIC_UPDATES_SERVER_PORT;
+    try {
+      await fetch(`http://localhost:${server_port}/upload-log-entries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(logEntries),
+      });
+    } catch (e) {
+      console.log('Server does not support the log entry endpoints');
+    }
   });
 
   const handleClearLogEntries = runBlockAsync(async () => {
@@ -236,7 +252,7 @@ export default function App() {
       <Text>Updates expoConfig</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>
         <Text testID="updates.expoClient" style={styles.logEntriesText}>
-          {JSON.stringify(Updates.manifest?.extra?.expoClient || {})}
+          {JSON.stringify((Updates.manifest as ExpoUpdatesManifest)?.extra?.expoClient || {})}
         </Text>
       </ScrollView>
 
@@ -289,22 +305,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 5,
-    paddingVertical: 5,
+    paddingVertical: 2,
     paddingHorizontal: 10,
     borderRadius: 4,
     elevation: 3,
     backgroundColor: '#4630EB',
   },
+  buttonPressed: {
+    backgroundColor: '#FFFFFF',
+  },
   buttonText: {
     color: 'white',
-    fontSize: 6,
+    fontSize: 10,
   },
   labelText: {
-    fontSize: 6,
+    fontSize: 10,
   },
   logEntriesContainer: {
     margin: 10,
-    height: 50,
+    height: 20,
     paddingVertical: 5,
     paddingHorizontal: 10,
     width: '90%',

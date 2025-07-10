@@ -2,8 +2,12 @@
 title: Navigating between pages
 description: Learn the different ways to link to and navigate to pages in Expo Router.
 sidebar_title: Navigation
+hasVideoLink: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -15,6 +19,7 @@ Like in React Navigation, you can call a function from an `onPress` handler to n
 
 ```tsx
 import { useRouter } from 'expo-router';
+import { Button } from 'react-native';
 
 export default function Home() {
   const router = useRouter();
@@ -34,6 +39,13 @@ With Expo Router, you refer to pages by their URL, or their position relative to
     ['app/profile/index.tsx', 'router.navigate("/profile")'],
     ['app/profile/friends.tsx', 'router.navigate("/profile/friends")'],
   ]}
+/>
+
+<BoxLink
+  title="Router imperative navigation API reference"
+  description="Learn how to use all the functions available for imperative navigation."
+  href="/versions/latest/sdk/router/#router"
+  Icon={BookOpen02Icon}
 />
 
 ## Links and buttons
@@ -78,6 +90,13 @@ export default function Page() {
 }
 ```
 
+<BoxLink
+  title="Link API reference"
+  description="Learn the options available when using Links for navigation."
+  href="/versions/latest/sdk/router/#link"
+  Icon={BookOpen02Icon}
+/>
+
 ## Relative routes
 
 You don't always have to use the absolute path to a route. Using paths that start with `./` (for the current directory) or `../` (for the parent directory) will navigate relative to the current route.
@@ -112,10 +131,10 @@ Each of these links will navigate to the same page:
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx
-/* @info Import the <CODE>Link</CODE> React component from <CODE>expo-router</CODE>. */
-import { Link } from 'expo-router';
+/* @info Import the <CODE>Link</CODE> React component and <CODE>router</CODE> to navigate imperatively from <CODE>expo-router</CODE>. */
+import { Link, router } from 'expo-router';
 /* @end */
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 
 export default function Page() {
   return (
@@ -128,10 +147,18 @@ export default function Page() {
         href={{
           pathname: '/user/[id]',
           params: { id: 'bacon' }
-        }}>
+        }}
+      >
         View user (id in params in href)
       </Link>
-      <Pressable onPress={() => router.navigate('/user', { id: 'bacon' })}>
+      <Pressable
+        onPress={() =>
+          router.navigate({
+            pathname: '/user/[id]',
+            params: { id: 'bacon' }
+          })
+        }
+      >
         <Text>View user (imperative)</Text>
       </Pressable>
     </View>
@@ -195,6 +222,13 @@ Query parameters can be updated without navigating to a new page. This can be do
 </Pressable>
 ```
 
+<BoxLink
+  title="Using URL parameters"
+  description="Learn more about how to set and use URL parameters in Expo Router."
+  href="/router/reference/url-parameters/"
+  Icon={BookOpen02Icon}
+/>
+
 ## Redirects
 
 You can immediately redirect to another route from a page or layout with the `Redirect` component. This functions like the `replace` imperative navigation function. A redirect will navigate to the new route without rendering the current page.
@@ -212,7 +246,7 @@ export default function Page() {
 The `prefetch` prop on a `<Link />` component enables prefetching of the target screen when the component is rendered. This allows for faster navigation by preparing the screen in advance.
 
 ```tsx
-import { Redirect } from 'expo-router';
+import { Link } from 'expo-router';
 
 export default function Page() {
   return <Link href="/about" prefetch />;

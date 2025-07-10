@@ -2,12 +2,12 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import fetch from 'node-fetch';
 import path from 'path';
 import semver from 'semver';
 
-import { EXPO_DIR, LOCAL_API_HOST, STAGING_API_HOST, PRODUCTION_API_HOST } from '../Constants';
+import { EXPO_DIR, LOCAL_API_HOST } from '../Constants';
 import logger from '../Logger';
+import * as Versions from '../Versions';
 
 type ActionOptions = {
   env: string;
@@ -128,8 +128,8 @@ async function getCurrentBundledNativeModules(
   sdkVersion: string
 ): Promise<BundledNativeModulesList> {
   const baseApiUrl = resolveBaseApiUrl(env);
-  const result = await fetch(`${baseApiUrl}/--/api/v2/sdks/${sdkVersion}/native-modules`);
-  const resultJson: GetBundledNativeModulesResult = await result.json();
+  const result = await fetch(`${baseApiUrl}/v2/sdks/${sdkVersion}/native-modules`);
+  const resultJson = (await result.json()) as GetBundledNativeModulesResult;
   return resultJson.data;
 }
 
@@ -183,7 +183,7 @@ async function syncModulesAsync(
   payload: SyncPayload
 ): Promise<void> {
   const baseApiUrl = resolveBaseApiUrl(env);
-  const result = await fetch(`${baseApiUrl}/--/api/v2/sdks/${sdkVersion}/native-modules/sync`, {
+  const result = await fetch(`${baseApiUrl}/v2/sdks/${sdkVersion}/native-modules/sync`, {
     method: 'put',
     body: JSON.stringify(payload),
     headers: {
@@ -199,9 +199,9 @@ async function syncModulesAsync(
 
 function resolveBaseApiUrl(env: Env): string {
   if (env === 'production') {
-    return `https://${PRODUCTION_API_HOST}`;
+    return `https://${Versions.VersionsApiHost.PRODUCTION}`;
   } else if (env === 'staging') {
-    return `https://${STAGING_API_HOST}`;
+    return `https://${Versions.VersionsApiHost.STAGING}`;
   } else {
     return `http://${LOCAL_API_HOST}`;
   }

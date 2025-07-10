@@ -3,9 +3,9 @@ import {
   exportEmbedAssetsAsync,
 } from '@expo/cli/build/src/export/embed/exportEmbedAsync';
 import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
-import { convertEntryPointToRelative, resolveRelativeEntryPoint } from '@expo/config/paths';
 import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
+import { convertEntryPointToRelative, resolveRelativeEntryPoint } from 'expo/config/paths';
 import { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
 import Server from 'metro/src/Server';

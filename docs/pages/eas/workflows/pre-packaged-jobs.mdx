@@ -1,0 +1,1275 @@
+---
+title: Pre-packaged jobs
+description: Learn how to set up and use pre-packaged jobs.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+Pre-packaged jobs are ready-to-use workflow jobs that help you automate common tasks like building, submitting, and testing your app. They provide a standardized way to handle these operations without having to write custom job configurations from scratch. This guide covers the available pre-packaged jobs and how to use them in your workflows.
+
+## Build
+
+Build your project into an Android or iOS app.
+
+Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
+
+### Prerequisites
+
+To successfully use the build job, you'll need to complete a build with EAS CLI using the same platform and profile as the pre-packaged job. Learn how to [create your first build](/build/setup/) to get started.
+
+### Syntax
+
+```yaml
+jobs:
+  build_app:
+    type: build
+    params:
+      platform: android | ios # required
+      profile: string # optional, default: production
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                                |
+| --------- | ------ | -------------------------------------------------------------------------- |
+| platform  | string | **Required.** The platform to build for. Can be either `android` or `ios`. |
+| profile   | string | Optional. The build profile to use. Defaults to `production`.              |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output            | Type   | Description                                                        |
+| ----------------- | ------ | ------------------------------------------------------------------ |
+| build_id          | string | The ID of the created build.                                       |
+| app_build_version | string | The version code/build number of the app.                          |
+| app_identifier    | string | The bundle identifier/package name of the app.                     |
+| app_version       | string | The version of the app.                                            |
+| channel           | string | The update channel used for the build.                             |
+| distribution      | string | The distribution method used. Can be `internal` or `store`.        |
+| fingerprint_hash  | string | The fingerprint hash of the build.                                 |
+| git_commit_hash   | string | The git commit hash used for the build.                            |
+| platform          | string | The platform the build was created for. Either `android` or `ios`. |
+| profile           | string | The build profile used.                                            |
+| runtime_version   | string | The runtime version used.                                          |
+| sdk_version       | string | The SDK version used.                                              |
+| simulator         | string | Whether the build is for simulator.                                |
+
+### Examples
+
+Here are some practical examples of using the build job:
+
+<Collapsible summary="Basic build for a specific platform">
+
+This workflow builds your iOS app whenever you push to the main branch.
+
+```yaml .eas/workflows/build-ios.yml
+name: Build iOS app
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Build for both platforms in parallel">
+
+This workflow builds both Android and iOS apps in parallel when you push to the main branch.
+
+```yaml .eas/workflows/build-all.yml
+name: Build for all platforms
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Build with environment variables">
+
+This workflow builds your Android app with custom environment variables that can be used during the build process.
+
+```yaml .eas/workflows/build-with-env.yml
+name: Build with environment variables
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    env:
+      APP_ENV: production
+      API_URL: https://api.example.com
+    params:
+      platform: android
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Build with different profiles">
+
+This workflow creates two different Android builds using different profiles - one for internal distribution and one for store submission using the development and production profiles.
+
+```yaml .eas/workflows/build-profiles.yml
+name: Build with different profiles
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android_development:
+    name: Build Android Development
+    type: build
+    params:
+      platform: android
+      profile: development
+
+  build_android_production:
+    name: Build Android Production
+    type: build
+    params:
+      platform: android
+      profile: production
+```
+
+</Collapsible>
+
+## Deploy
+
+Deploy your application using [EAS Hosting](/eas/hosting/introduction).
+
+### Prerequisites
+
+To deploy your application using EAS Hosting, you'll need to set up your project. See [Get Started with EAS Hosting](/eas/hosting/get-started/#prerequisites) for more information.
+
+### Syntax
+
+```yaml
+jobs:
+  deploy_web:
+    type: deploy
+    params:
+      alias: string # optional
+      prod: boolean # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type    | Description                                                                        |
+| --------- | ------- | ---------------------------------------------------------------------------------- |
+| alias     | string  | Optional. The [alias](/eas/hosting/deployments-and-aliases/#aliases) to deploy to. |
+| prod      | boolean | Optional. Whether to deploy to production.                                         |
+
+### Examples
+
+Here are some practical examples of using the deploy job:
+
+<Collapsible summary="Basic deployment to production">
+
+This workflow deploys your application to production using EAS Hosting.
+
+```yaml .eas/workflows/deploy-basic.yml
+name: Basic Deployment
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Deploy to production only on merges to the `main` branch">
+
+This workflow deploys your application to production when you merge to the main branch, and makes a non-production deployment on all other branches.
+
+```yaml .eas/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  deploy:
+    name: Deploy
+    type: deploy
+    params:
+      prod: ${{ github.ref_name == 'main' }}
+```
+
+</Collapsible>
+
+<Collapsible summary="Deployment with custom alias">
+
+This workflow deploys your application to a custom alias in production.
+
+```yaml .eas/workflows/deploy-alias.yml
+name: Deployment with Alias
+
+jobs:
+  deploy:
+    name: Deploy with Alias
+    type: deploy
+    params:
+      alias: my-custom-alias
+      prod: true
+```
+
+</Collapsible>
+
+## Fingerprint
+
+Calculates a fingerprint of your project.
+
+> **Note:** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
+
+### Syntax
+
+```yaml
+jobs:
+  fingerprint:
+    type: fingerprint
+    params:
+      environment: production | preview | development # optional, defaults to production
+      env: # optional
+        APP_VARIANT: staging # just an example
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter   | Type   | Description                                                                                                   |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------- |
+| environment | string | Optional. The environment to use. Can be `production`, `preview`, or `development`. Defaults to `production`. |
+| env         | object | Optional. Environment variables to use during fingerprint calculation.                                        |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                   | Type   | Description                       |
+| ------------------------ | ------ | --------------------------------- |
+| android_fingerprint_hash | string | The fingerprint hash for Android. |
+| ios_fingerprint_hash     | string | The fingerprint hash for iOS.     |
+
+### Examples
+
+Here are some practical examples of using the fingerprint job:
+
+<Collapsible summary="Basic fingerprint calculation">
+
+This workflow calculates fingerprints for both Android and iOS builds in the production environment.
+
+```yaml .eas/workflows/fingerprint-basic.yml
+name: Basic Fingerprint
+
+jobs:
+  fingerprint:
+    name: Calculate Fingerprint
+    type: fingerprint
+    params:
+      environment: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Fingerprint with environment variables">
+
+This workflow calculates fingerprints with custom environment variables that can affect the build configuration.
+
+```yaml .eas/workflows/fingerprint-with-env.yml
+name: Fingerprint with Environment Variables
+
+jobs:
+  fingerprint:
+    name: Calculate Fingerprint
+    type: fingerprint
+    params:
+      environment: production
+      env:
+        APP_VARIANT: staging
+        API_URL: https://api.staging.example.com
+```
+
+</Collapsible>
+
+## Get Build
+
+Retrieve an existing build from EAS that matches the provided parameters.
+
+### Syntax
+
+```yaml
+jobs:
+  get_build:
+    type: get-build
+    params:
+      platform: ios | android # optional
+      profile: string # optional
+      distribution: store | internal | simulator # optional
+      channel: string # optional
+      app_identifier: string # optional
+      app_build_version: string # optional
+      app_version: string # optional
+      git_commit_hash: string # optional
+      fingerprint_hash: string # optional
+      sdk_version: string # optional
+      runtime_version: string # optional
+      simulator: boolean # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter         | Type    | Description                                                                    |
+| ----------------- | ------- | ------------------------------------------------------------------------------ |
+| platform          | string  | Optional. The platform to get the build for. Can be `ios` or `android`.        |
+| profile           | string  | Optional. The build profile to use.                                            |
+| distribution      | string  | Optional. The distribution method. Can be `store`, `internal`, or `simulator`. |
+| channel           | string  | Optional. The update channel.                                                  |
+| app_identifier    | string  | Optional. The bundle identifier/package name.                                  |
+| app_build_version | string  | Optional. The build version.                                                   |
+| app_version       | string  | Optional. The app version.                                                     |
+| git_commit_hash   | string  | Optional. The git commit hash.                                                 |
+| fingerprint_hash  | string  | Optional. The fingerprint hash.                                                |
+| sdk_version       | string  | Optional. The SDK version.                                                     |
+| runtime_version   | string  | Optional. The runtime version.                                                 |
+| simulator         | boolean | Optional. Whether to get a simulator build.                                    |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output            | Type   | Description                                    |
+| ----------------- | ------ | ---------------------------------------------- |
+| build_id          | string | The ID of the retrieved build.                 |
+| app_build_version | string | The build version of the app.                  |
+| app_identifier    | string | The bundle identifier/package name of the app. |
+| app_version       | string | The version of the app.                        |
+| channel           | string | The update channel used for the build.         |
+| distribution      | string | The distribution method used.                  |
+| fingerprint_hash  | string | The fingerprint hash of the build.             |
+| git_commit_hash   | string | The git commit hash used for the build.        |
+| platform          | string | The platform the build was created for.        |
+| profile           | string | The build profile used.                        |
+| runtime_version   | string | The runtime version used.                      |
+| sdk_version       | string | The SDK version used.                          |
+| simulator         | string | Whether the build is for simulator.            |
+
+### Examples
+
+Here are some practical examples of using the get-build job:
+
+<Collapsible summary="Get latest production build">
+
+This workflow retrieves the latest production build for iOS from the store distribution channel.
+
+```yaml .eas/workflows/get-build-production.yml
+name: Get Production Build
+
+jobs:
+  get_build:
+    name: Get Latest Production Build
+    type: get-build
+    params:
+      platform: ios
+      profile: production
+      distribution: store
+      channel: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Get build by version">
+
+This workflow retrieves a specific version of an Android build by its app version and build version.
+
+```yaml .eas/workflows/get-build-version.yml
+name: Get Build by Version
+
+jobs:
+  get_build:
+    name: Get Specific Version Build
+    type: get-build
+    params:
+      platform: android
+      app_identifier: com.example.app
+      app_version: 1.0.0
+      app_build_version: 42
+```
+
+</Collapsible>
+
+<Collapsible summary="Get simulator build">
+
+This workflow retrieves a simulator build for iOS development.
+
+```yaml .eas/workflows/get-build-simulator.yml
+name: Get Simulator Build
+
+jobs:
+  get_build:
+    name: Get Simulator Build
+    type: get-build
+    params:
+      platform: ios
+      simulator: true
+      profile: development
+```
+
+</Collapsible>
+
+## Submit
+
+Submit an Android or iOS build to the app store using EAS Submit.
+
+### Prerequisites
+
+Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
+
+### Syntax
+
+```yaml
+jobs:
+  submit_to_store:
+    type: submit
+    params:
+      build_id: string # required
+      profile: string # optional, default: production
+      groups: string[] # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id  | string   | Required. The ID of the build to submit.                                                                                                                                                                                                                                                                                                                                                                                     |
+| profile   | string   | Optional. The submit profile to use. Defaults to `production`.                                                                                                                                                                                                                                                                                                                                                               |
+| groups    | string[] | Optional. An array of TestFlight internal group names to add the build to (only affects iOS submissions; for Android, this parameter is ignored). Overrides `groups` in the [submit profile](/eas/json/#ios-specific-options-1). Note: On top of the groups you provide here, the build will be automatically added to the groups that have been created with the "Enable automatic distribution" App Store Connect setting. |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                       |
+| --------------------- | ------ | ------------------------------------------------- |
+| apple_app_id          | string | The Apple App ID of the submitted build.          |
+| ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
+| android_package_id    | string | The Android package ID of the submitted build.    |
+
+### Examples
+
+Here are some practical examples of using the submit job:
+
+<Collapsible summary="Submit iOS build">
+
+This workflow submits an iOS build to the App Store using the production submit profile.
+
+```yaml .eas/workflows/submit-ios.yml
+name: Submit iOS Build
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit:
+    name: Submit to App Store
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Submit Android build">
+
+This workflow submits an Android build to the Play Store using the production submit profile.
+
+```yaml .eas/workflows/submit-android.yml
+name: Submit Android Build
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  submit:
+    name: Submit to Play Store
+    type: submit
+    needs: [build_android]
+    params:
+      build_id: ${{ needs.build_android.outputs.build_id }}
+      profile: production
+```
+
+</Collapsible>
+
+## Update
+
+Publish an update using [EAS Update](/eas-update/introduction/).
+
+### Prerequisites
+
+To publish update previews and to send over-the-air updates, you'll need to run `npx eas-cli@latest update:configure`, then create new builds. Learn more about [configuring EAS Update](/eas-update/getting-started/#prerequisites).
+
+### Syntax
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+    params:
+      message: string # optional
+      platform: string # optional - android | ios | all, defaults to all
+      branch: string # optional
+      channel: string # optional - cannot be used with branch
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                                                                                                                                                                                                                         |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| message   | string | Optional. Message to use for the update. If not provided, the commit message will be used.                                                                                                                                                                          |
+| platform  | string | Optional. Platform to use for the update. Can be `android`, `ios`, or `all`. Defaults to `all`.                                                                                                                                                                     |
+| branch    | string | Optional. Branch to use for the update. If not provided, the branch from the workflow run will be used. For manually run workflows you need to provide a value. Example: `${{ github.ref_name \|\| 'testing' }}`. Provide _either_ a branch or a channel, not both. |
+| channel   | string | Optional. Channel to use for the update. Provide _either_ a branch or a channel, not both.                                                                                                                                                                          |
+
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                                   |
+| --------------------- | ------ | ------------------------------------------------------------- |
+| first_update_group_id | string | The ID of the first update group.                             |
+| updates_json          | string | A JSON string containing information about all update groups. |
+
+### Examples
+
+Here are some practical examples of using the update job:
+
+<Collapsible summary="Basic update to production channel">
+
+This workflow publishes an update to the production channel whenever you push to the main branch, using the commit message as the update message.
+
+```yaml .eas/workflows/update-production.yml
+name: Update Production
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update_production:
+    name: Update Production Channel
+    type: update
+    params:
+      channel: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Platform-specific updates">
+
+This workflow publishes separate updates for Android and iOS platforms, allowing for platform-specific changes.
+
+```yaml .eas/workflows/update-platforms.yml
+name: Platform-specific Updates
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update_android:
+    name: Update Android
+    type: update
+    params:
+      platform: android
+      channel: production
+
+  update_ios:
+    name: Update iOS
+    type: update
+    params:
+      platform: ios
+      channel: production
+```
+
+</Collapsible>
+
+<Collapsible summary="Update with branch-based deployment">
+
+This workflow publishes updates based on the branch name, allowing for different environments (staging/production) based on the branch.
+
+```yaml .eas/workflows/update-branches.yml
+name: Branch-based Updates
+
+on:
+  push:
+    branches: ['main', 'staging']
+
+jobs:
+  update_branch:
+    name: Update Branch
+    type: update
+    params:
+      branch: ${{ github.ref_name }}
+      message: 'Update for branch: ${{ github.ref_name }}'
+```
+
+</Collapsible>
+
+## Maestro
+
+Run Maestro tests on a Android emulator or iOS Simulator build.
+
+> **important** Maestro tests are experimental and may experience flakiness.
+
+### Syntax
+
+```yaml
+jobs:
+  run_maestro_tests:
+    type: maestro
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required
+      flow_path: string | string[] # required
+      shards: number # optional, defaults to 1
+      retries: number # optional, defaults to 1
+      record_screen: boolean # optional, defaults to false
+      include_tags: string | string[] # optional
+      exclude_tags: string | string[] # optional
+      maestro_version: string # optional, defaults to latest
+      android_system_image_package: string # optional
+      device_identifier: string | { android: string, ios: string } # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter                    | Type                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                     | string                                                | Required. The ID of the build to test.                                                                                                                                                                                                                                                                                                                                                                                                |
+| flow_path                    | string                                                | Required. The path to the Maestro flow file(s) to run.                                                                                                                                                                                                                                                                                                                                                                                |
+| shards                       | number                                                | Optional and experimental. The number of shards to split the tests into. Defaults to 1.                                                                                                                                                                                                                                                                                                                                               |
+| retries                      | number                                                | Optional. The number of times to retry failed tests. Defaults to 1.                                                                                                                                                                                                                                                                                                                                                                   |
+| record_screen                | boolean                                               | Optional. Whether to record the screen. Defaults to false. Note: recording screen may impact emulator performance. You may want to use large runners when recording screen.                                                                                                                                                                                                                                                           |
+| include_tags                 | string                                                | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
+| exclude_tags                 | string                                                | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
+| maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
+| android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
+| device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
+
+### Examples
+
+Here are some practical examples of using the Maestro job:
+
+<Collapsible summary="Basic Maestro test">
+
+This workflow runs Maestro tests on an iOS Simulator build using the default settings.
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro/flows
+```
+
+</Collapsible>
+
+<Collapsible summary="Maestro test with sharding">
+
+This workflow runs Maestro tests on an Android emulator build with 3 shards and 2 retries for failed tests.
+
+```yaml .eas/workflows/maestro-sharded.yml
+name: Sharded Maestro Test
+
+jobs:
+  test:
+    name: Run Sharded Maestro Tests
+    type: maestro
+    environment: preview
+    runs_on: linux-large-nested-virtualization
+    params:
+      build_id: ${{ needs.build_android_emulator.outputs.build_id }}
+      flow_path: ./maestro/flows
+      shards: 3
+      retries: 2
+```
+
+</Collapsible>
+
+<Collapsible summary="Using Maestro prefixed environment variables">
+
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    env:
+      MAESTRO_APP_ID: 'com.yourhost.yourapp'
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+```
+
+</Collapsible>
+
+<Collapsible summary="Recording screen and using a specific device">
+
+This workflow runs Maestro tests on an Android emulator build with a specific device and records the screen.
+
+```yaml .eas/workflows/maestro-sharded.yml
+name: Pixel E2E Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    runs_on: linux-large-nested-virtualization
+    params:
+      build_id: ${{ needs.build_android_emulator.outputs.build_id }}
+      device_identifier: 'pixel_6'
+      record_screen: true
+      android_system_image_package: 'system-images;android-35;default;x86_64'
+```
+
+</Collapsible>
+
+## Maestro Cloud
+
+Run Maestro tests on Maestro Cloud.
+
+> **important** This requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+
+### Syntax
+
+```yaml
+jobs:
+  run_maestro_tests:
+    type: maestro-cloud
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required. ID of the build to test.
+      maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
+      flows: string # required. Path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.
+      maestro_api_key: string # optional, defaults to `$MAESTRO_CLOUD_API_KEY`
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_api_level: string # optional. Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
+      maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
+      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
+      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
+      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+      name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
+      branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
+      async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter          | Type    | Description                                                                                                                                                                                                                                  |
+| ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id           | string  | Required. The ID of the build to test. Example: `${{ needs.build_android.outputs.build_id }}`.                                                                                                                                               |
+| maestro_project_id | string  | Required. The ID of the Maestro Cloud project to use. Corresponds to `--project-id` param to `maestro cloud`. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`. Go to [Maestro Cloud](https://app.maestro.dev/) to find yours.                     |
+| flows              | string  | Required. The path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.                                                                                                     |
+| maestro_api_key    | string  | Optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.                                                            |
+| include_tags       | string  | Optional. The tags to include in the tests. Corresponds to `--include-tags` param to `maestro cloud`. Example: `"pull,push"`.                                                                                                                |
+| exclude_tags       | string  | Optional. The tags to exclude from the tests. Corresponds to `--exclude-tags` param to `maestro cloud`. Example: `"disabled"`.                                                                                                               |
+| maestro_version    | string  | Optional. The version of Maestro to use. Example: `1.30.0`.                                                                                                                                                                                  |
+| android_api_level  | string  | Optional. The Android API level to use. Corresponds to `--android-api-level` param to `maestro cloud`. Example: `29`.                                                                                                                        |
+| maestro_config     | string  | Optional. The path to the Maestro `config.yaml` file to use. Corresponds to `--config` param to `maestro cloud`. Example: `.maestro/config.yaml`.                                                                                            |
+| device_locale      | string  | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                                            |
+| device_model       | string  | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro cloud --help` for a list of supported values.                                           |
+| device_os          | string  | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro cloud --help` for a list of supported values.                                                  |
+| name               | string  | Optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.                                                                                                                                               |
+| branch             | string  | Optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`. |
+| async              | boolean | Optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.               |
+
+> **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
+
+### Examples
+
+Here are some practical examples of using the Maestro job:
+
+<Collapsible summary="Basic Maestro Cloud test">
+
+This workflow runs Maestro tests on an iOS Simulator build using the default settings.
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
+      flows: ./maestro/flows
+```
+
+</Collapsible>
+
+<Collapsible summary="Using Maestro prefixed environment variables">
+
+Maestro can automatically read environment variables in a workflow when the variable is prefixed by `MAESTRO_`. For more information, see the [Maestro documentation on shell variables](https://docs.maestro.dev/advanced/parameters-and-constants#accessing-variables-from-the-shell).
+
+```yaml .eas/workflows/maestro-basic.yml
+name: Basic Maestro Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro-cloud
+    env:
+      MAESTRO_APP_ID: 'com.yourhost.yourapp'
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
+      flows: ./maestro/flows
+```
+
+</Collapsible>
+
+## Slack
+
+Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).
+
+### Syntax
+
+```yaml
+jobs:
+  send_slack_notification:
+    type: slack
+    params:
+      webhook_url: string # required
+      message: string # required if payload is not provided
+      payload: object # required if message is not provided
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter   | Type   | Description                                                                                                                                                                |
+| ----------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| webhook_url | string | Required. The Slack webhook URL to send the message to. Currently only hardcoded strings are supported. Using webhooks stored in `env` are upcoming but not yet supported. |
+| message     | string | Required if payload is not provided. The message to send.                                                                                                                  |
+| payload     | object | Required if message is not provided. The [Slack Block Kit](https://api.slack.com/block-kit) payload to send.                                                               |
+
+### Examples
+
+Here are some practical examples of using the Slack job:
+
+<Collapsible summary="Basic build notification">
+
+This workflow builds an iOS app and then sends a notification with the app identifier and version from the build job outputs.
+
+```yaml .eas/workflows/slack-build-notification.yml
+name: Build Notification
+
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  notify_build:
+    name: Notify Build Status
+    needs: [build_ios]
+    type: slack
+    params:
+      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      message: 'Build completed for app ${{ needs.build_ios.outputs.app_identifier }} (version ${{ needs.build_ios.outputs.app_version }})'
+```
+
+</Collapsible>
+
+<Collapsible summary="Rich build notification with Block Kit">
+
+This workflow builds an Android app and sends a rich notification using the build job outputs.
+
+```yaml .eas/workflows/slack-rich-notification.yml
+name: Rich Build Notification
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  notify_build:
+    name: Notify Build Status
+    needs: [build_android]
+    type: slack
+    params:
+      webhook_url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+      payload:
+        blocks:
+          - type: header
+            text:
+              type: plain_text
+              text: 'Build Completed'
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*App:*\n${{ needs.build_android.outputs.app_identifier }}"
+              - type: mrkdwn
+                text: "*Version:*\n${{ needs.build_android.outputs.app_version }}"
+          - type: section
+            fields:
+              - type: mrkdwn
+                text: "*Build ID:*\n${{ needs.build_android.outputs.build_id }}"
+              - type: mrkdwn
+                text: "*Platform:*\n${{ needs.build_android.outputs.platform }}"
+          - type: section
+            text:
+              type: mrkdwn
+              text: 'Distribution: ${{ needs.build_android.outputs.distribution }}'
+```
+
+</Collapsible>
+
+## Require Approval
+
+Require approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job.
+
+### Syntax
+
+```yaml
+jobs:
+  require_approval:
+    type: require-approval
+```
+
+#### Parameters
+
+This job doesn't take any parameters.
+
+### Examples
+
+Here are some practical examples of using the Require Approval job:
+
+<Collapsible summary="Ask for approval before deploying to production">
+
+This workflow deploys a web app to preview and then requires approval from a user before deploying to production.
+
+```yaml .eas/workflows/web.yml
+jobs:
+  web_preview:
+    name: Deploy Web Preview
+    type: deploy
+
+  require_approval:
+    name: Deploy Web to Production?
+    needs: [web_preview]
+    type: require-approval
+
+  web_production:
+    name: Deploy Web Production
+    needs: [require_approval]
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Control flow of the workflow">
+
+This workflow lets a user decide how the story ends by requiring approval before revealing the conclusion.
+
+```yaml .eas/workflows/dragon-knight-interactive.yml
+jobs:
+  show_story_intro:
+    name: Dragon and Knight Story Intro
+    type: doc
+    params:
+      md: |
+        # The Dragon and the Knight
+
+        Once upon a time, in a land far away, a brave knight set out to face a mighty dragon.
+
+        The dragon roared, breathing fire across the valley, but the knight stood firm, shield raised high.
+
+        Now, the fate of their encounter is in your hands...
+
+  require_approval:
+    name: Should the knight and dragon become friends?
+    needs: [show_story_intro]
+    type: require-approval
+
+  happy_ending:
+    name: Friendship Ending
+    needs: [require_approval]
+    type: doc
+    params:
+      md: |
+        ## A New Friendship
+
+        The knight lowered his sword, and the dragon ceased its fire. They realized they both longed for peace. From that day on, they became the best of friends, protecting the kingdom together.
+
+  epic_battle:
+    name: Epic Battle Ending
+    after: [require_approval]
+    if: ${{ failure() }}
+    type: doc
+    params:
+      md: |
+        ## The Epic Battle
+
+        The knight charged forward, and the dragon unleashed a mighty roar. Their battle shook the mountains and echoed through the ages. In the end, both were remembered as fierce and noble adversaries.
+```
+
+</Collapsible>
+
+## Doc
+
+Displays a Markdown section in the workflow logs.
+
+### Syntax
+
+```yaml
+jobs:
+  show_whats_next:
+    type: doc
+    params:
+      md: string
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                                                 |
+| --------- | ------ | ------------------------------------------------------------------------------------------- |
+| md        | string | Required. The Markdown content to display. You can use `${{ ... }}` workflow interpolation. |
+
+### Examples
+
+Here are some practical examples of using the Doc job:
+
+<Collapsible summary="Display instructions">
+
+This workflow builds an iOS app and then displays a Markdown section in the workflow logs.
+
+```yaml .eas/workflows/build-and-submit-ios.yml
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit:
+    name: Submit to App Store
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+
+  next_steps:
+    name: Next Steps
+    needs: [submit]
+    type: doc
+    params:
+      md: |
+        # To do next
+
+        Your app has just been sent to [App Store Connect](https://appstoreconnect.apple.com/apps).
+
+        1. Download the app from TestFlight.
+        2. Test the app a bunch.
+        3. Submit the app for review.
+```
+
+</Collapsible>
+
+## Repack
+
+Repackages an app from an existing build. This job repackages the app's metadata and JavaScript bundle without performing a full native rebuild, which is useful for creating a faster build compatible with a specific fingerprint.
+
+### Syntax
+
+```yaml
+jobs:
+  repack:
+    type: repack
+    params:
+      build_id: string # required
+      profile: string # optional
+      embed_bundle_assets: boolean # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter           | Type    | Description                                                                                                                                 |
+| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
+| profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
+| embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
+
+### Examples
+
+Here are some practical examples of using the Fingerprint with Repack jobs:
+
+<Collapsible summary="Continuous Deployment with Fingerprint and Repack">
+
+This workflow first generates a fingerprint and then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
+
+```yaml .eas/workflows/cd-fingerprint-repack.yml
+name: continuous-deploy-fingerprint
+
+jobs:
+  fingerprint:
+    id: fingerprint
+    type: fingerprint
+
+  android_get_build:
+    needs: [fingerprint]
+    id: android_get_build
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      platform: android
+
+  android_repack:
+    needs: [android_get_build]
+    id: android_repack
+    if: ${{ needs.android_get_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.android_get_build.outputs.build_id }}
+
+  android_build:
+    needs: [android_get_build]
+    id: android_build
+    if: ${{ !needs.android_get_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: preview-simulator
+
+  android_maestro:
+    after: [android_repack, android_build]
+    id: android_maestro
+    type: maestro
+    image: latest
+    params:
+      build_id: ${{ needs.android_repack.outputs.build_id || needs.android_build.outputs.build_id }}
+      flow_path: ['maestro.yaml']
+
+  ios_get_build:
+    needs: [fingerprint]
+    id: ios_get_build
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      platform: ios
+
+  ios_repack:
+    needs: [ios_get_build]
+    id: ios_repack
+    if: ${{ needs.ios_get_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.ios_get_build.outputs.build_id }}
+
+  ios_build:
+    needs: [ios_get_build]
+    id: ios_build
+    if: ${{ !needs.ios_get_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: preview-simulator
+
+  ios_maestro:
+    after: [ios_repack, ios_build]
+    id: ios_maestro
+    type: maestro
+    image: latest
+    params:
+      build_id: ${{ needs.ios_repack.outputs.build_id || needs.ios_build.outputs.build_id }}
+      flow_path: ['maestro.yaml']
+```
+
+</Collapsible>

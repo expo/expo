@@ -38,9 +38,9 @@ it(`skips when favicon request is invalid`, async () => {
     next
   );
 
-  expect(next).toBeCalledTimes(1);
-  expect(next).toBeCalledWith();
-  expect(res.end).toBeCalledTimes(0);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith();
+  expect(res.end).toHaveBeenCalledTimes(0);
 });
 
 it(`skips when user-defined favicon is used`, async () => {
@@ -67,9 +67,9 @@ it(`skips when user-defined favicon is used`, async () => {
   );
 
   // Falls back on the serve static middleware.
-  expect(next).toBeCalledTimes(1);
-  expect(next).toBeCalledWith();
-  expect(res.end).toBeCalledTimes(0);
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith();
+  expect(res.end).toHaveBeenCalledTimes(0);
 });
 
 it(`generates a favicon from Expo config`, async () => {
@@ -99,9 +99,9 @@ it(`generates a favicon from Expo config`, async () => {
   );
 
   // Falls back on the serve static middleware.
-  expect(next).toBeCalledTimes(0);
-  expect(res.end).toBeCalledTimes(1);
-  expect(res.end).toBeCalledWith(Buffer.from('...'));
+  expect(next).toHaveBeenCalledTimes(0);
+  expect(res.end).toHaveBeenCalledTimes(1);
+  expect(res.end).toHaveBeenCalledWith(Buffer.from('...'));
 });
 
 it(`fails when favicon from Expo config is invalid`, async () => {
@@ -131,6 +131,6 @@ it(`fails when favicon from Expo config is invalid`, async () => {
     next
   );
 
-  expect(next).toBeCalledTimes(1);
-  expect(next).toBeCalledWith();
+  expect(next).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith();
 });

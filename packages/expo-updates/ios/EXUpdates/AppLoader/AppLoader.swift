@@ -344,7 +344,9 @@ open class AppLoader: NSObject {
             }
           }
           // This replaces the old force try
-          assert(contents != nil)
+          if !UpdatesUtils.isNativeDebuggingEnabled() {
+            assert(contents != nil)
+          }
           if let contents = contents {
             existingAsset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(contents)
             existingAsset.downloadTime = Date()

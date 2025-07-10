@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/@expo/fingerprin
 packageName: '@expo/fingerprint'
 iconUrl: '/static/images/packages/expo-fingerprint.png'
 platforms: ['node']
-isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -34,17 +33,24 @@ If you wish to use `@expo/fingerprint` as a standalone package, you can install 
 
 ### .fingerprintignore
 
-Placed in your project root, **.fingerprintignore** is a [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format)-like ignore mechanism used to exclude files from hash calculation. It behaves similarly but instead uses `minimatch` for pattern matching which has some [limitations](#options) (see documentation for `ignorePaths` under [Options](#options)).
+Placed in your project root, **.fingerprintignore** is a [**.gitignore**](https://git-scm.com/docs/gitignore#_pattern_format)-like ignore mechanism used to exclude files from hash calculation. All pattern paths are relative to the project root. It behaves similarly but instead uses `minimatch` for pattern matching which has some [limitations](#options) (see documentation for `ignorePaths` under [Options](#options)).
 
-For example, to skip a folder but keep some files:
+Here is an example **.fingerprintignore** configuration:
 
-```ignore
-# Ignore the entire /app/ios folder
-/app/ios/**/*
+```ignore .fingerprintignore
+# Ignore the entire android directory
+android/**/*
 
-# But still keep /app/ios/Podfile and /app/ios/Podfile.lock
-!/app/ios/Podfile
-!/app/ios/Podfile.lock
+# Ignore the entire ios directory but still keep ios/Podfile and ios/Podfile.lock
+ios/**/*
+!ios/Podfile
+!ios/Podfile.lock
+
+# Ignore specific package in node_modules
+node_modules/some-package/**/*
+
+# Same as above but having broader scope because packages may be nested
+**/node_modules/some-package/**/*
 ```
 
 ### fingerprint.config.js
@@ -53,7 +59,7 @@ Placed in your project root, **fingerprint.config.js** allows you to specify cus
 
 Below is an example **fingerprint.config.js** configuration, assuming you have `@expo/fingerprint` installed as a direct dependency:
 
-```js
+```js fingerprint.config.js
 /** @type {import('@expo/fingerprint').Config} */
 const config = {
   sourceSkips: [
@@ -70,6 +76,70 @@ If you are using `@expo/fingerprint` through `expo` (where `@expo/fingerprint` i
 ```js
 /** @type {import('expo/fingerprint').Config} */
 ```
+
+<Collapsible summary="Advanced: Customize sources before fingerprint hashing">
+
+In some cases, you may want to customize the sources before fingerprinting. For example:
+
+- You want to remove sensitive data from the app config.
+- You want to stabilize dynamic values in the app config.
+- You want to transform file hashes to stable values.
+
+To do this, you can use the `fileHookTransform` option in the **fingerprint.config.js** file to transform the sources before hashing. Learn more about the [`fileHookTransform` option](#filehooktransformfunctionsource-chunk-isendoffile-encoding).
+
+```js fingerprint.config.js
+const assert = require('node:assert');
+
+const fileChunkMap = {};
+
+/** @type {import('@expo/fingerprint').Config} */
+const config = {
+  fileHookTransform: (source, chunk, isEndOfFile, encoding) => {
+    // Remove the "updates" section from the app config
+    if (source.type === 'contents' && source.id === 'expoConfig') {
+      assert(isEndOfFile, 'contents source is expected to have single chunk.');
+      const config = JSON.parse(chunk);
+      delete config.updates;
+      return JSON.stringify(config);
+    }
+
+    // Transform content sources to an empty string
+    if (source.type === 'contents' && source.id === 'packageJson:scripts') {
+      return '';
+    }
+
+    // Transform a file source by replacing dynamic values
+    if (source.type === 'file' && source.filePath === 'eas.json') {
+      return chunk.toString().replace(/MyApp-Dev/g, 'MyApp');
+    }
+
+    // Transform a large file that is processed in multiple chunks
+    // To get the full file, buffer all chunks and return them all at once
+    if (source.type === 'file' && source.filePath === 'assets/large-image.jpg') {
+      let receivedBuffer = fileChunkMap[source.filePath] ?? Buffer.alloc(0);
+      if (chunk != null) {
+        const buffer = typeof chunk === 'string' ? Buffer.from(chunk, encoding) : chunk;
+        receivedBuffer = Buffer.concat([receivedBuffer, buffer]);
+        fileChunkMap[source.filePath] = receivedBuffer;
+      }
+      if (!isEndOfFile) {
+        return null;
+      }
+      fileChunkMap[source.filePath] = null;
+      // The full payload is available here and you can transform it as needed.
+      receivedBuffer = receivedBuffer.toString().replace(/SensitiveData/g, 'StableData');
+      return receivedBuffer;
+    }
+
+    // For other sources, just return the chunk
+    return chunk;
+  },
+};
+
+module.exports = config;
+```
+
+</Collapsible>
 
 ## Limitations
 

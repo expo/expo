@@ -79,6 +79,13 @@ export function resolveExpoAutolinkingVersion(projectRoot: string): string | nul
 }
 
 /**
+ * Resolve the package root of `expo/config-plugins` package in the project.
+ */
+export function resolveExpoConfigPluginsPackagePath(projectRoot: string): string | null {
+  return resolveFrom.silent(projectRoot, 'expo/config-plugins') ?? null;
+}
+
+/**
  * Resolve the `expo` package version and check if it satisfies the provided semver range.
  * @returns `null` if the `expo` package is not found in the project.
  */

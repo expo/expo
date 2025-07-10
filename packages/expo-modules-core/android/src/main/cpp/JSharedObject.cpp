@@ -5,7 +5,7 @@
 namespace expo {
 
 int JSharedObject::getId() noexcept {
-  static const auto method = getClass()->getMethod<int()>("getSharedObjectId");
+  static const auto method = javaClassStatic()->getMethod<int()>("getSharedObjectId");
   return method(self());
 }
 

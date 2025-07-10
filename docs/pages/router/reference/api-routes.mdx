@@ -1,6 +1,7 @@
 ---
 title: API Routes
 description: Learn how to create server endpoints with Expo Router.
+hasVideoLink: true
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
@@ -419,7 +420,7 @@ app.use(
 app.use(morgan('tiny'));
 
 app.all(
-  '*',
+  '/{*all}',
   createRequestHandler({
     build: SERVER_BUILD_DIR,
   })

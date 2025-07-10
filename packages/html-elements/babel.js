@@ -1,5 +1,3 @@
-// Based on https://github.com/gregberge/svgr/tree/master/packages/babel-plugin-transform-react-native-svg
-
 const elementToComponent = {
   a: 'A',
   article: 'Article',
@@ -50,6 +48,32 @@ const elementToComponent = {
   // NOTE: head, meta, link should use some special component in the future.
 };
 
+const svgElementToComponent = {
+  svg: 'Svg',
+  circle: 'Circle',
+  clipPath: 'ClipPath',
+  ellipse: 'Ellipse',
+  g: 'G',
+  linearGradient: 'LinearGradient',
+  radialGradient: 'RadialGradient',
+  line: 'Line',
+  path: 'Path',
+  pattern: 'Pattern',
+  polygon: 'Polygon',
+  polyline: 'Polyline',
+  rect: 'Rect',
+  symbol: 'Symbol',
+  text: 'Text',
+  textPath: 'TextPath',
+  tspan: 'TSpan',
+  use: 'Use',
+  defs: 'Defs',
+  stop: 'Stop',
+  mask: 'Mask',
+  image: 'Image',
+  foreignObject: 'ForeignObject',
+};
+
 function getPlatform(caller) {
   return caller && caller.platform;
 }
@@ -70,9 +94,22 @@ module.exports = ({ types: t, ...api }, { expo }) => {
         return;
       }
     }
+
+    // Check for SVG elements first
+    const svgComponent = svgElementToComponent[name];
+    if (svgComponent) {
+      const openingElementName = path.get('openingElement.name');
+      openingElementName.replaceWith(t.jsxIdentifier(svgComponent));
+      if (path.has('closingElement')) {
+        const closingElementName = path.get('closingElement.name');
+        closingElementName.replaceWith(t.jsxIdentifier(svgComponent));
+      }
+      state.replacedSvgComponents.add(svgComponent);
+      return;
+    }
+
     // Replace element with @expo/html-elements
     const component = elementToComponent[name];
-
     if (!component) {
       return;
     }
@@ -116,22 +153,47 @@ module.exports = ({ types: t, ...api }, { expo }) => {
           );
         });
       }
+
+      if (path.get('source').isStringLiteral({ value: 'react-native-svg' })) {
+        state.replacedSvgComponents.forEach((component) => {
+          if (
+            path
+              .get('specifiers')
+              .some((specifier) => specifier.get('local').isIdentifier({ name: component }))
+          ) {
+            return;
+          }
+          path.pushContainer(
+            'specifiers',
+            t.importSpecifier(t.identifier(component), t.identifier(component))
+          );
+        });
+      }
     },
   };
 
-  const source = '@expo/html-elements';
+  const htmlSource = '@expo/html-elements';
+  const svgSource = 'react-native-svg';
+
   return {
     name: 'Rewrite React DOM to universal Expo elements',
     visitor: {
       Program(path, state) {
         state.replacedComponents = new Set();
+        state.replacedSvgComponents = new Set();
         state.unsupportedComponents = new Set();
 
         path.traverse(htmlElementVisitor, state);
 
         // If state.replacedComponents is not empty, then ensure `import { ... } from '@expo/html-elements'` is present
         if (state.replacedComponents.size > 0) {
-          const importDeclaration = t.importDeclaration([], t.stringLiteral(source));
+          const importDeclaration = t.importDeclaration([], t.stringLiteral(htmlSource));
+          path.unshiftContainer('body', importDeclaration);
+        }
+
+        // If state.replacedSvgComponents is not empty, then ensure `import { ... } from 'react-native-svg'` is present
+        if (state.replacedSvgComponents.size > 0) {
+          const importDeclaration = t.importDeclaration([], t.stringLiteral(svgSource));
           path.unshiftContainer('body', importDeclaration);
         }
 

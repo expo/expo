@@ -46,6 +46,7 @@ test.describe('router-e2e with spaces', () => {
       command: (port) => ['bun', 'expo-internal', 'start', `--port=${port}`],
       cwd: projectRoot,
       env: {
+        EXPO_PUBLIC_VALUE_INLINE: 'inlined',
         TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
         NODE_ENV: 'development',
         // Ensure CI is disabled otherwise the file watcher won't run.
@@ -68,6 +69,9 @@ test.describe('router-e2e with spaces', () => {
     const pageErrors = pageCollectErrors(page);
 
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(expoStart, page);
+
+    // Ensure inlined env vars are rendered correctly
+    await expect(page.locator('[data-testid="env-var-inline"]')).toHaveText('inlined');
 
     // Ensure the initial hash is correct
     await expect(page.locator('[data-testid="env-var"]')).toHaveText('ROUTE_VALUE');

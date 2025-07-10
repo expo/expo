@@ -61,7 +61,7 @@ Object.defineProperty(SecurityLevel, 'BIOMETRIC', {
         ? '. `SecurityLevel.BIOMETRIC` is currently an alias for `SecurityLevel.BIOMETRIC_WEAK` on Android, which might lead to unexpected behaviour.'
         : '';
     console.warn(
-      '`SecurityLevel.BIOMETRIC` has been deprecated. Please use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
+      '`SecurityLevel.BIOMETRIC` has been deprecated. Use `SecurityLevel.BIOMETRIC_WEAK` or `SecurityLevel.BIOMETRIC_STRONG` instead' +
         additionalMessage
     );
     return Platform.OS === 'android'
@@ -83,11 +83,21 @@ export type LocalAuthenticationOptions = {
    */
   promptMessage?: string;
   /**
-   * Allows to customize the default `Cancel` label shown.
+   * A subtitle displayed below the prompt message in the authentication prompt.
+   * @platform android
+   */
+  promptSubtitle?: string;
+  /**
+   * A description displayed in the middle of the authentication prompt.
+   * @platform android
+   */
+  promptDescription?: string;
+  /**
+   * Allows customizing the default `Cancel` label shown.
    */
   cancelLabel?: string;
   /**
-   * After several failed attempts the system will fallback to the device passcode. This setting
+   * After several failed attempts, the system falls back to the device passcode. This setting
    * allows you to disable this option and instead handle the fallback yourself. This can be
    * preferable in certain custom authentication workflows. This behaviour maps to using the iOS
    * [`LAPolicyDeviceOwnerAuthenticationWithBiometrics`](https://developer.apple.com/documentation/localauthentication/lapolicy/deviceownerauthenticationwithbiometrics)

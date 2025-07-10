@@ -30,7 +30,7 @@ export declare function getPermissionsAsync(): Promise<import("./NotificationPer
  * import * as Notifications from 'expo-notifications';
  *
  * export function requestPermissionsAsync() {
- *   return await Notifications.requestPermissionsAsync({
+ *   return Notifications.requestPermissionsAsync({
  *     ios: {
  *       allowAlert: true,
  *       allowBadge: true,

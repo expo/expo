@@ -18,7 +18,10 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "react-native-reanimated" "react-native-svg" "lottie-react-native"
+remove_dependencies "react-native-reanimated" "react-native-svg"
+
+echo " Copying macOS patches..."
+cp -r ./scripts/fixtures/macos/patches/* ../../patches/
 
 RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
 if [[ "$RN_MACOS_VERSION" != "null" ]]; then
@@ -34,3 +37,7 @@ else
 
     fi
 fi
+
+echo " Running yarn from root..."
+cd ../../
+yarn install

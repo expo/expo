@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "lib": ["es2021", "esnext.asynciterable"],
+    "target": "es2023",
+    "lib": ["es2023", "esnext.asynciterable"],
     "module": "commonjs",
     "sourceMap": true,
     "inlineSources": true,

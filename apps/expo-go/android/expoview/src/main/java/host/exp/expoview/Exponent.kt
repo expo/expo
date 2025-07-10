@@ -378,9 +378,9 @@ class Exponent private constructor(val context: Context, val application: Applic
         val debuggerHostHostname = getHostname(debuggerHost)
         val debuggerHostPort = getPort(debuggerHost)
 
-        AndroidInfoHelpers.DEVICE_LOCALHOST = debuggerHostHostname
-        AndroidInfoHelpers.GENYMOTION_LOCALHOST = debuggerHostHostname
-        AndroidInfoHelpers.EMULATOR_LOCALHOST = debuggerHostHostname
+        AndroidInfoHelpers.DEVICE_LOCALHOST = debuggerHostHostname ?: ""
+        AndroidInfoHelpers.GENYMOTION_LOCALHOST = debuggerHostHostname ?: ""
+        AndroidInfoHelpers.EMULATOR_LOCALHOST = debuggerHostHostname ?: ""
         AndroidInfoHelpers.setDevServerPort(debuggerHostPort)
         AndroidInfoHelpers.setInspectorProxyPort(debuggerHostPort)
 

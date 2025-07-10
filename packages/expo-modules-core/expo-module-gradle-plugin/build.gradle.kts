@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.9.24"
+  kotlin("jvm") version "2.1.20"
   id("java-gradle-plugin")
 }
 

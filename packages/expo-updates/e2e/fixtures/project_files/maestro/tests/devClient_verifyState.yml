@@ -1,0 +1,41 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Check that state is correct on a dev client build with updates enabled
+- launchApp
+- tapOn:
+    label: Tap on local URL
+    below: Development servers
+- tapOn:
+    label: Tap on "Continue" to clear onboarding menu
+    text: Continue
+    optional: true
+- tapOn:
+    label: Tap on reload
+    text: Reload
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- copyTextFrom:
+    label: Copy text from updateID
+    id: updateID
+- assertTrue:
+    condition: ${maestro.copiedText != ""}
+    label: Assert updateID is not empty
+- copyTextFrom:
+    label: Copy text from isEmbeddedLaunch
+    id: isEmbeddedLaunch
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isEmbeddedLaunch is false
+- copyTextFrom:
+    label: Copy text from availableUpdateID
+    id: availableUpdateID
+- assertTrue:
+    condition: ${maestro.copiedText == "undefined"}
+    label: Assert availableUpdateID is undefined

@@ -35,12 +35,12 @@ describe(extractAsync, () => {
     await extractAsync('./template.tgz', './output');
 
     // Expect a warning that surfaces the native error message.
-    expect(Log.warn).toBeCalledTimes(1);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
     expect(Log.warn).toHaveBeenLastCalledWith(
       expect.stringMatching(/Failed to extract tar.*mock failure/)
     );
     // JS tools
-    expect(tar.extract).toBeCalledTimes(1);
+    expect(tar.extract).toHaveBeenCalledTimes(1);
     expect(tar.extract).toHaveBeenLastCalledWith({ cwd: './output', file: './template.tgz' });
   });
 
@@ -50,9 +50,9 @@ describe(extractAsync, () => {
 
     await extractAsync('./template.tgz', './output');
 
-    expect(spawnAsync).toBeCalledTimes(1);
-    expect(Log.warn).toBeCalledTimes(0);
-    expect(tar.extract).toBeCalledTimes(0);
+    expect(spawnAsync).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(tar.extract).toHaveBeenCalledTimes(0);
   });
 
   it('skips native tools on windows', async () => {
@@ -61,10 +61,10 @@ describe(extractAsync, () => {
     await extractAsync('./template.tgz', './output');
 
     // No native tools or warnings.
-    expect(spawnAsync).toBeCalledTimes(0);
-    expect(Log.warn).toBeCalledTimes(0);
+    expect(spawnAsync).toHaveBeenCalledTimes(0);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
     // JS tools
-    expect(tar.extract).toBeCalledTimes(1);
+    expect(tar.extract).toHaveBeenCalledTimes(1);
     expect(tar.extract).toHaveBeenLastCalledWith({ cwd: './output', file: './template.tgz' });
   });
 });

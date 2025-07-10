@@ -55,10 +55,10 @@ export class SessionUrlProvider {
       if (__DEV__) {
         if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
           nextSteps =
-            ' Please ensure you have the latest version of expo-constants installed and rebuild your native app. You can verify that originalFullName is defined by running `expo config --type public` and inspecting the output.';
+            ' Ensure you have the latest version of expo-constants installed and recompile your native app. You can verify that originalFullName is defined by running `npx expo config --type public` and inspecting the output.';
         } else if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
           nextSteps =
-            ' Please report this as a bug with the contents of `expo config --type public`.';
+            ' Report this as a bug with the contents of `expo config --type public`: https://github.com/expo/expo/issues';
         }
       }
 

@@ -101,6 +101,9 @@ object DevMenuManager : DevMenuManagerInterface {
   fun reload() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+  fun goToHome() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
   fun togglePerformanceMonitor() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }

@@ -1,4 +1,4 @@
-import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+import { AuthSessionOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 
 import { DiscoveryDocument } from './Discovery';
 
@@ -75,7 +75,7 @@ export enum Prompt {
  * Options passed to the `promptAsync()` method of `AuthRequest`s.
  * This can be used to configure how the web browser should look and behave.
  */
-export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatures'> & {
+export type AuthRequestPromptOptions = Omit<AuthSessionOpenOptions, 'windowFeatures'> & {
   /**
    * URL to open when prompting the user. This usually should be defined internally and left `undefined` in most cases.
    */

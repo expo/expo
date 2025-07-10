@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import ExpoModulesCore
 
 extension MKMapPoint {
   // Perpendicular distance (in metres) from `self` to the
@@ -29,12 +30,30 @@ extension MKMapPoint {
 @available(iOS 18.0, *)
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
-  @ObservedObject private var state = AppleMapsViewState()
+  @ObservedObject private var state = AppleMapsViewiOS18State()
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
+  }
+
+  func openLookAround(coordinate: Coordinate) async throws {
+    if state.lookAroundScene != nil {
+      throw LookAroundAlreadyPresentedException()
+    }
+
+    let scene = try await getLookAroundScene(from: CLLocationCoordinate2D(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude
+    ))
+
+    if scene == nil {
+      throw SceneUnavailableAtLocationException()
+    }
+
+    state.lookAroundScene = scene
+    state.lookAroundPresented = true
   }
 
   var body: some View {
@@ -60,6 +79,14 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
 
+        ForEach(props.polygons) { polygon in
+          renderPolygon(polygon)
+        }
+
+        ForEach(props.circles) { circle in
+          renderCircle(circle)
+        }
+
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
@@ -80,12 +107,51 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             }
           }
         }
-        UserAnnotation()
+
+        if props.properties.isMyLocationEnabled {
+          UserAnnotation()
+        }
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
-          // First check if we hit a polyline and send an event
-          if let hit = polyline(at: coordinate) {
+          // check if we hit a polygon and send an event
+          if let hit = props.polygons.first(where: { polygon in
+            isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
+          }) {
+            let coords = hit.coordinates.map {
+              [
+                "latitude": $0.latitude,
+                "longitude": $0.longitude
+              ]
+            }
+            props.onPolygonClick([
+              "id": hit.id,
+              "color": hit.color,
+              "lineColor": hit.lineColor,
+              "lineWidth": hit.lineWidth,
+              "coordinates": coords
+            ])
+          }
+          else if let hit = props.circles.first(where: { circle in
+            isTapInsideCircle(
+              tapCoordinate: coordinate,
+              circleCenter: circle.clLocationCoordinate2D,
+              radius: circle.radius
+            )}) {
+              props.onCircleClick([
+                "id": hit.id,
+                "color": hit.color,
+                "lineColor": hit.lineColor,
+                "lineWidth": hit.lineWidth,
+                "radius": hit.radius,
+                "coordinates": [
+                  "latitude": hit.center.latitude,
+                  "longitude": hit.center.longitude
+                ]
+              ])
+            }
+          // Then check if we hit a polyline and send an event
+          else if let hit = polyline(at: coordinate) {
             let coords = hit.coordinates.map {
               [
                 "latitude": $0.latitude,
@@ -103,8 +169,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
 
           // Send an event of map click regardless
           props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
+            "coordinates": [
+              "latitude": coordinate.latitude,
+              "longitude": coordinate.longitude
+            ]
           ])
         }
       }
@@ -145,6 +213,17 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
+      .lookAroundViewer(
+        isPresented: $state.lookAroundPresented,
+        initialScene: state.lookAroundScene,
+        allowsNavigation: true,
+        showsRoadLabels: true,
+        pointsOfInterest: .all,
+        onDismiss: {
+          state.lookAroundScene = nil
+          state.lookAroundPresented = false
+        }
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
@@ -187,5 +266,44 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       return false
     }
+  }
+
+  // Point-in-polygon algorithm (Ray-casting)
+  // See: https://rosettacode.org/wiki/Ray-casting_algorithm
+  func isTapInsidePolygon(tapCoordinate: CLLocationCoordinate2D, polygonCoordinates: [CLLocationCoordinate2D]) -> Bool {
+    var inside = false
+    let n = polygonCoordinates.count
+    var j = n - 1
+
+    for i in 0..<n {
+      let vi = polygonCoordinates[i]
+      let vj = polygonCoordinates[j]
+
+      // Check if the point's latitude is between the y-coordinates (latitude) of the edge
+      // and if the point's longitude is to the left of the intersection with the edge
+      if ((vi.latitude > tapCoordinate.latitude) != (vj.latitude > tapCoordinate.latitude)) &&
+        (tapCoordinate.longitude < (vj.longitude - vi.longitude) * (tapCoordinate.latitude - vi.latitude) / (vj.latitude - vi.latitude) + vi.longitude) {
+        inside.toggle()
+      }
+      j = i
+    }
+
+    return inside
+  }
+
+  func isTapInsideCircle(
+    tapCoordinate: CLLocationCoordinate2D, circleCenter: CLLocationCoordinate2D, radius: Double
+  ) -> Bool {
+    // Convert coordinates to CLLocation for distance calculation
+    let tapLocation = CLLocation(
+      latitude: tapCoordinate.latitude, longitude: tapCoordinate.longitude)
+    let circleCenterLocation = CLLocation(
+      latitude: circleCenter.latitude, longitude: circleCenter.longitude)
+
+    // Calculate distance between tap and circle center (in meters)
+    let distance = tapLocation.distance(from: circleCenterLocation)
+
+    // Return true if distance is less than or equal to the radius
+    return distance <= radius
   }
 }

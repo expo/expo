@@ -31,5 +31,5 @@ import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
  * }
  * ```
  */
-export declare function useImage(source: ImageSource | string, options?: ImageLoadOptions, dependencies?: DependencyList): ImageRef | null;
+export declare function useImage(source: ImageSource | string | number, options?: ImageLoadOptions, dependencies?: DependencyList): ImageRef | null;
 //# sourceMappingURL=useImage.d.ts.map

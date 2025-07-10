@@ -18,7 +18,7 @@ export default function getDefaultScheme(config: Pick<ExpoConfig, 'slug'>): stri
   // Edge case: if the slug didn't include any allowed characters we may end up with an empty string.
   if (scheme.length === 0) {
     throw new Error(
-      'Could not autogenerate a scheme. Please make sure the "slug" property in app config consists of URL friendly characters.'
+      `Unable to generate a scheme based on the "slug" (${config.slug}), because it does not contain any URL-friendly characters.`
     );
   }
 

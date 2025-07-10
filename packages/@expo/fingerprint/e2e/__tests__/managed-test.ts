@@ -12,12 +12,10 @@ import {
 import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
 
-jest.mock('../../src/sourcer/ExpoConfigLoader', () => ({
+jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
   getExpoConfigLoaderPath: jest.fn(() =>
-    jest
-      .requireActual('path')
-      .resolve(__dirname, '..', '..', 'build', 'sourcer', 'ExpoConfigLoader.js')
+    jest.requireActual('path').resolve(__dirname, '..', '..', 'build', 'ExpoConfigLoader.js')
   ),
 }));
 

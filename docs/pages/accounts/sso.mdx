@@ -8,7 +8,7 @@ import { Step } from '~/ui/components/Step';
 
 Single Sign-On (SSO) is available for [Enterprise plan](https://expo.dev/pricing) customers.
 
-To get started, prepare your identity provider (IdP) for Expo SSO and gather information by following the [configuration guide for your IdP](/#identity-provider-support) below. Once you have done this, an owner of your Organization can follow instructions to [enable SSO](#enable-sso).
+To get started, prepare your identity provider (IdP) for Expo SSO and gather information by following the [configuration guide for your IdP](/#identity-provider-support) below. Once you have done this, an owner of your Organization can follow instructions to [enable SSO](#setting-up-sso-on-an-organization).
 
 If you have questions or issues, [contact us](https://expo.dev/contact) and we'll help you set up your organization.
 
@@ -29,13 +29,13 @@ We implement the [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-
 
 <Step label="1">
 
-Log in as the Organization account owner, select the Organization, then go to **Organization settings** > **Overview**.
+Log in as the Organization account owner. In your account's EAS dashboard, go to **Settings** > **Organization settings** > **Create SSO configuration for account**.
 
 </Step>
 
 <Step label="2">
 
-Click the **Start** button next to the **Create SSO configuration for account** option.
+On **Create SSO configuration for account**, click the **Start** button.
 
 </Step>
 
@@ -146,7 +146,7 @@ Go to the [SSO login page](https://expo.dev/sso-login) and follow the prompts, s
 
 <Step label="3">
 
-By default, your new SSO user will have the View Only role. If you need a different role, ask an Admin or Owner to update your role in [**Member**](https://expo.dev/accounts/[account]/settings/members) settings.
+By default, your new SSO user will have the View Only role. If you need a different role, ask an Admin or Owner to update your role in [**Members**](https://expo.dev/accounts/[account]/settings/members) settings.
 
 </Step>
 
@@ -158,7 +158,7 @@ Run `eas login --sso` to switch to your new account on the CLI.
 
 <Step label="5">
 
-At this time, the Admin or Owner can remove your old user from the organization. In [**Member**](https://expo.dev/accounts/[account]/settings/members) settings, the list of organization members indicates whether a user is an SSO or non-SSO user. The Admin or Owner can click the dropdown next to the old user and click **Remove member**.
+At this time, the Admin or Owner can remove your old user from the organization. In [**Members**](https://expo.dev/accounts/[account]/settings/members) settings, the list of organization members indicates whether a user is an SSO or non-SSO user. The Admin or Owner can click the dropdown next to the old user and click **Remove member**.
 
 </Step>
 
@@ -173,11 +173,11 @@ If you no longer need your old user account, log out of your new SSO account, th
 ### Remove SSO users
 
 If someone has left your organization, remove or disable them in your IdP. Depending on the token refresh duration you configured with your IdP, the removed user will subsequently lose access to their Expo account.
-If you wish to remove them ahead of that time or you wish to remove them to clean up users on your account, you may do so on the organization **Member** settings page:
+If you wish to remove them ahead of that time or you wish to remove them to clean up users on your account, you may do so on the organization **Members** settings page:
 
 <Step label="1">
 
-Navigate to your [organization account **Member** settings](https://expo.dev/accounts/[account]/settings/members).
+Navigate to your [organization account **Members** settings](https://expo.dev/accounts/[account]/settings/members).
 
 </Step>
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { findNodeHandle, Image, StyleSheet, View } from 'react-native';
+import { findNodeHandle, Image, StyleSheet, View, Platform } from 'react-native';
 import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getNativeSourceFromSource, getUnloadedStatus, PlaybackMixin, } from './AV';
 import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
@@ -68,7 +68,16 @@ class Video extends React.Component {
         if (!video) {
             throw new Error(`Cannot complete operation because the Video component has not yet loaded`);
         }
-        const handle = findNodeHandle(this._nativeRef.current);
+        let handle = null;
+        if (Platform.OS === 'web' && 'getVideoElement' in this._nativeRef.current) {
+            handle = this._nativeRef.current.getVideoElement();
+        }
+        if (Platform.OS !== 'web') {
+            handle = findNodeHandle(this._nativeRef.current);
+        }
+        if (!handle) {
+            throw new Error('failed to find node handle');
+        }
         const status = await operation(handle);
         this._handleNewStatus(status);
         return status;

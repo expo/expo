@@ -30,15 +30,15 @@ export async function isAvailableAsync(): Promise<boolean> {
  * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called or the app is restarted. If you are
  * already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
  *
- * > Please note that on iOS, this will only prevent screen recordings, and is only available on
- * iOS 11 and newer. On older iOS versions, this method does nothing.
+ * > On iOS, this prevents screen recordings and screenshots, and is only available on iOS 11+ (recordings) and iOS 13+ (screenshots). On older
+ * iOS versions, this method does nothing.
  *
  * @param key Optional. If provided, this will help prevent multiple instances of the `preventScreenCaptureAsync`
  * and `allowScreenCaptureAsync` methods (and `usePreventScreenCapture` hook) from conflicting with each other.
  * When using multiple keys, you'll have to re-allow each one in order to re-enable screen capturing.
  *
  * @platform android
- * @platform ios 11+
+ * @platform ios
  */
 export async function preventScreenCaptureAsync(key: string = 'default'): Promise<void> {
   if (!ExpoScreenCapture.preventScreenCapture) {
@@ -94,8 +94,12 @@ export function usePreventScreenCapture(key: string = 'default'): void {
 // @needsAudit
 /**
  * Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded.
- * On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this
- * with [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
+ *
+ * Permission requirements for this method depend on your device’s Android version:
+ * - **Before Android 13**: Requires `READ_EXTERNAL_STORAGE`.
+ * - **Android 13**: Switches to `READ_MEDIA_IMAGES`.
+ * - **Post-Android 13**: No additional permissions required.
+ * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
  *
  * @param listener The function that will be executed when the user takes a screenshot.
  * This function accepts no arguments.
@@ -127,6 +131,25 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
  */
 export function removeScreenshotListener(subscription: EventSubscription) {
   subscription.remove();
+}
+
+// @needsAudit
+/**
+ * A React hook that listens for screenshots taken while the component is mounted.
+ *
+ * @param listener A function that will be called whenever a screenshot is detected.
+ *
+ * This hook automatically starts listening when the component mounts, and stops
+ * listening when the component unmounts.
+ */
+export function useScreenshotListener(listener: () => void) {
+  useEffect(() => {
+    const subscription = addScreenshotListener(listener);
+
+    return () => {
+      removeScreenshotListener(subscription);
+    };
+  }, [listener]);
 }
 
 /**

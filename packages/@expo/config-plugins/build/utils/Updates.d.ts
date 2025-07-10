@@ -1,5 +1,5 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
-export type ExpoConfigUpdates = Pick<ExpoConfig, 'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'>;
+export type ExpoConfigUpdates = Pick<ExpoConfig, 'sdkVersion' | 'runtimeVersion' | 'updates' | 'slug'>;
 export declare const FINGERPRINT_RUNTIME_VERSION_SENTINEL = "file:fingerprint";
 export declare function getExpoUpdatesPackageVersion(projectRoot: string): string | null;
 export declare function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'updates'>): string | null;

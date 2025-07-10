@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.4.3 - 2025-06-26
+
+### 🐛 Bug fixes
+
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
 ## 3.4.2 — 2025-05-01
 
 _This version does not introduce any user-facing changes._

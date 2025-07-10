@@ -8,6 +8,10 @@ export declare function isIgnoredPath(filePath: string, ignorePaths: string[], m
  */
 export declare function buildPathMatchObjects(paths: string[], minimatchOptions?: MinimatchOptions): Minimatch[];
 /**
+ * Append a new ignore path to the given `matchObjects`.
+ */
+export declare function appendIgnorePath(matchObjects: Minimatch[], path: string, minimatchOptions?: MinimatchOptions): void;
+/**
  * Build an ignore match objects for directories based on the given `ignorePathMatchObjects`.
  */
 export declare function buildDirMatchObjects(ignorePathMatchObjects: Minimatch[], minimatchOptions?: MinimatchOptions): Minimatch[];
@@ -31,3 +35,7 @@ export declare function normalizeFilePath(filePath: string, options: {
  * Convert any platform-specific path to a POSIX path.
  */
 export declare function toPosixPath(filePath: string): string;
+/**
+ * Check if the given `filePath` exists.
+ */
+export declare function pathExistsAsync(filePath: string): Promise<boolean>;

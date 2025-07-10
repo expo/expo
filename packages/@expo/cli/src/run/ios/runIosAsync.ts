@@ -13,15 +13,12 @@ import { exportEagerAsync } from '../../export/embed/exportEager';
 import * as Log from '../../log';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
+import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
-import {
-  resolveRemoteBuildCache,
-  uploadRemoteBuildCache,
-} from '../../utils/remote-build-cache-providers';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
@@ -46,7 +43,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const projectConfig = getConfig(projectRoot);
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
-    const localPath = await resolveRemoteBuildCache({
+    const localPath = await resolveBuildCache({
       projectRoot,
       platform: 'ios',
       runOptions: options,
@@ -188,7 +185,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   if (shouldUpdateBuildCache && props.buildCacheProvider) {
-    await uploadRemoteBuildCache({
+    await uploadBuildCache({
       projectRoot,
       platform: 'ios',
       provider: props.buildCacheProvider,

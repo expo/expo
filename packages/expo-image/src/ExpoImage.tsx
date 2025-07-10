@@ -29,6 +29,9 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
   // NOTE(@kitten): native methods
   startAnimating!: () => Promise<unknown> | unknown;
   stopAnimating!: () => Promise<unknown> | unknown;
+  lockResourceAsync!: () => Promise<void>;
+  unlockResourceAsync!: () => Promise<void>;
+  reloadAsync!: () => Promise<void>;
 
   onLoadStart = () => {
     this.props.onLoadStart?.();

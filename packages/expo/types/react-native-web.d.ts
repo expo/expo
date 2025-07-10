@@ -13,21 +13,21 @@ declare module 'react-native' {
     /** @platform web */
     backdropFilter?: string;
     /** @platform web */
-    animationDelay?: string;
+    animationDelay?: string | string[] | number | number[];
     /** @platform web */
-    animationDirection?: string;
+    animationDirection?: string | string[];
     /** @platform web */
-    animationDuration?: string;
+    animationDuration?: string | string[] | number | number[];
     /** @platform web */
-    animationFillMode?: string;
+    animationFillMode?: string | string[];
     /** @platform web */
-    animationName?: string | any[];
+    animationName?: string | Record<string, any> | (string | Record<string, any>)[];
     /** @platform web */
-    animationIterationCount?: number | 'infinite';
+    animationIterationCount?: number | 'infinite' | (number | 'infinite')[];
     /** @platform web */
-    animationPlayState?: string;
+    animationPlayState?: string | string[];
     /** @platform web */
-    animationTimingFunction?: string;
+    animationTimingFunction?: string | string[];
     /** @platform web */
     backgroundAttachment?: string;
     /** @platform web */
@@ -99,13 +99,13 @@ declare module 'react-native' {
     /** @platform web */
     touchAction?: string;
     /** @platform web */
-    transitionDelay?: string;
+    transitionDelay?: string | string[];
     /** @platform web */
-    transitionDuration?: string;
+    transitionDuration?: string | string[];
     /** @platform web */
-    transitionProperty?: string;
+    transitionProperty?: string | string[];
     /** @platform web */
-    transitionTimingFunction?: string;
+    transitionTimingFunction?: string | Function | (string | Function)[];
     /** @platform web */
     userSelect?: string;
     /** @platform web */
@@ -132,21 +132,21 @@ declare module 'react-native' {
     /** @platform web */
     backdropFilter?: string;
     /** @platform web */
-    animationDelay?: string;
+    animationDelay?: string | string[] | number | number[];
     /** @platform web */
-    animationDirection?: string;
+    animationDirection?: string | string[];
     /** @platform web */
-    animationDuration?: string;
+    animationDuration?: string | string[] | number | number[];
     /** @platform web */
-    animationFillMode?: string;
+    animationFillMode?: string | string[];
     /** @platform web */
-    animationName?: string | any[];
+    animationName?: string | Record<string, any> | (string | Record<string, any>)[];
     /** @platform web */
-    animationIterationCount?: number | 'infinite';
+    animationIterationCount?: number | 'infinite' | (number | 'infinite')[];
     /** @platform web */
-    animationPlayState?: string;
+    animationPlayState?: string | string[];
     /** @platform web */
-    animationTimingFunction?: string;
+    animationTimingFunction?: string | string[];
     /** @platform web */
     backgroundAttachment?: string;
     /** @platform web */
@@ -218,13 +218,13 @@ declare module 'react-native' {
     /** @platform web */
     touchAction?: string;
     /** @platform web */
-    transitionDelay?: string;
+    transitionDelay?: string | string[];
     /** @platform web */
-    transitionDuration?: string;
+    transitionDuration?: string | string[];
     /** @platform web */
-    transitionProperty?: string;
+    transitionProperty?: string | string[];
     /** @platform web */
-    transitionTimingFunction?: string;
+    transitionTimingFunction?: string | Function | (string | Function)[];
     /** @platform web */
     userSelect?: string;
     /** @platform web */

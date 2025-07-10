@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 17.1.7 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [Android] Fix `deleteAssetsAsync` not working on android 11 or above ([#33211](https://github.com/expo/expo/pull/33211) by [@Zeeshan404](https://github.com/Zeeshan404))
+
 ## 17.1.6 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
@@ -35,7 +41,9 @@ _This version does not introduce any user-facing changes._
 
 ## 17.1.1 — 2025-04-09
 
-_This version does not introduce any user-facing changes._
+### 💡 Others
+
+- [Android] Add `granularPermissions` option to config plugin. ([#36142](https://github.com/expo/expo/pull/36142) by [@bang9](https://github.com/bang9))
 
 ## 17.1.0 — 2025-04-04
 

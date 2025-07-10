@@ -1,9 +1,10 @@
 import { spacing } from '@expo/styleguide-native';
-import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
+import { Divider, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
 
 import { SnacksListItem } from '../../components/SnacksListItem';
+import { CappedWidthContainerView } from '../../components/Views';
 import { CommonSnackDataFragment } from '../../graphql/types';
 
 type Props = {
@@ -26,7 +27,10 @@ export function SnackListView(props: Props) {
 
   if (!isReady) {
     return (
-      <RNView
+      <CappedWidthContainerView
+        wrapperStyle={{
+          backgroundColor: theme.background.screen,
+        }}
         style={{
           flex: 1,
           padding: 30,
@@ -34,7 +38,7 @@ export function SnackListView(props: Props) {
           backgroundColor: theme.background.screen,
         }}>
         <ActivityIndicator />
-      </RNView>
+      </CappedWidthContainerView>
     );
   }
 
@@ -84,9 +88,8 @@ function SnackList({ data, loadMoreAsync }: Props) {
   );
 
   return (
-    <View
-      flex="1"
-      style={{
+    <CappedWidthContainerView
+      wrapperStyle={{
         backgroundColor: theme.background.screen,
       }}>
       <FlatList
@@ -98,6 +101,6 @@ function SnackList({ data, loadMoreAsync }: Props) {
         onEndReachedThreshold={0.2}
         onEndReached={handleLoadMoreAsync}
       />
-    </View>
+    </CappedWidthContainerView>
   );
 }

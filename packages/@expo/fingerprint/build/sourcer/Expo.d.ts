@@ -1,6 +1,6 @@
-import type { ExpoConfig } from 'expo/config';
+import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-export declare function getExpoConfigSourcesAsync(projectRoot: string, options: NormalizedOptions): Promise<HashSource[]>;
+export declare function getExpoConfigSourcesAsync(projectRoot: string, config: ProjectConfig | null, loadedModules: string[] | null, options: NormalizedOptions): Promise<HashSource[]>;
 export declare function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions): Promise<HashSource[]>;
 export declare function getExpoAutolinkingAndroidSourcesAsync(projectRoot: string, options: NormalizedOptions, expoAutolinkingVersion: string): Promise<HashSource[]>;
 /**

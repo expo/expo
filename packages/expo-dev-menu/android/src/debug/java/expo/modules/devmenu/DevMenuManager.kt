@@ -1,26 +1,28 @@
 package expo.modules.devmenu
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
-import android.content.Intent
-import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.children
+import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceEventListener
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.LifecycleEventListener
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import com.facebook.react.views.text.ReactFontManager
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.api.DevMenuMetroClient
+import expo.modules.devmenu.compose.BindingView
+import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
@@ -28,8 +30,6 @@ import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
-import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
-import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
@@ -42,20 +42,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   data class Callback(val name: String, val shouldCollapse: Boolean)
 
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
-  private var fontsWereLoaded = false
-
-  // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
-  private val useDeveloperSupport = false
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var shouldLaunchDevMenuOnStart: Boolean = false
-  private lateinit var devMenuHost: ReactHostWrapper
   private var currentReactInstance: WeakReference<ReactHostWrapper?> = WeakReference(null)
   private var canLaunchDevMenuOnStart = true
-  var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
+
+  private var goToHomeAction: () -> Unit = {}
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
@@ -78,28 +74,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private val delegateActivity: Activity?
     get() = delegateReactContext?.currentActivity
 
-  private val hostReactContext: ReactContext?
-    get() = devMenuHost.currentReactContext
-
-  private val hostActivity: Activity?
-    get() = hostReactContext?.currentActivity
-
   //endregion
 
   //region init
-
-  @Suppress("UNCHECKED_CAST")
-  private fun maybeInitDevMenuHost(application: Application) {
-    if (!this::devMenuHost.isInitialized) {
-      devMenuHost = ReactHostWrapper(
-        reactNativeHost = DevMenuReactNativeHost(application, useDeveloperSupport),
-        reactHostProvider = { DevMenuReactHost.create(application, useDeveloperSupport) }
-      )
-      UiThreadUtil.runOnUiThread {
-        devMenuHost.start()
-      }
-    }
-  }
 
   private fun setUpReactInstance(reactHost: ReactHostWrapper) {
     currentReactInstance = WeakReference(reactHost)
@@ -144,15 +121,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeInitDevMenuHost(
-      reactContext.currentActivity?.application
-        ?: reactContext.applicationContext as Application
-    )
     maybeStartDetectors(reactContext.applicationContext)
-    preferences = (
-      testInterceptor.overrideSettings()
-        ?: DevMenuPreferencesHandle(reactContext)
-      ).also {
+    preferences = DevMenuPreferencesHandle(reactContext).also {
       if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) || hasDisableOnboardingQueryParam(launchUrl.orEmpty())) {
         it.isOnboardingFinished = true
       }
@@ -164,13 +134,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  fun getAppInfo(): Bundle {
-    val reactContext = delegateReactContext ?: return Bundle.EMPTY
-    val reactHost = delegate?.reactHost() ?: return Bundle.EMPTY
-
-    return DevMenuAppInfo.getAppInfo(reactHost, reactContext)
-  }
-
   fun getDevSettings(): Bundle {
     val reactHost = delegate?.reactHost()
     if (reactHost != null) {
@@ -178,32 +141,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
 
     return Bundle.EMPTY
-  }
-
-  fun loadFonts(context: Context) {
-    if (fontsWereLoaded) {
-      return
-    }
-    fontsWereLoaded = true
-
-    val fonts = arrayOf(
-      "Inter-Black",
-      "Inter-ExtraBold",
-      "Inter-Bold",
-      "Inter-SemiBold",
-      "Inter-Medium",
-      "Inter-Regular",
-      "Inter-Light",
-      "Inter-ExtraLight",
-      "Inter-Thin"
-    )
-
-    val assets = context.assets
-
-    fonts.map { familyName ->
-      val font = Typeface.createFromAsset(assets, "$familyName.otf")
-      ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
-    }
   }
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
@@ -277,29 +214,69 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //region DevMenuManagerProtocol
 
-  override fun openMenu(activity: Activity, screen: String?) {
-    activity.startActivity(Intent(activity, DevMenuActivity::class.java))
+  fun findBidingView(activity: Activity): BindingView? {
+    val reactActivity = activity as? ReactActivity ?: return null
+    val rootView = reactActivity.reactDelegate?.reactRootView ?: return null
+    val parent = rootView.parent as? ViewGroup ?: return null
+    val potentialBindingViews = parent
+      .children
+      .filter { it is BindingView }
+      .map { it as BindingView }
+      .toList()
+
+    if (potentialBindingViews.size != 1) {
+      Log.e(DEV_MENU_TAG, "There should be only one BindingView in the hierarchy, but found: ${potentialBindingViews.size}")
+      return null
+    }
+
+    return potentialBindingViews.first()
   }
 
-  /**
-   * Triggers the animation that collapses the dev menu.
-   */
+  fun updateStateIfNeeded(activity: Activity, bindingView: BindingView) {
+    val currentReactInstance = currentReactInstance.get() ?: return
+    val appInfo = AppInfo.getAppInfo(currentReactInstance, activity)
+    bindingView.viewModel.updateAppInfo(appInfo)
+  }
+
+  inline fun withBindingView(
+    activity: Activity,
+    crossinline action: (BindingView) -> Unit
+  ) {
+    activity.runOnUiThread {
+      findBidingView(activity)?.let { bindingView ->
+        updateStateIfNeeded(activity, bindingView)
+        action(bindingView)
+      } ?: Log.e(DEV_MENU_TAG, "BindingView not found in the activity hierarchy.")
+    }
+  }
+
+  fun goToHome() {
+    goToHomeAction()
+  }
+
+  override fun openMenu(activity: Activity, screen: String?) =
+    withBindingView(activity) { bindingView ->
+      bindingView.viewModel.onAction(DevMenuAction.Open)
+    }
+
+  // TODO(@lukmccall): pass activity
   override fun closeMenu() {
-    val activity = hostActivity as? DevMenuActivity ?: return
-    if (!activity.isDestroyed) {
-      activity.closeBottomSheet()
+    withBindingView(activity = delegateActivity ?: return) { bindingView ->
+      bindingView.viewModel.onAction(DevMenuAction.Close)
     }
   }
 
   override fun hideMenu() {
-    hostActivity?.finish()
+    withBindingView(activity = delegateActivity ?: return) { bindingView ->
+      bindingView.viewModel.onAction(DevMenuAction.Close)
+    }
   }
 
-  override fun toggleMenu(activity: Activity) {
-    if (hostActivity?.isDestroyed == false) {
-      closeMenu()
+  override fun toggleMenu(activity: Activity) = withBindingView(activity) { bindingView ->
+    if (bindingView.viewModel.state.isOpen) {
+      bindingView.viewModel.onAction(DevMenuAction.Close)
     } else {
-      openMenu(activity)
+      bindingView.viewModel.onAction(DevMenuAction.Open)
     }
   }
 
@@ -362,28 +339,26 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun openJSInspector() {
     val devToolsDelegate = getDevToolsDelegate()
-    // If internal setting aren't available we can't open inspector
-    if (devToolsDelegate?.devInternalSettings == null) {
-      return
-    }
-    devToolsDelegate.openJSInspector()
+    // TOOD(@lukmccall): figure out if that's needed
+//    // If internal setting aren't available we can't open inspector
+//    if (devToolsDelegate?.devInternalSettings == null) {
+//      return
+//    }
+    devToolsDelegate?.openJSInspector()
   }
 
   fun toggleFastRefresh() {
     val devToolsDelegate = getDevToolsDelegate()
-    val internalSettings = devToolsDelegate?.devInternalSettings
+    val internalSettings = devToolsDelegate?.devSettings
       ?: return
 
     val nextEnabled = !internalSettings.isHotModuleReplacementEnabled
     internalSettings.isHotModuleReplacementEnabled = nextEnabled
 
-    val reactApplicationContext = delegateReactContext?.applicationContext as? ReactApplicationContext
-    if (reactApplicationContext != null) {
-      if (nextEnabled) {
-        reactApplicationContext.getJSModule(HMRClient::class.java).enable()
-      } else {
-        reactApplicationContext.getJSModule(HMRClient::class.java).disable()
-      }
+    if (nextEnabled) {
+      delegateReactContext?.getJSModule(HMRClient::class.java)?.enable()
+    } else {
+      delegateReactContext?.getJSModule(HMRClient::class.java)?.disable()
     }
     if (nextEnabled && !internalSettings.isJSDevModeEnabled) {
       internalSettings.isJSDevModeEnabled = true
@@ -399,6 +374,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     delegate = newDelegate.apply {
       setUpReactInstance(this.reactHost())
     }
+  }
+
+  fun setGoToHomeAction(action: () -> Unit) {
+    goToHomeAction = action
   }
 
   override fun initializeWithReactHost(reactHost: ReactHostWrapper) {
@@ -419,7 +398,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
-  override fun getMenuHost(): ReactHostWrapper = devMenuHost
+  override fun getMenuHost(): ReactHostWrapper = TODO()
 
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
@@ -438,5 +417,5 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  //endregion
+//endregion
 }

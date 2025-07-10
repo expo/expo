@@ -42,6 +42,8 @@ exports.Slot = Slot;
 exports.DefaultNavigator = DefaultNavigator;
 const native_1 = require("@react-navigation/native");
 const React = __importStar(require("react"));
+const react_1 = require("react");
+const react_native_is_edge_to_edge_1 = require("react-native-is-edge-to-edge");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
@@ -142,13 +144,14 @@ function NavigatorSlot() {
     const { state, descriptors } = context;
     return descriptors[state.routes[state.index].key]?.render() ?? null;
 }
+const SlotNavigatorWrapper = process.env.EXPO_OS === 'android' && (0, react_native_is_edge_to_edge_1.isEdgeToEdge)() ? react_1.Fragment : react_native_safe_area_context_1.SafeAreaView;
 /**
  * The default navigator for the app when no root _layout is provided.
  */
 function DefaultNavigator() {
-    return (<react_native_safe_area_context_1.SafeAreaView style={{ flex: 1 }}>
+    return (<SlotNavigatorWrapper style={{ flex: 1 }}>
       <SlotNavigator />
-    </react_native_safe_area_context_1.SafeAreaView>);
+    </SlotNavigatorWrapper>);
 }
 Navigator.Slot = NavigatorSlot;
 Navigator.useContext = useNavigatorContext;

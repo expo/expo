@@ -192,6 +192,6 @@ end`;
     jest.mocked(fs.promises.readFile).mockResolvedValue(podfileContent);
     const spy = jest.spyOn(console, 'warn');
     await shouldUpdateDeployTargetPodfileAsync('/app', '13.0');
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 });

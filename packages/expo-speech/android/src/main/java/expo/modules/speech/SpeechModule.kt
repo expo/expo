@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.ArrayDeque
@@ -18,6 +19,7 @@ const val speakingErrorEvent = "Exponent.speakingError"
 
 class SpeechModule : Module() {
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
+  private val delayedGetVoices: Queue<Promise> = ArrayDeque()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoSpeech")
@@ -40,26 +42,14 @@ class SpeechModule : Module() {
       textToSpeech.isSpeaking
     }
 
-    AsyncFunction<List<VoiceRecord>>("getVoices") {
-      val nativeVoices = try {
-        textToSpeech.voices.toList()
-      } catch (_: Exception) {
-        emptyList()
-      }
+    AsyncFunction("getVoices") { promise: Promise ->
+      if (isTextToSpeechReady) {
+        promise.resolve(getVoices())
+      } else {
+        delayedGetVoices.add(promise)
 
-      return@AsyncFunction nativeVoices.map {
-        val quality = if (it.quality > Voice.QUALITY_NORMAL) {
-          VoiceQuality.ENHANCED
-        } else {
-          VoiceQuality.DEFAULT
-        }
-
-        VoiceRecord(
-          identifier = it.name,
-          name = it.name,
-          quality = quality,
-          language = LanguageUtils.getISOCode(it.locale)
-        )
+        // Init TTS, the promise will be fulfilled after onInit
+        textToSpeech
       }
     }
 
@@ -81,6 +71,29 @@ class SpeechModule : Module() {
         textToSpeech
       }
       Unit
+    }
+  }
+
+  private fun getVoices(): List<VoiceRecord> {
+    val nativeVoices = try {
+      textToSpeech.voices.toList()
+    } catch (err: Exception) {
+      throw SpeechUnableToGetVoicesException(err)
+    }
+
+    return nativeVoices.map {
+      val quality = if (it.quality > Voice.QUALITY_NORMAL) {
+        VoiceQuality.ENHANCED
+      } else {
+        VoiceQuality.DEFAULT
+      }
+
+      VoiceRecord(
+        identifier = it.name,
+        name = it.name,
+        quality = quality,
+        language = LanguageUtils.getISOCode(it.locale)
+      )
     }
   }
 
@@ -156,6 +169,9 @@ class SpeechModule : Module() {
           })
           for ((id, text, options) in delayedUtterances) {
             speakOut(id, text, options)
+          }
+          for (promise in delayedGetVoices) {
+            promise.resolve(getVoices())
           }
         }
       }

@@ -15,7 +15,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   let interval: Double
   var wasPlaying = false
   var isPaused: Bool {
-    ref.rate != 0.0
+    ref.rate == 0.0
   }
   var samplingEnabled = false
 
@@ -27,6 +27,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   private var audioProcessor: AudioTapProcessor?
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
+  weak var owningRegistry: AudioComponentRegistry?
+  var onPlaybackComplete: (() -> Void)?
 
   var duration: Double {
     ref.currentItem?.duration.seconds ?? 0.0
@@ -67,9 +69,14 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
     samplingEnabled = enabled
     if enabled {
-      installTap()
+      if isLoaded {
+        installTap()
+      } else {
+        shouldInstallAudioTap = true
+      }
     } else {
       uninstallTap()
+      shouldInstallAudioTap = false
     }
   }
 
@@ -101,6 +108,21 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     self.emit(event: AudioConstants.playbackStatus, arguments: arguments)
   }
 
+  func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) async {
+    let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    let toleranceBefore = toleranceMillisBefore.map {
+      CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    } ?? CMTime.positiveInfinity
+    let toleranceAfter = toleranceMillisAfter.map {
+      CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    } ?? CMTime.positiveInfinity
+
+    await ref.currentItem?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter	)
+    updateStatus(with: [
+      "currentTime": currentTime
+    ])
+  }
+
   private func setupPublisher() {
     ref.publisher(for: \.currentItem?.status)
       .sink { [weak self] status in
@@ -111,12 +133,21 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           self.updateStatus(with: [
             "isLoaded": true
           ])
-          // We can't add the audio tap until the asset has loaded, otherwise the asset track will be empty.
-          // This is particularly important after replacing the audio source
-          if shouldInstallAudioTap {
-            setSamplingEnabled(enabled: shouldInstallAudioTap)
+          if shouldInstallAudioTap || samplingEnabled {
+            installTap()
             shouldInstallAudioTap = false
           }
+        }
+      }
+      .store(in: &cancellables)
+
+    ref.publisher(for: \.currentItem)
+      .sink { [weak self] _ in
+        guard let self else {
+          return
+        }
+        if self.samplingEnabled && self.isLoaded {
+          self.installTap()
         }
       }
       .store(in: &cancellables)
@@ -129,10 +160,13 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     // Remove the audio tap if it is active
     if samplingEnabled {
-      setSamplingEnabled(enabled: false)
+      uninstallTap()
     }
     ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
-    shouldInstallAudioTap = wasSamplingEnabled
+
+    if wasSamplingEnabled {
+      shouldInstallAudioTap = true
+    }
 
     if wasPlaying {
       ref.play()
@@ -149,20 +183,36 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
 
     if let currentItem = ref.currentItem {
-      return currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
+      return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
     }
     return true
   }
 
   private func installTap() {
-    if !tapInstalled {
-      audioProcessor = AudioTapProcessor(player: ref)
-      tapInstalled = audioProcessor?.installTap() ?? false
+    guard isLoaded else {
+      shouldInstallAudioTap = true
+      return
+    }
+
+    guard audioProcessor?.isTapInstalled != true else {
+      tapInstalled = true
+      return
+    }
+
+    if let audioProcessor {
+      audioProcessor.invalidate()
+    }
+
+    audioProcessor = AudioTapProcessor(player: ref)
+    let success = audioProcessor?.installTap() ?? false
+    tapInstalled = success
+
+    if success {
       audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
-        guard let self,
-        let audioBuffer = buffer?.pointee,
-        let data = audioBuffer.mData,
-        samplingEnabled else {
+        guard let self = self,
+          let audioBuffer = buffer?.pointee,
+          let data = audioBuffer.mData,
+          self.samplingEnabled else {
           return
         }
 
@@ -170,7 +220,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         let dataPointer = data.assumingMemoryBound(to: Float.self)
 
         let channels = (0..<channelCount).map { channelIndex in
-          let channelData = stride(from: channelIndex, to: frameCount, by: channelCount).map { frameIndex in
+          let channelData = stride(from: channelIndex, to: Int(frameCount), by: channelCount).map { frameIndex in
             dataPointer[frameIndex]
           }
           return ["frames": channelData]
@@ -191,31 +241,46 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func addPlaybackEndNotification() {
-    if let previous = endObserver {
-      NotificationCenter.default.removeObserver(previous)
+    if let endObserver {
+      NotificationCenter.default.removeObserver(endObserver)
     }
+
     endObserver = NotificationCenter.default.addObserver(
       forName: .AVPlayerItemDidPlayToEndTime,
       object: ref.currentItem,
       queue: nil
-    ) { _ in
+    ) { [weak self] _ in
+      guard let self else {
+        return
+      }
+
       if self.isLooping {
         self.ref.seek(to: CMTime.zero)
         self.ref.play()
       } else {
         self.updateStatus(with: [
-          "isPlaying": false,
+          "playing": false,
           "currentTime": self.duration,
           "didJustFinish": true
         ])
+        self.onPlaybackComplete?()
       }
     }
   }
 
   private func registerTimeObserver() {
+    if let timeToken {
+      ref.removeTimeObserver(timeToken)
+    }
+
     let updateInterval = interval / 1000
     let interval = CMTime(seconds: updateInterval, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { time in
+
+    timeToken = ref.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
+      guard let self else {
+        return
+      }
+
       self.updateStatus(with: [
         "currentTime": time.seconds
       ])
@@ -223,12 +288,25 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   public override func sharedObjectWillRelease() {
-    AudioComponentRegistry.shared.remove(self)
-    setSamplingEnabled(enabled: false)
-    if let token = timeToken {
-      ref.removeTimeObserver(token as Any)
+    owningRegistry?.remove(self)
+    cancellables.removeAll()
+
+    if samplingEnabled {
+      samplingEnabled = false
+      uninstallTap()
     }
-    NotificationCenter.default.removeObserver(endObserver as Any)
+
+    audioProcessor?.invalidate()
+    audioProcessor = nil
+
+    if let timeToken {
+      ref.removeTimeObserver(timeToken)
+    }
+
+    if let endObserver {
+      NotificationCenter.default.removeObserver(endObserver)
+    }
+
     ref.pause()
   }
 }

@@ -156,10 +156,7 @@ function isDynamicPart(p) {
     return p.startsWith(':') || p.startsWith('*');
 }
 function segmentMatchesConvention(segment) {
-    return (segment === 'index' ||
-        (0, matchers_1.matchDynamicName)(segment) != null ||
-        (0, matchers_1.matchGroupName)(segment) != null ||
-        (0, matchers_1.matchDeepDynamicRouteName)(segment) != null);
+    return (segment === 'index' || (0, matchers_1.matchGroupName)(segment) != null || (0, matchers_1.matchDynamicName)(segment) != null);
 }
 function encodeURISegment(str, { preserveBrackets = false } = {}) {
     // Valid characters according to

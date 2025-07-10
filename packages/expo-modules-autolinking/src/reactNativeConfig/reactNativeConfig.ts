@@ -31,6 +31,7 @@ export async function createReactNativeConfigAsync({
   platform,
   projectRoot,
   searchPaths,
+  transitiveLinkingDependencies,
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
   const dependencyRoots = {
@@ -45,8 +46,9 @@ export async function createReactNativeConfigAsync({
   // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
   const shouldAutolinkEdgeToEdge =
     platform === 'android' &&
-    (await resolveGradleEdgeToEdgeEnabled(projectRoot)) &&
-    !('react-native-edge-to-edge' in dependencyRoots);
+    !('react-native-edge-to-edge' in dependencyRoots) &&
+    ((await resolveGradleEdgeToEdgeEnabled(projectRoot)) ||
+      transitiveLinkingDependencies.includes('react-native-edge-to-edge'));
 
   if (shouldAutolinkEdgeToEdge) {
     const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);

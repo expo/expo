@@ -1,4 +1,4 @@
-import { PlayerError, SubtitleTrack, VideoPlayerStatus, VideoSource, VideoTrack } from './VideoPlayer.types';
+import { PlayerError, SubtitleTrack, VideoPlayerStatus, VideoSource, VideoTrack, AudioTrack } from './VideoPlayer.types';
 /**
  * Handlers for events which can be emitted by the player.
  */
@@ -44,6 +44,14 @@ export type VideoPlayerEvents = {
      */
     subtitleTrackChange(payload: SubtitleTrackChangeEventPayload): void;
     /**
+     * Handler for an event emitted when the available audio tracks change.
+     */
+    availableAudioTracksChange(payload: AvailableAudioTracksChangeEventPayload): void;
+    /**
+     * Handler for an event emitted when the current audio track changes.
+     */
+    audioTrackChange(payload: AudioTrackChangeEventPayload): void;
+    /**
      * Handler for an event emitted when the current video track changes.
      */
     videoTrackChange(payload: VideoTrackChangeEventPayload): void;
@@ -52,6 +60,12 @@ export type VideoPlayerEvents = {
      * This event is emitted when the player has finished metadata for a [`VideoSource`](#videosource), but it doesn't mean that there is enough data buffered to start the playback.
      */
     sourceLoad(payload: SourceLoadEventPayload): void;
+    /**
+     * Handler for an event emitted when the video player starts or stops sharing the video via AirPlay.
+     *
+     * @platform ios
+     */
+    isExternalPlaybackActiveChange(payload: IsExternalPlaybackActiveChangeEventPayload): void;
 };
 /**
  * Data delivered with the [`statusChange`](#videoplayerevents) event.
@@ -225,5 +239,40 @@ export type SourceLoadEventPayload = {
      * Subtitle tracks available for the loaded video source.
      */
     availableSubtitleTracks: SubtitleTrack[];
+    /**
+     * Audio tracks available for the loaded video source.
+     */
+    availableAudioTracks: AudioTrack[];
 };
+type AudioTrackChangeEventPayload = {
+    /**
+     * New audio track of the player.
+     */
+    audioTrack: AudioTrack | null;
+    /**
+     * Previous audio track of the player.
+     */
+    oldAudioTrack?: AudioTrack | null;
+};
+type AvailableAudioTracksChangeEventPayload = {
+    /**
+     * Array of available audio tracks.
+     */
+    availableAudioTracks: AudioTrack[];
+    /**
+     * Previous array of available audio tracks.
+     */
+    oldAvailableAudioTracks?: AudioTrack[];
+};
+export type IsExternalPlaybackActiveChangeEventPayload = {
+    /**
+     * The current external playback status.
+     */
+    isExternalPlaybackActive: boolean;
+    /**
+     * The previous external playback status.
+     */
+    oldIsExternalPlaybackActive?: boolean;
+};
+export {};
 //# sourceMappingURL=VideoPlayerEvents.types.d.ts.map

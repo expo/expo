@@ -36,7 +36,7 @@ Below is a reference for the syntax of the workflow configuration file.
 
 ## `name`
 
-The human-friendly name of the workflow. This is displayed on the Expo dashboard on the workflows list page and is the title of the workflow's detail page.
+The human-friendly name of the workflow. This is displayed on the EAS dashboard on the workflows list page and is the title of the workflow's detail page.
 
 ```yaml
 # @info #
@@ -68,6 +68,8 @@ With the `branches` list, you can trigger the workflow only when those specified
 
 With the `tags` list, you can trigger the workflow only when those specified tags are pushed. For example, if you use `tags: ['v1']`, only the `v1` tag being pushed will trigger the workflow. Supports globs. By using the `!` prefix you can specify tags to ignore (you still need to provide at least one tag pattern without it).
 
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+
 When neither `branches` nor `tags` are provided, `branches` defaults to `['*']` and `tags` defaults to `[]`, which means the workflow will trigger on push events to all branches and will not trigger on tag pushes. If only one of the two lists is provided the other defaults to `[]`.
 
 ```yaml
@@ -86,6 +88,12 @@ on:
       - v2*
       - !v2-preview** # other tag names and globs
 
+
+    paths:
+      - apps/mobile/**
+      - packages/shared/**
+      - !**/*.md # ignore markdown files
+
 ```
 
 ### `on.pull_request`
@@ -101,6 +109,8 @@ With the `types` list, you can trigger the workflow only on the specified pull r
 - `synchronize`
 - `labeled`
 
+With the `paths` list, you can trigger the workflow only when changes are made to files matching the specified paths. For example, if you use `paths: ['apps/mobile/**']`, only changes to files in the `apps/mobile` directory will trigger the workflow. Supports globs. By default, changes to any path will trigger the workflow.
+
 ```yaml
 on:
   # @info #
@@ -115,6 +125,12 @@ on:
     types:
       - opened
       # other event types
+
+    paths:
+      - apps/mobile/**
+      - packages/shared/**
+      - !**/*.md # ignore markdown files
+
 ```
 
 ### `on.pull_request_labeled`
@@ -146,6 +162,21 @@ on:
     - Test
     - Preview
     # other labels
+```
+
+### `on.schedule.cron`
+
+Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
+
+- Scheduled workflows will only run on the default branch of the repository. In many cases, this means crons inside workflow files on the `main` branch will be scheduled, while crons inside workflow files in feature branches will not be scheduled.
+- Scheduled workflows may be delayed during periods of high load. High load times include the start of every hour. In rare circumstances, jobs may be skipped or run multiple times. Make sure that your workflows are idempotent and do not have harmful side effects.
+- A workflow can have multiple `cron` schedules.
+- Scheduled workflows run in the GMT time zone.
+
+```yaml
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight GMT every day
 ```
 
 ## `jobs`
@@ -456,7 +487,7 @@ Learn about the different pre-packaged jobs below.
 
 #### `build`
 
-Creates an Android or iOS build of your project using [EAS Build](/build/introduction/).
+Creates an Android or iOS build of your project using [EAS Build](/build/introduction/). See [Build job documentation](/eas/workflows/pre-packaged-jobs#build) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -489,11 +520,9 @@ This job outputs the following properties:
 }
 ```
 
-Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
-
 #### `deploy`
 
-Deploys your application using [EAS Hosting](/eas/hosting/introduction/).
+Deploys your application using [EAS Hosting](/eas/hosting/introduction/). See [Deploy job documentation](/eas/workflows/pre-packaged-jobs#deploy) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -508,7 +537,7 @@ jobs:
 
 #### `fingerprint`
 
-Calculates fingerprint of Android and iOS builds.
+Calculates a fingerprint of your project. See [Fingerprint job documentation](/eas/workflows/pre-packaged-jobs#fingerprint) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -516,9 +545,11 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
+    params:
+      environment: production | preview | development # optional, defaults to production
+      env: # optional
+        APP_VARIANT: staging # just an example
 ```
-
-> **warning** This job type only supports [CNG (managed)](/workflow/continuous-native-generation/) workflows. If you commit your **android** or **ios** directories, the fingerprint job won't work.
 
 This job outputs the following properties:
 
@@ -531,7 +562,7 @@ This job outputs the following properties:
 
 #### `get-build`
 
-Retrieves an existing build from EAS that matches the provided parameters.
+Retrieves an existing build from EAS that matches the provided parameters. See [Get Build job documentation](/eas/workflows/pre-packaged-jobs#get-build) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -576,9 +607,7 @@ This job outputs the following properties:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). For `environment`, it uses the same environment used to create the build referenced in `build_id`.
-
-> Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
+Submits an Android or iOS build to the app store using [EAS Submit](/submit/introduction/). See [Submit job documentation](/eas/workflows/pre-packaged-jobs#submit) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -589,6 +618,7 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional, default: production
+      groups: string[] # optional
 ```
 
 This job outputs the following properties:
@@ -603,7 +633,7 @@ This job outputs the following properties:
 
 #### `update`
 
-Publishes an update using [EAS Update](/eas-update/introduction/).
+Publishes an update using [EAS Update](/eas-update/introduction/). See [Update job documentation](/eas/workflows/pre-packaged-jobs#update) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -629,7 +659,9 @@ This job outputs the following properties:
 
 #### `maestro`
 
-Runs [Maestro](https://maestro.mobile.dev/) tests on a build.
+Runs [Maestro](https://maestro.dev/) tests on a build. See [Maestro job documentation](/eas/workflows/pre-packaged-jobs#maestro) for detailed information and examples.
+
+> **important** Maestro tests are experimental and may experience flakiness.
 
 ```yaml
 jobs:
@@ -644,11 +676,49 @@ jobs:
       flow_path: string | string[] # required
       shards: number # optional, defaults to 1
       retries: number # optional, defaults to 1
+      record_screen: boolean # optional, defaults to false. If true, uploads a screen recording of the tests.
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_system_image_package: string # optional. Android emulator system image package to use.
+      device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
+```
+
+#### `maestro-cloud`
+
+Runs [Maestro](https://maestro.dev/) tests on a build in [Maestro Cloud](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud). See [Maestro Cloud job documentation](/eas/workflows/pre-packaged-jobs#maestro-cloud) for detailed information and examples.
+
+> **important** Running tests in Maestro Cloud requires a Maestro Cloud account and Cloud Plan subscription. Go to [Maestro docs](https://docs.maestro.dev/cloud/run-maestro-tests-in-the-cloud) to learn more.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: maestro-cloud
+    # @end #
+    environment: production | preview | development # optional, defaults to preview
+    image: string # optional. See https://docs.expo.dev/build-reference/infrastructure/ for a list of available images.
+    params:
+      build_id: string # required. ID of the build to test.
+      maestro_project_id: string # required. Maestro Cloud project ID. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`.
+      flows: string # required. Path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.
+      maestro_api_key: string # optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.
+      include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
+      exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.
+      maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
+      android_api_level: string # optional. Android API level to use for the tests. Will be passed to Maestro as `--android-api-level`.
+      maestro_config: string # optional. Path to the Maestro `config.yaml` file to use for the tests. Will be passed to Maestro as `--config`.
+      device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
+      device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
+      device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+      name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
+      branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
+      async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
 ```
 
 #### `slack`
 
-Sends a message to a Slack channel using a webhook URL.
+Sends a message to a Slack channel using a webhook URL. See [Slack job documentation](/eas/workflows/pre-packaged-jobs#slack) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -660,6 +730,46 @@ jobs:
       webhook_url: string # required
       message: string # required if payload is not provided
       payload: object # required if message is not provided
+```
+
+#### `require-approval`
+
+Requires approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job. See [Require Approval job documentation](/eas/workflows/pre-packaged-jobs#require-approval) for detailed information and examples.
+
+```yaml
+jobs:
+  confirm:
+    # @info #
+    type: require-approval
+    # @end #
+```
+
+#### `doc`
+
+Displays a Markdown section in the workflow logs. See [Doc job documentation](/eas/workflows/pre-packaged-jobs#doc) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: doc
+    params:
+      md: string
+    # @end #
+```
+
+#### `repack`
+
+Repackages an app from an existing build. This job repackages the app's metadata and JavaScript bundle without performing a full native rebuild, which is useful for creating a faster build compatible with a specific fingerprint. See [Repack job documentation](/eas/workflows/pre-packaged-jobs#repack) for detailed information and examples.
+
+```yaml
+jobs:
+  next_steps:
+    # @info #
+    type: repack
+    params:
+      build_id: string
+    # @end #
 ```
 
 ## Custom jobs
@@ -809,6 +919,20 @@ jobs:
         # @end #
 ```
 
+### `jobs.<job_id>.steps.<step>.shell`
+
+The shell to use for running the command. Defaults to `bash`.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - run: echo "Hello World"
+        shell: bash
+        # @end #
+```
+
 ### `jobs.<job_id>.steps.<step>.working_directory`
 
 The directory to run the command in. When defined at the step level, it overrides the `jobs.<job_id>.defaults.run.working_directory` setting on the job if it is also defined.
@@ -884,6 +1008,58 @@ jobs:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
+#### `eas/download_build`
+
+Downloads application archive of a given build. By default, the downloaded artifact can be an **.apk**, **.aab**, **.ipa**, or **.app** file, or a **.tar.gz** archive containing one or more of these files. If the artifact is a **.tar.gz** archive, it will be extracted and the first file matching the specified extensions will be returned. If the build produced no application archive, the step will fail.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/download_build
+        with:
+          build_id: string # Required. ID of the build to download.
+          extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
+```
+
+| Property     | Type     | Required | Default                        | Description                                                                |
+| ------------ | -------- | -------- | ------------------------------ | -------------------------------------------------------------------------- |
+| `build_id`   | string   | Yes      | –                              | The ID of the build to download. Must be a valid UUID.                     |
+| `extensions` | string[] | No       | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
+
+**Outputs:**
+
+- `artifact_path`: The absolute path to the matching application archive. This output can be used as input into other steps in your workflow. For example, to upload or process the artifact further.
+
+Example usage:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  my_job:
+    needs: [build_ios]
+    steps:
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_ios.outputs.build_id }}
+      - name: Print artifact path
+        run: |
+          echo "Artifact path: ${{ steps.download_build.outputs.artifact_path }}"
+```
+
+<BoxLink
+  title="eas/download_build source code"
+  description="View the source code for the eas/download_build function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
+/>
+
 #### `eas/prebuild`
 
 Runs the `expo prebuild` command using the package manager (bun, npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
@@ -930,8 +1106,10 @@ jobs:
 #### `eas/send_slack_message`
 
 Sends a specified message to a configured [Slack webhook URL](https://api.slack.com/messaging/webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://api.slack.com/block-kit) message.
-With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: ${{ eas.job.expoBuildUrl }}`, `Build finished with status: ${{ steps.run_fastlane.status_text }}`, `Build failed with error: ${{ steps.run_gradle.error_text }}`.
-Either "message" or "payload" has to be specified, but not both.
+
+With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: https://expo.dev/builds/${{ needs.build_ios.outputs.build_id }}`, `Build finished with status: ${{ after.build_android.outputs.status }}`.
+
+Either `message` or `payload` has to be specified, but not both.
 
 ```yaml
 jobs:
@@ -945,11 +1123,11 @@ jobs:
           slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
 ```
 
-| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ---------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                      |
-| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                     |
-| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use EAS secrets like `slack_hook_url: ${{ eas.env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` secret, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
+| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                                                            |
+| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://api.slack.com/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                                                                           |
+| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. You can provide the plain URL like `slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'`, use [EAS Environment Variables](/eas/environment-variables/#managing-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
 
 <BoxLink
   title="eas/send_slack_message source code"

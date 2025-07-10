@@ -1,0 +1,41 @@
+---
+title: Request proxying
+description: Proxy requests to the EAS Update server through your own server.
+hideTOC: true
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+EAS Update supports request proxying, which allows you to proxy requests to the EAS Update server through your own server. This can be useful for various reasons, such as adding custom headers, logging requests, or implementing additional security or request IP anonymization measures.
+
+## Enabling request proxying
+
+1. Create two proxy servers that will handle the requests:
+   - One for the update asset requests (JavaScript bundles, images, and so on).
+     - This must forward requests to `assets.eascdn.net`, the EAS Update asset server.
+     - This must pass-through all URL contents (path, query parameters, and so on).
+     - This must pass-through all headers prefixed with `expo-` or `eas-`.
+   - One for the update manifest requests.
+     - This must forward requests to `u.expo.dev`, the EAS Update server.
+     - This must pass-through all URL contents (path, query parameters, and so on).
+     - This must pass-through all headers prefixed with `expo-` or `eas-`.
+1. Add the following fields to your **eas.json** configuration file, replacing the placeholders with your actual proxy server URLs:
+
+   {/* prettier-ignore */}
+   ```json eas.json
+   {
+     "cli": {
+       /* @hide ... */ /* @end */
+       "updateAssetHostOverride": "updates-asset-proxy.example.com",
+       "updateManifestHostOverride": "updates-manifest-proxy.example.com"
+     }
+   }
+   ```
+
+1. Run the following command to apply the changes:
+   <Terminal cmd={['$ eas update:configure']} />
+1. Publish an update to test the proxying:
+   <Terminal cmd={['$ eas update']} />
+1. Verify by navigating to the update group on the [EAS Update dashboard](https://expo.dev/accounts/[account]/projects/[project]/updates) and clicking "View Metadata" for one of the platforms.
+   - **manifest.json** should show the overridden `manifestHostOverride`.
+   - Other assets should show the overridden `assetHostOverride`.

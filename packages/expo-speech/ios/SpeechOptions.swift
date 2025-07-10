@@ -9,6 +9,8 @@ struct SpeechOptions: Record {
   var rate: Double?
   @Field
   var voice: String?
+  @Field
+  var useApplicationAudioSession: Bool?
 }
 
 struct VoiceInfo: Record {

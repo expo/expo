@@ -1,19 +1,21 @@
-import { Row, useExpoTheme, View, Text } from 'expo-dev-client-components';
+import { Row, useExpoTheme, View, Text, padding } from 'expo-dev-client-components';
 import * as React from 'react';
 
+import { CappedWidthContainerView } from '../../components/Views';
 import { ProjectsQuery } from '../../graphql/types';
 
 type ProjectPageApp = ProjectsQuery['app']['byId'];
 
 export function ProjectHeader(props: { app: ProjectPageApp }) {
   const theme = useExpoTheme();
+  console.log(padding.padding.medium);
   return (
-    <View
-      bg="default"
-      padding="medium"
-      style={{
+    <CappedWidthContainerView
+      wrapperStyle={{
+        backgroundColor: theme.background.default,
         borderColor: theme.border.default,
         borderBottomWidth: 1,
+        ...padding.padding.medium,
       }}>
       <Row align="center">
         <View>
@@ -28,6 +30,6 @@ export function ProjectHeader(props: { app: ProjectPageApp }) {
           </Text>
         </View>
       </Row>
-    </View>
+    </CappedWidthContainerView>
   );
 }

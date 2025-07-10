@@ -223,16 +223,18 @@ For more information on these objects, see [`Notification`](/versions/latest/sdk
 
 To handle the behavior when notifications are received when your app is **foregrounded**, use [`Notifications.setNotificationHandler`](/versions/latest/sdk/notifications/#handling-incoming-notifications-when-the-app-is) with the `handleNotification()` callback to set the following options:
 
-- `shouldShowAlert`
 - `shouldPlaySound`
 - `shouldSetBadge`
+- `shouldShowBanner`
+- `shouldShowList`
 
 ```jsx
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: false,
     shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 ```

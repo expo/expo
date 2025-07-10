@@ -1,55 +1,28 @@
 "use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Screen = Screen;
 exports.isScreen = isScreen;
-const react_1 = __importStar(require("react"));
+const native_1 = require("@react-navigation/native");
+const react_1 = require("react");
 const useNavigation_1 = require("../useNavigation");
-const useLayoutEffect = typeof window !== 'undefined' ? react_1.default.useLayoutEffect : function () { };
+const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
+const stack_1 = require("../utils/stack");
 /** Component for setting the current screen's options dynamically. */
 function Screen({ name, options }) {
+    const route = (0, native_1.useRoute)();
     const navigation = (0, useNavigation_1.useNavigation)(name);
-    useLayoutEffect(() => {
-        if (options &&
+    const isFocused = navigation.isFocused();
+    const isPreloaded = (0, stack_1.isRoutePreloadedInStack)(navigation.getState(), route);
+    (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
+        if (options && Object.keys(options).length) {
             // React Navigation will infinitely loop in some cases if an empty object is passed to setOptions.
             // https://github.com/expo/router/issues/452
-            Object.keys(options).length) {
-            navigation.setOptions(options);
+            if (!isPreloaded || (isPreloaded && isFocused)) {
+                navigation.setOptions(options);
+            }
         }
-    }, [navigation, options]);
+    }, [isFocused, isPreloaded, navigation, options]);
     return null;
 }
 function isScreen(child, contextKey) {

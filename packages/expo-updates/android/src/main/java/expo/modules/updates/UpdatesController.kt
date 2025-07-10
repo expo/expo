@@ -19,7 +19,10 @@ import java.lang.ref.WeakReference
  * the callbacks that are invoked.
  */
 object UpdatesController {
+  @Volatile
   private var singletonInstance: IUpdatesController? = null
+
+  @Volatile
   private var overrideConfiguration: UpdatesConfiguration? = null
 
   @JvmStatic
@@ -131,10 +134,11 @@ object UpdatesController {
    * @param context the base context of the application, ideally a [ReactApplication]
    */
   @JvmStatic
+  @Synchronized
   fun initialize(context: Context) {
     if (singletonInstance == null) {
       initializeWithoutStarting(context)
-      singletonInstance!!.start()
+      singletonInstance?.start()
     }
   }
 

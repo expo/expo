@@ -11,7 +11,7 @@ describe(_assertNodeFetchSupport, () => {
   });
   it(`asserts environment is missing Node.js fetch`, () => {
     expect(() => _assertNodeFetchSupport({ process: { version: 'v16.12.2' } })).toThrow(
-      /Node.js version 16 is not supported. Please upgrade to Node.js 20 or newer./
+      /Node.js version 16 is not supported. Upgrade to Node.js 20 or newer./
     );
   });
   it(`asserts node fetch is disabled manually by user`, () => {

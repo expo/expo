@@ -1,7 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-import SafariServices
 import ExpoModulesCore
+
+#if os(iOS)
+import SafariServices
 
 internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   let viewController: SFSafariViewController
@@ -74,3 +76,79 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
     onDismiss(type)
   }
 }
+
+#elseif os(macOS)
+import AppKit
+import WebKit
+
+internal class WebBrowserSession: NSObject, WKNavigationDelegate, WKUIDelegate, NSWindowDelegate {
+  private let url: URL
+  private let options: WebBrowserOptions
+  let onDismiss: (String) -> Void
+  let didPresent: () -> Void
+
+  private var window: NSWindow?
+  private var webView: WKWebView?
+
+  init(url: URL, options: WebBrowserOptions, onDismiss: @escaping (String) -> Void, didPresent: @escaping () -> Void) {
+    self.url = url
+    self.options = options
+    self.onDismiss = onDismiss
+    self.didPresent = didPresent
+    super.init()
+  }
+
+  func open() {
+    let configuration = WKWebViewConfiguration()
+
+    let webView = WKWebView(frame: .zero, configuration: configuration)
+    webView.navigationDelegate = self
+    webView.uiDelegate = self
+    self.webView = webView
+
+    let window = NSWindow(
+      contentRect: self.options.presentationStyle.toContentRect(),
+      styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+      backing: .buffered,
+      defer: false
+    )
+
+    window.contentView = webView
+    window.center()
+    window.isReleasedWhenClosed = false
+    window.delegate = self
+    self.window = window
+
+    webView.load(URLRequest(url: url))
+
+    window.makeKeyAndOrderFront(nil)
+    didPresent()
+  }
+
+  func dismiss(completion: ((String) -> Void)? = nil) {
+    window?.close()
+    let type = "dismiss"
+    finish(type: type)
+    completion?(type)
+  }
+
+  // MARK: - WKNavigationDelegate
+  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation) {
+    webView.evaluateJavaScript("document.title") { [weak self] result, _ in
+      if let title = result as? String, !title.isEmpty {
+        self?.window?.title = title
+      }
+    }
+  }
+
+  // MARK: - NSWindowDelegate
+  func windowWillClose(_ notification: Notification) {
+    finish(type: "cancel")
+  }
+
+  // MARK: - Private
+  private func finish(type: String) {
+    onDismiss(type)
+  }
+}
+#endif

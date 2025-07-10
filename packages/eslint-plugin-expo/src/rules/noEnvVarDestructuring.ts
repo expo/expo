@@ -10,12 +10,12 @@ export const noEnvVarDestructuring = createRule({
   meta: {
     type: 'problem',
     docs: {
-      description: 'Disallow desctructuring of environment variables',
+      description: 'Disallow destructuring of environment variables',
     },
     schema: [],
     messages: {
       unexpectedDestructuring:
-        'Unexpected desctucturing. Cannot descructure {{value}} from process.env',
+        'Unexpected destructuring. Cannot destructure {{value}} from process.env',
     },
   },
   defaultOptions: [],

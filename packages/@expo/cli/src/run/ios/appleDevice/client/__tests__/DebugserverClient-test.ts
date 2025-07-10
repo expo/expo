@@ -63,6 +63,6 @@ describe('halt', () => {
     const client = createClient();
     client['protocolClient'].socket.write = jest.fn();
     await client.halt();
-    expect(client['protocolClient'].socket.write).toBeCalled();
+    expect(client['protocolClient'].socket.write).toHaveBeenCalled();
   });
 });

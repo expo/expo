@@ -89,7 +89,7 @@ When you use the Expo Push Service, and specify only `data` and `_contentAvailab
 
 The rule of thumb is to prefer a regular Notification Message if you don't require running JavaScript in the background.
 
-\* The exception is when you specify `title` or `message` inside of [`data`](https://github.com/expo/expo-server-sdk-node/blob/88ed8fbfc1345f13911d8a8d30a5d8009aaa8892/src/ExpoClient.ts#L349). In that case, `expo-notifications` package automatically presents the headless notification on Android, but not on iOS. We plan to make this behavior more consistent across platforms in a future release.
+\* The exception is when you specify `title` or `message` inside of [`data`](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidConfig). In that case, `expo-notifications` package automatically presents the headless notification on Android, but not on iOS. We plan to make this behavior more consistent across platforms in a future release.
 
 ### Data-only notifications
 

@@ -51,6 +51,7 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios:assets');
 const IMAGE_CACHE_NAME = 'splash-ios';
 const IMAGESET_PATH = 'Images.xcassets/SplashScreenLogo.imageset';
+const LEGACY_IMAGESET_PATH = 'Images.xcassets/SplashScreenLegacy.imageset';
 const PNG_FILENAME = 'image';
 const DARK_PNG_FILENAME = 'dark_image';
 const TABLET_PNG_FILENAME = 'tablet_image';
@@ -89,7 +90,18 @@ async function configureImageAssets({
   imageWidth,
   enableFullScreenImage
 }) {
-  const imageSetPath = _path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH);
+  const imagePath = enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH;
+  const imageSetPath = _path().default.resolve(iosNamedProjectRoot, imagePath);
+
+  // remove legacy imageSet if it is not used
+  if (!enableFullScreenImage) {
+    const legacyImageSetPath = _path().default.resolve(iosNamedProjectRoot, LEGACY_IMAGESET_PATH);
+    await _fs().default.promises.rm(legacyImageSetPath, {
+      force: true,
+      recursive: true
+    });
+  }
+
   // ensure old SplashScreen imageSet is removed
   await _fs().default.promises.rm(imageSetPath, {
     force: true,
@@ -156,7 +168,7 @@ async function copyImageFiles({
         });
         // Write image buffer to the file system.
         // const assetPath = join(iosNamedProjectRoot, IMAGESET_PATH, filename);
-        await _fs().default.promises.writeFile(_path().default.resolve(iosNamedProjectRoot, IMAGESET_PATH, `${fileName}${suffix}.png`), source);
+        await _fs().default.promises.writeFile(_path().default.resolve(iosNamedProjectRoot, enableFullScreenImage ? LEGACY_IMAGESET_PATH : IMAGESET_PATH, `${fileName}${suffix}.png`), source);
       });
     },
     anyItem: image,

@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.devlauncher.modules
 
-import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -10,8 +9,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import com.facebook.react.bridge.*
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableMap
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
@@ -19,17 +18,13 @@ import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
-import expo.modules.devlauncher.launcher.DevLauncherPendingIntentListener
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
-import expo.modules.devmenu.DevMenuManager
-import kotlinx.coroutines.launch
-import org.koin.core.component.inject
-
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-
+import kotlinx.coroutines.launch
+import org.koin.core.component.inject
 
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
 private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
@@ -101,17 +96,17 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
 
     AsyncFunction<List<Bundle?>>("getRecentlyOpenedApps") {
       val apps = controller.getRecentlyOpenedApps().map {
-          Bundle().apply {
-           putDouble("timestamp", it.timestamp.toDouble())
-           putString("name", it.name)
-           putString("url", it.url)
-           putBoolean("isEASUpdate", it.isEASUpdate == true)
+        Bundle().apply {
+          putDouble("timestamp", it.timestamp.toDouble())
+          putString("name", it.name)
+          putString("url", it.url)
+          putBoolean("isEASUpdate", it.isEASUpdate == true)
 
-            if (it.isEASUpdate == true) {
-             putString("updateMessage", it.updateMessage)
-             putString("branchName", it.branchName)
-            }
-         }
+          if (it.isEASUpdate == true) {
+            putString("updateMessage", it.updateMessage)
+            putString("branchName", it.branchName)
+          }
+        }
       }
       return@AsyncFunction apps
     }
@@ -169,7 +164,6 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
     }
 
     AsyncFunction("loadFontsAsync") {
-      DevMenuManager.loadFonts(context)
     }
 
     AsyncFunction("getNavigationState") {
@@ -229,9 +223,12 @@ class DevLauncherInternalModule : Module(), DevLauncherKoinComponent {
 
   private fun onNewPendingIntent(intent: Intent) {
     intent.data?.toString()?.let {
-      this@DevLauncherInternalModule.sendEvent(ON_NEW_DEEP_LINK_EVENT, bundleOf(
-        "url" to it
-      ))
+      this@DevLauncherInternalModule.sendEvent(
+        ON_NEW_DEEP_LINK_EVENT,
+        bundleOf(
+          "url" to it
+        )
+      )
     }
   }
 }

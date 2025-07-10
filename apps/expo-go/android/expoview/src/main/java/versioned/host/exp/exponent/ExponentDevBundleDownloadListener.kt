@@ -2,7 +2,7 @@ package versioned.host.exp.exponent
 
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import host.exp.exponent.experience.DevBundleDownloadProgressListener
-import java.lang.Exception
+import kotlin.Exception
 
 /**
  * Acts as a bridge between the versioned DevBundleDownloadListener and unversioned
@@ -18,9 +18,7 @@ class ExponentDevBundleDownloadListener(private val listener: DevBundleDownloadP
     listener.onProgress(status, done, total)
   }
 
-  override fun onFailure(cause: Exception?) {
-    cause?.let {
-      listener.onFailure(it)
-    }
+  override fun onFailure(cause: Exception) {
+    listener.onFailure(cause)
   }
 }

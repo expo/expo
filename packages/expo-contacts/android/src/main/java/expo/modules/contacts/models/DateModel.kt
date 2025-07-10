@@ -51,6 +51,12 @@ open class DateModel : BaseModel() {
   }
 
   private fun formatDateString(): String? {
+    val existingFormattedDate = this.data
+    if (existingFormattedDate != null) {
+      // when the date is loaded from an existing contact (from cursor)
+      return existingFormattedDate
+    }
+
     val year = map.getDouble("year", -1.0).toInt().takeIf { it > 0 }
     val month = map.getDouble("month", -1.0).toInt().takeIf { it >= 0 }?.plus(1)
     val day = map.getDouble("day", -1.0).toInt().takeIf { it > 0 }
@@ -59,7 +65,7 @@ open class DateModel : BaseModel() {
       year != null && month != null && day != null ->
         String.format(Locale.US, "%04d-%02d-%02d", year, month, day)
 
-      month != null && day != null ->
+      month != null && day != null -> // No year
         String.format(Locale.US, "--%02d-%02d", month, day)
 
       else -> null

@@ -5,16 +5,20 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-52/packages/expo-backgroun
 packageName: 'expo-background-task'
 platforms: ['android', 'ios']
 isNew: true
+hasVideoLink: true
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **warning** This library is currently in beta and subject to breaking changes.
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](task-manager.mdx) Native API to run JavaScript tasks.
+
+<VideoBoxLink videoId="4lFus7TvayI" title="Watch: Expo Background Task Deep Dive" />
 
 ## Background tasks
 

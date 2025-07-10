@@ -1,6 +1,9 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import AVFoundation
+import UniformTypeIdentifiers
+import Photos
+import ExpoModulesCore
 
 internal struct VideoUtils {
   static func tryCopyingVideo(at: URL, to: URL) throws {
@@ -75,7 +78,9 @@ internal struct VideoUtils {
 
   static func loadVideoRepresentation(provider: NSItemProvider, urlTransformer: @escaping (URL) throws -> URL) async throws -> URL {
     return try await withCheckedThrowingContinuation { continuation in
-      provider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { url, error in
+      let typeId = UTType.movie.identifier
+
+      provider.loadFileRepresentation(forTypeIdentifier: typeId) { url, error in
         guard let url else {
           return continuation.resume(throwing: FailedToReadVideoException().causedBy(error))
         }
@@ -84,7 +89,6 @@ internal struct VideoUtils {
           // Since we're using it asynchronously, we need to copy the video to another location.
           let newUrl = try urlTransformer(url)
           try VideoUtils.tryCopyingVideo(at: url, to: newUrl)
-
           continuation.resume(returning: newUrl)
         } catch {
           continuation.resume(throwing: error)

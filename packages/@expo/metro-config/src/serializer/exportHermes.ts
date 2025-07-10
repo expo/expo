@@ -10,25 +10,26 @@ const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 
 function importHermesCommandFromProject(): string {
   const platformExecutable = getHermesCommandPlatform();
-  const hermescLocations = [
+
+  const reactNativeRoot = path.dirname(require.resolve('react-native/package.json'));
+  const hermescPaths = [
     // Override hermesc dir by environment variables
     process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
       ? `${process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
       : '',
 
     // Building hermes from source
-    'react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
+    `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
 
     // Prebuilt hermesc in official react-native 0.69+
-    `react-native/sdks/hermesc/${platformExecutable}`,
-
-    // Legacy hermes-engine package
-    `hermes-engine/${platformExecutable}`,
+    `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
   ];
 
-  for (const location of hermescLocations) {
+  for (const hermescPath of hermescPaths) {
     try {
-      return require.resolve(location);
+      if (fs.existsSync(hermescPath)) {
+        return hermescPath;
+      }
     } catch {}
   }
   throw new Error('Cannot find the hermesc executable.');

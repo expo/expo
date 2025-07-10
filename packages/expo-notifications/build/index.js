@@ -1,6 +1,6 @@
 import { isRunningInExpoGo } from 'expo';
 function areWeTestingWithJest() {
-    return process.env.JEST_WORKER_ID !== undefined || process.env.NODE_ENV === 'TEST';
+    return process.env.JEST_WORKER_ID !== undefined || process.env.NODE_ENV?.toLowerCase() === 'test';
 }
 if (isRunningInExpoGo() && !areWeTestingWithJest()) {
     const message = '`expo-notifications` functionality is not fully supported in Expo Go:\n' +

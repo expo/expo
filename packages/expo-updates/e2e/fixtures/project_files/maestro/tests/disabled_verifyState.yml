@@ -1,0 +1,61 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Check that state is correct when updates are disabled
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- copyTextFrom:
+    label: Copy text from updateID
+    id: updateID
+- assertTrue:
+    condition: ${maestro.copiedText != ""}
+    label: Assert updateID is not empty
+- copyTextFrom:
+    label: Copy text from runtimeVersion
+    id: runtimeVersion
+- assertTrue:
+    condition: ${maestro.copiedText == "null"}
+    label: Assert runtimeVersion is null
+- copyTextFrom:
+    label: Copy text from checkAutomatically
+    id: checkAutomatically
+- assertTrue:
+    condition: ${maestro.copiedText == "NEVER"}
+    label: Assert checkAutomatically is NEVER
+- copyTextFrom:
+    label: Copy text from isEmbeddedLaunch
+    id: isEmbeddedLaunch
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert isEmbeddedLaunch is false
+- copyTextFrom:
+    label: Copy text from availableUpdateID
+    id: availableUpdateID
+- assertTrue:
+    condition: ${maestro.copiedText == "undefined"}
+    label: Assert availableUpdateID is undefined
+- copyTextFrom:
+    label: Copy text from lastJSAPIErrorMessage
+    id: lastJSAPIErrorMessage
+- assertTrue:
+    condition: ${maestro.copiedText == "false"}
+    label: Assert lastJSAPIErrorMessage is false
+- tapOn:
+    label: Tap on callJSAPI
+    id: callJSAPI
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from lastJSAPIErrorMessage
+    id: lastJSAPIErrorMessage
+- assertTrue:
+    condition: ${maestro.copiedText == "true"}
+    label: Assert lastJSAPIErrorMessage is true

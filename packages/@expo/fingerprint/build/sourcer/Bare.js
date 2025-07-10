@@ -96,18 +96,22 @@ async function getCoreAutolinkingSourcesFromRncCliAsync(projectRoot, options, us
         return [];
     }
 }
-async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, useRNCoreAutolinkingFromExpo) {
+async function getCoreAutolinkingSourcesFromExpoAndroid(projectRoot, options, coreAutolinkingTransitiveDeps, useRNCoreAutolinkingFromExpo) {
     if (useRNCoreAutolinkingFromExpo === false || !options.platforms.includes('android')) {
         return [];
     }
+    const args = [
+        (0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot),
+        'react-native-config',
+        '--json',
+        '--platform',
+        'android',
+    ];
+    if (coreAutolinkingTransitiveDeps.length > 0) {
+        args.push('--transitive-linking-dependencies', ...coreAutolinkingTransitiveDeps);
+    }
     try {
-        const { stdout } = await (0, spawn_async_1.default)('node', [
-            (0, ExpoResolver_1.resolveExpoAutolinkingCliPath)(projectRoot),
-            'react-native-config',
-            '--json',
-            '--platform',
-            'android',
-        ], { cwd: projectRoot });
+        const { stdout } = await (0, spawn_async_1.default)('node', args, { cwd: projectRoot });
         const config = JSON.parse(stdout);
         const results = await parseCoreAutolinkingSourcesAsync({
             config,

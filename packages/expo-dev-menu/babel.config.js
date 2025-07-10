@@ -1,7 +1,7 @@
 function tryResolveModule(module) {
   try {
     return require.resolve(module);
-  } catch (e) {
+  } catch {
     console.error(`Couldn't resolve vendored module - ${module}.`);
     return null;
   }

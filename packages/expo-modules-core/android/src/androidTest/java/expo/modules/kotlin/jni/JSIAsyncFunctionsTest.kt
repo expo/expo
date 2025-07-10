@@ -198,7 +198,7 @@ class JSIAsyncFunctionsTest {
   }
 
   @Test(expected = PromiseException::class)
-  fun should_reject_if_js_value_cannot_be_passed() = withSingleModule({
+  fun should_throw_if_js_value_cannot_be_passed() = withSingleModule({
     AsyncFunction("f") { _: Int -> }
   }) {
     callAsync("f", "Symbol()")

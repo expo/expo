@@ -28,7 +28,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -41,7 +41,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot, env: { ADBLOCK: '0' } });
       await bun.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({
@@ -76,7 +76,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.runAsync(['install']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({ stdio: 'inherit' })
@@ -87,7 +87,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot, silent: true });
       await bun.runAsync(['install']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         expect.objectContaining({ stdio: undefined })
@@ -98,7 +98,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.runAsync(['add', '--peer', '@babel/core']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '--peer', '@babel/core'],
         expect.objectContaining({ cwd: projectRoot })
@@ -109,7 +109,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.runAsync(['add', '--peer', '@babel/core', '@babel/runtime']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '--peer', '@babel/core', '@babel/runtime'],
         expect.objectContaining({ cwd: projectRoot })
@@ -126,7 +126,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
 
       expect(await bun.versionAsync()).toBe('4.2.0');
-      expect(spawnAsync).toBeCalledWith('bun', ['--version'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith('bun', ['--version'], expect.anything());
     });
   });
 
@@ -141,7 +141,11 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
 
       expect(await bun.getConfigAsync('registry')).toBe('https://custom.registry.org/');
-      expect(spawnAsync).toBeCalledWith('bun', ['config', 'get', 'registry'], expect.anything());
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'bun',
+        ['config', 'get', 'registry'],
+        expect.anything()
+      );
     });
   });
 
@@ -150,7 +154,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.installAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -161,7 +165,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.installAsync(['--ignore-scripts']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['install', '--ignore-scripts'],
         expect.objectContaining({ cwd: projectRoot })
@@ -207,7 +211,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -218,7 +222,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addAsync(['@react-navigation/native']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '@react-navigation/native'],
         expect.objectContaining({ cwd: projectRoot })
@@ -229,7 +233,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addAsync(['@react-navigation/native', '@react-navigation/drawer']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '@react-navigation/native', '@react-navigation/drawer'],
         expect.objectContaining({ cwd: projectRoot })
@@ -242,7 +246,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addDevAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -253,7 +257,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addDevAsync(['eslint']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '--dev', 'eslint'],
         expect.objectContaining({ cwd: projectRoot })
@@ -264,7 +268,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addDevAsync(['eslint', 'prettier']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '--dev', 'eslint', 'prettier'],
         expect.objectContaining({ cwd: projectRoot })
@@ -277,7 +281,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addGlobalAsync();
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
@@ -288,7 +292,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addGlobalAsync(['expo-cli@^5']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '--global', 'expo-cli@^5'],
         expect.anything()
@@ -299,7 +303,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.addGlobalAsync(['expo-cli@^5', 'eas-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['add', '--global', 'expo-cli@^5', 'eas-cli'],
         expect.anything()
@@ -312,7 +316,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.removeAsync(['metro']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['remove', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
@@ -323,7 +327,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.removeAsync(['metro', 'jest-haste-map']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['remove', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
@@ -336,7 +340,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.removeDevAsync(['metro']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['remove', 'metro'],
         expect.objectContaining({ cwd: projectRoot })
@@ -347,7 +351,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.removeDevAsync(['metro', 'jest-haste-map']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['remove', 'metro', 'jest-haste-map'],
         expect.objectContaining({ cwd: projectRoot })
@@ -360,7 +364,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.removeGlobalAsync(['expo-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['remove', '--global', 'expo-cli'],
         expect.objectContaining({ cwd: projectRoot })
@@ -371,7 +375,7 @@ describe('BunPackageManager', () => {
       const bun = new BunPackageManager({ cwd: projectRoot });
       await bun.removeGlobalAsync(['expo-cli', 'eas-cli']);
 
-      expect(spawnAsync).toBeCalledWith(
+      expect(spawnAsync).toHaveBeenCalledWith(
         'bun',
         ['remove', '--global', 'expo-cli', 'eas-cli'],
         expect.objectContaining({ cwd: projectRoot })

@@ -1,0 +1,42 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Use dev client to load a bundle from updates server
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- tapOn:
+    label: Tap on "Enter URL manually"
+    text: Enter URL manually
+- tapOn:
+    label: Tap on "Updates URL" text field
+    below: Enter URL manually
+- inputText:
+    label: Input local update server URL
+    text: "http://localhost:4747/update\n"
+- tapOn:
+    label: Tap on "Connect" button
+    text: Connect
+    optional: true
+- tapOn:
+    label: Tap on "Connect" button
+    text: Connect
+    optional: true
+- tapOn:
+    label: Tap on "Continue" to clear onboarding menu
+    text: Continue
+    optional: true
+- tapOn:
+    label: Tap on reload
+    text: Reload
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from update bundle

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIgnoreList = exports.extrapolateGroups = exports.generateDynamic = void 0;
+exports.extrapolateGroups = exports.generateDynamic = void 0;
 exports.getRoutes = getRoutes;
 exports.getExactRoutes = getExactRoutes;
 const getRoutesCore_1 = require("./getRoutesCore");
@@ -18,7 +18,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type }, defaults) {
+        getSystemRoute({ route, type, defaults }) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {
@@ -84,5 +84,4 @@ function getExactRoutes(contextModule, options = {}) {
 var getRoutesCore_2 = require("./getRoutesCore");
 Object.defineProperty(exports, "generateDynamic", { enumerable: true, get: function () { return getRoutesCore_2.generateDynamic; } });
 Object.defineProperty(exports, "extrapolateGroups", { enumerable: true, get: function () { return getRoutesCore_2.extrapolateGroups; } });
-Object.defineProperty(exports, "getIgnoreList", { enumerable: true, get: function () { return getRoutesCore_2.getIgnoreList; } });
 //# sourceMappingURL=getRoutesSSR.js.map

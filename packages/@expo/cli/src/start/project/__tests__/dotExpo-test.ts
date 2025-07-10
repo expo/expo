@@ -24,7 +24,7 @@ describe(createTemporaryProjectFile, () => {
     expect(vol.readFileSync('/.expo/README.md', 'utf8')).toMatch(/Why do I have a folder named/);
 
     // File is not automatically written...
-    await expect(file.getAsync('foo', null)).rejects.toThrowError(/ENOENT/);
+    await expect(file.getAsync('foo', null)).rejects.toThrow(/ENOENT/);
 
     // Matches defaults and doesn't fail when the file doesn't exist.
     expect(await creator.readAsync(projectRoot)).toEqual({ foo: 'bar' });

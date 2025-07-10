@@ -16,5 +16,5 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  */
 export declare function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
 export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-export { generateDynamic, extrapolateGroups, getIgnoreList } from './getRoutesCore';
+export { generateDynamic, extrapolateGroups } from './getRoutesCore';
 //# sourceMappingURL=getRoutesSSR.d.ts.map

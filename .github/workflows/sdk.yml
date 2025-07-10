@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   check-packages:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] || 
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]] ||
             ${{ steps.filter.outputs.module-scripts }} == "true"; then
             # Check all packages on scheduled events or if requested by workflow_dispatch event.
             bin/expotools check-packages --all

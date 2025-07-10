@@ -1,10 +1,11 @@
 import * as Linking from 'expo-linking';
-import { createElement } from 'react';
+import { createElement, useEffect } from 'react';
 
 import { cleanPath } from './fork/getStateFromPath-forks';
 import { RedirectConfig } from './getRoutesCore';
 import type { StoreRedirects } from './global-state/router-store';
-import { matchDeepDynamicRouteName, matchDynamicName } from './matchers';
+import { matchDynamicName } from './matchers';
+import { shouldLinkExternally } from './utils/url';
 
 export function applyRedirects(
   url: string | null | undefined,
@@ -24,6 +25,7 @@ export function applyRedirects(
   // If the redirect is external, open the URL
   if (redirect[2]) {
     let href = redirect[1].destination;
+
     if (href.startsWith('//') && process.env.EXPO_OS !== 'web') {
       href = `https:${href}`;
     }
@@ -35,37 +37,33 @@ export function applyRedirects(
   return applyRedirects(convertRedirect(url, redirect[1]), redirects);
 }
 
-export function getRedirectModule(route: string) {
+export function getRedirectModule(redirectConfig: RedirectConfig) {
   return {
     default: function RedirectComponent() {
-      // Use the store directly instead of useGlobalSearchParams.
-      // Importing the hooks directly causes build errors on the server
-      const params = require('./hooks').useGlobalSearchParams();
+      const pathname = require('./hooks').usePathname();
 
-      // Replace dynamic parts of the route with the actual values from the params
-      let href = route
-        .split('/')
-        .map((part) => {
-          const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
-          if (!match) {
-            return part;
+      const isExternal = shouldLinkExternally(redirectConfig.destination);
+
+      useEffect(() => {
+        if (isExternal) {
+          let href = redirectConfig.destination;
+          if (href.startsWith('//') && process.env.EXPO_OS !== 'web') {
+            href = `https:${href}`;
           }
 
-          const param = params[match];
-          delete params[match];
-          return param;
-        })
-        .filter(Boolean)
-        .join('/');
+          Linking.openURL(href);
+        }
+      }, []);
 
-      // Add any remaining params as query string
-      const queryString = new URLSearchParams(params as Record<string, any>).toString();
-
-      if (queryString) {
-        href += `?${queryString}`;
+      if (isExternal) {
+        return null;
       }
 
-      return createElement(require('./link/Link').Redirect, { href });
+      const href = convertRedirect(pathname, redirectConfig);
+
+      return createElement(require('./link/Link').Redirect, {
+        href,
+      });
     },
   };
 }
@@ -77,17 +75,14 @@ export function convertRedirect(path: string, config: RedirectConfig) {
   const sourceParts = config.source.split('/');
 
   for (const [index, sourcePart] of sourceParts.entries()) {
-    let match = matchDynamicName(sourcePart);
-
-    if (match) {
-      params[match] = parts[index];
+    const dynamicName = matchDynamicName(sourcePart);
+    if (!dynamicName) {
       continue;
-    }
-
-    match = matchDeepDynamicRouteName(sourcePart);
-
-    if (match) {
-      params[match] = parts.slice(index);
+    } else if (!dynamicName.deep) {
+      params[dynamicName.name] = parts[index];
+      continue;
+    } else {
+      params[dynamicName.name] = parts.slice(index);
       break;
     }
   }
@@ -99,14 +94,14 @@ export function mergeVariablesWithPath(path: string, params: Record<string, stri
   return path
     .split('/')
     .map((part) => {
-      const match = matchDynamicName(part) || matchDeepDynamicRouteName(part);
-      if (!match) {
+      const dynamicName = matchDynamicName(part);
+      if (!dynamicName) {
         return part;
+      } else {
+        const param = params[dynamicName.name];
+        delete params[dynamicName.name];
+        return param;
       }
-
-      const param = params[match];
-      delete params[match];
-      return param;
     })
     .filter(Boolean)
     .join('/');

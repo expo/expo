@@ -2,6 +2,7 @@
 title: Create a production build for iOS
 sidebar_title: iOS production build
 description: Learn about the process of creating a production build for iOS and automating the release process.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -55,7 +56,7 @@ To create an iOS production build using the default `production` profile, open y
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-The command will queue the build. Notice on the Expo dashboard that the **Build Number** is auto-incremented.
+The command will queue the build. Notice on the EAS dashboard that the **Build Number** is auto-incremented.
 
 </Step>
 
@@ -84,9 +85,8 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 
 - Click **[Apps](https://appstoreconnect.apple.com/apps),** and see the app icon.
 - Click the app name, and from the navigation tab menu, click **TestFlight**. If the build was just submitted, it may take a few minutes for Apple to process the build before it is available to distribute with TestFlight.
-- Click on the **Manage Compliance** link. Since our app doesn't use any encryption, select **None of the algorithms mentioned above**.
 
-> **info** **Tip:** Next time when creating an app, skip this compliance by adding [`ios.config.usesNonExemptEncryption`](/versions/latest/config/app/#usesnonexemptencryption) in app config and set it to `false` if the app doesn't use any encryption.
+> **info** **Only if you have skipped [iOS development build for devices chapter](/tutorial/eas/ios-development-build-for-devices/):** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
 
 - In App Store Connect, under **Internal Testing**, and create a test group. This will allow us to invite test users.
 

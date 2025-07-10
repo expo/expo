@@ -35,7 +35,7 @@ export default function ListScreen() {
 
   return (
     <>
-      <List listStyle="automatic">
+      <List listStyle="automatic" scrollEnabled={false}>
         <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
         <Switch
           value={selectEnabled}

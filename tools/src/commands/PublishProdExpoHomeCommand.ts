@@ -5,11 +5,12 @@ import {
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
 import chalk from 'chalk';
+import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
-import fetch, { Response } from 'node-fetch';
 import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
+import { Writable } from 'stream';
 
 import { EXPO_GO_ANDROID_DIR, EXPO_GO_IOS_DIR } from '../Constants';
 import { deepCloneObject } from '../Utils';
@@ -160,12 +161,16 @@ async function fetchManifestAndBundleAsync(
       ...bundleRequestHeaders,
     },
   });
+  if (!bundleResponse.ok || !bundleResponse.body) {
+    throw new Error(`Failed to download bundle from ${bundleUrl}`);
+  }
 
   const manifestPath = platform === 'ios' ? iosManifestPath : androidManifestPath;
   await fs.writeFile(path.resolve(manifestPath), JSON.stringify(manifest));
 
   const bundlePath = platform === 'ios' ? iosPublishBundlePath : androidPublishBundlePath;
-  await fs.writeFile(path.resolve(bundlePath), await bundleResponse.buffer());
+  const stream = createWriteStream(path.resolve(bundlePath));
+  await bundleResponse.body.pipeTo(Writable.toWeb(stream));
 }
 
 /**
@@ -182,16 +187,12 @@ async function action(): Promise<void> {
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
 
   const slug = 'home';
-  const owner = 'exponent';
   const easProjectId = '6b6c6660-df76-11e6-b9b4-59d1587e6774';
   const easUpdateURL = `https://u.expo.dev/${easProjectId}`;
 
   const appJsonFile = new JsonFile<AppConfig>(appJsonFilePath);
   const appJson = await appJsonFile.readAsync();
 
-  if (!appJson.expo.owner) {
-    throw new Error('app.json missing owner');
-  }
   if (!appJson.expo.extra || !appJson.expo.extra.eas || !appJson.expo.extra.eas.projectId) {
     throw new Error('app.json missing extra.eas.projectId');
   }
@@ -204,9 +205,6 @@ async function action(): Promise<void> {
 
   console.log(`Modifying home's slug to ${chalk.green(slug)}...`);
   appJson.expo.slug = slug;
-
-  console.log(`Modifying home's owner to ${chalk.green(owner)}...`);
-  appJson.expo.owner = owner;
 
   console.log(`Modifying home's EAS project ID to ${chalk.green(easProjectId)}...`);
   appJson.expo.extra.eas.projectId = easProjectId;
