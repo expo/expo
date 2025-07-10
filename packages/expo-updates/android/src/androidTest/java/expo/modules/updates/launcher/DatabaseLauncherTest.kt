@@ -13,7 +13,6 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import kotlinx.coroutines.test.TestScope
