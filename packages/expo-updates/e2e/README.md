@@ -54,7 +54,7 @@ yarn maestro:ios:debug:build
 
 ```bash
 yarn maestro:android:debug:build
-./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
+./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
 ```
 
 - For either the iOS or Android tests, you can optionally run the test updates server separately for debugging purposes.
