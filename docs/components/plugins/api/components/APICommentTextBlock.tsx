@@ -43,8 +43,9 @@ export const APICommentTextBlock = ({
   emptyCommentFallback,
 }: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
+  const hasContent = Boolean(content?.length);
 
-  const paramTags = content ? getParamTags(content) : undefined;
+  const paramTags = hasContent ? getParamTags(content) : undefined;
   const parsedContent = (
     <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
       {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
@@ -98,7 +99,11 @@ export const APICommentTextBlock = ({
   const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
 
   return (
-    <div className={mergeClasses(includeSpacing && 'px-4 [table_&]:!mb-0 [table_&]:px-0')}>
+    <div
+      className={mergeClasses(
+        includeSpacing && hasContent && 'px-4 [table_&]:!mb-0 [table_&]:px-0',
+        emptyCommentFallback && !hasContent && 'text-quaternary'
+      )}>
       {includePlatforms && hasPlatforms && (
         <APISectionPlatformTags
           comment={comment}
@@ -114,9 +119,7 @@ export const APICommentTextBlock = ({
         </>
       )}
       {beforeContent}
-      {emptyCommentFallback && !content?.length && (
-        <span className="text-quaternary">{emptyCommentFallback}</span>
-      )}
+      {Boolean(emptyCommentFallback) && !hasContent && emptyCommentFallback}
       {parsedContent}
       {afterContent}
       {afterContent && !exampleContent && <br />}
