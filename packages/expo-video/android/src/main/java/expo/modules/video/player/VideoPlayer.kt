@@ -64,7 +64,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .build()
 
   private val firstFrameEventGenerator = createFirstFrameEventGenerator()
-  val serviceConnection = PlaybackServiceConnection(WeakReference(this))
+  val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
   var playing by IgnoreSameSet(false) { new, old ->
