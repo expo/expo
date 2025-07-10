@@ -44,10 +44,6 @@ export const APICommentTextBlock = ({
 }: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
 
-  if (emptyCommentFallback && !content?.length) {
-    return <span className="text-quaternary">{emptyCommentFallback}</span>;
-  }
-
   const paramTags = content ? getParamTags(content) : undefined;
   const parsedContent = (
     <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
@@ -118,6 +114,9 @@ export const APICommentTextBlock = ({
         </>
       )}
       {beforeContent}
+      {emptyCommentFallback && !content?.length && (
+        <span className="text-quaternary">{emptyCommentFallback}</span>
+      )}
       {parsedContent}
       {afterContent}
       {afterContent && !exampleContent && <br />}
