@@ -20,6 +20,7 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.VideoSource
@@ -225,7 +226,9 @@ class VideoModule : Module() {
 
       Property("loop")
         .get { ref: VideoPlayer ->
-          ref.player.repeatMode == REPEAT_MODE_ONE
+          runBlocking(appContext.mainQueue.coroutineContext) {
+            ref.player.repeatMode == REPEAT_MODE_ONE
+          }
         }
         .set { ref: VideoPlayer, loop: Boolean ->
           appContext.mainQueue.launch {
@@ -251,6 +254,12 @@ class VideoModule : Module() {
         }
         .set { ref: VideoPlayer, bufferOptions: BufferOptions ->
           ref.bufferOptions = bufferOptions
+        }
+
+      Property("isExternalPlaybackActive")
+        .get { ref: VideoPlayer ->
+          // isExternalPlaybackActive is not supported on Android as of now. Return false.
+          false
         }
 
       Function("play") { ref: VideoPlayer ->
@@ -380,6 +389,11 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   }
   Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
     view.allowsFullscreen = allowsFullscreen ?: true
+  }
+  Prop("fullscreenOptions") { view: T, fullscreenOptions: FullscreenOptions? ->
+    if (fullscreenOptions != null) {
+      view.fullscreenOptions = fullscreenOptions
+    }
   }
   Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
     val linearPlayback = requiresLinearPlayback ?: false

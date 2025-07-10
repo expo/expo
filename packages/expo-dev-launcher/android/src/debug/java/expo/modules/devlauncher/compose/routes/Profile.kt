@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.compose.screens
+package expo.modules.devlauncher.compose.routes
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.Composable
@@ -18,7 +18,7 @@ import expo.modules.devlauncher.compose.ui.ProfileLayout
 import expo.modules.devlauncher.compose.ui.SignUp
 
 @Composable
-fun Profile(
+fun ProfileRoute(
   bottomSheetState: ModalBottomSheetState,
   viewModel: ProfileViewModel = viewModel()
 ) {

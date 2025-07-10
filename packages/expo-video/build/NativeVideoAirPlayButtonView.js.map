@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeVideoAirPlayButtonView.js","sourceRoot":"","sources":["../src/NativeVideoAirPlayButtonView.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,MAAM,CAAC;AAEzC,eAAe,iBAAiB,CAAC,WAAW,EAAE,wBAAwB,CAAC,CAAC","sourcesContent":["import { requireNativeView } from 'expo';\n\nexport default requireNativeView('ExpoVideo', 'VideoAirPlayButtonView');\n"]}

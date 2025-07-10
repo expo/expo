@@ -61,6 +61,19 @@ export type TextInputProps = {
    * @default true
    */
   autocorrection?: boolean;
+  /**
+   * Options to request software keyboard to capitalize the text. Applies to languages which has upper-case and lower-case letters.
+   *
+   * Available options:
+   * - `characters`: Capitalize all characters.
+   * - `none`: Do not auto-capitalize text.
+   * - `sentences`: Capitalize the first character of each sentence.
+   * - `unspecified`: Capitalization behavior is not specified.
+   * - `words`: Capitalize the first character of every word.
+   * @default none
+   * @platform android
+   */
+  autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
 };
 
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<

@@ -1,42 +1,104 @@
 package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.composables.core.Dialog
+import com.composables.core.DialogPanel
+import com.composables.core.Icon
+import com.composables.core.Scrim
+import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
 import com.composeunstyled.TextField
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.DevLauncherAction
-import expo.modules.devlauncher.compose.DevLauncherState
+import expo.modules.devlauncher.compose.HomeAction
+import expo.modules.devlauncher.compose.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
+import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.primitives.Divider
+import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
+import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
+import expo.modules.devmenu.compose.ui.MenuButton
 
 @Composable
-fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
+fun HomeScreen(
+  state: HomeState,
+  onAction: (HomeAction) -> Unit,
+  onProfileClick: () -> Unit
+) {
+  val hasPackager = state.runningPackagers.isNotEmpty()
+  val dialogState = rememberDialogState(initiallyVisible = false)
+
+  Dialog(state = dialogState) {
+    Scrim()
+
+    DialogPanel(
+      modifier = Modifier
+        .displayCutoutPadding()
+        .systemBarsPadding()
+        .clip(RoundedCornerShape(12.dp))
+        .background(Theme.colors.background.default)
+    ) {
+      Column {
+        RowLayout(
+          rightComponent = {
+            Button(onClick = {
+              dialogState.visible = false
+            }) {
+              Icon(
+                painterResource(R.drawable._expodevclientcomponents_assets_xicon),
+                contentDescription = "Close dialog"
+              )
+            }
+          },
+          modifier = Modifier.padding(Theme.spacing.medium)
+        ) {
+          Heading("Development servers")
+        }
+
+        Divider()
+
+        Row(modifier = Modifier.padding(Theme.spacing.medium)) {
+          DevelopmentSessionHelper()
+        }
+      }
+    }
+  }
+
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
-      AppHeader(state.appName, onProfileClick = onProfileClick)
+      AppHeader(
+        appName = state.appName,
+        currentAccount = state.currentAccount,
+        onProfileClick = onProfileClick
+      )
     }
 
     Column(
@@ -57,10 +119,16 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
             )
           },
           rightIcon = {
-            Image(
-              painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
-              contentDescription = "Terminal Icon"
-            )
+            if (hasPackager) {
+              Button(onClick = {
+                dialogState.visible = true
+              }) {
+                Image(
+                  painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
+                  contentDescription = "Terminal Icon"
+                )
+              }
+            }
           }
         )
       }
@@ -69,14 +137,34 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
 
       RoundedSurface {
         Column {
-          for (packager in state.runningPackagers) {
-            RunningAppCard(
-              appIp = packager.url
-            ) {
-              state.onAction(DevLauncherAction.OpenApp(packager.url))
+          if (hasPackager) {
+            for (packager in state.runningPackagers) {
+              RunningAppCard(
+                appIp = packager.url,
+                appName = packager.description
+              ) {
+                onAction(HomeAction.OpenApp(packager.url))
+              }
+              Divider()
+            }
+          } else {
+            Box(modifier = Modifier.padding(Theme.spacing.medium)) {
+              DevelopmentSessionHelper()
             }
             Divider()
           }
+
+          MenuButton(
+            onClick = {
+              onAction(HomeAction.RefetchRunningApps)
+            },
+            enabled = !state.isFetchingPackagers,
+            label = if (state.isFetchingPackagers) {
+              "Searching for development servers..."
+            } else {
+              "Fetch development servers"
+            }
+          )
 
           Accordion("Enter URL manually", initialState = false) {
             val url = remember { mutableStateOf("") }
@@ -108,9 +196,12 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
 
               Spacer(Theme.spacing.tiny)
 
-              Button(onClick = {
-                state.onAction(DevLauncherAction.OpenApp(url.value))
-              }, modifier = Modifier.fillMaxWidth()) {
+              Button(
+                onClick = {
+                  onAction(HomeAction.OpenApp(url.value))
+                },
+                modifier = Modifier.fillMaxWidth()
+              ) {
                 Row(modifier = Modifier.padding(vertical = Theme.spacing.small)) {
                   Text("Connect")
                 }
@@ -130,5 +221,5 @@ fun HomeScreen(state: DevLauncherState, onProfileClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(state = DevLauncherState(), onProfileClick = {})
+  HomeScreen(state = HomeState(), onAction = {}, onProfileClick = {})
 }
