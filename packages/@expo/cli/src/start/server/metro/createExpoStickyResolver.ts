@@ -72,6 +72,8 @@ const getReactNativeConfigResolutions = async (
     // NOTE(@kitten): web will use ios here. This is desired since this function only accepts android|ios.
     // However, we'd still like to sticky resolve dependencies for web
     platform: opts.platform === 'android' ? 'android' : 'ios',
+    // TODO(@kitten): Unclear if this should be populated or directly relates to sticky resolution
+    transitiveLinkingDependencies: [],
   });
   return Object.fromEntries(
     Object.entries(configResult.dependencies).map(([key, entry]) => [key, entry.root])
