@@ -244,11 +244,11 @@ export type PathInfo = {
 };
 export type DirectoryInfo = {
     /**
-     * Indicates whether the file exists.
+     * Indicates whether the directory exists.
      */
     exists: boolean;
     /**
-     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     * A `file://` URI pointing to the directory.
      */
     uri?: string;
     /**
@@ -256,11 +256,11 @@ export type DirectoryInfo = {
      */
     size?: number;
     /**
-     * The last modification time of the file expressed in milliseconds since epoch.
+     * The last modification time of the directory expressed in milliseconds since epoch.
      */
     modificationTime?: number;
     /**
-     * A creation time of the file expressed in milliseconds since epoch. Returns null if the Android version is earlier than API 26.
+     * A creation time of the directory expressed in milliseconds since epoch. Returns null if the Android version is earlier than API 26.
      */
     creationTime?: number;
     /**
