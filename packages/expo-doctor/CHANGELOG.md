@@ -8,6 +8,7 @@
 
 - Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
 - Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
+- add a warning when mixing `@expo/vector-icons` and `react-native-vector-icons` or packages from `@react-native-vector-icons` ([#37958](https://github.com/expo/expo/pull/37958) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
@@ -171,7 +172,6 @@ _This version does not introduce any user-facing changes._
 
 - Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
 - Add check that detects duplicated native modules ([#38683](https://github.com/expo/expo/pull/38683) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
