@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- add a warning about `@expo/vector-icons` deprecation ([#37958](https://github.com/expo/expo/pull/37958) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
