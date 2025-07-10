@@ -5,6 +5,8 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
+import { TypeDocOptions } from 'typedoc';
+import { CommentStyle, TypeDocOptionMap } from 'typedoc/dist/lib/utils/options/declaration';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -97,7 +99,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
-  'expo-status-bar': ['StatusBar.tsx'],
+  'expo-status-bar': ['StatusBar.ts'],
   'expo-store-review': ['StoreReview.ts'],
   'expo-symbols': ['index.ts'],
   'expo-system-ui': ['SystemUI.ts'],
@@ -156,8 +158,14 @@ const executeCommand = async (
       excludeProtected: true,
       excludeExternals: true,
       pretty: !MINIFY_JSON,
-      commentStyle: 'block',
-      jsDocCompatibility: false,
+      commentStyle: 'block' as unknown as typeof CommentStyle,
+      jsDocCompatibility: {
+        exampleTag: true,
+        defaultTag: true,
+        inheritDocTag: true,
+        ignoreUnescapedBraces: true,
+      },
+      useTsLinkResolution: false,
       preserveLinkText: true,
       sourceLinkExternal: false,
       markdownLinkExternal: false,
@@ -170,7 +178,7 @@ const executeCommand = async (
         '@needsAudit',
         '@platform',
       ],
-    },
+    } satisfies Partial<TypeDocOptionMap> as unknown as TypeDocOptions,
     [new TSConfigReader(), new TypeDocReader()]
   );
 
@@ -203,7 +211,15 @@ const executeCommand = async (
   }
 };
 
-const KEYS_TO_OMIT = ['id', 'groups', 'kindString', 'originalName', 'files', 'sourceFileName'];
+const KEYS_TO_OMIT = [
+  'id',
+  'groups',
+  'kindString',
+  'originalName',
+  'files',
+  'sourceFileName',
+  'schemaVersion',
+];
 
 function filterOutKeys(data: Record<string, any>) {
   return recursiveOmitBy(data, ({ key, node }) => {
