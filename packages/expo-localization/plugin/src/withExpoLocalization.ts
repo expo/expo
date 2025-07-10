@@ -15,15 +15,27 @@ type ConfigPluginProps = {
   supportsRTL?: boolean;
   forcesRTL?: boolean;
   allowDynamicLocaleChangesAndroid?: boolean;
-  supportedLocales?: string[];
+  supportedLocales?:
+    | string[]
+    | {
+        ios?: string[];
+        android?: string[];
+      };
 };
 
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   const mergedConfig = { ...config.extra, ...data };
+
+  const supportedLocales =
+    typeof mergedConfig.supportedLocales === 'object' &&
+    !Array.isArray(mergedConfig.supportedLocales)
+      ? mergedConfig.supportedLocales.ios
+      : mergedConfig.supportedLocales;
+
   if (
     mergedConfig?.supportsRTL == null &&
     mergedConfig?.forcesRTL == null &&
-    mergedConfig?.supportedLocales == null
+    supportedLocales == null
   )
     return config;
   if (!config.ios) config.ios = {};
@@ -34,8 +46,8 @@ function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   if (mergedConfig?.forcesRTL != null) {
     config.ios.infoPlist.ExpoLocalization_forcesRTL = mergedConfig?.forcesRTL;
   }
-  if (mergedConfig?.supportedLocales != null) {
-    config.ios.infoPlist.CFBundleLocalizations = mergedConfig?.supportedLocales;
+  if (supportedLocales != null) {
+    config.ios.infoPlist.CFBundleLocalizations = supportedLocales;
   }
   return config;
 }
@@ -54,7 +66,13 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
     });
   }
   const mergedConfig = { ...config.extra, ...data };
-  const supportedLocales = mergedConfig?.supportedLocales;
+
+  const supportedLocales =
+    typeof mergedConfig.supportedLocales === 'object' &&
+    !Array.isArray(mergedConfig.supportedLocales)
+      ? mergedConfig.supportedLocales.android
+      : mergedConfig.supportedLocales;
+
   if (supportedLocales) {
     config = withDangerousMod(config, [
       'android',

@@ -8,9 +8,13 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
+    const supportedLocales = typeof mergedConfig.supportedLocales === 'object' &&
+        !Array.isArray(mergedConfig.supportedLocales)
+        ? mergedConfig.supportedLocales.ios
+        : mergedConfig.supportedLocales;
     if (mergedConfig?.supportsRTL == null &&
         mergedConfig?.forcesRTL == null &&
-        mergedConfig?.supportedLocales == null)
+        supportedLocales == null)
         return config;
     if (!config.ios)
         config.ios = {};
@@ -22,8 +26,8 @@ function withExpoLocalizationIos(config, data) {
     if (mergedConfig?.forcesRTL != null) {
         config.ios.infoPlist.ExpoLocalization_forcesRTL = mergedConfig?.forcesRTL;
     }
-    if (mergedConfig?.supportedLocales != null) {
-        config.ios.infoPlist.CFBundleLocalizations = mergedConfig?.supportedLocales;
+    if (supportedLocales != null) {
+        config.ios.infoPlist.CFBundleLocalizations = supportedLocales;
     }
     return config;
 }
@@ -41,7 +45,10 @@ function withExpoLocalizationAndroid(config, data) {
         });
     }
     const mergedConfig = { ...config.extra, ...data };
-    const supportedLocales = mergedConfig?.supportedLocales;
+    const supportedLocales = typeof mergedConfig.supportedLocales === 'object' &&
+        !Array.isArray(mergedConfig.supportedLocales)
+        ? mergedConfig.supportedLocales.android
+        : mergedConfig.supportedLocales;
     if (supportedLocales) {
         config = (0, config_plugins_1.withDangerousMod)(config, [
             'android',
