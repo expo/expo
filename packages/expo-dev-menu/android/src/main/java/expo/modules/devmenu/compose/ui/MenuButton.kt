@@ -59,7 +59,6 @@ fun MenuButton(
         label,
         color = labelTextColor
       )
-
     }
   }
 }

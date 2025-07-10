@@ -47,7 +47,7 @@ export type ButtonProps = {
     /**
      * The text or React node to display inside the button.
      */
-    children: string | React.ReactNode;
+    children?: string | React.ReactNode;
     /**
      * Button color.
      */

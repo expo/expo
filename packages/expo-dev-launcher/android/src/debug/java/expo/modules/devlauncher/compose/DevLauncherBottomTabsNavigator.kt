@@ -14,21 +14,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import expo.modules.devlauncher.compose.primitives.DefaultScaffold
-import expo.modules.devlauncher.compose.screens.HomeScreen
-import expo.modules.devlauncher.compose.screens.Profile
-import expo.modules.devlauncher.compose.screens.SettingsScreen
+import expo.modules.devlauncher.compose.routes.Home
+import expo.modules.devlauncher.compose.routes.HomeRoute
+import expo.modules.devlauncher.compose.routes.ProfileRoute
+import expo.modules.devlauncher.compose.routes.Settings
+import expo.modules.devlauncher.compose.routes.SettingsRoute
 import expo.modules.devlauncher.compose.ui.BottomTabBar
 import expo.modules.devlauncher.compose.ui.Full
 import expo.modules.devlauncher.compose.ui.rememberBottomSheetState
-import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devmenu.compose.theme.Theme
-import kotlinx.serialization.Serializable
-
-@Serializable
-object Home
-
-@Serializable
-object Settings
 
 @Composable
 fun DefaultScreenContainer(
@@ -52,16 +46,8 @@ data class Tab(
   val screen: Any
 )
 
-data class DevLauncherState(
-  val appName: String = "BareExpo",
-  val runningPackagers: Set<PackagerInfo> = emptySet<PackagerInfo>(),
-  val onAction: DevLauncherActionHandler = {}
-)
-
 @Composable
-fun DevLauncherBottomTabsNavigator(
-  state: DevLauncherState
-) {
+fun DevLauncherBottomTabsNavigator() {
   val navController = rememberNavController()
   val bottomSheetState = rememberBottomSheetState()
 
@@ -78,10 +64,14 @@ fun DevLauncherBottomTabsNavigator(
         ExitTransition.None
       }
     ) {
-      composable<Home> { DefaultScreenContainer { HomeScreen(state, onProfileClick = { bottomSheetState.jumpTo(Full) }) } }
-      composable<Settings> { DefaultScreenContainer { SettingsScreen() } }
+      composable<Home> {
+        HomeRoute(onProfileClick = { bottomSheetState.jumpTo(Full) })
+      }
+      composable<Settings> {
+        SettingsRoute()
+      }
     }
   }
 
-  Profile(bottomSheetState)
+  ProfileRoute(bottomSheetState)
 }

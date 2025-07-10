@@ -52,6 +52,23 @@ fun Heading(
 }
 
 @Composable
+fun Mono(
+  text: String,
+  fontSize: FontSize = Theme.typography.medium,
+  color: Color? = null,
+  maxLines: Int = Int.MAX_VALUE
+) {
+  BasicText(
+    text,
+    maxLines = maxLines,
+    style = fontSize.font.merge(
+      color = color ?: Theme.colors.text.default,
+      fontFamily = Theme.typography.mono
+    )
+  )
+}
+
+@Composable
 @Preview(showBackground = true)
 fun TextPreview() {
   Column {
@@ -64,4 +81,10 @@ fun TextPreview() {
 @Preview(showBackground = true)
 fun HeadingPreview() {
   Heading("Hello, World!")
+}
+
+@Composable
+@Preview(showBackground = true)
+fun MonoPreview() {
+  Mono("Hello, World!")
 }

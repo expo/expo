@@ -96,6 +96,7 @@
   "react-native-edge-to-edge": "1.6.0",
   "react-native-gesture-handler": "~2.26.0",
   "react-native-get-random-values": "~1.11.0",
+  "react-native-keyboard-controller": "1.17.5",
   "react-native-maps": "1.20.1",
   "react-native-pager-view": "6.7.1",
   "react-native-reanimated": "~3.18.0",

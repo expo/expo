@@ -19,6 +19,8 @@ struct Button: ExpoSwiftUI.View {
           } else {
             Text(text)
           }
+        } else if let systemImage = props.systemImage {
+          Image(systemName: systemImage)
         } else {
           Children()
         }
