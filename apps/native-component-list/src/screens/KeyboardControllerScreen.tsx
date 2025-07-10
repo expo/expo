@@ -89,7 +89,8 @@ const useGradualAnimation = () => {
 
 function KeyboardControllerExample() {
   const { height } = useGradualAnimation();
-  const bottomTabBarHeight = useBottomTabBarHeight();
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const bottomTabBarHeight = Platform.OS === 'ios' ? useBottomTabBarHeight() : 0;
 
   const fakeView = useAnimatedStyle(() => {
     return {
