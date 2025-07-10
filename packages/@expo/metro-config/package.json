@@ -57,6 +57,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@babel/code-frame": "^7.20.0",
     "@jridgewell/trace-mapping": "^0.3.20",
     "dedent": "^1.5.3",
     "expo-module-scripts": "^4.1.7",
