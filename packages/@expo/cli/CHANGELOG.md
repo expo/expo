@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Add information link to web platform metro error ([#27884](https://github.com/expo/expo/pull/27884) by [@kbrandwijk](https://github.com/kbrandwijk))
 - add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
 - Use Vaul for modals and sheets on web with a custom stack ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
 - fix web back/forward buttons ([#37747](https://github.com/expo/expo/pull/37747) by [@Ubax](https://github.com/Ubax))
