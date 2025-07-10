@@ -475,9 +475,11 @@ public class AudioModule: Module {
         categoryOptions.insert(.mixWithOthers)
       }
 
+#if !os(tvOS)
       if category == .playAndRecord {
         categoryOptions.insert(.allowBluetooth)
       }
+#endif
 
       sessionOptions = categoryOptions
     }
