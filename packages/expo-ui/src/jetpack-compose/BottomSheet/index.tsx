@@ -1,11 +1,12 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
+import React from "react";
 
 export type BottomSheetProps = {
   /**
    * The children of the `BottomSheet` component.
    */
-  children: any;
+  children: React.ReactNode;
   /**
    * Whether the `BottomSheet` is opened.
    */
