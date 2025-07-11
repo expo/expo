@@ -30,7 +30,6 @@ import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
