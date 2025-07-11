@@ -71,8 +71,9 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
         return {
           ...defaults,
           loadRoute() {
-            // TODO: Replace with rewrite module
-            return require('./getRoutesRedirects').getRedirectModule(rewriteConfig);
+            return {
+              default: contextModule(rewriteConfig.destinationContextKey).default,
+            };
           },
         };
       }

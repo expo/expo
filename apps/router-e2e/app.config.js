@@ -72,6 +72,9 @@ module.exports = {
         redirects: process.env.E2E_ROUTER_REDIRECTS
           ? JSON.parse(process.env.E2E_ROUTER_REDIRECTS)
           : undefined,
+        rewrites: process.env.E2E_ROUTER_REWRITES
+          ? JSON.parse(process.env.E2E_ROUTER_REWRITES)
+          : undefined,
       },
     ],
   ],
