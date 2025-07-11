@@ -1,13 +1,12 @@
 'use client';
 
-import { type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
-import { useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { use, useEffect, useState } from 'react';
+import { View, ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
-import { useNavigation } from '../useNavigation';
+import { ModalPortalContent, PortalContentHeightContext } from './Portal';
 import { areDetentsValid } from './utils';
 
 export interface ModalProps extends ViewProps {
@@ -105,7 +104,6 @@ export function Modal(props: ModalProps) {
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
-  const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
     if (!areDetentsValid(detents)) {
       throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
@@ -115,13 +113,12 @@ export function Modal(props: ModalProps) {
     if (visible) {
       const newId = nanoid();
       openModal({
+        component: children,
         animationType,
         presentationStyle,
         transparent,
         viewProps,
-        component: children,
         uniqueId: newId,
-        parentNavigationProp: navigation,
         detents,
       });
       setCurrentModalId(newId);
@@ -160,5 +157,29 @@ export function Modal(props: ModalProps) {
     }
     return () => {};
   }, [currentModalId, addEventListener, onClose, onShow]);
-  return null;
+  if (!currentModalId || !visible) {
+    return null;
+  }
+  return (
+    <ModalPortalContent hostId={currentModalId}>
+      <ModalContent {...viewProps}>{children}</ModalContent>
+    </ModalPortalContent>
+  );
+}
+
+function ModalContent(props: ViewProps) {
+  const { children, ...viewProps } = props;
+  const { setHeight } = use(PortalContentHeightContext);
+  return (
+    <View
+      {...viewProps}
+      onLayout={(e) => {
+        const { height } = e.nativeEvent.layout;
+        if (height) {
+          setHeight(height);
+        }
+      }}>
+      {children}
+    </View>
+  );
 }
