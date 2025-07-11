@@ -60,6 +60,8 @@ export interface ModalProps extends ViewProps {
  * It always renders on top of the application's content.
  * Internally, the modal is rendered as a `Stack.Screen`, with the presentation style determined by the `presentationStyle` prop.
  *
+ * **Props should be set before the modal is opened. Changes to the props will take effect after the modal is reopened.**
+ *
  * This component is not linkable. If you need to link to a modal, use `<Stack.Screen options={{ presentationStyle: "modal" }} />` instead.
  *
  * @example
