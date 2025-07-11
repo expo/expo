@@ -124,7 +124,9 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
     }
     catch (error) {
         if (error.constructor.name === 'JS_Parse_Error') {
-            throw new Error(`${error.message} in file ${filename} at ${error.line}:${error.col}`);
+            throw new Error(`${error.message} in file ${filename} at ${error.line}:${error.col}
+
+The error above is result of failed minification. Try to upgrade 'terser' the default minification library used by Metro.`);
         }
         throw error;
     }
