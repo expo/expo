@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <RNScreens/RNSScreenStack.h>
+
 @interface LinkPreviewNativeNavigation: NSObject
 
 /*
@@ -14,5 +16,9 @@
 */
 - (void)pushPreloadedView;
 
+@end
+
+@protocol LinkPreviewModalDismissible <RNSDismissibleModalProtocol>
+@required
 @end
 
