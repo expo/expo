@@ -84,7 +84,6 @@ export default function Index() {
         detents={[0.25, 0.5, 0.75]}
         style={{
           backgroundColor: '#C2FBEF',
-          justifyContent: 'center',
           alignItems: 'center',
           gap: 8,
         }}>

@@ -30,6 +30,8 @@
 - fix navigation from preview to modal ([#37832](https://github.com/expo/expo/pull/37832) by [@Ubax](https://github.com/Ubax))
 - Unhandled rejections due to missing SplashModule internal functions in Expo Go ([#38045](https://github.com/expo/expo/pull/38045)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Fix children update in modal ([#38064](https://github.com/expo/expo/pull/38064) by [@Ubax](https://github.com/Ubax))
+- use portal in Modal ([#37980](https://github.com/expo/expo/pull/37980) by [@Ubax](https://github.com/Ubax))
+
 
 ### 💡 Others
 
