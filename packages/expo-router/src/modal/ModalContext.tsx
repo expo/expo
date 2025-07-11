@@ -1,6 +1,5 @@
 'use client';
 
-import type { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 import {
   createContext,
@@ -20,11 +19,9 @@ import {
   type StackPresentationTypes,
 } from 'react-native-screens';
 
-import { ModalComponent } from './ModalComponent';
+import { ModalPortalHost } from './Portal';
 
 export interface ModalConfig {
-  component: React.ReactNode;
-  parentNavigationProp: NavigationProp<ParamListBase>;
   uniqueId: string;
   animationType?: 'slide' | 'fade' | 'none';
   presentationStyle?: 'fullScreen' | 'overFullScreen' | 'pageSheet' | 'formSheet';
@@ -120,44 +117,71 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
         </ModalContext.Provider>
       </ScreenStackItem>
       {modalConfigs.map((config) => (
-        <ScreenStackItem
+        <NativeModal
           key={config.uniqueId}
-          {...config.viewProps}
-          screenId={`${rootId}${config.uniqueId}`}
-          activityState={2}
-          stackPresentation={getStackPresentationType(config)}
-          stackAnimation={getStackAnimationType(config)}
-          nativeBackButtonDismissalEnabled
-          headerConfig={{
-            hidden: true,
-          }}
-          contentStyle={[
-            {
-              flex: 1,
-              backgroundColor: config.transparent ? 'transparent' : 'white',
-            },
-            config.viewProps?.style,
-          ]}
-          sheetAllowedDetents={config.detents}
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              backgroundColor: config.transparent ? 'transparent' : 'white',
-            },
-          ]}
-          onDismissed={() => {
-            closeModal(config.uniqueId);
-            emitCloseEvent(config.uniqueId);
-          }}
-          onAppear={() => {
-            emitShowEvent(config.uniqueId);
-          }}>
-          <ModalComponent modalConfig={config} />
-        </ScreenStackItem>
+          config={config}
+          closeModal={closeModal}
+          emitCloseEvent={emitCloseEvent}
+          emitShowEvent={emitShowEvent}
+        />
       ))}
     </ScreenStack>
   );
 };
+
+interface NativeModalProps {
+  config: ModalConfig;
+  closeModal: (id: string) => void;
+  emitCloseEvent: (id: string) => void;
+  emitShowEvent: (id: string) => void;
+}
+
+function NativeModal({ config, closeModal, emitCloseEvent, emitShowEvent }: NativeModalProps) {
+  const stackPresentation = getStackPresentationType(config);
+  const isFluid = stackPresentation !== 'formSheet';
+  const style = isFluid
+    ? ({
+        width: '100%',
+        height: '100%',
+      } as const)
+    : {};
+  return (
+    <ScreenStackItem
+      key={config.uniqueId}
+      {...config.viewProps}
+      screenId={`__modal-${config.uniqueId}`}
+      activityState={2}
+      stackPresentation={stackPresentation}
+      stackAnimation={getStackAnimationType(config)}
+      nativeBackButtonDismissalEnabled
+      headerConfig={{
+        hidden: true,
+      }}
+      contentStyle={[
+        {
+          flex: 1,
+          backgroundColor: config.transparent ? 'transparent' : 'white',
+        },
+        config.viewProps?.style,
+      ]}
+      sheetAllowedDetents={config.detents}
+      style={[
+        StyleSheet.absoluteFill,
+        {
+          backgroundColor: config.transparent ? 'transparent' : 'white',
+        },
+      ]}
+      onDismissed={() => {
+        closeModal(config.uniqueId);
+        emitCloseEvent(config.uniqueId);
+      }}
+      onAppear={() => {
+        emitShowEvent(config.uniqueId);
+      }}>
+      <ModalPortalHost hostId={config.uniqueId} style={style} fluid={isFluid} />
+    </ScreenStackItem>
+  );
+}
 
 export const useModalContext = () => {
   const context = use(ModalContext);

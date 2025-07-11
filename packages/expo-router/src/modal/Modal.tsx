@@ -1,13 +1,12 @@
 'use client';
 
-import { type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 import { useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
-import { useNavigation } from '../useNavigation';
+import { ModalPortalContent } from './Portal';
 
 export interface ModalProps extends ViewProps {
   /**
@@ -101,7 +100,6 @@ export function Modal(props: ModalProps) {
   } = props;
   const { openModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
-  const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
     if (!currentModalId && visible) {
       const newId = nanoid();
@@ -110,9 +108,7 @@ export function Modal(props: ModalProps) {
         presentationStyle,
         transparent,
         viewProps,
-        component: children,
         uniqueId: newId,
-        parentNavigationProp: navigation,
       });
       setCurrentModalId(newId);
       return () => {
@@ -145,5 +141,14 @@ export function Modal(props: ModalProps) {
     }
     return () => {};
   }, [currentModalId, addEventListener, onClose]);
-  return null;
+  if (!currentModalId || !visible) {
+    return null;
+  }
+  return (
+    <ModalPortalContent hostId={currentModalId}>
+      <View {...viewProps} style={StyleSheet.flatten([{ flex: 1 }, viewProps.style])}>
+        {children}
+      </View>
+    </ModalPortalContent>
+  );
 }

@@ -5,7 +5,6 @@ export { Link, Redirect, RedirectProps, LinkProps, WebAnchorProps } from './link
 export { useIsPreview } from './link/preview/PreviewRouteContext';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
-export { ModalPortalHost, ModalPortalContent } from './modal/Portal';
 export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
 export { Sitemap } from './views/Sitemap';

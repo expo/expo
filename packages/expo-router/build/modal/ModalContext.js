@@ -6,7 +6,7 @@ const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
-const ModalComponent_1 = require("./ModalComponent");
+const Portal_1 = require("./Portal");
 const ModalContext = (0, react_1.createContext)(undefined);
 const ModalContextProvider = ({ children }) => {
     const [modalConfigs, setModalConfigs] = (0, react_1.useState)([]);
@@ -66,30 +66,41 @@ const ModalContextProvider = ({ children }) => {
           {children}
         </ModalContext.Provider>
       </react_native_screens_1.ScreenStackItem>
-      {modalConfigs.map((config) => (<react_native_screens_1.ScreenStackItem key={config.uniqueId} {...config.viewProps} screenId={`${rootId}${config.uniqueId}`} activityState={2} stackPresentation={getStackPresentationType(config)} stackAnimation={getStackAnimationType(config)} nativeBackButtonDismissalEnabled headerConfig={{
-                hidden: true,
-            }} contentStyle={[
-                {
-                    flex: 1,
-                    backgroundColor: config.transparent ? 'transparent' : 'white',
-                },
-                config.viewProps?.style,
-            ]} sheetAllowedDetents={config.detents} style={[
-                react_native_1.StyleSheet.absoluteFill,
-                {
-                    backgroundColor: config.transparent ? 'transparent' : 'white',
-                },
-            ]} onDismissed={() => {
-                closeModal(config.uniqueId);
-                emitCloseEvent(config.uniqueId);
-            }} onAppear={() => {
-                emitShowEvent(config.uniqueId);
-            }}>
-          <ModalComponent_1.ModalComponent modalConfig={config}/>
-        </react_native_screens_1.ScreenStackItem>))}
+      {modalConfigs.map((config) => (<NativeModal key={config.uniqueId} config={config} closeModal={closeModal} emitCloseEvent={emitCloseEvent} emitShowEvent={emitShowEvent}/>))}
     </react_native_screens_1.ScreenStack>);
 };
 exports.ModalContextProvider = ModalContextProvider;
+function NativeModal({ config, closeModal, emitCloseEvent, emitShowEvent }) {
+    const stackPresentation = getStackPresentationType(config);
+    const isFluid = stackPresentation !== 'formSheet';
+    const style = isFluid
+        ? {
+            width: '100%',
+            height: '100%',
+        }
+        : {};
+    return (<react_native_screens_1.ScreenStackItem key={config.uniqueId} {...config.viewProps} screenId={`__modal-${config.uniqueId}`} activityState={2} stackPresentation={stackPresentation} stackAnimation={getStackAnimationType(config)} nativeBackButtonDismissalEnabled headerConfig={{
+            hidden: true,
+        }} contentStyle={[
+            {
+                flex: 1,
+                backgroundColor: config.transparent ? 'transparent' : 'white',
+            },
+            config.viewProps?.style,
+        ]} sheetAllowedDetents={config.detents} style={[
+            react_native_1.StyleSheet.absoluteFill,
+            {
+                backgroundColor: config.transparent ? 'transparent' : 'white',
+            },
+        ]} onDismissed={() => {
+            closeModal(config.uniqueId);
+            emitCloseEvent(config.uniqueId);
+        }} onAppear={() => {
+            emitShowEvent(config.uniqueId);
+        }}>
+      <Portal_1.ModalPortalHost hostId={config.uniqueId} style={style} fluid={isFluid}/>
+    </react_native_screens_1.ScreenStackItem>);
+}
 const useModalContext = () => {
     const context = (0, react_1.use)(ModalContext);
     if (!context) {

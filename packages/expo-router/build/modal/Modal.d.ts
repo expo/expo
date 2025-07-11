@@ -78,5 +78,5 @@ export interface ModalProps extends ViewProps {
  *  );
  * }
  */
-export declare function Modal(props: ModalProps): null;
+export declare function Modal(props: ModalProps): import("react").JSX.Element | null;
 //# sourceMappingURL=Modal.d.ts.map
