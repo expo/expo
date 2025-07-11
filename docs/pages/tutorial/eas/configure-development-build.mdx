@@ -204,3 +204,31 @@ We successfully used the EAS CLI to initialize, and configure our project, link 
   nextChapterTitle="Create and run a cloud build for Android"
   nextChapterLink="/tutorial/eas/android-development-build/"
 />
+import React from 'react';
+import Image from 'next/image'; // Se estiver usando Next.js; caso contrário, use <img>
+
+// Componente principal
+function App() {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-black text-white">
+      {/* Fundo da imagem */}
+      <div className="relative w-full h-full">
+        <Image
+          src="https://via.placeholder.com/800x800?text=Cidade"
+          alt="Cidade"
+          layout="fill"
+          objectFit="cover"
+          className="brightness-50 grayscale" // Efeito de preto e branco
+        />
+      </div>
+
+      {/* Texto principal */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+        <h1 className="text-6xl font-bold mb-4">Bn sensiX</h1>
+        <p className="text-3xl font-bold">PREMIUM</p>
+      </div>
+    </div>
+  );
+}
+
+export default App;
