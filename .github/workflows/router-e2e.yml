@@ -1,53 +1,62 @@
 name: Router Maestro E2E
 
 on:
-  pull_request:
-    paths:
-      - .github/workflows/router-e2e.yml
-      - packages/@expo/cli/**
-      - packages/expo-router/**
+  workflow_run:
+    workflows: ['Test Suite']
+    types:
+      - success
 
 jobs:
-  expo-go-dev-maestro-router:
-    runs-on: macos-latest
-    env:
-      E2E_ROUTER_USE_PUBLISHED_EXPO_GO: true
-      E2E_ROUTER_SRC: expo-go-dev-maestro-router
-      E2E_ROUTER_EXPO_PORT: 8081
+  should-run-check:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
-      # Find and restore Yarn's global cache
-      # See: https://github.com/actions/cache/blob/main/examples.md#node---yarn
-      - name: 🔍 Find Yarn Cache
-        id: yarn-cache
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-      - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-cache-
-
-      - name: Install dependencies
-        run: YARN_IGNORE_SCRIPTS=true yarn --frozen-lockfile
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Install Maestro
+      - id: check
         run: |
-          export MAESTRO_VERSION=1.39.9
+          git fetch origin ${{ github.event.workflow_run.head_branch }}
+          DIFF=$(git diff --name-only origin/main...origin/${{ github.event.workflow_run.head_branch }} | grep -E '^(packages/expo-router|apps/router-e2e)/' || true)
+          if [ -z "$DIFF" ]; then
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=true" >> $GITHUB_OUTPUT
+  ios-dev-maestro-router:
+    runs-on: macos-latest
+    needs: should-run-check
+    if: needs.should-run-check.outputs.should_run == 'true'
+    env:
+      E2E_ROUTER_SRC: maestro-development-build
+      E2E_ROUTER_JS_ENGINE: hermes
+      E2E_CANARY_ENABLED: 1
+      E2E_ROUTER_EXPO_PORT: 8081
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🌠 Download builds
+        uses: actions/download-artifact@v4
+        with:
+          name: bare-expo-ios-builds
+          path: apps/router-e2e/ios/build/RouterApp.app
+      - name: 🍺 Install Maestro
+        run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          brew tap facebook/fb
+          brew install facebook/fb/idb-companion
+          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+      - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
 
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
@@ -56,7 +65,7 @@ jobs:
         working-directory: apps/router-e2e
         run: |
           # Run the Expo Dev Server in the background
-          node ../../packages/@expo/cli/build/bin/cli start --ios --port $E2E_ROUTER_EXPO_PORT &
+          node ../../packages/@expo/cli/build/bin/cli run:ios --binary apps/router-e2e/ios/build/RouterApp.app --port $E2E_ROUTER_EXPO_PORT &
           sleep 10
 
       - name: Preload Expo bundle
@@ -69,23 +78,13 @@ jobs:
           # Start the build early by starting the build in the background
           curl --silent --output /dev/null --show-error --fail $BUNDLE_URL &
 
-      - name: Install latest Expo Go
-        working-directory: bin
-        run: |
-          ./expotools client-install -p ios -s 53.0.0
-
-      - name: Setup maestro env
-        run: |
-          # Setup the maestro env
-          echo "MAESTRO_APP_URL=exp://localhost:${E2E_ROUTER_EXPO_PORT}/--" >> $GITHUB_ENV
-
       - name: Run Maestro iOS tests
         working-directory: apps/router-e2e
         env:
           MAESTRO_DRIVER_STARTUP_TIMEOUT: 360000
         run: |
           # Run the Expo Dev Server in the background
-          maestro test launch-tests.yml --no-ansi --format=junit --debug-output .logs
+          maestro test __e2e__/maestro-development-build/__tests__/ --no-ansi --format=junit --debug-output .logs
 
       - name: Log output
         if: ${{ failure() }}

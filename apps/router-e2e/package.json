@@ -26,9 +26,11 @@
     "export:vaul": "E2E_ROUTER_SRC=vaul-modal E2E_ROUTER_JS_ENGINE=hermes EXPO_WEB_DEV_HYDRATE=1 expo export --platform web",
     "start:vaul-modal": "E2E_ROUTER_SRC=vaul-modal E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
     "start:fast-refresh": "E2E_ROUTER_SRC=fast-refresh E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start -p web",
+    "start:maestro-e2e": "E2E_ROUTER_SRC=maestro-development-build E2E_ROUTER_JS_ENGINE=hermes E2E_CANARY_ENABLED=1 EXPO_USE_METRO_REQUIRE=1 expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "lint": "expo lint __e2e__"
+    "lint": "expo lint __e2e__",
+    "test:e2e": "maestro test __e2e__/maestro-development-build/__tests__"
   },
   "dependencies": {
     "@expo/dom-webview": "0.1.4",

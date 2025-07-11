@@ -1,0 +1,14 @@
+appId: com.expo.routere2e
+name: Relative link
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://preview
+- assertVisible: "Preview Index"
+- longPressOn: "Link.Preview /one"
+- assertVisible: "Preview One"
+- assertVisible: "(Preview Mode)"
+- tapOn:
+    point: "50%,50%"
+- assertVisible: "Preview One"
+- assertVisible: "Title of preview one"
+- assertVisible: "(Screen Mode)"
