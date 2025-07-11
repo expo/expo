@@ -15,10 +15,15 @@ export type BottomSheetProps = {
    * Callback function that is called when the `BottomSheet` is opened.
    */
   onIsOpenedChange: (isOpened: boolean) => void;
+  /**
+   * Immediately opens the bottom sheet in full screen.
+   */
+  skipPartiallyExpanded?: boolean;
 };
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {
   onIsOpenedChange: (event: NativeSyntheticEvent<{ isOpened: boolean }>) => void;
+  skipPartiallyExpanded: boolean;
 };
 
 const BottomSheetNativeView: React.ComponentType<NativeBottomSheetProps> = requireNativeView(
@@ -29,6 +34,7 @@ const BottomSheetNativeView: React.ComponentType<NativeBottomSheetProps> = requi
 function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps {
   return {
     ...props,
+    skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
     onIsOpenedChange: ({ nativeEvent: { isOpened } }) => {
       props.onIsOpenedChange(isOpened);
     },

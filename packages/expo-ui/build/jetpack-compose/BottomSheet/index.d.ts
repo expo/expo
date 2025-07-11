@@ -1,8 +1,9 @@
+import React from "react";
 export type BottomSheetProps = {
     /**
      * The children of the `BottomSheet` component.
      */
-    children: any;
+    children: React.ReactNode;
     /**
      * Whether the `BottomSheet` is opened.
      */
@@ -11,6 +12,10 @@ export type BottomSheetProps = {
      * Callback function that is called when the `BottomSheet` is opened.
      */
     onIsOpenedChange: (isOpened: boolean) => void;
+    /**
+     * Immediately opens the bottom sheet in full screen.
+     */
+    skipPartiallyExpanded?: boolean;
 };
-export declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
+export declare function BottomSheet(props: BottomSheetProps): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map
