@@ -25,12 +25,13 @@ open class IsOpenedChangeEvent(
 
 data class BottomSheetProps(
   val isOpened: MutableState<Boolean> = mutableStateOf(false),
+  val skipPartiallyExpanded: MutableState<Boolean> = mutableStateOf(false),
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheetComposable(isOpened: Boolean, onIsOpenedChange: (Boolean) -> Unit, content: @Composable () -> Unit) {
-  val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+fun BottomSheetComposable(skipPartiallyExpanded: Boolean, isOpened: Boolean, onIsOpenedChange: (Boolean) -> Unit, content: @Composable () -> Unit) {
+  val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded)
 
   if (isOpened) {
     ModalBottomSheet(
@@ -59,11 +60,13 @@ class BottomSheetView(context: Context, appContext: AppContext) :
   @Composable
   override fun Content() {
     val (isOpened) = props.isOpened
+    val (skipPartiallyExpanded) = props.skipPartiallyExpanded
 
     Box {
       BottomSheetComposable(
+        skipPartiallyExpanded,
         isOpened,
-        onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) }
+        onIsOpenedChange = { value -> onIsOpenedChange(IsOpenedChangeEvent(value)) },
       ) {
         GrandChildren()
       }
