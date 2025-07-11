@@ -6,6 +6,7 @@ const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const ModalContext_1 = require("./ModalContext");
+const Portal_1 = require("./Portal");
 const useNavigation_1 = require("../useNavigation");
 const utils_1 = require("./utils");
 /**
@@ -58,13 +59,12 @@ function Modal(props) {
         if (visible) {
             const newId = (0, non_secure_1.nanoid)();
             openModal({
+                component: children,
                 animationType,
                 presentationStyle,
                 transparent,
                 viewProps,
-                component: children,
                 uniqueId: newId,
-                parentNavigationProp: navigation,
                 detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
             });
             setCurrentModalId(newId);
@@ -111,6 +111,23 @@ function Modal(props) {
         }
         return () => { };
     }, [currentModalId, addEventListener, onClose, onShow]);
-    return null;
+    if (!currentModalId || !visible) {
+        return null;
+    }
+    return (<Portal_1.ModalPortalContent hostId={currentModalId}>
+      <ModalContent {...viewProps}>{children}</ModalContent>
+    </Portal_1.ModalPortalContent>);
+}
+function ModalContent(props) {
+    const { children, ...viewProps } = props;
+    const { setHeight } = (0, react_1.use)(Portal_1.PortalContentHeightContext);
+    return (<react_native_1.View {...viewProps} onLayout={(e) => {
+            const { height } = e.nativeEvent.layout;
+            if (height) {
+                setHeight(height);
+            }
+        }}>
+      {children}
+    </react_native_1.View>);
 }
 //# sourceMappingURL=Modal.js.map
