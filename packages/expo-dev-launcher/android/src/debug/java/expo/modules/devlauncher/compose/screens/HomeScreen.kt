@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +18,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,6 +36,7 @@ import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.HomeAction
 import expo.modules.devlauncher.compose.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
+import expo.modules.devlauncher.compose.primitives.pulseEffect
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
@@ -45,7 +49,6 @@ import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
-import expo.modules.devmenu.compose.ui.MenuButton
 
 @Composable
 fun HomeScreen(
@@ -154,17 +157,51 @@ fun HomeScreen(
             Divider()
           }
 
-          MenuButton(
+          val infoColor = Theme.colors.status.info
+          val defaultColor = Theme.colors.status.default
+          val isFetching = state.isFetchingPackagers
+
+          Button(
             onClick = {
               onAction(HomeAction.RefetchRunningApps)
             },
-            enabled = !state.isFetchingPackagers,
-            label = if (state.isFetchingPackagers) {
-              "Searching for development servers..."
-            } else {
-              "Fetch development servers"
+            enabled = !isFetching
+          ) {
+            RowLayout(
+              modifier = Modifier.padding(Theme.spacing.medium),
+              leftComponent = {
+                Box(
+                  modifier = Modifier
+                    .size(Theme.spacing.small)
+                    .drawBehind {
+                      drawCircle(
+                        color = defaultColor,
+                        radius = size.minDimension / 2f
+                      )
+                    }
+                    .then(
+                      if (isFetching) {
+                        Modifier.pulseEffect(
+                          initialScale = 0.95f,
+                          targetScale = 2f,
+                          brush = SolidColor(infoColor)
+                        )
+                      } else {
+                        Modifier
+                      }
+                    )
+                )
+              }
+            ) {
+              Text(
+                if (isFetching) {
+                  "Searching for development servers..."
+                } else {
+                  "Fetch development servers"
+                }
+              )
             }
-          )
+          }
 
           Accordion("Enter URL manually", initialState = false) {
             val url = remember { mutableStateOf("") }
