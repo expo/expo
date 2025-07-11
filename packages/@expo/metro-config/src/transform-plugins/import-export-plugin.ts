@@ -23,7 +23,7 @@ import type {
   ExportAllDeclaration as BabelNodeExportAllDeclaration,
   ExportDefaultDeclaration as BabelNodeExportDefaultDeclaration,
   Identifier as BabelNodeIdentifier,
-// eslint-disable-next-line import/no-duplicates
+  // eslint-disable-next-line import/no-duplicates
 } from '@babel/types';
 // eslint-disable-next-line import/no-duplicates
 import type * as BabelTypes from '@babel/types';
@@ -145,14 +145,14 @@ function withLocation<TNode extends BabelNode>(
 
 // eslint-disable-next-line no-redeclare
 function withLocation<TNode extends BabelNode>(
-  node: ReadonlyArray<TNode>,
+  node: readonly TNode[],
   loc: BabelSourceLocation | null | undefined
-): Array<TNode>;
+): TNode[];
 
 function withLocation<TNode extends BabelNode>(
-  node: TNode | ReadonlyArray<TNode>,
+  node: TNode | readonly TNode[],
   loc: BabelSourceLocation | null | undefined
-): TNode | Array<TNode> {
+): TNode | TNode[] {
   if (Array.isArray(node)) {
     return node.map((n) => withLocation(n, loc));
   }
@@ -277,7 +277,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             const remote = s.exported;
 
             // export * as b from 'a'
-            if (!local && s.type === "ExportNamespaceSpecifier") {
+            if (!local && s.type === 'ExportNamespaceSpecifier') {
               local = s.exported;
             }
 
@@ -325,7 +325,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                 );
 
                 state.exportDefault.push({ local: temp.name, loc });
-              } else if (s.type === "ExportNamespaceSpecifier") {
+              } else if (s.type === 'ExportNamespaceSpecifier') {
                 path.insertBefore(
                   withLocation(
                     importTemplate({

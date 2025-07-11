@@ -187,7 +187,7 @@ function importExportPlugin({ types: t }) {
                         let local = s.local;
                         const remote = s.exported;
                         // export * as b from 'a'
-                        if (!local && s.type === "ExportNamespaceSpecifier") {
+                        if (!local && s.type === 'ExportNamespaceSpecifier') {
                             local = s.exported;
                         }
                         if (remote.type === 'StringLiteral') {
@@ -216,7 +216,7 @@ function importExportPlugin({ types: t }) {
                                 }), loc));
                                 state.exportDefault.push({ local: temp.name, loc });
                             }
-                            else if (s.type === "ExportNamespaceSpecifier") {
+                            else if (s.type === 'ExportNamespaceSpecifier') {
                                 path.insertBefore(withLocation(importTemplate({
                                     IMPORT: t.cloneNode(state.importAll),
                                     FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
