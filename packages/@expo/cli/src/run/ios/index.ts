@@ -30,8 +30,8 @@ export const expoRunIos: Command = async (argv) => {
   };
   const args = assertWithOptionsArgs(rawArgsMap, {
     argv,
-
     permissive: true,
+    stopAtPositional: true,
   });
 
   // '-d' -> '--device': Boolean,
@@ -40,7 +40,7 @@ export const expoRunIos: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Run the iOS app binary locally`,
-      `npx expo run:ios`,
+      chalk`npx expo run:ios [Options] [--] [ProjectRoot] {dim Default: PWD}`,
       [
         `--no-build-cache                 Clear the native derived data before building`,
         `--no-install                     Skip installing dependencies`,
@@ -53,6 +53,8 @@ export const expoRunIos: Command = async (argv) => {
         `-h, --help                       Usage info`,
       ].join('\n'),
       [
+        '',
+        chalk`  {underline Note}: If specified, ProjectRoot must not be preceded by \`--device/-d\` or \`--scheme\`. Use the \`--\` separator in that case.`,
         '',
         chalk`  Build for production (unsigned) with the {bold Release} configuration:`,
         chalk`    {dim $} npx expo run:ios --configuration Release`,

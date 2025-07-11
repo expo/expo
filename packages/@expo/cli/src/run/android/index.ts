@@ -30,8 +30,8 @@ export const expoRunAndroid: Command = async (argv) => {
   };
   const args = assertWithOptionsArgs(rawArgsMap, {
     argv,
-
     permissive: true,
+    stopAtPositional: true,
   });
 
   // '-d' -> '--device': Boolean,
@@ -43,7 +43,7 @@ export const expoRunAndroid: Command = async (argv) => {
     Run the native Android app locally
 
   {bold Usage}
-    $ npx expo run:android <dir>
+    $ npx expo run:android [Options] [--] [ProjectRoot] {dim Default: PWD}
 
   {bold Options} 
     --no-build-cache       Clear the native build cache
@@ -55,6 +55,8 @@ export const expoRunAndroid: Command = async (argv) => {
     -d, --device [device]  Device name to run the app on
     -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
     -h, --help             Output usage information
+
+  {underline Note}: If specified, ProjectRoot must not be preceded by \`--device/-d\`. Use the \`--\` separator in that case.
 `,
       0
     );

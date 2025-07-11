@@ -58,6 +58,7 @@ const args = arg(
   },
   {
     permissive: true,
+    stopAtPositional: true,
   }
 );
 
