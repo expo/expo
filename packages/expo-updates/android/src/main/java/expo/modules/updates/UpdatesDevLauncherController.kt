@@ -65,7 +65,7 @@ class UpdatesDevLauncherController(
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
-  private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+  private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
