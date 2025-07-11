@@ -1,6 +1,6 @@
-import { Link, Modal, Stack } from 'expo-router';
+import { Link, Modal } from 'expo-router';
 import { useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, ScrollView, Text, View } from 'react-native';
 
 export default function Index() {
   const [isOpenA, setIsOpenA] = useState(false);
@@ -97,7 +97,8 @@ export default function Index() {
           setIsOpenB(false);
         }}
         animationType="slide"
-        presentationStyle="pageSheet"
+        presentationStyle="formSheet"
+        detents={[0.7, 0.85, 1]}
         style={{
           flex: 1,
           backgroundColor: '#7DAA92',
@@ -116,16 +117,17 @@ export default function Index() {
           }}
           animationType="fade"
           presentationStyle="formSheet"
-          detents={[0.5, 0.75, 0.8]}
           style={{
             flex: 1,
             backgroundColor: '#BA7978',
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text>Modal C - formSheet</Text>
-          {openButtons}
-          {closeButtons}
+          <ScrollView>
+            <Text>Modal C - formSheet</Text>
+            {openButtons}
+            {closeButtons}
+          </ScrollView>
         </Modal>
       )}
       {isOpenD && (
