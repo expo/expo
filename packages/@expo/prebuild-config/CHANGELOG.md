@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- revert remove `expo-notifications` from auto plugins ([#37886](https://github.com/expo/expo/pull/37886) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ### ⚠️ Notices
@@ -30,7 +32,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
+- [reverted] remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 

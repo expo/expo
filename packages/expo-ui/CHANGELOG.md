@@ -15,6 +15,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add `placeholder` TextInput prop. ([#36590](https://github.com/expo/expo/pull/36590) by [@ramonfabrega](https://github.com/ramonfabrega))
+
 ### 💡 Others
 
 - Make `DateTimePicker` label hidden if empty. ([#37665](https://github.com/expo/expo/pull/37665) by [@aleqsio](https://github.com/aleqsio))

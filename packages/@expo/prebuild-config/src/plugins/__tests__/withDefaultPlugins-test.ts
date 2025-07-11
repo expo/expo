@@ -38,6 +38,8 @@ jest.mock('../icons/withAndroidIcons', () => {
     setIconAsync() {},
   };
 });
+const NotificationsPlugin = require('../unversioned/expo-notifications/withAndroidNotifications');
+NotificationsPlugin.withNotificationIcons = jest.fn((config) => config);
 
 function getLargeConfig(): ExportedConfig {
   // A very extensive Expo Config.

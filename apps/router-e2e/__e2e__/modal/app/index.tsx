@@ -116,6 +116,7 @@ export default function Index() {
           }}
           animationType="fade"
           presentationStyle="formSheet"
+          detents={[0.5, 0.75, 0.8]}
           style={{
             flex: 1,
             backgroundColor: '#BA7978',

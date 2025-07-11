@@ -5,8 +5,8 @@ package expo.modules.kotlin.views.decorators
 import android.view.View
 import com.facebook.react.uimanager.ViewProps
 import expo.modules.kotlin.types.enforceType
-
 import expo.modules.kotlin.views.ViewDefinitionBuilder
+
 inline fun <reified T : View> ViewDefinitionBuilder<T>.UseTestIDProp(crossinline body: (view: T, testID: String?) -> Unit) {
   Prop(ViewProps.TEST_ID) { view: T, testID: String? ->
     body(view, testID)

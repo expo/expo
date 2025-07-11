@@ -8,6 +8,7 @@ import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
 import { useNavigation } from '../useNavigation';
+import { areDetentsValid } from './utils';
 
 export interface ModalProps extends ViewProps {
   /**
@@ -70,6 +71,8 @@ export interface ModalProps extends ViewProps {
  * It always renders on top of the application's content.
  * Internally, the modal is rendered as a `Stack.Screen`, with the presentation style determined by the `presentationStyle` prop.
  *
+ * **Props should be set before the modal is opened. Changes to the props will take effect after the modal is reopened.**
+ *
  * This component is not linkable. If you need to link to a modal, use `<Stack.Screen options={{ presentationStyle: "modal" }} />` instead.
  *
  * @example
@@ -103,6 +106,11 @@ export function Modal(props: ModalProps) {
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
+    if (!areDetentsValid(props.detents)) {
+      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(props.detents)}`);
+    }
+  }, [props.detents]);
+  useEffect(() => {
     if (!currentModalId && visible) {
       const newId = nanoid();
       openModal({
@@ -111,6 +119,7 @@ export function Modal(props: ModalProps) {
         transparent,
         viewProps,
         component: children,
+        detents: props.detents,
         uniqueId: newId,
         parentNavigationProp: navigation,
       });

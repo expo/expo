@@ -3,7 +3,6 @@ package expo.modules.devlauncher.services
 import androidx.core.net.toUri
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.helpers.await
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -11,7 +10,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Request
 
 private val portsToCheck = arrayOf(8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002)
@@ -40,8 +39,7 @@ data class PackagerInfo(
  * Class responsible for discovering running packagers.
  */
 class PackagerService(
-  private val httpClientService: HttpClientService,
-  private val scope: CoroutineScope
+  private val httpClientService: HttpClientService
 ) {
   private val packagersToCheck = portsToCheck.map { port -> PackagerInfo("http://$hostToCheck:$port") }
 
@@ -50,10 +48,6 @@ class PackagerService(
 
   val runningPackagers = _runningPackagers.asStateFlow()
   val isLoading = _isLoading.asStateFlow()
-
-  init {
-    refetchedPackager()
-  }
 
   private fun addPackager(packager: PackagerInfo) {
     _runningPackagers.update { packagers ->
@@ -131,14 +125,14 @@ class PackagerService(
     }
   }
 
-  fun refetchedPackager() {
+  suspend fun refetchedPackager() {
     // It's loading already, so we don't need to do anything.
     if (isLoading.value) {
       return
     }
 
     _isLoading.update { true }
-    scope.launch(context = Dispatchers.Default) {
+    withContext(context = Dispatchers.Default) {
       fetchedDevelopmentSession()
       fetchedLocalPackagers()
       _isLoading.update { false }
