@@ -1,0 +1,113 @@
+package com.example.aviatorbot
+
+import android.content.ContentValues
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+
+class VelaDatabase(context: Context) :
+    SQLiteOpenHelper(context, "velas.db", null, 1) {
+
+    override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE velas(id INTEGER PRIMARY KEY AUTOINCREMENT, multiplicador REAL, horario TEXT)")
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        db.execSQL("DROP TABLE IF EXISTS velas")
+        onCreate(db)
+    }
+
+    fun inserirVela(multiplicador: Double, horario: String) {
+        val valores = ContentValues().apply {
+            put("multiplicador", multiplicador)
+            put("horario", horario)
+        }
+        writableDatabase.insert("velas", null, valores)
+    }
+}
+package com.example.aviatorbot
+
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var bot: AviatorBot
+    private lateinit var statusText: TextView
+    private var botRunning = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        bot = AviatorBot(this)
+        statusText = findViewById(R.id.statusText)
+
+        val startButton = findViewById<Button>(R.id.startBotButton)
+        startButton.setOnClickListener {
+            if (!botRunning) {
+                bot.startBot { result ->
+                    runOnUiThread {
+                        statusText.text = result
+                    }
+                }
+                startButton.text = "Parar Bot"
+                botRunning = true
+            } else {
+                bot.stopBot()
+                startButton.text = "Iniciar Bot"
+                statusText.text = "Status: Inativo"
+                botRunning = false
+            }
+        }
+    }
+}
+package com.example.aviatorbot
+
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+class AviatorBot(private val context: Context) {
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val checkInterval: Long = 5000 // 5 segundos
+    private var running = false
+    private val db = VelaDatabase(context)
+
+    fun startBot(onResult: (String) -> Unit) {
+        running = true
+        handler.post(object : Runnable {
+            override fun run() {
+                if (running) {
+                    val simulatedMultiplier = getSimulatedMultiplier()
+                    if (simulatedMultiplier >= 50.0) {
+                        val time = getCurrentTime()
+                        db.inserirVela(simulatedMultiplier, time)
+                        onResult("ðŸ”¥ Vela rosa detectada: $simulatedMultiplier x Ã s $time")
+                    }
+                    handler.postDelayed(this, checkInterval)
+                }
+            }
+        })
+    }
+
+    fun stopBot() {
+        running = false
+        handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun getSimulatedMultiplier(): Double {
+        return listOf(1.2, 2.0, 10.0, 5.5, 50.0, 70.0, 1.0, 100.0).random()
+    }
+
+    private fun getCurrentTime(): String {
+        val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        return sdf.format(Date())
+    }
+}
