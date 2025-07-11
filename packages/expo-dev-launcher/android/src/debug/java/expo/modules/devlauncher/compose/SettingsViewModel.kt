@@ -8,7 +8,7 @@ data class SettingsState(
   val showMenuAtLaunch: Boolean = false,
   val isShakeEnable: Boolean = true,
   val isThreeFingerLongPressEnable: Boolean = true,
-  val isKeyCommandEnabled: Boolean = true,
+  val isKeyCommandEnabled: Boolean = true
 )
 
 sealed interface SettingsAction {

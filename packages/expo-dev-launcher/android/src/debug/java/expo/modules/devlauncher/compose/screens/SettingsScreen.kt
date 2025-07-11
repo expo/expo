@@ -25,7 +25,7 @@ import expo.modules.devmenu.compose.ui.MenuSwitch
 @Composable
 fun SettingsScreen(
   state: SettingsState = SettingsState(),
-  onAction: (SettingsAction) -> Unit = { },
+  onAction: (SettingsAction) -> Unit = {}
 ) {
   Column(modifier = Modifier.padding(Theme.spacing.medium)) {
     ScreenHeaderContainer(backgroundColor = Theme.colors.background.secondary) {

@@ -26,5 +26,4 @@ open class DevMenuDefaultPreferences : DevMenuPreferencesInterface {
   override var isOnboardingFinished: Boolean
     get() = true
     set(_) = methodUnavailable()
-
 }
