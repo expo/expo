@@ -3,7 +3,11 @@
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
+#if __has_include(<React/React-Core-umbrella.h>)
 #import <React/React-Core-umbrella.h>
+#else
+#import <React_Core/React_Core-umbrella.h>
+#endif
 
 #ifdef __cplusplus
 
@@ -17,20 +21,20 @@ namespace react = facebook::react;
 
 typedef void (^JSRuntimeExecutionBlock)(void);
 
-typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                     NSArray<EXJavaScriptValue *> * _Nonnull arguments,
+typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
+                                     NSArray<EXJavaScriptValue *> *_Nonnull arguments,
                                      RCTPromiseResolveBlock _Nonnull resolve,
                                      RCTPromiseRejectBlock _Nonnull reject);
 
-typedef EXJavaScriptValue * _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                                             NSArray<EXJavaScriptValue *> * _Nonnull arguments,
-                                                             NSError * _Nullable __autoreleasing * _Nullable error);
+typedef EXJavaScriptValue *_Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
+                                                            NSArray<EXJavaScriptValue *> *_Nonnull arguments,
+                                                            NSError *_Nullable __autoreleasing *_Nullable error);
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime,
                                           std::shared_ptr<react::CallInvoker> callInvoker,
-                                          EXJavaScriptValue * _Nonnull thisValue,
-                                          NSArray<EXJavaScriptValue *> * _Nonnull arguments);
+                                          EXJavaScriptValue *_Nonnull thisValue,
+                                          NSArray<EXJavaScriptValue *> *_Nonnull arguments);
 #endif // __cplusplus
 
 NS_SWIFT_NAME(JavaScriptRuntime)
@@ -94,7 +98,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #pragma mark - Classes
 
-typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, NSArray<EXJavaScriptValue *> * _Nonnull arguments);
+typedef void (^ClassConstructorBlock)(EXJavaScriptObject *_Nonnull thisValue, NSArray<EXJavaScriptValue *> *_Nonnull arguments);
 
 - (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
                                 constructor:(nonnull ClassConstructorBlock)constructor;

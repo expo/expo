@@ -10,7 +10,11 @@
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
 
-#import <React/React-Core-umbrella.h>
+#if __has_include(<React/React-Core-umbrella.h>)
+  #import <React/React-Core-umbrella.h>
+#else
+  #import <React_Core/React_Core-umbrella.h>
+#endif
 
 #import <string.h>
 
