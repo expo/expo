@@ -9,7 +9,7 @@ const ComponentWithModal = (props?: { onModalClose: () => void }) => {
   return (
     <View testID="ComponentWithModal">
       <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
-      <Modal visible={isOpen} onClose={props.onModalClose}>
+      <Modal visible={isOpen} onRequestClose={props.onModalClose}>
         <View testID="modal-content" />
       </Modal>
     </View>

@@ -24,7 +24,7 @@ export interface ModalProps extends ViewProps {
    * Callback that is called after modal is closed.
    * This is called when the modal is dismissed by the user or programmatically.
    */
-  onClose?: () => void;
+  onRequestClose?: () => void;
   /**
    * Callback that is called after modal is shown.
    */
@@ -92,7 +92,7 @@ export function Modal(props: ModalProps) {
   const {
     children,
     visible,
-    onClose,
+    onRequestClose,
     onShow,
     animationType,
     presentationStyle,
@@ -134,7 +134,7 @@ export function Modal(props: ModalProps) {
       });
       const unsubscribeClose = addEventListener('close', (id) => {
         if (id === currentModalId) {
-          onClose?.();
+          onRequestClose?.();
           setCurrentModalId(undefined);
         }
       });
@@ -144,6 +144,6 @@ export function Modal(props: ModalProps) {
       };
     }
     return () => {};
-  }, [currentModalId, addEventListener, onClose]);
+  }, [currentModalId, addEventListener, onRequestClose]);
   return null;
 }
