@@ -22,7 +22,7 @@ import { registerStaticFont } from './server';
  */
 export function isLoaded(fontFamily: string): boolean {
   if (Platform.OS === 'web') {
-    return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded(fontFamily);
+    return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded!(fontFamily);
   }
   return isLoadedNative(fontFamily);
 }
@@ -196,7 +196,7 @@ export async function unloadAsync(
 
 async function unloadFontInNamespaceAsync(
   fontFamily: string,
-  options?: UnloadFontOptions | null
+  options?: UnloadFontOptions
 ): Promise<void> {
   if (!isLoaded(fontFamily)) {
     return;
@@ -212,7 +212,9 @@ async function unloadFontInNamespaceAsync(
   if (!fontFamily) {
     throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
   }
-
+  if (!ExpoFontLoader.unloadAsync) {
+    throw new UnavailabilityError('expo-font', 'unloadAsync');
+  }
   await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 

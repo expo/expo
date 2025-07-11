@@ -156,6 +156,9 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
     if (!fontFamily) {
         throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
     }
+    if (!ExpoFontLoader.unloadAsync) {
+        throw new UnavailabilityError('expo-font', 'unloadAsync');
+    }
     await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 export { FontDisplay };
