@@ -406,12 +406,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // doesn't do that and we can't rely on Hermes spec compliance enough to use standard presets.
         const babelPresetReactNativeEnv = getPreset(null, presetOpts);
 
-        // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
-        // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
-        // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
-        babelPresetReactNativeEnv.overrides.push({
-          plugins: [require('@babel/plugin-transform-export-namespace-from')],
-        });
+        if (!platformOptions.disableImportExportTransform) {
+          // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
+          // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
+          // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
+          babelPresetReactNativeEnv.overrides.push({
+            plugins: [require('@babel/plugin-transform-export-namespace-from')],
+          });
+        }
 
         return babelPresetReactNativeEnv;
       })(),

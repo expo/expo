@@ -325,9 +325,4 @@ console.log("Hey I'm running on the UI thread");
 };someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}();"
 `;
 
-exports[`webpack transpiles non-standard exports 1`] = `
-"import*as _default from
-'./Animated';export{_default as default};"
-`;
-
 exports[`webpack uses the platform's react-native import 1`] = `"import View from"react-native-web/dist/exports/View";"`;

@@ -87,11 +87,7 @@ describe.each(['ios', 'android', 'web'])('%s', (platform) => {
         [`export { Foo } from './x';`, `export { Foo } from './x';`],
         [`export * from './x';`, `export * from './x';`],
         [`export { default } from './x';`, `export { default } from './x';`],
-        [
-          `export * as X from './x';`,
-          `import * as _X from './x';
-          export { _X as X };`,
-        ],
+        [`export * as X from './x';`, `export * as X from './x';`],
         [
           `export { default as Foo, Bar } from './x';`,
           `export { default as Foo, Bar } from './x';`,
