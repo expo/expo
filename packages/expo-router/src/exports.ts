@@ -21,6 +21,8 @@ export { useIsPreview } from './link/preview/PreviewRouteContext';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 
+export { ModalPortalHost, ModalPortalContent } from './modal/Portal';
+
 // Expo Router Views
 export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';

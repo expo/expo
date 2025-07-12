@@ -20,6 +20,7 @@ import { StoreContext } from './global-state/storeContext';
 import { ImperativeApiEmitter } from './imperative-api';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { ModalContextProvider } from './modal/ModalContext';
+import { PortalContextProvider } from './modal/Portal';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
@@ -161,10 +162,12 @@ function ContextNavigator({
         onReady={store.onReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ModalContextProvider>
-              <ImperativeApiEmitter />
-              <Content />
-            </ModalContextProvider>
+            <PortalContextProvider>
+              <ModalContextProvider>
+                <ImperativeApiEmitter />
+                <Content />
+              </ModalContextProvider>
+            </PortalContextProvider>
           </WrapperComponent>
         </ServerContext.Provider>
       </UpstreamNavigationContainer>

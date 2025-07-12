@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.Modal = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.Modal = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.ModalPortalContent = exports.ModalPortalHost = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -57,6 +57,9 @@ var PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
 Object.defineProperty(exports, "useIsPreview", { enumerable: true, get: function () { return PreviewRouteContext_1.useIsPreview; } });
 var withLayoutContext_1 = require("./layouts/withLayoutContext");
 Object.defineProperty(exports, "withLayoutContext", { enumerable: true, get: function () { return withLayoutContext_1.withLayoutContext; } });
+var Portal_1 = require("./modal/Portal");
+Object.defineProperty(exports, "ModalPortalHost", { enumerable: true, get: function () { return Portal_1.ModalPortalHost; } });
+Object.defineProperty(exports, "ModalPortalContent", { enumerable: true, get: function () { return Portal_1.ModalPortalContent; } });
 // Expo Router Views
 var ExpoRoot_1 = require("./ExpoRoot");
 Object.defineProperty(exports, "ExpoRoot", { enumerable: true, get: function () { return ExpoRoot_1.ExpoRoot; } });
