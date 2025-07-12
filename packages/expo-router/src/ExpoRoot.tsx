@@ -25,6 +25,11 @@ import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
 import * as SplashScreen from './views/Splash';
 
+/**
+ * THIS IS A CHANGE TO RUN E2E IN CI
+ *
+ */
+
 export type ExpoRootProps = {
   context: RequireContext;
   location?: URL | string;

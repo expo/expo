@@ -1,6 +1,10 @@
 import React, { type PropsWithChildren, type ComponentType } from 'react';
 import { ExpoLinkingOptions } from './getLinkingConfig';
 import { RequireContext } from './types';
+/**
+ * THIS IS A CHANGE TO RUN E2E IN CI
+ *
+ */
 export type ExpoRootProps = {
     context: RequireContext;
     location?: URL | string;
