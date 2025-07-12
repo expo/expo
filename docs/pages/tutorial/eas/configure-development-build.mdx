@@ -204,3 +204,111 @@ We successfully used the EAS CLI to initialize, and configure our project, link 
   nextChapterTitle="Create and run a cloud build for Android"
   nextChapterLink="/tutorial/eas/android-development-build/"
 />
+import React, { useState } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Slider, Button } from 'react-native';
+
+// Componente principal
+function App() {
+  // Estado para armazenar a sensibilidade atual
+  const [sensitivity, setSensitivity] = useState(240);
+
+  // Função para atualizar a sensibilidade
+  const handleSensitivityChange = (value) => {
+    setSensitivity(value);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <Text style={styles.title}>LENSI BOOSTER</Text>
+      </View>
+
+      {/* Seção de ajustes */}
+      <View style={styles.section}>
+        <Text style={styles.label}>Sensibilidade da Jogo</Text>
+        <Slider
+          style={{ width: '100%' }}
+          minimumValue={100}
+          maximumValue={500}
+          step={1}
+          value={sensitivity}
+          onValueChange={handleSensitivityChange}
+          thumbTintColor="blue"
+          minimumTrackTintColor="red"
+          maximumTrackTintColor="gray"
+        />
+        <Text style={styles.value}>
+          Valor atual: <Text style={styles.bold}>{sensitivity}</Text> / 1z
+        </Text>
+        <Text style={styles.recommended}>
+          Recomendado: <Text style={styles.bold}>100 Hz</Text>
+        </Text>
+      </View>
+
+      {/* Rodapé */}
+      <View style={styles.footer}>
+        <Text style={styles.copyright}>
+          Desenvolvido por: <Text style={styles.bold}>Seu Nome</Text>
+        </Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  header: {
+    padding: 20,
+    backgroundColor: '#222',
+    width: '100%',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  section: {
+    padding: 20,
+    backgroundColor: '#333',
+    width: '90%',
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 18,
+    color: '#fff',
+    marginBottom: 10,
+  },
+  value: {
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 10,
+  },
+  recommended: {
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 5,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  footer: {
+    padding: 20,
+    backgroundColor: '#222',
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+  },
+  copyright: {
+    fontSize: 14,
+    color: '#aaa',
+  },
+});
+
+export default App;
