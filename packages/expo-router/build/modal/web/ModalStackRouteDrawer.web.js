@@ -136,7 +136,7 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
             fadeFromIndex,
         }
         : {};
-    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground onOpenChange={setOpen} {...sheetProps}>
+    return (<vaul_1.Drawer.Root key={`${routeKey}-${isSheet ? 'sheet' : 'modal'}`} open={open} dismissible={options.gestureEnabled ?? true} onAnimationEnd={handleOpenChange} shouldScaleBackground autoFocus onOpenChange={setOpen} {...sheetProps}>
       <vaul_1.Drawer.Portal>
         <vaul_1.Drawer.Overlay className={modalStyles_1.default.overlay} style={options.webModalStyle?.overlayBackground
             ? {
