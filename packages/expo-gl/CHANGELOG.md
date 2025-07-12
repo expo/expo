@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Use pointerEvents style instead of prop for components on web.
+- Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 15.1.7 - 2025-07-01
 
