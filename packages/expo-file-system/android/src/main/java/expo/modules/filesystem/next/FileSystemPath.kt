@@ -4,8 +4,12 @@ import android.os.Build
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.EnumSet
+import kotlin.io.path.Path
 import kotlin.io.path.moveTo
+import kotlin.io.path.readAttributes
+import kotlin.time.Duration.Companion.milliseconds
 
 // We use the `File` class to represent a file or a directory in the file system.
 // The Path class might be better, but `java.nio.file.Path` class is not available in API 23.
@@ -103,6 +107,21 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
       file.copyTo(getMoveOrCopyPath(to))
       file.delete()
       file = getMoveOrCopyPath(to)
+    }
+  }
+
+  val modificationTime: Long get() {
+    validateType()
+    return file.lastModified()
+  }
+
+  val creationTime: Long? get() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      validateType()
+      val attributes = Path(file.path).readAttributes<BasicFileAttributes>()
+      return attributes.creationTime().toMillis().milliseconds.inWholeMilliseconds
+    } else {
+      return null
     }
   }
 }

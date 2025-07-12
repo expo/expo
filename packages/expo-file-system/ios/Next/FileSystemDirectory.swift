@@ -73,4 +73,28 @@ internal final class FileSystemDirectory: FileSystemPath {
       throw Exception(name: "wrong type", description: "tried to create a directory with a file path")
     }
   }
+
+  func info() throws -> DirectoryInfo {
+    try validateType()
+    try validatePermission(.read)
+    if !exists {
+      let result = DirectoryInfo()
+      result.exists = false
+      result.uri = url.absoluteString
+      return result
+    }
+    switch url.scheme {
+    case "file":
+      let result = DirectoryInfo()
+      result.exists = true
+      result.uri = url.absoluteString
+      result.size = try size
+      result.files = (try? FileManager.default.contentsOfDirectory(atPath: url.path)) ?? []
+      result.modificationTime = try modificationTime
+      result.creationTime = try creationTime
+      return result
+    default:
+      throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+    }
+  }
 }
