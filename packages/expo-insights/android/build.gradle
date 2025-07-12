@@ -16,4 +16,5 @@ android {
 
 dependencies {
   implementation project(':expo-eas-client')
+  implementation "com.facebook.react:react-android"
 }
