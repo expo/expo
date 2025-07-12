@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- expose `ExpoFontLoader` on web ([#37991](https://github.com/expo/expo/pull/37991) by [@vonovak](https://github.com/vonovak))
 - Add local package mocks. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes

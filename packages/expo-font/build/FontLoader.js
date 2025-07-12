@@ -14,9 +14,6 @@ export function getAssetForSource(source) {
     else if (typeof source === 'object' && typeof source.uri !== 'undefined') {
         return getAssetForSource(source.uri);
     }
-    // @ts-ignore Error: Type 'string' is not assignable to type 'Asset'
-    // We can't have a string here, we would have thrown an error if !isWeb
-    // or returned Asset.fromModule if isWeb.
     return source;
 }
 export async function loadSingleFontAsync(name, input) {
