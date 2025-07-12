@@ -5,7 +5,7 @@ import { ViewProps } from 'react-native';
  *
  * - `'none'` - Falls back to a semi-transparent view instead of rendering a blur effect.
  *
- * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance and rendering issues during transitions made by `react-native-screens`.
+ * - `'dimezisBlurView'` - Uses a native blur view implementation based on [BlurView](https://github.com/Dimezis/BlurView) library. This method may lead to decreased performance.
  *
  * @platform android
  */
