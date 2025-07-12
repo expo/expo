@@ -68,7 +68,7 @@ open class NotificationsEmitter : Module(), NotificationListener {
    * @return Whether notification has been handled
    */
   override fun onNotificationResponseReceived(response: NotificationResponse): Boolean {
-    val bundle = NotificationSerializer.toBundle(response)
+    val bundle = response.toBundle()
     DebugLogging.logBundle("NotificationsEmitter.onNotificationResponseReceived", bundle)
     lastNotificationResponseBundle = bundle
     sendEvent(NEW_RESPONSE_EVENT_NAME, lastNotificationResponseBundle)
