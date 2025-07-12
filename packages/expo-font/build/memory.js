@@ -14,12 +14,6 @@ export function isLoadedNative(fontFamily) {
     }
     else {
         const loadedNativeFonts = ExpoFontLoader.getLoadedFonts();
-        // NOTE(brentvatne): Bail out here if there are no loaded fonts. This
-        // is functionally equivalent to the behavior below if the returned array
-        // is empty, but this handles improper mocking of `getLoadedFonts`.
-        if (!loadedNativeFonts?.length) {
-            return false;
-        }
         loadedNativeFonts.forEach((font) => {
             cache[font] = true;
         });
