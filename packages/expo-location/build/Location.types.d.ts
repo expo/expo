@@ -194,6 +194,12 @@ export type LocationTaskServiceOptions = {
      * Boolean value whether to destroy the foreground service if the app is killed.
      */
     killServiceOnDestroy?: boolean;
+    /**
+     * Boolean value whether to show the notification in the status bar.
+     * @default false
+     * @platform android
+    */
+    ongoing?: boolean;
 };
 /**
  * Type representing geofencing region object.
