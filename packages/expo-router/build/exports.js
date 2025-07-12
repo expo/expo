@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.Modal = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.Modal = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.Badge = exports.Icon = exports.Title = exports.BottomAccessory = exports.useIsPreview = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -55,6 +55,12 @@ Object.defineProperty(exports, "Link", { enumerable: true, get: function () { re
 Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Link_1.Redirect; } });
 var PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
 Object.defineProperty(exports, "useIsPreview", { enumerable: true, get: function () { return PreviewRouteContext_1.useIsPreview; } });
+var BottomAccessory_1 = require("./ui/NativeBottomTabs/BottomAccessory");
+Object.defineProperty(exports, "BottomAccessory", { enumerable: true, get: function () { return BottomAccessory_1.BottomAccessory; } });
+var NavigatorElements_1 = require("./ui/NativeBottomTabs/NavigatorElements");
+Object.defineProperty(exports, "Title", { enumerable: true, get: function () { return NavigatorElements_1.Title; } });
+Object.defineProperty(exports, "Icon", { enumerable: true, get: function () { return NavigatorElements_1.Icon; } });
+Object.defineProperty(exports, "Badge", { enumerable: true, get: function () { return NavigatorElements_1.Badge; } });
 var withLayoutContext_1 = require("./layouts/withLayoutContext");
 Object.defineProperty(exports, "withLayoutContext", { enumerable: true, get: function () { return withLayoutContext_1.withLayoutContext; } });
 // Expo Router Views

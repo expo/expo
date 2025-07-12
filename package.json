@@ -21,6 +21,7 @@
   },
   "resolutions": {
     "react-native": "0.80.1",
+    "react-native-screens": "file:./react-native-screens-2025-07-08T18-21.tgz",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "@react-navigation/bottom-tabs": "7.3.10",
