@@ -33,7 +33,7 @@ abstract class DevMenuSettingsBase(
   override var isJSMinifyEnabled: Boolean = mPreferences.getBoolean("js_minify_debug", false)
 
   override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-    if (this.listener != null && ("fps_debug" == key || "js_dev_mode_debug" == key || "start_sampling_profiler_on_init" == key || "js_minify_debug" == key)) {
+    if (this.listener != null && ("fps_debug" == key || "js_dev_mode_debug" == key || "js_minify_debug" == key)) {
       listener.onInternalSettingsChanged()
     }
   }
@@ -53,9 +53,6 @@ abstract class DevMenuSettingsBase(
     set(remoteJSDebugEnabled) {
       mPreferences.edit().putBoolean("remote_js_debug", remoteJSDebugEnabled).apply()
     }
-
-  override var isStartSamplingProfilerOnInit: Boolean =
-    mPreferences.getBoolean("start_sampling_profiler_on_init", false)
 
   override fun addMenuItem(title: String) {
   }
