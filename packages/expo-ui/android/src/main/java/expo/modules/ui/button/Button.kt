@@ -138,7 +138,7 @@ class Button(context: Context, appContext: AppContext) :
   }
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     val (variant) = props.variant
     val (text) = props.text
     val (colors) = props.elementColors

@@ -72,7 +72,7 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
   private val onDateSelected by EventDispatcher<DatePickerResult>()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
       ExpoTimePicker(props = props) {
         onDateSelected(it)

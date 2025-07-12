@@ -120,7 +120,7 @@ class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<Shap
   override val props = ShapeProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     val (smoothing) = props.smoothing
     val (cornerRounding) = props.cornerRounding
     val (innerRadius) = props.innerRadius
