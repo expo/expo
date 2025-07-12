@@ -1,13 +1,13 @@
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
-  anchor: 'modal-regular',
+  anchor: 'page',
 };
 
 export default function Layout() {
   return (
-    <Stack>
-      <Stack.Screen name="[test]/modal-regular" />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="page" />
       <Stack.Screen
         name="sheet-radius"
         options={{

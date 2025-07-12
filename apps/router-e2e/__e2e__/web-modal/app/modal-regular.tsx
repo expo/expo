@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   button: {
@@ -8,11 +8,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     alignItems: 'center',
-  },
-  buttonText: {
+    backgroundColor: '#333',
     color: 'white',
     fontSize: 14,
-    textAlign: 'center',
   },
 });
 
@@ -32,33 +30,21 @@ export default function Page() {
         </Text>
       </View>
 
-      <Pressable
-        testID="open-sheet-radius"
-        onPress={() => router.push('/sheet-radius')}
-        style={[styles.button, { backgroundColor: '#5856D6' }]}>
-        <Text style={styles.buttonText}>Open Sheet (radius 24)</Text>
-      </Pressable>
+      <Link testID="open-sheet-radius" href="/sheet-radius" style={styles.button}>
+        Open Sheet (radius 24)
+      </Link>
 
-      <Pressable
-        testID="open-modal-transparent"
-        onPress={() => router.push('/modal-transparent')}
-        style={[styles.button, { backgroundColor: '#000' }]}>
-        <Text style={styles.buttonText}>Open Transparent Modal</Text>
-      </Pressable>
+      <Link testID="open-modal-transparent" href="/modal-transparent" style={styles.button}>
+        Open Transparent Modal
+      </Link>
 
-      <Pressable
-        testID="navigate-root"
-        onPress={() => router.navigate('/')}
-        style={[styles.button, { backgroundColor: '#FF3B30' }]}>
-        <Text style={styles.buttonText}>Navigate to root</Text>
-      </Pressable>
+      <Link testID="navigate-root" href="/" style={styles.button}>
+        Navigate to root
+      </Link>
 
-      <Pressable
-        testID="navigate-modal-margin"
-        onPress={() => router.push('/modal-margin')}
-        style={[styles.button, { backgroundColor: '#007AFF' }]}>
-        <Text style={styles.buttonText}>Push to non-modal route</Text>
-      </Pressable>
+      <Link testID="navigate-modal-margin" href="/modal-margin" style={styles.button}>
+        Push to non-modal route
+      </Link>
     </ScrollView>
   );
 }
