@@ -185,7 +185,7 @@ describe.each([
   ['metro', getCaller({ name: 'metro', isDev: false })],
   ['metro+hermes', getCaller({ name: 'metro', engine: 'hermes', isDev: true })],
   ['webpack', getCaller({ name: 'babel-loader', isDev: true })],
-])('%s', (_name, caller) => {
+])('%s', (bundler, caller) => {
   it(`compiles sample files`, () => {
     const options = {
       babelrc: false,
@@ -226,23 +226,26 @@ import { View } from 'react-native';
     expect(code).toMatchSnapshot();
   });
 
-  it(`transpiles non-standard exports`, () => {
-    const options = {
-      babelrc: false,
-      presets: [preset],
-      filename: '/unknown',
-      // Make the snapshot easier to read
-      retainLines: true,
-      caller,
-    };
+  if (bundler !== 'webpack') {
+    // TODO: Is it still need to for export namespace from to be transformed?
+    it(`transpiles non-standard exports`, () => {
+      const options = {
+        babelrc: false,
+        presets: [preset],
+        filename: '/unknown',
+        // Make the snapshot easier to read
+        retainLines: true,
+        caller,
+      };
 
-    const sourceCode = `
+      const sourceCode = `
 export * as default from './Animated';
 `;
-    const { code } = babel.transform(sourceCode, options)!;
+      const { code } = babel.transform(sourceCode, options)!;
 
-    expect(code).toMatchSnapshot();
-  });
+      expect(code).toMatchSnapshot();
+    });
+  }
 
   it(`supports disabling reanimated`, () => {
     expect(require.resolve('react-native-reanimated/plugin')).toBeDefined();

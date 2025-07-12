@@ -49,6 +49,7 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import { importExportPlugin } from '../transform-plugins/import-export-plugin';
 
 export { JsTransformOptions };
 
@@ -162,7 +163,9 @@ export const minifyCode = async (
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
-      throw new Error(`${error.message} in file ${filename} at ${error.line}:${error.col}`);
+      throw new Error(`${error.message} in file ${filename} at ${error.line}:${error.col}
+
+The error above is result of failed minification. Try to upgrade 'terser' the default minification library used by Metro.`);
     }
 
     throw error;
@@ -240,7 +243,7 @@ export function applyImportSupport<TFile extends t.File>(
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //
-      [metroTransformPlugins.importExportPlugin, babelPluginOpts]
+      [importExportPlugin, babelPluginOpts]
     );
   }
 

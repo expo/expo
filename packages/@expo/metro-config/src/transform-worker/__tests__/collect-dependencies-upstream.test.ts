@@ -21,6 +21,7 @@ import {
 } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
+import { importExportPlugin } from '../../transform-plugins/import-export-plugin';
 import type {
   Dependency,
   DependencyTransformer,
@@ -1499,7 +1500,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
     ast: true,
     plugins: [
       [
-        require('metro-transform-plugins').importExportPlugin,
+        importExportPlugin,
         {
           importDefault,
           importAll,
