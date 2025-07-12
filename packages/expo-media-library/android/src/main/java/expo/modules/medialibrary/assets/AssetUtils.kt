@@ -110,7 +110,7 @@ fun putAssetsInfo(
     val localUri = "file://$path"
     val mediaType = cursor.getInt(mediaTypeIndex)
     var exifInterface: ExifInterface? = null
-    if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+    if (resolveWithFullInfo && mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
       try {
         exifInterface = ExifInterface(path)
       } catch (e: IOException) {
