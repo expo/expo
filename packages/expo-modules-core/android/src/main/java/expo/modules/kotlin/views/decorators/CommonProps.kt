@@ -22,7 +22,6 @@ private fun <T : View> ViewDefinitionBuilder<T>.UseTestIDProp() {
   }
 }
 
-
 /**
  * Decorates the view definition builder with common props.
  */
