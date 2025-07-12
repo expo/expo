@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Use pointerEvents style instead of prop for components on web.
+
 ### 📚 3rd party library updates
 
 ## 16.1.10 - 2025-07-01

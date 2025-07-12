@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use pointerEvents style instead of prop for components on web.
+
 ## 15.1.7 - 2025-07-01
 
 ### 🐛 Bug fixes
