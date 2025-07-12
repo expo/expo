@@ -86,6 +86,7 @@ export default class VideoPlayerWeb
   videoTrack: VideoTrack | null = null; // Not supported on web. Dummy to match the interface.
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
   isExternalPlaybackActive: boolean = false; // Not supported on web. Dummy to match the interface.
+  keepScreenOnWhilePlaying: boolean = false; // Not supported on web. Dummy to match the interface
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
