@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Modal = Modal;
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
+const react_native_1 = require("react-native");
 const ModalContext_1 = require("./ModalContext");
 const useNavigation_1 = require("../useNavigation");
 const utils_1 = require("./utils");
@@ -43,6 +44,14 @@ function Modal(props) {
         }
     }, [props.detents]);
     (0, react_1.useEffect)(() => {
+        if (props.presentationStyle === 'formSheet' &&
+            props.detents !== 'fitToContents' &&
+            process.env.EXPO_OS === 'ios' &&
+            react_native_1.StyleSheet.flatten(props.style)?.flex) {
+            console.warn('The `formSheet` presentation style does not support flex styles on iOS. Consider using a fixed height view or scroll view with `fitToContents` detent instead. See TODO');
+        }
+    }, [props.style, props.presentationStyle, props.detents]);
+    (0, react_1.useEffect)(() => {
         if (!currentModalId && visible) {
             const newId = (0, non_secure_1.nanoid)();
             openModal({
@@ -51,7 +60,7 @@ function Modal(props) {
                 transparent,
                 viewProps,
                 component: children,
-                detents: props.detents,
+                detents: props.detents ?? 'fitToContents',
                 uniqueId: newId,
                 parentNavigationProp: navigation,
             });

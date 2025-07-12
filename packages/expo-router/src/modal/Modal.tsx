@@ -3,7 +3,7 @@
 import { type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 import { useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { StyleSheet, ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
@@ -62,6 +62,8 @@ export interface ModalProps extends ViewProps {
    * Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.
    * You can pass an array of ascending values each defining allowed sheet detent. iOS accepts any number of detents,
    * while **Android is limited to three**.
+   *
+   * @default 'fitToContents'
    */
   detents?: ModalConfig['detents'];
 }
@@ -111,6 +113,18 @@ export function Modal(props: ModalProps) {
     }
   }, [props.detents]);
   useEffect(() => {
+    if (
+      props.presentationStyle === 'formSheet' &&
+      props.detents !== 'fitToContents' &&
+      process.env.EXPO_OS === 'ios' &&
+      StyleSheet.flatten(props.style)?.flex
+    ) {
+      console.warn(
+        'The `formSheet` presentation style does not support flex styles on iOS. Consider using a fixed height view or scroll view with `fitToContents` detent instead. See TODO'
+      );
+    }
+  }, [props.style, props.presentationStyle, props.detents]);
+  useEffect(() => {
     if (!currentModalId && visible) {
       const newId = nanoid();
       openModal({
@@ -119,7 +133,7 @@ export function Modal(props: ModalProps) {
         transparent,
         viewProps,
         component: children,
-        detents: props.detents,
+        detents: props.detents ?? 'fitToContents',
         uniqueId: newId,
         parentNavigationProp: navigation,
       });
