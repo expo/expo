@@ -30,10 +30,9 @@ import expo.modules.devmenu.compose.theme.Theme
 fun MenuSwitch(
   label: String,
   icon: Painter? = null,
+  toggled: Boolean = false,
   onToggled: (Boolean) -> Unit = {}
 ) {
-  var toggled by remember { mutableStateOf(false) }
-
   val animatedBackgroundColor by animateColorAsState(
     if (toggled) {
       Theme.colors.background.success
@@ -52,9 +51,7 @@ fun MenuSwitch(
 
   Button(
     onClick = {
-      val newValue = !toggled
-      toggled = newValue
-      onToggled(newValue)
+      onToggled(!toggled)
     },
     backgroundColor = Theme.colors.background.default
   ) {
@@ -100,7 +97,10 @@ fun MenuSwitch(
 @Composable
 @Preview(showBackground = true)
 fun MenuSwitchPreview() {
+  var toggled by remember { mutableStateOf(false) }
   MenuSwitch(
-    label = "Menu Switch"
+    label = "Menu Switch",
+    toggled = toggled,
+    onToggled = { toggled = it }
   )
 }
