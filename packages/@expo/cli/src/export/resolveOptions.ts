@@ -14,6 +14,7 @@ export type Options = {
   dumpAssetmap: boolean;
   sourceMaps: boolean;
   skipSSG: boolean;
+  hostedNative: boolean;
 };
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
@@ -82,6 +83,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   const platforms = resolvePlatformOption(exp, platformBundlers, args['--platform']);
   return {
     platforms,
+    hostedNative: !!args['--unstable-hosted-native'],
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
     bytecode: !args['--no-bytecode'],
