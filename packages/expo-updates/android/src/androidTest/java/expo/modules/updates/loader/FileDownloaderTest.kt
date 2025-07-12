@@ -1,9 +1,7 @@
 package expo.modules.updates.loader
 
-import android.content.Context
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
@@ -15,6 +13,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
+import kotlinx.coroutines.test.runTest
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -22,20 +21,23 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import java.io.File
 import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class FileDownloaderTest {
-  private lateinit var context: Context
   private lateinit var logger: UpdatesLogger
+
+  @get:Rule
+  val temporaryFolder = TemporaryFolder()
 
   @Before
   fun setup() {
-    context = InstrumentationRegistry.getInstrumentation().targetContext
-    logger = UpdatesLogger(context.filesDir)
+    logger = UpdatesLogger(temporaryFolder.newFolder())
   }
 
   @Test
@@ -45,7 +47,8 @@ class FileDownloaderTest {
       "runtimeVersion" to "1.0"
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForRemoteUpdate(null, config, logger, context)
+    val fileDownloader = createFileDownloader(config)
+    val actual = fileDownloader.createRequestForRemoteUpdate(null, config, logger)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -66,7 +69,8 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger, context)
+    val fileDownloader = createFileDownloader(config)
+    val actual = fileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -90,7 +94,8 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger, context)
+    val fileDownloader = createFileDownloader(config)
+    val actual = fileDownloader.createRequestForRemoteUpdate(extraHeaders, config, logger)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -114,7 +119,8 @@ class FileDownloaderTest {
     }
 
     // assetRequestHeaders should not be able to override preset headers
-    val actual = FileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, context)
+    val fileDownloader = createFileDownloader(config)
+    val actual = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -142,7 +148,7 @@ class FileDownloaderTest {
     }
 
     // assetRequestHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config, context)
+    val actual = createFileDownloader(config).createRequestForAsset(assetEntity, JSONObject("{}"), config)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -205,7 +211,7 @@ class FileDownloaderTest {
   }
 
   @Test
-  fun test_downloadAsset_mismatchedAssetHash() {
+  fun test_downloadAsset_mismatchedAssetHash() = runTest {
     val configMap = mapOf<String, Any>(
       UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
       UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
@@ -221,42 +227,27 @@ class FileDownloaderTest {
 
     val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
-        every { enqueue(any()) } answers {
-          firstArg<Callback>().onResponse(
-            mockk(),
-            mockk {
-              every { isSuccessful } returns true
-              every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
-            }
-          )
+        every { execute() } returns mockk {
+          every { isSuccessful } returns true
+          every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
         }
       }
     }
 
-    var error: Exception? = null
-    var didSucceed = false
-
-    FileDownloader(context, config, logger, client).downloadAsset(
-      assetEntity,
-      File(context.cacheDir, "test"),
-      JSONObject("{}"),
-      object : FileDownloader.AssetDownloadCallback {
-        override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-          error = e
-        }
-
-        override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-          didSucceed = true
-        }
-      }
-    )
-
-    Assert.assertTrue(error!!.localizedMessageWithCauseLocalizedMessage().contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
-    Assert.assertFalse(didSucceed)
+    try {
+      FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, client).downloadAsset(
+        assetEntity,
+        File(temporaryFolder.newFolder(), "test"),
+        JSONObject("{}")
+      )
+      Assert.fail("Expected exception to be thrown")
+    } catch (e: Exception) {
+      Assert.assertTrue(e.localizedMessageWithCauseLocalizedMessage().contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
+    }
   }
 
   @Test
-  fun test_downloadAsset_nullExpectedAssetHash() {
+  fun test_downloadAsset_nullExpectedAssetHash() = runTest {
     val configMap = mapOf<String, Any>(
       UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
       UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
@@ -271,37 +262,30 @@ class FileDownloaderTest {
 
     val client = mockk<OkHttpClient> {
       every { newCall(any()) } returns mockk {
-        every { enqueue(any()) } answers {
-          firstArg<Callback>().onResponse(
-            mockk(),
-            mockk {
-              every { isSuccessful } returns true
-              every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
-            }
-          )
+        every { execute() } returns mockk {
+          every { isSuccessful } returns true
+          every { body } returns "hello".toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull())
         }
       }
     }
 
-    var error: Exception? = null
-    var didSucceed = false
-
-    FileDownloader(context, config, logger, client).downloadAsset(
+    val result = FileDownloader(temporaryFolder.newFolder(), "eas-test-client-id", config, logger, client).downloadAsset(
       assetEntity,
-      File(context.cacheDir, "test"),
-      JSONObject("{}"),
-      object : FileDownloader.AssetDownloadCallback {
-        override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-          error = e
-        }
-
-        override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-          didSucceed = true
-        }
-      }
+      File(temporaryFolder.newFolder(), "test"),
+      JSONObject("{}")
     )
 
-    Assert.assertNull(error)
-    Assert.assertTrue(didSucceed)
+    Assert.assertNotNull(result)
+    Assert.assertTrue(result.isNew)
+  }
+
+  private fun createFileDownloader(config: UpdatesConfiguration): FileDownloader {
+    val filesDirectory = temporaryFolder.newFolder()
+    return FileDownloader(
+      filesDirectory,
+      easClientID = "test-eas-client-id",
+      configuration = config,
+      logger = logger
+    )
   }
 }
