@@ -31,6 +31,43 @@ Sometimes, it makes sense to build a UI to allow the user to set other localizat
 - Localized units if your app makes at least a moderate use of them (such as metric/imperial measurements, currency, temperature, and more)
 - Other preferences if there's no API to get the default value on platforms you want to support (check [`expo-localization`](/versions/latest/sdk/localization) API documentation for details)
 
+### Enabling per-app language selection via system settings
+
+Both Android and iOS allow users to choose a preferred language for individual apps via the system settings. To support this feature, your app must declare its supported locales to the system.
+
+To do so, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and define the `extra.supportedLocales` property in the app config:
+
+```json app.json
+{
+  "expo": {
+    "extra": {
+      "supportedLocales": ["en", "ja"]
+    },
+    "plugins": ["expo-localization"]
+  }
+}
+```
+
+If you need to specify different locale values for Android and iOS, use the `supportedLocales.ios` and `supportedLocales.android` fields:
+
+```json app.json
+{
+  "expo": {
+    "extra": {
+      "supportedLocales": {
+        "ios": ["en", "ja"],
+        "android": ["en", "ja"]
+      }
+    },
+    "plugins": ["expo-localization"]
+  }
+}
+```
+
+> On Android, refer to the [locale naming guidelines](https://developer.android.com/guide/topics/resources/app-languages#locale-names) and the [list of most commonly used locales](https://developer.android.com/guide/topics/resources/app-languages#sample-config).
+>
+> On iOS, use the language name or ISO language designator.
+
 ## Translating an app
 
 Creating and managing translations quickly becomes a large task. You can handle translations manually, but it's best to use a library to handle this for you.
