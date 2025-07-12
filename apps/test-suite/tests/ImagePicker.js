@@ -9,7 +9,7 @@ import { isDeviceFarm } from '../utils/Environment';
 export const name = 'ImagePicker';
 
 export async function test({ it, beforeAll, expect, jasmine, describe, afterAll }) {
-  function testMediaObjectShape(shape, type) {
+  function testMediaObjectShape(shape, type, useCamera) {
     expect(shape).toBeDefined();
 
     expect(typeof shape.uri).toBe('string');
@@ -20,6 +20,11 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
     expect(shape.uri).not.toBe('');
     expect(shape.width).toBeGreaterThan(0);
     expect(shape.height).toBeGreaterThan(0);
+
+    if (!useCamera) {
+      expect(shape.fileDate).toBeDefined();
+      expect(shape.fileDate).toBeGreaterThan(0);
+    }
 
     expect(typeof shape.type).toBe('string');
 
@@ -32,11 +37,11 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
       expect(shape.duration).toBeGreaterThan(0);
     }
   }
-  function testResultShape(result, type) {
+  function testResultShape(result, type, useCamera) {
     expect(result.canceled).toBe(false);
 
     for (const asset of result.assets) {
-      testMediaObjectShape(asset, type);
+      testMediaObjectShape(asset, type, useCamera);
     }
   }
 
@@ -62,7 +67,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
           await alertAndWaitForResponse('Please take a picture for this test to pass.');
           const result = await ImagePicker.launchCameraAsync();
 
-          testResultShape(result);
+          testResultShape(result, 'image', true);
         });
 
         it('cancels the camera', async () => {
@@ -90,7 +95,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         });
-        testResultShape(result, 'image');
+        testResultShape(result, 'image', false);
       });
 
       it('mediaType: video', async () => {
@@ -98,7 +103,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         });
-        testResultShape(result, 'video');
+        testResultShape(result, 'video', false);
       });
 
       it('allows editing', async () => {
@@ -107,7 +112,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
         });
-        testResultShape(result, 'image');
+        testResultShape(result, 'image', false);
       });
 
       it('allows editing and returns base64', async () => {
@@ -118,7 +123,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
           base64: true,
         });
 
-        testResultShape(result, 'image');
+        testResultShape(result, 'image', false);
 
         for (const image of result.assets) {
           expect(typeof image.base64).toBe('string');
@@ -135,7 +140,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
             videoExportPreset: ImagePicker.VideoExportPreset.H264_640x480,
           });
 
-          testResultShape(result, 'video');
+          testResultShape(result, 'video', false);
 
           for (const video of result.assets) {
             expect(Math.max(video.width, video.height)).toBeLessThanOrEqual(640);

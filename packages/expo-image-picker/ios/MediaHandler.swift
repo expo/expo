@@ -90,6 +90,7 @@ internal struct MediaHandler {
           fileName: unwrappedName, targetExtension: fileExtension.lowercased())
       }
       let fileSize = getFileSize(from: targetUrl)
+      let fileDate = getFileDate(assetIdentifier: asset?.localIdentifier)
 
       let base64 =
         options.base64
@@ -106,6 +107,7 @@ internal struct MediaHandler {
         height: Double(size.height),
         fileName: fileName,
         fileSize: fileSize,
+        fileDate: fileDate,
         mimeType: mimeType,
         base64: base64,
         exif: exif
@@ -148,6 +150,7 @@ internal struct MediaHandler {
         let fileSize = getFileSize(from: cachedUrl)
         let mimeType = getMimeType(from: cachedUrl.pathExtension)
         let fileName = itemProvider.suggestedName.map { $0 + fileExtension }
+        let fileDate = getFileDate(assetIdentifier: selectedImage.assetIdentifier)
 
         // Conditionally read raw data only if needed to avoid unnecessary I/O
         var rawData: Data?
@@ -165,6 +168,7 @@ internal struct MediaHandler {
           height: Double(size.height),
           fileName: fileName,
           fileSize: fileSize,
+          fileDate: fileDate,
           mimeType: mimeType,
           base64: base64,
           exif: exif
@@ -192,6 +196,7 @@ internal struct MediaHandler {
     try ImageUtils.write(imageData: imageData, to: targetUrl)
     let fileSize = getFileSize(from: targetUrl)
     let fileName = itemProvider.suggestedName.map { $0 + fileExtension }
+    let fileDate = getFileDate(assetIdentifier: selectedImage.assetIdentifier)
 
     // We need to get EXIF from original image data, as it is being lost in UIImage
     let exif = options.exif ? ImageUtils.readExifFrom(data: rawData) : nil
@@ -206,6 +211,7 @@ internal struct MediaHandler {
       height: Double(size.height),
       fileName: fileName,
       fileSize: fileSize,
+      fileDate: fileDate,
       mimeType: mimeType,
       base64: base64,
       exif: exif
@@ -248,6 +254,7 @@ internal struct MediaHandler {
     let mimeType = getMimeType(from: photoUrl.pathExtension)
     let base64 = options.base64 ? imageData.base64EncodedString() : nil
     let exif = options.exif ? ImageUtils.readExifFrom(data: imageData) : nil
+    let fileDate = getFileDate(assetIdentifier: selectedImage.assetIdentifier)
 
     let pairedVideoAssetInfo = try getPairedAssetInfo(
       from: videoResource, fileUrl: pairedVideoUrl, assetId: selectedImage.assetIdentifier)
@@ -260,6 +267,7 @@ internal struct MediaHandler {
       height: livePhoto.size.height,
       fileName: fileName,
       fileSize: fileSize,
+      fileDate: fileDate,
       mimeType: mimeType,
       base64: base64,
       exif: exif,
@@ -277,6 +285,7 @@ internal struct MediaHandler {
     let duration = VideoUtils.readDurationFrom(url: fileUrl)
     let mimeType = getMimeType(from: fileUrl.pathExtension)
     let fileSize = getFileSize(from: fileUrl)
+    let fileDate = getFileDate(assetIdentifier: assetId)
 
     return AssetInfo(
       assetId: assetId,
@@ -286,6 +295,7 @@ internal struct MediaHandler {
       height: dimensions.height,
       fileName: fileName,
       fileSize: fileSize,
+      fileDate: fileDate,
       mimeType: mimeType,
       duration: duration
     )
@@ -353,6 +363,7 @@ internal struct MediaHandler {
     let mimeType = getMimeType(from: targetUrl.pathExtension)
     let fileName = asset?.value(forKey: "filename") as? String
     let fileSize = getFileSize(from: targetUrl)
+    let fileDate = getFileDate(assetIdentifier: asset?.localIdentifier)
 
     return AssetInfo(
       assetId: asset?.localIdentifier,
@@ -362,6 +373,7 @@ internal struct MediaHandler {
       height: dimensions.height,
       fileName: fileName,
       fileSize: fileSize,
+      fileDate: fileDate,
       mimeType: mimeType,
       duration: VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
     )
@@ -491,6 +503,7 @@ internal struct MediaHandler {
     }
     let duration = VideoUtils.readDurationFrom(url: videoUrl)
     let fileSize = getFileSize(from: videoUrl)
+    let fileDate = getFileDate(assetIdentifier: assetId)
 
     return AssetInfo(
       assetId: assetId,
@@ -500,6 +513,7 @@ internal struct MediaHandler {
       height: size.height,
       fileName: fileName,
       fileSize: fileSize,
+      fileDate: fileDate,
       mimeType: mimeType,
       duration: duration
     )
@@ -518,6 +532,23 @@ internal struct MediaHandler {
   private func getFileExtension(from fileName: String) -> String {
     return ".\(URL(fileURLWithPath: fileName).pathExtension)"
   }
+}
+
+/*
+* Returns the date associated to the file. As displayed in the system media library.
+* If the user import an image without exif, then the system returns the date at which it has been added to the gallery.
+* If the user changes the date from the system gallery app, then the media date value is updated.
+* Is null if the photo comes from the camera.
+*/
+private func getFileDate(assetIdentifier: String?) -> Int64? {
+  guard let assetIdentifier = assetIdentifier else {
+    return nil
+  }
+  let assets = PHAsset.fetchAssets(withLocalIdentifiers: [assetIdentifier], options: nil)
+  if let timeIntervalSince1970 = assets.firstObject?.creationDate?.timeIntervalSince1970 {
+    return Int64(timeIntervalSince1970 * 1000)
+  }
+  return nil
 }
 
 extension PHAssetResourceManager {
