@@ -87,6 +87,7 @@ const LOADED_ENV_NAME = exports.LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
  */
 function getEnvFiles({
   mode = process.env.NODE_ENV,
+  local = true,
   silent
 } = {}) {
   if (!isEnabled()) {
@@ -97,18 +98,18 @@ function getEnvFiles({
   const logWarning = silent ? debug : _nodeConsole().default.warn;
   if (!mode) {
     logError(`The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set. Using only .env.local and .env`);
-    return ['.env.local', '.env'];
+    return local ? ['.env.local', '.env'] : ['.env'];
   }
   if (!KNOWN_MODES.includes(mode)) {
     logWarning(`NODE_ENV="${mode}" is non-conventional and might cause development code to run in production. Use "development", "test", or "production" instead. Continuing with non-conventional mode`);
   }
 
   // see: https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
-  return [`.env.${mode}.local`,
+  return [local && `.env.${mode}.local`,
   // Don't include `.env.local` for `test` environment
   // since normally you expect tests to produce the same
   // results for everyone
-  mode !== 'test' && `.env.local`, `.env.${mode}`, `.env`].filter(Boolean);
+  local && mode !== 'test' && `.env.local`, `.env.${mode}`, `.env`].filter(x => !!x);
 }
 
 /**

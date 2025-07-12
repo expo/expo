@@ -27,10 +27,13 @@ export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
  */
 export function getEnvFiles({
   mode = process.env.NODE_ENV,
+  local = true,
   silent,
 }: {
   /** The mode to use when creating the list of `.env*` files, defaults to `NODE_ENV` */
   mode?: string;
+  /** Whether to include local-only `.env*.local` files in the load order */
+  local?: boolean;
   /** If possible misconfiguration warnings should be logged, or only logged as debug log */
   silent?: boolean;
 } = {}) {
@@ -46,7 +49,7 @@ export function getEnvFiles({
     logError(
       `The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set. Using only .env.local and .env`
     );
-    return ['.env.local', '.env'];
+    return local ? ['.env.local', '.env'] : ['.env'];
   }
 
   if (!KNOWN_MODES.includes(mode)) {
@@ -57,14 +60,14 @@ export function getEnvFiles({
 
   // see: https://github.com/bkeepers/dotenv/tree/v3.1.4#customizing-rails
   return [
-    `.env.${mode}.local`,
+    local && `.env.${mode}.local`,
     // Don't include `.env.local` for `test` environment
     // since normally you expect tests to produce the same
     // results for everyone
-    mode !== 'test' && `.env.local`,
+    local && mode !== 'test' && `.env.local`,
     `.env.${mode}`,
     `.env`,
-  ].filter(Boolean) as string[];
+  ].filter((x): x is string => !!x);
 }
 
 /**
