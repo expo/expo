@@ -8,6 +8,7 @@
 
 - Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add `:projectRoot` option to `use_expo_modules!` ([#38210](https://github.com/expo/expo/pull/38210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Link dependencies of parent folders (to improve monorepo support). ([#38036](https://github.com/expo/expo/pull/38036) by [@jeppester](https://github.com/jeppester))
 
 ### 🐛 Bug fixes
 
