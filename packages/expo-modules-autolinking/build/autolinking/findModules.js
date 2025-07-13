@@ -203,9 +203,11 @@ async function filterToProjectDependenciesAsync(results, options) {
             }
         }
     }
-    // Visit project's package.
-    const projectPackageJsonPath = await (0, mergeLinkingOptions_1.getProjectPackageJsonPathAsync)(options.projectRoot);
-    await visitPackage(projectPackageJsonPath);
+    // Visit project's package, and ancestor projects' packages
+    const projectPackageJsonPaths = await (0, mergeLinkingOptions_1.getProjectPackageJsonPathsAsync)(options.projectRoot);
+    for (const path of projectPackageJsonPaths) {
+        await visitPackage(path);
+    }
     return filteredResults;
 }
 //# sourceMappingURL=findModules.js.map

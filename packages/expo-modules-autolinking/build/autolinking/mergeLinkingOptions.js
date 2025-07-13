@@ -5,9 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
 exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
+exports.getProjectPackageJsonPathsAsync = getProjectPackageJsonPathsAsync;
 exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
 exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
-const find_up_1 = __importDefault(require("find-up"));
+const find_up_1 = require("find-up");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("./utils");
@@ -15,7 +16,7 @@ const utils_1 = require("./utils");
  * Find the path to the `package.json` of the closest project in the given project root.
  */
 async function getProjectPackageJsonPathAsync(projectRoot) {
-    const result = await (0, find_up_1.default)('package.json', { cwd: projectRoot });
+    const result = await (0, find_up_1.findUp)('package.json', { cwd: projectRoot });
     if (!result) {
         throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
     }
@@ -25,8 +26,18 @@ async function getProjectPackageJsonPathAsync(projectRoot) {
  * Synchronous version of {@link getProjectPackageJsonPathAsync}.
  */
 function getProjectPackageJsonPathSync(projectRoot) {
-    const result = find_up_1.default.sync('package.json', { cwd: projectRoot });
+    const result = (0, find_up_1.findUpSync)('package.json', { cwd: projectRoot });
     if (!result) {
+        throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
+    }
+    return result;
+}
+/**
+ * Find the paths of `package.json` files in all parent folders
+ */
+async function getProjectPackageJsonPathsAsync(projectRoot) {
+    const result = await (0, find_up_1.findUpMultiple)('package.json', { cwd: projectRoot });
+    if (result.length === 0) {
         throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
     }
     return result;
@@ -64,7 +75,7 @@ async function findDefaultPathsAsync(cwd) {
     const paths = [];
     let dir = cwd;
     let pkgJsonPath;
-    while ((pkgJsonPath = await (0, find_up_1.default)('package.json', { cwd: dir }))) {
+    while ((pkgJsonPath = await (0, find_up_1.findUp)('package.json', { cwd: dir }))) {
         dir = path_1.default.dirname(path_1.default.dirname(pkgJsonPath));
         paths.push(path_1.default.join(pkgJsonPath, '..', 'node_modules'));
         // This stops the infinite loop when the package.json is placed at the root dir.
@@ -86,7 +97,7 @@ async function findDefaultPathsAsync(cwd) {
  * @returns resolved native modules directory or `null` if it is not found or doesn't exist.
  */
 async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
-    const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd });
+    const packageJsonPath = await (0, find_up_1.findUp)('package.json', { cwd });
     const projectRoot = packageJsonPath != null ? path_1.default.join(packageJsonPath, '..') : cwd;
     const resolvedPath = path_1.default.resolve(projectRoot, nativeModulesDir || 'modules');
     return fs_1.default.existsSync(resolvedPath) ? resolvedPath : null;

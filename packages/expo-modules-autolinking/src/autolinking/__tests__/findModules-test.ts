@@ -215,6 +215,76 @@ describe(findModulesAsync, () => {
   /**
    * /workspace
    *   │ ╚══ /workspace/packages/app
+   *   │
+   *   └── /workspace/node_modules/pkg@1.0.0
+   */
+  it('should link package deps hoisted to ancestor folder package.json (monorepos)', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('monorepo', {
+          pkgDependencies: { pkg: '*' },
+        }),
+        'packages/app': {
+          ...mockedRoot('app'),
+        },
+        node_modules: { pkg: mockedModule('pkg') },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      searchPaths: [
+        path.join(projectRoot, 'packages/app/node_modules'),
+        path.join(projectRoot, 'node_modules'),
+      ],
+      platform: 'ios',
+      projectRoot: path.join(projectRoot, 'packages/app'),
+    });
+    expect(result['pkg']).toBeDefined();
+  });
+
+  /**
+   * /workspace
+   *   │ ╚══ /workspace/packages/app
+   *   │       └── /workspace/packages/app/node_modules/pkg@0.1.0
+   *   │
+   *   └── /workspace/node_modules/pkg@1.0.0
+   */
+  it('should prefer the non-hoisted dep over ancestor folder dep', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('monorepo', {
+          pkgDependencies: { pkg: '1.0.0' },
+        }),
+        'packages/app': {
+          ...mockedRoot('app', {
+            pkgDependencies: { pkg: '0.1.0' },
+          }),
+          node_modules: {
+            pkg: mockedModule('pkg', { pkgVersion: '0.1.0' }),
+          },
+        },
+        node_modules: { pkg: mockedModule('pkg', { pkgVersion: '1.0.0' }) },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      searchPaths: [
+        path.join(projectRoot, 'packages/app/node_modules'),
+        path.join(projectRoot, 'node_modules'),
+      ],
+      platform: 'ios',
+      projectRoot: path.join(projectRoot, 'packages/app'),
+    });
+    expect(result['pkg']).toBeDefined();
+    expect(result['pkg'].path).toEqual('/fake/project/packages/app/node_modules/pkg');
+    expect(result['pkg'].version).toEqual('0.1.0');
+  });
+
+  /**
+   * /workspace
+   *   │ ╚══ /workspace/packages/app
    *   │       └── /workspace/packages/app/node_modules/pkg@1.0.0
    *   │
    *   └── /workspace/node_modules/pkg@0.0.0
