@@ -4,6 +4,7 @@ exports.getServerManifest = getServerManifest;
 exports.parseParameter = parseParameter;
 const matchers_1 = require("./matchers");
 const sortRoutes_1 = require("./sortRoutes");
+const url_1 = require("./utils/url");
 function isNotFoundRoute(route) {
     return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
 }
@@ -47,9 +48,16 @@ function getServerManifest(route) {
         (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))), ([path]) => path);
     const redirects = uniqueBy(flat.filter(([, , route]) => route.type === 'redirect'), ([path]) => path)
         .map((redirect) => {
-        redirect[1] =
-            flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
-                '/';
+        // TODO(@hassankhan): ENG-16577
+        // For external redirects, use `destinationContextKey` as the destination URL
+        if ((0, url_1.shouldLinkExternally)(redirect[2].destinationContextKey)) {
+            redirect[1] = redirect[2].destinationContextKey;
+        }
+        else {
+            redirect[1] =
+                flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
+                    '/';
+        }
         return redirect;
     })
         .reverse();
