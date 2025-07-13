@@ -13,13 +13,15 @@ const expoRoot = path.join(__dirname, '..', '..', '..', '..', '..');
 
 jest.mock('glob');
 
-const mockProjectPackageJsonPath = jest.fn().mockResolvedValue(path.join(expoRoot, 'package.json'));
+const mockProjectPackageJsonPaths = jest
+  .fn()
+  .mockResolvedValue([path.join(expoRoot, 'package.json')]);
 
 jest.mock('../mergeLinkingOptions', () => {
   const actualModule = jest.requireActual('../mergeLinkingOptions');
   return {
     ...actualModule,
-    getProjectPackageJsonPathAsync: mockProjectPackageJsonPath,
+    getProjectPackageJsonPathsAsync: mockProjectPackageJsonPaths,
   };
 });
 
@@ -131,7 +133,7 @@ describe(findModulesAsync, () => {
 
       // mock app project package.json
       const appDependencies = isNegativeTest ? {} : { pkg: '*' };
-      mockProjectPackageJsonPath.mockResolvedValue(appPackageJsonPath);
+      mockProjectPackageJsonPaths.mockResolvedValue([appPackageJsonPath]);
       registerRequireMock(appPackageJsonPath, {
         name: 'app',
         version: '0.0.1',
@@ -178,7 +180,7 @@ describe(findModulesAsync, () => {
       // mock app project package.json
 
       const appDependencies = isNegativeTest ? {} : { 'dpk-pkg': '*' };
-      mockProjectPackageJsonPath.mockResolvedValue(appPackageJsonPath);
+      mockProjectPackageJsonPaths.mockResolvedValue([appPackageJsonPath]);
       registerRequireMock(appPackageJsonPath, {
         name: 'app',
         version: '0.0.1',
@@ -218,8 +220,96 @@ describe(findModulesAsync, () => {
   /**
    * /workspace
    *   │ ╚══ /workspace/packages/app
-   *   │       └── /workspace/packages/app/node_modules/pkg@1.0.0
    *   │
+   *   └── /workspace/node_modules/pkg
+   */
+  it('should link package deps hoisted to ancestor folder package.json (monorepos)', async () => {
+    const appPackageJsonPath = path.join(expoRoot, 'packages', 'app', 'package.json');
+    const monoRepoPackageJsonPath = path.join(expoRoot, 'package.json');
+    const appNodeModules = path.join(expoRoot, 'packages', 'app', 'node_modules');
+
+    // mock app and monorepo package.jsons
+    mockProjectPackageJsonPaths.mockResolvedValue([appPackageJsonPath, monoRepoPackageJsonPath]);
+    registerRequireMock(appPackageJsonPath, {
+      name: 'app',
+      version: '0.0.1',
+      dependencies: {},
+    });
+    registerRequireMock(monoRepoPackageJsonPath, {
+      name: 'monorepo',
+      version: '0.0.1',
+      dependencies: { pkg: '*' },
+    });
+
+    // add mocked pkgs
+    const workspaceNodeModules = path.join(expoRoot, 'node_modules');
+    const searchPaths = [appNodeModules, workspaceNodeModules];
+    addMockedModule('pkg', {
+      globCwd: workspaceNodeModules,
+      nodeModulesRoot: workspaceNodeModules,
+      pkgVersion: '0.0.0',
+    });
+
+    const result = await findModulesAsync({
+      searchPaths,
+      platform: 'ios',
+      projectRoot: expoRoot,
+    });
+    expect(result['pkg']).toBeDefined();
+  });
+
+  /**
+   * /workspace
+   *   │ ╚══ /workspace/packages/app
+   *   │
+   *   └── /workspace/node_modules/pkg
+   */
+  it('should prefer the non-hoisted dep over ancestor folder dep', async () => {
+    const appPackageJsonPath = path.join(expoRoot, 'packages', 'app', 'package.json');
+    const monoRepoPackageJsonPath = path.join(expoRoot, 'package.json');
+    const appNodeModules = path.join(expoRoot, 'packages', 'app', 'node_modules');
+
+    // mock app and monorepo package.jsons
+    mockProjectPackageJsonPaths.mockResolvedValue([appPackageJsonPath, monoRepoPackageJsonPath]);
+    registerRequireMock(monoRepoPackageJsonPath, {
+      name: 'monorepo',
+      version: '0.0.1',
+      dependencies: { pkg: '1.0.0' },
+    });
+    registerRequireMock(appPackageJsonPath, {
+      name: 'app',
+      version: '0.0.1',
+      dependencies: { pkg: '0.1.0' },
+    });
+
+    // add mocked pkgs
+    const workspaceNodeModules = path.join(expoRoot, 'node_modules');
+    const searchPaths = [appNodeModules, workspaceNodeModules];
+    addMockedModule('pkg', {
+      globCwd: workspaceNodeModules,
+      nodeModulesRoot: workspaceNodeModules,
+      pkgVersion: '1.0.0',
+    });
+    addMockedModule('pkg', {
+      globCwd: appNodeModules,
+      nodeModulesRoot: appNodeModules,
+      pkgVersion: '0.1.0',
+    });
+
+    const result = await findModulesAsync({
+      searchPaths,
+      platform: 'ios',
+      projectRoot: expoRoot,
+    });
+    expect(result['pkg']).toBeDefined();
+    expect(result['pkg'].version).toEqual('0.1.0');
+  });
+
+  /**
+   * /workspace
+   *   │ ╚══ /workspace/packages/app
+   *   │       └── /workspace/packages/app/node_modules/pkg@1.0.0
+   *   │    console.log(searchPath);
    *   └── /workspace/node_modules/pkg@0.0.0
    */
   it('should link non-hoisted package first if there are multiple versions', async () => {
@@ -227,7 +317,7 @@ describe(findModulesAsync, () => {
     const appNodeModules = path.join(expoRoot, 'packages', 'app', 'node_modules');
 
     // mock app project package.json
-    mockProjectPackageJsonPath.mockResolvedValue(appPackageJsonPath);
+    mockProjectPackageJsonPaths.mockResolvedValue([appPackageJsonPath]);
     registerRequireMock(appPackageJsonPath, {
       name: 'app',
       version: '0.0.1',
@@ -272,7 +362,7 @@ describe(findModulesAsync, () => {
    *              ├── /expo-dev-client
    *              └── /expo-dev-launcher
    */
-  it('should link pacakges which are installed in isolated stores', async () => {
+  it('should link packages which are installed in isolated stores', async () => {
     const modulesRoot = path.join(expoRoot, 'isolation', 'node_modules');
 
     // Create the isolated store paths

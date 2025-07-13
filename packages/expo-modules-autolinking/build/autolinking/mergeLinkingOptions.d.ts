@@ -8,6 +8,10 @@ export declare function getProjectPackageJsonPathAsync(projectRoot: string): Pro
  */
 export declare function getProjectPackageJsonPathSync(projectRoot: string): string;
 /**
+ * Find the paths of `package.json` files in all parent folders
+ */
+export declare function getProjectPackageJsonPathsAsync(projectRoot: string): Promise<string[]>;
+/**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
  * - platform-specific options from the above (e.g. `expo.autolinking.apple`)
