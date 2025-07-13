@@ -179,6 +179,7 @@ function ModalStackRouteDrawer({
       dismissible={options.gestureEnabled ?? true}
       onAnimationEnd={handleOpenChange}
       shouldScaleBackground
+      autoFocus
       onOpenChange={setOpen}
       {...sheetProps}>
       <Drawer.Portal>
