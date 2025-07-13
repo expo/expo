@@ -1,18 +1,17 @@
 package expo.modules.updates.loader
 
 import android.net.Uri
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
-
-import expo.modules.updates.TestUtils.asJSONResponse
-import expo.modules.updates.TestUtils.asResponse
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CertificateFixtures
 import expo.modules.updates.codesigning.TestCertificateType
+import expo.modules.updates.codesigning.TestUtils.asJSONResponse
+import expo.modules.updates.codesigning.TestUtils.asResponse
 import expo.modules.updates.codesigning.getTestCertificate
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.Update
+import kotlinx.coroutines.test.runTest
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -23,13 +22,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert
-import org.junit.Test
-import kotlinx.coroutines.test.runTest
 import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class FileDownloaderManifestParsingTest {
   @get:Rule
   val temporaryFolder = TemporaryFolder()
