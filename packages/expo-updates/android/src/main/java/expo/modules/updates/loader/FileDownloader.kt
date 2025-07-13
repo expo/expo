@@ -1,6 +1,6 @@
 package expo.modules.updates.loader
 
-import com.facebook.react.common.annotations.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.OuterList
