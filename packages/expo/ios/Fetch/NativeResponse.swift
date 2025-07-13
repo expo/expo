@@ -26,6 +26,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   private(set) var responseInit: NativeResponseInit?
   private(set) var redirected = false
   private(set) var error: Error?
+  private(set) var redirectMode: NativeRequestRedirect = .follow
 
   var bodyUsed: Bool {
     return self.sink.bodyUsed
@@ -34,6 +35,10 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   init(dispatchQueue: DispatchQueue) {
     self.sink = ResponseSink()
     self.dispatchQueue = dispatchQueue
+  }
+
+  func setRedirectMode(_ mode: NativeRequestRedirect) {
+    self.redirectMode = mode
   }
 
   func startStreaming() -> Data? {
@@ -145,6 +150,17 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
 
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data) {
     if isInvalidState(.responseReceived, .bodyStreamingStarted, .bodyStreamingCanceled) {
+      return
+    }
+
+    if redirected && redirectMode == .error {
+      let error = FetchRedirectException()
+      self.error = error
+      if state == .bodyStreamingStarted {
+        emit(event: "didFailWithError", arguments: error.localizedDescription)
+      }
+      state = .errorReceived
+      emit(event: "readyForJSFinalization")
       return
     }
 

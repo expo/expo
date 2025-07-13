@@ -8,6 +8,7 @@ import ExpoModulesCore
 internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
   private let delegate: ExpoURLSessionTaskDelegate
   private var task: URLSessionDataTask?
+  private var redirectMode: NativeRequestRedirect = .follow
 
   init(delegate: ExpoURLSessionTaskDelegate) {
     self.delegate = delegate
@@ -21,6 +22,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     requestInit: NativeRequestInit,
     requestBody: Data?
   ) {
+    self.redirectMode = requestInit.redirect
     var request = URLRequest(url: url)
     request.httpMethod = requestInit.method
     request.timeoutInterval = 0
@@ -61,7 +63,12 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
     self.delegate.urlSession(self, didRedirect: response)
-    completionHandler(request)
+    switch self.redirectMode {
+      case .follow:
+        completionHandler(request)
+      case .manual, .error:
+        completionHandler(nil)
+    }
   }
 
   func urlSession(
