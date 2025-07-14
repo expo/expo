@@ -7,13 +7,9 @@
  */
 // Copy of the upstream test to ensure compatible behavior.
 
-import { codeFrameColumns } from '@babel/code-frame';
-import type { SourceLocation as BabelSourceLocation } from '@babel/types';
-import type { Dependency } from 'metro/src/ModuleGraph/worker/collectDependencies';
-import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
-
 import { importExportPlugin } from '../import-export-plugin';
-import { compare, transformToAst } from './__mocks__/test-helpers-upstream';
+import { compare } from './__mocks__/test-helpers-upstream';
+import { showTransformedDeps } from './utils';
 
 const opts = {
   importAll: '_$$_IMPORT_ALL',
@@ -370,51 +366,3 @@ it('supports `import {default as LocalName}`', () => {
         | ^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (react-native)"
   `);
 });
-
-function showTransformedDeps(code: string) {
-  const { dependencies } = collectDependencies(transformToAst([importExportPlugin], code, opts), {
-    asyncRequireModulePath: 'asyncRequire',
-    dependencyMapName: null,
-    dynamicRequires: 'reject',
-    inlineableCalls: [opts.importAll, opts.importDefault],
-    keepRequireNames: true,
-    allowOptionalDependencies: false,
-    unstable_allowRequireContext: false,
-  });
-
-  return formatDependencyLocs(dependencies, code);
-}
-
-function formatDependencyLocs(dependencies: readonly Dependency[], code: string) {
-  return (
-    '\n' +
-    dependencies
-      .map((dep, depIndex) =>
-        dep.data.locs.length
-          ? dep.data.locs.map((loc) => formatLoc(loc, depIndex, dep, code)).join('\n')
-          : `dep #${depIndex} (${dep.name}): no location recorded`
-      )
-      .join('\n')
-  );
-}
-
-function adjustPosForCodeFrame(
-  pos: BabelSourceLocation['start'] | BabelSourceLocation['end'] | null | undefined
-) {
-  return pos ? { ...pos, column: pos.column + 1 } : pos;
-}
-
-function adjustLocForCodeFrame(loc: BabelSourceLocation) {
-  return {
-    start: adjustPosForCodeFrame(loc.start),
-    end: adjustPosForCodeFrame(loc.end),
-  };
-}
-
-function formatLoc(loc: BabelSourceLocation, depIndex: number, dep: Dependency, code: string) {
-  return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
-    message: `dep #${depIndex} (${dep.name})`,
-    linesAbove: 0,
-    linesBelow: 0,
-  });
-}
