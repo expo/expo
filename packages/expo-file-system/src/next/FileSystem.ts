@@ -208,4 +208,13 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
   get name() {
     return Paths.basename(this.uri);
   }
+
+  createFile(name: string, mimeType: string | null): File {
+    // Wrapping with the JS child class for additional, JS-only methods.
+    return new File(super.createFile(name, mimeType).uri);
+  }
+
+  createDirectory(name: string): Directory {
+    return new Directory(super.createDirectory(name).uri);
+  }
 }

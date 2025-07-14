@@ -1,6 +1,8 @@
 package expo.modules.filesystem.next
 
+import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
@@ -8,27 +10,31 @@ import java.net.URI
 import java.util.EnumSet
 import kotlin.io.path.moveTo
 
-abstract class FileSystemPath(public var uri: URI) : SharedObject() {
-  val file get() = File(uri)
+abstract class FileSystemPath(var uri: Uri) : SharedObject() {
+  val javaFile get() = File(URI.create(uri.toString()))
+  val file: FileSystemFileAdapter by lazy {
+    FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), uri)
+  }
+  val isContentURI = uri.scheme == "content"
 
-  fun delete(fileOrDirectory: File = file) {
-    if (!fileOrDirectory.exists()) {
-      throw UnableToDeleteException("path '${fileOrDirectory.path}' does not exist")
+  fun delete() {
+    if (!file.exists()) {
+      throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
-    if (fileOrDirectory.isDirectory) {
-      fileOrDirectory.listFiles()?.forEach { child ->
+    if (file.isDirectory) {
+      file.listFiles().forEach { child ->
         if (child.isDirectory) {
           // Recursively delete subdirectories
-          delete(child)
+          FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
         } else {
           if (!child.delete()) {
-            throw UnableToDeleteException("failed to delete '${child.path}'")
+            throw UnableToDeleteException("failed to delete '${child.uri}'")
           }
         }
       }
     }
-    if (!fileOrDirectory.delete()) {
-      throw UnableToDeleteException("failed to delete '${fileOrDirectory.path}'")
+    if (!file.delete()) {
+      throw UnableToDeleteException("failed to delete '${file.uri}'")
     }
   }
 
@@ -40,26 +46,26 @@ abstract class FileSystemPath(public var uri: URI) : SharedObject() {
         if (!destination.exists) {
           throw DestinationDoesNotExistException()
         }
-        return File(destination.file, file.name)
+        return File(destination.javaFile, javaFile.name)
       }
       // this if FileSystemDirectory
       // we match unix behavior https://askubuntu.com/a/763915
       if (destination.exists) {
-        return File(destination.file, file.name)
+        return File(destination.javaFile, javaFile.name)
       }
-      if (destination.file.parentFile?.exists() != true) {
+      if (destination.javaFile.parentFile?.exists() != true) {
         throw DestinationDoesNotExistException()
       }
-      return destination.file
+      return destination.javaFile
     }
     // destination is FileSystemFile
     if (this !is FileSystemFile) {
       throw CopyOrMoveDirectoryToFileException()
     }
-    if (destination.file.parentFile?.exists() != true) {
+    if (destination.javaFile.parentFile?.exists() != true) {
       throw DestinationDoesNotExistException()
     }
-    return destination.file
+    return destination.javaFile
   }
 
   fun validatePermission(permission: Permission) {
@@ -69,7 +75,11 @@ abstract class FileSystemPath(public var uri: URI) : SharedObject() {
   }
 
   fun checkPermission(permission: Permission): Boolean {
-    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
+    if(file.isContentURI) {
+      // TODO: Consider adding a check for content URIs (not in legacy FS)
+      return true
+    }
+    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, javaFile.path) ?: EnumSet.noneOf(Permission::class.java)
     return permissions.contains(permission)
   }
 
@@ -85,7 +95,7 @@ abstract class FileSystemPath(public var uri: URI) : SharedObject() {
     validatePermission(Permission.READ)
     to.validatePermission(Permission.WRITE)
 
-    file.copyRecursively(getMoveOrCopyPath(to))
+    javaFile.copyRecursively(getMoveOrCopyPath(to))
   }
 
   fun move(to: FileSystemPath) {
@@ -96,12 +106,12 @@ abstract class FileSystemPath(public var uri: URI) : SharedObject() {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val destination = getMoveOrCopyPath(to)
-      file.toPath().moveTo(destination.toPath())
-      uri = destination.toURI()
+      javaFile.toPath().moveTo(destination.toPath())
+      uri = destination.toUri()
     } else {
-      file.copyTo(getMoveOrCopyPath(to))
-      file.delete()
-      uri = getMoveOrCopyPath(to).toURI()
+      javaFile.copyTo(getMoveOrCopyPath(to))
+      javaFile.delete()
+      uri = getMoveOrCopyPath(to).toUri()
     }
   }
 }
