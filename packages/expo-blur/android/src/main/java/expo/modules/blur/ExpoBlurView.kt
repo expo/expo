@@ -92,8 +92,8 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
 
     // Now we can safely walk the parent hierarchy
     if (!isBlurViewConfigured) {
-      configureBlurView()
       isBlurViewConfigured = true
+      configureBlurView()
     }
   }
 
