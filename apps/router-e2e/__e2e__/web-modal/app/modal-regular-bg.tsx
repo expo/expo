@@ -16,16 +16,18 @@ const styles = StyleSheet.create({
 
 export default function Page() {
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, alignItems: 'center' }}>
+    <ScrollView
+      style={{ backgroundColor: 'red' }}
+      contentContainerStyle={{ padding: 16, alignItems: 'center' }}>
       <Text
         testID="modal-title-regular"
         style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' }}>
-        Regular Modal (detent 0.4)
+        Regular Modal (detent 0.8)
       </Text>
 
       <View style={{ maxWidth: 400, marginBottom: 32 }}>
         <Text style={{ marginBottom: 8 }}>
-          This modal uses a single detent at 40% of the screen height. The buttons below open other
+          This modal uses a single detent at 80% of the screen height. The buttons below open other
           examples or navigate elsewhere so you can test nested navigation behaviour.
         </Text>
       </View>

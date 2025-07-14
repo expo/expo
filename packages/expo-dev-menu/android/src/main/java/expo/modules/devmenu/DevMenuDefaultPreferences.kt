@@ -1,8 +1,5 @@
 package expo.modules.devmenu
 
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
 
 open class DevMenuDefaultPreferences : DevMenuPreferencesInterface {
@@ -29,19 +26,4 @@ open class DevMenuDefaultPreferences : DevMenuPreferencesInterface {
   override var isOnboardingFinished: Boolean
     get() = true
     set(_) = methodUnavailable()
-
-  override fun serialize(): WritableMap =
-    Arguments
-      .createMap()
-      .apply {
-        putBoolean("motionGestureEnabled", motionGestureEnabled)
-        putBoolean("touchGestureEnabled", touchGestureEnabled)
-        putBoolean("keyCommandsEnabled", keyCommandsEnabled)
-        putBoolean("showsAtLaunch", showsAtLaunch)
-        putBoolean("isOnboardingFinished", isOnboardingFinished)
-      }
-
-  override fun setPreferences(settings: ReadableMap) {
-    methodUnavailable()
-  }
 }

@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Link } from 'expo-router';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   button: {
@@ -8,8 +8,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     alignItems: 'center',
-  },
-  buttonText: {
+    backgroundColor: '#333',
     color: 'white',
     fontSize: 14,
   },
@@ -21,7 +20,7 @@ export default function Page() {
       <Text
         testID="modal-title-full"
         style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
-        Full Screen Modal
+        Default page in nested layout
       </Text>
       <Text>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
@@ -31,18 +30,14 @@ export default function Page() {
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
         labore et dolore magna aliqua.
       </Text>
-      <Pressable
-        testID="open-modal-regular"
-        onPress={() => router.push('/[test]/sheet-radius')}
-        style={[styles.button, { backgroundColor: '#5856D6' }]}>
-        <Text style={styles.buttonText}>Sheet (border radius 24)</Text>
-      </Pressable>
-      <Pressable
-        testID="open-modal-regular"
-        onPress={() => router.push('/modal-transparent')}
-        style={[styles.button, { backgroundColor: '#000000' }]}>
-        <Text style={styles.buttonText}>Modal (transparent)</Text>
-      </Pressable>
+      <View style={{ marginTop: 20 }}>
+        <Link testID="open-modal-regular" href="/nested/sheet-radius" style={styles.button}>
+          Sheet
+        </Link>
+        <Link testID="open-modal-regular" href="/modal-transparent" style={styles.button}>
+          Modal (transparent)
+        </Link>
+      </View>
     </ScrollView>
   );
 }

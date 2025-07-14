@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.compose.SettingsAction
+import expo.modules.devlauncher.compose.SettingsState
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.primitives.Divider
@@ -21,7 +23,10 @@ import expo.modules.devmenu.compose.ui.MenuInfo
 import expo.modules.devmenu.compose.ui.MenuSwitch
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+  state: SettingsState = SettingsState(),
+  onAction: (SettingsAction) -> Unit = {}
+) {
   Column(modifier = Modifier.padding(Theme.spacing.medium)) {
     ScreenHeaderContainer(backgroundColor = Theme.colors.background.secondary) {
       Heading("Settings")
@@ -30,7 +35,12 @@ fun SettingsScreen() {
     Spacer(Theme.spacing.large)
 
     RoundedSurface {
-      MenuSwitch("Show menu as launch", icon = painterResource(R.drawable._expodevclientcomponents_assets_showmenuatlaunchicon))
+      MenuSwitch(
+        "Show menu as launch",
+        icon = painterResource(R.drawable._expodevclientcomponents_assets_showmenuatlaunchicon),
+        toggled = state.showMenuAtLaunch,
+        onToggled = { onAction(SettingsAction.ToggleShowMenuAtLaunch(it)) }
+      )
     }
 
     Spacer(Theme.spacing.medium)
@@ -46,13 +56,27 @@ fun SettingsScreen() {
         MenuButton(
           "Shake device",
           icon = painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_shakedeviceicon),
-          rightIcon = painterResource(R.drawable._expodevclientcomponents_assets_checkicon)
+          onClick = {
+            onAction(SettingsAction.ToggleShakeEnable(!state.isShakeEnable))
+          },
+          rightIcon = if (state.isShakeEnable) {
+            painterResource(R.drawable._expodevclientcomponents_assets_checkicon)
+          } else {
+            null
+          }
         )
         Divider()
         MenuButton(
           "Three three-finger long press",
           icon = painterResource(R.drawable._expodevclientcomponents_assets_threefingerlongpressicon),
-          rightIcon = painterResource(R.drawable._expodevclientcomponents_assets_checkicon)
+          onClick = {
+            onAction(SettingsAction.ToggleThreeFingerLongPressEnable(!state.isThreeFingerLongPressEnable))
+          },
+          rightIcon = if (state.isThreeFingerLongPressEnable) {
+            painterResource(R.drawable._expodevclientcomponents_assets_checkicon)
+          } else {
+            null
+          }
         )
       }
     }

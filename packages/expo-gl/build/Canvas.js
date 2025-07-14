@@ -32,7 +32,7 @@ function getSize({ size, ref }) {
     const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
     return { width, height };
 }
-const Canvas = React.forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
+const Canvas = (props) => createElement('canvas', props);
 const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
     const [size, setSize] = React.useState(null);
     const ref = React.useRef(null);
@@ -76,7 +76,7 @@ const CanvasWrapper = ({ pointerEvents, children, style, ...props }) => {
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
     return (<View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill}/>
+      <Canvas ref={_canvasRef} style={[StyleSheet.absoluteFill, { pointerEvents }]}/>
       {children}
     </View>);
 };

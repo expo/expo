@@ -43,10 +43,11 @@ function getSize({ size, ref }: GetSizeParams): Size {
   return { width, height };
 }
 
-const Canvas = React.forwardRef(
-  (props: React.ComponentProps<typeof View>, ref: React.Ref<HTMLCanvasElement>) =>
-    createElement('canvas', { ...props, ref })
-);
+const Canvas = (
+  props: React.ComponentProps<typeof View> & {
+    ref?: React.Ref<HTMLCanvasElement>;
+  }
+) => createElement('canvas', props);
 
 const CanvasWrapper: React.FunctionComponent<
   ViewProps & {
@@ -114,7 +115,7 @@ const CanvasWrapper: React.FunctionComponent<
 
   return (
     <View {...props} style={[styles.wrapper, style]} ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill} />
+      <Canvas ref={_canvasRef} style={[StyleSheet.absoluteFill, { pointerEvents }]} />
       {children}
     </View>
   );

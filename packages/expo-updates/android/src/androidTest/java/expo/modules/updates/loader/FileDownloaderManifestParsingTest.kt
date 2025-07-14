@@ -2,8 +2,8 @@ package expo.modules.updates.loader
 
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
+
 import expo.modules.updates.TestUtils.asJSONResponse
 import expo.modules.updates.TestUtils.asResponse
 import expo.modules.updates.UpdatesConfiguration
@@ -24,14 +24,18 @@ import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert
 import org.junit.Test
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class FileDownloaderManifestParsingTest {
-  @Test
-  fun testManifestParsing_JSONBody() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  @get:Rule
+  val temporaryFolder = TemporaryFolder()
 
+  @Test
+  fun testManifestParsing_JSONBody() = runTest {
     val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
 
     val configuration = UpdatesConfiguration(
@@ -41,30 +45,18 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdate: Update? = null
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(response)
+    val resultUpdate = updateResponse.manifestUpdateResponsePart?.update
 
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
     Assert.assertNotNull(resultUpdate)
     Assert.assertFalse(resultUpdate!!.manifest.isVerified())
   }
 
   @Test
-  fun testManifestParsing_MultipartBody() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBody() = runTest {
+    val filesDirectory = temporaryFolder.newFolder()
+    val logDirectory = temporaryFolder.newFolder()
     val boundary = "blah"
 
     val extensions = "{}"
@@ -86,35 +78,18 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val resultUpdateResponse = FileDownloader(filesDirectory, "", configuration, UpdatesLogger(logDirectory)).parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertNotNull(resultUpdateResponse!!.manifestUpdateResponsePart)
-    Assert.assertFalse(resultUpdateResponse!!.manifestUpdateResponsePart!!.update.manifest.isVerified())
+    Assert.assertNotNull(resultUpdateResponse.manifestUpdateResponsePart)
+    Assert.assertFalse(resultUpdateResponse.manifestUpdateResponsePart!!.update.manifest.isVerified())
 
-    Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
-    Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
+    Assert.assertNotNull(resultUpdateResponse.directiveUpdateResponsePart)
+    Assert.assertTrue(resultUpdateResponse.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
   }
 
   @Test
-  fun testManifestParsing_MultipartBodyOnlyDirective() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodyOnlyDirective() = runTest {
     val boundary = "blah"
 
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
@@ -132,34 +107,18 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.manifestUpdateResponsePart)
 
-    Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
-    Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
+    Assert.assertNotNull(resultUpdateResponse.directiveUpdateResponsePart)
+    Assert.assertTrue(resultUpdateResponse.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
   }
 
   @Test
-  fun testManifestParsing_MultipartBodyOnlyDirective_v0CompatibilityMode() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodyOnlyDirective_v0CompatibilityMode() = runTest {
     val boundary = "blah"
     val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
 
@@ -177,29 +136,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred: Exception? = null
-    var resultUpdate: Update? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = e
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
-    )
-
-    Assert.assertEquals("Invalid update response: Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version.", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
-    Assert.assertNull(resultUpdate)
+    try {
+      val fileDownloader = createFileDownloader(configuration)
+      fileDownloader.parseRemoteUpdateResponse(response)
+    } catch (e: Exception) {
+      Assert.assertEquals("Invalid update response: Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version.", e.localizedMessageWithCauseLocalizedMessage())
+    }
   }
 
   @Test
-  fun testManifestParsing_MultipartBodyNoRelevantParts() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodyNoRelevantParts() = runTest {
     val boundary = "blah"
 
     val response = MultipartBody.Builder(boundary)
@@ -215,32 +161,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
-    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.directiveUpdateResponsePart)
   }
 
   @Test
-  fun testManifestParsing_MultipartBodyEmpty() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodyEmpty() = runTest {
     val boundary = "blah"
 
     val response = Response.Builder()
@@ -258,33 +188,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
-    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.directiveUpdateResponsePart)
   }
 
   @Test
-  fun testManifestParsing_NullBodyResponseProtocol1() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-
+  fun testManifestParsing_NullBodyResponseProtocol1() = runTest {
     val response = Response.Builder()
       .request(Request.Builder().url("http://wat.com").build())
       .protocol(Protocol.HTTP_2)
@@ -301,33 +214,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
-    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.directiveUpdateResponsePart)
   }
 
   @Test
-  fun testManifestParsing_204ResponseProtocol1() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-
+  fun testManifestParsing_204ResponseProtocol1() = runTest {
     val response = Response.Builder()
       .request(Request.Builder().url("http://wat.com").build())
       .protocol(Protocol.HTTP_2)
@@ -344,33 +240,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
-    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse.directiveUpdateResponsePart)
   }
 
   @Test
-  fun testManifestParsing_204ResponseNoProtocol() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-
+  fun testManifestParsing_204ResponseNoProtocol() = runTest {
     val response = Response.Builder()
       .request(Request.Builder().url("http://wat.com").build())
       .protocol(Protocol.HTTP_2)
@@ -386,35 +265,22 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred: Exception? = null
-    var resultUpdate: Update? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = e
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
-    )
-
-    Assert.assertEquals("Invalid update response: Empty body", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
-    Assert.assertNull(resultUpdate)
+    try {
+      val fileDownloader = createFileDownloader(configuration)
+      fileDownloader.parseRemoteUpdateResponse(response)
+      Assert.fail("Expected exception to be thrown")
+    } catch (e: Exception) {
+      Assert.assertEquals("Invalid update response: Empty body", e.localizedMessageWithCauseLocalizedMessage())
+    }
   }
 
   @Test
-  fun testManifestParsing_JSONBodySigned() {
+  fun testManifestParsing_JSONBodySigned() = runTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0",
       "expo-signature" to CertificateFixtures.testExpoUpdatesManifestBodySignature
     )
-
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(headersMap.toHeaders())
 
@@ -428,30 +294,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdate: Update? = null
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(response)
+    val resultUpdate = updateResponse.manifestUpdateResponsePart?.update
 
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
     Assert.assertNotNull(resultUpdate)
     Assert.assertTrue(resultUpdate!!.manifest.isVerified())
   }
 
   @Test
-  fun testManifestParsing_MultipartBodySigned() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodySigned() = runTest {
     val boundary = "blah"
 
     val headersMap = mapOf(
@@ -495,39 +347,22 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
     Assert.assertNotNull(resultUpdateResponse)
-    Assert.assertTrue(resultUpdateResponse!!.manifestUpdateResponsePart!!.update.manifest.isVerified())
+    Assert.assertTrue(resultUpdateResponse.manifestUpdateResponsePart!!.update.manifest.isVerified())
 
-    Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
-    Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
+    Assert.assertNotNull(resultUpdateResponse.directiveUpdateResponsePart)
+    Assert.assertTrue(resultUpdateResponse.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
   }
 
   @Test
-  fun testManifestParsing_JSONBodySigned_UnsignedRequest() {
+  fun testManifestParsing_JSONBodySigned_UnsignedRequest() = runTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0"
     )
-
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(headersMap.toHeaders())
 
@@ -541,29 +376,16 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred: Exception? = null
-    var resultUpdate: Update? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = e
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
-    )
-
-    Assert.assertEquals("Code signing verification failed for manifest: No expo-signature header specified", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
-    Assert.assertNull(resultUpdate)
+    try {
+      val fileDownloader = createFileDownloader(configuration)
+      fileDownloader.parseRemoteUpdateResponse(response)
+    } catch (e: Exception) {
+      Assert.assertEquals("Code signing verification failed for manifest: No expo-signature header specified", e.localizedMessageWithCauseLocalizedMessage())
+    }
   }
 
   @Test
-  fun testManifestParsing_MultipartBodySignedCertificateParticularExperience() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodySignedCertificateParticularExperience() = runTest {
     val boundary = "blah"
 
     val headersMap = mapOf(
@@ -614,33 +436,18 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
-    var resultUpdateResponse: UpdateResponse? = null
+    val fileDownloader = createFileDownloader(configuration)
+    val resultUpdateResponse = fileDownloader.parseRemoteUpdateResponse(response)
 
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
+    Assert.assertNotNull(resultUpdateResponse.manifestUpdateResponsePart?.update)
+    Assert.assertTrue(resultUpdateResponse.manifestUpdateResponsePart?.update!!.manifest.isVerified())
 
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertFalse(errorOccurred)
-    Assert.assertNotNull(resultUpdateResponse!!.manifestUpdateResponsePart?.update)
-    Assert.assertTrue(resultUpdateResponse!!.manifestUpdateResponsePart?.update!!.manifest.isVerified())
-
-    Assert.assertNotNull(resultUpdateResponse!!.directiveUpdateResponsePart)
-    Assert.assertTrue(resultUpdateResponse!!.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
+    Assert.assertNotNull(resultUpdateResponse.directiveUpdateResponsePart)
+    Assert.assertTrue(resultUpdateResponse.directiveUpdateResponsePart!!.updateDirective is UpdateDirective.NoUpdateAvailableUpdateDirective)
   }
 
   @Test
-  fun testManifestParsing_MultipartBodySignedCertificateParticularExperience_IncorrectExperienceInManifest() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodySignedCertificateParticularExperience_IncorrectExperienceInManifest() = runTest {
     val boundary = "blah"
     val contentType = "multipart/mixed; boundary=$boundary"
 
@@ -684,29 +491,18 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred: Exception? = null
-    var resultUpdate: Update? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = e
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
-    )
-
-    Assert.assertEquals("Code signing verification failed for manifest: Code signing certificate project ID or scope key does not match project ID or scope key in response", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
-    Assert.assertNull(resultUpdate)
+    try {
+      val fileDownloader = createFileDownloader(configuration)
+      fileDownloader.parseRemoteUpdateResponse(
+        response
+      )
+    } catch (e: Exception) {
+      Assert.assertEquals("Code signing verification failed for manifest: Code signing certificate project ID or scope key does not match project ID or scope key in response", e.localizedMessageWithCauseLocalizedMessage())
+    }
   }
 
   @Test
-  fun testManifestParsing_MultipartBodySignedCertificateParticularExperience_IncorrectExperienceInDirective() {
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
+  fun testManifestParsing_MultipartBodySignedCertificateParticularExperience_IncorrectExperienceInDirective() = runTest {
     val boundary = "blah"
 
     val headersMap = mapOf(
@@ -747,35 +543,20 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred: Exception? = null
-    var resultUpdateResponse: UpdateResponse? = null
-
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = e
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdateResponse = updateResponse
-        }
-      }
-    )
-
-    Assert.assertEquals("Code signing verification failed for directive: Code signing certificate project ID or scope key does not match project ID or scope key in response part", errorOccurred!!.localizedMessageWithCauseLocalizedMessage())
-    Assert.assertNull(resultUpdateResponse)
+    try {
+      val fileDownloader = createFileDownloader(configuration)
+      fileDownloader.parseRemoteUpdateResponse(response)
+    } catch (e: Exception) {
+      Assert.assertEquals("Code signing verification failed for directive: Code signing certificate project ID or scope key does not match project ID or scope key in response part", e.localizedMessageWithCauseLocalizedMessage())
+    }
   }
 
   @Test
-  fun testManifestParsing_JSONBodySigned_UnsignedRequest_ManifestSignatureOptional() {
+  fun testManifestParsing_JSONBodySigned_UnsignedRequest_ManifestSignatureOptional() = runTest {
     val headersMap = mapOf(
       "expo-protocol-version" to "0",
       "expo-sfv-version" to "0"
     )
-
-    val context = InstrumentationRegistry.getInstrumentation().targetContext
-
     val response = CertificateFixtures.testExpoUpdatesManifestBody.asJSONResponse(headersMap.toHeaders())
 
     val configuration = UpdatesConfiguration(
@@ -788,23 +569,24 @@ class FileDownloaderManifestParsingTest {
       )
     )
 
-    var errorOccurred = false
     var resultUpdate: Update? = null
 
-    FileDownloader(context, configuration, UpdatesLogger(context.filesDir)).parseRemoteUpdateResponse(
-      response,
-      object : FileDownloader.RemoteUpdateDownloadCallback {
-        override fun onFailure(e: Exception) {
-          errorOccurred = true
-        }
-
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          resultUpdate = updateResponse.manifestUpdateResponsePart?.update
-        }
-      }
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(
+      response
     )
-
-    Assert.assertFalse(errorOccurred)
+    resultUpdate = updateResponse.manifestUpdateResponsePart?.update
     Assert.assertNotNull(resultUpdate)
+  }
+
+  private fun createFileDownloader(config: UpdatesConfiguration): FileDownloader {
+    val filesDirectory = temporaryFolder.newFolder()
+    val loggerDirectory = temporaryFolder.newFolder()
+    return FileDownloader(
+      filesDirectory,
+      easClientID = "test-eas-client-id",
+      configuration = config,
+      logger = UpdatesLogger(loggerDirectory)
+    )
   }
 }

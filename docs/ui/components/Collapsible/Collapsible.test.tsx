@@ -8,9 +8,7 @@ import { HeadingsContext } from '~/common/withHeadingManager';
 import { Collapsible } from '.';
 
 const prepareHeadingManager = () => {
-  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
-
-  return headingManager;
+  return new HeadingManager(new GithubSlugger(), { headings: [] });
 };
 
 const WrapWithContext = ({ children }: PropsWithChildren) => {
