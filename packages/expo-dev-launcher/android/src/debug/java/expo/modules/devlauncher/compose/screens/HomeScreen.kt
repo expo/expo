@@ -16,10 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
+import com.composables.core.DialogState
 import com.composables.core.Icon
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
@@ -35,6 +37,8 @@ import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devlauncher.compose.ui.ServerUrlInput
+import expo.modules.devlauncher.compose.utils.withIsLast
+import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -44,14 +48,7 @@ import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
-fun HomeScreen(
-  state: HomeState,
-  onAction: (HomeAction) -> Unit,
-  onProfileClick: () -> Unit
-) {
-  val hasPackager = state.runningPackagers.isNotEmpty()
-  val dialogState = rememberDialogState(initiallyVisible = false)
-
+fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
   Dialog(state = dialogState) {
     Scrim()
 
@@ -87,6 +84,18 @@ fun HomeScreen(
       }
     }
   }
+}
+
+@Composable
+fun HomeScreen(
+  state: HomeState,
+  onAction: (HomeAction) -> Unit,
+  onProfileClick: () -> Unit
+) {
+  val hasPackager = state.runningPackagers.isNotEmpty()
+  val dialogState = rememberDialogState(initiallyVisible = false)
+
+  HowToStartDevelopmentServerDialog(dialogState)
 
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
@@ -116,13 +125,17 @@ fun HomeScreen(
           },
           rightIcon = {
             if (hasPackager) {
-              Button(onClick = {
-                dialogState.visible = true
-              }) {
-                Image(
-                  painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
-                  contentDescription = "Terminal Icon"
-                )
+              Row {
+                Button(onClick = {
+                  dialogState.visible = true
+                }) {
+                  Image(
+                    painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
+                    contentDescription = "Terminal Icon"
+                  )
+                }
+
+                Spacer(Theme.spacing.small)
               }
             }
           }
@@ -196,6 +209,8 @@ fun HomeScreen(
             }
           }
 
+          Divider()
+
           Accordion("Enter URL manually", initialState = false) {
             Column {
               Spacer(Theme.spacing.tiny)
@@ -212,7 +227,55 @@ fun HomeScreen(
         }
       }
 
-      Spacer(Theme.spacing.medium)
+      Spacer(Theme.spacing.large)
+
+      if (state.recentlyOpenedApps.isNotEmpty()) {
+        Row {
+          Spacer(Theme.spacing.small)
+
+          SectionHeader(
+            "Recently",
+            rightIcon = {
+              Button(onClick = {
+                onAction(HomeAction.ResetRecentlyOpendApps)
+              }) {
+                Row {
+                  Text(
+                    "Reset",
+                    color = Theme.colors.text.secondary,
+                    fontSize = Theme.typography.small,
+                    fontWeight = FontWeight.Bold
+                  )
+
+                  Spacer(Theme.spacing.small)
+                }
+              }
+            }
+          )
+        }
+
+        Spacer(Theme.spacing.small)
+
+        RoundedSurface {
+          Column {
+            for ((packager, isLast) in state.recentlyOpenedApps.withIsLast()) {
+              val url = packager.url
+              val description = packager.name
+
+              RunningAppCard(
+                appIp = url,
+                appName = description
+              ) {
+                onAction(HomeAction.OpenApp(url))
+              }
+
+              if (!isLast) {
+                Divider()
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -220,5 +283,13 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(state = HomeState(), onAction = {}, onProfileClick = {})
+  HomeScreen(
+    state = HomeState(
+      recentlyOpenedApps = listOf(
+        DevLauncherAppEntry(timestamp = 1752249592809L, name = "BareExpo", url = "http://10.0.2.2:8081", isEASUpdate = false, updateMessage = null, branchName = null)
+      )
+    ),
+    onAction = {},
+    onProfileClick = {}
+  )
 }
