@@ -197,6 +197,7 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-1wyyakw{z-index:-1;}
 .r-1xcajam{position:fixed;}
 .r-1xnzce8{-moz-user-select:text;-webkit-user-select:text;user-select:text;}
+.r-1xpsq9i{box-shadow:0px 3px 3px rgba(0, 0, 0, 0.33);}
 .r-1xzupcd{width:13px;}
 .r-1yef0xd{animation-name:r-11cv4x;}
 .r-2eszeu::-webkit-scrollbar{display:none}
@@ -208,7 +209,6 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 .r-417010{z-index:0;}
 .r-4gszlv{background-size:cover;}
 .r-4v7adb{height:5px;}
-.r-56yt86{box-shadow:0px 3px 3px rgba(0,0,0,0.33);}
 .r-5oul0u{margin-bottom:8px;}
 .r-60vfwk{min-width:1px;}
 .r-633pao{pointer-events:none!important;}
