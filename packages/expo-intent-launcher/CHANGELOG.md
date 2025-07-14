@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `APP_OPEN_BY_DEFAULT_SETTINGS` action.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
