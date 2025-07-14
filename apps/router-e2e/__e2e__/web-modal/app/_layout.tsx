@@ -7,7 +7,7 @@ export const unstable_settings = {
 export default function Layout() {
   return (
     <Stack>
-      <Stack.Screen name="index" />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
         name="modal"
         options={{
@@ -25,7 +25,7 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="modal-full"
+        name="modal-scroll"
         options={{
           presentation: 'modal',
           sheetCornerRadius: 0,
@@ -40,7 +40,7 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="modal-small"
+        name="modal-fit"
         options={{
           presentation: 'formSheet',
           sheetCornerRadius: 12,

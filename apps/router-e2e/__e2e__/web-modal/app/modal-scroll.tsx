@@ -6,7 +6,7 @@ export default function Page() {
       <Text
         testID="modal-title-full"
         style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
-        Full Screen Modal
+        Modal with scrollable content
       </Text>
       {Array.from({ length: 60 }).map((_, idx) => (
         <Text key={idx}>This modal should occupy the full screen (no detents).</Text>

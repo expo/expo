@@ -1,6 +1,5 @@
 package expo.modules.updates
 
-import expo.modules.updates.TestUtils.asResponseBody
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
