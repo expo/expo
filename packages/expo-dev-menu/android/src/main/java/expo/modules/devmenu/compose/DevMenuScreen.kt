@@ -108,7 +108,7 @@ fun DevMenuContent(
             copyToClipboard(
               context,
               label = "Application Info",
-              text = appInfo.toJson() ?: "No application info available"
+              text = appInfo.toJson()
             )
           }
         )
