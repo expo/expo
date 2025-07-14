@@ -51,6 +51,7 @@ import okhttp3.OkHttpClient
 import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.dsl.module
+import androidx.core.net.toUri
 
 // Use this to load from a development server for the development client launcher UI
 // private val DEV_LAUNCHER_HOST = "10.0.0.175:8090";
@@ -270,7 +271,7 @@ class DevLauncherController private constructor() :
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
         coroutineScope.launch {
           try {
-            loadApp(Uri.parse(lastOpenedApp.url), activityToBeInvalidated)
+            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
           } catch (e: Throwable) {
             navigateToLauncher()
           }
