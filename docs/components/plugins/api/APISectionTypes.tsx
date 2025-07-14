@@ -48,7 +48,7 @@ const renderTypeDeclarationTable = (
     {index && index > 0 ? (
       <CALLOUT
         className={mergeClasses(STYLES_SECONDARY, 'border-t border-palette-gray4 px-4 py-3')}>
-        Or object shaped as below:
+        Or <CODE className="text-default">object</CODE> shaped as below:
       </CALLOUT>
     ) : undefined}
     <APICommentTextBlock comment={comment} />

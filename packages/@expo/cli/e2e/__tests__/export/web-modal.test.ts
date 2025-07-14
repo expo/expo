@@ -12,9 +12,9 @@ import {
 
 runExportSideEffects();
 
-describe('export vaul-modal example', () => {
+describe('export web-modal example', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-vaul-modal';
+  const outputName = 'dist-static-web-modal';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
@@ -22,7 +22,7 @@ describe('export vaul-modal example', () => {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'vaul-modal',
+        E2E_ROUTER_SRC: 'web-modal',
         E2E_ROUTER_ASYNC: 'production',
         EXPO_USE_FAST_RESOLVER: 'true',
       },
@@ -35,7 +35,7 @@ describe('export vaul-modal example', () => {
     expect(files).toContain('index.html');
     expect(files).toContain('modal.html');
     expect(files).toContain('modal-multi.html');
-    expect(files).toContain('modal-full.html');
+    expect(files).toContain('modal-scroll.html');
   });
 
   const { getScriptTagsAsync } = getHtmlHelpers(outputDir);
@@ -50,8 +50,8 @@ describe('export vaul-modal example', () => {
     expect(await getScriptTagsAsync('modal-multi.html')).toEqual(
       ['entry', '_layout', 'index', 'modal-multi'].map(expectChunkPathMatching)
     );
-    expect(await getScriptTagsAsync('modal-full.html')).toEqual(
-      ['entry', '_layout', 'index', 'modal-full'].map(expectChunkPathMatching)
+    expect(await getScriptTagsAsync('modal-scroll.html')).toEqual(
+      ['entry', '_layout', 'index', 'modal-scroll'].map(expectChunkPathMatching)
     );
   });
 });

@@ -168,7 +168,8 @@ export type AssetInfo = Asset & {
 
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
- * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * and time-lapse or high-frame-rate video. Maps to [`PHAssetMediaSubtype`](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * @platform ios
  * */
 export type MediaSubtype =
   | 'depthEffect'
@@ -178,7 +179,9 @@ export type MediaSubtype =
   | 'panorama'
   | 'screenshot'
   | 'stream'
-  | 'timelapse';
+  | 'timelapse'
+  | 'spatialMedia'
+  | 'videoCinematic';
 
 // @needsAudit
 export type MediaLibraryAssetInfoQueryOptions = {
@@ -306,6 +309,11 @@ export type AssetsOptions = {
    * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
+  /**
+   * An array of [MediaSubtype](#mediasubtype)s or a single `MediaSubtype`.
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[] | MediaSubtype;
   /**
    * `Date` object or Unix timestamp in milliseconds limiting returned assets only to those that
    * were created after this date.
@@ -834,6 +842,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     mediaType,
     createdAfter,
     createdBefore,
+    mediaSubtypes,
     resolveWithFullInfo,
   } = assetsOptions;
 
@@ -843,6 +852,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     album: getId(album),
     sortBy: arrayize(sortBy),
     mediaType: arrayize(mediaType || [MediaType.photo]),
+    mediaSubtypes: arrayize(mediaSubtypes),
     createdAfter: dateToNumber(createdAfter),
     createdBefore: dateToNumber(createdBefore),
     resolveWithFullInfo: resolveWithFullInfo ?? false,

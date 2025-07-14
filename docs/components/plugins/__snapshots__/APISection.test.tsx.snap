@@ -2611,7 +2611,7 @@ sign-out operation.
     </div>
     <br />
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     >
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
@@ -3101,7 +3101,7 @@ for more details.
       </blockquote>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -3602,7 +3602,7 @@ may be
       </p>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -3670,11 +3670,11 @@ may be
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
           <tr
@@ -3713,11 +3713,11 @@ may be
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
           <tr
@@ -3756,11 +3756,11 @@ may be
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
           <tr
@@ -3799,11 +3799,11 @@ may be
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
           <tr
@@ -3842,11 +3842,11 @@ may be
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
           <tr
@@ -3885,11 +3885,11 @@ may be
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -4222,7 +4222,7 @@ for more details.
       </blockquote>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -4409,11 +4409,11 @@ OAuth 2.0 protocol
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -4553,7 +4553,7 @@ for more details.
       </blockquote>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -4904,7 +4904,7 @@ for more details.
       </blockquote>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -5017,11 +5017,11 @@ OAuth 2.0 protocol
             <td
               class="border-r border-secondary p-4 text-left last:border-r-0"
             >
-              <span
+              <div
                 class="text-quaternary"
               >
                 -
-              </span>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -6099,7 +6099,7 @@ for more details.
       </h3>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="border-t border-t-palette-gray4 px-4 pb-0 pt-3 [&_h4]:mb-0.5"
@@ -8438,10 +8438,10 @@ After calling this function, the listener will no longer receive any events from
       </h3>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -8579,7 +8579,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
     <div>
       <div
-        class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+        class=""
       />
       <div
         class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs mx-4 mt-0.5"
@@ -8849,7 +8849,7 @@ After calling this function, the listener will no longer receive any events from
       </p>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="table-wrapper mb-4 overflow-x-auto overflow-y-hidden border-default shadow-xs mt-0.5 rounded-none border-0 border-t"
@@ -9142,7 +9142,7 @@ in order to enable/disable the permission.
       </h3>
     </div>
     <div
-      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+      class=""
     />
     <div
       class="border-t border-t-palette-gray4 px-4 pb-0 pt-3 [&_h4]:mb-0.5"

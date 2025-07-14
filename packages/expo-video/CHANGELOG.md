@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add complete support for AirPlay streaming. Add a device selection button and `VideoPlayer.isExternalPlaybackActive` property and appropriate listeners. ([#37207](https://github.com/expo/expo/pull/37207) by [@behenate](https://github.com/behenate))
 - Add fullscreen orientation and auto-exit functionality. ([#36910](https://github.com/expo/expo/pull/36910) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
@@ -32,7 +33,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [Android][iOS] Added support for Audio Track feature. You can now set the audio track using `player.audioTrack` and list available audio tracks using `player.availableAudioTracks`. ([#36207](https://github.com/expo/expo/pull/36207) by [@HADeveloper](https://github.com/HADeveloper))
-- [iOS] Add complete support for AirPlay streaming. Add a device selection button and `VideoPlayer.isExternalPlaybackActive` property and appropriate listeners. ([#37207](https://github.com/expo/expo/pull/37207) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
