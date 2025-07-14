@@ -93,12 +93,14 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
             modalStyleVars.minHeight = mh;
         }
     }
-    const fitToContents = isSheet && options.sheetAllowedDetents === 'fitToContents';
+    const fitToContents = options.sheetAllowedDetents === 'fitToContents';
     if (fitToContents) {
         modalStyleVars.height = 'auto';
         modalStyleVars.minHeight = 'auto';
+        // TODO:(@Hirbod) Clarify if we should limit maxHeight to sheets only
         // Allow sheet to grow with content but never exceed viewport height
-        modalStyleVars.maxHeight = 'calc(100vh)';
+        // dvh is important, otherwise it will scale over the visible viewport height
+        modalStyleVars.maxHeight = '100dvh';
     }
     // Apply corner radius (default 10px)
     const radiusValue = options.sheetCornerRadius ?? 10;
@@ -145,7 +147,8 @@ function ModalStackRouteDrawer({ routeKey, options, renderScreen, onDismiss, the
             : undefined}/>
         <vaul_1.Drawer.Content aria-describedby="modal-description" className={modalStyles_1.default.drawerContent} style={{
             pointerEvents: 'none',
-            ...(fitToContents ? { height: 'auto' } : null),
+            // This needs to be limited to sheets, otherwise it will position the modal at the bottom of the screen
+            ...(isSheet && fitToContents ? { height: 'auto' } : null),
         }}>
           <div className={modalStyles_1.default.modal} data-presentation={isSheet ? 'formSheet' : 'modal'} style={modalStyleVars}>
             {/* TODO:(@Hirbod) Figure out how to add title and description to the modal for screen readers in a meaningful way */}
