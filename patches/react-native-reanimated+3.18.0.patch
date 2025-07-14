@@ -3,7 +3,7 @@ index 88cf5c6..13baf96 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp
 @@ -18,7 +18,7 @@ ReanimatedMountHook::~ReanimatedMountHook() noexcept {
- 
+
  void ReanimatedMountHook::shadowTreeDidMount(
      const RootShadowNode::Shared &rootShadowNode,
 -    double) noexcept {
@@ -16,12 +16,12 @@ index 143eb87..f0952f8 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 @@ -21,7 +21,7 @@ class ReanimatedMountHook : public UIManagerMountHook {
- 
+
    void shadowTreeDidMount(
        RootShadowNode::Shared const &rootShadowNode,
 -      double mountTime) noexcept override;
 +                          HighResTimeStamp mountTime) noexcept override;
- 
+
   private:
    const std::shared_ptr<PropsRegistry> propsRegistry_;
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
@@ -30,7 +30,7 @@ index f3742ed..3710db4 100644
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
 @@ -7,6 +7,7 @@
  #include <unordered_map>
- 
+
  #ifdef RCT_NEW_ARCH_ENABLED
 +#include "NativeDOM.h"
  #include <reanimated/Fabric/ReanimatedCommitShadowNode.h>
@@ -44,7 +44,7 @@ index f3742ed..3710db4 100644
 +    const std::shared_ptr<const ShadowNode> &shadowNode) {
    auto newestCloneOfShadowNode =
        uiManager_->getNewestCloneOfShadowNode(*shadowNode);
- 
+
 @@ -403,7 +404,7 @@ jsi::Value ReanimatedModuleProxy::getViewProp(
    const auto propNameStr = propName.asString(rnRuntime).utf8(rnRuntime);
    const auto funPtr = std::make_shared<jsi::Function>(
@@ -62,7 +62,7 @@ index f3742ed..3710db4 100644
 +  auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(rt, shadowNodeWrapper);
    propsRegistry_->markNodeAsRemovable(shadowNode);
  }
- 
+
 @@ -692,7 +693,7 @@ void ReanimatedModuleProxy::updateProps(
    for (size_t i = 0; i < length; ++i) {
      auto item = array.getValueAtIndex(rt, i).asObject(rt);
@@ -93,71 +93,10 @@ index f3742ed..3710db4 100644
 @@ -844,7 +845,7 @@ jsi::Value ReanimatedModuleProxy::measure(
      const jsi::Value &shadowNodeValue) {
    // based on implementation from UIManagerBinding.cpp
- 
+
 -  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
 +  auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(rt, shadowNodeValue);
    auto layoutMetrics = uiManager_->getRelativeLayoutMetrics(
        *shadowNode, nullptr, {/* .includeTransform = */ true});
- 
-diff --git a/node_modules/react-native-reanimated/android/build/intermediates/prefab_package_header_only/prefab_publication.json/debug b/node_modules/react-native-reanimated/android/build/intermediates/prefab_package_header_only/prefab_publication.json/debug
-new file mode 100644
-index 0000000..eea68d9
---- /dev/null
-+++ b/node_modules/react-native-reanimated/android/build/intermediates/prefab_package_header_only/prefab_publication.json/debug
-@@ -0,0 +1,24 @@
-+{
-+  "installationFolder": "/Users/chrfalch/repos/expo/expo/node_modules/react-native-reanimated/android/build/intermediates/prefab_package/debug/prefab",
-+  "gradlePath": ":react-native-reanimated",
-+  "packageInfo": {
-+    "packageName": "react-native-reanimated",
-+    "packageVersion": "3.18.0",
-+    "packageSchemaVersion": 2,
-+    "packageDependencies": [],
-+    "modules": [
-+      {
-+        "moduleName": "reanimated",
-+        "moduleHeaders": "/Users/chrfalch/repos/expo/expo/node_modules/react-native-reanimated/android/build/prefab-headers/reanimated",
-+        "moduleExportLibraries": [],
-+        "abis": []
-+      },
-+      {
-+        "moduleName": "worklets",
-+        "moduleHeaders": "/Users/chrfalch/repos/expo/expo/node_modules/react-native-reanimated/android/build/prefab-headers/worklets",
-+        "moduleExportLibraries": [],
-+        "abis": []
-+      }
-+    ]
-+  }
-+}
-\ No newline at end of file
-diff --git a/node_modules/react-native-reanimated/android/build/intermediates/prefab_package_header_only/prefab_publication.json/release b/node_modules/react-native-reanimated/android/build/intermediates/prefab_package_header_only/prefab_publication.json/release
-new file mode 100644
-index 0000000..715bf03
---- /dev/null
-+++ b/node_modules/react-native-reanimated/android/build/intermediates/prefab_package_header_only/prefab_publication.json/release
-@@ -0,0 +1,24 @@
-+{
-+  "installationFolder": "/Users/chrfalch/repos/expo/expo/node_modules/react-native-reanimated/android/build/intermediates/prefab_package/release/prefab",
-+  "gradlePath": ":react-native-reanimated",
-+  "packageInfo": {
-+    "packageName": "react-native-reanimated",
-+    "packageVersion": "3.18.0",
-+    "packageSchemaVersion": 2,
-+    "packageDependencies": [],
-+    "modules": [
-+      {
-+        "moduleName": "reanimated",
-+        "moduleHeaders": "/Users/chrfalch/repos/expo/expo/node_modules/react-native-reanimated/android/build/prefab-headers/reanimated",
-+        "moduleExportLibraries": [],
-+        "abis": []
-+      },
-+      {
-+        "moduleName": "worklets",
-+        "moduleHeaders": "/Users/chrfalch/repos/expo/expo/node_modules/react-native-reanimated/android/build/prefab-headers/worklets",
-+        "moduleExportLibraries": [],
-+        "abis": []
-+      }
-+    ]
-+  }
-+}
+
 \ No newline at end of file
