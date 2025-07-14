@@ -4,7 +4,12 @@ import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
 
@@ -71,5 +76,49 @@ object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
       .edit(commit = true) {
         putBoolean(key, value)
       }
+  }
+
+  fun serialize(): WritableMap =
+    Arguments
+      .createMap()
+      .apply {
+        putBoolean("motionGestureEnabled", motionGestureEnabled)
+        putBoolean("touchGestureEnabled", touchGestureEnabled)
+        putBoolean("keyCommandsEnabled", keyCommandsEnabled)
+        putBoolean("showsAtLaunch", showsAtLaunch)
+        putBoolean("isOnboardingFinished", isOnboardingFinished)
+      }
+
+  fun setPreferences(settings: ReadableMap) {
+    if (settings.hasKey("motionGestureEnabled")) {
+      motionGestureEnabled = settings.getBoolean("motionGestureEnabled")
+    }
+
+    if (settings.hasKey("keyCommandsEnabled")) {
+      keyCommandsEnabled = settings.getBoolean("keyCommandsEnabled")
+    }
+
+    if (settings.hasKey("showsAtLaunch")) {
+      showsAtLaunch = settings.getBoolean("showsAtLaunch")
+    }
+
+    if (settings.hasKey("touchGestureEnabled")) {
+      touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
+    }
+  }
+}
+
+class DevMenuPreferences : Module() {
+
+  override fun definition() = ModuleDefinition {
+    Name("DevMenuPreferences")
+
+    AsyncFunction<WritableMap>("getPreferencesAsync") {
+      DevMenuPreferencesHandle.serialize()
+    }
+
+    AsyncFunction("setPreferencesAsync") { settings: ReadableMap ->
+      DevMenuPreferencesHandle.setPreferences(settings)
+    }
   }
 }
