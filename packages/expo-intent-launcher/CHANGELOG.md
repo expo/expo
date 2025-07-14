@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `APP_OPEN_BY_DEFAULT_SETTINGS` action.
+- Added `APP_OPEN_BY_DEFAULT_SETTINGS` action. ([#38054](https://github.com/expo/expo/pull/38054) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
