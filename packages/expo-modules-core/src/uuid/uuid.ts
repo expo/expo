@@ -1,31 +1,39 @@
-import sha1 from './lib/sha1';
-import v35 from './lib/v35';
+import bytesToUuid from './lib/bytesToUuid';
 import { UUID, Uuidv5Namespace } from './uuid.types';
 
 function uuidv4(): string {
-  if (
-    // We use this code path in jest-expo.
-    process.env.NODE_ENV === 'test' ||
-    // Node.js has supported global crypto since v15.
-    (typeof crypto === 'undefined' &&
-      // Only use abstract imports in server environments.
-      typeof window === 'undefined')
-  ) {
-    // NOTE: Metro statically extracts all `require` statements to resolve them for environments
-    // that don't support `require` natively. Here we check if we're running in a server environment
-    // by using the standard `typeof window` check, then running `eval` to skip Metro's static
-    // analysis and keep the `require` statement intact for runtime evaluation.
-    // eslint-disable-next-line no-eval
-    return eval('require')('node:crypto').randomUUID();
+  const nativeUuidv4 = globalThis?.expo?.uuidv4;
+
+  if (!nativeUuidv4) {
+    throw Error(
+      "Native UUID version 4 generator implementation wasn't found in `expo-modules-core`"
+    );
   }
 
-  return crypto.randomUUID();
+  return nativeUuidv4();
+}
+
+function uuidv5(name: string, namespace: string | number[]) {
+  const parsedNamespace =
+    Array.isArray(namespace) && namespace.length === 16 ? bytesToUuid(namespace) : namespace;
+
+  // If parsed namespace is still an array it means that it wasn't valid
+  if (Array.isArray(parsedNamespace)) {
+    throw new Error('`namespace` must be a valid UUID string or an Array of 16 byte values');
+  }
+
+  const nativeUuidv5 = globalThis?.expo?.uuidv5;
+
+  if (!nativeUuidv5) {
+    throw Error("Native UUID type 5 generator implementation wasn't found in `expo-modules-core`");
+  }
+
+  return nativeUuidv5(name, parsedNamespace);
 }
 
 const uuid: UUID = {
   v4: uuidv4,
-  v5: v35('v5', 0x50, sha1),
+  v5: uuidv5,
   namespace: Uuidv5Namespace,
 };
-
 export default uuid;

@@ -1,5 +1,5 @@
-import uuid from '../uuid';
 import { EventEmitter, NativeModule, SharedObject, SharedRef } from './CoreModule';
+import uuid from '../uuid/uuid.web';
 
 // jest-expo imports to this file directly without going through the global types
 // Exporting the types to let jest-expo to know the globalThis types
