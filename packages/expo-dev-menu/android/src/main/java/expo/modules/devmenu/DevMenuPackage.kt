@@ -82,6 +82,7 @@ class DevMenuPackage : Package, ReactPackage {
       object : ApplicationLifecycleListener {
         override fun onCreate(application: Application) {
           DevMenuPreferencesHandle.init(application)
+          AppInfo.init(application)
         }
       }
     )
