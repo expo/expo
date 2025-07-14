@@ -7,7 +7,7 @@ on:
 
 jobs:
   validate-npm-owners:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -31,4 +31,3 @@ jobs:
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Validate npm owners
-

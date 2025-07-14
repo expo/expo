@@ -29,13 +29,4 @@ interface DevMenuPreferencesInterface {
    */
   var isOnboardingFinished: Boolean
 
-  /**
-   * Serializes settings into a [WritableMap] so they can be passed through the bridge.
-   */
-  fun serialize(): WritableMap
-
-  /**
-   * Updates settings from [ReadableMap] - the map can be a partial of all the possible settings options
-   */
-  fun setPreferences(settings: ReadableMap)
 }

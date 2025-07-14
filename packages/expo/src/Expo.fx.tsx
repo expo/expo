@@ -1,5 +1,6 @@
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import './winter';
+import './async-require';
 import 'expo-asset';
 import 'expo/virtual/rsc';
 
@@ -9,6 +10,15 @@ import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { AppEntryNotFound } from './errors/AppEntryNotFound';
 import { createErrorHandler } from './errors/ExpoErrorManager';
+
+// Only during development.
+if (
+  __DEV__ &&
+  // Disable for SSR
+  typeof globalThis.expo !== 'undefined'
+) {
+  require('./async-require/messageSocket');
+}
 
 if (isRunningInExpoGo()) {
   // set up some improvements to commonly logged error messages stemming from react-native

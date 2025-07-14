@@ -79,7 +79,8 @@ open class NonFinalBridgeDevSupportManager(
     customPackagerCommandHandlers,
     surfaceDelegateFactory,
     devLoadingViewManager,
-    pausedInDebuggerOverlayManager) {
+    pausedInDebuggerOverlayManager
+  ) {
 
   override val uniqueTag: String
     get() = "Bridge"
@@ -87,7 +88,9 @@ open class NonFinalBridgeDevSupportManager(
   override fun handleReloadJS() {
     UiThreadUtil.assertOnUiThread()
     ReactMarker.logMarker(
-      ReactMarkerConstants.RELOAD, devSettings.packagerConnectionSettings.debugServerHost)
+      ReactMarkerConstants.RELOAD,
+      devSettings.packagerConnectionSettings.debugServerHost
+    )
 
     // dismiss redbox if exists
     hideRedboxDialog()

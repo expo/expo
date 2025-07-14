@@ -1,18 +1,34 @@
 package expo.modules.devmenu.modules
 
-import android.content.Context
+import android.app.Application
 import android.content.Context.MODE_PRIVATE
-import com.facebook.react.bridge.*
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
 
-class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
-  private val sharedPreferences by lazy {
-    context.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
+object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
+  private lateinit var sharedPreferences: SharedPreferences
+
+  private val listeners = mutableListOf<() -> Unit>()
+
+  // The preference manager does not currently store a strong reference to the listener.
+  private val mainListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+    listeners.forEach { it() }
+  }
+
+  fun init(application: Application) {
+    sharedPreferences = application.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
+    sharedPreferences.registerOnSharedPreferenceChangeListener(mainListener)
+  }
+
+  fun addOnChangeListener(listener: () -> Unit) {
+    listeners.add(listener)
+  }
+
+  fun removeOnChangeListener(listener: () -> Unit) {
+    listeners.remove(listener)
   }
 
   /**
@@ -50,64 +66,10 @@ class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
     get() = sharedPreferences.getBoolean("isOnboardingFinished", false)
     set(value) = saveBoolean("isOnboardingFinished", value)
 
-  /**
-   * Serializes settings into a [WritableMap] so they can be passed through the bridge.
-   */
-  override fun serialize(): WritableMap =
-    Arguments
-      .createMap()
-      .apply {
-        putBoolean("motionGestureEnabled", motionGestureEnabled)
-        putBoolean("touchGestureEnabled", touchGestureEnabled)
-        putBoolean("keyCommandsEnabled", keyCommandsEnabled)
-        putBoolean("showsAtLaunch", showsAtLaunch)
-        putBoolean("isOnboardingFinished", isOnboardingFinished)
-      }
-
   private fun saveBoolean(key: String, value: Boolean) {
     sharedPreferences
-      .edit()
-      .putBoolean(key, value)
-      .apply()
-  }
-
-  override fun setPreferences(settings: ReadableMap) {
-    if (settings.hasKey("motionGestureEnabled")) {
-      motionGestureEnabled = settings.getBoolean("motionGestureEnabled")
-    }
-
-    if (settings.hasKey("keyCommandsEnabled")) {
-      keyCommandsEnabled = settings.getBoolean("keyCommandsEnabled")
-    }
-
-    if (settings.hasKey("showsAtLaunch")) {
-      showsAtLaunch = settings.getBoolean("showsAtLaunch")
-    }
-
-    if (settings.hasKey("touchGestureEnabled")) {
-      touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
-    }
-  }
-}
-
-/**
- * Class that represents all user preferences connected with the current [expo.modules.devmenu.interfaces.DevMenuDelegateInterface].
- */
-class DevMenuPreferences : Module() {
-  private val preferencesHandel by lazy {
-    DevMenuPreferencesHandle(
-      appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    )
-  }
-  override fun definition() = ModuleDefinition {
-    Name("DevMenuPreferences")
-
-    AsyncFunction<WritableMap>("getPreferencesAsync") {
-      preferencesHandel.serialize()
-    }
-
-    AsyncFunction("setPreferencesAsync") { settings: ReadableMap ->
-      preferencesHandel.setPreferences(settings)
-    }
+      .edit(commit = true) {
+        putBoolean(key, value)
+      }
   }
 }

@@ -55,7 +55,13 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
   const recorderState = useAudioRecorderState(audioRecorder);
 
-  const record = () => audioRecorder.record();
+  const record = () => {
+    try {
+      audioRecorder.record();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
 
   const renderOptionsButton = (title: string, options: RecordingOptions) => {
     return (
@@ -67,10 +73,14 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   };
 
   const togglePause = () => {
-    if (audioRecorder.isRecording) {
-      audioRecorder.pause();
-    } else {
-      audioRecorder.record();
+    try {
+      if (audioRecorder.isRecording) {
+        audioRecorder.pause();
+      } else {
+        audioRecorder.record();
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
     }
   };
 

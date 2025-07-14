@@ -23,6 +23,12 @@ export default function ButtonScreen() {
           <Button style={styles.button} variant="default">
             Default
           </Button>
+          <Button style={styles.button} variant="glass">
+            Glass button
+          </Button>
+          <Button style={styles.button} variant="glassProminent">
+            Glass Prominent
+          </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
           </Button>
@@ -66,6 +72,7 @@ export default function ButtonScreen() {
           <Button style={styles.button} systemImage="heart">
             Heart
           </Button>
+          <Button style={styles.button} systemImage="gear" variant="glass" />
         </Section>
         <Section title="Tinted Buttons">
           <Button style={styles.button} color="#f00f0f">
@@ -96,6 +103,7 @@ const styles = StyleSheet.create({
   button: {
     width: 150,
     margin: 5,
+    marginLeft: 20,
     overflow: 'visible',
   },
   buttonHost: {

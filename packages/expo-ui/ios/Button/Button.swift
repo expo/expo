@@ -7,7 +7,7 @@ struct Button: ExpoSwiftUI.View {
   @ObservedObject var props: ButtonProps
 
   var body: some View {
-    SwiftUI.Button(
+    let button = SwiftUI.Button(
       role: props.buttonRole?.toNativeRole(),
       action: {
         props.onButtonPressed()
@@ -19,6 +19,8 @@ struct Button: ExpoSwiftUI.View {
           } else {
             Text(text)
           }
+        } else if let systemImage = props.systemImage {
+          Image(systemName: systemImage)
         } else {
           Children()
         }
@@ -32,6 +34,7 @@ struct Button: ExpoSwiftUI.View {
     .if(props.variant == .plain, {
       $0.buttonStyle(.plain)
     })
+
     .if(props.variant == .borderedProminent, {
       $0.buttonStyle(.borderedProminent)
     })
@@ -55,5 +58,22 @@ struct Button: ExpoSwiftUI.View {
       $0.buttonStyle(.link)
     })
     #endif
+
+    if #available(iOS 26.0, *) {
+      #if compiler(>=6.2) // Xcode 26
+      switch props.variant {
+      case .glass:
+        button.buttonStyle(.glass)
+      case .glassProminent:
+        button.buttonStyle(.glassProminent)
+      default:
+        button
+      }
+      #else
+      button
+      #endif
+    } else {
+      button
+    }
   }
 }

@@ -12,6 +12,24 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+## 15.2.14 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed unnecessary database reopen from `SQLiteProvider` with same options. ([#37872](https://github.com/expo/expo/pull/37872) by [@kudo](https://github.com/kudo))
+
+## 15.2.13 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added Android 16KB page size support. ([#37446](https://github.com/expo/expo/pull/37446) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- Updated libSQL SDK to 0.9.11. ([#37442](https://github.com/expo/expo/pull/37442) by [@kudo](https://github.com/kudo))
+
 ## 15.2.12 - 2025-06-08
 
 ### 🐛 Bug fixes

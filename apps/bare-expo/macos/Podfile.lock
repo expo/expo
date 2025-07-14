@@ -1,7 +1,11 @@
 PODS:
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
+  - EASClient (0.14.3):
+    - ExpoModulesCore
   - EXConstants (17.1.6):
+    - ExpoModulesCore
+  - EXManifests (0.16.5):
     - ExpoModulesCore
   - Expo (53.0.9):
     - DoubleConversion
@@ -69,6 +73,36 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (14.1.6):
     - ExpoModulesCore
+  - EXStructuredHeaders (4.1.0)
+  - EXUpdates (0.28.13):
+    - DoubleConversion
+    - EASClient
+    - EXManifests
+    - ExpoModulesCore
+    - EXStructuredHeaders
+    - EXUpdatesInterface
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - ReachabilitySwift
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - EXUpdatesInterface (1.1.0):
+    - ExpoModulesCore
   - fast_float (6.1.4)
   - FBLazyVector (0.78.3)
   - fmt (11.0.2)
@@ -101,6 +135,7 @@ PODS:
     - FBLazyVector (= 0.78.3)
     - RCTRequired (= 0.78.3)
     - React-Core (= 0.78.3)
+  - ReachabilitySwift (5.2.4)
   - React (0.78.3):
     - React-Core (= 0.78.3)
     - React-Core/DevSupport (= 0.78.3)
@@ -1704,7 +1739,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGestureHandler (2.24.0):
+  - RNGestureHandler (2.26.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1731,7 +1766,9 @@ PODS:
 DEPENDENCIES:
   - boost (from `../../../node_modules/react-native-macos/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../../../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec`)
+  - EASClient (from `../../../packages/expo-eas-client/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
+  - EXManifests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../node_modules/expo`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
@@ -1744,6 +1781,9 @@ DEPENDENCIES:
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
+  - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
+  - EXUpdates (from `../../../packages/expo-updates/ios`)
+  - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - fast_float (from `../../../node_modules/react-native-macos/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../../../node_modules/react-native-macos/Libraries/FBLazyVector`)
   - fmt (from `../../../node_modules/react-native-macos/third-party-podspecs/fmt.podspec`)
@@ -1817,14 +1857,24 @@ DEPENDENCIES:
   - SocketRocket (from `../../../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec`)
   - Yoga (from `../../../node_modules/react-native-macos/ReactCommon/yoga`)
 
+SPEC REPOS:
+  trunk:
+    - ReachabilitySwift
+
 EXTERNAL SOURCES:
   boost:
     :podspec: "../../../node_modules/react-native-macos/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../../../node_modules/react-native-macos/third-party-podspecs/DoubleConversion.podspec"
+  EASClient:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-eas-client/ios"
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
+  EXManifests:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../node_modules/expo"
   ExpoAsset:
@@ -1860,6 +1910,15 @@ EXTERNAL SOURCES:
   ExpoWebBrowser:
     inhibit_warnings: false
     :path: "../../../packages/expo-web-browser/ios"
+  EXStructuredHeaders:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-structured-headers/ios"
+  EXUpdates:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-updates/ios"
+  EXUpdatesInterface:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-updates-interface/ios"
   fast_float:
     :podspec: "../../../node_modules/react-native-macos/third-party-podspecs/fast_float.podspec"
   FBLazyVector:
@@ -2005,7 +2064,9 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 7d49a506d1ac47358fea28558d184dd6431170ca
   DoubleConversion: 10f51d3e1238973c033faac2d84c0ea114942f53
+  EASClient: 81d62c389f7385bee733cd028f3aeb0b700bc900
   EXConstants: be238322d57d084dc055dbd5d6fe6479510504ce
+  EXManifests: 18dc175e0df41ce726d456dc13489e60e6a742a3
   Expo: a83417971ce4165d6fff913a381224abc1831762
   ExpoAsset: 3ea3275cca6a7793b3d36fbf1075c590f803fbcb
   ExpoCrypto: fc94a8865ce0e06c68c10c3993f9ac9a6424d0c2
@@ -2018,6 +2079,9 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 81aba1cc8072d3ea46125d8276bc414b7be67aec
   ExpoSQLite: c092c9454ad72ba09e29c494470a4fe41996f741
   ExpoWebBrowser: 8aa522ab60113768d4dc5691c36d3315cc3b297b
+  EXStructuredHeaders: 1c799cb91e8057e0671610635e5b2109fa295114
+  EXUpdates: b3101fd5478a983781ddccbfab37d6a31d11871d
+  EXUpdatesInterface: b941371be742ef272f2fa7d6f46ee9fdf8c73c60
   fast_float: 44983b3bddb2d2ed3021a98be86f60ec8abc9ffd
   FBLazyVector: b61b46a4137164b884a21e2ae3e289e1ccef5700
   fmt: f6af2d677a106e3e44c9536a4c0c7f03ab53c854
@@ -2027,6 +2091,7 @@ SPEC CHECKSUMS:
   RCTDeprecation: cf39863b43871c2031050605fb884019b6193910
   RCTRequired: 8e45f166ea2d154c59dd209c5bb710ad3ac0e752
   RCTTypeSafety: 28651c7820ad239ac978b3a0cca1f1486a19408a
+  ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   React: e470b63f0ff02464f52a526d7989f533467e725a
   React-callinvoker: cdbf74bfa1e78c0a41d43bbd5f34b6e22e093368
   React-Core: 3cc4c4a445a9cd3f978d4fa78cf1f8635b372308
@@ -2085,7 +2150,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 0e6b627e262ae3216aaa7735bb44853899347254
   ReactCommon: 06d6013a960cfd9223a4f6d335343ce04c0edbbe
   RNCAsyncStorage: efa02b644121f4e1f7f33e712f4f82c30aa4ff4a
-  RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
+  RNGestureHandler: 5fca159e221d84c26a24d249ef5552c0393776e2
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: f89a870053f1a8fbee8c98e35a1b9eff44ce2015
 

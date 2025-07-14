@@ -48,6 +48,7 @@ class AudioPlayer(
   var isPaused = false
   var isMuted = false
   var previousVolume = 1f
+  var onPlaybackStateChange: ((Boolean) -> Unit)? = null
 
   private var playerScope = CoroutineScope(Dispatchers.Default)
   private var samplingEnabled = false
@@ -91,7 +92,11 @@ class AudioPlayer(
         delay(updateInterval.toLong())
       }
     }
-      .onEach { sendPlayerUpdate() }
+      .onEach {
+        if (playing) {
+          sendPlayerUpdate()
+        }
+      }
       .launchIn(playerScope)
   }
 
@@ -101,11 +106,12 @@ class AudioPlayer(
       playerScope.launch {
         sendPlayerUpdate(mapOf("playing" to isPlaying))
       }
+      onPlaybackStateChange?.invoke(isPlaying)
     }
 
     override fun onIsLoadingChanged(isLoading: Boolean) {
       playerScope.launch {
-        sendPlayerUpdate(mapOf("isLoaded" to isLoading))
+        sendPlayerUpdate(mapOf("isLoaded" to !isLoading))
       }
     }
 
@@ -136,6 +142,13 @@ class AudioPlayer(
     } else {
       visualizer?.release()
       visualizer = null
+    }
+  }
+
+  fun seekTo(seekTime: Double) {
+    ref.seekTo((seekTime * 1000L).toLong())
+    playerScope.launch {
+      sendPlayerUpdate()
     }
   }
 
@@ -204,7 +217,7 @@ class AudioPlayer(
           object : Visualizer.OnDataCaptureListener {
             override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
               waveform?.let {
-                if (samplingEnabled) {
+                if (samplingEnabled && ref.isPlaying) {
                   val data = extractAmplitudes(it)
                   sendAudioSampleUpdate(data)
                 }

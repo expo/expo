@@ -17,7 +17,7 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
   return getRoutesCore(contextModule, {
-    getSystemRoute({ route, type }, defaults) {
+    getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
         return {
@@ -60,15 +60,25 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
           children: [],
         };
-      } else if ((type === 'redirect' || type === 'rewrite') && defaults) {
+      } else if (type === 'redirect' && redirectConfig && defaults) {
         return {
           ...defaults,
           loadRoute() {
-            return require('./getRoutesRedirects').getRedirectModule(route);
+            return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
+          },
+        };
+      } else if (type === 'rewrite' && rewriteConfig && defaults) {
+        return {
+          ...defaults,
+          loadRoute() {
+            // TODO: Replace with rewrite module
+            return require('./getRoutesRedirects').getRedirectModule(rewriteConfig);
           },
         };
       }
-      throw new Error(`Unknown system route: ${route} and type: ${type}`);
+      throw new Error(
+        `Unknown system route: ${route} and type: ${type} and redirectConfig: ${redirectConfig} and rewriteConfig: ${rewriteConfig}`
+      );
     },
     ...options,
   });
@@ -84,4 +94,4 @@ export function getExactRoutes(
   });
 }
 
-export { generateDynamic, extrapolateGroups, getIgnoreList } from './getRoutesCore';
+export { generateDynamic, extrapolateGroups } from './getRoutesCore';

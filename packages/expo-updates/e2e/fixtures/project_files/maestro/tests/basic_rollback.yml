@@ -1,0 +1,90 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Test rollbacks
+- evalScript:
+    script:  ${output.updateBeforeRollbackId = output.api.serveManifest('test-update-before-rollback', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve the first update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.firstRequestHeaders = output.api.lastRequestHeaders()}
+    label: Save headers from first request
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-3"}
+    label: Assert update string is from downloaded bundle
+- evalScript:
+    script: ${output.secondRequestHeaders = output.api.lastRequestHeaders()}
+    label: Save headers from second request
+- stopApp
+- evalScript:
+    script:  ${output.api.restartUpdatesServer()}
+    label: Restart updates server
+- evalScript:
+    script:  ${output.api.serveManifest('test-rollback', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a rollback
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-3"}
+    label: Assert update string is from downloaded bundle
+- evalScript:
+    script: ${output.thirdRequestHeaders = output.api.lastRequestHeaders()}
+    label: Save headers from third request
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.fourthRequestHeaders = output.api.lastRequestHeaders()}
+    label: Save headers from fourth request
+- assertTrue:
+    condition: ${output.firstRequestHeaders['expo-embedded-update-id'] == output.firstRequestHeaders['expo-current-update-id']}
+    label: Assert first request headers have matching embedded and current update ids
+- assertTrue:
+    condition: ${output.secondRequestHeaders['expo-embedded-update-id'] == output.firstRequestHeaders['expo-embedded-update-id']}
+    label: Assert second request headers has same embedded ID
+- assertTrue:
+    condition: ${output.thirdRequestHeaders['expo-embedded-update-id'] == output.firstRequestHeaders['expo-embedded-update-id']}
+    label: Assert third request headers has same embedded ID
+- assertTrue:
+    condition: ${output.fourthRequestHeaders['expo-embedded-update-id'] == output.firstRequestHeaders['expo-embedded-update-id']}
+    label: Assert fourth request headers has same embedded ID
+- assertTrue:
+    condition: ${output.secondRequestHeaders['expo-current-update-id'] == output.updateBeforeRollbackId}
+    label: Assert second request headers has correct current update id
+- assertTrue:
+    condition: ${output.thirdRequestHeaders['expo-current-update-id'] == output.updateBeforeRollbackId}
+    label: Assert third request headers has correct current update id
+- assertTrue:
+    condition: ${output.fourthRequestHeaders['expo-current-update-id'] == output.firstRequestHeaders['expo-embedded-update-id']}
+    label: Assert fourth request headers has original embedded ID as current ID
+

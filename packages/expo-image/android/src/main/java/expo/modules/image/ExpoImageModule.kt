@@ -5,6 +5,7 @@ package expo.modules.image
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
@@ -19,6 +20,7 @@ import com.bumptech.glide.request.target.Target
 import com.github.penfeizhou.animation.apng.APNGDrawable
 import com.github.penfeizhou.animation.gif.GifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
+import expo.modules.image.blurhash.BlurhashEncoder
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
@@ -36,8 +38,12 @@ import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.toKClass
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.URL
 
 class ExpoImageModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -110,6 +116,20 @@ class ExpoImageModule : Module() {
 
     AsyncFunction("loadAsync") Coroutine { source: SourceMap, options: ImageLoadOptions? ->
       ImageLoadTask(appContext, source, options ?: ImageLoadOptions()).load()
+    }
+
+    AsyncFunction("generateBlurhashAsync") Coroutine { source: Either<URL, Image>, numberOfComponents: Pair<Int, Int> ->
+      val image = source.let {
+        if (it.`is`(Image::class)) {
+          it.get(Image::class)
+        } else {
+          ImageLoadTask(appContext, SourceMap(uri = it.get(URL::class).toString()), ImageLoadOptions()).load()
+        }
+      }
+      val blurHash = withContext(Dispatchers.Default) {
+        BlurhashEncoder.encode(image.ref.toBitmap(), numberOfComponents)
+      }
+      blurHash
     }
 
     Class(Image::class) {

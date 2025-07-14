@@ -192,6 +192,8 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
     let sdCacheType = cachePolicy.toSdCacheType().rawValue
     context[.originalQueryCacheType] = sdCacheType
     context[.originalStoreCacheType] = sdCacheType
+    context[.queryCacheType] = sdCacheType
+    context[.storeCacheType] = sdCacheType
   } else {
     context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
     context[.originalStoreCacheType] = SDImageCacheType.none.rawValue

@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "web"],
   "apple": {
-    "modules": ["ExpoHeadModule"],
+    "modules": ["ExpoHeadModule", "LinkPreviewNativeModule"],
     "appDelegateSubscribers": ["ExpoHeadAppDelegateSubscriber"]
   }
 }

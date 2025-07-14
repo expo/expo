@@ -8,10 +8,28 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
-- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 2.1.14 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed breaking change for local AAR autolinking. ([#37882](https://github.com/expo/expo/pull/37882) by [@kudo](https://github.com/kudo))
+- [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.13 - 2025-07-01
+
+### 💡 Others
+
+- Added `System.getenv()` syntax support to credentials for extraMavenRepos. ([#37343](https://github.com/expo/expo/pull/37343) by [@kudo](https://github.com/kudo))
+
+## 2.1.12 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
 
 ## 2.1.11 - 2025-06-08
 
