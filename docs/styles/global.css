@@ -40,6 +40,12 @@ code {
   outline: none;
 }
 
+/* Collapsible */
+
+details::details-content {
+  display: contents;
+}
+
 /* Selections */
 
 ::selection {

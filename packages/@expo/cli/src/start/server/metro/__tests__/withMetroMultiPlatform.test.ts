@@ -4,6 +4,7 @@ import { ConfigT } from 'metro-config';
 import { CustomResolutionContext } from 'metro-resolver/src';
 import assert from 'node:assert';
 
+import { StickyModuleResolverInput } from '../createExpoStickyResolver';
 import { shouldCreateVirtualCanary, shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
@@ -290,7 +291,7 @@ describe(withExtendedResolver, () => {
           platform
         );
 
-        expect(getResolveFunc()).not.toBeCalled();
+        expect(getResolveFunc()).not.toHaveBeenCalled();
       });
     });
 
@@ -313,7 +314,7 @@ describe(withExtendedResolver, () => {
         'web'
       );
 
-      expect(getResolveFunc()).toBeCalled();
+      expect(getResolveFunc()).toHaveBeenCalled();
     });
 
     it(`resolves production react files normally when bundling for production`, async () => {
@@ -334,7 +335,7 @@ describe(withExtendedResolver, () => {
         'web'
       );
 
-      expect(getResolveFunc()).toBeCalled();
+      expect(getResolveFunc()).toHaveBeenCalled();
     });
   });
 
@@ -1199,6 +1200,71 @@ describe(withExtendedResolver, () => {
         3,
         expect.objectContaining({ originModulePath: '/root/package.json' }),
         'expo-router/package.json',
+        platform
+      );
+    });
+  });
+
+  describe('with sticky module resolver', () => {
+    function getModifiedConfig(input: StickyModuleResolverInput) {
+      return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        tsconfig: {},
+        stickyModuleResolverInput: input,
+        isTsconfigPathsEnabled: false,
+        isReactCanaryEnabled: true,
+        getMetroBundler: getMetroBundlerGetter() as any,
+      });
+    }
+
+    it('resolves redirect path for sticky module input', () => {
+      const platform = 'ios';
+      const modified = getModifiedConfig({
+        ios: {
+          platform: 'ios',
+          moduleTestRe: /^(expo-router)($|\/.*)/,
+          resolvedModulePaths: {
+            'expo-router': '/sticky/expo-router',
+          },
+        },
+      });
+
+      jest.mocked(getResolveFunc()).mockImplementation((context, moduleName, _platform) => {
+        return { type: 'sourceFile', filePath: context.originModulePath };
+      });
+
+      // Supports bare module name
+      let result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'expo-router',
+        platform
+      );
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({
+        filePath: '/sticky/expo-router',
+        type: 'sourceFile',
+      });
+
+      expect(getResolveFunc()).toHaveBeenLastCalledWith(
+        expect.objectContaining({ originModulePath: '/sticky/expo-router' }),
+        'expo-router',
+        platform
+      );
+
+      // Supports sub-path module name
+      result = modified.resolver.resolveRequest!(
+        getDefaultRequestContext(),
+        'expo-router/file',
+        platform
+      );
+      expect(getResolveFunc()).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        filePath: '/sticky/expo-router',
+        type: 'sourceFile',
+      });
+
+      expect(getResolveFunc()).toHaveBeenLastCalledWith(
+        expect.objectContaining({ originModulePath: '/sticky/expo-router' }),
+        'expo-router/file',
         platform
       );
     });

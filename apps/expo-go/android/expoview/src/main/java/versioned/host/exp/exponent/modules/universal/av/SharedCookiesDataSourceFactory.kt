@@ -17,7 +17,7 @@ class SharedCookiesDataSourceFactory(
     reactApplicationContext,
     transferListener,
     CustomHeadersOkHttpDataSourceFactory(
-      (reactApplicationContext.catalystInstance.getNativeModule("Networking") as NetworkingModule?)!!.mClient,
+      (reactApplicationContext.catalystInstance.getNativeModule("Networking") as NetworkingModule?)!!.client,
       userAgent,
       requestHeaders
     )

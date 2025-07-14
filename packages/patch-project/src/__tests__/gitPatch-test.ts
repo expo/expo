@@ -12,7 +12,7 @@ describe(applyPatchAsync, () => {
     // @ts-expect-error: Simulate spawn error
     error.code = 'ENOENT';
     mockedSpawnAsync.mockRejectedValue(error);
-    await expect(() => applyPatchAsync('/app', '/app/cng-patches/ios+.patch')).rejects.toThrowError(
+    await expect(() => applyPatchAsync('/app', '/app/cng-patches/ios+.patch')).rejects.toThrow(
       /Git is required to apply patches/
     );
   });

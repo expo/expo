@@ -2,7 +2,7 @@
 const fs = require('fs');
 
 const minKotlinVersion = '2.0.0';
-const maxKotlinVersion = '2.1.20';
+const maxKotlinVersion = '2.2.0';
 
 const groupId = 'com.google.devtools.ksp';
 const artifactId = 'symbol-processing-gradle-plugin';
@@ -16,14 +16,16 @@ const mavenSearchUrl = 'https://search.maven.org/solrsearch/select';
 
 async function* fetchMavenVersions(groupId, artifactId) {
   const query = `g:"${groupId}" AND a:"${artifactId}"`;
-
   const url = `${mavenSearchUrl}?q=${encodeURIComponent(query)}&core=gav&rows=${mavenRows}&wt=json`;
 
   let currentIndex = 0;
   while (true) {
+    const urlWithIndex = `${url}&start=${currentIndex}`;
+    console.log(`Fetching versions from: ${urlWithIndex}...`);
     const response = await fetch(`${url}&start=${currentIndex}`);
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error, status: ${response.status}`);
     }
 
     const data = await response.json();

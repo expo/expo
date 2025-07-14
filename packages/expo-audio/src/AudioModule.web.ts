@@ -9,8 +9,8 @@ import {
   RecordingInput,
   RecordingOptions,
 } from './Audio.types';
+import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
-import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
 import resolveAssetSource from './utils/resolveAssetSource';
 
@@ -192,7 +192,11 @@ export class AudioPlayerWeb
     this.media = this._createMediaElement();
   }
 
-  async seekTo(seconds: number): Promise<void> {
+  async seekTo(
+    seconds: number,
+    toleranceMillisBefore?: number,
+    toleranceMillisAfter?: number
+  ): Promise<void> {
     this.media.currentTime = seconds;
   }
 

@@ -202,12 +202,6 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/LottieScreen'));
-    },
-    name: 'Lottie',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/MapsScreen'));
     },
     name: 'Maps',
@@ -268,6 +262,12 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/FlashListScreen'));
     },
     name: 'FlashList',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/KeyboardControllerScreen'));
+    },
+    name: 'KeyboardController',
   },
   {
     getComponent() {

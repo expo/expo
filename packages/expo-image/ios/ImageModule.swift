@@ -107,6 +107,14 @@ public final class ImageModule: Module {
         view.autoplay = autoplay ?? true
       }
 
+      Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
+        view.useAppleWebpCodec = useAppleWebpCodec
+      }
+
+      Prop("enforceEarlyResizing", false) { (view, enforceEarlyResizing: Bool) in
+        view.enforceEarlyResizing = enforceEarlyResizing
+      }
+
       AsyncFunction("startAnimating") { (view: ImageView) in
         view.sdImageView.startAnimating()
       }
@@ -162,19 +170,28 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("generateBlurhashAsync") { (url: URL, numberOfComponents: CGSize, promise: Promise) in
+    AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
       let downloader = SDWebImageDownloader()
-      let parsedNumberOfComponents = (Int(numberOfComponents.width), Int(numberOfComponents.height))
-      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
-        DispatchQueue.global().async {
-          if let downloadedImage = image {
-            let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
-            promise.resolve(blurhashString)
-          } else {
-            promise.reject(BlurhashGenerationException())
-          }
+      let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
+
+      if let image: Image = source.get() {
+        if let blurhashString = blurhash(fromImage: image.ref, numberOfComponents: parsedNumberOfComponents) {
+          promise.resolve(blurhashString)
+        } else {
+          promise.reject(BlurhashGenerationException())
         }
-      })
+      } else if let url: URL = source.get() {
+        downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+          DispatchQueue.global().async {
+            if let downloadedImage = image {
+              let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
+              promise.resolve(blurhashString)
+            } else {
+              promise.reject(BlurhashGenerationException())
+            }
+          }
+        })
+      }
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in

@@ -34,6 +34,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     availableAudioTracks: AudioTrack[];
     videoTrack: VideoTrack | null;
     availableVideoTracks: VideoTrack[];
+    isExternalPlaybackActive: boolean;
     set muted(value: boolean);
     get muted(): boolean;
     set playbackRate(value: number);

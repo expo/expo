@@ -475,16 +475,18 @@ jobs:
     params:
       build_id: string # required
       profile: string # optional, default: production
+      groups: string[] # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                    |
-| --------- | ------ | -------------------------------------------------------------- |
-| build_id  | string | Required. The ID of the build to submit.                       |
-| profile   | string | Optional. The submit profile to use. Defaults to `production`. |
+| Parameter | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id  | string   | Required. The ID of the build to submit.                                                                                                                                                                                                                                                                                                                                                                                     |
+| profile   | string   | Optional. The submit profile to use. Defaults to `production`.                                                                                                                                                                                                                                                                                                                                                               |
+| groups    | string[] | Optional. An array of TestFlight internal group names to add the build to (only affects iOS submissions; for Android, this parameter is ignored). Overrides `groups` in the [submit profile](/eas/json/#ios-specific-options-1). Note: On top of the groups you provide here, the build will be automatically added to the groups that have been created with the "Enable automatic distribution" App Store Connect setting. |
 
 #### Outputs
 
@@ -688,18 +690,30 @@ jobs:
       flow_path: string | string[] # required
       shards: number # optional, defaults to 1
       retries: number # optional, defaults to 1
+      record_screen: boolean # optional, defaults to false
+      include_tags: string | string[] # optional
+      exclude_tags: string | string[] # optional
+      maestro_version: string # optional, defaults to latest
+      android_system_image_package: string # optional
+      device_identifier: string | { android: string, ios: string } # optional
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type   | Description                                                                             |
-| --------- | ------ | --------------------------------------------------------------------------------------- |
-| build_id  | string | Required. The ID of the build to test.                                                  |
-| flow_path | string | Required. The path to the Maestro flow file(s) to run.                                  |
-| shards    | number | Optional and experimental. The number of shards to split the tests into. Defaults to 1. |
-| retries   | number | Optional. The number of times to retry failed tests. Defaults to 1.                     |
+| Parameter                    | Type                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                     | string                                                | Required. The ID of the build to test.                                                                                                                                                                                                                                                                                                                                                                                                |
+| flow_path                    | string                                                | Required. The path to the Maestro flow file(s) to run.                                                                                                                                                                                                                                                                                                                                                                                |
+| shards                       | number                                                | Optional and experimental. The number of shards to split the tests into. Defaults to 1.                                                                                                                                                                                                                                                                                                                                               |
+| retries                      | number                                                | Optional. The number of times to retry failed tests. Defaults to 1.                                                                                                                                                                                                                                                                                                                                                                   |
+| record_screen                | boolean                                               | Optional. Whether to record the screen. Defaults to false. Note: recording screen may impact emulator performance. You may want to use large runners when recording screen.                                                                                                                                                                                                                                                           |
+| include_tags                 | string                                                | Optional. Flow tags to include in the tests. Will be passed to Maestro as `--include-tags`.                                                                                                                                                                                                                                                                                                                                           |
+| exclude_tags                 | string                                                | Optional. Flow tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.                                                                                                                                                                                                                                                                                                                                         |
+| maestro_version              | string                                                | Optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.                                                                                                                                                                                                                                                                                                                                  |
+| android_system_image_package | string                                                | Optional. Android Emulator system image package to use. Run `sdkmanager --list` on your machine to list available packages. Choose an `x86_64` variant. Examples: `system-images;android-36;google_apis;x86_64`, `system-images;android-35-ext15;google_apis_playstore;x86_64`. Note that newer images require more computing resources, for which you may want to use large runners.                                                 |
+| device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 
 ### Examples
 
@@ -765,6 +779,27 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Recording screen and using a specific device">
+
+This workflow runs Maestro tests on an Android emulator build with a specific device and records the screen.
+
+```yaml .eas/workflows/maestro-sharded.yml
+name: Pixel E2E Test
+
+jobs:
+  test:
+    name: Run Maestro Tests
+    type: maestro
+    runs_on: linux-large-nested-virtualization
+    params:
+      build_id: ${{ needs.build_android_emulator.outputs.build_id }}
+      device_identifier: 'pixel_6'
+      record_screen: true
+      android_system_image_package: 'system-images;android-35;default;x86_64'
+```
+
+</Collapsible>
+
 ## Maestro Cloud
 
 Run Maestro tests on Maestro Cloud.
@@ -792,26 +827,32 @@ jobs:
       device_locale: string # optional. Device locale to use for the tests. Will be passed to Maestro as `--device-locale`. Run `maestro cloud --help` for a list of supported values.
       device_model: string # optional. Model of the device to use for the tests. Will be passed to Maestro as `--device-model`. Run `maestro cloud --help` for a list of supported values.
       device_os: string # optional. OS of the device to use for the tests. Will be passed to Maestro as `--device-os`. Run `maestro cloud --help` for a list of supported values.
+      name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
+      branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
+      async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter          | Type   | Description                                                                                                                                                                                                              |
-| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| build_id           | string | Required. The ID of the build to test. Example: `${{ needs.build_android.outputs.build_id }}`.                                                                                                                           |
-| maestro_project_id | string | Required. The ID of the Maestro Cloud project to use. Corresponds to `--project-id` param to `maestro cloud`. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`. Go to [Maestro Cloud](https://app.maestro.dev/) to find yours. |
-| flows              | string | Required. The path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.                                                                                 |
-| maestro_api_key    | string | Optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.                                        |
-| include_tags       | string | Optional. The tags to include in the tests. Corresponds to `--include-tags` param to `maestro cloud`. Example: `"pull,push"`.                                                                                            |
-| exclude_tags       | string | Optional. The tags to exclude from the tests. Corresponds to `--exclude-tags` param to `maestro cloud`. Example: `"disabled"`.                                                                                           |
-| maestro_version    | string | Optional. The version of Maestro to use. Example: `1.30.0`.                                                                                                                                                              |
-| android_api_level  | string | Optional. The Android API level to use. Corresponds to `--android-api-level` param to `maestro cloud`. Example: `29`.                                                                                                    |
-| maestro_config     | string | Optional. The path to the Maestro `config.yaml` file to use. Corresponds to `--config` param to `maestro cloud`. Example: `.maestro/config.yaml`.                                                                        |
-| device_locale      | string | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                        |
-| device_model       | string | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro cloud --help` for a list of supported values.                       |
-| device_os          | string | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro cloud --help` for a list of supported values.                              |
+| Parameter          | Type    | Description                                                                                                                                                                                                                                  |
+| ------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id           | string  | Required. The ID of the build to test. Example: `${{ needs.build_android.outputs.build_id }}`.                                                                                                                                               |
+| maestro_project_id | string  | Required. The ID of the Maestro Cloud project to use. Corresponds to `--project-id` param to `maestro cloud`. Example: `proj_01jw6hxgmdffrbye9fqn0pyzm0`. Go to [Maestro Cloud](https://app.maestro.dev/) to find yours.                     |
+| flows              | string  | Required. The path to the Maestro flow file or directory containing the flows to run. Corresponds to `--flows` param to `maestro cloud`.                                                                                                     |
+| maestro_api_key    | string  | Optional. The API key to use for the Maestro project. By default, `MAESTRO_CLOUD_API_KEY` environment variable will be used. Corresponds to `--api-key` param to `maestro cloud`.                                                            |
+| include_tags       | string  | Optional. The tags to include in the tests. Corresponds to `--include-tags` param to `maestro cloud`. Example: `"pull,push"`.                                                                                                                |
+| exclude_tags       | string  | Optional. The tags to exclude from the tests. Corresponds to `--exclude-tags` param to `maestro cloud`. Example: `"disabled"`.                                                                                                               |
+| maestro_version    | string  | Optional. The version of Maestro to use. Example: `1.30.0`.                                                                                                                                                                                  |
+| android_api_level  | string  | Optional. The Android API level to use. Corresponds to `--android-api-level` param to `maestro cloud`. Example: `29`.                                                                                                                        |
+| maestro_config     | string  | Optional. The path to the Maestro `config.yaml` file to use. Corresponds to `--config` param to `maestro cloud`. Example: `.maestro/config.yaml`.                                                                                            |
+| device_locale      | string  | Optional. The locale that will be set on devices used for the tests. Corresponds to `--device-locale` param to `maestro cloud`. Example: `pl_PL`.                                                                                            |
+| device_model       | string  | Optional. The model of the device to use for the tests. Corresponds to `--device-model` param to `maestro cloud`. Example: `iPhone-11`. Run `maestro cloud --help` for a list of supported values.                                           |
+| device_os          | string  | Optional. The OS of the device to use for the tests. Corresponds to `--device-os` param to `maestro cloud`. Example: `iOS-18-2`. Run `maestro cloud --help` for a list of supported values.                                                  |
+| name               | string  | Optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.                                                                                                                                               |
+| branch             | string  | Optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`. |
+| async              | boolean | Optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.               |
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
@@ -959,6 +1000,276 @@ jobs:
             text:
               type: mrkdwn
               text: 'Distribution: ${{ needs.build_android.outputs.distribution }}'
+```
+
+</Collapsible>
+
+## Require Approval
+
+Require approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job.
+
+### Syntax
+
+```yaml
+jobs:
+  require_approval:
+    type: require-approval
+```
+
+#### Parameters
+
+This job doesn't take any parameters.
+
+### Examples
+
+Here are some practical examples of using the Require Approval job:
+
+<Collapsible summary="Ask for approval before deploying to production">
+
+This workflow deploys a web app to preview and then requires approval from a user before deploying to production.
+
+```yaml .eas/workflows/web.yml
+jobs:
+  web_preview:
+    name: Deploy Web Preview
+    type: deploy
+
+  require_approval:
+    name: Deploy Web to Production?
+    needs: [web_preview]
+    type: require-approval
+
+  web_production:
+    name: Deploy Web Production
+    needs: [require_approval]
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
+<Collapsible summary="Control flow of the workflow">
+
+This workflow lets a user decide how the story ends by requiring approval before revealing the conclusion.
+
+```yaml .eas/workflows/dragon-knight-interactive.yml
+jobs:
+  show_story_intro:
+    name: Dragon and Knight Story Intro
+    type: doc
+    params:
+      md: |
+        # The Dragon and the Knight
+
+        Once upon a time, in a land far away, a brave knight set out to face a mighty dragon.
+
+        The dragon roared, breathing fire across the valley, but the knight stood firm, shield raised high.
+
+        Now, the fate of their encounter is in your hands...
+
+  require_approval:
+    name: Should the knight and dragon become friends?
+    needs: [show_story_intro]
+    type: require-approval
+
+  happy_ending:
+    name: Friendship Ending
+    needs: [require_approval]
+    type: doc
+    params:
+      md: |
+        ## A New Friendship
+
+        The knight lowered his sword, and the dragon ceased its fire. They realized they both longed for peace. From that day on, they became the best of friends, protecting the kingdom together.
+
+  epic_battle:
+    name: Epic Battle Ending
+    after: [require_approval]
+    if: ${{ failure() }}
+    type: doc
+    params:
+      md: |
+        ## The Epic Battle
+
+        The knight charged forward, and the dragon unleashed a mighty roar. Their battle shook the mountains and echoed through the ages. In the end, both were remembered as fierce and noble adversaries.
+```
+
+</Collapsible>
+
+## Doc
+
+Displays a Markdown section in the workflow logs.
+
+### Syntax
+
+```yaml
+jobs:
+  show_whats_next:
+    type: doc
+    params:
+      md: string
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type   | Description                                                                                 |
+| --------- | ------ | ------------------------------------------------------------------------------------------- |
+| md        | string | Required. The Markdown content to display. You can use `${{ ... }}` workflow interpolation. |
+
+### Examples
+
+Here are some practical examples of using the Doc job:
+
+<Collapsible summary="Display instructions">
+
+This workflow builds an iOS app and then displays a Markdown section in the workflow logs.
+
+```yaml .eas/workflows/build-and-submit-ios.yml
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit:
+    name: Submit to App Store
+    type: submit
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      profile: production
+
+  next_steps:
+    name: Next Steps
+    needs: [submit]
+    type: doc
+    params:
+      md: |
+        # To do next
+
+        Your app has just been sent to [App Store Connect](https://appstoreconnect.apple.com/apps).
+
+        1. Download the app from TestFlight.
+        2. Test the app a bunch.
+        3. Submit the app for review.
+```
+
+</Collapsible>
+
+## Repack
+
+Repackages an app from an existing build. This job repackages the app's metadata and JavaScript bundle without performing a full native rebuild, which is useful for creating a faster build compatible with a specific fingerprint.
+
+### Syntax
+
+```yaml
+jobs:
+  repack:
+    type: repack
+    params:
+      build_id: string # required
+      profile: string # optional
+      embed_bundle_assets: boolean # optional
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter           | Type    | Description                                                                                                                                 |
+| ------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id            | string  | Required. The source build ID of the build to repack.                                                                                       |
+| profile             | string  | Optional. The build profile to use. Defaults to the profile of the source build retrieved from `build_id`.                                  |
+| embed_bundle_assets | boolean | Optional. Whether to embed the bundle assets in the repacked build. By default, this is automatically determined based on the source build. |
+
+### Examples
+
+Here are some practical examples of using the Fingerprint with Repack jobs:
+
+<Collapsible summary="Continuous Deployment with Fingerprint and Repack">
+
+This workflow first generates a fingerprint and then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
+
+```yaml .eas/workflows/cd-fingerprint-repack.yml
+name: continuous-deploy-fingerprint
+
+jobs:
+  fingerprint:
+    id: fingerprint
+    type: fingerprint
+
+  android_get_build:
+    needs: [fingerprint]
+    id: android_get_build
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      platform: android
+
+  android_repack:
+    needs: [android_get_build]
+    id: android_repack
+    if: ${{ needs.android_get_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.android_get_build.outputs.build_id }}
+
+  android_build:
+    needs: [android_get_build]
+    id: android_build
+    if: ${{ !needs.android_get_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: preview-simulator
+
+  android_maestro:
+    after: [android_repack, android_build]
+    id: android_maestro
+    type: maestro
+    image: latest
+    params:
+      build_id: ${{ needs.android_repack.outputs.build_id || needs.android_build.outputs.build_id }}
+      flow_path: ['maestro.yaml']
+
+  ios_get_build:
+    needs: [fingerprint]
+    id: ios_get_build
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      platform: ios
+
+  ios_repack:
+    needs: [ios_get_build]
+    id: ios_repack
+    if: ${{ needs.ios_get_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.ios_get_build.outputs.build_id }}
+
+  ios_build:
+    needs: [ios_get_build]
+    id: ios_build
+    if: ${{ !needs.ios_get_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: preview-simulator
+
+  ios_maestro:
+    after: [ios_repack, ios_build]
+    id: ios_maestro
+    type: maestro
+    image: latest
+    params:
+      build_id: ${{ needs.ios_repack.outputs.build_id || needs.ios_build.outputs.build_id }}
+      flow_path: ['maestro.yaml']
 ```
 
 </Collapsible>

@@ -65,7 +65,7 @@ async function setLocalesAsync(config, {
             $: {
               name: k
             },
-            _: v
+            _: `"${v}"`
           }
         }))
       }

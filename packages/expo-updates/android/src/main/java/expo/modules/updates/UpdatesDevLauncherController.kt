@@ -1,11 +1,11 @@
 package expo.modules.updates
 
 import android.content.Context
-import android.os.AsyncTask
-import android.os.Bundle
 import android.net.Uri
+import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -19,7 +19,6 @@ import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.loader.UpdateResponse
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
@@ -29,7 +28,9 @@ import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
 import java.io.File
@@ -63,6 +64,7 @@ class UpdatesDevLauncherController(
   private var updatesConfiguration: UpdatesConfiguration? = initialUpdatesConfiguration
 
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
+  private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -151,7 +153,7 @@ class UpdatesDevLauncherController(
 
     setDevelopmentSelectionPolicy()
 
-    val fileDownloader = FileDownloader(context, updatesConfiguration!!, logger)
+    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration!!, logger)
     val loader = RemoteLoader(
       context,
       updatesConfiguration!!,
@@ -161,47 +163,44 @@ class UpdatesDevLauncherController(
       updatesDirectory,
       null
     )
-    loader.start(object : Loader.LoaderCallback {
-      override fun onFailure(e: Exception) {
-        // reset controller's configuration to what it was before this request
-        updatesConfiguration = previousUpdatesConfiguration
-        callback.onFailure(e)
+    controllerScope.launch {
+      val progressJob = launch {
+        loader.progressFlow.collect { progress ->
+          callback.onProgress(progress.successfulAssetCount, progress.failedAssetCount, progress.totalAssetCount)
+        }
       }
 
-      override fun onSuccess(loaderResult: Loader.LoaderResult) {
+      try {
+        val loaderResult = loader.load { updateResponse ->
+          val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+          if (updateDirective != null) {
+            return@load Loader.OnUpdateResponseLoadedResult(
+              shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+              }
+            )
+          }
+
+          val update = updateResponse.manifestUpdateResponsePart?.update
+            ?: return@load Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+          Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
+        }
+
         // the dev launcher doesn't handle roll back to embedded commands
         if (loaderResult.updateEntity == null) {
           callback.onSuccess(null)
-          return
+          return@launch
         }
         launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
+      } catch (e: Exception) {
+        // reset controller's configuration to what it was before this request
+        updatesConfiguration = previousUpdatesConfiguration
+        callback.onFailure(e)
+      } finally {
+        progressJob.cancel()
       }
-
-      override fun onAssetLoaded(
-        asset: AssetEntity,
-        successfulAssetCount: Int,
-        failedAssetCount: Int,
-        totalAssetCount: Int
-      ) {
-        callback.onProgress(successfulAssetCount, failedAssetCount, totalAssetCount)
-      }
-
-      override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-        val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-        if (updateDirective != null) {
-          return Loader.OnUpdateResponseLoadedResult(
-            shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-              is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-              is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-            }
-          )
-        }
-
-        val update = updateResponse.manifestUpdateResponsePart?.update
-          ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(update.manifest.getRawJson()))
-      }
-    })
+    }
   }
 
   override fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean {
@@ -249,7 +248,7 @@ class UpdatesDevLauncherController(
     resetSelectionPolicyToDefault()
   }
 
-  private fun launchUpdate(
+  private suspend fun launchUpdate(
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
@@ -275,35 +274,30 @@ class UpdatesDevLauncherController(
       updatesDirectory!!,
       fileDownloader,
       selectionPolicy,
-      logger
+      logger,
+      controllerScope
     )
-    launcher.launch(
-      databaseHolder.database,
-      object : Launcher.LauncherCallback {
-        override fun onFailure(e: Exception) {
-          // reset controller's configuration to what it was before this request
-          updatesConfiguration = previousUpdatesConfiguration
-          callback.onFailure(e)
-        }
-
-        override fun onSuccess() {
-          this@UpdatesDevLauncherController.launcher = launcher
-          callback.onSuccess(object : UpdatesInterface.Update {
-            override val manifest: JSONObject
-              get() = launcher.launchedUpdate!!.manifest
-            override val launchAssetPath: String
-              get() = launcher.launchAssetFile!!
-          })
-          runReaper()
-        }
-      }
-    )
+    try {
+      launcher.launch(databaseHolder.database)
+      this@UpdatesDevLauncherController.launcher = launcher
+      callback.onSuccess(object : UpdatesInterface.Update {
+        override val manifest: JSONObject
+          get() = launcher.launchedUpdate!!.manifest
+        override val launchAssetPath: String
+          get() = launcher.launchAssetFile!!
+      })
+      runReaper()
+    } catch (e: Exception) {
+      // reset controller's configuration to what it was before this request
+      updatesConfiguration = previousUpdatesConfiguration
+      callback.onFailure(e)
+    }
   }
 
   private fun getDatabase(): UpdatesDatabase = databaseHolder.database
 
   private fun runReaper() {
-    AsyncTask.execute {
+    controllerScope.launch {
       updatesConfiguration?.let {
         val databaseLocal = getDatabase()
         Reaper.reapUnusedUpdates(

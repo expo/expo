@@ -21,11 +21,25 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Animation resuming',
+    route: 'image/animation-resuming',
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimationResuming'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageFlashListScreen'));
+    },
+  },
+  {
+    name: 'Blurhash',
+    route: 'image/blurhash',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBlurhash'));
     },
   },
   {

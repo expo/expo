@@ -40,6 +40,8 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
     self.deferredRootView = EXDeferredRCTRootView()
+
+#if os(iOS) || os(tvOS)
     // This view can potentially be displayed for a while.
     // We should use the splashscreens view here, otherwise a black view appears in the middle of the launch sequence.
     if let view = createSplashScreenview(), let rootView = self.deferredRootView {
@@ -56,6 +58,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
         view.bottomAnchor.constraint(equalTo: rootView.bottomAnchor)
       ])
     }
+#endif
     return self.deferredRootView
   }
 
@@ -84,12 +87,21 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       initialProps: self.rootViewInitialProperties,
       launchOptions: self.launchOptions
     )
-    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
+
     let window = getWindow()
     let rootViewController = reactDelegate.createRootViewController()
+#if os(iOS) || os(tvOS)
+    rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     rootViewController.view = rootView
     window.rootViewController = rootViewController
     window.makeKeyAndVisible()
+#else
+    rootViewController.view = rootView
+    rootView.frame = window.frame
+    window.contentViewController = rootViewController
+    window.makeKeyAndOrderFront(self)
+    window.center()
+#endif
 
     self.cleanup()
   }
@@ -107,6 +119,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     self.rootViewInitialProperties = nil
   }
 
+#if os(iOS) || os(tvOS)
   private func createSplashScreenview() -> UIView? {
     var view: UIView?
     let mainBundle = Bundle.main
@@ -125,11 +138,18 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
 
     return view
   }
+#endif
 
   private func getWindow() -> UIWindow {
+    #if os(macOS)
+    guard let window = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? NSApplication.shared.mainWindow else {
+      fatalError("Cannot find the current window.")
+    }
+    #else
     guard let window = UIApplication.shared.windows.filter(\.isKeyWindow).first ?? UIApplication.shared.delegate?.window as? UIWindow else {
       fatalError("Cannot find the current window.")
     }
+    #endif
     return window
   }
 }

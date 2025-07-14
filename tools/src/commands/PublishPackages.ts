@@ -222,6 +222,17 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
     return [assignTagForSdkRelease];
   }
   if (options.canary) {
+    if (!process.env.CI) {
+      logger.info(
+        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-canaries.yml`
+      );
+    }
+    if (options.packageNames.length > 0) {
+      logger.error(
+        '⚠️  Do not pass package names with the --canary flag - canary tags do not support semver ranges, so this would likely cause duplicate expo package versions.'
+      );
+      throw Error('Passing package names with the --canary flag is not allowed.');
+    }
     return [publishCanaryPipeline];
   }
   return [publishPackagesPipeline];

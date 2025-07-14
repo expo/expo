@@ -90,7 +90,7 @@ describe(resolveScheme, () => {
       scheme: undefined,
     };
     expect(resolveScheme({})).toStrictEqual('exp');
-    expect(console.warn).toBeCalled();
+    expect(console.warn).toHaveBeenCalled();
   });
 
   it(`allows for compliant alternative in client`, () => {
@@ -137,7 +137,7 @@ describe(resolveScheme, () => {
       scheme: ['foobar', 'beta'],
     };
     expect(resolveScheme({})).toStrictEqual('foobar');
-    expect(console.warn).toBeCalled();
+    expect(console.warn).toHaveBeenCalled();
   });
   it(`warns no scheme is defined in but the app id is in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
@@ -153,7 +153,7 @@ describe(resolveScheme, () => {
         android: 'package',
       })
     );
-    expect(console.warn).toBeCalled();
+    expect(console.warn).toHaveBeenCalled();
   });
   it(`throws when no scheme is provided in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;

@@ -175,12 +175,14 @@ export default function Page() {
 ```json postcss.config.json
 {
   "plugins": {
-    "autoprefixer": {}
+    "tailwindcss": {}
   }
 }
 ```
 
 Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
+
+Expo CLI automatically handles CSS vendor prefixes with built-in support for [browserslist](https://browsersl.ist/). Avoid adding `autoprefixer` as this duplicates the functionality and slows down bundling.
 
 #### Resetting cache after updates
 
@@ -190,6 +192,16 @@ Changing the Post CSS or `browserslist` config will require you to clear the Met
   cmd={['$ npx expo start --clear', '$ npx expo export --clear']}
   cmdCopy="npx expo start --clear && npx expo export --clear"
 />
+
+### browserslist
+
+Expo has automatic [browserslist](https://browsersl.ist/) support via the Rust-based CSS parser. You can customize the CSS vendor prefixes and browser support by adding a **browserslist** field to your **package.json** file. For example:
+
+```json package.json
+{
+  "browserslist": [">0.2%", "not dead", "not op_mini all"]
+}
+```
 
 ### SASS
 

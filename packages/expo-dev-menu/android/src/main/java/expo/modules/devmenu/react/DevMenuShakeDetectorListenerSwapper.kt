@@ -23,7 +23,7 @@ class DevMenuShakeDetectorListenerSwapper {
 
       val shakeDetector: ShakeDetector =
         DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
-          "mShakeDetector",
+          "shakeDetector",
           devSupportManager
         )
 

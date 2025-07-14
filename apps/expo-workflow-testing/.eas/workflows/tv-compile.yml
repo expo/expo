@@ -47,10 +47,13 @@ jobs:
         run: |
           yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project-tv.ts
           ls -la ../updates-e2e
+      - name: Prepare TV project
+        id: prepare
+        working_directory: ../../../updates-e2e
+        run: |
+          npx pod-install
       - name: Compile TV project
         id: build
         working_directory: ../../../updates-e2e
         run: |
-          yarn generate-test-update-bundles
-          npx pod-install
-          npx detox build -c ios.debug
+          yarn tvos:build | npx @expo/xcpretty

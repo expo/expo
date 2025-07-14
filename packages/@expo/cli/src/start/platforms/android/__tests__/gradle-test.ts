@@ -98,7 +98,7 @@ describe(spawnGradleAsync, () => {
       args: ['foo', 'bar'],
     });
 
-    expect(spawnAsync).toBeCalledWith('/gradlew', ['foo', 'bar'], {
+    expect(spawnAsync).toHaveBeenCalledWith('/gradlew', ['foo', 'bar'], {
       cwd: '/',
       stdio: 'inherit',
       env: expect.anything(),
@@ -112,7 +112,7 @@ describe(spawnGradleAsync, () => {
       port: 3000,
     });
 
-    expect(spawnAsync).toBeCalledWith(
+    expect(spawnAsync).toHaveBeenCalledWith(
       '/gradlew',
       ['foo', 'bar', '-PreactNativeDevServerPort=3000'],
       { cwd: '/', stdio: 'inherit', env: expect.anything() }
@@ -128,6 +128,6 @@ describe(spawnGradleAsync, () => {
         args: ['foo', 'bar'],
         port: 3000,
       })
-    ).rejects.toThrowError(AbortCommandError);
+    ).rejects.toThrow(AbortCommandError);
   });
 });

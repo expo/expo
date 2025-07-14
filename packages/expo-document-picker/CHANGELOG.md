@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- [Web] getDocumentAsync() no longer returns base64 by default. The uri on web now always points to a Blob created via URL.createObjectURL(), which can be used for previews or appended to FormData for uploads. Selecting large files on web is now almost instant, since there’s no base64 conversion by default. If you still need base64, you can pass base64: true in the options. A new base64 field will then be included in the result. ([#37443](https://github.com/expo/expo/pull/37443) by [@hirbod](https://github.com/hirbod))
+
 ### 🎉 New features
+
+- [iOS][Android] add lastModified for iOS and Android to align with web ([#37429](https://github.com/expo/expo/pull/37429) by [@hirbod](https://github.com/hirbod))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.1.6 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- [Android] avoid hard crash in case of an exception ([#37110](https://github.com/expo/expo/pull/37110) by [@vonovak](https://github.com/vonovak))
 
 ## 13.1.5 — 2025-04-30
 

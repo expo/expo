@@ -87,6 +87,6 @@ class DevLauncherBridgeDevSupportManager(
   }
 
   companion object {
-    fun getDevHelperInternalFieldName() = "mReactInstanceDevHelper"
+    fun getDevHelperInternalFieldName() = "reactInstanceDevHelper"
   }
 }

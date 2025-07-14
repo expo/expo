@@ -111,22 +111,26 @@ const styles = StyleSheet.create({
 ```jsx
 import { useState, useEffect } from 'react';
 import { View, StyleSheet, Button } from 'react-native';
-import { useAudioRecorder, AudioModule, RecordingPresets } from 'expo-audio';
+import {
+  useAudioRecorder,
+  AudioModule,
+  RecordingPresets,
+  setAudioModeAsync,
+  useAudioRecorderState,
+} from 'expo-audio';
 
 export default function App() {
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const [isRecording, setIsRecording] = useState(false);
+  const recorderState = useAudioRecorderState(audioRecorder);
 
   const record = async () => {
     await audioRecorder.prepareToRecordAsync();
     audioRecorder.record();
-    setIsRecording(true);
   };
 
   const stopRecording = async () => {
     // The recording will be available on `audioRecorder.uri`.
     await audioRecorder.stop();
-    setIsRecording(false);
   };
 
   useEffect(() => {
@@ -135,14 +139,19 @@ export default function App() {
       if (!status.granted) {
         Alert.alert('Permission to access microphone was denied');
       }
+
+      setAudioModeAsync({
+        playsInSilentMode: true,
+        allowsRecording: true,
+      });
     })();
   }, []);
 
   return (
     <View style={styles.container}>
       <Button
-        title={isRecording ? 'Stop Recording' : 'Start Recording'}
-        onPress={isRecording ? stopRecording : record}
+        title={recorderState.isRecording ? 'Stop Recording' : 'Start Recording'}
+        onPress={recorderState.isRecording ? stopRecording : record}
       />
     </View>
   );

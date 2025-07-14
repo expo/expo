@@ -23,7 +23,7 @@ const doTransformForOutput = async (
     ],
   });
   const output = await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toBeCalledTimes(1);
+  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
   return {
     input: jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8'),
     output,
@@ -36,7 +36,7 @@ const doTransformForInput = async (
   options: Partial<JsTransformOptions>
 ): Promise<string> => {
   await doTransform(filename, src, options);
-  expect(upstreamTransformer.transform).toBeCalledTimes(1);
+  expect(upstreamTransformer.transform).toHaveBeenCalledTimes(1);
   return jest.mocked(upstreamTransformer.transform).mock.calls[0][3].toString('utf8');
 };
 const doTransform = async (filename: string, src: string, options: Partial<JsTransformOptions>) => {
@@ -81,6 +81,47 @@ it(`transforms a global CSS file in dev for native`, async () => {
       platform: 'ios',
     })
   ).toMatchInlineSnapshot(`""`);
+});
+
+describe('Global CSS', () => {
+  it(`automatically strips redundant vendor prefixes`, async () => {
+    const fixture = `
+      .button {
+        -webkit-border-radius: 10px; /* Chrome, Safari, Edge (WebKit) */
+        -moz-border-radius: 10px;    /* Firefox */
+        -ms-border-radius: 10px;     /* Internet Explorer */
+        border-radius: 10px;         /* Standard, unprefixed property */
+      }
+      `;
+
+    const css = (
+      await doTransformForOutput('acme.css', fixture, {
+        dev: true,
+        minify: true,
+        platform: 'web',
+      })
+    ).output.output[0].data.css.code;
+
+    expect(css).not.toMatch(/-webkit-transition/);
+    expect(css).toEqual('.button{-ms-border-radius:10px;border-radius:10px}');
+  });
+  it(`automatically injects vendor prefixes`, async () => {
+    const fixture = `
+      .button {
+         background: image-set("image1.jpg" 1x, "image2.jpg" 2x);
+      }
+      `;
+
+    const css = (
+      await doTransformForOutput('acme.css', fixture, {
+        dev: true,
+        minify: true,
+        platform: 'web',
+      })
+    ).output.output[0].data.css.code;
+
+    expect(css).toMatch(/-webkit-image-set/);
+  });
 });
 
 describe('CSS Modules', () => {
@@ -133,6 +174,28 @@ describe('CSS Modules', () => {
           platform: 'web',
         })
       ).toMatchSnapshot();
+    });
+
+    it(`automatically strips redundant vendor prefixes`, async () => {
+      const fixture = `
+      .button {
+        -webkit-border-radius: 10px; /* Chrome, Safari, Edge (WebKit) */
+        -moz-border-radius: 10px;    /* Firefox */
+        -ms-border-radius: 10px;     /* Internet Explorer */
+        border-radius: 10px;         /* Standard, unprefixed property */
+      }
+      `;
+
+      const css = (
+        await doTransformForOutput('acme.module.css', fixture, {
+          dev: true,
+          minify: true,
+          platform: 'web',
+        })
+      ).output.output[0].data.css.code;
+
+      expect(css).not.toMatch(/-webkit-transition/);
+      expect(css).toEqual('._R_BGG_button{-ms-border-radius:10px;border-radius:10px}');
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
