@@ -1,6 +1,6 @@
 import type { Directory, File } from '../FileSystem';
 import * as nodePath from './path';
-import { fileURLToPath, isFileUrl, pathToFileURLString } from './url';
+import { asUrl, isUrl, encodeURLChars } from './url';
 
 function uriObjectToString(path: string | File | Directory): string {
   return typeof path === 'string' ? path : path.uri;
@@ -13,12 +13,13 @@ export class PathUtilities {
    * @returns A string representing the joined path.
    */
   static join(...paths: (string | File | Directory)[]): string {
-    const stringPaths = paths.map(uriObjectToString);
-    if (stringPaths[0] && isFileUrl(stringPaths[0])) {
-      const [firstPath, ...rest] = stringPaths;
-      return pathToFileURLString(nodePath.join(fileURLToPath(firstPath), ...rest));
+    const [firstSegment, ...rest] = paths.map(uriObjectToString);
+    const pathAsUrl = asUrl(firstSegment);
+    if (pathAsUrl) {
+      pathAsUrl.pathname = nodePath.join(pathAsUrl.pathname, ...rest.map(encodeURLChars));
+      return pathAsUrl.toString();
     }
-    return nodePath.join(...stringPaths);
+    return nodePath.join(firstSegment, ...rest.map(encodeURLChars));
   }
 
   /**
@@ -32,12 +33,12 @@ export class PathUtilities {
     const toString = uriObjectToString(to);
 
     // If the first path is a file URL, convert it to a path
-    if (isFileUrl(fromString)) {
-      from = fileURLToPath(fromString);
+    if (isUrl(fromString)) {
+      from = asUrl(fromString)!.pathname;
     }
     // If the second path is a file URL, convert it to a path
-    if (isFileUrl(toString)) {
-      to = fileURLToPath(toString);
+    if (isUrl(toString)) {
+      to = asUrl(toString)!.pathname;
     }
     return nodePath.relative(fromString, toString);
   }
@@ -49,7 +50,7 @@ export class PathUtilities {
    */
   static isAbsolute(path: string | File | Directory): boolean {
     const pathString = uriObjectToString(path);
-    if (isFileUrl(pathString)) {
+    if (isUrl(pathString)) {
       return true;
     }
     return nodePath.isAbsolute(pathString);
@@ -62,8 +63,10 @@ export class PathUtilities {
    */
   static normalize(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
-    if (isFileUrl(pathString)) {
-      return pathToFileURLString(fileURLToPath(nodePath.normalize(pathString)));
+    const pathURL = asUrl(encodeURLChars(pathString));
+    if (pathURL) {
+      pathURL.pathname = encodeURLChars(nodePath.normalize(decodeURIComponent(pathURL.pathname)));
+      return pathURL.toString();
     }
     return nodePath.normalize(pathString);
   }
@@ -75,8 +78,10 @@ export class PathUtilities {
    */
   static dirname(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
-    if (isFileUrl(pathString)) {
-      return pathToFileURLString(nodePath.dirname(fileURLToPath(pathString)));
+    const pathURL = asUrl(pathString);
+    if (pathURL) {
+      pathURL.pathname = encodeURLChars(nodePath.dirname(decodeURIComponent(pathURL.pathname)));
+      return pathURL.toString();
     }
     return nodePath.dirname(pathString);
   }
@@ -89,8 +94,9 @@ export class PathUtilities {
    */
   static basename(path: string | File | Directory, ext?: string): string {
     const pathString = uriObjectToString(path);
-    if (isFileUrl(pathString)) {
-      return nodePath.basename(fileURLToPath(pathString), ext);
+    const pathURL = asUrl(pathString);
+    if (pathURL) {
+      return nodePath.basename(decodeURIComponent(pathURL.pathname));
     }
     return nodePath.basename(pathString, ext);
   }
@@ -102,8 +108,9 @@ export class PathUtilities {
    */
   static extname(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
-    if (isFileUrl(pathString)) {
-      return nodePath.extname(fileURLToPath(pathString));
+    const pathURL = asUrl(pathString);
+    if (pathURL) {
+      return nodePath.extname(decodeURIComponent(pathURL.pathname));
     }
     return nodePath.extname(pathString);
   }
@@ -121,8 +128,9 @@ export class PathUtilities {
     name: string;
   } {
     const pathString = uriObjectToString(path);
-    if (isFileUrl(pathString)) {
-      return nodePath.parse(fileURLToPath(pathString));
+    const pathURL = asUrl(pathString);
+    if (pathURL) {
+      return nodePath.parse(decodeURIComponent(pathURL.pathname));
     }
     return nodePath.parse(pathString);
   }

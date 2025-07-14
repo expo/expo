@@ -63,9 +63,9 @@ class FileSystemNextModule : Module() {
       val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
 
       val destination = if (to is FileSystemDirectory) {
-        File(to.file, fileName)
+        File(to.javaFile, fileName)
       } else {
-        to.file
+        to.javaFile
       }
 
       if (destination.exists()) {
@@ -93,7 +93,7 @@ class FileSystemNextModule : Module() {
     }
 
     Class(FileSystemFile::class) {
-      Constructor { uri: URI ->
+      Constructor { uri: Uri ->
         FileSystemFile(uri)
       }
 
@@ -210,7 +210,7 @@ class FileSystemNextModule : Module() {
     }
 
     Class(FileSystemDirectory::class) {
-      Constructor { uri: URI ->
+      Constructor { uri: Uri ->
         FileSystemDirectory(uri)
       }
 
@@ -224,6 +224,14 @@ class FileSystemNextModule : Module() {
 
       Function("create") { directory: FileSystemDirectory, options: CreateOptions? ->
         directory.create(options ?: CreateOptions())
+      }
+
+      Function("createDirectory") { file: FileSystemDirectory, name: String ->
+        return@Function file.createDirectory(name)
+      }
+
+      Function("createFile") { file: FileSystemDirectory, name: String, mimeType: String? ->
+        return@Function file.createFile(mimeType, name)
       }
 
       Property("exists") { directory: FileSystemDirectory ->

@@ -9,11 +9,10 @@ import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
-import java.net.URI
 import java.security.MessageDigest
 
 @OptIn(EitherType::class)
-class FileSystemFile(uri: URI) : FileSystemPath(uri) {
+class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
   fun validatePath() {
   }
@@ -39,15 +38,19 @@ class FileSystemFile(uri: URI) : FileSystemPath(uri) {
     validateType()
     validatePermission(Permission.WRITE)
     validateCanCreate(options)
-    if (options.overwrite && file.exists()) {
-      file.delete()
-    }
-    if (options.intermediates) {
-      file.parentFile?.mkdirs()
-    }
-    val created = file.createNewFile()
-    if (!created) {
-      throw UnableToCreateException("file already exists or could not be created")
+    if(isContentURI) {
+      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
+    } else {
+      if (options.overwrite && exists) {
+        javaFile.delete()
+      }
+      if (options.intermediates) {
+        javaFile.parentFile?.mkdirs()
+      }
+      val created = javaFile.createNewFile()
+      if (!created) {
+        throw UnableToCreateException("file already exists or could not be created")
+      }
     }
   }
 
@@ -57,7 +60,7 @@ class FileSystemFile(uri: URI) : FileSystemPath(uri) {
     if (!exists) {
       create()
     }
-    FileOutputStream(file).use {
+    FileOutputStream(javaFile).use {
       it.write(content.toByteArray())
     }
   }
@@ -68,52 +71,52 @@ class FileSystemFile(uri: URI) : FileSystemPath(uri) {
     if (!exists) {
       create()
     }
-    FileOutputStream(file).use {
+    FileOutputStream(javaFile).use {
       it.channel.write(content.toDirectBuffer())
     }
   }
 
   fun asString(): String {
-    val uriString = Uri.fromFile(file).toString()
+    val uriString = file.uri.toString()
     return if (uriString.endsWith("/")) uriString.dropLast(1) else uriString
   }
 
   fun text(): String {
     validateType()
     validatePermission(Permission.READ)
-    return file.readText()
+    return javaFile.readText()
   }
 
   fun base64(): String {
     validateType()
     validatePermission(Permission.READ)
-    return Base64.encodeToString(file.readBytes(), Base64.NO_WRAP)
+    return Base64.encodeToString(javaFile.readBytes(), Base64.NO_WRAP)
   }
 
   fun bytes(): ByteArray {
     validateType()
     validatePermission(Permission.READ)
-    return file.readBytes()
+    return javaFile.readBytes()
   }
 
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
     validatePermission(Permission.READ)
     val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(file.readBytes())
+    val digest = md.digest(javaFile.readBytes())
     return digest.toHexString()
   }
 
   val size: Long? get() {
-    return if (file.exists()) {
-      file.length()
+    return if (javaFile.exists()) {
+      javaFile.length()
     } else {
       null
     }
   }
 
   val type: String? get() {
-    return MimeTypeMap.getFileExtensionFromUrl(file.path)
+    return MimeTypeMap.getFileExtensionFromUrl(javaFile.path)
       ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
   }
 
@@ -123,15 +126,15 @@ class FileSystemFile(uri: URI) : FileSystemPath(uri) {
     if (!file.exists()) {
       val fileInfo = FileInfo(
         exists = false,
-        uri = slashifyFilePath(file.toURI().toString())
+        uri = slashifyFilePath(javaFile.toURI().toString())
       )
       return fileInfo
     }
     when {
-      file.toURI().scheme == "file" -> {
+      javaFile.toURI().scheme == "file" -> {
         val fileInfo = FileInfo(
           exists = true,
-          uri = slashifyFilePath(file.toURI().toString()),
+          uri = slashifyFilePath(javaFile.toURI().toString()),
           size = size,
           modificationTime = modificationTime,
           creationTime = creationTime
@@ -141,7 +144,7 @@ class FileSystemFile(uri: URI) : FileSystemPath(uri) {
         }
         return fileInfo
       }
-      else -> throw UnableToGetInfoException("file schema ${file.toURI().scheme} is not supported")
+      else -> throw UnableToGetInfoException("file schema ${javaFile.toURI().scheme} is not supported")
     }
   }
 }

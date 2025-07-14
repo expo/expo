@@ -9,6 +9,8 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem@next';
 
 export async function test({ describe, expect, it, ...t }) {
+  const only = it;
+  // it = () => {};
   const testDirectory = FS.documentDirectory + 'tests/';
   t.beforeEach(async () => {
     try {
@@ -47,6 +49,23 @@ export async function test({ describe, expect, it, ...t }) {
         // });
       });
     } else {
+      only('Supports some operations on SAF picker files', async () => {
+        const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        if (!saf.granted) {
+          throw new Error();
+        }
+        const safDirectory = new Directory(saf.directoryUri);
+        // new Directory(saf.directoryUri).delete();
+        expect(safDirectory.list().length).toBe(0);
+
+        safDirectory.createFile('New Folder', 'text/plain');
+        expect(safDirectory.list().length).toBe(1);
+
+        safDirectory.list().forEach((sd) => {
+          sd.delete();
+        });
+        expect(safDirectory.list().length).toBe(0);
+      });
       it('Creates a lazy file reference', () => {
         const file = new File('file:///path/to/file');
         expect(file.uri).toBe('file:///path/to/file');
@@ -54,9 +73,11 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('Supports different slash combinations', async () => {
         expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+
         // This URL is confusing, as path is actually a hostname.
-        // We throw a descriptive error in this case.
-        expect(() => new File('file://path/to/file').uri).toThrow();
+        // We can no longer throw a descriptive error in this case, since this URL scheme is also used for SAF URIs.
+        // TODO: Consider bringing back the scheme validation check.
+        // expect(() => new File('file://path/to/file').uri).toThrow();
 
         expect(new File('file://localhost/path/to/file').uri).toBe('file:///path/to/file');
         expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
@@ -166,11 +187,12 @@ export async function test({ describe, expect, it, ...t }) {
           expect(dir.name).toBe('my%file.txt');
         });
 
-        it('Throws error on invalid uris passed in as argument', () => {
-          expect(() => {
-            // eslint-disable-next-line no-new
-            new Directory(testDirectory + '/TestFolder%query');
-          }).toThrow();
+        it('(disabled) Throws error on invalid uris passed in as argument', () => {
+          // We no longer throw on url with hash passed as first argument to constructor, instead clearing the hash segment of the URL during joining paths.
+          // expect(() => {
+          //   // eslint-disable-next-line no-new
+          //   new Directory(testDirectory + '/TestFolder%query');
+          // }).toThrow();
         });
       });
 
@@ -261,7 +283,7 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.text()).toBe('');
       });
 
-      it('Deletes a folder', () => {
+      only('Deletes a folder', () => {
         const folder = new Directory(testDirectory, 'newFolder');
         folder.create();
         expect(folder.exists).toBe(true);
