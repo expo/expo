@@ -301,7 +301,37 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                         }
                     }
                     specifiers.forEach((spec) => {
-                        if (types.isIdentifier(spec.exported)) {
+                        if (spec.type === 'ExportNamespaceSpecifier' && path.node.source) {
+                            // Get module for import ID:
+                            const nextModule = getDepForImportId(path.node.source.value);
+                            const exportResults = getExportsForModule(nextModule, checkedModules);
+                            if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
+                                // Process the export namespace specifier
+                                // ```
+                                // export * as n from 'a';
+                                // ```
+                                // becomes
+                                // ```
+                                // import * as _n from 'a';
+                                // export { _n as n };
+                                // ```
+                                // NOTE: It's important we only use one import statement so we don't skew the multi-dep tracking from collect dependencies.
+                                // Extract namespace name from the export namespace specifier
+                                const namespaceIdentifier = spec.exported;
+                                const uniqueLocalName = path.scope.generateUidIdentifier(namespaceIdentifier.name);
+                                const importNamespace = types.importDeclaration([types.importNamespaceSpecifier(uniqueLocalName)], types.stringLiteral(path.node.source.value));
+                                const exportSpec = types.exportSpecifier(uniqueLocalName, namespaceIdentifier);
+                                const exportDecl = types.exportNamedDeclaration(null, [exportSpec], null);
+                                path.replaceWithMultiple([importNamespace, exportDecl]);
+                                // TODO: Update deps
+                                populateModuleWithImportUsage(value);
+                            }
+                            else {
+                                debug('Cannot resolve star export:', nextModule.path);
+                                hasUnresolvableStarExport = true;
+                            }
+                        }
+                        else if (types.isIdentifier(spec.exported)) {
                             exportNames.push(spec.exported.name);
                         }
                     });
