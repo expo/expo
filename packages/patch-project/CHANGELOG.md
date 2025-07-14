@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `The return value should be string when recursive is true` error. ([#37923](https://github.com/expo/expo/pull/37923) by [@kudo](https://github.com/kudo))
+- Fixed running error on SDK 53. ([#37923](https://github.com/expo/expo/pull/37923) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
