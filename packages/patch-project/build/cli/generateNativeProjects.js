@@ -37,9 +37,6 @@ async function generateNativeProjectsAsync(projectRoot, exp, options) {
     if (options.platforms.includes('ios')) {
         const { installCocoaPodsAsync } = require((0, resolveFromExpoCli_1.resolveFromExpoCli)(projectRoot, 'build/src/utils/cocoapods'));
         await installCocoaPodsAsync(projectRoot);
-        // await spawnAsync('pod', ['deintegrate'], {
-        //   cwd: path.join(projectRoot, 'ios'),
-        // });
     }
     return templateChecksum;
 }
