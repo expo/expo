@@ -576,11 +576,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@expo/styleguide-search-ui@npm:3.0.2"
+"@expo/styleguide-search-ui@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@expo/styleguide-search-ui@npm:3.1.0"
   dependencies:
-    "@expo/styleguide": "npm:^9.1.2"
+    "@expo/styleguide": "npm:^9.2.0"
     "@expo/styleguide-icons": "npm:^2.2.2"
     "@kapaai/react-sdk": "npm:^0.3.0"
     "@sanity/client": "npm:^6.28.3"
@@ -591,7 +591,7 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/f40e9f4986933ecc6c4a4feb1685ba7b6544dd317e35aea99e64cdbe7821073c84e1fe886b7771f40d16a25d8493491a88925360b346ab576cb35823058001d6
+  checksum: 10c0/367509b5ec48d596680ec6fe499357440f140c3d92488ba19eefe9cc9938f41aebbf5296556067af90739e56395192e736e457d78c5ba8ec765b3bd4d4040d40
   languageName: node
   linkType: hard
 
@@ -605,6 +605,19 @@ __metadata:
     next: ">= 13"
     react: ">= 16"
   checksum: 10c0/003936dbf97ff5af74adc802726295267ac003c44140ba3b8a1ff3fbcfed09f48cf1d6ba74d8491a9867c90b2245b61bb655e2e9527092340f808e3e302534b5
+  languageName: node
+  linkType: hard
+
+"@expo/styleguide@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "@expo/styleguide@npm:9.2.0"
+  dependencies:
+    "@expo/styleguide-base": "npm:^2.0.3"
+    tailwind-merge: "npm:^2.5.4"
+  peerDependencies:
+    next: ">= 13"
+    react: ">= 16"
+  checksum: 10c0/585fa2e8e3cef5043a8b952ca6c87acb76dc186b365df99a42b6b9ebb2fa4d4598393deb883d9c4dff7e8464be4eb4ab5e4214db366a0b49787ff95e20a1e944
   languageName: node
   linkType: hard
 
@@ -5973,7 +5986,7 @@ __metadata:
     "@expo/styleguide": "npm:^9.1.2"
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.2"
-    "@expo/styleguide-search-ui": "npm:^3.0.2"
+    "@expo/styleguide-search-ui": "npm:^3.1.0"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
