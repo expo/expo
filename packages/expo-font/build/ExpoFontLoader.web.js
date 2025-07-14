@@ -1,4 +1,4 @@
-import { CodedError, NativeModule, Platform, registerWebModule } from 'expo-modules-core';
+import { CodedError, Platform, registerWebModule } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
@@ -56,7 +56,7 @@ function getHeadElements() {
         })),
     ];
 }
-class ExpoFontLoader extends NativeModule {
+const ExpoFontLoader = {
     async unloadAllAsync() {
         if (!Platform.isDOMAvailable)
             return;
@@ -64,7 +64,7 @@ class ExpoFontLoader extends NativeModule {
         if (element && element instanceof HTMLStyleElement) {
             document.removeChild(element);
         }
-    }
+    },
     async unloadAsync(fontFamilyName, options) {
         const sheet = getFontFaceStyleSheet();
         if (!sheet)
@@ -73,7 +73,7 @@ class ExpoFontLoader extends NativeModule {
         for (const item of items) {
             sheet.deleteRule(item.index);
         }
-    }
+    },
     getServerResources() {
         const elements = getHeadElements();
         return elements
@@ -88,17 +88,17 @@ class ExpoFontLoader extends NativeModule {
             }
         })
             .filter(Boolean);
-    }
+    },
     resetServerContext() {
         serverContext.clear();
-    }
+    },
     getLoadedFonts() {
         if (typeof window === 'undefined') {
             return [...serverContext.values()].map(({ name }) => name);
         }
         const rules = getFontFaceRules();
         return rules.map(({ rule }) => rule.style.fontFamily);
-    }
+    },
     isLoaded(fontFamilyName, resource = {}) {
         if (typeof window === 'undefined') {
             return !![...serverContext.values()].find((asset) => {
@@ -106,12 +106,12 @@ class ExpoFontLoader extends NativeModule {
             });
         }
         return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
-    }
-    // NOTE(vonovak): This is used in RN vector-icons to load fonts dynamically on web.
+    },
+    // NOTE(vonovak): This is used in RN vector-icons to load fonts dynamically on web. Changing the signature is breaking.
     // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
     loadAsync(fontFamilyName, resource) {
         if (__DEV__ && typeof resource !== 'object') {
-            // to help devving on web where loadAsync interface is different from native
+            // to help devving on web, where loadAsync interface is different from native
             throw new CodedError('ERR_FONT_SOURCE', `Expected font resource of type \`object\` instead got: ${typeof resource}`);
         }
         if (typeof window === 'undefined') {
@@ -140,9 +140,19 @@ class ExpoFontLoader extends NativeModule {
             // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
             display: resource.display,
         }).load(null, 6000);
-    }
+    },
+};
+const isServer = Platform.OS === 'web' && typeof window === 'undefined';
+function createExpoFontLoader() {
+    return ExpoFontLoader;
 }
-export default registerWebModule(ExpoFontLoader, 'ExpoFontLoader');
+const toExport = isServer
+    ? ExpoFontLoader
+    : // @ts-expect-error: registerWebModule calls `new` on the module implementation.
+        // Normally that'd be a class but that doesn't work on server, so we use a function instead.
+        // TS doesn't like that but we don't need it to be a class.
+        registerWebModule(createExpoFontLoader, 'ExpoFontLoader');
+export default toExport;
 const ID = 'expo-generated-fonts';
 function getStyleElement() {
     const element = document.getElementById(ID);

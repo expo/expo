@@ -73,8 +73,7 @@ xdescribe('within Expo Go', () => {
     });
 
     it(`throws if loading a downloaded font fails`, async () => {
-      // @ts-expect-error
-      ExpoFontLoader.loadAsync.mockImplementation(async () => {
+      jest.spyOn(ExpoFontLoader, 'loadAsync').mockImplementation(async () => {
         throw new Error('Intentional error from FontLoader mock');
       });
 

@@ -2,15 +2,16 @@ import { requireNativeModule } from 'expo-modules-core';
 
 import { UnloadFontOptions } from './Font.types';
 
-export interface ExpoFontLoaderModule {
+export type ExpoFontLoaderModule = {
   getLoadedFonts: () => string[];
   loadAsync: (fontFamilyName: string, localUriOrWebAsset: any) => Promise<void>;
-  unloadAllAsync?: () => Promise<void>; // web-only
-  unloadAsync?: (fontFamilyName: string, options?: UnloadFontOptions) => Promise<void>; // web-only
-  isLoaded?: (fontFamilyName: string, options?: UnloadFontOptions) => boolean; // web-only
-  getServerResources?: () => string[]; // server-only
-  resetServerContext?: () => void; // server-only
-}
+  // the following methods are only available on web
+  unloadAllAsync?: () => Promise<void>;
+  unloadAsync?: (fontFamilyName: string, options?: UnloadFontOptions) => Promise<void>;
+  isLoaded?: (fontFamilyName: string, options?: UnloadFontOptions) => boolean;
+  getServerResources?: () => string[];
+  resetServerContext?: () => void;
+};
 
 const m: ExpoFontLoaderModule =
   typeof window === 'undefined'
