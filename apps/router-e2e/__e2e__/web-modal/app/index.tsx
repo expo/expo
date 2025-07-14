@@ -21,11 +21,18 @@ export default function Page() {
           <Link testID="open-sheet-radius" href="/sheet-radius" style={styles.button}>
             Sheet (border radius 24)
           </Link>
+
+          <Link testID="open-sheet-bg" href="/sheet-bg" style={styles.button}>
+            Sheet (background color red)
+          </Link>
         </View>
 
         <View style={{ marginLeft: 16, alignItems: 'center' }}>
           <Link testID="open-modal-regular" href="/modal-regular" style={styles.button}>
             Modal (Regular)
+          </Link>
+          <Link testID="open-modal-bg" href="/modal-regular-bg" style={styles.button}>
+            Modal (Regular with red background)
           </Link>
           <Link testID="open-modal-scroll" href="/modal-scroll" style={styles.button}>
             Modal (Full Screen)

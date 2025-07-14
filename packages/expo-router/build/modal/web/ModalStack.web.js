@@ -71,10 +71,10 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
       {isWeb &&
             overlayRoutes.map((route) => {
                 const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
-                if (isTransparentModal) {
-                    return (<TransparentModalStackRouteDrawer_web_1.TransparentModalStackRouteDrawer key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss}/>);
-                }
-                return (<ModalStackRouteDrawer_web_1.ModalStackRouteDrawer key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} themeColors={colors}/>);
+                const ModalComponent = isTransparentModal
+                    ? TransparentModalStackRouteDrawer_web_1.TransparentModalStackRouteDrawer
+                    : ModalStackRouteDrawer_web_1.ModalStackRouteDrawer;
+                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} themeColors={colors}/>);
             })}
     </div>);
 };
