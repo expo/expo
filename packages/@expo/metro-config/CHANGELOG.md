@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Replace `@babel/plugin-transform-export-namespace-from` by `ImportExportPlugin` when `experimentalImportSupport` (`disableImportExportTransform`) is enabled. ([#37964](https://github.com/expo/expo/pull/37964) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 0.20.17 - 2025-07-03
 
 _This version does not introduce any user-facing changes._
