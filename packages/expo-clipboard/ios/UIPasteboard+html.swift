@@ -2,15 +2,16 @@
 
 import UIKit
 import MobileCoreServices
+import UniformTypeIdentifiers
 
 extension UIPasteboard {
   var html: String? {
     get {
-      if let htmlString = self.value(forPasteboardType: kUTTypeHTML as String) as? String {
+      if let htmlString = self.value(forPasteboardType: UTType.html.identifier) as? String {
         return htmlString
       }
 
-      if let rtfData = self.data(forPasteboardType: kUTTypeRTF as String) {
+      if let rtfData = self.data(forPasteboardType: UTType.rtf.identifier as String) {
         let attributedString = try? NSAttributedString(data: rtfData,
                                                        options: [
                                                          .documentType: NSAttributedString.DocumentType.rtf
@@ -32,9 +33,9 @@ extension UIPasteboard {
         return
       }
       let item: [String: Any] = [
-        kUTTypeRTF as String: attributedString.rtfData as Any,
-        kUTTypeHTML as String: attributedString.htmlString as Any,
-        kUTTypeUTF8PlainText as String: attributedString.string
+        UTType.rtf.identifier: attributedString.rtfData as Any,
+        UTType.html.identifier: attributedString.htmlString as Any,
+        UTType.utf8PlainText.identifier: attributedString.string
       ]
 
       self.setItems([item])
@@ -42,6 +43,6 @@ extension UIPasteboard {
   }
 
   var hasHTML: Bool {
-    contains(pasteboardTypes: [kUTTypeHTML as String, kUTTypeRTF as String])
+    contains(pasteboardTypes: [UTType.html.identifier, UTType.rtf.identifier])
   }
 }

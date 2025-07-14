@@ -6,7 +6,9 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.AvailableSubtitleTracksChangedEventPayload
+import expo.modules.video.records.AvailableAudioTracksChangedEventPayload
 import expo.modules.video.records.IsPlayingEventPayload
 import expo.modules.video.records.MutedChangedEventPayload
 import expo.modules.video.records.PlaybackError
@@ -15,6 +17,7 @@ import expo.modules.video.records.SourceChangedEventPayload
 import expo.modules.video.records.StatusChangedEventPayload
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.SubtitleTrackChangedEventPayload
+import expo.modules.video.records.AudioTrackChangedEventPayload
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoEventPayload
 import expo.modules.video.records.VideoSource
@@ -74,6 +77,11 @@ sealed class PlayerEvent {
     override val jsEventPayload = SubtitleTrackChangedEventPayload(subtitleTrack, oldSubtitleTrack)
   }
 
+  data class AudioTrackChanged(val audioTrack: AudioTrack?, val oldAudioTrack: AudioTrack?) : PlayerEvent() {
+    override val name = "audioTrackChange"
+    override val jsEventPayload = AudioTrackChangedEventPayload(audioTrack, oldAudioTrack)
+  }
+
   data class VideoTrackChanged(val videoTrack: VideoTrack?, val oldVideoTrack: VideoTrack?) : PlayerEvent() {
     override val name = "videoTrackChange"
     override val jsEventPayload = VideoTrackChangedEventPayload(videoTrack, oldVideoTrack)
@@ -94,18 +102,28 @@ sealed class PlayerEvent {
     override val jsEventPayload = AvailableSubtitleTracksChangedEventPayload(availableSubtitleTracks, oldAvailableSubtitleTracks)
   }
 
+  data class AvailableAudioTracksChanged(
+    val availableAudioTracks: List<AudioTrack>,
+    val oldAvailableAudioTracks: List<AudioTrack>
+  ) : PlayerEvent() {
+    override val name = "availableAudioTracksChange"
+    override val jsEventPayload = AvailableAudioTracksChangedEventPayload(availableAudioTracks, oldAvailableAudioTracks)
+  }
+
   data class VideoSourceLoaded(
     val videoSource: VideoSource?,
     val duration: Double,
     val availableVideoTracks: List<VideoTrack>,
-    val availableSubtitleTracks: List<SubtitleTrack>
+    val availableSubtitleTracks: List<SubtitleTrack>,
+    val availableAudioTracks: List<AudioTrack>
   ) : PlayerEvent() {
     override val name = "sourceLoad"
     override val jsEventPayload = VideoSourceLoadedEventPayload(
       videoSource,
       duration,
       availableVideoTracks,
-      availableSubtitleTracks
+      availableSubtitleTracks,
+      availableAudioTracks
     )
   }
 
@@ -138,7 +156,8 @@ sealed class PlayerEvent {
       is AudioMixingModeChanged -> listeners.forEach { it.onAudioMixingModeChanged(player, audioMixingMode, oldAudioMixingMode) }
       is VideoTrackChanged -> listeners.forEach { it.onVideoTrackChanged(player, videoTrack, oldVideoTrack) }
       is RenderedFirstFrame -> listeners.forEach { it.onRenderedFirstFrame(player) }
-      // JS-only events - VideoSourceLoaded, SubtitleTrackChanged - In the native events the TracksChanged can be used instead
+      is VideoSourceLoaded -> listeners.forEach { it.onVideoSourceLoaded(player, videoSource, duration, availableVideoTracks, availableSubtitleTracks, availableAudioTracks) }
+      // JS-only events - SubtitleTrackChanged - In the native events the TracksChanged can be used instead
       else -> Unit
     }
   }

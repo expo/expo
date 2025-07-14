@@ -44,6 +44,15 @@ export function App() {
 registerRootComponent(App);
 ```
 
+Then, update your app's main entry point in **package.json**:
+
+```json package.json
+{
+  "main": "index.js"
+  /* @hide ... */ /* @end */
+}
+```
+
 > Do not use this to change the root directory (**app**) as it won't account for usage in any other places.
 
 ## `require.context` not enabled

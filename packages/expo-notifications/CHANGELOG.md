@@ -8,7 +8,28 @@
 
 ### 🐛 Bug fixes
 
+- [android] add missing proguard-rules for `expo-notifications` ([#37833](https://github.com/expo/expo/pull/37833) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 0.31.4 - 2025-07-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.31.3 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- [ios] ensure `getLastNotificationResponseAsync` does not return null when no response listener added ([#36930](https://github.com/expo/expo/pull/36930) by [@jmysliv](https://github.com/jmysliv))
+
+### 💡 Others
+
+- improve test environment condition to avoid warning ([#33982](https://github.com/expo/expo/pull/33982) by [@PiotrBorowski](https://github.com/PiotrBorowski))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.31.2 — 2025-05-08
+
+_This version does not introduce any user-facing changes._
 
 ## 0.31.1 — 2025-04-30
 

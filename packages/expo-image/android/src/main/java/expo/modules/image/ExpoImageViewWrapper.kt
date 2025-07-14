@@ -18,6 +18,7 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.github.penfeizhou.animation.gif.GifDrawable
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
@@ -163,25 +164,45 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   internal var autoplay: Boolean = true
 
+  internal var lockResource: Boolean = false
+
   internal var priority: Priority = Priority.NORMAL
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   fun setIsAnimating(setAnimating: Boolean) {
-    val resource = activeView.drawable
+    // Animatable animations always start from the beginning when resumed.
+    // So we check first if the resource is a GifDrawable, because it can continue
+    // from where it was paused.
+    when (val resource = activeView.drawable) {
+      is GifDrawable -> setIsAnimating(resource, setAnimating)
+      is Animatable -> setIsAnimating(resource, setAnimating)
+    }
+  }
 
-    if (resource is Animatable) {
-      if (setAnimating) {
-        resource.start()
+  private fun setIsAnimating(resource: GifDrawable, setAnimating: Boolean) {
+    if (setAnimating) {
+      if (resource.isPaused) {
+        resource.resume()
       } else {
-        resource.stop()
+        resource.start()
       }
+    } else {
+      resource.pause()
+    }
+  }
+
+  private fun setIsAnimating(resource: Animatable, setAnimating: Boolean) {
+    if (setAnimating) {
+      resource.start()
+    } else {
+      resource.stop()
     }
   }
 
   /**
    * Whether the image should be loaded again
    */
-  private var shouldRerender = false
+  internal var shouldRerender = false
 
   /**
    * Currently loaded source
@@ -477,8 +498,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
   }
 
-  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false) =
-    trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize)") {
+  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false, force: Boolean = false) =
+    trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize,force=$force)") {
+      if (lockResource && !force) {
+        return@trace
+      }
       val bestSource = bestSource
       val bestPlaceholder = bestPlaceholder
 

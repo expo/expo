@@ -1,4 +1,3 @@
-import { NavigationState } from '@react-navigation/native';
 import { act } from '@testing-library/react-native';
 import React from 'react';
 
@@ -83,7 +82,7 @@ it('should go back to a previous route in the same stack', () => {
     ],
     stale: false,
     type: 'stack',
-  } as NavigationState);
+  });
 
   act(() => router.dismissTo('/1/a'));
   expect(screen).toHavePathname('/1/a');
@@ -138,7 +137,7 @@ it('should go back to a previous route in the same stack', () => {
     ],
     stale: false,
     type: 'stack',
-  } as NavigationState);
+  });
 });
 
 it('should go back to a previous route in different stacks', () => {
@@ -241,7 +240,7 @@ it('should go back to a previous route in different stacks', () => {
     ],
     stale: false,
     type: 'stack',
-  } as NavigationState);
+  });
 
   act(() => router.dismissTo('/1/a'));
   expect(screen).toHavePathname('/1/a');
@@ -296,7 +295,7 @@ it('should go back to a previous route in different stacks', () => {
     ],
     stale: false,
     type: 'stack',
-  } as NavigationState);
+  });
 });
 
 it('will replace the route if the provided href is not in the history', () => {
@@ -393,5 +392,5 @@ it('will replace the route if the provided href is not in the history', () => {
     ],
     stale: false,
     type: 'stack',
-  } as NavigationState);
+  });
 });

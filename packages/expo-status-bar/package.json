@@ -4,6 +4,13 @@
   "description": "Provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.",
   "main": "src/StatusBar",
   "types": "build/StatusBar.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/StatusBar.d.ts",
+      "default": "./src/StatusBar.ts"
+    }
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -37,7 +44,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^15.0.7",
     "@testing-library/react-native": "^13.1.0",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "react": "*",

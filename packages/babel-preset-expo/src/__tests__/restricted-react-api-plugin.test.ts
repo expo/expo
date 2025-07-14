@@ -72,9 +72,9 @@ describe('forbidden React server APIs', () => {
     runServerPass(`import { useRandom } from 'react';`);
   });
   it(`asserts importing client-side React APIs in server components`, () => {
-    expect(() => runServerPass(`import React, { PureComponent } from 'react';`)).toThrowError();
-    expect(() => runServerPass(`import { PureComponent } from 'react';`)).toThrowError();
-    expect(() => runServerPass(`import { Component } from 'react';`)).toThrowError();
+    expect(() => runServerPass(`import React, { PureComponent } from 'react';`)).toThrow();
+    expect(() => runServerPass(`import { PureComponent } from 'react';`)).toThrow();
+    expect(() => runServerPass(`import { Component } from 'react';`)).toThrow();
   });
   // Support importing but not using. This allows for shared components to import React APIs and only have assertions on usage.
   it(`does not assert importing client-side react-dom APIs in server components`, () => {

@@ -50,7 +50,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           promise.resolve([
             "isAvailable": false,
             "isRollBackToEmbedded": false,
-            "reason": reason
+            "reason": reason.rawValue
           ])
           return
         case .updateAvailable(let manifest):

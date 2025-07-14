@@ -219,7 +219,7 @@ export interface ExpoConfig {
     useNativeDebug?: boolean;
   };
   /**
-   * Provide overrides by locale for System Dialog prompts like Permissions Boxes
+   * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
    */
   locales?: {
     [k: string]:
@@ -289,7 +289,18 @@ export interface ExpoConfig {
      */
     reactServerFunctions?: boolean;
     /**
-     * Experimentally enable downloading cached builds from remote.
+     * Experimentally enable downloading cached builds from a provider.
+     */
+    buildCacheProvider?:
+      | 'eas'
+      | {
+          plugin: string;
+          options?: {
+            [k: string]: any;
+          };
+        };
+    /**
+     * @deprecated This field will be removed in a future release, use the `buildCacheProvider` field instead.
      */
     remoteBuildCache?: {
       /**

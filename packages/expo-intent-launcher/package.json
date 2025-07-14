@@ -34,7 +34,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/intent-launcher/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*"

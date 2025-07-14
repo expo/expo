@@ -4,12 +4,12 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '8.1.5'
+version = '8.1.6'
 
 android {
   namespace "expo.modules.screenorientation"
   defaultConfig {
     versionCode 7
-    versionName '8.1.5'
+    versionName '8.1.6'
   }
 }

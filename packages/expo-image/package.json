@@ -1,7 +1,7 @@
 {
   "name": "expo-image",
   "title": "Expo Image",
-  "version": "2.1.6",
+  "version": "2.3.0",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -11,6 +11,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
+    "test:rsc": "jest --config jest-rsc.config.js",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
@@ -28,7 +29,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*",
@@ -40,5 +41,8 @@
     "react-native-web": {
       "optional": true
     }
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

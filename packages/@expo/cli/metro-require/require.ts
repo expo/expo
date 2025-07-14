@@ -97,10 +97,12 @@ export type DefineFn = (
 type VerboseModuleNameForDev = string;
 type ModuleDefiner = (moduleId: ModuleID) => void;
 
-global.__r = metroRequire as RequireFn;
-global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
-global.__c = clear;
-global.__registerSegment = registerSegment;
+if (__DEV__ || !global[`${__METRO_GLOBAL_PREFIX__}__d`]) {
+  global.__r = metroRequire as RequireFn;
+  global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
+  global.__c = clear;
+  global.__registerSegment = registerSegment;
+}
 
 var modules = clear();
 

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.16.4'
+version = '0.16.5'
 
 expoModule {
   canBePublished false
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.manifests"
   defaultConfig {
     versionCode 31
-    versionName '0.16.4'
+    versionName '0.16.5'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   testOptions {

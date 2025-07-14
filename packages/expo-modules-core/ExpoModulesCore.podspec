@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
     :osx => '11.0',
     :tvos => '15.1'
   }
-  s.swift_version  = '5.4'
+  s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'
@@ -65,6 +65,7 @@ Pod::Spec.new do |s|
     header_search_paths.concat([
       # Transitive dependency of React-Core
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectorcdp/jsinspector_moderncdp.framework/Headers"'
     ])
   end
   # Swift/Objective-C compatibility

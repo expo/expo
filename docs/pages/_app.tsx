@@ -1,8 +1,9 @@
 import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
+import { MotionConfig } from 'framer-motion';
 import { AppProps } from 'next/app';
-import { Inter, Fira_Code } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
@@ -24,8 +25,7 @@ export const regularFont = Inter({
   display: 'swap',
   subsets: ['latin'],
 });
-export const monospaceFont = Fira_Code({
-  weight: ['400', '500'],
+export const monospaceFont = JetBrains_Mono({
   display: 'swap',
   subsets: ['latin'],
 });
@@ -41,9 +41,9 @@ Sentry.init({
     /https:\/\/expo\.nodejs\.cn/,
   ],
   integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
-  tracesSampleRate: 0.002,
-  replaysSessionSampleRate: 0.0001,
-  replaysOnErrorSampleRate: 0.05,
+  tracesSampleRate: 0.0001,
+  replaysSessionSampleRate: 0.000005,
+  replaysOnErrorSampleRate: 0.002,
 });
 
 await import('@sentry/react').then(lazyLoadedSentry => {
@@ -79,19 +79,21 @@ export default function App({ Component, pageProps }: AppProps) {
           font-family: ${monospaceFont.style.fontFamily}, monospace;
         }
       `}</style>
-      <AnalyticsProvider>
-        <ThemeProvider>
-          <TutorialChapterCompletionProvider>
-            <CodeBlockSettingsProvider>
-              <MDXProvider components={rootMarkdownComponents}>
-                <Tooltip.Provider>
-                  <Component {...pageProps} />
-                </Tooltip.Provider>
-              </MDXProvider>
-            </CodeBlockSettingsProvider>
-          </TutorialChapterCompletionProvider>
-        </ThemeProvider>
-      </AnalyticsProvider>
+      <MotionConfig reducedMotion="user">
+        <AnalyticsProvider>
+          <ThemeProvider>
+            <TutorialChapterCompletionProvider>
+              <CodeBlockSettingsProvider>
+                <MDXProvider components={rootMarkdownComponents}>
+                  <Tooltip.Provider>
+                    <Component {...pageProps} />
+                  </Tooltip.Provider>
+                </MDXProvider>
+              </CodeBlockSettingsProvider>
+            </TutorialChapterCompletionProvider>
+          </ThemeProvider>
+        </AnalyticsProvider>
+      </MotionConfig>
     </>
   );
 }

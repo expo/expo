@@ -50,6 +50,15 @@ public:
   );
 
   /**
+   * Evaluates given JavaScript source code.
+   * @throws if the input format is unknown, or evaluation causes an error,
+   * a jni::JniException<JavaScriptEvaluateException> will be thrown.
+   */
+  void evaluateVoidScript(
+    const std::string &script
+  );
+
+  /**
    * Returns the runtime global object for use in Kotlin.
    */
   jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global() noexcept;

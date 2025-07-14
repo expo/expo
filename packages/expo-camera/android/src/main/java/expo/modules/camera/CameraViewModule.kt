@@ -351,7 +351,9 @@ class CameraViewModule : Module() {
       }
 
       OnViewDidUpdateProps { view ->
-        view.createCamera()
+        moduleScope.launch {
+          view.createCamera()
+        }
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->

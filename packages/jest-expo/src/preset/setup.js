@@ -5,12 +5,14 @@
 'use strict';
 
 const findUp = require('find-up');
+const merge = require('lodash/merge');
 const path = require('path');
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules').default;
 const stackTrace = require('stacktrace-js');
 
-const publicExpoModules = require('./expoModules');
-const internalExpoModules = require('./internalExpoModules');
+const publicExpoModules = require('./moduleMocks/expoModules');
+const internalExpoModules = require('./moduleMocks/internalExpoModules');
+const thirdPartyModules = require('./moduleMocks/thirdPartyModules');
 
 // window isn't defined as of react-native 0.45+ it seems
 if (typeof window !== 'object') {
@@ -51,10 +53,7 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
   get: () => mockNativeModules.Linking,
 });
 
-const expoModules = {
-  ...publicExpoModules,
-  ...internalExpoModules,
-};
+const expoModules = merge(publicExpoModules, merge(thirdPartyModules, internalExpoModules));
 
 // Mock the experience URL in development mode for asset setup
 expoModules.NativeUnimoduleProxy.modulesConstants.mockDefinition.ExponentConstants.experienceUrl.mock =
@@ -127,6 +126,9 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
     });
   }
 );
+
+// Mock Expo's default async require messaging sockets when running tests
+jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 try {
   jest.mock('expo-file-system', () => ({
@@ -252,7 +254,8 @@ try {
       // Support auto-mocking of expo-modules that:
       // 1. have a mock in the `mocks` directory
       // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-      const nativeModuleMock = attemptLookup(name) ?? ExpoModulesCore.requireNativeModule(name);
+      const nativeModuleMock =
+        attemptLookup(name) ?? ExpoModulesCore.requireOptionalNativeModule(name);
       if (!nativeModuleMock) {
         return null;
       }

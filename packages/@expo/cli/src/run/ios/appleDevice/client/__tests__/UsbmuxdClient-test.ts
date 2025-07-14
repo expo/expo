@@ -42,7 +42,7 @@ describe('connect', () => {
         },
         8080
       )
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       /There was an error connecting to the USB connected device \(id: 7, port: 8080\)/
     );
   });

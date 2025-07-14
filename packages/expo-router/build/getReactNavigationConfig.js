@@ -14,15 +14,16 @@ function convertDynamicRouteToReactNavigation(segment) {
     if (segment === '+not-found') {
         return '*not-found';
     }
-    const rest = (0, matchers_1.matchDeepDynamicRouteName)(segment);
-    if (rest != null) {
-        return '*' + rest;
-    }
     const dynamicName = (0, matchers_1.matchDynamicName)(segment);
-    if (dynamicName != null) {
-        return `:${dynamicName}`;
+    if (dynamicName && !dynamicName.deep) {
+        return `:${dynamicName.name}`;
     }
-    return segment;
+    else if (dynamicName?.deep) {
+        return '*' + dynamicName.name;
+    }
+    else {
+        return segment;
+    }
 }
 function parseRouteSegments(segments) {
     return (

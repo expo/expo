@@ -3,8 +3,7 @@ import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import * as FS from 'expo-file-system';
-import { File, Directory } from 'expo-file-system/next';
-import { Paths } from 'expo-file-system/src/next';
+import { File, Directory, Paths } from 'expo-file-system/next';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
@@ -489,6 +488,23 @@ export async function test({ describe, expect, it, ...t }) {
           }
           expect(error.message.includes('Destination already exists')).toBe(true);
         });
+
+        it('downloads file when headers are set', async () => {
+          const url = 'https://picsum.photos/id/237/200/300';
+          const file = new File(testDirectory, 'image.jpeg');
+          const output = await File.downloadFileAsync(url, file, { headers: { Token: '1234' } });
+          expect(file.exists).toBe(true);
+          expect(output.uri).toBe(file.uri);
+        });
+
+        it('Supports downloading a file using bytes', async () => {
+          const url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+          const md5 = '2942bfabb3d05332b66eb128e0842cff';
+          const response = await fetch(url);
+          const src = new File(testDirectory, 'file.pdf');
+          src.write(await response.bytes());
+          expect(src.md5).toEqual(md5);
+        });
       });
 
       describe('Computes file properties', () => {
@@ -496,6 +512,17 @@ export async function test({ describe, expect, it, ...t }) {
           const file = new File(testDirectory, 'file.txt');
           file.write('Hello world');
           expect(file.size).toBe(11);
+        });
+
+        it('creationTime is earlier than modificationTime or equal', async () => {
+          const file = new File(
+            testDirectory,
+            'creationTime_is_earlier_than_modificationTime_or_equal.txt'
+          );
+          file.write('Hello world');
+          expect(file.creationTime).not.toBeNull();
+          expect(file.modificationTime).not.toBeNull();
+          expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
         });
 
         it('computes md5', async () => {
@@ -509,11 +536,15 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.size).toBe(null);
           expect(file.md5).toBe(null);
         });
+      });
 
-        it('computes md5', async () => {
-          const file = new File(testDirectory, 'file.txt');
+      describe('Computes directory properties', () => {
+        it('computes size', async () => {
+          const dir = new Directory(testDirectory, 'directory');
+          const file = new File(testDirectory, 'directory', 'file.txt');
+          file.create({ intermediates: true });
           file.write('Hello world');
-          expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+          expect(dir.size).toBe(11);
         });
       });
 
@@ -532,6 +563,36 @@ export async function test({ describe, expect, it, ...t }) {
           expect(src.bytes()).toEqual(
             new Uint8Array([72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100])
           );
+        });
+      });
+
+      describe('Returns path info', () => {
+        it('correctly if exists and is a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_a_directory';
+          const src = new Directory(uri);
+          src.create();
+          expect(Paths.info(uri)).toEqual({
+            exists: true,
+            isDirectory: true,
+          });
+        });
+
+        it('correctly if exists and is not a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_not_a_directory.txt';
+          const src = new File(uri);
+          src.create();
+          expect(Paths.info(uri)).toEqual({
+            exists: true,
+            isDirectory: false,
+          });
+        });
+
+        it('correctly if does not exist', () => {
+          const uri = testDirectory + 'correctly_if_does_not_exist.txt';
+          expect(Paths.info(uri)).toEqual({
+            exists: false,
+            isDirectory: null,
+          });
         });
       });
 
@@ -593,8 +654,52 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
+      describe('When getting file info', () => {
+        it('executes correctly', () => {
+          const url = `${testDirectory}execute_correctly.txt`;
+          const src = new File(url);
+          src.create();
+          src.write('Hello World');
+          const result = src.info({ md5: true });
+          expect(result.exists).toBe(true);
+          if (result.exists) {
+            const { uri, size, modificationTime, creationTime, md5 } = result;
+            expect(modificationTime).not.toBeNull();
+            expect(creationTime).not.toBeNull();
+            expect(md5).not.toBeNull();
+            expect(uri).toBe(url);
+            expect(size).toBe(11);
+          }
+        });
+        it('executes correctly when options are undefined', () => {
+          const url = `${testDirectory}executes_correctly_when_options_are_undefined.txt`;
+          const src = new File(url);
+          src.write('Hello World');
+          const result = src.info();
+          if (result.exists) {
+            expect(result.md5).toBeNull();
+          }
+        });
+        it('returns exists false if file does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_file_does_not_exist.txt`;
+          const src = new File(url);
+          src.write('Hello world');
+          src.delete();
+          const result = src.info();
+          expect(result.exists).toBe(false);
+        });
+      });
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
+  });
+
+  describe('Exposes total filesystem sizes', () => {
+    it('Returns total filesystem space', () => {
+      expect(Paths.totalDiskSpace > 100000).toBe(true);
+    });
+    it('Returns available filesystem space', () => {
+      expect(Paths.availableDiskSpace > 100000).toBe(true);
+    });
   });
 
   describe('Exposes file handles', () => {

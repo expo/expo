@@ -43,6 +43,13 @@ export default function ScreenCaptureScreen() {
     }
   }, [isEnabled]);
 
+  // We need to allow screen capture when the component unmounts to allow screen capture again on Android/iOS
+  React.useEffect(() => {
+    return () => {
+      ScreenCapture.allowScreenCaptureAsync();
+    };
+  }, []);
+
   useScreenCapture(() => setTimestamps((timestamps) => timestamps.concat([new Date()])));
 
   return (

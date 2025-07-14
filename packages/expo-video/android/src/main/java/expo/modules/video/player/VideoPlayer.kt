@@ -54,6 +54,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl.Builder().build()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
+  val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
   val trackSelector = DefaultTrackSelector(context)
 
   val player = ExoPlayer
@@ -180,13 +181,17 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     override fun onTracksChanged(tracks: Tracks) {
       val oldSubtitleTracks = ArrayList(subtitles.availableSubtitleTracks)
+      val oldAudioTracks = ArrayList(audioTracks.availableAudioTracks)
       val oldCurrentTrack = subtitles.currentSubtitleTrack
+      val oldCurrentAudioTrack = audioTracks.currentAudioTrack
 
       // Emit the tracks change event to update the subtitles
       sendEvent(PlayerEvent.TracksChanged(tracks))
 
       val newSubtitleTracks = subtitles.availableSubtitleTracks
+      val newAudioTracks = audioTracks.availableAudioTracks
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
+      val newCurrentAudioTrack = audioTracks.currentAudioTrack
       availableVideoTracks = tracks.toVideoTracks()
 
       if (isLoadingNewSource) {
@@ -195,7 +200,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
             commitedSource,
             this@VideoPlayer.player.duration / 1000.0,
             availableVideoTracks,
-            newSubtitleTracks
+            newSubtitleTracks,
+            newAudioTracks
           )
         )
         isLoadingNewSource = false
@@ -204,18 +210,27 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       if (!oldSubtitleTracks.toArray().contentEquals(newSubtitleTracks.toArray())) {
         sendEvent(PlayerEvent.AvailableSubtitleTracksChanged(newSubtitleTracks, oldSubtitleTracks))
       }
+      if (!oldAudioTracks.toArray().contentEquals(newAudioTracks.toArray())) {
+        sendEvent(PlayerEvent.AvailableAudioTracksChanged(newAudioTracks, oldAudioTracks))
+      }
       if (oldCurrentTrack != newCurrentSubtitleTrack) {
         sendEvent(PlayerEvent.SubtitleTrackChanged(newCurrentSubtitleTrack, oldCurrentTrack))
+      }
+      if (oldCurrentAudioTrack != newCurrentAudioTrack) {
+        sendEvent(PlayerEvent.AudioTrackChanged(newCurrentAudioTrack, oldCurrentAudioTrack))
       }
       super.onTracksChanged(tracks)
     }
 
     override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
       val oldTrack = subtitles.currentSubtitleTrack
+      val oldAudioTrack = audioTracks.currentAudioTrack
       sendEvent(PlayerEvent.TrackSelectionParametersChanged(parameters))
 
       val newTrack = subtitles.currentSubtitleTrack
+      val newAudioTrack = audioTracks.currentAudioTrack
       sendEvent(PlayerEvent.SubtitleTrackChanged(newTrack, oldTrack))
+      sendEvent(PlayerEvent.AudioTrackChanged(newAudioTrack, oldAudioTrack))
       super.onTrackSelectionParametersChanged(parameters)
     }
 

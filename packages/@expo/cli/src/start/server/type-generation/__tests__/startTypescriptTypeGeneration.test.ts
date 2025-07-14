@@ -28,7 +28,7 @@ it(`sets up typed routes`, async () => {
 
   await startTypescriptTypeGenerationAsync({ projectRoot: '/', server, metro });
 
-  expect(setupTypedRoutes).toBeCalledWith({
+  expect(setupTypedRoutes).toHaveBeenCalledWith({
     metro,
     projectRoot: '/',
     routerDirectory: '/app',
@@ -70,7 +70,7 @@ it(`sets up typed routes and removes`, async () => {
 
   await startTypescriptTypeGenerationAsync({ projectRoot: '/', server, metro });
 
-  expect(setupTypedRoutes).toBeCalledWith({
+  expect(setupTypedRoutes).toHaveBeenCalledWith({
     metro,
     projectRoot: '/',
     routerDirectory: '/app',
@@ -124,7 +124,7 @@ it(`removes typed routes from malformed project`, async () => {
 
   await startTypescriptTypeGenerationAsync({ projectRoot: '/', server, metro });
 
-  expect(setupTypedRoutes).not.toBeCalled();
+  expect(setupTypedRoutes).not.toHaveBeenCalled();
 
   expect(Object.keys(vol.toJSON())).toEqual([
     '/tsconfig.json',

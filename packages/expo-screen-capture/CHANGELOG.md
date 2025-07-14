@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- Implemented `useScreenshotListener` hook. ([#37411](https://github.com/expo/expo/pull/37411) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- Implemented screenshot prevention on iOS. ([#37874](https://github.com/expo/expo/pull/37874) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix permissions on Android 13.
+
 ### 💡 Others
+
+## 7.1.5 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
 
 ## 7.1.4 — 2025-04-30
 

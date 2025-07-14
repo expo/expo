@@ -28,38 +28,45 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polygon
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.toKClass
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import kotlinx.coroutines.launch
-import androidx.core.graphics.toColorInt
 
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
   val polylines: MutableState<List<PolylineRecord>> = mutableStateOf(listOf()),
+  val polygons: MutableState<List<PolygonRecord>> = mutableStateOf(listOf()),
+  val circles: MutableState<List<CircleRecord>> = mutableStateOf(listOf()),
   val uiSettings: MutableState<MapUiSettingsRecord> = mutableStateOf(MapUiSettingsRecord()),
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM)
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
-class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView<GoogleMapsViewProps>(context, appContext) {
+class GoogleMapsView(context: Context, appContext: AppContext) :
+  ExpoComposeView<GoogleMapsViewProps>(context, appContext, withHostingView = true) {
   override val props = GoogleMapsViewProps()
 
   private val onMapLoaded by EventDispatcher<Unit>()
 
-  private val onMapClick by EventDispatcher<Coordinates>()
-  private val onMapLongClick by EventDispatcher<Coordinates>()
+  private val onMapClick by EventDispatcher<MapClickEvent>()
+  private val onMapLongClick by EventDispatcher<MapClickEvent>()
   private val onPOIClick by EventDispatcher<POIRecord>()
   private val onMarkerClick by EventDispatcher<MarkerRecord>()
   private val onPolylineClick by EventDispatcher<PolylineRecord>()
+  private val onPolygonClick by EventDispatcher<PolygonRecord>()
+  private val onCircleClick by EventDispatcher<CircleRecord>()
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
 
@@ -68,98 +75,113 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
 
-  init {
-    setContent {
-      cameraState = updateCameraState()
-      val markerState = markerStateFromProps()
-      val locationSource = locationSourceFromProps()
-      val polylineState by polylineStateFromProps()
+  @Composable
+  override fun Content() {
+    cameraState = updateCameraState()
+    val markerState = markerStateFromProps()
+    val locationSource = locationSourceFromProps()
+    val polylineState by polylineStateFromProps()
+    val polygonState by polygonStateFromProps()
+    val circleState by circleStateFromProps()
 
-      GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraState,
-        uiSettings = props.uiSettings.value.toMapUiSettings(),
-        properties = props.properties.value.toMapProperties(),
-        onMapLoaded = {
-          onMapLoaded(Unit)
-          wasLoaded.value = true
-        },
-        onMapClick = { latLng ->
-          onMapClick(
+    GoogleMap(
+      modifier = Modifier.fillMaxSize(),
+      cameraPositionState = cameraState,
+      uiSettings = props.uiSettings.value.toMapUiSettings(),
+      properties = props.properties.value.toMapProperties(),
+      onMapLoaded = {
+        onMapLoaded(Unit)
+        wasLoaded.value = true
+      },
+      onMapClick = { latLng ->
+        onMapClick(
+          MapClickEvent(
             Coordinates(latLng.latitude, latLng.longitude)
           )
-        },
-        onMapLongClick = { latLng ->
-          onMapLongClick(
+        )
+      },
+      onMapLongClick = { latLng ->
+        onMapLongClick(
+          MapClickEvent(
             Coordinates(latLng.latitude, latLng.longitude)
           )
-        },
-        onPOIClick = { poi ->
-          onPOIClick(
-            POIRecord(
-              poi.name,
-              Coordinates(poi.latLng.latitude, poi.latLng.longitude)
-            )
+        )
+      },
+      onPOIClick = { poi ->
+        onPOIClick(
+          POIRecord(
+            poi.name,
+            Coordinates(poi.latLng.latitude, poi.latLng.longitude)
           )
-        },
-        onMyLocationButtonClick = props.userLocation.value.coordinates?.let { coordinates ->
-          {
-            // Override onMyLocationButtonClick with default behavior to update manualCameraControl
-            appContext.mainQueue.launch {
-              cameraState.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
-              manualCameraControl = false
-            }
-            true
+        )
+      },
+      onMyLocationButtonClick = props.userLocation.value.coordinates?.let { coordinates ->
+        {
+          // Override onMyLocationButtonClick with default behavior to update manualCameraControl
+          appContext.mainQueue.launch {
+            cameraState.animate(CameraUpdateFactory.newLatLng(coordinates.toLatLng()))
+            manualCameraControl = false
           }
-        },
-        mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
-        locationSource = locationSource
-      ) {
-        polylineState.forEach { (polyline, coordinates) ->
-          Polyline(
-            points = coordinates,
-            color = Color(polyline.color),
-            geodesic = polyline.geodesic,
-            width = polyline.width,
-            clickable = true,
-            onClick = {
-              onPolylineClick(
-                PolylineRecord(
-                  id = polyline.id,
-                  coordinates.map { Coordinates(it.latitude, it.longitude) },
-                  polyline.geodesic,
-                  polyline.color,
-                  polyline.width
-                )
-              )
-            }
-          )
+          true
         }
-
-        for ((marker, state) in markerState.value) {
-          val icon = getIconDescriptor(marker)
-
-          Marker(
-            state = state,
-            title = marker.title,
-            snippet = marker.snippet,
-            draggable = marker.draggable,
-            icon = icon,
-            onClick = {
-              onMarkerClick(
-                // We can't send icon to js, because it's not serializable
-                // So we need to remove it from the marker record
-                MarkerRecord(
-                  id = marker.id,
-                  title = marker.title,
-                  snippet = marker.snippet,
-                  coordinates = marker.coordinates
-                )
+      },
+      mapColorScheme = props.colorScheme.value.toComposeMapColorScheme(),
+      locationSource = locationSource
+    ) {
+      polylineState.forEach { (polyline, coordinates) ->
+        Polyline(
+          points = coordinates,
+          color = Color(polyline.color),
+          geodesic = polyline.geodesic,
+          width = polyline.width,
+          clickable = true,
+          onClick = {
+            onPolylineClick(
+              PolylineRecord(
+                id = polyline.id,
+                coordinates.map { Coordinates(it.latitude, it.longitude) },
+                polyline.geodesic,
+                polyline.color,
+                polyline.width
               )
-              !marker.showCallout
-            }
-          )
-        }
+            )
+          }
+        )
+      }
+
+      MapPolygons(
+        polygonState = polygonState,
+        onPolygonClick = onPolygonClick
+      )
+
+      MapCircles(
+        circleState = circleState,
+        onCircleClick = onCircleClick
+      )
+
+      for ((marker, state) in markerState.value) {
+        val icon = getIconDescriptor(marker)
+
+        Marker(
+          state = state,
+          title = marker.title,
+          snippet = marker.snippet,
+          draggable = marker.draggable,
+          icon = icon,
+          onClick = {
+            onMarkerClick(
+              // We can't send icon to js, because it's not serializable
+              // So we need to remove it from the marker record
+              MarkerRecord(
+                id = marker.id,
+                title = marker.title,
+                snippet = marker.snippet,
+                coordinates = marker.coordinates
+              )
+            )
+            !marker.showCallout
+          }
+        )
       }
     }
   }
@@ -238,6 +260,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
     }
 
   @Composable
+  private fun circleStateFromProps() =
+    remember {
+      derivedStateOf {
+        props.circles.value.map { circle ->
+          circle to circle.center.toLatLng()
+        }
+      }
+    }
+
+  @Composable
   private fun polylineStateFromProps() =
     remember {
       derivedStateOf {
@@ -246,6 +278,43 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
         }
       }
     }
+
+  @Composable
+  private fun polygonStateFromProps() =
+    remember {
+      derivedStateOf {
+        props.polygons.value.map { polygon ->
+          polygon to polygon.coordinates.map { it.toLatLng() }
+        }
+      }
+    }
+
+  @Composable
+  private fun MapPolygons(
+    polygonState: List<Pair<PolygonRecord, List<LatLng>>>,
+    onPolygonClick: ViewEventCallback<PolygonRecord>
+  ) {
+    polygonState.forEach { (polygon, coordinates) ->
+      Polygon(
+        points = coordinates,
+        fillColor = Color(polygon.color),
+        strokeColor = Color(polygon.lineColor),
+        strokeWidth = polygon.lineWidth,
+        clickable = true,
+        onClick = {
+          onPolygonClick(
+            PolygonRecord(
+              id = polygon.id,
+              coordinates.map { Coordinates(it.latitude, it.longitude) },
+              color = polygon.color,
+              lineColor = polygon.lineColor,
+              lineWidth = polygon.lineWidth
+            )
+          )
+        }
+      )
+    }
+  }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
     // Stop updating the camera position based on user location.
@@ -277,5 +346,34 @@ class GoogleMapsView(context: Context, appContext: AppContext) : ExpoComposeView
 
       bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
     }
+  }
+}
+
+@Composable
+private fun MapCircles(
+  circleState: List<Pair<CircleRecord, LatLng>>,
+  onCircleClick: ViewEventCallback<CircleRecord>
+) {
+  circleState.forEach { (circle, center) ->
+    Circle(
+      center = center,
+      radius = circle.radius,
+      fillColor = Color(circle.color),
+      strokeColor = circle.lineColor?.let { Color(it) } ?: Color.Transparent,
+      strokeWidth = circle.lineWidth ?: 0f,
+      clickable = true,
+      onClick = {
+        onCircleClick(
+          CircleRecord(
+            id = circle.id,
+            center = Coordinates(center.latitude, center.longitude),
+            radius = circle.radius,
+            color = circle.color,
+            lineColor = circle.lineColor,
+            lineWidth = circle.lineWidth
+          )
+        )
+      }
+    )
   }
 }

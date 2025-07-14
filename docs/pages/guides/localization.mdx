@@ -154,12 +154,17 @@ The keys provided to `locales` should be the [language identifier](https://devel
 
 ```json japanese.json
 {
-  "CFBundleDisplayName": "こんにちは",
-  "NSContactsUsageDescription": "日本語のこれらの言葉"
+  "ios": {
+    "CFBundleDisplayName": "こんにちは",
+    "NSContactsUsageDescription": "日本語のこれらの言葉"
+  },
+  "android": {
+    "app_name": "こんにちは"
+  }
 }
 ```
 
-Now, iOS knows to set the display name of your app to `こんにちは` whenever it's installed on a device with the language set to Japanese.
+Now, the display name of your app is set to `こんにちは` whenever it's installed on a device with the language set to Japanese.
 
 ## Enabling RTL support
 
@@ -320,7 +325,12 @@ export default Text;
 
 ### Selecting assets based on locale direction
 
-If you need to use different icons for LTR/RTL or change styles based on this setting, you can use `I18nManager.isRTL` to get the current layout direction.
+If you need to use different icons for LTR/RTL or change styles based on this setting, you can use [`I18nManager.isRTL`](https://reactnative.dev/docs/next/i18nmanager#isrtl) to get the current layout direction.
+
+```tsx
+import { I18nManager } from 'react-native';
+const isRTL = I18nManager.isRTL;
+```
 
 ## Locale settings and units
 

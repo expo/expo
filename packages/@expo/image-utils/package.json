@@ -33,7 +33,7 @@
   "dependencies": {
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.0.0",
-    "getenv": "^1.0.0",
+    "getenv": "^2.0.0",
     "jimp-compact": "0.16.1",
     "parse-png": "^2.1.0",
     "resolve-from": "^5.0.0",
@@ -42,9 +42,9 @@
     "unique-string": "~2.0.0"
   },
   "devDependencies": {
-    "@types/getenv": "^0.7.0",
+    "@types/getenv": "^1.0.0",
     "@types/semver": "^7.0.0",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "publishConfig": {
     "access": "public"

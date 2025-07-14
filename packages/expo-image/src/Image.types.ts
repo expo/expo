@@ -1,5 +1,5 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle, View } from 'react-native';
+import { ImageStyle as RNImageStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 
@@ -64,19 +64,6 @@ export type ImageSource = {
    * @platform ios
    */
   isAnimated?: boolean;
-
-  /**
-   * Whether to use the Apple system WebP codec.
-   *
-   * When set to `true`, use the Apple system WebP codec from `SDWebImageAWebPCoder`.
-   * When set to `false`, use the libwebp codec from `SDWebImageWebPCoder`.
-   * The Apple system WebP codec is faster and uses less memory, but it has some issues with animated WebP images.
-   * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
-   *
-   * @default true
-   * @platform ios
-   */
-  useAppleWebpCodec?: boolean;
 };
 
 /**
@@ -177,7 +164,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
 
   /**
    * A color used to tint template images (a bitmap image where only the opacity matters).
-   * The color is applied to every non-transparent pixel, causing the image’s shape to adopt that color.
+   * The color is applied to every non-transparent pixel, causing the image's shape to adopt that color.
    * This effect is not applied to placeholders.
    * @default null
    */
@@ -321,13 +308,13 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   accessible?: boolean;
 
   /**
-   * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
+   * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
    */
   accessibilityLabel?: string;
 
   /**
-   * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
+   * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
    *
    * @alias accessibilityLabel
    * @default undefined
@@ -363,6 +350,28 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * @platform android
    */
   decodeFormat?: ImageDecodeFormat;
+
+  /**
+   * Whether to use the Apple's default WebP codec.
+   *
+   * Set this prop to `false` to use the official standard-compliant [libwebp](https://github.com/webmproject/libwebp) codec for WebP images.
+   * The default implementation from Apple is faster and uses less memory but may render animated images with incorrect blending or play them at the wrong framerate.
+   * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
+   *
+   * @default true
+   * @platform ios
+   */
+  useAppleWebpCodec?: boolean;
+
+  /**
+   * Force early resizing of the image to match the container size.
+   * This option helps to reduce the memory usage of the image view, especially when the image is larger than the container.
+   * It may affect the `resizeType` and `contentPosition` properties when the image view is resized dynamically.
+   *
+   * @default false
+   * @platform ios
+   */
+  enforceEarlyResizing?: boolean;
 }
 
 /**
@@ -430,10 +439,14 @@ export type ImageContentPosition =
     }
   | ImageContentPositionString;
 
+/**
+ * It allows you to use an image as a background while rendering other content on top of it.
+ * It extends all `Image` props but provides separate styling controls for the container and the background image itself.
+ */
 export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
-  /** The style of the image container */
+  /** The style of the image container. */
   style?: StyleProp<ViewStyle> | undefined;
-  /** Style object for the image */
+  /** Style object for the image. */
   imageStyle?: StyleProp<RNImageStyle> | undefined;
   /** @hidden */
   children?: React.ReactNode | undefined;

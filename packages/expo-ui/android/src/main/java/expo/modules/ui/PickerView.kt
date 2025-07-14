@@ -29,7 +29,6 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.ui.button.ButtonColors
 
 class PickerColors : Record {
   @Field
@@ -76,95 +75,95 @@ data class PickerProps(
   val variant: MutableState<String> = mutableStateOf("segmented")
 ) : ComposeProps
 
-class PickerView(context: Context, appContext: AppContext) : ExpoComposeView<PickerProps>(context, appContext) {
+class PickerView(context: Context, appContext: AppContext) :
+  ExpoComposeView<PickerProps>(context, appContext, withHostingView = true) {
   override val props = PickerProps()
   private val onOptionSelected by EventDispatcher()
 
-  init {
-    setContent {
-      val (selectedIndex) = props.selectedIndex
-      val (options) = props.options
-      val (colors) = props.elementColors
-      val (variant) = props.variant
+  @Composable
+  override fun Content() {
+    val (selectedIndex) = props.selectedIndex
+    val (options) = props.options
+    val (colors) = props.elementColors
+    val (variant) = props.variant
 
-      @Composable
-      fun SegmentedComposable() {
-        DynamicTheme {
-          AutoSizingComposable(shadowNodeProxy) {
-            SingleChoiceSegmentedButtonRow {
-              options.forEachIndexed { index, label ->
-                SegmentedButton(
-                  shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size
+    @Composable
+    fun SegmentedComposable() {
+      DynamicTheme {
+        AutoSizingComposable(shadowNodeProxy) {
+          SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, label ->
+              SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                  index = index,
+                  count = options.size
+                ),
+                onClick = {
+                  onOptionSelected(mapOf("index" to index, "label" to label))
+                },
+                selected = index == selectedIndex,
+                label = { Text(label) },
+                colors = SegmentedButtonDefaults.colors(
+                  activeBorderColor = colors.activeBorderColor.compose,
+                  activeContentColor = colors.activeContentColor.compose,
+                  inactiveBorderColor = colors.inactiveBorderColor.compose,
+                  inactiveContentColor = colors.inactiveContentColor.compose,
+                  disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
+                  disabledActiveContentColor = colors.disabledActiveContentColor.compose,
+                  disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
+                  disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
+                  activeContainerColor = colors.activeContainerColor.compose,
+                  inactiveContainerColor = colors.inactiveContainerColor.compose,
+                  disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
+                  disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
+                )
+              )
+            }
+          }
+        }
+      }
+    }
+
+    @Composable
+    fun RadioComposable() {
+      DynamicTheme {
+        AutoSizingComposable(shadowNodeProxy) {
+          Column(Modifier.selectableGroup()) {
+            options.forEachIndexed { index, label ->
+              Row(
+                Modifier.fillMaxWidth()
+                  .height(28.dp)
+                  .selectable(
+                    selected = index == selectedIndex,
+                    onClick = {
+                      onOptionSelected(mapOf("index" to index, "label" to label))
+                    },
+                    role = Role.RadioButton
                   ),
-                  onClick = {
-                    onOptionSelected(mapOf("index" to index, "label" to label))
-                  },
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                RadioButton(
                   selected = index == selectedIndex,
-                  label = { Text(label) },
-                  colors = SegmentedButtonDefaults.colors(
-                    activeBorderColor = colors.activeBorderColor.compose,
-                    activeContentColor = colors.activeContentColor.compose,
-                    inactiveBorderColor = colors.inactiveBorderColor.compose,
-                    inactiveContentColor = colors.inactiveContentColor.compose,
-                    disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
-                    disabledActiveContentColor = colors.disabledActiveContentColor.compose,
-                    disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
-                    disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
-                    activeContainerColor = colors.activeContainerColor.compose,
-                    inactiveContainerColor = colors.inactiveContainerColor.compose,
-                    disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
-                    disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
-                  )
+                  onClick = null
+                )
+                Text(
+                  text = label,
+                  modifier = Modifier.padding(start = 12.dp)
                 )
               }
             }
           }
         }
       }
+    }
 
-      @Composable
-      fun RadioComposable() {
-        DynamicTheme {
-          AutoSizingComposable(shadowNodeProxy) {
-            Column(Modifier.selectableGroup()) {
-              options.forEachIndexed { index, label ->
-                Row(
-                  Modifier.fillMaxWidth()
-                    .height(28.dp)
-                    .selectable(
-                      selected = index == selectedIndex,
-                      onClick = {
-                        onOptionSelected(mapOf("index" to index, "label" to label))
-                      },
-                      role = Role.RadioButton
-                    ),
-                  verticalAlignment = Alignment.CenterVertically
-                ) {
-                  RadioButton(
-                    selected = index == selectedIndex,
-                    onClick = null
-                  )
-                  Text(
-                    text = label,
-                    modifier = Modifier.padding(start = 12.dp)
-                  )
-                }
-              }
-            }
-          }
-        }
-      }
-
-      if (variant == "segmented") {
-        SegmentedComposable()
-      } else if (variant == "radio") {
-        RadioComposable()
-      } else {
-        // Default to segmented picker
-        SegmentedComposable()
-      }
+    if (variant == "segmented") {
+      SegmentedComposable()
+    } else if (variant == "radio") {
+      RadioComposable()
+    } else {
+      // Default to segmented picker
+      SegmentedComposable()
     }
   }
 }

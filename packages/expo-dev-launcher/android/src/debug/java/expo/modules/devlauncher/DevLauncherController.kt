@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -50,6 +51,7 @@ import okhttp3.OkHttpClient
 import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.dsl.module
+import androidx.core.net.toUri
 
 // Use this to load from a development server for the development client launcher UI
 // private val DEV_LAUNCHER_HOST = "10.0.0.175:8090";
@@ -108,6 +110,7 @@ class DevLauncherController private constructor() :
   private var appIsLoading = false
 
   private var networkInterceptor: DevLauncherNetworkInterceptor? = null
+  private var pendingIntentExtras: Bundle? = null
 
   private fun isEASUpdateURL(url: Uri): Boolean {
     return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
@@ -248,6 +251,7 @@ class DevLauncherController private constructor() :
 
         coroutineScope.launch {
           try {
+            pendingIntentRegistry.intent = intent
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
@@ -267,7 +271,7 @@ class DevLauncherController private constructor() :
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
         coroutineScope.launch {
           try {
-            loadApp(Uri.parse(lastOpenedApp.url), activityToBeInvalidated)
+            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
           } catch (e: Throwable) {
             navigateToLauncher()
           }
@@ -281,6 +285,8 @@ class DevLauncherController private constructor() :
   }
 
   private fun handleExternalIntent(intent: Intent): Boolean {
+    // Always store the intent extras even if we don't set the pending intent.
+    pendingIntentExtras = intent.extras
     if (mode != Mode.APP && intent.action != Intent.ACTION_MAIN) {
       pendingIntentRegistry.intent = intent
     }
@@ -299,6 +305,9 @@ class DevLauncherController private constructor() :
   }
 
   private fun setupDevMenu(launchUrl: String) {
+    devMenuManager.setGoToHomeAction {
+      navigateToLauncher()
+    }
     devMenuManager.currentManifest = manifest
     devMenuManager.currentManifestURL = manifestURL.toString()
     devMenuManager.launchUrl = launchUrl
@@ -362,7 +371,15 @@ class DevLauncherController private constructor() :
           intent.categories?.let {
             categories.addAll(it)
           }
+        } ?: run {
+        // If no pending intent is available, use the extras from the intent that was used to launch the app.
+        pendingIntentExtras?.let {
+          putExtras(it)
         }
+      }
+
+      // Clear the pending intent extras after using them.
+      pendingIntentExtras = null
     }
 
   private fun createBasicAppIntent() =

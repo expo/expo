@@ -1,6 +1,7 @@
 ---
 title: Add navigation
 description: In this chapter, learn how to add navigation to the Expo app.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -68,12 +69,12 @@ import { Stack } from 'expo-router';
 
 export default function RootLayout() {
   return (
+    /* @tutinfo Wrap screens inside <CODE>Stack</CODE> navigator. Add <CODE>options</CODE> prop to <CODE>/index</CODE> route. Add another <CODE>Stack.Screen</CODE> component to add <CODE>/about</CODE> route. */
     <Stack>
-      /* @tutinfo Add <CODE>options</CODE> prop to <CODE>/index</CODE> route. Add another <CODE>Stack.Screen</CODE> component to add <CODE>/about</CODE> route. */
       <Stack.Screen name="index" options={{ title: 'Home' }} />
       <Stack.Screen name="about" options={{ title: 'About' }} />
-      /* @end */
     </Stack>
+    /* @end */
   );
 }
 ```
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Let's took a look at the changes in our app. Click on `Link` to navigate to the `/about` route:
+Let's take a look at the changes in our app. Click on `Link` to navigate to the `/about` route:
 
 <ContentSpotlight file="tutorial/01-navigating-between-screens.mp4" />
 
@@ -237,7 +238,6 @@ export default function RootLayout() {
       /* @tutinfo This is how a tab navigator is nested inside a stack navigator, especially when the Root layout is composed of a parent stack navigator. We're also setting the <CODE>headerShown</CODE> option to <CODE>false</CODE> to hide the header for the tab navigator. Otherwise, there will be two headers displayed on each screen. */
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       /* @end */
-      <Stack.Screen name="+not-found" />
     </Stack>
   );
 }
@@ -338,7 +338,7 @@ Let's also change the background color of the tab bar and header using `screenOp
     headerShadowVisible: false,
     headerTintColor: '#fff',
     tabBarStyle: {
-    backgroundColor: '#25292e',
+      backgroundColor: '#25292e',
     },
   }}
 >

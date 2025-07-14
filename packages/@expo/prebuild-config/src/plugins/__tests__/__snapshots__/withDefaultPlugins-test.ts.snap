@@ -809,11 +809,6 @@ exports[`built-in plugins introspects mods 1`] = `
                               "android:scheme": "my-app-redirect",
                             },
                           },
-                          {
-                            "$": {
-                              "android:scheme": "com.bacon.todo",
-                            },
-                          },
                         ],
                       },
                       {
@@ -1765,11 +1760,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                           {
                             "$": {
                               "android:scheme": "my-app-redirect",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:scheme": "com.bacon.todo",
                             },
                           },
                         ],

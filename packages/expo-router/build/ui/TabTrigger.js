@@ -62,7 +62,7 @@ function isTabTrigger(child) {
 function useTabTrigger(options) {
     const { state, navigation } = (0, Navigator_1.useNavigatorContext)();
     const { name, reset, onPress, onLongPress } = options;
-    const triggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
+    const triggerMap = (0, react_1.use)(TabContext_1.TabTriggerMapContext);
     const getTrigger = (0, react_1.useCallback)((name) => {
         const config = triggerMap[name];
         if (!config) {

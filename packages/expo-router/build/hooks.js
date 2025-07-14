@@ -22,6 +22,7 @@ const constants_1 = require("./constants");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
+const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -56,6 +57,32 @@ function useRootNavigation() {
 function useNavigationContainerRef() {
     return router_store_1.store.navigationRef;
 }
+const displayWarningForProp = (prop) => {
+    if (process.env.NODE_ENV !== 'production') {
+        console.warn(`router.${prop} should not be used in a previewed screen. To fix this issue, wrap navigation calls with 'if (!isPreview) { ... }'.`);
+    }
+};
+const createNOOPWithWarning = (prop) => () => displayWarningForProp(prop);
+const routerWithWarnings = {
+    back: createNOOPWithWarning('back'),
+    canGoBack: () => {
+        displayWarningForProp('canGoBack');
+        return false;
+    },
+    push: createNOOPWithWarning('push'),
+    navigate: createNOOPWithWarning('navigate'),
+    replace: createNOOPWithWarning('replace'),
+    dismiss: createNOOPWithWarning('dismiss'),
+    dismissTo: createNOOPWithWarning('dismissTo'),
+    dismissAll: createNOOPWithWarning('dismissAll'),
+    canDismiss: () => {
+        displayWarningForProp('canDismiss');
+        return false;
+    },
+    setParams: createNOOPWithWarning('setParams'),
+    reload: createNOOPWithWarning('reload'),
+    prefetch: createNOOPWithWarning('prefetch'),
+};
 /**
  *
  * Returns the [Router](#router) object for imperative navigation.
@@ -75,6 +102,10 @@ function useNavigationContainerRef() {
  * ```
  */
 function useRouter() {
+    const { isPreview } = (0, PreviewRouteContext_1.usePreviewInfo)();
+    if (isPreview) {
+        return routerWithWarnings;
+    }
     return imperative_api_1.router;
 }
 /**
@@ -112,8 +143,14 @@ function useGlobalSearchParams() {
     return (0, router_store_1.useRouteInfo)().params;
 }
 function useLocalSearchParams() {
-    const params = react_1.default.useContext(Route_1.LocalRouteParamsContext) ?? {};
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => {
+    const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
+    const { params: previewParams } = (0, PreviewRouteContext_1.usePreviewInfo)();
+    return Object.fromEntries(Object.entries(previewParams ?? params).map(([key, value]) => {
+        // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
+        // navigation.setParams as it shallow merges. Hence, we hide them here
+        if (value === undefined) {
+            return [key, undefined];
+        }
         if (Array.isArray(value)) {
             return [
                 key,

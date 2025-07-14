@@ -49,19 +49,19 @@ function getTypedRoutesDeclarationFile(ctx, { partialTypedGroups = false, testIg
             .map((param) => {
             const key = param.startsWith('...') ? param.slice(3) : param;
             const value = param.startsWith('...') ? '(string | number)[]' : 'string | number';
-            return `${key}: ${value};`;
+            return `${contextKeyToProperty(key)}: ${value};`;
         })
             .join('');
         const outputParams = paramsNames
             .map((param) => {
             const key = param.startsWith('...') ? param.slice(3) : param;
             const value = param.startsWith('...') ? 'string[]' : 'string';
-            return `${key}: ${value};`;
+            return `${contextKeyToProperty(key)}: ${value};`;
         })
             .join('');
         dynamicRouteStrings.push(contextKeyToType(dynamicRouteTemplate
             .replaceAll(CATCH_ALL, '${string}')
-            .replaceAll(SLUG, '${Router.SingleRoutePart<T>}'), partialTypedGroups));
+            .replaceAll(SLUG, '${Router.SingleRoutePart<T>}') + urlParams, partialTypedGroups));
         dynamicRouteInputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownInputParams & { ${inputParams} } }`);
         dynamicRouteOutputObjects.push(`{ pathname: ${contextKeyToType(dynamicRouteTemplate, partialTypedGroups)}, params: Router.UnknownOutputParams & { ${outputParams} } }`);
     }
@@ -144,6 +144,9 @@ function groupRouteNodes(routeNode, groupedContextKeys = {
         groupRouteNodes(child, groupedContextKeys);
     }
     return groupedContextKeys;
+}
+function contextKeyToProperty(contextKey) {
+    return !/^(?!\d)[\w$]+$/.test(contextKey) ? JSON.stringify(contextKey) : contextKey;
 }
 function contextKeyToType(contextKey, partialTypedGroups) {
     if (contextKey.match(GROUP) === null) {

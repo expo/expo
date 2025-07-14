@@ -1,19 +1,29 @@
 import { SharedObject } from 'expo';
 
-import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 import { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
+import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 import { crop, extent, flip, resize, rotate } from './actions/index.web';
 
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 
 export default class ImageManipulatorContext extends SharedObject {
   private loader: ContextLoader;
-  private currentTask: Promise<HTMLCanvasElement>;
+
+  private _currentTask: Promise<HTMLCanvasElement> | undefined;
+  get currentTask() {
+    if (this._currentTask) {
+      return this._currentTask;
+    }
+    this._currentTask = new Promise((resolve) => resolve(this.loader()));
+    return this._currentTask;
+  }
+  set currentTask(task) {
+    this._currentTask = task;
+  }
 
   constructor(loader?: ContextLoader) {
     super();
     this.loader = loader ?? (() => document.createElement('canvas'));
-    this.currentTask = new Promise((resolve) => resolve(this.loader()));
   }
 
   resize(size: { width: number; height: number }): ImageManipulatorContext {

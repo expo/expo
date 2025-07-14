@@ -1,8 +1,9 @@
 import { RouteNode, sortRoutes } from '../Route';
 import { generateDynamic } from '../getRoutes';
 
-const asRouteNode = (route: string) =>
-  ({
+const asRouteNode = (route: string): RouteNode => {
+  return {
+    type: 'route',
     children: [],
     dynamic: generateDynamic(route),
     loadRoute(): any {
@@ -14,7 +15,8 @@ const asRouteNode = (route: string) =>
     },
     route,
     contextKey: 'INVALID_TEST_VALUE',
-  }) as RouteNode;
+  };
+};
 
 function getSortedRoutes(...routes: string[]) {
   return routes

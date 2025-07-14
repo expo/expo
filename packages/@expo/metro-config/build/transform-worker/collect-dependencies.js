@@ -503,6 +503,11 @@ function getNearestLocFromPath(path) {
     while (current && !current.node.loc && !current.node.METRO_INLINE_REQUIRES_INIT_LOC) {
         current = current.parentPath;
     }
+    // Avoid using the location of the `Program` node,
+    // to avoid conflating locations of single line code
+    if (current && t.isProgram(current.node)) {
+        current = null;
+    }
     return current?.node.METRO_INLINE_REQUIRES_INIT_LOC ?? current?.node.loc;
 }
 function registerDependency(state, qualifier, path) {
@@ -511,6 +516,7 @@ function registerDependency(state, qualifier, path) {
     if (loc != null) {
         dependency.locs.push(loc);
     }
+    dependency.imports += 1;
     return dependency;
 }
 function isOptionalDependency(name, path, state) {
@@ -716,6 +722,7 @@ class DependencyRegistry {
                 index: this._dependencies.size,
                 key: hashKey(key),
                 exportNames: qualifier.exportNames,
+                imports: 0,
             };
             if (qualifier.optional) {
                 newDependency.isOptional = true;

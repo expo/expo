@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- [iOS] added `useApplicationAudioSession` option ([#37487](https://github.com/expo/expo/pull/37487) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.1.7 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [Android] Fix calling getVoices before TTS initialization ([#36664](https://github.com/expo/expo/pull/36664) by [@jakex7](https://github.com/jakex7))
 
 ## 13.1.6 — 2025-04-30
 

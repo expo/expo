@@ -53,7 +53,7 @@ describe('_resolveModule', () => {
       .mockReturnValueOnce(null);
     jest.mocked(externalModule._resolveLocal).mockReturnValue('/');
 
-    expect(() => externalModule._resolveModule(true)).toThrowError(/exports a nullish value/);
+    expect(() => externalModule._resolveModule(true)).toThrow(/exports a nullish value/);
   });
 });
 
@@ -177,12 +177,12 @@ describe('installAsync', () => {
       autoInstall: false,
       shouldPrompt: true,
     });
-    expect(delayAsync).toBeCalled();
+    expect(delayAsync).toHaveBeenCalled();
 
     expect(instance).toBe('foobar');
-    expect(PackageManager.createForProject).toBeCalled();
+    expect(PackageManager.createForProject).toHaveBeenCalled();
     // Ensure all packages are added as dev dep locally.
-    expect(addDevAsync).toBeCalled();
+    expect(addDevAsync).toHaveBeenCalled();
   });
 
   it(`installs the missing package globally with npm`, async () => {
@@ -204,10 +204,10 @@ describe('installAsync', () => {
       shouldGloballyInstall: true,
     });
 
-    expect(PackageManager.createForProject).not.toBeCalled();
+    expect(PackageManager.createForProject).not.toHaveBeenCalled();
     // Ensure all packages are added as dev dep locally.
-    expect(addGlobalAsync).toBeCalled();
-    expect(confirmAsync).not.toBeCalled();
+    expect(addGlobalAsync).toHaveBeenCalled();
+    expect(confirmAsync).not.toHaveBeenCalled();
   });
 
   it(`throws an error when the package cannot be found after install`, async () => {
@@ -225,12 +225,12 @@ describe('installAsync', () => {
       addDevAsync: jest.fn(),
     } as any);
 
-    await expect(externalModule.installAsync({ autoInstall: true })).rejects.toThrowError(
-      /Please install .* and try again/
+    await expect(externalModule.installAsync({ autoInstall: true })).rejects.toThrow(
+      /Install .* and try again/
     );
 
     expect(externalModule.installAsync).toHaveBeenCalledTimes(2);
-    expect(PackageManager.createForProject).toBeCalled();
+    expect(PackageManager.createForProject).toHaveBeenCalled();
   });
 
   it(`asserts on missing`, async () => {
@@ -250,11 +250,11 @@ describe('installAsync', () => {
 
     await expect(
       externalModule.resolveAsync({ autoInstall: false, shouldPrompt: false })
-    ).rejects.toThrowError(/Please install .* and try again/);
+    ).rejects.toThrow(/Install .* and try again/);
 
     // Only invoked once, since we're not prompting.
     expect(externalModule.installAsync).toHaveBeenCalledTimes(1);
     // No install was called
-    expect(PackageManager.createForProject).toBeCalledTimes(0);
+    expect(PackageManager.createForProject).toHaveBeenCalledTimes(0);
   });
 });

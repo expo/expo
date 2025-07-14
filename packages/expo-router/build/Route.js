@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 /** Return the RouteNode at the current contextual boundary. */
 function useRouteNode() {
-    return (0, react_1.useContext)(CurrentRouteContext);
+    return (0, react_1.use)(CurrentRouteContext);
 }
 function useContextKey() {
     const node = useRouteNode();

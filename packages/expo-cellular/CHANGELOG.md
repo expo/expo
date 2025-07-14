@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 7.1.5 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
 ## 7.1.4 — 2025-04-30
 
 _This version does not introduce any user-facing changes._
@@ -183,7 +189,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Added experimental opt-in implementation in Swift ([#13523](https://github.com/expo/expo/pull/13523) by [@tsapeta](https://github.com/tsapeta))
-- Rewrote Android part from Java to Kotlin ([#13694](https://github.com/expo/expo/pull/13694) by [@m1st4ke](https://github.com/m1st4ke))
+- Rewritten Android part from Java to Kotlin ([#13694](https://github.com/expo/expo/pull/13694) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 3.2.0 — 2021-06-16
 

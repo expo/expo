@@ -17,6 +17,10 @@ public class AppleMapsModule: Module {
       AsyncFunction("setCameraPosition") { (view: AppleMapsViewWrapper, config: CameraPosition?) in
         view.setCameraPosition(config: config)
       }
+
+      AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate) in
+        try await view.openLookAround(coordinate: coordinates)
+      }
     }
   }
 }

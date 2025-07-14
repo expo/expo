@@ -7,13 +7,13 @@ import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import java.io.File
 
-class FileTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<File>(isOptional) {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): File {
+class FileTypeConverter : DynamicAwareTypeConverters<File>() {
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): File {
     val path = value.asString()
     return File(path)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): File {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): File {
     val path = value as String
     return File(path)
   }

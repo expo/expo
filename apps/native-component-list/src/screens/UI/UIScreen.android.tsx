@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Shape component',
+    route: 'ui/shape',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShapeScreen'));
+    },
+  },
+  {
     name: 'Section component',
     route: 'ui/section',
     options: {},
@@ -96,6 +104,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./BottomSheetScreen'));
+    },
+  },
+  {
+    name: 'Jetpack Compose primitives',
+    route: 'ui/jetpack-compose-primitives',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./JetpackComposePrimitivesScreen'));
     },
   },
 ];

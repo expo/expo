@@ -114,7 +114,8 @@ data class ContextMenuDispatchers(
   val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchValueChangeEvent>
 )
 
-class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<ContextMenuProps>(context, appContext) {
+class ContextMenu(context: Context, appContext: AppContext) :
+  ExpoComposeView<ContextMenuProps>(context, appContext, withHostingView = true) {
   override val props = ContextMenuProps()
   val expanded = mutableStateOf(false)
   val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()
@@ -146,30 +147,29 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
     return super.dispatchTouchEvent(ev)
   }
 
-  init {
-    setContent {
-      var elements by remember { props.elements }
-      val color by remember { props.color }
+  @Composable
+  override fun Content() {
+    var elements by remember { props.elements }
+    val color by remember { props.color }
 
-      return@setContent Box {
-        DynamicTheme {
-          DropdownMenu(
-            containerColor = color?.composeOrNull ?: MenuDefaults.containerColor,
-            expanded = expanded.value,
-            onDismissRequest = {
-              expanded.value = !expanded.value
-            }
-          ) {
-            FlatMenu(
-              elements,
-              null,
-              dispatchers = ContextMenuDispatchers(
-                buttonPressed = onContextMenuButtonPressed,
-                switchCheckedChanged = onContextMenuSwitchValueChanged
-              ),
-              expanded = expanded
-            )
+    return Box {
+      DynamicTheme {
+        DropdownMenu(
+          containerColor = color?.composeOrNull ?: MenuDefaults.containerColor,
+          expanded = expanded.value,
+          onDismissRequest = {
+            expanded.value = !expanded.value
           }
+        ) {
+          FlatMenu(
+            elements,
+            null,
+            dispatchers = ContextMenuDispatchers(
+              buttonPressed = onContextMenuButtonPressed,
+              switchCheckedChanged = onContextMenuSwitchValueChanged
+            ),
+            expanded = expanded
+          )
         }
       }
     }

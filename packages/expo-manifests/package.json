@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "main": "build/Manifests.js",
   "types": "build/Manifests.d.ts",
@@ -34,11 +34,11 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "~11.0.7",
+    "@expo/config": "~11.0.10",
     "expo-json-utils": "~0.15.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
     "expo": "*"

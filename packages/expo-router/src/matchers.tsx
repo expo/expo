@@ -1,13 +1,21 @@
-/** Match `[page]` -> `page` */
-export function matchDynamicName(name: string): string | undefined {
-  // Don't match `...` or `[` or `]` inside the brackets
-  // eslint-disable-next-line no-useless-escape
-  return name.match(/^\[([^[\](?:\.\.\.)]+?)\]$/)?.[1];
+/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+const dynamicNameRe = /^\[([^[\]]+?)\]$/;
+
+interface DynamicNameMatch {
+  name: string;
+  deep: boolean;
 }
 
-/** Match `[...page]` -> `page` */
-export function matchDeepDynamicRouteName(name: string): string | undefined {
-  return name.match(/^\[\.\.\.([^/]+?)\]$/)?.[1];
+/** Match `[page]` -> `page` */
+export function matchDynamicName(name: string): DynamicNameMatch | undefined {
+  const paramName = name.match(dynamicNameRe)?.[1];
+  if (paramName == null) {
+    return undefined;
+  } else if (paramName.startsWith('...')) {
+    return { name: paramName.slice(3), deep: true };
+  } else {
+    return { name: paramName, deep: false };
+  }
 }
 
 /** Test `/` -> `page` */
@@ -17,17 +25,17 @@ export function testNotFound(name: string): boolean {
 
 /** Match `(page)` -> `page` */
 export function matchGroupName(name: string): string | undefined {
-  return name.match(/^(?:[^\\(\\)])*?\(([^\\/]+)\).*?$/)?.[1];
+  return name.match(/^(?:[^\\()])*?\(([^\\/]+)\)/)?.[1];
 }
 
 /** Match `(app)/(page)` -> `page` */
 export function matchLastGroupName(name: string): string | undefined {
-  return name.match(/.*(?:\/|^)\(([^\\/\s]+)\)[^\s]*$/)?.[1];
+  return name.match(/.*(?:\/|^)\(([^\\/]+)\)[^\s]*$/)?.[1];
 }
 
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 export function matchArrayGroupName(name: string) {
-  return name.match(/(?:[^\\(\\)])*?\(([^\\/]+,[^\\/]+)\).*?$/)?.[1];
+  return name.match(/(?:[^\\()])*?\(([^\\/]+,[^\\/]+)\)/)?.[1];
 }
 
 export function getNameFromFilePath(name: string): string {

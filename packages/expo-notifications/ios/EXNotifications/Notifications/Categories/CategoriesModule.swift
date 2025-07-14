@@ -30,13 +30,11 @@ open class CategoriesModule: Module {
     let categoryRecord = CategoryRecord(identifier, actions: actions, options: options)
     let newNotificationCategory = categoryRecord.toUNNotificationCategory()
     let oldCategories = await UNUserNotificationCenter.current().notificationCategories()
-    let newCategories = Set(
-      oldCategories
+    let newCategories = oldCategories
         .filter { oldCategory in
           return oldCategory.identifier != newNotificationCategory.identifier
         }
         .union([newNotificationCategory])
-    )
     UNUserNotificationCenter.current().setNotificationCategories(newCategories)
     return CategoryRecord(newNotificationCategory)
   }
@@ -47,9 +45,9 @@ open class CategoriesModule: Module {
       return oldCategory.identifier == identifier
     }
     if didDelete {
-      let newCategories = Set(oldCategories.filter { oldCategory in
+      let newCategories = oldCategories.filter { oldCategory in
         return oldCategory.identifier != identifier
-      })
+      }
       UNUserNotificationCenter.current().setNotificationCategories(newCategories)
     }
     return didDelete

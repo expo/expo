@@ -168,7 +168,8 @@ export type AssetInfo = Asset & {
 
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
- * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * and time-lapse or high-frame-rate video. Maps to [`PHAssetMediaSubtype`](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * @platform ios
  * */
 export type MediaSubtype =
   | 'depthEffect'
@@ -178,7 +179,9 @@ export type MediaSubtype =
   | 'panorama'
   | 'screenshot'
   | 'stream'
-  | 'timelapse';
+  | 'timelapse'
+  | 'spatialMedia'
+  | 'videoCinematic';
 
 // @needsAudit
 export type MediaLibraryAssetInfoQueryOptions = {
@@ -306,6 +309,11 @@ export type AssetsOptions = {
    * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
+  /**
+   * An array of [MediaSubtype](#mediasubtype)s or a single `MediaSubtype`.
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[] | MediaSubtype;
   /**
    * `Date` object or Unix timestamp in milliseconds limiting returned assets only to those that
    * were created after this date.
@@ -443,6 +451,8 @@ export async function isAvailableAsync(): Promise<boolean> {
  * @param writeOnly
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(
@@ -817,7 +827,8 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
   }
 
-  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
+  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore, mediaSubtypes } =
+    assetsOptions;
 
   const options = {
     first: first == null ? 20 : first,
@@ -825,6 +836,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     album: getId(album),
     sortBy: arrayize(sortBy),
     mediaType: arrayize(mediaType || [MediaType.photo]),
+    mediaSubtypes: arrayize(mediaSubtypes),
     createdAfter: dateToNumber(createdAfter),
     createdBefore: dateToNumber(createdBefore),
   };

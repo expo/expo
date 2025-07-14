@@ -1,0 +1,201 @@
+---
+title: Run E2E tests on EAS Workflows
+sidebar_title: Run E2E tests
+description: Learn how to set up and run E2E tests on EAS Workflows with Maestro.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+In this guide, you'll learn how to run end-to-end (E2E) tests on EAS Workflows using [Maestro](https://maestro.dev/). The example demonstrates how to configure your E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you'll need to adjust the flows to match your app's UI.
+
+<Step label="1">
+## Set up your project
+
+If you haven't already, create a new project and sync it with EAS.
+
+Follow the [Get started with EAS Workflows guide](/eas/workflows/get-started/#set-up-your-project) to create a new project and sync it with EAS. Then, [configure your project](/eas/workflows/get-started/#configure-your-project) and link your GitHub repository.
+
+</Step>
+
+<Step label="2">
+
+## Add example Maestro test cases
+
+This is what the UI of the app created from the default Expo template looks like:
+
+<div style={{ display: 'flex', justifyContent: 'center' }}>
+  <ContentSpotlight src="/static/images/eas-build/tests/01-home.png" className="max-w-[360px]" />
+  <ContentSpotlight src="/static/images/eas-build/tests/02-explore.png" className="max-w-[360px]" />
+</div>
+
+Let's create two simple Maestro flows for the example app. Start by creating a directory called **.maestro** in the root of your project directory. This directory will contain the flows you'll configure and should be at the same level as **eas.json**.
+
+Inside, create a new file called **home.yml**. This flow will launch the app and assert that the text "Welcome!" is visible on the home screen.
+
+```yaml .maestro/home.yml
+appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
+---
+- launchApp
+- assertVisible: 'Welcome!'
+```
+
+Next, create a new flow called **expand_test.yml**. This flow will open the "Explore" screen in the example app, click on the "File-based routing" collapsible, and assert that the text "This app has two screens." is visible on the screen.
+
+```yaml .maestro/expand_test.yml
+appId: dev.expo.eastestsexample # This is an example app id. Replace it with your app id.
+---
+- launchApp
+- tapOn: 'Explore.*'
+- tapOn: '.*File-based routing'
+- assertVisible: 'This app has two screens.*'
+```
+
+</Step>
+
+<Step label="3">
+## Run Maestro tests locally (optional)
+
+To run Maestro tests locally, install the Maestro CLI by following the instructions in [Installing Maestro](https://docs.maestro.dev/getting-started/installing-maestro).
+
+[Install your app on a local Android Emulator or iOS Simulator](/more/expo-cli/#compiling). Open a terminal, navigate to the Maestro directory, and run the following commands to start the tests with the Maestro CLI:
+
+<Terminal
+  cmd={['$ maestro test .maestro/expand_test.yml', '', '$ maestro test .maestro/home.yml']}
+/>
+
+The video below shows a successful run of the **.maestro/expand_test.yml** flow:
+
+<ContentSpotlight file="guides/local-e2e.mp4" />
+
+</Step>
+
+<Step label="4">
+## Build profile for E2E tests
+
+E2E tests require a built app file: **.apk** for Android or **.app** for iOS &mdash; that EAS can install and test on an emulator/simulator.
+
+In your **eas.json** file, create a build profile for E2E tests. If the file doesn't exist, run `eas build:configure` to generate it.
+
+```json eas.json
+{
+  "build": {
+    "e2e-test": {
+      "withoutCredentials": true,
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+```
+
+The above build profile creates an **.apk** for Android and an **.app** for iOS. The workflow uses this profile to build the app on EAS servers.
+
+</Step>
+
+<Step label="5">
+## Create an E2E test workflow
+
+At the root of your project, create an **.eas/workflows** directory. Then, add a YAML file for your E2E test workflow, such as **.eas/workflows/e2e-test-android.yml**.
+
+```yaml .eas/workflows/e2e-test-android.yml
+name: e2e-test-android
+
+on:
+  pull_request:
+    branches: ['*'] # Run the E2E test workflow on every pull request.
+jobs:
+  build_android_for_e2e:
+    type: build
+    params:
+      platform: android
+      profile: e2e-test # your eas build profile for E2E test
+
+  maestro_test:
+    needs: [build_android_for_e2e]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_android_for_e2e.outputs.build_id }}
+      flow_path: ['.maestro/home.yml']
+```
+
+This workflow builds an **.apk** for Android using the `e2e-test` build profile from the previous step. Then it runs the **.maestro/home.yml** flow on the built APK.
+
+Here's an example of the same test workflow for iOS:
+
+```yaml .eas/workflows/e2e-test.yml
+name: e2e-test-ios
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  build_ios_for_e2e:
+    type: build
+    params:
+      platform: ios
+      profile: e2e-test # your eas build profile for E2E test
+
+  maestro_test:
+    needs: [build_ios_for_e2e]
+    type: maestro
+    params:
+      build_id: ${{ needs.build_ios_for_e2e.outputs.build_id }}
+      flow_path: ['.maestro/home.yml']
+```
+
+Learn more about [Syntax for EAS Workflows](/eas/workflows/syntax/).
+
+</Step>
+
+<Step label="6">
+## Run the E2E test workflow
+
+You can run the E2E test workflow in two ways:
+
+1. **Manually using the EAS CLI**
+
+<Terminal cmd={['$ npx eas-cli@latest workflow:run .eas/workflows/e2e-test-android.yml']} />
+
+2. **Automatically when you open a pull request**
+
+The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [EAS Workflow triggers](/eas/workflows/syntax/#on).
+
+After the workflow starts, you can track its progress and view the results in the EAS dashboard. Here's a screenshot of a completed workflow run:
+
+<ContentSpotlight src="/static/images/eas-build/tests/e2e-workflow.png" />
+
+</Step>
+
+## More
+
+<BoxLink
+  title="Syntax for EAS Workflows"
+  description="Learn more about the syntax for EAS Workflows."
+  href="/eas/workflows/syntax/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="Example CI/CD workflows"
+  description="Learn more about example CI/CD workflows for EAS Workflows."
+  href="/eas/workflows/examples/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="Maestro documentation"
+  description="Learn more about Maestro flows and how to write them."
+  href="https://docs.maestro.dev/"
+  Icon={BookOpen02Icon}
+/>

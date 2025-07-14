@@ -2,7 +2,7 @@ import { validatePathConfig as RNValidatePathConfig, type Route } from '@react-n
 import * as queryString from 'query-string';
 
 import type { Options, State, StringifyConfig } from './getPathFromState';
-import { matchDeepDynamicRouteName, matchDynamicName, matchGroupName } from '../matchers';
+import { matchDynamicName, matchGroupName } from '../matchers';
 
 export type ExpoOptions = {
   preserveDynamicRoutes?: boolean;
@@ -176,10 +176,7 @@ export function isDynamicPart(p: string) {
 
 function segmentMatchesConvention(segment: string): boolean {
   return (
-    segment === 'index' ||
-    matchDynamicName(segment) != null ||
-    matchGroupName(segment) != null ||
-    matchDeepDynamicRouteName(segment) != null
+    segment === 'index' || matchGroupName(segment) != null || matchDynamicName(segment) != null
   );
 }
 

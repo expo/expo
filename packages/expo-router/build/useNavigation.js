@@ -60,6 +60,10 @@ const href_1 = require("./link/href");
 function useNavigation(parent) {
     let navigation = (0, native_1.useNavigation)();
     let state = (0, native_1.useStateForPath)();
+    if (parent === undefined) {
+        // If no parent is provided, return the current navigation object
+        return navigation;
+    }
     // Check for the top-level navigator - we cannot fetch anything higher!
     const currentId = navigation.getId();
     if (currentId === '' || currentId === `/expo-router/build/views/Navigator`) {

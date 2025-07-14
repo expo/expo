@@ -17,18 +17,8 @@ public class LocalizationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLocalization")
 
-    Constants {
-      return Self.getCurrentLocalization()
-    }
-    AsyncFunction("getLocalizationAsync") {
-      return Self.getCurrentLocalization()
-    }
-    Function("getLocales") {
-      return Self.getLocales()
-    }
-    Function("getCalendars") {
-      return Self.getCalendars()
-    }
+    Function("getLocales", Self.getLocales)
+    Function("getCalendars", Self.getCalendars)
     OnCreate {
       if let forceRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool {
         self.setRTLPreferences(true, forceRTL)
@@ -233,28 +223,6 @@ public class LocalizationModule: Module {
         "uses24hourClock": uses24HourClock(),
         "firstWeekday": calendar.firstWeekday
       ]
-    ]
-  }
-
-  static func getCurrentLocalization() -> [String: Any?] {
-    let locale = getLocale()
-    let languageCode = locale.languageCode ?? "en"
-    var languageIds = Locale.preferredLanguages
-
-    if languageIds.isEmpty {
-      languageIds.append("en-US")
-    }
-    return [
-      "currency": locale.currencyCode ?? "USD",
-      "decimalSeparator": locale.decimalSeparator ?? ".",
-      "digitGroupingSeparator": locale.groupingSeparator ?? ",",
-      "isoCurrencyCodes": Locale.isoCurrencyCodes,
-      "isMetric": locale.usesMetricSystem,
-      "isRTL": Locale.characterDirection(forLanguage: languageCode) == .rightToLeft,
-      "locale": languageIds.first,
-      "locales": languageIds,
-      "region": locale.regionCode ?? "US",
-      "timezone": TimeZone.current.identifier
     ]
   }
 }

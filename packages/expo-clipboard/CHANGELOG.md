@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 7.1.5 - 2025-07-01
+
+### 💡 Others
+
+- [iOS] Refactor deprecated code ([#36714](https://github.com/expo/expo/pull/36714) by [@hirbod](https://github.com/hirbod))
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
 ## 7.1.4 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

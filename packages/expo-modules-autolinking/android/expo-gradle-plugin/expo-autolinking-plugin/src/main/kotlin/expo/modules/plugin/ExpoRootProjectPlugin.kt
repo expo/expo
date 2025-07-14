@@ -14,7 +14,7 @@ import kotlin.jvm.optionals.getOrNull
 class ExpoRootProjectPlugin : Plugin<Project> {
   override fun apply(rootProject: Project) {
     val versionCatalogs = rootProject.extensions.getByType(VersionCatalogsExtension::class.java)
-    val libs = versionCatalogs.find("libs")
+    val libs = versionCatalogs.find("expoLibs")
 
     with(rootProject) {
       defineDefaultProperties(libs)
@@ -33,7 +33,16 @@ fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
   // Kotlin related
   val kotlin = extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.0.21") }
   val ksp = extra.setIfNotExist("kspVersion") {
-    versionCatalogs.getVersionOrDefault("ksp", KSPLookup.getValue(extra.get("kotlinVersion") as String))
+    versionCatalogs.getVersionOrDefault("ksp") {
+      try {
+        return@getVersionOrDefault KSPLookup.getValue(extra.get("kotlinVersion") as String)
+      } catch (e: Throwable) {
+        throw IllegalStateException(
+          "Can't find KSP version for Kotlin version '${extra.get("kotlinVersion")}'. You're probably using an unsupported version of Kotlin. Supported versions are: '${KSPLookup.keys.joinToString(", ")}'",
+          e
+        )
+      }
+    }
   }
 
   project.logger.quiet("""
@@ -58,4 +67,8 @@ inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any
 
 fun Optional<VersionCatalog>.getVersionOrDefault(name: String, default: String): String {
   return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion ?: default
+}
+
+fun Optional<VersionCatalog>.getVersionOrDefault(name: String, default: () -> String): String {
+  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion ?: default.invoke()
 }

@@ -2,6 +2,7 @@
 title: Share previews with your team
 sidebar_title: Share previews
 description: Learn how to use EAS Update to send OTA updates and share previews with a team.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -121,11 +122,11 @@ We'll modify the text of the first button in our example app that says **Choose 
 
 Instead of creating a new build to share this change with our team for testing, let's publish an update:
 
-<Terminal cmd={['$ eas update --branch development --message "Change first button label"']} />
+<Terminal cmd={['$ eas update --channel development --message "Change first button label"']} />
 
-In the command above, we used the `development` branch. Every update is associated with an [update branch](/eas-update/how-it-works/#publishing-an-update). It is similar to every commit that we make with git, which is associated with a git branch.
+In the command above, we used the `development` channel. Every update is associated with a [channel name]](/eas-update/how-it-works/#publishing-an-update). It is similar to every commit that we make with git, which is associated with a git branch.
 
-By default, EAS will map branches and channels with the same name, if no other mapping has been specified. So, by using the channel `development` in our build profile and then publishing an update on the development branch, we're asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update branch, we can map it to a channel.
+So, by using the channel `development` in our build profile and then publishing an, we're asking EAS to deliver this update to builds with the `development` channel. When we make an EAS Update channel it automatically gets mapped to a branch with the same name.
 
 After the update is published, the CLI will prompt us with information about it.
 
@@ -134,10 +135,10 @@ After the update is published, the CLI will prompt us with information about it.
   src="/static/images/tutorial/eas/update-01.png"
 />
 
-Click on the **Website link** to see the Update on the Expo dashboard under **Updates**:
+Click on the **Website link** to see the Update on the EAS dashboard under **Updates**:
 
 <ContentSpotlight
-  alt="Expo dashboard shows the latest published update for the development build"
+  alt="EAS dashboard shows the latest published update for the development build"
   src="/static/images/tutorial/eas/update-02.png"
   className="max-w-[800px]"
 />
@@ -167,7 +168,7 @@ Any team member running the preview or production build will receive the update 
 
 For example, for a `preview` build, we can run:
 
-<Terminal cmd={['$ eas update --branch preview --message "Change first button label"']} />
+<Terminal cmd={['$ eas update --channel preview --message "Change first button label"']} />
 
 Here is an example where we've published an update for the `preview` build. To test the update, force close and reopen the app twice to download and view the changes:
 

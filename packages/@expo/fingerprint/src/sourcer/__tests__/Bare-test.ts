@@ -19,6 +19,7 @@ import { SourceSkips } from '../SourceSkips';
 jest.mock('@expo/spawn-async');
 jest.mock('fs/promises');
 jest.mock('/app/package.json', () => ({}), { virtual: true });
+jest.mock('../../ProjectWorkflow');
 
 describe('getBareSourcesAsync', () => {
   afterEach(() => {

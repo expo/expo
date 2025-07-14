@@ -84,6 +84,6 @@ describe(choosePortAsync, () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
     expect(port).toBe(null);
-    expect(confirmAsync).not.toBeCalled();
+    expect(confirmAsync).not.toHaveBeenCalled();
   });
 });

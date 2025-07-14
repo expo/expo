@@ -1,7 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import { Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
+import { padding, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { ActivityIndicator } from 'react-native';
 import { SectionHeader } from 'src/components/SectionHeader';
@@ -10,6 +10,7 @@ import { EASUpdateLaunchSection } from './EASUpdateLaunchSection';
 import { ProjectHeader } from './ProjectHeader';
 import ScrollView from '../../components/NavigationScrollView';
 import ShareProjectButton from '../../components/ShareProjectButton';
+import { CappedWidthContainerView } from '../../components/Views';
 import { ProjectsQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
@@ -50,11 +51,11 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
     contents = (
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
-        <View padding="medium">
+        <CappedWidthContainerView style={padding.padding.medium}>
           <SectionHeader header="Branches" style={{ paddingTop: 0 }} />
           <EASUpdateLaunchSection app={app} />
           <Spacer.Vertical size="xl" />
-        </View>
+        </CappedWidthContainerView>
       </ScrollView>
     );
   }

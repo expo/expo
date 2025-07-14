@@ -31,12 +31,12 @@
     "debug": "^4.3.4",
     "dotenv": "~16.4.5",
     "dotenv-expand": "~11.0.6",
-    "getenv": "^1.0.0"
+    "getenv": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "^4.1.6"
+    "expo-module-scripts": "^4.1.7"
   },
   "publishConfig": {
     "access": "public"

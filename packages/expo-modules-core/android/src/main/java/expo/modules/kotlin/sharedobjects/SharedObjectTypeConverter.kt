@@ -3,11 +3,10 @@ package expo.modules.kotlin.sharedobjects
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.IncorrectRefTypeException
-import expo.modules.kotlin.exception.InvalidSharedObjectTypeException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.toStrongReference
-import expo.modules.kotlin.types.NullAwareTypeConverter
+import expo.modules.kotlin.types.NonNullableTypeConverter
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
@@ -15,9 +14,9 @@ import kotlin.reflect.full.isSuperclassOf
 
 class SharedObjectTypeConverter<T : SharedObject>(
   val type: KType
-) : NullAwareTypeConverter<T>(type.isMarkedNullable) {
+) : NonNullableTypeConverter<T>() {
   @Suppress("UNCHECKED_CAST")
-  override fun convertNonOptional(value: Any, context: AppContext?): T {
+  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
     val id = SharedObjectId(
       if (value is Dynamic) {
         value.asInt()
@@ -38,7 +37,7 @@ class SharedObjectTypeConverter<T : SharedObject>(
 
 class SharedRefTypeConverter<T : SharedRef<*>>(
   val type: KType
-) : NullAwareTypeConverter<T>(type.isMarkedNullable) {
+) : NonNullableTypeConverter<T>() {
   private val sharedObjectTypeConverter = SharedObjectTypeConverter<T>(type)
 
   val sharedRefType: KType? by lazy {
@@ -64,11 +63,8 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
     return@lazy null
   }
 
-  override fun convertNonOptional(value: Any, context: AppContext?): T {
-    val sharedObject = sharedObjectTypeConverter.convert(value, context)
-    if (sharedObject !is SharedRef<*>) {
-      throw InvalidSharedObjectTypeException(type)
-    }
+  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): T {
+    val sharedObject = sharedObjectTypeConverter.convert(value, context, forceConversion)
 
     @Suppress("UNCHECKED_CAST")
     return checkInnerRef(sharedObject) as T

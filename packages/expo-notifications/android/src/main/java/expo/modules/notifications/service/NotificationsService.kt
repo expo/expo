@@ -679,8 +679,8 @@ open class NotificationsService : BroadcastReceiver() {
     )
 
   open fun onGetAllPresentedNotifications(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelableArrayList(
+    Bundle().apply {
+      putParcelableArrayList(
         NOTIFICATIONS_KEY,
         ArrayList(
           getPresentationDelegate(context).getAllPresentedNotifications()
@@ -718,8 +718,8 @@ open class NotificationsService : BroadcastReceiver() {
   //region Category handling
 
   open fun onGetCategories(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelableArrayList(
+    Bundle().apply {
+      putParcelableArrayList(
         NOTIFICATION_CATEGORIES_KEY,
         ArrayList(
           getCategoriesDelegate(context).getCategories()
@@ -728,8 +728,8 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
   open fun onSetCategory(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelable(
+    Bundle().apply {
+      putParcelable(
         NOTIFICATION_CATEGORY_KEY,
         getCategoriesDelegate(context).setCategory(
           intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
@@ -738,8 +738,8 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
   open fun onDeleteCategory(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putBoolean(
+    Bundle().apply {
+      putBoolean(
         SUCCEEDED_KEY,
         getCategoriesDelegate(context).deleteCategory(
           intent.extras?.getString(IDENTIFIER_KEY)!!
@@ -751,8 +751,8 @@ open class NotificationsService : BroadcastReceiver() {
   //region Scheduling notifications
 
   open fun onGetAllScheduledNotifications(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelableArrayList(
+    Bundle().apply {
+      putParcelableArrayList(
         NOTIFICATION_REQUESTS_KEY,
         ArrayList(
           getSchedulingDelegate(context).getAllScheduledNotifications()
@@ -761,8 +761,8 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
   open fun onGetScheduledNotification(context: Context, intent: Intent) =
-    Bundle().also {
-      it.putParcelable(
+    Bundle().apply {
+      putParcelable(
         NOTIFICATION_REQUEST_KEY,
         getSchedulingDelegate(context).getScheduledNotification(
           intent.extras?.getString(IDENTIFIER_KEY)!!

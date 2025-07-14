@@ -13,7 +13,7 @@ function createMockContextModule(map: Record<string, Record<string, any>> = {}) 
   return contextModule as unknown as RequireContext;
 }
 
-function dropFunctions({ loadRoute, ...node }: RouteNode) {
+function dropFunctions({ loadRoute, ...node }: RouteNode): unknown {
   return {
     ...node,
     children: node.children.map(dropFunctions),
@@ -284,10 +284,10 @@ describe(loadStaticParamsAsync, () => {
       route: '',
     });
 
-    expect(generateStaticParamsParent).toBeCalledTimes(1);
+    expect(generateStaticParamsParent).toHaveBeenCalledTimes(1);
     expect(generateStaticParamsParent).toHaveBeenNthCalledWith(1, { params: {} });
 
-    expect(generateStaticParams).toBeCalledTimes(2);
+    expect(generateStaticParams).toHaveBeenCalledTimes(2);
     expect(generateStaticParams).toHaveBeenNthCalledWith(1, { params: { color: 'red' } });
     expect(generateStaticParams).toHaveBeenNthCalledWith(2, { params: { color: 'blue' } });
   });
@@ -714,7 +714,7 @@ describe(loadStaticParamsAsync, () => {
   });
 
   it(`generateStaticParams throws when deep dynamic segments return invalid type`, async () => {
-    const loadWithParam = (params) =>
+    const loadWithParam = (params: unknown) =>
       loadStaticParamsAsync(
         getExactRoutes(
           createMockContextModule({

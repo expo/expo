@@ -1,6 +1,7 @@
 ---
 title: Tabs
 description: Learn how to use the Tabs layout in Expo Router.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -42,7 +43,7 @@ This file structure produces a layout with a tab bar at the bottom of the screen
 You can use the **app/\_layout.tsx** file to define your app's root layout:
 
 ```tsx app/_layout.tsx
-import { Stack } from 'expo-router/stack';
+import { Stack } from 'expo-router';
 
 export default function Layout() {
   return (
@@ -147,12 +148,12 @@ export default function TabLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        {/* Name of the dynamic route.*/}
+        // Name of the dynamic route.
         name="[user]"
         options={{
-          {/* Ensure the tab always links to the same href.*/}
+          // Ensure the tab always links to the same href.
           href: '/evanbacon',
-          {/* OR you can use the href object.*/}
+          // OR you can use the href object.
           href: {
             pathname: '/[user]',
             params: {

@@ -38,7 +38,7 @@ import { resolveSource } from './utils/resolveSources';
  * ```
  */
 export function useImage(
-  source: ImageSource | string,
+  source: ImageSource | string | number,
   options: ImageLoadOptions = {},
   dependencies: DependencyList = []
 ): ImageRef | null {

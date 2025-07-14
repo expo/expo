@@ -15,7 +15,10 @@ import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { DependencyData } from '../transform-worker/collect-dependencies';
+import {
+  DependencyData,
+  MutableInternalDependency,
+} from '../transform-worker/collect-dependencies';
 import { collectDependenciesForShaking } from '../transform-worker/metro-transform-worker';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
@@ -424,10 +427,12 @@ export async function treeShakeSerializer(
   function disconnectGraphNode(
     graphModule: Module<MixedOutput>,
     importModuleId: string,
-    { isSideEffectyImport }: { isSideEffectyImport?: boolean } = {}
+    {
+      isSideEffectyImport,
+      bailOnDuplicateDefaultExport,
+    }: { isSideEffectyImport?: boolean; bailOnDuplicateDefaultExport?: boolean } = {}
   ): { path: string; removed: boolean } {
     // Unlink the module in the graph
-
     // The hash key for the dependency instance in the module.
     const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
     // If the dependency was already removed, then we don't need to do anything.
@@ -447,6 +452,18 @@ export async function treeShakeSerializer(
     //
     if (graphEntryForTargetImport.path.match(/\.(s?css|sass)$/)) {
       debug('Skip graph unlinking for CSS:');
+      debug('- Origin module:', graphModule.path);
+      debug('- Module ID:', importModuleId);
+      // Skip CSS imports.
+      return { path: importInstance.absolutePath, removed: false };
+    }
+
+    if (
+      bailOnDuplicateDefaultExport &&
+      // @ts-expect-error: exportNames is added by babel
+      importInstance.data.data.exportNames?.includes('default')
+    ) {
+      debug('Skip graph unlinking for duplicate default export:');
       debug('- Origin module:', graphModule.path);
       debug('- Module ID:', importModuleId);
       // Skip CSS imports.
@@ -493,13 +510,15 @@ export async function treeShakeSerializer(
       // Unless it's an empty module.
       isEmptyModule(graphEntryForTargetImport)
     ) {
-      // Remove a random instance of the dep count to track if there are multiple imports.
-      // TODO: Get the exact instance of the import.
+      // TODO: Get the exact instance of the import. This help with more readable errors when import was not counted.
+      const importData = importInstance.data.data as MutableInternalDependency;
+      assert(
+        'imports' in importData,
+        'Expo InternalDependency type expected, but `imports` key is missing.'
+      );
+      importData.imports -= 1;
 
-      // @ts-expect-error: typed as readonly
-      importInstance.data.data.locs.pop();
-
-      if (importInstance.data.data.locs.length === 0) {
+      if (importData.imports <= 0) {
         // Remove dependency from this module so it doesn't appear in the dependency map.
         graphModule.dependencies.delete(targetHashId);
 
@@ -697,7 +716,11 @@ export async function treeShakeSerializer(
           // If export from import then check if we can remove the import.
           if (importModuleId) {
             if (path.node.specifiers.length === 0) {
-              const removeRequest = disconnectGraphNode(value, importModuleId);
+              const removeRequest = disconnectGraphNode(value, importModuleId, {
+                // Due to a quirk in how we've added tree shaking, export-all is expanded and could overlap with existing exports in the same module.
+                // If we find that the existing export has a default export then we should skip removing the node entirely.
+                bailOnDuplicateDefaultExport: true,
+              });
               if (removeRequest.removed) {
                 dirtyImports.push(removeRequest.path);
                 // TODO: Update source maps

@@ -24,7 +24,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Configuration in app config
 
-The recommended way to add fonts to your app is through `expo-font` built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run: [android|ios]`). The plugin allows you to embed font files at build time which is more efficient than using [`loadAsync`](#loadasyncfontfamilyorfontmap-source). It can be configured in different ways, see the [Fonts](/develop/user-interface/fonts/#with-expo-font-config-plugin) guide on how to use it.
+There are two ways to add fonts to your app: using the `expo-font` config plugin (recommended) or loading them at runtime.
+
+The plugin allows you to embed font files at build time which is more efficient than [`useFonts`](#usefontsmap) or [`loadAsync`](#loadasyncfontfamilyorfontmap-source). After you set up the config plugin and run [prebuild](/workflow/continuous-native-generation/#usage), you can render custom fonts right away. The plugin can be configured in different ways, see the [Fonts](/develop/user-interface/fonts/#with-expo-font-config-plugin) guide on how to use it.
 
 <ConfigPluginExample>
 
@@ -50,6 +52,7 @@ The recommended way to add fonts to your app is through `expo-font` built-in [co
                 ]
               }
             ]
+          }
         }
       ]
     ]
@@ -64,7 +67,7 @@ The recommended way to add fonts to your app is through `expo-font` built-in [co
     {
       name: 'fonts',
       description:
-        'An array of font definitions to link to the native project. The paths should be relative to the project root. On Android, the file name becomes the font family name. On iOS, the font family name is always taken directly from the font file and may not be the same as the file name &mdash; use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
+        'An array of font definitions to link to the native project. The paths should be relative to the project root. On Android, the file name becomes the font family name. On iOS, the font family name is always taken directly from the font file and may not be the same as the file name &mdash; follow the [naming advice](/develop/user-interface/fonts/#how-to-determine-which-font-family-name-to-use) or use [`getLoadedFonts`](#getloadedfonts) to see what fonts are available.',
       default: '[]',
     },
     {
@@ -91,7 +94,9 @@ The recommended way to add fonts to your app is through `expo-font` built-in [co
 
 ## Usage
 
-<SnackInline label="Minimal example of using a custom font" dependencies={['expo-font', 'expo-splash-screen']} files={{ 'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67' }}>
+If you don't want to use the [config plugin](#configuration-in-app-config), you can load a font at runtime with the `useFonts` hook, as shown in the snippet:
+
+<SnackInline label="Example of loading and using a custom font" dependencies={['expo-font', 'expo-splash-screen']} files={{ 'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67' }}>
 
 ```tsx
 /* @info Import useFonts hook from 'expo-font'. */ import { useFonts } from 'expo-font'; /* @end */
@@ -104,6 +109,7 @@ SplashScreen.preventAutoHideAsync();
 /* @end */
 
 export default function App() {
+  // Use `useFonts` only if you can't use the config plugin.
   const [loaded, error] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });

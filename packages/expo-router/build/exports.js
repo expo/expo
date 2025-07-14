@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.Modal = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.Redirect = exports.Link = exports.router = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -53,6 +53,8 @@ Object.defineProperty(exports, "router", { enumerable: true, get: function () { 
 var Link_1 = require("./link/Link");
 Object.defineProperty(exports, "Link", { enumerable: true, get: function () { return Link_1.Link; } });
 Object.defineProperty(exports, "Redirect", { enumerable: true, get: function () { return Link_1.Redirect; } });
+var PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
+Object.defineProperty(exports, "useIsPreview", { enumerable: true, get: function () { return PreviewRouteContext_1.useIsPreview; } });
 var withLayoutContext_1 = require("./layouts/withLayoutContext");
 Object.defineProperty(exports, "withLayoutContext", { enumerable: true, get: function () { return withLayoutContext_1.withLayoutContext; } });
 // Expo Router Views
@@ -62,8 +64,12 @@ var Unmatched_1 = require("./views/Unmatched");
 Object.defineProperty(exports, "Unmatched", { enumerable: true, get: function () { return Unmatched_1.Unmatched; } });
 var Sitemap_1 = require("./views/Sitemap");
 Object.defineProperty(exports, "Sitemap", { enumerable: true, get: function () { return Sitemap_1.Sitemap; } });
+var useSitemap_1 = require("./views/useSitemap");
+Object.defineProperty(exports, "useSitemap", { enumerable: true, get: function () { return useSitemap_1.useSitemap; } });
 var ErrorBoundary_1 = require("./views/ErrorBoundary");
 Object.defineProperty(exports, "ErrorBoundary", { enumerable: true, get: function () { return ErrorBoundary_1.ErrorBoundary; } });
+var Modal_1 = require("./modal/Modal");
+Object.defineProperty(exports, "Modal", { enumerable: true, get: function () { return Modal_1.Modal; } });
 // Platform
 /**
  * @hidden

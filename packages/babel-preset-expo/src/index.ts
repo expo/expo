@@ -30,6 +30,10 @@ type BabelPresetExpoPlatformOptions = {
   decorators?: false | { legacy?: boolean; version?: number };
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
   reanimated?: boolean;
+  /** Enable or disable adding the Worklets plugin by default. Only applies when
+   * using `react-native-worklets` or Reanimated 4. @default `true`
+   */
+  worklets?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -40,6 +44,8 @@ type BabelPresetExpoPlatformOptions = {
   lazyImports?: boolean;
 
   disableImportExportTransform?: boolean;
+
+  disableDeepImportWarnings?: boolean;
 
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
@@ -240,7 +246,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    extraPlugins.push(
+      require('@babel/plugin-transform-parameters'),
+
+      // Add support for class static blocks.
+      [require('@babel/plugin-transform-class-static-block'), { loose: true }]
+    );
   }
 
   const inlines: Record<string, null | boolean | string> = {
@@ -250,9 +261,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   };
 
   // `typeof window` is left in place for native + client environments.
-  const minifyTypeofWindow =
-    (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
-
+  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
+  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
+  const minifyTypeofWindow = platformOptions.minifyTypeofWindow ?? isServerEnv;
   if (minifyTypeofWindow !== false) {
     // This nets out slightly faster in development when considering the cost of bundling server dependencies.
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
@@ -357,13 +368,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
           //
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
-          // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
+          // Both __source and __self are automatically set when using the automatic jsxRuntime. Remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
           // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
           // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
           withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
+          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           lazyImportExportTransform:
             lazyImportsOption === true
               ? (importModuleSpecifier: string) => {
@@ -443,8 +455,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
-      hasModule('react-native-reanimated') &&
-        platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
+      hasModule('react-native-worklets') &&
+      platformOptions.worklets !== false &&
+      platformOptions.reanimated !== false
+        ? [require('react-native-worklets/plugin')]
+        : hasModule('react-native-reanimated') &&
+          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
 }

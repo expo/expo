@@ -3,16 +3,21 @@ title: BackgroundTask
 description: A library that provides an API for running background tasks.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-background-task'
 packageName: 'expo-background-task'
-platforms: ['android', 'ios']
+platforms: ['android', 'ios*']
 isNew: true
+hasVideoLink: true
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](task-manager.mdx) Native API to run JavaScript tasks.
+
+<VideoBoxLink videoId="4lFus7TvayI" title="Watch: Expo Background Task Deep Dive" />
 
 ## Background tasks
 
@@ -121,21 +126,23 @@ export default function BackgroundTaskScreen() {
   const [status, setStatus] = useState<BackgroundTask.BackgroundTaskStatus | null>(null);
 
   useEffect(() => {
-    checkStatusAsync();
+    updateAsync();
   }, []);
 
-  const checkStatusAsync = async () => {
+  const updateAsync = async () => {
     const status = await BackgroundTask.getStatusAsync();
     setStatus(status);
+    const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER);
+    setIsRegistered(isRegistered);
   };
 
   const toggle = async () => {
-    if (isRegistered) {
+    if (!isRegistered) {
       await registerBackgroundTaskAsync();
     } else {
       await unregisterBackgroundTaskAsync();
     }
-    setIsRegistered(!isRegistered);
+    await updateAsync();
   };
 
   return (
@@ -153,7 +160,7 @@ export default function BackgroundTaskScreen() {
         title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
         onPress={toggle}
       />
-      <Button title="Check Background Task Status" onPress={checkStatusAsync} />
+      <Button title="Check Background Task Status" onPress={updateAsync} />
     </View>
   );
 }
@@ -178,6 +185,72 @@ const styles = StyleSheet.create({
 Since the Background Tasks API on iOS and the WorkManager API on Android limit the number of tasks that can be scheduled for a single app, Expo Background Task uses a single worker on both platforms. While you can define multiple JavaScript background tasks, they will all run through this single worker.
 
 The last registered background task determines the minimum interval for execution.
+
+## Testing background tasks
+
+Background tasks can be tested using the [`triggerTaskWorkerForTestingAsync`](#backgroundtasktriggertaskworkerfortestingasync) method. This method will run all registered tasks directly on Android and invoke the `BGTaskScheduler` on iOS. This is useful for testing the behavior of your background tasks without having to wait for the system to trigger them.
+
+This method is only available in development mode. It will not work in production builds.
+
+```tsx
+import * as BackgroundTask from 'expo-background-task';
+import { Button } from 'react-native';
+
+function App() {
+  const triggerTask = async () => {
+    await BackgroundTask.triggerTaskWorkerForTestingAsync();
+  };
+
+  return <Button title="Trigger Background Task" onPress={triggerTask} />;
+}
+```
+
+## Inspecting background tasks&ensp;<PlatformTags platforms={['android']} />
+
+To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks:
+
+<Terminal cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 -E "JOB #.* <package-name>']} />
+
+The output from this command will show you the scheduled tasks for your app, including their status, constraints, and other information. Look for the `JOB` line to find the ID of the job and other details in the output:
+
+```text
+JOB #u0a453/275: 216a359 <package-name>/androidx.work.impl.background.systemjob.SystemJobService
+  u0a453 tag=*job*/<package-name>/androidx.work.impl.background.systemjob.SystemJobService#275
+  Source: uid=u0a453 user=0 pkg=<package-name>
+  ...
+  Required constraints: TIMING_DELAY CONNECTIVITY UID_NOT_RESTRICTED [0x90100000]
+  Preferred constraints:
+  Dynamic constraints:
+  Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA UID_NOT_RESTRICTED [0x1b500000]
+  Unsatisfied constraints: TIMING_DELAY [0x80000000]
+  ...
+  Enqueue time: -8m12s280ms
+  Run time: earliest=+6m47s715ms, latest=none, original latest=none
+  Restricted due to: none.
+  Ready: false (job=false user=true !restricted=true !pending=true !active=true !backingup=true comp=true)
+```
+
+The first line contains the Job ID (275). The `Run time: earliest` value indicates the earliest time the task may start, while `enqueue time` shows how long ago the task was scheduled.
+
+To force a task to run, use the `adb shell am broadcast` command. Move your app to the background before running this command, as the task will not run if the app is in the foreground.
+
+<Terminal cmd={['$ adb shell cmd jobscheduler run -f <package-name> <JOB_ID>']} />
+
+Where `JOB_ID` would be the identifier of the job you want to run that you found in the previous step.
+
+## Troubleshooting background tasks&ensp;<PlatformTags platforms={['ios']} />
+
+iOS does not have a tool similar to `adb` for inspecting background tasks. To test background tasks on iOS, use the built-in [`triggerTaskWorkerForTestingAsync`](#backgroundtasktriggertaskworkerfortestingasync) method. This method simulates the system triggering the task.
+
+You can trigger this method from your app in debug mode (it does not work in production builds) to test the behavior of your background tasks without waiting for the system. If your background task configuration is incorrect, you will see the error description in the Xcode console:
+
+```text
+No task request with identifier com.expo.modules.backgroundtask.processing has been scheduled
+```
+
+The above error tells you that you need to run prebuild to apply the changes to your app's configuration.
+
+This error also means you must run prebuild to apply your background task configuration to the app. Additionally, ensure you have defined and registered a background task as shown in [this example](#usage).
 
 ## API
 

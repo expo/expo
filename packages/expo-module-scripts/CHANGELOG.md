@@ -12,6 +12,20 @@
 
 - Upgrade minimum Node.js version to 20. ([#36535](https://github.com/expo/expo/pull/36535) by [@EvanBacon](https://github.com/EvanBacon))
 
+## 4.1.9 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.8 - 2025-06-26
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.7 — 2025-05-08
+
+### 🎉 New features
+
+- Added base **eslint.config.js** for ESLint 9. ([#36695](https://github.com/expo/expo/pull/36695) by [@kudo](https://github.com/kudo))
+
 ## 4.1.6 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

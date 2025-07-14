@@ -7,6 +7,10 @@ type BabelPresetExpoPlatformOptions = {
     };
     /** Enable or disable adding the Reanimated plugin by default. @default `true` */
     reanimated?: boolean;
+    /** Enable or disable adding the Worklets plugin by default. Only applies when
+     * using `react-native-worklets` or Reanimated 4. @default `true`
+     */
+    worklets?: boolean;
     /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
     useTransformReactJSXExperimental?: boolean;
     /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -15,6 +19,7 @@ type BabelPresetExpoPlatformOptions = {
     jsxImportSource?: string;
     lazyImports?: boolean;
     disableImportExportTransform?: boolean;
+    disableDeepImportWarnings?: boolean;
     disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean;
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';

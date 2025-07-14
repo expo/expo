@@ -72,7 +72,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
         await fs.promises.writeFile(babelConfigPath, contents);
       } catch {
         console.warn(
-          '⚠️ Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
+          '⚠️ Could not find Babel config file in the project root. Manually update the Babel config to use `babel-preset-expo`.'
         );
       }
 
@@ -159,7 +159,7 @@ export function updateMetroConfig(contents: string): string {
     /^const \{\s*getDefaultConfig, mergeConfig\s*\} = require\('@react-native\/metro-config'\);$/m;
   if (!contents.match(searchPattern)) {
     console.warn(
-      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'
+      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'
     );
     return contents;
   }

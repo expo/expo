@@ -4,8 +4,8 @@ import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
 import { isOSType } from '../../../start/platforms/ios/simctl';
+import { resolveBuildCacheProvider } from '../../../utils/build-cache-providers';
 import { profile } from '../../../utils/profile';
-import { resolveRemoteBuildCacheProvider } from '../../../utils/remote-build-cache-providers';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
 import { BuildProps, Options } from '../XcodeBuild.types';
 
@@ -42,8 +42,9 @@ export async function resolveOptionsAsync(
   const isSimulator = isSimulatorDevice(device);
 
   const projectConfig = getConfig(projectRoot);
-  const buildCacheProvider = resolveRemoteBuildCacheProvider(
-    projectConfig.exp.experiments?.remoteBuildCache?.provider,
+  const buildCacheProvider = await resolveBuildCacheProvider(
+    projectConfig.exp.experiments?.buildCacheProvider ??
+      projectConfig.exp.experiments?.remoteBuildCache?.provider,
     projectRoot
   );
 

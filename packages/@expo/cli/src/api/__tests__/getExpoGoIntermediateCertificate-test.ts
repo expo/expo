@@ -3,10 +3,6 @@ import nock from 'nock';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { getExpoGoIntermediateCertificateAsync } from '../getExpoGoIntermediateCertificate';
 
-jest.mock('../user/actions', () => ({
-  ensureLoggedInAsync: jest.fn(),
-}));
-
 beforeAll(() => {
   process.env.EXPO_NO_CACHE = 'true';
 });
@@ -28,7 +24,7 @@ describe(getExpoGoIntermediateCertificateAsync, () => {
     const scope = nock(getExpoApiBaseUrl())
       .get('/v2/projects/123/development-certificates/expo-go-intermediate-certificate')
       .reply(500, 'something went wrong');
-    await expect(getExpoGoIntermediateCertificateAsync('123')).rejects.toThrowError(/Expo server/);
+    await expect(getExpoGoIntermediateCertificateAsync('123')).rejects.toThrow(/Expo server/);
     expect(scope.isDone()).toBe(true);
   });
 });

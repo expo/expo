@@ -6,9 +6,45 @@
 
 ### 🎉 New features
 
+- Support Liquid Glass app icons. ([#37609](https://github.com/expo/expo/pull/37609) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
+- revert remove `expo-notifications` from auto plugins ([#37886](https://github.com/expo/expo/pull/37886) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 9.0.10 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.9 - 2025-07-02
+
+### 🎉 New features
+
+- Add android config plugin for app name translation. ([#37202](https://github.com/expo/expo/pull/37202) by [@aleqsio](https://github.com/aleqsio))
+
+## 9.0.7 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- [reverted] remove `expo-notifications` from auto plugins ([#36873](https://github.com/expo/expo/pull/36873) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.0.6 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.5 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 9.0.4 — 2025-04-30
 

@@ -1,4 +1,5 @@
 import { Platform, requireNativeViewManager } from 'expo-modules-core';
+import { processColor } from 'react-native';
 
 import { NativeSymbolViewProps, SymbolViewProps } from './SymbolModule.types';
 
@@ -25,7 +26,8 @@ function getNativeProps(props: SymbolViewProps): NativeSymbolViewProps {
   return {
     ...props,
     style,
-    colors,
+    colors: colors.map((c) => processColor(c)),
+    tint: processColor(props.tintColor),
     animated,
     type,
   };

@@ -26,7 +26,7 @@ async function _subscribeDeviceToPushNotificationsAsync() {
     // @ts-expect-error: TODO: not on the schema
     const serviceWorkerPath = Constants.expoConfig?.notification?.serviceWorkerPath;
     if (!serviceWorkerPath) {
-        throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Please provide the path to the service worker that will handle notifications.');
+        throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Provide the path to the service worker that will handle notifications.');
     }
     guardPermission();
     let registration = null;

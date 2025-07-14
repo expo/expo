@@ -9,9 +9,6 @@ import { VendoringTargetConfig } from '../types';
 const config: VendoringTargetConfig = {
   name: 'Expo Go',
   modules: {
-    'amazon-cognito-identity-js': {
-      source: 'https://github.com/aws-amplify/amplify-js.git',
-    },
     'react-native-view-shot': {
       source: 'react-native-view-shot',
       sourceType: 'npm',

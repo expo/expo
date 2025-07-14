@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 0.2.8 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.2.7 — 2025-05-08
+
+### 💡 Others
+
+- Exposed testing method for background tasks on both iOS and Android ([#36732](https://github.com/expo/expo/pull/36732) by [@chrfalch](https://github.com/chrfalch))
+- Simplified how workers are started and stopped. Removed battery constraint on Android. ([#36705](https://github.com/expo/expo/pull/36705) by [@chrfalch](https://github.com/chrfalch))
+
 ## 0.2.6 — 2025-04-30
 
 _This version does not introduce any user-facing changes._

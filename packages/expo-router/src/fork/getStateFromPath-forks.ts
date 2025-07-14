@@ -17,6 +17,7 @@ export type ExpoRouteConfig = {
   hasChildren: boolean;
   expandedRouteNames: string[];
   parts: string[];
+  staticPartCount: number;
 };
 
 /**
@@ -82,14 +83,22 @@ export function createConfig(
   const parts: string[] = [];
   let isDynamic = false;
   const isIndex = screen === 'index' || screen.endsWith('/index');
+  let staticPartCount = 0;
 
   for (const part of pattern.split('/')) {
     if (part) {
       // If any part is dynamic, then the route is dynamic
-      isDynamic ||= part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
+      const isDynamicPart =
+        part.startsWith(':') || part.startsWith('*') || part.includes('*not-found');
+
+      isDynamic ||= isDynamicPart;
 
       if (!matchGroupName(part)) {
         parts.push(part);
+
+        if (!isDynamicPart) {
+          staticPartCount++;
+        }
       }
     }
   }
@@ -99,6 +108,7 @@ export function createConfig(
 
   if (isIndex) {
     parts.push('index');
+    staticPartCount++;
   }
 
   return {
@@ -106,6 +116,7 @@ export function createConfig(
     isIndex,
     hasChildren,
     parts,
+    staticPartCount,
     userReadableName: [...routeNames.slice(0, -1), config.path || screen].join('/'),
     // Don't include the __root route name
     expandedRouteNames: routeNames.slice(1).flatMap((name) => {
@@ -304,6 +315,13 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
     }
 
     /*
+     * If the routes have any static segments, the one the most static segments should be higher
+     */
+    if (a.staticPartCount !== b.staticPartCount) {
+      return b.staticPartCount - a.staticPartCount;
+    }
+
+    /*
      * If both are static/dynamic or a layout file, then we check group similarity
      */
     const similarToPreviousA = previousSegments.filter((value, index) => {
@@ -463,7 +481,9 @@ export function routePatternToRegex(pattern: string) {
     `^(${pattern
       .split('/')
       .map((it) => {
-        if (it.startsWith(':')) {
+        if (it.startsWith('(') && it.endsWith(')')) {
+          return `${it}?`;
+        } else if (it.startsWith(':')) {
           return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
         }
 

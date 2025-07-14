@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 🐛 Bug fixes
+
+- [iOS] Resolve StoryBoard name from Info.plist. ([#37151](https://github.com/expo/expo/pull/37151) by [@Vadko](https://github.com/Vadko))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -9,6 +13,18 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.30.10 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.9 - 2025-06-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.30.8 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
 
 ## 0.30.7 — 2025-04-30
 

@@ -5,6 +5,7 @@ description: A collection of common questions about Expo push notification servi
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 A collection of common issues and FAQs when setting up push notifications with the `expo-notifications` library and Expo push notification service.
 
@@ -106,6 +107,16 @@ Setting the priority to `high` gives your notification the greatest likelihood t
 ### Handle expired push notification credentials
 
 When your push notification credentials have expired, run `eas credentials`, choose iOS and a build profile, then remove your push notification key and generate a new one.
+
+### No valid aps-environment entitlement string found error for iOS
+
+This error occurs if you haven't set up a push notification key for your iOS project. To check, go to the [Project Credentials page](https://expo.dev/accounts/[account]/projects/[project]/credentials/ios).
+
+To generate a new push notification key, trigger a new build by running:
+
+<Terminal cmd={['$ eas build --profile [profile] --platform ios']} />
+
+For a visual guide, see the [Expo Notifications with EAS video](https://youtu.be/BCCjGtKtBjE?t=2123).
 
 ### Error message when sending a notification
 

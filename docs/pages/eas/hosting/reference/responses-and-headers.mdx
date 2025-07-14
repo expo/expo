@@ -64,15 +64,50 @@ EAS Hosting will respond with an error page in these cases. The error page will 
 
 ## Request headers
 
-**EAS Hosting** will add a couple of headers to every request, before it's forwarded to your API routes. These headers generally add more information about who made the request.
+**EAS Hosting** will add the following headers to every request, before they're forwarded to your API routes. These headers generally add more information about who made the request.
+
+| Request header      | Description                                                                                                                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Forwarded`         | Comma-separated list of semicolon-separated `for`, `host`, and `proto` parameters.<br /> See MDN documentation on [the HTTP `Forwarded` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) for more information. |
+| `X-Forwarded-For`   | Comma-separated list of forwarder IPs for a given request                                                                                                                                                                                  |
+| `X-Forwarded-Proto` | Protocol used to make the request. Typically, `https`                                                                                                                                                                                      |
+| `X-Forwarded-Host`  | Hostname from the incoming request                                                                                                                                                                                                         |
+| `X-Real-IP`         | IP address from the incoming request                                                                                                                                                                                                       |
+| `Origin`            | URL Origin from the incoming request                                                                                                                                                                                                       |
+| `Host`              | Hostname of the forwarded request (matching `request.url`'s hostname)                                                                                                                                                                      |
+| `eas-colo`          | Code of the Cloudflare data center that handled the request. For example, `lhr`                                                                                                                                                            |
+| `eas-ip-continent`  | Two letter continent code of the client.<br /> One of: `AF`, `AN`, `AS`, `EU`, `NA`, `OC`, or `SA`                                                                                                                                         |
+| `eas-ip-country`    | Three letter country code of the client in ISO-3166 Alpha 2 format.<br />For example, `US` or `JP`                                                                                                                                         |
+| `eas-ip-region`     | Region code of the client in ISO-3166-2 format, which has a maximum length of three characters                                                                                                                                             |
+| `eas-ip-city`       | Human-readable city name of the client (optional). For example, `London` or `Chicago`                                                                                                                                                      |
+| `eas-ip-latitude`   | Best guess of the client's latitude (optional)                                                                                                                                                                                             |
+| `eas-ip-longitude`  | Best guess of the client's longitude (optional)                                                                                                                                                                                            |
+| `eas-ip-timezone`   | Timezone of the client. For example, `Europe/London`                                                                                                                                                                                       |
+| `eas-ip-eu`         | Set to `1` when the request likely originated in the jurisdictional area of the European Union                                                                                                                                             |
+
+### Request URL and origin
+
+EAS Hosting routes requests from several hostnames to your deployments. [Aliases](/eas/hosting/deployments-and-aliases) and [Custom domains](/eas/hosting/custom-domain) mean that there may be a difference between the **incoming** URL that clients have used to make a request, and the **target** URL that your API routes receive.
+
+For example, while a client may make a request to an alias URL such as `https://my-app--staging.expo.app/`, the worker deployment that will receive the request will have a URL containing its deployment ID, such as `https://my-app--or1170q9ix.expo.app/`.
+
+This difference is also present in the `Request`'s URL and headers that you receive in your API routes. While the `request.url` will be your worker deployment's URL, the `Origin` and `X-Forwarded-Host` header will be set to the incoming URL that the client used to make the request.
+
+```js
+export async function GET(request) {
+  request.url; // 'https://my-app--or1170q9ix.expo.app/'
+  request.headers.get('Origin'); // 'https://my-app--staging.expo.app/'
+  request.headers.get('X-Forwarded-Host'); // 'my-app--staging.expo.app'
+  origin; // 'https://my-app--staging.expo.app/'
+}
+```
 
 ### IP headers
 
 The request contains several headers to identify the IP address of the user's device that made the request:
 
-- `Forwarded` is a standard header that delivers a comma-separated list of forwarder IPs for the given request. See MDN documentation on [HTTP `Forwarded` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) for more information.
-- `X-Forwarded-For` is a de-facto standard header that is set to a comma-separated list of the forwarder IPs for a given request without any added information.
-- `X-Forwarded-For` contains a list of protocols used to forward the request, typically it's set to `https`
+- `Forwarded` contains a comma-separated list of semicolon-separated parameters. Each entry in the list represents a proxy that forwarded the request. Therefore, the first entry's `for` parameter is likely the original client's IP address.
+- `X-Forwarded-For` only contains a comma-separated list of IP addresses. Each entry in the list represents a proxy that forwarded the request as well.
 - `X-Real-IP` contains only the original request's IP address
 
 For example, to retrieve the IP address of the user's browser that is calling your API route, read the `X-Real-IP` header from the request:

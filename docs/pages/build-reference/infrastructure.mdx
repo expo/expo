@@ -27,7 +27,6 @@ When selecting an image for the build you can use the full name provided below o
 - The `sdk-53` alias will be assigned to the image best suited for SDK 53 builds.
 - The `sdk-52` alias will be assigned to the image best suited for SDK 52 builds.
 - The `sdk-51` alias will be assigned to the image best suited for SDK 51 builds.
-- The `sdk-50` alias will be assigned to the image best suited for SDK 50 builds.
 - SDK aliases will be updated with every new SDK release.
 - The `latest` alias will be updated with every new image release.
 
@@ -60,7 +59,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
 
-  ```yml ~/.yarnrc.yml
+  ```yaml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
   npmRegistryServer: 'http://10.4.0.19:4873'
@@ -264,7 +263,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 - Global Yarn configuration in **~/.yarnrc.yml**:
 
-  ```yml ~/.yarnrc.yml
+  ```yaml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
   npmRegistryServer: 'http://10.94.183.70:4873'
@@ -273,7 +272,55 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### `macos-sequoia-15.3-xcode-16.2` (`latest`, `sdk-52`, `sdk-53`)
+#### `macos-sequoia-15.5-xcode-16.4` (`latest`)
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.5
+- Xcode 16.4 (16E140)
+- Node.js 20.19.2
+- Bun 1.2.15
+- Yarn 1.22.22
+- pnpm 9.15.9
+- npm 10.8.2
+- fastlane 2.227.1
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 11.2.0
+- jq 1.8.0
+- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
+- Git 2.49.0
+- Git LFS 3.6.1
+- applesimutils 0.9.10
+- idb-companion 1.1.8
+
+</Collapsible>
+
+#### `macos-sequoia-15.4-xcode-16.3` (`sdk-53`)
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.4.1
+- Xcode 16.3 (16E140)
+- Node.js 20.19.1
+- Bun 1.2.11
+- Yarn 1.22.22
+- pnpm 9.15.9
+- npm 9.8.1
+- fastlane 2.227.1
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 11.2.0
+- jq 1.7.1
+- Azul Zulu JDK 17.58.21 (OpenJDK 17.0.15)
+- Git 2.49.0
+- Git LFS 3.6.1
+- applesimutils 0.9.10
+- idb-companion 1.1.8
+
+</Collapsible>
+
+#### `macos-sequoia-15.3-xcode-16.2` (`sdk-52`)
 
 <Collapsible summary="Details">
 

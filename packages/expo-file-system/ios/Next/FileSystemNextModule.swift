@@ -4,22 +4,62 @@ import ExpoModulesCore
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemNextModule: Module {
+  var documentDirectory: URL? {
+    return appContext?.config.documentDirectory
+  }
+
+  var cacheDirectory: URL? {
+    return appContext?.config.cacheDirectory
+  }
+
+  var totalDiskSpace: Int64? {
+    guard let path = documentDirectory?.path,
+      let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
+      return nil
+    }
+    return attributes[.systemFreeSize] as? Int64
+  }
+
+  var availableDiskSpace: Int64? {
+    guard let path = documentDirectory?.path,
+      let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
+      return nil
+    }
+    return attributes[.systemFreeSize] as? Int64
+  }
+
   public func definition() -> ModuleDefinition {
     Name("FileSystemNext")
 
     Constants {
       return [
-        "documentDirectory": appContext?.config.documentDirectory?.absoluteString,
-        "cacheDirectory": appContext?.config.cacheDirectory?.absoluteString,
+        "documentDirectory": documentDirectory?.absoluteString,
+        "cacheDirectory": cacheDirectory?.absoluteString,
         "bundleDirectory": Bundle.main.bundlePath,
         "appleSharedContainers": getAppleSharedContainers()
       ]
     }
 
-    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, promise: Promise) in
+    Property("totalDiskSpace") {
+      return totalDiskSpace
+    }
+
+    Property("availableDiskSpace") {
+      return availableDiskSpace
+    }
+
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptionsNext?, promise: Promise) in
       try to.validatePermission(.write)
 
-      let downloadTask = URLSession.shared.downloadTask(with: url) { urlOrNil, responseOrNil, errorOrNil in
+      var request = URLRequest(url: url)
+
+      if let headers = options?.headers {
+        headers.forEach { key, value in
+          request.addValue(value, forHTTPHeaderField: key)
+        }
+      }
+
+      let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
         guard errorOrNil == nil else {
           return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
         }
@@ -54,6 +94,26 @@ public final class FileSystemNextModule: Module {
       downloadTask.resume()
     }
 
+    Function("info") { (url: URL) in
+      let output = PathInfo()
+      output.exists = false
+      output.isDirectory = nil
+
+      guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+        return output
+      }
+
+      if permissionsManager.getPathPermissions(url.path).contains(.read) {
+        var isDirectory: ObjCBool = false
+        if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+          output.exists = true
+          output.isDirectory = isDirectory.boolValue
+          return output
+        }
+      }
+      return output
+    }
+
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
         return FileSystemFile(url: url.standardizedFileURL)
@@ -81,6 +141,10 @@ public final class FileSystemNextModule: Module {
         return try FileSystemFileHandle(file: file)
       }
 
+      Function("info") { (file: FileSystemFile, options: InfoOptions?) in
+        return try file.info(options: options ?? InfoOptions())
+      }
+
       Function("write") { (file, content: Either<String, TypedArray>) in
         if let content: String = content.get() {
           try file.write(content)
@@ -96,6 +160,14 @@ public final class FileSystemNextModule: Module {
 
       Property("md5") { file in
         try? file.md5
+      }
+
+      Property("modificationTime") { file in
+        try? file.modificationTime
+      }
+
+      Property("creationTime") { file in
+        try? file.creationTime
       }
 
       Property("type") { file in
@@ -188,6 +260,10 @@ public final class FileSystemNextModule: Module {
 
       Property("uri") { directory in
         return directory.url.absoluteString
+      }
+
+      Property("size") { directory in
+        return try? directory.size
       }
     }
   }

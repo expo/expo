@@ -36,7 +36,7 @@ describe(getXcodeVersionAsync, () => {
       throw new Error('foobar');
     });
     expect(await getXcodeVersionAsync({ force: true })).toEqual(null);
-    expect(Log.warn).not.toBeCalled();
+    expect(Log.warn).not.toHaveBeenCalled();
   });
 });
 

@@ -238,8 +238,9 @@ it(`matches expected with safe names that collide`, () => {
 
 // TODO: Maybe assert sooner?
 it(`asserts duplicate keys eventually`, () => {
-  const matcher = getServerManifest(getRoutesFor(['./[a]/b/[a].tsx']))[0];
-  expect(() => new RegExp(matcher.namedRegex)).toThrowError();
+  const routeNode = getRoutesFor(['./[a]/b/[a].tsx']);
+  const route = getServerManifest(routeNode).htmlRoutes[0];
+  expect(() => new RegExp(route.namedRegex)).toThrow();
 });
 
 it(`converts dynamic routes`, () => {

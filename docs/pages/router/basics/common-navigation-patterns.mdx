@@ -4,7 +4,8 @@ description: Apply Expo Router basics to real-life navigation patterns you could
 sidebar_title: Common patterns
 ---
 
-import { DocsLogo } from '@expo/styleguide';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Lock01Icon } from '@expo/styleguide-icons/outline/Lock01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
@@ -79,7 +80,7 @@ You can also nest tabs inside of an outer stack navigator. That is often more us
   title="Nested navigators"
   description="Learn more about how to use nested navigators in your Expo Router app."
   href="/router/advanced/nesting-navigators/"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />
 
 ## One screen, two tabs: sharing routes
@@ -131,76 +132,99 @@ When you're already focused on a tab and navigating to a user, you will stay in 
   title="Shared routes"
   description="Learn more about how distinct routes can share the same URL in Expo Router."
   href="/router/advanced/shared-routes/"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />
 
-## Authenticated users only protecting routes
+## Authenticated users only: protected routes
 
-If you have a set of routes that should only be accessible to authenticated users, you can embed those routes in a group whose layout redirects users to a login page if they are not authenticated.
+For mobile apps requiring authentication, you will likely have a set of routes that should only be accessible to authenticated users.
 
-Here's what that looks like:
+For example, consider the following navigation tree in which you have a bottom tabs layout, a sign-in page, a create account page, and a modal that should only be visible to authenticated users:
 
 <FileTree
   files={[
-    ['app/_layout.tsx'],
-    ['app/login.tsx', 'routes users back to /(logged-in) after authentication'],
-    ['app/(logged-in)/\_layout.tsx', 'includes redirect for unauthenticated users'],
-    ['app/(logged-in)/(tabs)/\_layout.tsx'],
-    ['app/(logged-in)/(tabs)/index.tsx', 'default route for app'],
-    ['app/(logged-in)/(tabs)/feed.tsx'],
-    ['app/(logged-in)/modal.tsx'],
+    ['app/_layout.tsx', 'Root layout'],
+    ['app/(tabs)/_layout.tsx'],
+    [
+      'app/(tabs)/index.tsx',
+      <span>
+        Protected <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
+    [
+      'app/(tabs)/settings.tsx',
+      <span>
+        Protected <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
+    ['app/sign-in.tsx'],
+    ['app/create-account.tsx'],
+    [
+      'app/modal.tsx',
+      <span>
+        Protected <Lock01Icon className="mb-1 inline" />
+      </span>,
+    ],
   ]}
 />
 
-By default, the app will go to the nearest index, **app/(logged-in)/(tabs)/index.tsx**. However, a route group's layout file will be rendered before the enclosed route is. So, if the user is not authenticated, at this point, you can redirect the user to the login page:
+When your app is first launched, the router will try to open the root index, **app/(tabs)/index.tsx**. If you wrap this screen in a `Stack.Protected` with the `guard={false}`, the screen will become inaccessible and the next available screen will be opened instead. In this example, the `sign-in` screen will be opened, since it is the next available route.
 
-```tsx app/(logged-in)/_layout.tsx
-import { Redirect, Stack } from 'expo-router';
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { useAuthState } from '@/utils/authState';
 
-export default function AuthLayout() {
-  const isAuthenticated = /* check for valid auth token/session */
+export default function RootLayout() {
+  const { isLoggedIn } = useAuthState();
 
-  if (!isAuthenticated) {
-    return <Redirect href="/login" />;
-  }
-
-  return <Stack />;
-}
-```
-
-Further, if a user tries to navigate to a deep link that's inside the `(logged-in)` group, they will also be redirected to the login page. Every layout on the way to the route you're navigating to is first rendered before the route itself.
-
-The data source for checking authentication status could be React context, a state library, or a third-party auth framework. In the case of a reactive data source like context, not only will this redirect an unauthenticated user when first entering the app, but it will also redirect them if their session becomes invalid while using the app, as this layout component will re-render at that time.
-
-In the **app/login.tsx** file, attempt to reroute the user to the `/(logged-in)` route after successful authentication:
-
-```tsx app/login.tsx
-import { Button } from 'react-native';
-import { useRouter } from 'expo-router';
-
-export default function Login() {
   return (
-    <View>
-      {/* login form */}
-      <Button
-        title="Login"
-        onPress={() => {
-          /* authenticate user */
-          router.replace('/(logged-in)');
-        }}
-      />
-    </View>
+    <Stack>
+      <Stack.Protected guard={isLoggedIn}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="modal" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!isLoggedIn}>
+        <Stack.Screen name="sign-in" />
+        <Stack.Screen name="create-account" />
+      </Stack.Protected>
+    </Stack>
   );
 }
 ```
 
-This will cause **app/(logged-in)/\_layout.tsx** to re-render again. This time, the authentication check will pass, and the app will proceed to the default route.
+This way, you can fetch your auth state from a store and show the appropriate screens. If the auth state changes, the layout will re-render, so if `isLoggedIn` changes from `false` to `true`, the app will automatically navigate to the root of the `(tabs)` group.
+
+Another benefit of protected routes is that they are checked even if you deep link into a page directly. For example, if an unauthenticated user deep links into the modal screen above, they will be redirected to the sign-in page.
+
+Protected routes can also be used to conditionally show bottom tabs. In this example, the `vip` tab will only be shown to authenticated users who are VIP members:
+
+```tsx app/(tabs)/_layout.tsx
+import { Stack } from 'expo-router';
+import { useAuthState } from '@/utils/authState';
+
+export default function TabsLayout() {
+  const { isVip } = useAuthState();
+
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" />
+
+      <Tabs.Protected guard={isVip}>
+        <Tabs.Screen name="vip" />
+      </Tabs.Protected>
+
+      <Tabs.Screen name="settings" />
+    </Tabs>
+  );
+}
+```
 
 <BoxLink
-  title="Expo Router Authentication Guide"
-  description="Follow an in-depth example of implementing authentication using protected routes."
+  title="Expo Router authentication"
+  description="Follow an in-depth guide for implementing authentication using protected routes."
   href="/router/advanced/authentication/"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />
 
 ## Sometimes the best route isn't a route at all
@@ -229,5 +253,5 @@ export default function Layout() {
   title="Modals in Expo Router"
   description="Learn multiple patterns for displaying modals in Expo Router, including using a modal inside of a layout file."
   href="/router/advanced/modals/"
-  Icon={DocsLogo}
+  Icon={BookOpen02Icon}
 />

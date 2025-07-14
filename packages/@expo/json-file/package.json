@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.1",
     "@types/json5": "^2.2.0",
-    "expo-module-scripts": "^4.1.6",
+    "expo-module-scripts": "^4.1.7",
     "memfs": "^3.2.0"
   },
   "publishConfig": {

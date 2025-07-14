@@ -60,9 +60,9 @@ describe(ensureDependenciesAsync, () => {
       })
     ).toBe(true);
 
-    expect(confirmAsync).toBeCalledTimes(1);
-    expect(installAsync).toBeCalledTimes(1);
-    expect(installAsync).toBeCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
+    expect(confirmAsync).toHaveBeenCalledTimes(1);
+    expect(installAsync).toHaveBeenCalledTimes(1);
+    expect(installAsync).toHaveBeenCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
   });
   it(`installs without prompting`, async () => {
     jest
@@ -91,9 +91,9 @@ describe(ensureDependenciesAsync, () => {
       })
     ).toBe(true);
 
-    expect(confirmAsync).toBeCalledTimes(0);
-    expect(installAsync).toBeCalledTimes(1);
-    expect(installAsync).toBeCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
+    expect(confirmAsync).toHaveBeenCalledTimes(0);
+    expect(installAsync).toHaveBeenCalledTimes(1);
+    expect(installAsync).toHaveBeenCalledWith(['bacon@~1.0.0'], { projectRoot: 'projectRoot' });
   });
   it(`installs dev dependencies`, async () => {
     jest
@@ -122,9 +122,9 @@ describe(ensureDependenciesAsync, () => {
       })
     ).toBe(true);
 
-    expect(confirmAsync).toBeCalledTimes(0);
-    expect(installAsync).toBeCalledTimes(1);
-    expect(installAsync).toBeCalledWith(['eslint@~1.0.0'], {
+    expect(confirmAsync).toHaveBeenCalledTimes(0);
+    expect(installAsync).toHaveBeenCalledTimes(1);
+    expect(installAsync).toHaveBeenCalledWith(['eslint@~1.0.0'], {
       projectRoot: 'projectRoot',
       dev: true,
     });
@@ -153,10 +153,10 @@ describe(ensureDependenciesAsync, () => {
           name: 'my-app',
         },
       })
-    ).rejects.toThrowError(/Please install/);
+    ).rejects.toThrow(/Install/);
 
-    expect(confirmAsync).toBeCalledTimes(1);
-    expect(installAsync).toBeCalledTimes(0);
+    expect(confirmAsync).toHaveBeenCalledTimes(1);
+    expect(installAsync).toHaveBeenCalledTimes(0);
   });
   it(`asserts when mutations are required in CI`, async () => {
     // jest.mocked(confirmAsync).mockResolvedValueOnce(false);
@@ -178,10 +178,10 @@ describe(ensureDependenciesAsync, () => {
           name: 'my-app',
         },
       })
-    ).rejects.toThrowError(/Please install/);
+    ).rejects.toThrow(/Install/);
 
-    expect(confirmAsync).toBeCalledTimes(0);
-    expect(installAsync).toBeCalledTimes(0);
+    expect(confirmAsync).toHaveBeenCalledTimes(0);
+    expect(installAsync).toHaveBeenCalledTimes(0);
   });
 });
 

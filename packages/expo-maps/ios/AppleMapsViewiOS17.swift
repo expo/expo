@@ -1,15 +1,34 @@
 import SwiftUI
 import MapKit
+import ExpoModulesCore
 
 @available(iOS 17.0, *)
 struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
-  @ObservedObject private var state = AppleMapsCameraState()
+  @ObservedObject private var state = AppleMapsViewiOS17State()
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
     }
+  }
+
+  func openLookAround(coordinate: Coordinate) async throws {
+    if state.lookAroundScene != nil {
+      throw LookAroundAlreadyPresentedException()
+    }
+
+    let scene = try await getLookAroundScene(from: CLLocationCoordinate2D(
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude
+    ))
+
+    if scene == nil {
+      throw SceneUnavailableAtLocationException()
+    }
+
+    state.lookAroundScene = scene
+    state.lookAroundPresented = true
   }
 
   var body: some View {
@@ -33,6 +52,14 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             .stroke(polyline.color, lineWidth: polyline.width)
         }
 
+        ForEach(props.polygons) { polygon in
+          renderPolygon(polygon)
+        }
+
+        ForEach(props.circles) { circle in
+          renderCircle(circle)
+        }
+
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
@@ -53,13 +80,18 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             }
           }
         }
-        UserAnnotation()
+
+        if props.properties.isMyLocationEnabled {
+          UserAnnotation()
+        }
       }
       .onTapGesture(coordinateSpace: .local) { position in
         if let coordinate = reader.convert(position, from: .local) {
           props.onMapClick([
-            "latitude": coordinate.latitude,
-            "longitude": coordinate.longitude
+            "coordinates": [
+              "latitude": coordinate.latitude,
+              "longitude": coordinate.longitude
+            ]
           ])
         }
       }
@@ -98,6 +130,17 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .mapStyle(properties.mapType.toMapStyle(
         showsTraffic: properties.isTrafficEnabled
       ))
+      .lookAroundViewer(
+        isPresented: $state.lookAroundPresented,
+        initialScene: state.lookAroundScene,
+        allowsNavigation: true,
+        showsRoadLabels: true,
+        pointsOfInterest: .all,
+        onDismiss: {
+          state.lookAroundScene = nil
+          state.lookAroundPresented = false
+        }
+      )
       .onAppear {
         state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
       }
