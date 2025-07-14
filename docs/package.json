@@ -27,7 +27,7 @@
   },
   "packageManager": "yarn@4.9.1",
   "dependencies": {
-    "@expo/styleguide": "^9.1.2",
+    "@expo/styleguide": "^9.2.0",
     "@expo/styleguide-base": "^2.0.3",
     "@expo/styleguide-icons": "^2.2.2",
     "@expo/styleguide-search-ui": "^3.1.0",
