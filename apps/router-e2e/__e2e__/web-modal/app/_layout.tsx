@@ -40,6 +40,13 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
+        name="modal-regular-bg"
+        options={{
+          presentation: 'modal',
+          sheetAllowedDetents: [0.8],
+        }}
+      />
+      <Stack.Screen
         name="modal-fit"
         options={{
           presentation: 'formSheet',
@@ -67,6 +74,13 @@ export default function Layout() {
           sheetAllowedDetents: [0.4],
           sheetCornerRadius: 32,
           sheetGrabberVisible: true,
+        }}
+      />
+      <Stack.Screen
+        name="sheet-bg"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.4],
         }}
       />
       <Stack.Screen
