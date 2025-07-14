@@ -24,7 +24,6 @@ import expo.modules.devlauncher.helpers.findDevMenuPackage
 import expo.modules.devlauncher.helpers.injectDebugServerHost
 import expo.modules.devlauncher.helpers.injectDevServerHelper
 import expo.modules.devlauncher.modules.DevLauncherInternalModule
-import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.kotlin.ModulesProvider
 
 object DevLauncherReactHost {
@@ -82,7 +81,6 @@ object DevLauncherReactHost {
         object : ModulesProvider {
           override fun getModulesList() =
             listOf(
-              DevMenuPreferences::class.java,
               DevLauncherInternalModule::class.java,
               SafeAreaProviderManager::class.java
             )
