@@ -316,6 +316,13 @@ export type AssetsOptions = {
    * date.
    */
   createdBefore?: Date | number;
+  /**
+   * Whether to resolve full info for the assets during the query.
+   * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+   * @default false
+   * @platform android
+   */
+  resolveWithFullInfo?: boolean;
 };
 
 // @needsAudit
@@ -819,7 +826,16 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
   }
 
-  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
+  const {
+    first,
+    after,
+    album,
+    sortBy,
+    mediaType,
+    createdAfter,
+    createdBefore,
+    resolveWithFullInfo,
+  } = assetsOptions;
 
   const options = {
     first: first == null ? 20 : first,
@@ -829,6 +845,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     mediaType: arrayize(mediaType || [MediaType.photo]),
     createdAfter: dateToNumber(createdAfter),
     createdBefore: dateToNumber(createdBefore),
+    resolveWithFullInfo: resolveWithFullInfo ?? false,
   };
 
   if (first != null && typeof options.first !== 'number') {

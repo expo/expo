@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Fix `getAssetsAsync` loading performance, add `resolveWithFullInfo` option to control whether to load full EXIF data for images ([#37957](https://github.com/expo/expo/pull/37957) by [@kosmydel](https://github.com/kosmydel)). This is a breaking change for Android apps, as it might break the orientation of images in some cases.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -14,7 +16,6 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `getAssetsAsync` loading performance, do not load full EXIF data for images by default ([#37957](https://github.com/expo/expo/pull/37957) by [@kosmydel](https://github.com/**kosmydel**))
 - [Android] Fix `deleteAssetsAsync` not working on android 11 or above ([#33211](https://github.com/expo/expo/pull/33211) by [@Zeeshan404](https://github.com/Zeeshan404))
 
 ## 17.1.6 — 2025-04-30
