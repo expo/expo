@@ -56,6 +56,9 @@ export async function generateNativeProjectsAsync(
       resolveFromExpoCli(projectRoot, 'build/src/utils/cocoapods')
     ) as typeof import('@expo/cli/src/utils/cocoapods');
     await installCocoaPodsAsync(projectRoot);
+    // await spawnAsync('pod', ['deintegrate'], {
+    //   cwd: path.join(projectRoot, 'ios'),
+    // });
   }
 
   return templateChecksum;
