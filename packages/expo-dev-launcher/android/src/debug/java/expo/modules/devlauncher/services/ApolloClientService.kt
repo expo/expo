@@ -3,12 +3,16 @@ package expo.modules.devlauncher.services
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.http.HttpHeader
+import com.apollographql.apollo.network.okHttpClient
 import expo.modules.devlauncher.MeQuery
 
-class ApolloClientService {
+class ApolloClientService(
+  httpClientService: HttpClientService
+) {
   private var _client = ApolloClient
     .Builder()
     .serverUrl("https://exp.host/--/graphql")
+    .okHttpClient(httpClientService.httpClient)
     .build()
 
   val client: ApolloClient

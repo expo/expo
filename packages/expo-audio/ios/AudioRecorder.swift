@@ -99,10 +99,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     totalRecordedDuration = 0
   }
 
-  func startRecording() -> [String: Any] {
+  func startRecording() throws -> [String: Any] {
     guard allowsRecording else {
-      log.info("Recording is currently disabled")
-      return [:]
+      throw RecordingDisabledException()
     }
 
     guard currentState == .prepared || currentState == .paused else {

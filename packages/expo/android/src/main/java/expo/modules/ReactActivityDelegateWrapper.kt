@@ -29,12 +29,13 @@ import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
 import expo.modules.rncompatibility.ReactNativeFeatureFlags
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -70,6 +71,14 @@ class ReactActivityDelegateWrapper(
    * A deferred that indicates when the app loading is ready
    */
   private val loadAppReady = CompletableDeferred<Unit>()
+
+  /**
+   * A mutex to ensure all coroutines in a scope are running in atomic way.
+   *
+   * This is to act like [Activity] lifecycle,
+   * e.g. all work in [onResume] should be executed after all work in [onCreate] finished.
+   */
+  private val mutex = Mutex()
 
   /**
    * A [CoroutineScope] that binds its lifecycle as [ReactActivityDelegateWrapper].
@@ -110,7 +119,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun loadApp(appKey: String?) {
-    activity.lifecycleScope.launch(start = CoroutineStart.UNDISPATCHED) {
+    launchLifecycleScopeWithLock(start = CoroutineStart.UNDISPATCHED) {
       loadAppImpl(appKey, supportsDelayLoad = true)
     }
   }
@@ -138,7 +147,7 @@ class ReactActivityDelegateWrapper(
       // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
       // That's not ideal but works.
 
-      activity.lifecycleScope.launch(start = CoroutineStart.UNDISPATCHED) {
+      launchLifecycleScopeWithLock(start = CoroutineStart.UNDISPATCHED) {
         awaitDelayLoadAppWhenReady(delayLoadAppHandler)
         loadAppReady.complete(Unit)
 
@@ -184,7 +193,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onResume()
       reactActivityLifecycleListeners.forEach { listener ->
@@ -194,10 +203,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onPause() {
-    activity.lifecycleScope.launch {
-      if (!loadAppReady.isCompleted) {
-        loadAppReady.completeExceptionally(CancellationException("Activity paused before app loaded"))
-      }
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onPause(activity)
@@ -219,7 +225,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onUserLeaveHint() {
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       reactActivityLifecycleListeners.forEach { listener ->
         listener.onUserLeaveHint(activity)
@@ -232,26 +238,24 @@ class ReactActivityDelegateWrapper(
     // Note: use our `coroutineScope` for onDestroy here
     // because the lifecycleScope destroyed before the executions.
     applicationCoroutineScope.launch {
-      if (!loadAppReady.isCompleted) {
-        // Cancel loadAppReady so any waiting coroutines are notified
-        loadAppReady.completeExceptionally(CancellationException("Activity destroyed before app loaded"))
-      }
-      loadAppReady.await()
-      reactActivityLifecycleListeners.forEach { listener ->
-        listener.onDestroy(activity)
-      }
-      if (delayLoadAppHandler != null) {
-        try {
-          // For the delay load case, we may enter a different call flow than react-native.
-          // For example, Activity stopped before delay load finished.
-          // We stop before the ReactActivityDelegate gets a chance to set up.
-          // In this case, we should catch the exceptions.
-          delegate.onDestroy()
-        } catch (e: Exception) {
-          Log.e(TAG, "Exception occurred during onDestroy with delayed app loading", e)
+      mutex.withLock {
+        loadAppReady.await()
+        reactActivityLifecycleListeners.forEach { listener ->
+          listener.onDestroy(activity)
         }
-      } else {
-        delegate.onDestroy()
+        if (delayLoadAppHandler != null) {
+          try {
+            // For the delay load case, we may enter a different call flow than react-native.
+            // For example, Activity stopped before delay load finished.
+            // We stop before the ReactActivityDelegate gets a chance to set up.
+            // In this case, we should catch the exceptions.
+            delegate.onDestroy()
+          } catch (e: Exception) {
+            Log.e(TAG, "Exception occurred during onDestroy with delayed app loading", e)
+          }
+        } else {
+          delegate.onDestroy()
+        }
       }
     }
   }
@@ -270,7 +274,7 @@ class ReactActivityDelegateWrapper(
      *
      * TODO (@bbarthec): fix it upstream?
      */
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
         val reactContextListener = object : ReactInstanceEventListener {
@@ -279,7 +283,9 @@ class ReactActivityDelegateWrapper(
             delegate.onActivityResult(requestCode, resultCode, data)
           }
         }
-        return@launch delegate.reactInstanceManager.addReactInstanceEventListener(reactContextListener)
+        return@launchLifecycleScopeWithLock delegate.reactInstanceManager.addReactInstanceEventListener(
+          reactContextListener
+        )
       }
 
       delegate.onActivityResult(requestCode, resultCode, data)
@@ -342,21 +348,21 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onWindowFocusChanged(hasFocus)
     }
   }
 
   override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.requestPermissions(permissions, requestCode, listener)
     }
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -383,7 +389,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onConfigurationChanged(newConfig: Configuration?) {
-    activity.lifecycleScope.launch {
+    launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onConfigurationChanged(newConfig)
     }
@@ -466,6 +472,17 @@ class ReactActivityDelegateWrapper(
       delayLoadAppHandler.whenReady {
         Utils.assertMainThread()
         continuation.resume(Unit)
+      }
+    }
+  }
+
+  private fun launchLifecycleScopeWithLock(
+    start: CoroutineStart = CoroutineStart.DEFAULT,
+    block: suspend CoroutineScope.() -> Unit
+  ) {
+    activity.lifecycleScope.launch(start = start) {
+      mutex.withLock {
+        block()
       }
     }
   }

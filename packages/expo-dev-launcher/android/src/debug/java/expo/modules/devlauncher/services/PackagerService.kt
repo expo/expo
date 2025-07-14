@@ -1,18 +1,17 @@
 package expo.modules.devlauncher.services
 
+import androidx.core.net.toUri
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.helpers.await
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
+import kotlinx.coroutines.withContext
 import okhttp3.Request
-import kotlin.time.Duration.Companion.seconds
 
 private val portsToCheck = arrayOf(8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002)
 private val hostToCheck = if (EmulatorUtilities.isRunningOnEmulator()) {
@@ -22,64 +21,121 @@ private val hostToCheck = if (EmulatorUtilities.isRunningOnEmulator()) {
 }
 
 data class PackagerInfo(
-  val host: String,
-  val port: Int
+  val url: String,
+  val description: String? = null,
+  val isDevelopmentSession: Boolean = false
 ) {
+  internal val port = url.toUri().port
+
   internal fun createStatusPageRequest(): Request {
-    val url = "http://$host:$port/status"
+    val url = "$url/status"
     return Request.Builder()
       .url(url)
       .build()
   }
-
-  val url: String
-    get() = "http://$host:$port"
 }
-
-private val defaultDelay = 3.seconds
 
 /*
  * Class responsible for discovering running packagers.
  */
 class PackagerService(
-  private val httpClient: OkHttpClient,
-  scope: CoroutineScope
+  private val httpClientService: HttpClientService
 ) {
-  private val packagersToCheck = portsToCheck.map { PackagerInfo(hostToCheck, it) }
+  private val packagersToCheck = portsToCheck.map { port -> PackagerInfo("http://$hostToCheck:$port") }
 
   private val _runningPackagers = MutableStateFlow<Set<PackagerInfo>>(emptySet())
+  private val _isLoading = MutableStateFlow(false)
 
   val runningPackagers = _runningPackagers.asStateFlow()
+  val isLoading = _isLoading.asStateFlow()
 
-  init {
-    scope.launch(Dispatchers.IO) {
-      while (isActive) {
-        for (packager in packagersToCheck) {
-          val statusPageRequest = packager.createStatusPageRequest()
-          launch {
-            val data = runCatching { statusPageRequest.await(httpClient) }.getOrNull()
-            val isSuccessful = data?.isSuccessful == true
-            if (isSuccessful) {
-              _runningPackagers.update {
-                if (!it.contains(packager)) {
-                  it.plus(packager)
-                } else {
-                  it
-                }
-              }
-            } else {
-              _runningPackagers.update {
-                if (it.contains(packager)) {
-                  it.minus(packager)
-                } else {
-                  it
-                }
-              }
-            }
-          }
-        }
-        delay(defaultDelay)
+  private fun addPackager(packager: PackagerInfo) {
+    _runningPackagers.update { packagers ->
+      // The packager list contains a development session packager, which the same port and we are trying to add local packager.
+      // In this case, we can ignore the local packager, because the development session is more important.
+      val canBeIgnored = packagers.any { it.port == packager.port && it.isDevelopmentSession && !packager.isDevelopmentSession }
+      if (canBeIgnored) {
+        return@update packagers
       }
+
+      if (!packagers.contains(packager)) {
+        packagers.plus(packager)
+      } else {
+        packagers
+      }
+    }
+  }
+
+  private fun removePackager(packager: PackagerInfo) {
+    _runningPackagers.update { packagers ->
+      if (packagers.contains(packager)) {
+        packagers.minus(packager)
+      } else {
+        packagers
+      }
+    }
+  }
+
+  private suspend fun fetchedLocalPackagers(): Unit = coroutineScope {
+    val jobs = packagersToCheck.map { packager ->
+      async {
+        val statusPageRequest = packager.createStatusPageRequest()
+        val isSuccessful = runCatching { statusPageRequest.await(httpClientService.httpClient) }
+          .getOrNull()
+          ?.use { response -> response.isSuccessful }
+          ?: false
+
+        if (isSuccessful) {
+          addPackager(packager)
+        } else {
+          removePackager(packager)
+        }
+      }
+    }
+
+    jobs.awaitAll()
+  }
+
+  private suspend fun fetchedDevelopmentSession() {
+    val developmentSession = httpClientService.fetchDevelopmentSession()
+    val newPackagers = developmentSession.map { session ->
+      PackagerInfo(
+        url = session.url,
+        description = session.description,
+        isDevelopmentSession = true
+      )
+    }
+
+    _runningPackagers.update { packagers ->
+      // We remove all existing development session packagers and
+      // also local packagers with the same port as the new development session packagers
+      val filteredPackager = packagers.filter {
+        !it.isDevelopmentSession && newPackagers.all { newPackager -> newPackager.port != it.port }
+      }
+
+      filteredPackager.plus(
+        developmentSession.map { session ->
+          PackagerInfo(
+            url = session.url,
+            description = session.description,
+            isDevelopmentSession = true
+          )
+        }
+      ).toSet()
+    }
+  }
+
+  suspend fun refetchedPackager() {
+    // It's loading already, so we don't need to do anything.
+    if (isLoading.value) {
+      return
+    }
+
+    _isLoading.update { true }
+    withContext(context = Dispatchers.Default) {
+      fetchedDevelopmentSession()
+      fetchedLocalPackagers()
+      _isLoading.update { false }
     }
   }
 }

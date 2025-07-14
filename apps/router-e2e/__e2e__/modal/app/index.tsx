@@ -1,6 +1,6 @@
 import { Link, Modal, Stack } from 'expo-router';
 import { useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function Index() {
   const [isOpenA, setIsOpenA] = useState(false);
@@ -116,6 +116,7 @@ export default function Index() {
           }}
           animationType="fade"
           presentationStyle="formSheet"
+          detents={[0.5, 0.75, 0.8]}
           style={{
             flex: 1,
             backgroundColor: '#BA7978',
@@ -146,6 +147,78 @@ export default function Index() {
           {closeButtons}
         </Modal>
       )}
+      <FitForm />
     </View>
+  );
+}
+
+function FitForm() {
+  const [open, setIsOpen] = useState(false);
+  const [count, setCount] = useState(1);
+  return (
+    <>
+      <Button title="Open fitToContents" onPress={() => setIsOpen((open) => !open)} />
+      <Modal
+        visible={open}
+        onClose={() => setIsOpen(false)}
+        presentationStyle="formSheet"
+        detents="fitToContents">
+        <ScrollView
+          style={{ gap: 8 }}
+          contentContainerStyle={{
+            padding: 16,
+            gap: 8,
+          }}
+          automaticallyAdjustsScrollIndicatorInsets
+          contentInsetAdjustmentBehavior="automatic">
+          {Array.from({ length: count }).map((_, index) => (
+            <View
+              key={String(index)}
+              style={{
+                padding: 24,
+                backgroundColor: '#ccc',
+                borderRadius: 16,
+                borderCurve: 'continuous',
+              }}
+            />
+          ))}
+
+          <View
+            style={{
+              gap: 4,
+              flex: 1,
+              flexDirection: 'row',
+            }}>
+            <MutateButton onPress={() => setCount((count) => count + 1)}>Add</MutateButton>
+            <MutateButton onPress={() => setCount(Math.max(count - 1, 0))}>Remove</MutateButton>
+          </View>
+        </ScrollView>
+      </Modal>
+    </>
+  );
+}
+
+function MutateButton({ onPress, children }: { onPress: () => void; children?: React.ReactNode }) {
+  return (
+    <Pressable style={{ display: 'contents' }} onPress={onPress}>
+      {({ pressed }) => (
+        <View
+          style={[
+            {
+              padding: 8,
+              flex: 1,
+              borderRadius: 24,
+              borderCurve: 'continuous',
+              borderWidth: 0.5,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderColor: '#ccc',
+            },
+            pressed && { backgroundColor: '#eee' },
+          ]}>
+          <Text style={{ fontWeight: '600' }}>{children}</Text>
+        </View>
+      )}
+    </Pressable>
   );
 }

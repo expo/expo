@@ -23,6 +23,7 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * - `plain` - A button with no border or background and a less prominent text.
  * macOS-only styles:
  * - `glass` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta version of Xcode)
+ * - `glassProminent` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta 3 version of Xcode)
  * - `accessoryBar` - A button style for accessory bars.
  * - `accessoryBarAction` - A button style for accessory bar actions.
  * - `card` - A button style for cards.
@@ -34,6 +35,7 @@ export type ButtonVariant =
   | 'bordered'
   | 'plain'
   | 'glass'
+  | 'glassProminent'
   | 'borderedProminent'
   | 'borderless'
   // MacOS-only;
@@ -65,7 +67,7 @@ export type ButtonProps = {
   /**
    * The text or React node to display inside the button.
    */
-  children: string | React.ReactNode;
+  children?: string | React.ReactNode;
   /**
    * Button color.
    */
@@ -117,11 +119,22 @@ export function transformButtonProps(
  */
 export function ButtonPrimitive(props: ButtonProps) {
   const { children, ...restProps } = props;
-  const text = typeof children === 'string' ? children : undefined;
-  if (text !== undefined) {
-    return <ButtonNativeView {...transformButtonProps(restProps, text)} />;
+
+  if (!children && !restProps.systemImage) {
+    throw new Error('Button without systemImage prop should have React children');
   }
-  return <ButtonNativeView {...transformButtonProps(restProps, text)}>{children}</ButtonNativeView>;
+
+  const text = typeof children === 'string' ? children : undefined;
+
+  const transformedProps = transformButtonProps(restProps, text);
+
+  // Render without children wrapper if text-only or icon-only
+  const shouldRenderDirectly = text != null || children == null;
+
+  if (shouldRenderDirectly) {
+    return <ButtonNativeView {...transformedProps} />;
+  }
+  return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
 }
 
 /**

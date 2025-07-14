@@ -20,7 +20,7 @@ fun BottomTabButton(
   modifier: Modifier = Modifier,
   onClick: () -> Unit
 ) {
-  Button(onClick = onClick, modifier = modifier) {
+  Button(onClick = onClick, enabled = !isSelected, modifier = modifier) {
     Column(horizontalAlignment = Alignment.Companion.CenterHorizontally, modifier = Modifier.Companion.padding(Theme.spacing.small)) {
       Icon(
         painter = icon,

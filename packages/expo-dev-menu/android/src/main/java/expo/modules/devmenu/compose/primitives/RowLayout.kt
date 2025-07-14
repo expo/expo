@@ -13,7 +13,7 @@ fun RowLayout(
   modifier: Modifier = Modifier,
   leftComponent: @Composable (() -> Unit)? = null,
   rightComponent: @Composable (() -> Unit)? = null,
-  content: @Composable () -> Unit,
+  content: @Composable () -> Unit
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,

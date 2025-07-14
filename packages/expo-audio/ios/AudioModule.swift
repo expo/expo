@@ -232,7 +232,7 @@ public class AudioModule: Module {
 
       Function("record") { (recorder: AudioRecorder) -> [String: Any] in
         try checkPermissions()
-        return recorder.startRecording()
+        return try recorder.startRecording()
       }
 
       Function("pause") { recorder in
@@ -384,7 +384,7 @@ public class AudioModule: Module {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
       if recorder.allowsRecording && !recorder.isRecording {
-        _ = recorder.startRecording()
+        _ = try? recorder.startRecording()
       }
     }
 #endif
@@ -475,9 +475,11 @@ public class AudioModule: Module {
         categoryOptions.insert(.mixWithOthers)
       }
 
+#if !os(tvOS)
       if category == .playAndRecord {
         categoryOptions.insert(.allowBluetooth)
       }
+#endif
 
       sessionOptions = categoryOptions
     }
