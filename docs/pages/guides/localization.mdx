@@ -52,14 +52,15 @@ If you need to specify different locale values for Android and iOS, use the `sup
 
 ```json app.json
 {
-  "expo": {
-    "extra": {
-      "supportedLocales": {
-        "ios": ["en", "ja"],
-        "android": ["en", "ja"]
-      }
-    },
-    "plugins": ["expo-localization"]
+      [
+        "expo-localization", 
+        {
+          "supportedLocales": {
+            "ios": ["en", "ja"],
+            "android": ["en", "ja"]
+          }
+        }
+      ]
   }
 }
 ```
