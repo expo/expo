@@ -286,5 +286,26 @@ module Expo
       SUPPORT_SCRIPT
     end
 
+    # From Xcode 15, new projects default to having the ENABLE_USER_SCRIPT_SANDBOXING build setting enabled
+    # preventing build scripts from running properly in brownfield apps.
+    def self.disable_user_script_sandboxing(project)
+      configs_to_change = []
+      project.native_targets.each do |native_target|
+        native_target.build_configurations.each do |build_configuration|
+          if build_configuration.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] == 'YES'
+            configs_to_change << build_configuration
+          end
+        end
+      end
+
+      if configs_to_change.any?
+        Pod::UI.warn 'User script sandboxing is enabled. Disabling it to allow react-native scripts to work.'
+        configs_to_change.each do |build_configuration|
+          build_configuration.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+        end
+        project.mark_dirty!
+      end
+    end
+
   end # module ProjectIntegrator
 end # module Expo
