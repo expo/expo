@@ -53,10 +53,9 @@ export async function test({ describe, expect, it, ...t }) {
           throw new Error();
         }
         const safDirectory = new Directory(saf.directoryUri);
-        // new Directory(saf.directoryUri).delete();
         expect(safDirectory.list().length).toBe(0);
 
-        safDirectory.createFile('New Folder', 'text/plain');
+        safDirectory.createFile('newFile', 'text/plain');
         expect(safDirectory.list().length).toBe(1);
 
         safDirectory.list().forEach((sd) => {
