@@ -64,10 +64,10 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
   ) {
     self.delegate.urlSession(self, didRedirect: response)
     switch self.redirectMode {
-      case .follow:
-        completionHandler(request)
-      case .manual, .error:
-        completionHandler(nil)
+    case .follow:
+      completionHandler(request)
+    case .manual, .error:
+      completionHandler(nil)
     }
   }
 
