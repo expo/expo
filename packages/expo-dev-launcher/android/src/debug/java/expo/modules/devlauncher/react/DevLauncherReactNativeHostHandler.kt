@@ -4,7 +4,6 @@ import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
@@ -34,9 +33,6 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
       // Assuming V8 overrides the `getJavaScriptExecutorFactory` in the main ReactNativeHost,
       // return null here to use the default value.
       return null
-    }
-    if (SoLoader.getLibraryPath("libjsc.so") != null) {
-      return JSCExecutorFactory(applicationContext.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
     }
     return HermesExecutorFactory()
   }
