@@ -5,6 +5,13 @@
   "description": "Library, which makes it possible to display live photos on iOS",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
