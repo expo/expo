@@ -16,7 +16,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
     DocumentFile.fromSingleUri(context, uri)
   }
 
-  // TODO:// consider adding the domain check here check here
+  // TODO: consider adding the SAF domain check here
   val isContentURI = uri.scheme == "content"
 
   fun exists(): Boolean {
@@ -58,7 +58,6 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
         return FileSystemFileAdapter(context, documentFile.uri)
       }
     } else {
-      // get path to child with name
       val childFile = File(javaFile.parentFile, displayName)
       childFile.createNewFile()
       return FileSystemFileAdapter(context, childFile.toUri())
@@ -73,7 +72,6 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
         return FileSystemFileAdapter(context, documentFile.uri)
       }
     } else {
-      // get path to child with name
       val childFile = File(javaFile.parentFile, displayName)
       childFile.mkdir()
       return FileSystemFileAdapter(context, childFile.toUri())
