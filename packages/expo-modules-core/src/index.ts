@@ -1,5 +1,5 @@
 import './sweet/setUpErrorManager.fx';
-import './web';
+import './polyfill';
 
 export type * from './ts-declarations/global';
 

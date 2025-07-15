@@ -9,6 +9,7 @@ import com.composables.core.Icon
 import com.composeunstyled.Button
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.Account
+import expo.modules.devlauncher.compose.utils.withIsLast
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.RowLayout
@@ -25,7 +26,7 @@ fun AccountSelector(
   Column {
     RoundedSurface {
       Column {
-        for ((index, account) in accounts.withIndex()) {
+        for ((account, isLast) in accounts.withIsLast()) {
           Button(
             onClick = { onClick(account) },
             enabled = !account.isSelected
@@ -52,7 +53,8 @@ fun AccountSelector(
               Text(account.name)
             }
           }
-          if (index < accounts.size - 1) {
+
+          if (!isLast) {
             Divider()
           }
         }

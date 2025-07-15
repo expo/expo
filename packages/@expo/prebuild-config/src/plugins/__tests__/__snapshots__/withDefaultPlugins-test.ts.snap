@@ -568,8 +568,9 @@ exports[`built-in plugins introspects mods 1`] = `
             "value": "http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects",
           },
           {
-            "type": "comment",
-            "value": "org.gradle.parallel=true",
+            "key": "org.gradle.parallel",
+            "type": "property",
+            "value": "true",
           },
           {
             "type": "empty",

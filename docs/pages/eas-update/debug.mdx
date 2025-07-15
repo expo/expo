@@ -104,6 +104,20 @@ To diagnose the error causing the update crash:
 
 A common reason a new update does not work but embedded code does is due to a missing environment variable. See [how environment variables work with EAS Update](/eas-update/environment-variables/) for more information.
 
+### Failed to load all assets
+
+If your users are seeing a "Failed to load all assets" error, it means that the app was able to download the manifest but could not download all of the assets required for the update to run. An asset will need to be downloaded if it is not present in the original build. Common reasons for error are:
+
+- Many large assets were added to the update, and the app is unable to download them all due to network issues.
+- The user has poor internet connection.
+- The user is in a country that blocks or throttles Cloudflare IP addresses, which are used by EAS Update to serve assets.
+
+To diagnose the asset loading issue:
+
+- Verify which assets are downloaded by users and their sizes by inspecting the [asset list](/eas-update/debug/#viewing-all-assets-included-in-an-update).
+- Reproduce the issue on your own device and examine the `expo-updates` [logs entries](/versions/latest/sdk/updates/#updatesreadlogentriesasyncmaxage) surfaced from the native layer.
+- If you've logged this error in a service like Sentry, inspect the IP address of the user that encountered the error and verify it is not in a country known to block or throttle Cloudflare IP addresses.
+
 ## Solutions
 
 ### Configure channel
@@ -429,7 +443,11 @@ When we publish an update with EAS Update, it creates a **/dist** directory in t
 
 ### Viewing all assets included in an update
 
-It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
+It may be helpful to see which assets are included in our update bundle. We can see a list of named assets from the [Updates Detail](https://expo.dev/accounts/[account]/projects/[project]/updates) page:
+
+<ContentSpotlight alt="Asset list" src="/static/images/eas-update/asset-list.png" />
+
+Or run locally:
 
 <Terminal cmd={['$ npx expo export']} />
 
