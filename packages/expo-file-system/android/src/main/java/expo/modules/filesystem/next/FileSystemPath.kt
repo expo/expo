@@ -6,7 +6,6 @@ import androidx.core.net.toUri
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
-import java.net.URI
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.EnumSet
 import kotlin.io.path.Path
@@ -15,11 +14,18 @@ import kotlin.io.path.readAttributes
 import kotlin.time.Duration.Companion.milliseconds
 
 abstract class FileSystemPath(var uri: Uri) : SharedObject() {
-  val javaFile get() = File(URI.create(uri.toString()))
+  private var fileAdapter: FileSystemFileAdapter? = null
   val file: FileSystemFileAdapter get() {
-    return FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), uri)
+    val currentAdapter = fileAdapter
+    if (currentAdapter?.uri == uri) {
+      return currentAdapter
+    }
+    val newAdapter = FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), uri)
+    fileAdapter = newAdapter
+    return newAdapter
   }
-  val isContentURI = uri.scheme == "content"
+  val javaFile get() = file.javaFile ?: throw Exception("This method cannot be used with content URIs: $uri")
+  val isContentURI get() = file.isContentURI
 
   fun delete() {
     if (!file.exists()) {

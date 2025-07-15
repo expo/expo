@@ -8,22 +8,27 @@ import java.io.File
 import java.net.URI
 
 class FileSystemFileAdapter(val context: Context, val uri: Uri) {
-  val javaFile get() = File(URI.create(uri.toString()))
-  val treeDocumentFile: DocumentFile? by lazy {
-    DocumentFile.fromTreeUri(context, uri)
-  }
-  val singleDocumentFile: DocumentFile? by lazy {
-    DocumentFile.fromSingleUri(context, uri)
-  }
-
   // TODO: consider adding the SAF domain check here
   val isContentURI = uri.scheme == "content"
+
+  var javaFile: File? = null
+  var treeDocumentFile: DocumentFile? = null
+  var singleDocumentFile: DocumentFile? = null
+
+  init {
+    if (isContentURI) {
+      treeDocumentFile = DocumentFile.fromTreeUri(context, uri)
+      singleDocumentFile = DocumentFile.fromSingleUri(context, uri)
+    } else {
+      javaFile = File(URI.create(uri.toString()))
+    }
+  }
 
   fun exists(): Boolean {
     return if (isContentURI) {
       singleDocumentFile?.exists() == true
     } else {
-      javaFile.exists() == true
+      javaFile?.exists() == true
     }
   }
 
@@ -31,7 +36,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
     return if (isContentURI) {
       singleDocumentFile?.isDirectory == true
     } else {
-      javaFile.isDirectory == true
+      javaFile?.isDirectory == true
     }
   }
 
@@ -39,7 +44,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
     return if (isContentURI) {
       singleDocumentFile?.isFile == true
     } else {
-      javaFile.isFile == true
+      javaFile?.isFile == true
     }
   }
 
@@ -47,7 +52,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
     return if (isContentURI) {
       treeDocumentFile?.parentFile?.let { FileSystemFileAdapter(context, it.uri) }
     } else {
-      javaFile.parentFile?.toUri()?.let { FileSystemFileAdapter(context, it) }
+      javaFile?.parentFile?.toUri()?.let { FileSystemFileAdapter(context, it) }
     }
   }
 
@@ -58,7 +63,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
         return FileSystemFileAdapter(context, documentFile.uri)
       }
     } else {
-      val childFile = File(javaFile.parentFile, displayName)
+      val childFile = File(javaFile?.parentFile, displayName)
       childFile.createNewFile()
       return FileSystemFileAdapter(context, childFile.toUri())
     }
@@ -72,7 +77,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
         return FileSystemFileAdapter(context, documentFile.uri)
       }
     } else {
-      val childFile = File(javaFile.parentFile, displayName)
+      val childFile = File(javaFile?.parentFile, displayName)
       childFile.mkdir()
       return FileSystemFileAdapter(context, childFile.toUri())
     }
@@ -83,7 +88,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
     return if (isContentURI) {
       singleDocumentFile?.delete() == true
     } else {
-      javaFile.delete()
+      javaFile?.delete() == true
     }
   }
 
@@ -93,7 +98,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
         FileSystemFileAdapter(context, it.uri)
       } ?: emptyList()
     } else {
-      javaFile.listFiles()?.map {
+      javaFile?.listFiles()?.map {
         FileSystemFileAdapter(context, it.toUri())
       } ?: emptyList()
     }
