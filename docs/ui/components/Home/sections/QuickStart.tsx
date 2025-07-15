@@ -34,7 +34,10 @@ export function QuickStart() {
               <QuickStartIcon /> Quick Start
             </h2>
             <div>
-              <Terminal cmd={['$ npx create-expo-app@latest']} />
+              <Terminal
+                cmd={['$ npx create-expo-app@latest']}
+                className="asset-shadow rounded-md"
+              />
               <CALLOUT theme="secondary">
                 Then continue{' '}
                 <A href="/get-started/set-up-your-environment">setting up your environment</A>.
@@ -45,7 +48,7 @@ export function QuickStart() {
         <GridCell
           className={mergeClasses(
             'relative z-0 min-h-[192px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
-            'dark:bg-palette-blue3'
+            'dark:bg-palette-blue3 dark:bg-blend-color-burn'
           )}>
           <div
             className={mergeClasses(
@@ -66,23 +69,16 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] border-palette-purple6 bg-palette-purple4',
-            'selection:bg-palette-purple6',
-            'dark:border-palette-purple7 dark:bg-palette-purple4'
+            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-purple3',
+            'selection:bg-palette-purple5'
           )}>
-          <div
-            className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-palette-purple3 from-15% to-transparent',
-              'dark:from-palette-purple3 dark:to-transparent'
-            )}
-          />
           <AppleAppStoreIcon className="absolute -bottom-16 -right-10 size-72 text-palette-purple10 opacity-10" />
           <div className="relative z-10 flex flex-col gap-4">
             <h2 className="flex items-center gap-2 !font-bold !text-palette-purple10 heading-lg">
               <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
             </h2>
             <div>
-              <Terminal cmd={['$ npx testflight']} />
+              <Terminal cmd={['$ npx testflight']} className="asset-shadow rounded-md" />
               <CALLOUT theme="secondary">
                 This is an iOS-only command that will upload your app to TestFlight.
               </CALLOUT>
@@ -91,16 +87,9 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] border-palette-green6 bg-[#f0f9f0]',
-            'selection:bg-palette-green5',
-            'dark:border-palette-green7 dark:bg-[#1d392c]'
+            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-green3',
+            'selection:bg-palette-green4'
           )}>
-          <div
-            className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-gradient-to-b from-[#e8f5e8] from-15% to-transparent',
-              'dark:from-[#1d392c] dark:to-transparent'
-            )}
-          />
           <Cloud01DuotoneIcon className="absolute -bottom-20 -right-8 size-80 text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
           <div className="relative z-10 flex flex-col gap-4">
             <h2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] heading-lg dark:!text-[#4eca8c]">
@@ -108,7 +97,7 @@ export function QuickStart() {
               your web app
             </h2>
             <div>
-              <Terminal cmd={['$ npx eas-cli deploy']} />
+              <Terminal cmd={['$ npx eas-cli deploy']} className="asset-shadow rounded-md" />
               <CALLOUT theme="secondary">
                 For prerequisites and complete instructions, see{' '}
                 <A href="/deploy/web/#export-your-web-project/">our guide</A>.
@@ -118,7 +107,7 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[158px] border-palette-pink6 bg-palette-pink3 dark:bg-palette-pink3',
+            'relative z-0 min-h-[158px] bg-subtle bg-gradient-to-br from-subtle from-30% to-palette-pink3',
             'selection:bg-palette-pink5',
             'max-md-gutters:min-h-[200px]'
           )}>
@@ -147,7 +136,7 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[158px] border-palette-orange6 bg-palette-orange3',
+            'relative z-0 min-h-[158px] bg-subtle bg-gradient-to-br from-subtle from-30% to-palette-orange3',
             'selection:bg-palette-orange5',
             'max-md-gutters:min-h-[200px]'
           )}>
