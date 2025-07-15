@@ -35,24 +35,24 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
     if (!file.exists()) {
       val directoryInfo = DirectoryInfo(
         exists = false,
-        uri = slashifyFilePath(file.toURI().toString())
+        uri = slashifyFilePath(javaFile.toURI().toString())
       )
       return directoryInfo
     }
 
     when {
-      file.toURI().scheme == "file" -> {
+      javaFile.toURI().scheme == "file" -> {
         val directoryInfo = DirectoryInfo(
           exists = true,
-          uri = slashifyFilePath(file.toURI().toString()),
-          files = file.listFiles()?.map { i -> i.name },
+          uri = slashifyFilePath(javaFile.toURI().toString()),
+          files = javaFile.listFiles()?.map { i -> i.name },
           modificationTime = modificationTime,
           creationTime = creationTime,
           size = size
         )
         return directoryInfo
       }
-      else -> throw UnableToGetInfoException("file schema ${file.toURI().scheme} is not supported")
+      else -> throw UnableToGetInfoException("file schema ${javaFile.toURI().scheme} is not supported")
     }
   }
 
