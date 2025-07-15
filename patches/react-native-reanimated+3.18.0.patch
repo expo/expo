@@ -1,9 +1,74 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.cpp
+index d11f7fa..7c754b9 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.cpp
+@@ -9,7 +9,7 @@ std::lock_guard<std::mutex> PropsRegistry::createLock() const {
+ }
+ 
+ void PropsRegistry::update(
+-    const ShadowNode::Shared &shadowNode,
++    const std::shared_ptr<const ShadowNode> &shadowNode,
+     folly::dynamic &&props) {
+   const auto tag = shadowNode->getTag();
+   const auto it = map_.find(tag);
+@@ -32,7 +32,7 @@ void PropsRegistry::for_each(std::function<void(
+   }
+ }
+ 
+-void PropsRegistry::markNodeAsRemovable(const ShadowNode::Shared &shadowNode) {
++void PropsRegistry::markNodeAsRemovable(const std::shared_ptr<const ShadowNode> &shadowNode) {
+   removableShadowNodes_[shadowNode->getTag()] = shadowNode;
+ }
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.h
+index 42a29b2..ad8a9e4 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/PropsRegistry.h
+@@ -17,7 +17,7 @@ class PropsRegistry {
+   std::lock_guard<std::mutex> createLock() const;
+   // returns a lock you need to hold when calling any of the methods below
+ 
+-  void update(const ShadowNode::Shared &shadowNode, folly::dynamic &&props);
++  void update(const std::shared_ptr<const ShadowNode> &shadowNode, folly::dynamic &&props);
+ 
+   void for_each(std::function<void(
+                     const ShadowNodeFamily &family,
+@@ -49,13 +49,13 @@ class PropsRegistry {
+     return map_.empty();
+   }
+ 
+-  void markNodeAsRemovable(const ShadowNode::Shared &shadowNode);
++  void markNodeAsRemovable(const std::shared_ptr<const ShadowNode> &shadowNode);
+   void unmarkNodeAsRemovable(Tag viewTag);
+   void handleNodeRemovals(const RootShadowNode &rootShadowNode);
+ 
+  private:
+-  std::unordered_map<Tag, std::pair<ShadowNode::Shared, folly::dynamic>> map_;
+-  std::unordered_map<Tag, ShadowNode::Shared> removableShadowNodes_;
++  std::unordered_map<Tag, std::pair<std::shared_ptr<const ShadowNode>, folly::dynamic>> map_;
++  std::unordered_map<Tag, std::shared_ptr<const ShadowNode>> removableShadowNodes_;
+ 
+   mutable std::mutex mutex_; // Protects `map_`.
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp
+index c8f9ac8..7b4c9fc 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp
+@@ -80,7 +80,7 @@ RootShadowNode::Unshared ReanimatedCommitHook::shadowTreeWillCommit(
+           propsMap[&family].emplace_back(props);
+         });
+ 
+-    rootNode = cloneShadowTreeWithNewProps(*rootNode, propsMap);
++    rootNode = std::static_pointer_cast<RootShadowNode>(cloneShadowTreeWithNewProps(*rootNode, propsMap));
+ 
+     // If the commit comes from React Native then pause commits from
+     // Reanimated since the ShadowTree to be committed by Reanimated may not
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp
-index 88cf5c6..13baf96 100644
+index 88cf5c6..bc21a12 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp
 @@ -18,7 +18,7 @@ ReanimatedMountHook::~ReanimatedMountHook() noexcept {
-
+ 
  void ReanimatedMountHook::shadowTreeDidMount(
      const RootShadowNode::Shared &rootShadowNode,
 -    double) noexcept {
@@ -11,32 +76,100 @@ index 88cf5c6..13baf96 100644
    auto reaShadowNode =
        std::reinterpret_pointer_cast<ReanimatedCommitShadowNode>(
            std::const_pointer_cast<RootShadowNode>(rootShadowNode));
+@@ -63,8 +63,8 @@ void ReanimatedMountHook::shadowTreeDidMount(
+                   propsMap[&family].emplace_back(props);
+                 });
+ 
+-                rootNode =
+-                    cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap);
++                rootNode = std::static_pointer_cast<RootShadowNode>(
++                    cloneShadowTreeWithNewProps(oldRootShadowNode, propsMap));
+               }
+ 
+               // Mark the commit as Reanimated commit so that we can
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 index 143eb87..f0952f8 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ReanimatedMountHook.h
 @@ -21,7 +21,7 @@ class ReanimatedMountHook : public UIManagerMountHook {
-
+ 
    void shadowTreeDidMount(
        RootShadowNode::Shared const &rootShadowNode,
 -      double mountTime) noexcept override;
 +                          HighResTimeStamp mountTime) noexcept override;
-
+ 
   private:
    const std::shared_ptr<PropsRegistry> propsRegistry_;
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp
+index 8f8f466..3679dca 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp
+@@ -42,7 +42,7 @@ Props::Shared mergeProps(
+   return newProps;
+ }
+ 
+-ShadowNode::Unshared cloneShadowTreeWithNewPropsRecursive(
++std::shared_ptr<ShadowNode> cloneShadowTreeWithNewPropsRecursive(
+     const ShadowNode &shadowNode,
+     const ChildrenMap &childrenMap,
+     const PropsMap &propsMap) {
+@@ -59,11 +59,11 @@ ShadowNode::Unshared cloneShadowTreeWithNewPropsRecursive(
+ 
+   return shadowNode.clone(
+       {mergeProps(shadowNode, propsMap, *family),
+-       std::make_shared<ShadowNode::ListOfShared>(children),
++       std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(children),
+        shadowNode.getState()});
+ }
+ 
+-RootShadowNode::Unshared cloneShadowTreeWithNewProps(
++std::shared_ptr<ShadowNode> cloneShadowTreeWithNewProps(
+     const RootShadowNode &oldRootNode,
+     const PropsMap &propsMap) {
+   ChildrenMap childrenMap;
+@@ -86,8 +86,7 @@ RootShadowNode::Unshared cloneShadowTreeWithNewProps(
+ 
+   // This cast is safe, because this function returns a clone
+   // of the oldRootNode, which is an instance of RootShadowNode
+-  return std::static_pointer_cast<RootShadowNode>(
+-      cloneShadowTreeWithNewPropsRecursive(oldRootNode, childrenMap, propsMap));
++  return cloneShadowTreeWithNewPropsRecursive(oldRootNode, childrenMap, propsMap);
+ }
+ 
+ } // namespace reanimated
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
+index e3f9f6d..0be8158 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/Fabric/ShadowTreeCloner.h
+@@ -20,7 +20,7 @@ using PropsMap =
+ using ChildrenMap =
+     std::unordered_map<const ShadowNodeFamily *, std::unordered_set<int>>;
+ 
+-RootShadowNode::Unshared cloneShadowTreeWithNewProps(
++std::shared_ptr<ShadowNode> cloneShadowTreeWithNewProps(
+     const RootShadowNode &oldRootNode,
+     const PropsMap &propsMap);
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
+index 6592c0a..276d2d9 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.cpp
+@@ -71,8 +71,8 @@ std::optional<SurfaceId> LayoutAnimationsProxy::progressLayoutAnimation(
+   PropsParserContext propsParserContext{
+       layoutAnimation.finalView->surfaceId, *contextContainer_};
+ #ifdef ANDROID
+-  rawProps = std::make_shared<RawProps>(folly::dynamic::merge(
+-      layoutAnimation.finalView->props->rawProps, (folly::dynamic)*rawProps));
++  /*rawProps = std::make_shared<RawProps>(folly::dynamic::merge(
++      layoutAnimation.finalView->props->rawProps, (folly::dynamic)*rawProps));*/
+ #endif
+   auto newProps =
+       getComponentDescriptorForShadowView(*layoutAnimation.finalView)
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
-index f3742ed..3710db4 100644
+index f3742ed..256ed21 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
-@@ -7,6 +7,7 @@
- #include <unordered_map>
-
- #ifdef RCT_NEW_ARCH_ENABLED
-+#include "NativeDOM.h"
- #include <reanimated/Fabric/ReanimatedCommitShadowNode.h>
- #include <reanimated/Fabric/ShadowTreeCloner.h>
- #endif // RCT_NEW_ARCH_ENABLED
-@@ -355,7 +356,7 @@ static inline std::string intColorToHex(const int val) {
+@@ -355,7 +355,7 @@ static inline std::string intColorToHex(const int val) {
  std::string ReanimatedModuleProxy::obtainPropFromShadowNode(
      jsi::Runtime &rt,
      const std::string &propName,
@@ -44,8 +177,8 @@ index f3742ed..3710db4 100644
 +    const std::shared_ptr<const ShadowNode> &shadowNode) {
    auto newestCloneOfShadowNode =
        uiManager_->getNewestCloneOfShadowNode(*shadowNode);
-
-@@ -403,7 +404,7 @@ jsi::Value ReanimatedModuleProxy::getViewProp(
+ 
+@@ -403,7 +403,7 @@ jsi::Value ReanimatedModuleProxy::getViewProp(
    const auto propNameStr = propName.asString(rnRuntime).utf8(rnRuntime);
    const auto funPtr = std::make_shared<jsi::Function>(
        callback.getObject(rnRuntime).asFunction(rnRuntime));
@@ -54,7 +187,7 @@ index f3742ed..3710db4 100644
    workletsModuleProxy_->getUIScheduler()->scheduleOnUI(
        [=, weakThis = weak_from_this()]() {
          auto strongThis = weakThis.lock();
-@@ -600,7 +601,7 @@ void ReanimatedModuleProxy::cleanupSensors() {
+@@ -600,7 +600,7 @@ void ReanimatedModuleProxy::cleanupSensors() {
  void ReanimatedModuleProxy::markNodeAsRemovable(
      jsi::Runtime &rt,
      const jsi::Value &shadowNodeWrapper) {
@@ -62,8 +195,8 @@ index f3742ed..3710db4 100644
 +  auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(rt, shadowNodeWrapper);
    propsRegistry_->markNodeAsRemovable(shadowNode);
  }
-
-@@ -692,7 +693,7 @@ void ReanimatedModuleProxy::updateProps(
+ 
+@@ -692,7 +692,7 @@ void ReanimatedModuleProxy::updateProps(
    for (size_t i = 0; i < length; ++i) {
      auto item = array.getValueAtIndex(rt, i).asObject(rt);
      auto shadowNodeWrapper = item.getProperty(rt, "shadowNodeWrapper");
@@ -72,16 +205,25 @@ index f3742ed..3710db4 100644
      const jsi::Value &updates = item.getProperty(rt, "updates");
      operationsInBatch_.emplace_back(
          shadowNode, std::make_unique<jsi::Value>(rt, updates));
-@@ -809,7 +810,7 @@ void ReanimatedModuleProxy::dispatchCommand(
+@@ -795,7 +795,7 @@ void ReanimatedModuleProxy::performOperations() {
+                     rootNode);
+             reaShadowNode->setReanimatedCommitTrait();
+ 
+-            return rootNode;
++            return std::static_pointer_cast<RootShadowNode>(rootNode);
+           },
+           {/* .enableStateReconciliation = */
+            false,
+@@ -809,7 +809,7 @@ void ReanimatedModuleProxy::dispatchCommand(
      const jsi::Value &shadowNodeValue,
      const jsi::Value &commandNameValue,
      const jsi::Value &argsValue) {
 -  ShadowNode::Shared shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-+  ShadowNode::Shared shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(rt, shadowNodeValue);
++  auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(rt, shadowNodeValue);
    std::string commandName = stringFromValue(rt, commandNameValue);
    folly::dynamic args = commandArgsFromValue(rt, argsValue);
    const auto &scheduler = static_cast<Scheduler *>(uiManager_->getDelegate());
-@@ -833,7 +834,7 @@ jsi::String ReanimatedModuleProxy::obtainProp(
+@@ -833,7 +833,7 @@ jsi::String ReanimatedModuleProxy::obtainProp(
      const jsi::Value &propName) {
    jsi::Runtime &uiRuntime = uiWorkletRuntime_->getJSIRuntime();
    const auto propNameStr = propName.asString(rt).utf8(rt);
@@ -90,13 +232,34 @@ index f3742ed..3710db4 100644
    const auto resultStr =
        obtainPropFromShadowNode(uiRuntime, propNameStr, shadowNode);
    return jsi::String::createFromUtf8(rt, resultStr);
-@@ -844,7 +845,7 @@ jsi::Value ReanimatedModuleProxy::measure(
+@@ -844,7 +844,7 @@ jsi::Value ReanimatedModuleProxy::measure(
      const jsi::Value &shadowNodeValue) {
    // based on implementation from UIManagerBinding.cpp
-
+ 
 -  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
 +  auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(rt, shadowNodeValue);
    auto layoutMetrics = uiManager_->getRelativeLayoutMetrics(
        *shadowNode, nullptr, {/* .includeTransform = */ true});
-
-\ No newline at end of file
+ 
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+index f9332ea..4ada58e 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+@@ -150,7 +150,7 @@ class ReanimatedModuleProxy
+   std::string obtainPropFromShadowNode(
+       jsi::Runtime &rt,
+       const std::string &propName,
+-      const ShadowNode::Shared &shadowNode);
++      const std::shared_ptr<const ShadowNode> &shadowNode);
+ 
+ #ifdef IS_REANIMATED_EXAMPLE_APP
+   std::function<std::string()> createRegistriesLeakCheck();
+@@ -227,7 +227,7 @@ class ReanimatedModuleProxy
+   std::shared_ptr<UIManager> uiManager_;
+   std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy_;
+ 
+-  std::vector<std::pair<ShadowNode::Shared, std::unique_ptr<jsi::Value>>>
++  std::vector<std::pair<std::shared_ptr<const ShadowNode>, std::unique_ptr<jsi::Value>>>
+       operationsInBatch_; // TODO: refactor std::pair to custom struct
+ 
+   std::shared_ptr<PropsRegistry> propsRegistry_;
