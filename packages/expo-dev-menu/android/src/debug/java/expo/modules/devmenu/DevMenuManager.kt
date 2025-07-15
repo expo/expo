@@ -233,7 +233,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun updateStateIfNeeded(activity: Activity, bindingView: BindingView) {
     val currentReactInstance = currentReactInstance.get() ?: return
-    val appInfo = AppInfo.getAppInfo(currentReactInstance, activity)
+    val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
   }
 

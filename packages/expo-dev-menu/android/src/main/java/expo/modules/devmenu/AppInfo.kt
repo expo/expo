@@ -1,6 +1,6 @@
 package expo.modules.devmenu
 
-import android.content.Context
+import android.app.Application
 import android.content.pm.PackageManager
 import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devmenu.compose.DevMenuState
@@ -12,9 +12,15 @@ object AppInfo {
     val appVersion: String? = null
   )
 
-  fun getNativeAppInfo(context: Context): Native {
-    val packageManager = context.packageManager
-    val packageName = context.packageName
+  lateinit var native: Native
+
+  fun init(application: Application) {
+    native = getNativeAppInfo(application)
+  }
+
+  private fun getNativeAppInfo(application: Application): Native {
+    val packageManager = application.packageManager
+    val packageName = application.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
 
     val appVersion = packageInfo.versionName
@@ -27,9 +33,7 @@ object AppInfo {
     )
   }
 
-  fun getAppInfo(reactHost: ReactHostWrapper, context: Context): DevMenuState.AppInfo {
-    val native = getNativeAppInfo(context)
-
+  fun getAppInfo(reactHost: ReactHostWrapper): DevMenuState.AppInfo {
     // We want to override the native app name and version with the manifest values if available.
     var appName = native.appName
     var appVersion = native.appVersion

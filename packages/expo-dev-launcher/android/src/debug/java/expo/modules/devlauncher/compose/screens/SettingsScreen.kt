@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.R
@@ -12,6 +13,8 @@ import expo.modules.devlauncher.compose.SettingsAction
 import expo.modules.devlauncher.compose.SettingsState
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
+import expo.modules.devmenu.compose.utils.copyToClipboard
+import expo.modules.devlauncher.services.ApplicationInfo
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -27,6 +30,8 @@ fun SettingsScreen(
   state: SettingsState = SettingsState(),
   onAction: (SettingsAction) -> Unit = {}
 ) {
+  val context = LocalContext.current
+
   Column(modifier = Modifier.padding(Theme.spacing.medium)) {
     ScreenHeaderContainer(backgroundColor = Theme.colors.background.secondary) {
       Heading("Settings")
@@ -93,11 +98,26 @@ fun SettingsScreen(
 
     RoundedSurface {
       Column {
-        MenuInfo("Version", "N/A")
+        MenuInfo("Version", state.applicationInfo?.appVersion ?: "N/A")
         Divider()
-        MenuInfo("Runtime version", "N/A")
-        Divider()
-        MenuButton("Tap to Copy All", icon = null, labelTextColor = Theme.colors.text.link)
+        val runtimeVersion = (state.applicationInfo as? ApplicationInfo.Updates)?.runtimeVersion
+        if (runtimeVersion != null) {
+          MenuInfo("Runtime version", runtimeVersion)
+          Divider()
+        }
+
+        MenuButton(
+          "Tap to Copy All",
+          onClick = {
+            copyToClipboard(
+              context,
+              label = "Application Info",
+              text = state.applicationInfo?.toJson() ?: "No application info available"
+            )
+          },
+          icon = null,
+          labelTextColor = Theme.colors.text.link
+        )
       }
     }
   }
@@ -106,5 +126,15 @@ fun SettingsScreen(
 @Composable
 @Preview(showBackground = true)
 fun SettingsScreenPreview() {
-  SettingsScreen()
+  SettingsScreen(
+    state = SettingsState(
+      applicationInfo = ApplicationInfo.Updates(
+        appName = "BareExpo",
+        appVersion = "1.0.0",
+        appId = "01980973-2cf9-71fb-a891-a53444132a6e",
+        runtimeVersion = "1.0.0",
+        projectUrl = "https://u.expo.dev/01980973-2cf9-71fb-a891-a53444132a6e"
+      )
+    )
+  )
 }

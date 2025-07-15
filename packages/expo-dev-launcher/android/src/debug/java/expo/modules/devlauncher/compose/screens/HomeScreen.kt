@@ -236,19 +236,19 @@ fun HomeScreen(
           SectionHeader(
             "Recently",
             rightIcon = {
-              Button(onClick = {
-                onAction(HomeAction.ResetRecentlyOpendApps)
-              }) {
-                Row {
+              Row {
+                Button(onClick = {
+                  onAction(HomeAction.ResetRecentlyOpendApps)
+                }) {
                   Text(
                     "Reset",
                     color = Theme.colors.text.secondary,
                     fontSize = Theme.typography.small,
                     fontWeight = FontWeight.Bold
                   )
-
-                  Spacer(Theme.spacing.small)
                 }
+
+                Spacer(Theme.spacing.small)
               }
             }
           )
@@ -286,7 +286,14 @@ fun HomeScreenPreview() {
   HomeScreen(
     state = HomeState(
       recentlyOpenedApps = listOf(
-        DevLauncherAppEntry(timestamp = 1752249592809L, name = "BareExpo", url = "http://10.0.2.2:8081", isEASUpdate = false, updateMessage = null, branchName = null)
+        DevLauncherAppEntry(
+          timestamp = 1752249592809L,
+          name = "BareExpo",
+          url = "http://10.0.2.2:8081",
+          isEASUpdate = false,
+          updateMessage = null,
+          branchName = null
+        )
       )
     ),
     onAction = {},
