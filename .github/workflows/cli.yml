@@ -16,6 +16,8 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
       - packages/create-expo/**
+      - packages/eslint-config-expo/**
+      - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - yarn.lock
   pull_request:
@@ -32,6 +34,8 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
       - packages/create-expo/**
+      - packages/eslint-config-expo/**
+      - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - yarn.lock
   schedule:
