@@ -1,4 +1,5 @@
 import { CodedError } from 'expo-modules-core';
+import { Image } from 'react-native';
 import ExpoUpdates from './ExpoUpdates';
 import { UpdatesCheckAutomaticallyValue, } from './Updates.types';
 /**
@@ -107,6 +108,37 @@ const shouldDeferToNativeForAPIMethodAvailabilityInDevelopment = !!ExpoUpdates.s
 const isUsingDeveloperTool = 'extra' in manifest ? !!manifest.extra?.expoGo?.developer?.tool : false;
 const manualUpdatesInstructions = 'To test usage of the expo-updates JS API in your app, make a release build with `npx expo run:ios --configuration Release` or ' +
     '`npx expo run:android --variant Release`.';
+function resolveImageSource(source) {
+    if (typeof source === 'string') {
+        return { url: source };
+    }
+    if (typeof source === 'number') {
+        const resolved = Image.resolveAssetSource(source);
+        if (resolved) {
+            return {
+                url: resolved.uri,
+                width: resolved.width,
+                height: resolved.height,
+                scale: resolved.scale,
+            };
+        }
+        return null;
+    }
+    if (typeof source === 'object' && source !== null) {
+        return source;
+    }
+    return null;
+}
+function resolveReloadScreenOptions(options) {
+    if (!options.image) {
+        return options;
+    }
+    const resolvedImage = resolveImageSource(options.image);
+    return {
+        ...options,
+        image: resolvedImage || undefined,
+    };
+}
 /**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the
@@ -252,5 +284,65 @@ export async function fetchUpdateAsync() {
  */
 export function setUpdateURLAndRequestHeadersOverride(configOverride) {
     ExpoUpdates.setUpdateURLAndRequestHeadersOverride(configOverride);
+}
+/**
+ * Sets the configuration for the reload screen that will be displayed during `reloadAsync()` calls.
+ * By default, the reload screen shows a centered loading spinner on a white background.
+ *
+ * @param options Configuration options for customizing the reload screen appearance.
+ *
+ * @example
+ * ```ts
+ * import * as Updates from 'expo-updates';
+ *
+ * // Set a custom background color and spinner color
+ * Updates.setReloadScreenOptions({
+ *   backgroundColor: '#1a1a1a',
+ *   spinner: {
+ *     color: '#ffffff'
+ *   }
+ * });
+ *
+ * // Use a custom image instead of spinner
+ * Updates.setReloadScreenOptions({
+ *   backgroundColor: '#ffffff',
+ *   image: require('./assets/loading.png'),
+ *   imageResizeMode: 'contain'
+ * });
+ * ```
+ */
+export function setReloadScreenOptions(options) {
+    const resolvedOptions = resolveReloadScreenOptions(options);
+    ExpoUpdates.setReloadScreenOptions(resolvedOptions);
+}
+/**
+ * Shows the reload screen. This is primarily useful for testing how the reload screen
+ * will appear to users. The reload screen can be hidden by calling `hideReloadScreen()`.
+ *
+ * @return A promise that resolves when the reload screen is shown.
+ *
+ * @example
+ * ```ts
+ * import * as Updates from 'expo-updates';
+ *
+ * // Show the reload screen for testing
+ * await Updates.showReloadScreen();
+ *
+ * // Hide it after 3 seconds
+ * setTimeout(async () => {
+ *   await Updates.hideReloadScreen();
+ * }, 3000);
+ * ```
+ */
+export async function showReloadScreen() {
+    ExpoUpdates.showReloadScreen();
+}
+/**
+ * Hides the reload screen if it is currently being displayed.
+ *
+ * @return A promise that resolves when the reload screen is hidden.
+ */
+export async function hideReloadScreen() {
+    ExpoUpdates.hideReloadScreen();
 }
 //# sourceMappingURL=Updates.js.map

@@ -1,4 +1,4 @@
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, ReloadScreenOptions } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration
@@ -185,4 +185,57 @@ export declare function setUpdateURLAndRequestHeadersOverride(configOverride: {
     updateUrl: string;
     requestHeaders: Record<string, string>;
 } | null): void;
+/**
+ * Sets the configuration for the reload screen that will be displayed during `reloadAsync()` calls.
+ * By default, the reload screen shows a centered loading spinner on a white background.
+ *
+ * @param options Configuration options for customizing the reload screen appearance.
+ *
+ * @example
+ * ```ts
+ * import * as Updates from 'expo-updates';
+ *
+ * // Set a custom background color and spinner color
+ * Updates.setReloadScreenOptions({
+ *   backgroundColor: '#1a1a1a',
+ *   spinner: {
+ *     color: '#ffffff'
+ *   }
+ * });
+ *
+ * // Use a custom image instead of spinner
+ * Updates.setReloadScreenOptions({
+ *   backgroundColor: '#ffffff',
+ *   image: require('./assets/loading.png'),
+ *   imageResizeMode: 'contain'
+ * });
+ * ```
+ */
+export declare function setReloadScreenOptions(options: ReloadScreenOptions): void;
+/**
+ * Shows the reload screen. This is primarily useful for testing how the reload screen
+ * will appear to users. The reload screen can be hidden by calling `hideReloadScreen()`.
+ *
+ * @return A promise that resolves when the reload screen is shown.
+ *
+ * @example
+ * ```ts
+ * import * as Updates from 'expo-updates';
+ *
+ * // Show the reload screen for testing
+ * await Updates.showReloadScreen();
+ *
+ * // Hide it after 3 seconds
+ * setTimeout(async () => {
+ *   await Updates.hideReloadScreen();
+ * }, 3000);
+ * ```
+ */
+export declare function showReloadScreen(): Promise<void>;
+/**
+ * Hides the reload screen if it is currently being displayed.
+ *
+ * @return A promise that resolves when the reload screen is hidden.
+ */
+export declare function hideReloadScreen(): Promise<void>;
 //# sourceMappingURL=Updates.d.ts.map

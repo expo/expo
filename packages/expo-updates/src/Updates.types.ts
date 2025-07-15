@@ -260,6 +260,12 @@ export enum UpdatesCheckAutomaticallyValue {
  */
 export type LocalAssets = Record<string, string>;
 
+export type {
+  ReloadScreenOptions,
+  ReloadScreenOptions as ResolvedReloadScreenOptions,
+  ReloadScreenImageSource,
+} from './ReloadScreen.types';
+
 /**
  * @hidden
  */

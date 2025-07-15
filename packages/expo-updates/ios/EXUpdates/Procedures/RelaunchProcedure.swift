@@ -72,6 +72,8 @@ final class RelaunchProcedure: StateMachineProcedure {
           RCTReloadCommandSetBundleURL(self.launcherWithDatabase.launchAssetUrl)
           RCTTriggerReloadCommandListeners(self.triggerReloadCommandListenersReason)
 
+          ReloadScreenManager.shared.show()
+
           // TODO(wschurman): this was moved to after the RCT calls to unify reload
           // code between JS API call and error recovery handler. double check that
           // this is okay

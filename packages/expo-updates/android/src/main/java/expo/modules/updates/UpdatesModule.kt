@@ -6,6 +6,7 @@ import android.os.Bundle
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -17,6 +18,8 @@ import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updates.reloadscreen.ReloadScreenManager
+import expo.modules.updates.reloadscreen.ReloadScreenOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -59,6 +62,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
     OnDestroy {
       UpdatesController.removeUpdatesEventManagerObserver()
+      ReloadScreenManager.unregisterReloadListener()
     }
 
     AsyncFunction("reload") Coroutine { ->
@@ -161,6 +165,19 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
       UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
+
+    Function("setReloadScreenOptions") { options: ReloadScreenOptions? ->
+      ReloadScreenManager.setConfiguration(options)
+    }
+
+    AsyncFunction("showReloadScreen") { ->
+      val activity = appContext.currentActivity
+      ReloadScreenManager.show(activity)
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("hideReloadScreen") { ->
+      ReloadScreenManager.hide()
+    }.runOnQueue(Queues.MAIN)
   }
 
   companion object {

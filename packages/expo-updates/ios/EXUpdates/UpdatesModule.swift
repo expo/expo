@@ -144,6 +144,18 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { (configOverride: UpdatesConfigOverrideParam?) in
       try AppController.sharedInstance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigOverride())
     }
+
+    Function("setReloadScreenOptions") { (options: ReloadScreenOptions?) in
+      ReloadScreenManager.shared.setConfiguration(options)
+    }
+
+    AsyncFunction("showReloadScreen") {
+      ReloadScreenManager.shared.show()
+    }.runOnQueue(.main)
+
+    AsyncFunction("hideReloadScreen") {
+      ReloadScreenManager.shared.hide()
+    }.runOnQueue(.main)
   }
 
   public func onStateMachineContextEvent(context: UpdatesStateContext) {
