@@ -14,9 +14,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   #if os(tvOS)
   var wasPlaying: Bool = false
-  #endif
-  #if os(tvOS)
   let startPictureInPictureAutomatically = false
+  var isFullscreen: Bool = false
   #else
   var startPictureInPictureAutomatically = false {
     didSet {
@@ -78,8 +77,8 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
       self.wasPlaying = self.player?.isPlaying == true
       self.playerViewController.view.removeFromSuperview()
       self.reactViewController().present(self.playerViewController, animated: true)
-      onFullscreenEnter()
-      isFullscreen = true
+      self.onFullscreenEnter()
+      self.isFullscreen = true
       #endif
     }
     playerViewController.enterFullscreen(selectorUnsupportedFallback: tvOSFallback)
@@ -87,6 +86,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   func exitFullscreen() {
     playerViewController.exitFullscreen()
+    self.isFullscreen = false
   }
 
   func startPictureInPicture() throws {
