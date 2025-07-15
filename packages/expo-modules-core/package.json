@@ -26,10 +26,6 @@
     "./src/uuid/uuid": {
       "types": "./build/uuid/uuid.d.ts",
       "default": "./src/uuid/uuid.ts"
-    },
-    "./src/uuid/uuid.native": {
-      "types": "./build/uuid/uuid.native.d.ts",
-      "default": "./src/uuid/uuid.native.ts"
     }
   },
   "scripts": {
