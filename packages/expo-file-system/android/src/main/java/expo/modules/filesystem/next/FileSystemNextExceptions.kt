@@ -29,12 +29,6 @@ internal class UnableToCreateException(reason: String) :
     "Unable to create file or directory: $reason"
   )
 
-internal class InvalidUriConcatenation() :
-  CodedException(
-    "content URIs cannot be created by joining path segments."
-  )
-
-
 internal class InvalidPermissionException(permission: Permission) :
   CodedException(
     "Missing '${permission.name}' permission for accessing the file."

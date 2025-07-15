@@ -59,26 +59,6 @@ export function encodeURLChars(path: string) {
   return resolved;
 }
 
-// function getPathFromURLPosix(pathname: string) {
-//   for (let n = 0; n < pathname.length; n++) {
-//     if (pathname[n] === '%') {
-//       const third = +pathname.charAt(n + 2) | 0x20;
-//       if (pathname[n + 1] === '2' && third === 102) {
-//         throw new Error('pathname must not include encoded / characters');
-//       }
-//     }
-//   }
-//   return decodeURIComponent(pathname);
-// }
-
-// export function urlToPath(url: string | URL): URL {
-//   url = new URL(url);
-//   // if (path.protocol !== 'file:')
-//   //   throw new Error('Must be a file URL – are you sure your url starts with `file:///`?');
-//   url.pathname = getPathFromURLPosix(url.pathname);
-//   return url;
-// }
-
 export function isUrl(url: string) {
   try {
     return !!new URL(url);
