@@ -5,8 +5,9 @@ export async function directoryExistsAsync(file: string): Promise<boolean> {
   return (await fs.promises.stat(file).catch(() => null))?.isDirectory() ?? false;
 }
 
-export async function ensureDirectoryAsync(path: string): Promise<void> {
+export async function ensureDirectoryAsync(path: string): Promise<string> {
   await fs.promises.mkdir(path, { recursive: true });
+  return path;
 }
 
 export async function moveAsync(src: string, dest: string): Promise<void> {

@@ -22,6 +22,7 @@ import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import com.th3rdwave.safeareacontext.SafeAreaContextModule
 import com.zoontek.rnedgetoedge.EdgeToEdgeModule
 import com.reactnativekeyboardcontroller.KeyboardControllerModule
 import com.reactnativekeyboardcontroller.KeyboardControllerPackage
@@ -128,6 +129,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNViewShotModule(reactContext, scopedContext.cacheDir, scopedContext.externalCacheDir))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
+        nativeModules.add(SafeAreaContextModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
         nativeModules.add(RNGestureHandlerModule(reactContext))
         nativeModules.add(RNCWebViewModule(reactContext))

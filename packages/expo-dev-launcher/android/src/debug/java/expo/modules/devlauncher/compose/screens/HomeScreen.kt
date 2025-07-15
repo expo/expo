@@ -2,42 +2,43 @@ package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
+import com.composables.core.DialogState
 import com.composables.core.Icon
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
-import com.composeunstyled.TextField
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.HomeAction
 import expo.modules.devlauncher.compose.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
+import expo.modules.devlauncher.compose.primitives.pulseEffect
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
+import expo.modules.devlauncher.compose.ui.ServerUrlInput
+import expo.modules.devlauncher.compose.utils.withIsLast
+import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -45,17 +46,9 @@ import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
-import expo.modules.devmenu.compose.ui.MenuButton
 
 @Composable
-fun HomeScreen(
-  state: HomeState,
-  onAction: (HomeAction) -> Unit,
-  onProfileClick: () -> Unit
-) {
-  val hasPackager = state.runningPackagers.isNotEmpty()
-  val dialogState = rememberDialogState(initiallyVisible = false)
-
+fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
   Dialog(state = dialogState) {
     Scrim()
 
@@ -91,6 +84,18 @@ fun HomeScreen(
       }
     }
   }
+}
+
+@Composable
+fun HomeScreen(
+  state: HomeState,
+  onAction: (HomeAction) -> Unit,
+  onProfileClick: () -> Unit
+) {
+  val hasPackager = state.runningPackagers.isNotEmpty()
+  val dialogState = rememberDialogState(initiallyVisible = false)
+
+  HowToStartDevelopmentServerDialog(dialogState)
 
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
@@ -120,13 +125,17 @@ fun HomeScreen(
           },
           rightIcon = {
             if (hasPackager) {
-              Button(onClick = {
-                dialogState.visible = true
-              }) {
-                Image(
-                  painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
-                  contentDescription = "Terminal Icon"
-                )
+              Row {
+                Button(onClick = {
+                  dialogState.visible = true
+                }) {
+                  Image(
+                    painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
+                    contentDescription = "Terminal Icon"
+                  )
+                }
+
+                Spacer(Theme.spacing.small)
               }
             }
           }
@@ -154,58 +163,63 @@ fun HomeScreen(
             Divider()
           }
 
-          MenuButton(
+          val infoColor = Theme.colors.status.info
+          val defaultColor = Theme.colors.status.default
+          val isFetching = state.isFetchingPackagers
+
+          Button(
             onClick = {
               onAction(HomeAction.RefetchRunningApps)
             },
-            enabled = !state.isFetchingPackagers,
-            label = if (state.isFetchingPackagers) {
-              "Searching for development servers..."
-            } else {
-              "Fetch development servers"
+            enabled = !isFetching
+          ) {
+            RowLayout(
+              modifier = Modifier.padding(Theme.spacing.medium),
+              leftComponent = {
+                Box(
+                  modifier = Modifier
+                    .size(Theme.spacing.small)
+                    .drawBehind {
+                      drawCircle(
+                        color = defaultColor,
+                        radius = size.minDimension / 2f
+                      )
+                    }
+                    .then(
+                      if (isFetching) {
+                        Modifier.pulseEffect(
+                          initialScale = 0.95f,
+                          targetScale = 2f,
+                          brush = SolidColor(infoColor)
+                        )
+                      } else {
+                        Modifier
+                      }
+                    )
+                )
+              }
+            ) {
+              Text(
+                if (isFetching) {
+                  "Searching for development servers..."
+                } else {
+                  "Fetch development servers"
+                }
+              )
             }
-          )
+          }
+
+          Divider()
 
           Accordion("Enter URL manually", initialState = false) {
-            val url = remember { mutableStateOf("") }
-
             Column {
               Spacer(Theme.spacing.tiny)
 
-              TextField(
-                url.value,
-                onValueChange = { newValue ->
-                  url.value = newValue
-                },
-                placeholder = "http://10.0.2.2:8081",
-                textStyle = Theme.typography.medium.font,
-                maxLines = 1,
-                modifier = Modifier
-                  .border(
-                    width = Theme.sizing.border.default,
-                    shape = RoundedCornerShape(Theme.sizing.borderRadius.small),
-                    color = Theme.colors.border.default
-                  )
-                  .padding(Theme.spacing.small),
-                keyboardOptions = KeyboardOptions(
-                  capitalization = KeyboardCapitalization.None,
-                  autoCorrectEnabled = false,
-                  keyboardType = KeyboardType.Uri
-                )
-              )
-
-              Spacer(Theme.spacing.tiny)
-
-              Button(
-                onClick = {
-                  onAction(HomeAction.OpenApp(url.value))
-                },
-                modifier = Modifier.fillMaxWidth()
-              ) {
-                Row(modifier = Modifier.padding(vertical = Theme.spacing.small)) {
-                  Text("Connect")
+              ServerUrlInput(
+                openApp = { urlValue ->
+                  onAction(HomeAction.OpenApp(urlValue))
                 }
-              }
+              )
 
               Spacer(Theme.spacing.small)
             }
@@ -213,7 +227,55 @@ fun HomeScreen(
         }
       }
 
-      Spacer(Theme.spacing.medium)
+      Spacer(Theme.spacing.large)
+
+      if (state.recentlyOpenedApps.isNotEmpty()) {
+        Row {
+          Spacer(Theme.spacing.small)
+
+          SectionHeader(
+            "Recently",
+            rightIcon = {
+              Row {
+                Button(onClick = {
+                  onAction(HomeAction.ResetRecentlyOpendApps)
+                }) {
+                  Text(
+                    "Reset",
+                    color = Theme.colors.text.secondary,
+                    fontSize = Theme.typography.small,
+                    fontWeight = FontWeight.Bold
+                  )
+                }
+
+                Spacer(Theme.spacing.small)
+              }
+            }
+          )
+        }
+
+        Spacer(Theme.spacing.small)
+
+        RoundedSurface {
+          Column {
+            for ((packager, isLast) in state.recentlyOpenedApps.withIsLast()) {
+              val url = packager.url
+              val description = packager.name
+
+              RunningAppCard(
+                appIp = url,
+                appName = description
+              ) {
+                onAction(HomeAction.OpenApp(url))
+              }
+
+              if (!isLast) {
+                Divider()
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -221,5 +283,20 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-  HomeScreen(state = HomeState(), onAction = {}, onProfileClick = {})
+  HomeScreen(
+    state = HomeState(
+      recentlyOpenedApps = listOf(
+        DevLauncherAppEntry(
+          timestamp = 1752249592809L,
+          name = "BareExpo",
+          url = "http://10.0.2.2:8081",
+          isEASUpdate = false,
+          updateMessage = null,
+          branchName = null
+        )
+      )
+    ),
+    onAction = {},
+    onProfileClick = {}
+  )
 }
