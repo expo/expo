@@ -22,6 +22,7 @@
 - [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix procedure scope no surviving app reloads. ([#38073](https://github.com/expo/expo/pull/38073) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 📚 3rd party library updates
 

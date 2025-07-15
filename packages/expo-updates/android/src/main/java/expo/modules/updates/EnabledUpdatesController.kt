@@ -276,7 +276,6 @@ class EnabledUpdatesController(
   }
 
   override fun shutdown() {
-    stateMachine.shutdown()
     controllerScope.cancel()
   }
 

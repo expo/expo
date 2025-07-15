@@ -59,7 +59,6 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
     OnDestroy {
       UpdatesController.removeUpdatesEventManagerObserver()
-      UpdatesController.instance.shutdown()
     }
 
     AsyncFunction("reload") Coroutine { ->
