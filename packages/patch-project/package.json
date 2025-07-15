@@ -46,6 +46,7 @@
     "memfs": "^3.2.0"
   },
   "dependencies": {
+    "@bacons/xcode": "1.0.0-alpha.24",
     "@expo/config": "~11.0.13",
     "@expo/config-plugins": "~10.1.2",
     "@expo/env": "~1.0.7",
