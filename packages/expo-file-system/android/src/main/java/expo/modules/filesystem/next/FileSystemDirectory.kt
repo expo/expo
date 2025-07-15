@@ -1,6 +1,7 @@
 package expo.modules.filesystem.next
 
 import android.net.Uri
+import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 import java.io.File
 
@@ -27,6 +28,33 @@ class FileSystemDirectory(file: File) : FileSystemPath(file) {
     validatePermission(Permission.READ)
     validateType()
     return file.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
+  }
+
+  fun info(): DirectoryInfo {
+    validateType()
+    validatePermission(Permission.READ)
+    if (!file.exists()) {
+      val directoryInfo = DirectoryInfo(
+        exists = false,
+        uri = slashifyFilePath(file.toURI().toString())
+      )
+      return directoryInfo
+    }
+
+    when {
+      file.toURI().scheme == "file" -> {
+        val directoryInfo = DirectoryInfo(
+          exists = true,
+          uri = slashifyFilePath(file.toURI().toString()),
+          files = file.listFiles()?.map { i -> i.name },
+          modificationTime = modificationTime,
+          creationTime = creationTime,
+          size = size
+        )
+        return directoryInfo
+      }
+      else -> throw UnableToGetInfoException("file schema ${file.toURI().scheme} is not supported")
+    }
   }
 
   fun create(options: CreateOptions = CreateOptions()) {

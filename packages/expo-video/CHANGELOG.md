@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- [iOS] Add complete support for AirPlay streaming. Add a device selection button and `VideoPlayer.isExternalPlaybackActive` property and appropriate listeners. ([#37207](https://github.com/expo/expo/pull/37207) by [@behenate](https://github.com/behenate))
+- Add fullscreen orientation and auto-exit functionality. ([#36910](https://github.com/expo/expo/pull/36910) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
+
 ### 💡 Others
+
+- Export types using the `export type` syntax. ([#37396](https://github.com/expo/expo/pull/37396) by [@behenate](https://github.com/behenate))
 
 ## 2.2.2 - 2025-06-18
 

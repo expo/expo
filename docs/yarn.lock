@@ -375,6 +375,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.17.9":
+  version: 7.27.6
+  resolution: "@babel/runtime@npm:7.27.6"
+  checksum: 10c0/89726be83f356f511dcdb74d3ea4d873a5f0cf0017d4530cb53aa27380c01ca102d573eff8b8b77815e624b1f8c24e7f0311834ad4fb632c90a770fda00bd4c8
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.25.9, @babel/template@npm:^7.3.3":
   version: 7.25.9
   resolution: "@babel/template@npm:7.25.9"
@@ -569,33 +576,64 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^2.3.6":
-  version: 2.3.6
-  resolution: "@expo/styleguide-search-ui@npm:2.3.6"
+"@expo/styleguide-search-ui@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "@expo/styleguide-search-ui@npm:3.1.3"
   dependencies:
-    "@expo/styleguide": "npm:^9.1.2"
+    "@expo/styleguide": "npm:^9.2.0"
     "@expo/styleguide-icons": "npm:^2.2.2"
+    "@kapaai/react-sdk": "npm:^0.3.0"
     "@sanity/client": "npm:^6.28.3"
     "@sanity/image-url": "npm:^1.1.0"
     cmdk: "npm:^0.2.1"
     lodash.groupby: "npm:^4.6.0"
+    markdown-to-jsx: "npm:^7.7.10"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/23df44e28607a1c18f0a4cc7bbc1f36b0d9d3c871c7859e642044a37e990b33df379493d32d42b975b33986b1899a744ed0781e6c5b184e2e6c36a6dbdf4a939
+  checksum: 10c0/0895c2f0bd21c1387388c927c6414d9fe6f316cc92530542c1830dd1c722b63e88b77e0fa8264104e9907e67807556980ce6b07c92146b1381dbe86b63cf8b03
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^9.1.2":
-  version: 9.1.2
-  resolution: "@expo/styleguide@npm:9.1.2"
+"@expo/styleguide@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "@expo/styleguide@npm:9.2.0"
   dependencies:
     "@expo/styleguide-base": "npm:^2.0.3"
     tailwind-merge: "npm:^2.5.4"
   peerDependencies:
     next: ">= 13"
     react: ">= 16"
-  checksum: 10c0/003936dbf97ff5af74adc802726295267ac003c44140ba3b8a1ff3fbcfed09f48cf1d6ba74d8491a9867c90b2245b61bb655e2e9527092340f808e3e302534b5
+  checksum: 10c0/585fa2e8e3cef5043a8b952ca6c87acb76dc186b365df99a42b6b9ebb2fa4d4598393deb883d9c4dff7e8464be4eb4ab5e4214db366a0b49787ff95e20a1e944
+  languageName: node
+  linkType: hard
+
+"@fingerprintjs/fingerprintjs-pro-react@npm:^2.6.3":
+  version: 2.7.0
+  resolution: "@fingerprintjs/fingerprintjs-pro-react@npm:2.7.0"
+  dependencies:
+    "@fingerprintjs/fingerprintjs-pro-spa": "npm:^1.3.2"
+    fast-deep-equal: "npm:3.1.3"
+  checksum: 10c0/8892e325885ba4d5a10ffc48764dc016dcff73c1fc356c9aff245fbdb48c17b5b99c74ad280017f6739d0f035e505ece0006ad74116fc947bcb7c6042591d6a5
+  languageName: node
+  linkType: hard
+
+"@fingerprintjs/fingerprintjs-pro-spa@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "@fingerprintjs/fingerprintjs-pro-spa@npm:1.3.2"
+  dependencies:
+    "@fingerprintjs/fingerprintjs-pro": "npm:^3.11.0"
+    tslib: "npm:^2.7.0"
+  checksum: 10c0/a53fb7be19fe04dcb9705bcbd790ff7a411864ab031044193292046cbd63ec1c80672ed67a5b5326eef0320af35f21853281294fca471148c25ceb1aca24b555
+  languageName: node
+  linkType: hard
+
+"@fingerprintjs/fingerprintjs-pro@npm:^3.11.0":
+  version: 3.11.11
+  resolution: "@fingerprintjs/fingerprintjs-pro@npm:3.11.11"
+  dependencies:
+    tslib: "npm:^2.4.1"
+  checksum: 10c0/1561bf86ecac3943d90379705fec9e0776e9d73ecacad66848c980b7923e0261ffce607742e26754c0bdc4678a3c8338a07cfbd0b5d05bfc2675d21035d05086
   languageName: node
   linkType: hard
 
@@ -663,6 +701,26 @@ __metadata:
   version: 0.2.8
   resolution: "@floating-ui/utils@npm:0.2.8"
   checksum: 10c0/a8cee5f17406c900e1c3ef63e3ca89b35e7a2ed645418459a73627b93b7377477fc888081011c6cd177cac45ec2b92a6cab018c14ea140519465498dddd2d3f9
+  languageName: node
+  linkType: hard
+
+"@hcaptcha/loader@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@hcaptcha/loader@npm:2.0.0"
+  checksum: 10c0/c69c8e62ccf41cc5cce8f25721b9bd8284e201da608022476dc6d69afbd70512a6f272dd2bfe558c4b5fdbc0ee20fb5f062033c4d556e6d523ecb2448203298f
+  languageName: node
+  linkType: hard
+
+"@hcaptcha/react-hcaptcha@npm:^1.12.0":
+  version: 1.12.0
+  resolution: "@hcaptcha/react-hcaptcha@npm:1.12.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.17.9"
+    "@hcaptcha/loader": "npm:^2.0.0"
+  peerDependencies:
+    react: ">= 16.3.0"
+    react-dom: ">= 16.3.0"
+  checksum: 10c0/58fddf7cbbeb1c9d784a90a4ee76604efd8d0c968d1d256f72d112d95c8d68bbb1255dd4184148e7e43e38491c5614b3747f4d17393a17d320e28935da47f8e8
   languageName: node
   linkType: hard
 
@@ -1205,6 +1263,22 @@ __metadata:
   version: 7.1.3
   resolution: "@jsdevtools/ono@npm:7.1.3"
   checksum: 10c0/a9f7e3e8e3bc315a34959934a5e2f874c423cf4eae64377d3fc9de0400ed9f36cb5fd5ebce3300d2e8f4085f557c4a8b591427a583729a87841fda46e6c216b9
+  languageName: node
+  linkType: hard
+
+"@kapaai/react-sdk@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@kapaai/react-sdk@npm:0.3.0"
+  dependencies:
+    "@fingerprintjs/fingerprintjs-pro-react": "npm:^2.6.3"
+    "@hcaptcha/react-hcaptcha": "npm:^1.12.0"
+    "@tanstack/react-query": "npm:^5.74.3"
+    js-cookie: "npm:^3.0.5"
+    tldts: "npm:^7.0.7"
+  peerDependencies:
+    react: ">=17.0.0"
+    react-dom: ">=17.0.0"
+  checksum: 10c0/5e68cbebcbe74940e1894e8b1d6e93f78dce45b7571556846ee07fbb8d91774b8fc60162548477aecddfb038caec2601f55a5ebcc34d7f91098f53aec5efe9ce
   languageName: node
   linkType: hard
 
@@ -2615,6 +2689,24 @@ __metadata:
   peerDependencies:
     tailwindcss: "*"
   checksum: 10c0/bd1a1d0ab06816afe129a49cb8a693b4f6ffe77748f5279f07ea29ea9fcb44ef24d1f8b1cfcffaf41dd9cb60065745897cbfc9dcabc57c8a60ceb89d594c97c6
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.82.0":
+  version: 5.82.0
+  resolution: "@tanstack/query-core@npm:5.82.0"
+  checksum: 10c0/8569830a34aad334842dec04338ddbb58a94a77ea7d75995486c4160d29cd1d4b2b4da6c6b82cdb2f8959096ab0b6b97736ade8a7868bfd9934decc0c4ce629f
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.74.3":
+  version: 5.82.0
+  resolution: "@tanstack/react-query@npm:5.82.0"
+  dependencies:
+    "@tanstack/query-core": "npm:5.82.0"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/c73f7974801e6be2833b6c85860c8c3ce86afbd581287497694f79f2d34f502abd7009b3bad141f56781a21cf071383429ae2110500c8d4f7fb5b57ae4fedb64
   languageName: node
   linkType: hard
 
@@ -5878,10 +5970,10 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.9.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^9.1.2"
+    "@expo/styleguide": "npm:^9.2.0"
     "@expo/styleguide-base": "npm:^2.0.3"
     "@expo/styleguide-icons": "npm:^2.2.2"
-    "@expo/styleguide-search-ui": "npm:^2.3.6"
+    "@expo/styleguide-search-ui": "npm:^3.1.3"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/mdx": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
@@ -5987,7 +6079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
+"fast-deep-equal@npm:3.1.3, fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: 10c0/40dedc862eb8992c54579c66d914635afbec43350afbbe991235fdcb4e3a8d5af1b23ae7e79bef7d4882d0ecee06c3197488026998fb19f72dc95acff1d1b1d0
@@ -7933,6 +8025,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-cookie@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "js-cookie@npm:3.0.5"
+  checksum: 10c0/04a0e560407b4489daac3a63e231d35f4e86f78bff9d792011391b49c59f721b513411cd75714c418049c8dc9750b20fcddad1ca5a2ca616c3aca4874cce5b3a
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -8530,6 +8629,15 @@ __metadata:
   version: 3.0.4
   resolution: "markdown-table@npm:3.0.4"
   checksum: 10c0/1257b31827629a54c24a5030a3dac952256c559174c95ce3ef89bebd6bff0cb1444b1fd667b1a1bb53307f83278111505b3e26f0c4e7b731e0060d435d2d930b
+  languageName: node
+  linkType: hard
+
+"markdown-to-jsx@npm:^7.7.10":
+  version: 7.7.10
+  resolution: "markdown-to-jsx@npm:7.7.10"
+  peerDependencies:
+    react: ">= 0.14.0"
+  checksum: 10c0/71dfdc91fde05f62e7db7bf23e6c67ac5c9d2d2be575689793a498c868db96c5082ca7aec582a93f8145c60bb9a2e5300705a9b00e05954dda7c15cc1499857a
   languageName: node
   linkType: hard
 
@@ -12278,6 +12386,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tldts-core@npm:^7.0.10":
+  version: 7.0.10
+  resolution: "tldts-core@npm:7.0.10"
+  checksum: 10c0/049f606c18707463366cfcb63d766dc5a4e68c94ba79bd86fce90a2a2187324ab44907a1ce114665f68774a579d10fa7fcc5c44111179f7b19c84fbb3474d9cf
+  languageName: node
+  linkType: hard
+
+"tldts@npm:^7.0.7":
+  version: 7.0.10
+  resolution: "tldts@npm:7.0.10"
+  dependencies:
+    tldts-core: "npm:^7.0.10"
+  bin:
+    tldts: bin/cli.js
+  checksum: 10c0/d94610130fdc6eca6d4516fe417fce2be863c8cd7aeaed3f144325244945516e756c82bd1398f9ffb062f55c059f63bbdfb591eca86e1d93afb81bc60dabd0a6
+  languageName: node
+  linkType: hard
+
 "tmpl@npm:1.0.5":
   version: 1.0.5
   resolution: "tmpl@npm:1.0.5"
@@ -12371,7 +12497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
+"tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.4.1, tslib@npm:^2.7.0, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62

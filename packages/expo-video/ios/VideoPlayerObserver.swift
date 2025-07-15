@@ -27,6 +27,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
   func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?)
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?)
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
+  func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool)
 }
 
 // Default implementations for the delegate
@@ -45,6 +46,7 @@ extension VideoPlayerObserverDelegate {
   func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {}
   func onLoadedPlayerItem(player: AVPlayer, playerItem: AVPlayerItem?) {}
   func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {}
+  func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool) {}
 }
 
 // Wrapper used to store WeakReferences to the observer delegate
@@ -120,6 +122,21 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     }
   }
 
+  private var isExternalPlaybackActive: Bool = false {
+    didSet {
+      guard let player else {
+        return
+      }
+      delegates.forEach { delegate in
+        delegate.value?.onIsExternalPlaybackActiveChanged(
+          player: player,
+          oldIsExternalPlaybackActive: oldValue,
+          newIsExternalPlaybackActive: isExternalPlaybackActive
+        )
+      }
+    }
+  }
+
   private var playerItemObserver: NSObjectProtocol?
   private var playerRateObserver: NSKeyValueObservation?
 
@@ -131,6 +148,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   private var playerIsMutedObserver: NSKeyValueObservation?
   private var playerAudioMixingModeObserver: NSKeyValueObservation?
   private var tracksObserver: NSKeyValueObservation?
+  private var playerExternalPlaybackObserver: NSKeyValueObservation?
 
   // Current player item observers
   private var playbackBufferEmptyObserver: NSKeyValueObservation?
@@ -189,6 +207,9 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playerCurrentItemObserver = player.observe(\.currentItem, options: [.initial, .new]) { [weak self] player, change in
       self?.onPlayerCurrentItemChanged(player, change)
     }
+    playerExternalPlaybackObserver = player.observe(\.isExternalPlaybackActive, changeHandler: { [weak self] player, change in
+      self?.onIsExternalPlaybackActiveChanged(player, change)
+    })
   }
 
   private func invalidatePlayerObservers() {
@@ -198,6 +219,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
     playerVolumeObserver?.invalidate()
     playerIsMutedObserver?.invalidate()
     playerCurrentItemObserver?.invalidate()
+    playerExternalPlaybackObserver?.invalidate()
   }
 
   private func initializeCurrentPlayerItemObservers(player: AVPlayer, playerItem: AVPlayerItem) {
@@ -462,6 +484,10 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
         delegate.value?.onIsMutedChanged(player: player, oldIsMuted: change.oldValue, newIsMuted: newIsMuted)
       }
     }
+  }
+
+  private func onIsExternalPlaybackActiveChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<Bool>) {
+    self.isExternalPlaybackActive = player.isExternalPlaybackActive
   }
 
   // MARK: - VideoSourceLoaderListener

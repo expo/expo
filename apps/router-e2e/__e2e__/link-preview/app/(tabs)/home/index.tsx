@@ -26,6 +26,17 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview: /home</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Spacer />
+      <Link href="/(tabs)/home/modal">Normal link: /(tabs)/home/modal</Link>
+      <Link href="/(tabs)/home/modal">
+        <Link.Trigger>Link.Preview: /(tabs)/home/modal</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/(tabs)/home/fullScreenModal">
+        <Link.Trigger>Link.Preview: /(tabs)/home/fullScreenModal</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Spacer />
       <Link href="/(tabs)/home/one">Normal link: /(tabs)/home/one</Link>
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Normal link with trigger: /(tabs)/home/one</Link.Trigger>
@@ -51,7 +62,6 @@ const HomeIndex = () => {
             <View style={{ width: 20, height: 20, backgroundColor: 'orange' }} />
             <Text>Multiple children</Text>
           </TouchableOpacity>
-          <Text>with asChild</Text>
         </Link.Trigger>
       </Link>
       <Link href="/(tabs)/home/one">
@@ -66,23 +76,58 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview 16:9: /(tabs)/home/one</Link.Trigger>
         <Link.Preview width={width} height={width * (9 / 16)} />
       </Link>
+      <Link href="/(tabs)/home/one">
+        <Link.Trigger>Link.Menu: /(tabs)/home/one</Link.Trigger>
+        <Link.Preview />
+        <Link.Menu title="Actions" icon="ellipsis">
+          <Link.MenuAction
+            title="Share"
+            icon="square.and.arrow.up"
+            onPress={() => {
+              console.log('Share Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Copy"
+            icon="doc.on.doc"
+            onPress={() => {
+              console.log('Copy Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Delete"
+            icon="trash"
+            onPress={() => {
+              console.log('Delete Pressed');
+            }}
+          />
+          <Link.Menu title="More" icon="ellipsis">
+            <Link.MenuAction
+              title="Submenu Item 1"
+              onPress={() => {
+                console.log('Submenu Item 1 Pressed');
+              }}
+            />
+            <Link.MenuAction
+              title="Submenu Item 2"
+              onPress={() => {
+                console.log('Submenu Item 2 Pressed');
+              }}
+            />
+          </Link.Menu>
+        </Link.Menu>
+      </Link>
+      <Spacer />
       <Link href={`/(tabs)/home/two?time=${time}`}>
         <Link.Trigger>/(tabs)/home/two?time={time}</Link.Trigger>
         <Link.Preview />
       </Link>
-      <Link href="/(tabs)/home/one">
-        <Link.Trigger>Link.Menu: /(tabs)/home/one</Link.Trigger>
-        <Link.Preview />
-        <Link.Menu>
-          <Link.MenuAction title="Share" onPress={() => {}} />
-          <Link.MenuAction title="Copy" onPress={() => {}} />
-          <Link.MenuAction title="Delete" onPress={() => {}} />
-        </Link.Menu>
-      </Link>
+      <Spacer />
       <Link href="/(tabs)/settings">
         <Link.Trigger>Link.Preview: /(tabs)/settings</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Spacer />
       <Link href="/(tabs)/home/slot/one">
         <Link.Trigger>Link.Preview: /(tabs)/home/slot/one</Link.Trigger>
         <Link.Preview />
@@ -90,5 +135,14 @@ const HomeIndex = () => {
     </View>
   );
 };
+
+const Spacer = () => (
+  <View
+    style={{
+      width: '100%',
+      height: 16,
+    }}
+  />
+);
 
 export default HomeIndex;

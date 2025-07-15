@@ -2,39 +2,39 @@ package expo.modules.devlauncher.compose
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import expo.modules.devlauncher.services.ApolloClientService
 import expo.modules.devlauncher.services.SessionService
+import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+
+data class Account(
+  val id: String,
+  val name: String,
+  val avatar: String?,
+  val isSelected: Boolean = false
+)
 
 sealed interface ProfileState {
-  data class Account(
-    val name: String,
-    val avatar: String?
-  )
-
   class LoggedIn(
-    val isLoading: Boolean = true,
     val accounts: List<Account> = emptyList()
   ) : ProfileState
 
+  object Fetching : ProfileState
   object LoggedOut : ProfileState
 }
 
 class ProfileViewModel : ViewModel() {
   sealed interface Action {
     class LogIn(val sessionSecret: String) : Action
+    class SwitchAccount(val account: Account) : Action
     object SignOut : Action
   }
 
-  val sessionSession = inject<SessionService>()
-  val apolloClientService = inject<ApolloClientService>()
+  val session = inject<SessionService>()
 
   private val _state = MutableStateFlow<ProfileState>(ProfileState.LoggedOut)
 
@@ -42,54 +42,40 @@ class ProfileViewModel : ViewModel() {
     get() = _state.asStateFlow()
 
   init {
-    sessionSession.session.onEach { newSession ->
-      if (newSession != null) {
-        fetchMe()
-        _state.update {
-          ProfileState.LoggedIn()
+    session.user.onEach { newUserState ->
+      when (newUserState) {
+        UserState.LoggedOut -> _state.update { ProfileState.LoggedOut }
+        UserState.Fetching -> _state.update { ProfileState.Fetching }
+        is UserState.LoggedIn -> _state.update {
+          ProfileState.LoggedIn(
+            accounts = newUserState.data.meUserActor?.accounts?.map { account ->
+              Account(
+                id = account.id,
+                name = account.name,
+                avatar = account.ownerUserActor?.profilePhoto,
+                isSelected = account.id == newUserState.selectedAccount?.id
+              )
+            } ?: emptyList()
+          )
         }
-      } else {
-        _state.update { ProfileState.LoggedOut }
       }
     }
       .launchIn(viewModelScope)
   }
 
-  private fun fetchMe() {
-    viewModelScope.launch(Dispatchers.IO) {
-      val me = apolloClientService.fetchMe()
-      _state.update { prevState ->
-        // User logged out in the meantime, we can ignore the result
-        if (prevState is ProfileState.LoggedOut) {
-          return@update prevState
-        }
-
-        val accounts = me.data?.meUserActor?.accounts?.map {
-          ProfileState.Account(
-            name = it.name,
-            avatar = it.ownerUserActor?.profilePhoto
-          )
-        } ?: emptyList()
-
-        ProfileState.LoggedIn(
-          isLoading = false,
-          accounts = accounts
-        )
-      }
-    }
-  }
-
   fun onAction(action: Action) {
     when (action) {
       is Action.LogIn -> {
-        sessionSession.setSession(
+        session.setSession(
           Session(action.sessionSecret)
         )
       }
 
       Action.SignOut -> {
-        sessionSession.setSession(null)
+        session.setSession(null)
       }
+
+      is Action.SwitchAccount -> session.switchAccount(action.account.id)
     }
   }
 }

@@ -1,7 +1,9 @@
 import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
     title: string;
+    icon?: string;
     id: string;
+    children?: React.ReactNode;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export type NativeLinkPreviewTriggerProps = ViewProps;
@@ -18,6 +20,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
     onPreviewWillClose?: () => void;
     onPreviewDidClose?: () => void;
     onPreviewTapped?: () => void;
+    onPreviewTappedAnimationCompleted?: () => void;
     children: React.ReactNode;
 }
 export declare function NativeLinkPreview(props: NativeLinkPreviewProps): import("react").JSX.Element | null;

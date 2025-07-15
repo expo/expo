@@ -63,4 +63,8 @@ object Typography {
     Font(R.font.inter_regular, FontWeight.Normal),
     Font(R.font.inter_semibold, FontWeight.SemiBold)
   )
+
+  val mono = FontFamily(
+    Font(R.font.robotomono_medium, FontWeight.Medium)
+  )
 }

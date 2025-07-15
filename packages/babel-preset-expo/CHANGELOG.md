@@ -13,9 +13,19 @@
 
 ### 💡 Others
 
+- Add fork of `@babel/transform-export-namespace-from` to preserve location of the transformed import/export statements ([#38042](https://github.com/expo/expo/pull/38042) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 13.2.3 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.2 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
 
 ## 13.2.1 - 2025-06-18
 

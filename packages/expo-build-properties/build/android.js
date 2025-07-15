@@ -98,6 +98,14 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.enableBundleCompression',
         propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
     },
+    {
+        propName: 'reactNativeArchitectures',
+        propValueGetter: (config) => config.android?.buildArchs?.join(','),
+    },
+    {
+        propName: 'exclusiveEnterpriseRepository',
+        propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`

@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
+class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPreviewModalDismissible {
   private var trigger: NativeLinkPreviewTrigger?
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
@@ -10,6 +10,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
 
   let onPreviewTapped = EventDispatcher()
+  let onPreviewTappedAnimationCompleted = EventDispatcher()
   let onWillPreviewOpen = EventDispatcher()
   let onDidPreviewOpen = EventDispatcher()
   let onPreviewWillClose = EventDispatcher()
@@ -21,11 +22,17 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
     self.interaction = UIContextMenuInteraction(delegate: self)
   }
 
+  // MARK: - LinkPreviewModalDismissable
+
+  func isDismissible() -> Bool {
+    return false
+  }
+
   // MARK: - Props
 
   func setNextScreenId(_ screenId: String) {
     self.nextScreenId = screenId
-      linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
+    linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
   }
 
   // MARK: - Children
@@ -137,9 +144,10 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
     willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionCommitAnimating
   ) {
-    linkPreviewNativeNavigation.pushPreloadedView()
+    self.onPreviewTapped()
     animator.addCompletion { [weak self] in
-      self?.onPreviewTapped()
+      self?.linkPreviewNativeNavigation.pushPreloadedView()
+      self?.onPreviewTappedAnimationCompleted()
     }
   }
 
@@ -159,17 +167,36 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   }
 
   private func createContextMenu() -> UIMenu {
-    let uiActions = actions.map { action in
-      return UIAction(
-        title: action.title
-      ) { _ in
-        self.onActionSelected([
-          "id": action.id
-        ])
-      }
+    if actions.count == 1, let menu = convertActionViewToUiAction(actions[0]) as? UIMenu {
+      return menu
     }
+    return UIMenu(
+      title: "",
+      children: actions.map { action in
+        self.convertActionViewToUiAction(action)
+      }
+    )
+  }
 
-    return UIMenu(title: "", children: uiActions)
+  private func convertActionViewToUiAction(_ action: LinkPreviewNativeActionView) -> UIMenuElement {
+    if !action.subActions.isEmpty {
+      let subActions = action.subActions.map { subAction in
+        self.convertActionViewToUiAction(subAction)
+      }
+      return UIMenu(
+        title: action.title,
+        image: action.icon.flatMap { UIImage(systemName: $0) },
+        children: subActions
+      )
+    }
+    return UIAction(
+      title: action.title,
+      image: action.icon.flatMap { UIImage(systemName: $0) }
+    ) { _ in
+      self.onActionSelected([
+        "id": action.id
+      ])
+    }
   }
 }
 

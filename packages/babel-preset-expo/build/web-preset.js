@@ -21,7 +21,7 @@ const defaultPlugins = [
     [require('@babel/plugin-transform-private-methods'), { loose }],
     [require('@babel/plugin-transform-private-property-in-object'), { loose }],
     [require('@babel/plugin-syntax-export-default-from')],
-    [require('@babel/plugin-transform-export-namespace-from')],
+    [require('./babel-plugin-transform-export-namespace-from')],
 ];
 module.exports = function (babel, options) {
     const extraPlugins = [];

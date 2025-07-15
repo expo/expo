@@ -179,6 +179,26 @@ export interface PluginConfigTypeAndroid {
    * @default false
    */
   buildFromSource?: boolean;
+  /**
+   * Override the default `reactNativeArchitectures` list of ABIs to build in **gradle.properties**.
+   *
+   * @see [Android documentation](https://developer.android.com/ndk/guides/abis) for more information.
+   *
+   * @example
+   * ```json
+   * ["arm64-v8a", "x86_64"]
+   * ```
+   *
+   * @default ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+   */
+  buildArchs?: string[];
+  /**
+   * Specifies a single Maven repository to be used as an exclusive mirror for all dependency resolution.
+   * When set, all other Maven repositories will be ignored and only this repository will be used to fetch dependencies.
+   *
+   * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
+   */
+  exclusiveMavenMirror?: string;
 }
 
 // @docsMissing
@@ -658,6 +678,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
+        buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
+        exclusiveMavenMirror: { type: 'string', nullable: true },
       },
       nullable: true,
     },

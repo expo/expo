@@ -81,6 +81,13 @@ export type VideoPlayerEvents = {
    * This event is emitted when the player has finished metadata for a [`VideoSource`](#videosource), but it doesn't mean that there is enough data buffered to start the playback.
    */
   sourceLoad(payload: SourceLoadEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the video player starts or stops sharing the video via AirPlay.
+   *
+   * @platform ios
+   */
+  isExternalPlaybackActiveChange(payload: IsExternalPlaybackActiveChangeEventPayload): void;
 };
 
 /**
@@ -310,4 +317,16 @@ type AvailableAudioTracksChangeEventPayload = {
    * Previous array of available audio tracks.
    */
   oldAvailableAudioTracks?: AudioTrack[];
+};
+
+export type IsExternalPlaybackActiveChangeEventPayload = {
+  /**
+   * The current external playback status.
+   */
+  isExternalPlaybackActive: boolean;
+
+  /**
+   * The previous external playback status.
+   */
+  oldIsExternalPlaybackActive?: boolean;
 };

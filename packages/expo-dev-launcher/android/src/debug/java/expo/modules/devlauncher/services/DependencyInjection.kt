@@ -1,7 +1,9 @@
 package expo.modules.devlauncher.services
 
 import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
+import expo.modules.devlauncher.DevLauncherController
 
 /**
  * Simple dependency injection container for DevLauncher.
@@ -11,35 +13,68 @@ object DependencyInjection {
   var wasInitialized: Boolean = false
     private set
 
+  var httpClientService: HttpClientService = HttpClientService()
+    private set
+
+  var imageLoaderService: ImageLoaderService? = null
+    private set
+
   var sessionService: SessionService? = null
     private set
 
-  var apolloClientService: ApolloClientService? = null
+  var apolloClientService: ApolloClientService = ApolloClientService(httpClientService)
     private set
 
-  fun init(context: Context) = synchronized(this) {
+  var devLauncherController: DevLauncherController? = null
+    private set
+
+  var packagerService: PackagerService = PackagerService(httpClientService)
+    private set
+
+  var appService: AppService = AppService()
+    private set
+
+  fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
     if (wasInitialized) {
       return
     }
 
     wasInitialized = true
 
-    val apolloClient = ApolloClientService()
+    this.devLauncherController = devLauncherController
 
-    apolloClientService = apolloClient
+    imageLoaderService = ImageLoaderService(
+      context = context.applicationContext,
+      httpClientService = httpClientService
+    )
 
     sessionService = SessionService(
       sessionStore = context.applicationContext.getSharedPreferences("expo.modules.devlauncher.session", Context.MODE_PRIVATE),
-      apolloClientService = apolloClient
+      apolloClientService = apolloClientService,
+      httpClientService = httpClientService
     )
   }
 }
 
-@Suppress("UNCHECKED_CAST")
-inline fun <reified T> ViewModel.inject(): T {
+@PublishedApi
+internal inline fun <reified T> injectService(): T {
   return when (T::class) {
     SessionService::class -> DependencyInjection.sessionService
     ApolloClientService::class -> DependencyInjection.apolloClientService
+    ImageLoaderService::class -> DependencyInjection.imageLoaderService
+    HttpClientService::class -> DependencyInjection.httpClientService
+    DevLauncherController::class -> DependencyInjection.devLauncherController
+    PackagerService::class -> DependencyInjection.packagerService
+    AppService::class -> DependencyInjection.appService
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
+}
+
+inline fun <reified T> ViewModel.inject(): T {
+  return injectService<T>()
+}
+
+@Composable
+inline fun <reified T> inject(): T {
+  return injectService<T>()
 }

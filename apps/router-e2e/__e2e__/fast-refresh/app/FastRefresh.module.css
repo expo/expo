@@ -1,0 +1,13 @@
+.container {
+    background-color: #888;
+    padding: 10px;
+    margin-top: auto;
+}
+
+.test {
+    color: red;
+}
+
+.green {
+    color: green;
+}

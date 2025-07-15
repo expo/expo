@@ -1,8 +1,8 @@
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useVideoPlayer, VideoAirPlayButton, VideoView } from 'expo-video';
 import React, { useCallback } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Platform, ScrollView, Text, View } from 'react-native';
 
 import { bigBuckBunnySource } from './videoSources';
 import { styles } from './videoStyles';
@@ -22,7 +22,7 @@ export default function VideoPlaybackControlsScreen() {
     player.loop = loop;
     player.preservesPitch = preservePitch;
     player.showNowPlayingNotification = false;
-    player.allowsExternalPlayback = false;
+    player.allowsExternalPlayback = true;
     player.play();
   });
 
@@ -99,6 +99,12 @@ export default function VideoPlaybackControlsScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        {Platform.OS === 'ios' && (
+          <View style={[styles.row, { alignItems: 'center', justifyContent: 'center' }]}>
+            <Text style={styles.mediumText}>Share video screen:</Text>
+            <VideoAirPlayButton style={{ width: 50, height: 50 }} tint="green" activeTint="red" />
+          </View>
+        )}
       </ScrollView>
     </View>
   );

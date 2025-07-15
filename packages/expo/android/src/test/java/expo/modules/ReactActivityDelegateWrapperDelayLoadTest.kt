@@ -135,7 +135,7 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
     verify(exactly = 0) { spyDelegate.onResume() }
 
     callbackSlot.captured.run()
-    verify(exactly = 2) { spyDelegateWrapper.onResume() }
+    verify(exactly = 1) { spyDelegateWrapper.onResume() }
     verify(exactly = 1) { spyDelegate.onResume() }
     verify(exactly = 0) { spyDelegateWrapper.onPause() }
     verify(exactly = 0) { spyDelegateWrapper.onDestroy() }
@@ -171,60 +171,6 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
     verify(exactly = 1) { spyDelegateWrapper.onDestroy() }
     verify(exactly = 1) { spyDelegate.onPause() }
     verify(exactly = 1) { spyDelegate.onDestroy() }
-  }
-
-  @Test
-  fun `should cancel pending resume if activity pause before delay load finished`() = runTest {
-    every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithDelay)
-
-    val callbackSlot = slot<Runnable>()
-    every { delayLoadAppHandler.whenReady(capture(callbackSlot)) } answers {
-      // Don't call the callback immediately to simulate delay
-    }
-
-    activityController = Robolectric.buildActivity(MockActivity::class.java)
-      .also {
-        val activity = it.get()
-        (activity.application as MockApplication).bindCurrentActivity(activity)
-      }
-      .setup()
-    val spyDelegateWrapper = activity.reactActivityDelegate as ReactActivityDelegateWrapper
-    val spyDelegate = spyDelegateWrapper.delegate
-
-    verify(exactly = 1) { spyDelegateWrapper.onCreate(any()) }
-    verify(exactly = 1) { spyDelegateWrapper.onResume() }
-    verify(exactly = 0) { spyDelegate.onResume() }
-
-    activityController.pause()
-    callbackSlot.captured.run()
-    verify(exactly = 0) { spyDelegate.onResume() }
-  }
-
-  @Test
-  fun `should cancel pending resume if activity stop before delay load finished`() = runTest {
-    every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithDelay)
-
-    val callbackSlot = slot<Runnable>()
-    every { delayLoadAppHandler.whenReady(capture(callbackSlot)) } answers {
-      // Don't call the callback immediately to simulate delay
-    }
-
-    activityController = Robolectric.buildActivity(MockActivity::class.java)
-      .also {
-        val activity = it.get()
-        (activity.application as MockApplication).bindCurrentActivity(activity)
-      }
-      .setup()
-    val spyDelegateWrapper = activity.reactActivityDelegate as ReactActivityDelegateWrapper
-    val spyDelegate = spyDelegateWrapper.delegate
-
-    verify(exactly = 1) { spyDelegateWrapper.onCreate(any()) }
-    verify(exactly = 1) { spyDelegateWrapper.onResume() }
-    verify(exactly = 0) { spyDelegate.onResume() }
-
-    activityController.pause().stop()
-    callbackSlot.captured.run()
-    verify(exactly = 0) { spyDelegate.onResume() }
   }
 
   @Test

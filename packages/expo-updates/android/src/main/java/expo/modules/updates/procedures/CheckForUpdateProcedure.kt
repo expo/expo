@@ -14,10 +14,8 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.CancellationException
 import org.json.JSONObject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 class CheckForUpdateProcedure(
   private val context: Context,
@@ -52,25 +50,12 @@ class CheckForUpdateProcedure(
     }
   }
 
-  private suspend fun downloadRemoteUpdate(extraHeaders: JSONObject) = suspendCancellableCoroutine { continuation ->
-
-    val callback = object : FileDownloader.RemoteUpdateDownloadCallback {
-      override fun onFailure(e: Exception) {
-        if (continuation.isActive) {
-          continuation.resumeWithException(e)
-        }
-      }
-
-      override fun onSuccess(updateResponse: UpdateResponse) {
-        if (continuation.isActive) {
-          continuation.resume(updateResponse)
-        }
-      }
-    }
-    fileDownloader.downloadRemoteUpdate(extraHeaders, callback)
-
-    continuation.invokeOnCancellation {
+  private suspend fun downloadRemoteUpdate(extraHeaders: JSONObject): UpdateResponse {
+    try {
+      return fileDownloader.downloadRemoteUpdate(extraHeaders)
+    } catch (e: CancellationException) {
       updatesLogger.info("Download cancelled for remote update check")
+      throw e
     }
   }
 
