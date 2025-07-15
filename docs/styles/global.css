@@ -37,7 +37,7 @@ code {
 }
 
 [cmdk-input] {
-  outline: none;
+  outline: none !important;
 }
 
 /* Collapsible */
