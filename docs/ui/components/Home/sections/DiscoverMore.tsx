@@ -15,11 +15,7 @@ export function DiscoverMore() {
         description="Try out Expo in minutes and learn how to get the most out of Expo."
       />
       <GridContainer>
-        <GridCell
-          className={mergeClasses(
-            'border-palette-orange6 bg-palette-orange3 selection:bg-palette-orange5',
-            'dark:border-palette-orange7 dark:bg-palette-orange4 dark:selection:bg-palette-orange6'
-          )}>
+        <GridCell className="bg-gradient-to-br from-subtle from-30% to-palette-orange3">
           <SnackImage />
           <RawH3 className="!font-bold !text-palette-orange11">Try Expo in your browser</RawH3>
           <P className="max-w-[24ch] !text-xs !text-palette-orange11">
@@ -36,7 +32,7 @@ export function DiscoverMore() {
             Create a Snack
           </HomeButton>
         </GridCell>
-        <GridCell className="border-palette-green6 bg-palette-green3 selection:bg-palette-green5">
+        <GridCell className="bg-gradient-to-br from-subtle from-30% to-palette-green3">
           <WhyImage />
           <RawH3 className="!font-bold !text-palette-green11">Frequently Asked Questions</RawH3>
           <P className="max-w-[36ch] !text-xs !text-palette-green11">
@@ -49,11 +45,7 @@ export function DiscoverMore() {
             Read FAQ
           </HomeButton>
         </GridCell>
-        <GridCell
-          className={mergeClasses(
-            'border-palette-yellow6 bg-palette-yellow3 selection:bg-palette-yellow5',
-            'dark:border-palette-yellow7 dark:bg-palette-yellow4'
-          )}>
+        <GridCell className="bg-gradient-to-br from-subtle from-30% to-palette-yellow3">
           <OfficeHoursImage />
           <RawH3 className="!font-bold !text-palette-yellow11">Join us for Office Hours</RawH3>
           <P className="max-w-[28ch] !text-xs !text-palette-yellow11">
@@ -66,7 +58,7 @@ export function DiscoverMore() {
             Go to Discord
           </HomeButton>
         </GridCell>
-        <GridCell className="border-palette-blue6 bg-palette-blue3 selection:bg-palette-blue5">
+        <GridCell className="bg-gradient-to-br from-subtle from-30% to-palette-blue3">
           <div className="absolute bottom-6 right-6 rounded-full bg-palette-blue5 p-4">
             <DiscordIcon className="size-12 text-palette-blue9 dark:text-palette-blue9" />
           </div>
