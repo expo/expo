@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed patches applying error when there were changed spaces. ([#38060](https://github.com/expo/expo/pull/38060) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.2.10 — 2025-07-15
