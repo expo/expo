@@ -35,7 +35,8 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       AppController.removeUpdatesEventManagerObserver()
     }
 
-    AsyncFunction("reload") { (promise: Promise) in
+    AsyncFunction("reload") { (options: ReloadScreenOptions?, promise: Promise) in
+      ReloadScreenManager.shared.setConfiguration(options)
       AppController.sharedInstance.requestRelaunch {
         promise.resolve(nil)
       } error: { error in
@@ -144,6 +145,19 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { (configOverride: UpdatesConfigOverrideParam?) in
       try AppController.sharedInstance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigOverride())
     }
+
+    AsyncFunction("showReloadScreen") { (options: ReloadScreenOptions?) in
+#if DEBUG
+      ReloadScreenManager.shared.setConfiguration(options)
+      ReloadScreenManager.shared.show()
+#endif
+    }.runOnQueue(.main)
+
+    AsyncFunction("hideReloadScreen") {
+#if DEBUG
+      ReloadScreenManager.shared.hide()
+#endif
+    }.runOnQueue(.main)
   }
 
   public func onStateMachineContextEvent(context: UpdatesStateContext) {
