@@ -35,7 +35,7 @@ Sometimes, it makes sense to build a UI to allow the user to set other localizat
 
 Both Android and iOS allow users to choose a preferred language for individual apps via the system settings. To support this feature, your app must declare its supported locales to the system.
 
-To do so, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and define the `extra.supportedLocales` property in the app config:
+To do so, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and pass the `supportedLocales` property to the `expo-localization` config plugin:
 
 ```json app.json
 {
