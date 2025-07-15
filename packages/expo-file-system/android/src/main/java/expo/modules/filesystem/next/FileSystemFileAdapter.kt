@@ -15,6 +15,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
   val singleDocumentFile: DocumentFile? by lazy {
     DocumentFile.fromSingleUri(context, uri)
   }
+
   // TODO:// consider adding the domain check here check here
   val isContentURI = uri.scheme == "content"
 
@@ -53,7 +54,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
   fun createFile(mimeType: String, displayName: String): FileSystemFileAdapter? {
     if (isContentURI) {
       val documentFile = treeDocumentFile?.createFile(mimeType, displayName)
-      if(documentFile != null) {
+      if (documentFile != null) {
         return FileSystemFileAdapter(context, documentFile.uri)
       }
     } else {
@@ -62,13 +63,13 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
       childFile.createNewFile()
       return FileSystemFileAdapter(context, childFile.toUri())
     }
-    return null;
+    return null
   }
 
   fun createDirectory(displayName: String): FileSystemFileAdapter? {
     if (isContentURI) {
       val documentFile = treeDocumentFile?.createDirectory(displayName)
-      if(documentFile != null) {
+      if (documentFile != null) {
         return FileSystemFileAdapter(context, documentFile.uri)
       }
     } else {
@@ -77,7 +78,7 @@ class FileSystemFileAdapter(val context: Context, val uri: Uri) {
       childFile.mkdir()
       return FileSystemFileAdapter(context, childFile.toUri())
     }
-    return null;
+    return null
   }
 
   fun delete(): Boolean {

@@ -38,7 +38,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     validateType()
     validatePermission(Permission.WRITE)
     validateCanCreate(options)
-    if(isContentURI) {
+    if (isContentURI) {
       throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
     } else {
       if (options.overwrite && exists) {

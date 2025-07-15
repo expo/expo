@@ -79,7 +79,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   }
 
   fun checkPermission(permission: Permission): Boolean {
-    if(file.isContentURI) {
+    if (file.isContentURI) {
       // TODO: Consider adding a check for content URIs (not in legacy FS)
       return true
     }

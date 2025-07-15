@@ -1,11 +1,8 @@
 package expo.modules.filesystem.next
 
-import android.content.Context
 import android.net.Uri
 import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
-import java.io.File
-import java.net.URI
 
 class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun validatePath() {
@@ -13,9 +10,9 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   override fun validateType() {
-      if (file.exists() == true && !file.isDirectory) {
-        throw InvalidTypeFolderException()
-      }
+    if (file.exists() == true && !file.isDirectory) {
+      throw InvalidTypeFolderException()
+    }
   }
 
   val exists: Boolean get() {
@@ -91,12 +88,12 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
     validateType()
     validatePermission(Permission.READ)
     return file.listFiles().map {
-        val uriString = it.uri.toString()
-        mapOf(
-          "isDirectory" to it.isDirectory,
-          "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
-        )
-      }
+      val uriString = it.uri.toString()
+      mapOf(
+        "isDirectory" to it.isDirectory,
+        "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
+      )
+    }
   }
 
   fun asString(): String {
