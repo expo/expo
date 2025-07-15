@@ -9,8 +9,6 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem@next';
 
 export async function test({ describe, expect, it, ...t }) {
-  const only = it;
-  // it = () => {};
   const testDirectory = FS.documentDirectory + 'tests/';
   t.beforeEach(async () => {
     try {
@@ -49,7 +47,7 @@ export async function test({ describe, expect, it, ...t }) {
         // });
       });
     } else {
-      only('Supports some operations on SAF picker files', async () => {
+      it('Supports some operations on SAF picker files', async () => {
         const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
         if (!saf.granted) {
           throw new Error();
@@ -283,7 +281,7 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.text()).toBe('');
       });
 
-      only('Deletes a folder', () => {
+      it('Deletes a folder', () => {
         const folder = new Directory(testDirectory, 'newFolder');
         folder.create();
         expect(folder.exists).toBe(true);

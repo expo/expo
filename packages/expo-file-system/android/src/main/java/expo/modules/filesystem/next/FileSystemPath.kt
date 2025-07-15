@@ -12,8 +12,8 @@ import kotlin.io.path.moveTo
 
 abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   val javaFile get() = File(URI.create(uri.toString()))
-  val file: FileSystemFileAdapter by lazy {
-    FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), uri)
+  val file: FileSystemFileAdapter get() {
+    return FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), uri)
   }
   val isContentURI = uri.scheme == "content"
 
