@@ -27,6 +27,7 @@
 - Fix web modal styling ([#38040](https://github.com/expo/expo/pull/38040) by [@Ubax](https://github.com/Ubax))
 - fix(web): fitToContents modal support on desktop, aligned default styles more with iOS ([#38028](https://github.com/expo/expo/pull/38028) by [@hirbod](https://github.com/hirbod))
 - fix navigation from preview to modal ([#37832](https://github.com/expo/expo/pull/37832) by [@Ubax](https://github.com/Ubax))
+- Unhandled rejections due to missing SplashModule internal functions in Expo Go ([#38045](https://github.com/expo/expo/pull/38045)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
