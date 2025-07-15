@@ -37,16 +37,6 @@ Both Android and iOS allow users to choose a preferred language for individual a
 
 To do so, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and pass the `supportedLocales` property to the `expo-localization` config plugin:
 
-```json app.json
-{
-  "expo": {
-    "extra": {
-      "supportedLocales": ["en", "ja"]
-    },
-    "plugins": ["expo-localization"]
-  }
-}
-```
 
 If you need to specify different locale values for Android and iOS, use the `supportedLocales.ios` and `supportedLocales.android` fields:
 
