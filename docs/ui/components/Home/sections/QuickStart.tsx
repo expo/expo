@@ -1,13 +1,12 @@
-import { RouterLogo, mergeClasses } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
-import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { Cloud01DuotoneIcon } from '@expo/styleguide-icons/duotone/Cloud01DuotoneIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 
 import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
-import { H1, RawH2, CALLOUT, A, P } from '~/ui/components/Text';
+import { H1, CALLOUT, A, P } from '~/ui/components/Text';
 
 export function QuickStart() {
   return (
@@ -104,64 +103,6 @@ export function QuickStart() {
               </CALLOUT>
             </div>
           </div>
-        </GridCell>
-        <GridCell
-          className={mergeClasses(
-            'relative z-0 min-h-[158px] bg-subtle bg-gradient-to-br from-subtle from-30% to-palette-pink3',
-            'selection:bg-palette-pink5',
-            'max-md-gutters:min-h-[200px]'
-          )}>
-          <RouterLogo
-            className={mergeClasses(
-              'absolute -bottom-20 -left-24 size-[340px] rotate-[20deg] opacity-[0.12]',
-              'stroke-palette-pink7 stroke-[0.01rem] text-palette-pink7'
-            )}
-          />
-          <RouterLogo
-            className={mergeClasses(
-              'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-3',
-              'border-palette-pink5 bg-palette-pink4 stroke-palette-pink8 stroke-[0.01rem] text-palette-pink8'
-            )}
-          />
-          <RawH2 className="relative z-10 max-w-[32ch] !text-lg !text-palette-pink11">
-            Discover the benefits of file-based routing with Expo Router
-          </RawH2>
-          <HomeButton
-            className="border-palette-pink10 bg-palette-pink10 hocus:bg-palette-pink9 dark:text-palette-pink2"
-            href="/router/introduction/"
-            size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-pink2" />}>
-            Learn more
-          </HomeButton>
-        </GridCell>
-        <GridCell
-          className={mergeClasses(
-            'relative z-0 min-h-[158px] bg-subtle bg-gradient-to-br from-subtle from-30% to-palette-orange3',
-            'selection:bg-palette-orange5',
-            'max-md-gutters:min-h-[200px]'
-          )}>
-          <PlanEnterpriseIcon
-            className={mergeClasses(
-              'absolute -bottom-12 -left-20 size-[350px] rotate-[40deg] opacity-[0.12]',
-              'text-palette-orange7'
-            )}
-          />
-          <PlanEnterpriseIcon
-            className={mergeClasses(
-              'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-2',
-              'border-palette-orange5 bg-palette-orange4 text-palette-orange8'
-            )}
-          />
-          <RawH2 className="relative z-10 max-w-[22ch] !text-lg !text-palette-orange11">
-            Speed up your development with Expo Application Services
-          </RawH2>
-          <HomeButton
-            className="border-palette-orange10 bg-palette-orange10 hocus:bg-palette-orange9 dark:text-palette-orange2"
-            href="/tutorial/eas/introduction/"
-            size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-orange2" />}>
-            <span className="max-sm-gutters:hidden">Start&nbsp;</span>EAS Tutorial
-          </HomeButton>
         </GridCell>
       </GridContainer>
     </>
