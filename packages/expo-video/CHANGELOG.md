@@ -13,6 +13,7 @@
 
 - [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
+- [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

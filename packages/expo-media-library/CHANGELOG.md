@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix tvOS compilation errors. ([#38085](https://github.com/expo/expo/pull/38085) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 17.1.7 - 2025-06-04
