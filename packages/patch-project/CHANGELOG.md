@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed running error on SDK 53. ([#37923](https://github.com/expo/expo/pull/37923) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.2.10 — 2025-07-15
+
+### 🐛 Bug fixes
+
+- Fixed running error on SDK 53. ([#37923](https://github.com/expo/expo/pull/37923) by [@kudo](https://github.com/kudo))
 
 ## 0.2.9 — 2025-07-03
 
