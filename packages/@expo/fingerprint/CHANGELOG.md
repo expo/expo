@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 0.13.4 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Added support for ignoring the patches directory ([#37702](https://github.com/expo/expo/pull/37702) by [@huextrat](https://github.com/huextrat))
+- Fixed unstable fingerprint from packages with native binaries like `sharp`. ([#37733](https://github.com/expo/expo/pull/37733) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `sharp@~0.32.0`. ([#37758](https://github.com/expo/expo/pull/37758) by [@kudo](https://github.com/kudo))
+
 ## 0.13.1 - 2025-06-18
 
 ### 🐛 Bug fixes

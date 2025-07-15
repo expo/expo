@@ -19,6 +19,8 @@ struct Button: ExpoSwiftUI.View {
           } else {
             Text(text)
           }
+        } else if let systemImage = props.systemImage {
+          Image(systemName: systemImage)
         } else {
           Children()
         }
@@ -59,9 +61,14 @@ struct Button: ExpoSwiftUI.View {
 
     if #available(iOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
-      button.if(props.variant == .glass, {
-        $0.buttonStyle(.glass)
-      })
+      switch props.variant {
+      case .glass:
+        button.buttonStyle(.glass)
+      case .glassProminent:
+        button.buttonStyle(.glassProminent)
+      default:
+        button
+      }
       #else
       button
       #endif

@@ -80,7 +80,10 @@ class AudioModule : Module() {
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
           if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
             players.values.forEach { player ->
-              player.ref.volume /= 2f
+              if (player.previousVolume != player.ref.volume) {
+                player.previousVolume = player.ref.volume
+              }
+              player.ref.volume = player.previousVolume * 0.5f
             }
           } else {
             players.values.forEach { player ->
@@ -123,7 +126,7 @@ class AudioModule : Module() {
           AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
         }
       } ?: AudioManager.AUDIOFOCUS_GAIN
-      val audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
+      audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
         setAudioAttributes(
           AudioAttributes.Builder()
             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -149,6 +152,10 @@ class AudioModule : Module() {
   }
 
   private fun releaseAudioFocus() {
+    if (!focusAcquired) {
+      return
+    }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       audioFocusRequest?.let {
         audioManager.abandonAudioFocusRequest(it)
@@ -215,7 +222,11 @@ class AudioModule : Module() {
 
     OnActivityEntersForeground {
       if (!staysActiveInBackground) {
-        requestAudioFocus()
+        val hasPlayersToResume = players.values.any { it.isPaused }
+        if (hasPlayersToResume) {
+          requestAudioFocus()
+        }
+
         players.values.forEach { player ->
           if (player.isPaused) {
             player.isPaused = false
@@ -258,6 +269,11 @@ class AudioModule : Module() {
             mediaSource,
             updateInterval
           )
+          player.onPlaybackStateChange = { isPlaying ->
+            if (!isPlaying && shouldReleaseFocus()) {
+              releaseAudioFocus()
+            }
+          }
           players[player.id] = player
           player
         }
@@ -371,10 +387,6 @@ class AudioModule : Module() {
       Function("pause") { player: AudioPlayer ->
         runOnMain {
           player.ref.pause()
-
-          if (shouldReleaseFocus()) {
-            releaseAudioFocus()
-          }
         }
       }
 
@@ -402,8 +414,8 @@ class AudioModule : Module() {
         }
       }
 
-      AsyncFunction("seekTo") { player: AudioPlayer, seekTime: Double ->
-        player.ref.seekTo((seekTime * 1000L).toLong())
+      AsyncFunction("seekTo") { player: AudioPlayer, seekTime: Double, _: Double?, _: Double? ->
+        player.seekTo(seekTime)
       }.runOnQueue(Queues.MAIN)
 
       Function("setPlaybackRate") { player: AudioPlayer, rate: Float ->
@@ -415,12 +427,7 @@ class AudioModule : Module() {
       }
 
       Function("remove") { player: AudioPlayer ->
-        val wasPlaying = player.ref.isPlaying
         players.remove(player.id)
-
-        if (wasPlaying && shouldReleaseFocus()) {
-          releaseAudioFocus()
-        }
       }
     }
 

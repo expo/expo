@@ -12,7 +12,17 @@
 
 ### 💡 Others
 
-- Change the `global.expo` polyfill to work with package exports and be more explicit. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
+- Change the `global.expo` polyfill to work with package exports and be more explicit. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
+- add experimental link preview ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
+- Add ExpoFont to ignorelist. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+
+## 53.0.9 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.8 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
 
 ## 53.0.7 - 2025-06-06
 

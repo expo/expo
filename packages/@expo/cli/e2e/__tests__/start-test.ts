@@ -169,8 +169,10 @@ describe('start - dev clients', () => {
     },
   });
 
+  let projectRoot: string;
+
   beforeAll(async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank');
+    projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank');
     expo.options.cwd = projectRoot;
 
     // Add a `.env` file with `TEST_SCHEME`
@@ -191,6 +193,9 @@ describe('start - dev clients', () => {
   });
   afterAll(async () => {
     await expo.stopAsync();
+    // Remove app.config.js and .env files
+    await fs.promises.unlink(path.join(projectRoot, 'app.config.js'));
+    await fs.promises.unlink(path.join(projectRoot, '.env'));
   });
 
   it('runs `npx expo start` in dev client mode, using environment variable from .env', async () => {

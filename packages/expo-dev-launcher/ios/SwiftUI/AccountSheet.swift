@@ -7,93 +7,118 @@ struct AccountSheet: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
 
   var body: some View {
-    VStack(spacing: 24) {
-      HStack(spacing: 8) {
-        Text("Account")
-          .font(.title)
-          .fontWeight(.semibold)
-        Spacer()
-        Image(systemName: "xmark")
-          .onTapGesture {
-            dismiss()
+    ScrollView {
+      VStack(spacing: 0) {
+        accountScreenHeader
+
+        Spacer(minLength: 16)
+
+        VStack(spacing: 0) {
+          if viewModel.isAuthenticated {
+            userAccountSelector
+          } else {
+            loginSignupCard
           }
-      }
+        }
+        .padding(.horizontal, 16)
 
-      if viewModel.isAuthenticated {
-        authenticated
-      } else {
-        unauthenticated
+        Spacer()
       }
-
-      Spacer()
     }
-    .padding()
     .background(Color(.systemGroupedBackground))
   }
 
-  private var authenticated: some View {
+  private var accountScreenHeader: some View {
+    VStack(spacing: 8) {
+      HStack {
+        Text("Account")
+          .font(.title2)
+          .fontWeight(.semibold)
+
+        Spacer()
+
+        Button {
+          dismiss()
+        }
+        label: {
+          Image(systemName: "xmark")
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.primary)
+            .frame(width: 44, height: 44)
+        }
+      }
+      .padding(.horizontal, 16)
+      .padding(.top, 8)
+    }
+  }
+
+  private var userAccountSelector: some View {
     VStack(spacing: 16) {
-      VStack(spacing: 8) {
-        createAvatar()
-        Text(viewModel.userInfo?["username"] as? String ?? "user@example.com")
+      if let userData = viewModel.user, !userData.accounts.isEmpty {
+        VStack(spacing: 0) {
+          ForEach(Array(userData.accounts.enumerated()), id: \.element.id) { index, account in
+            accountRow(account: account)
+            if index < userData.accounts.count - 1 {
+              Divider()
+            }
+          }
+        }
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+      }
+
+      Button {
+        viewModel.signOut()
+      }
+      label: {
+        Text("Log Out")
           .font(.headline)
+          .fontWeight(.bold)
+          .foregroundColor(.white)
+          .frame(maxWidth: .infinity)
+          .padding(.vertical, 12)
       }
-      signOutButton
+      .background(Color.black)
+      .cornerRadius(8)
     }
   }
 
-  private var unauthenticated: some View {
-    VStack(alignment: .leading, spacing: 15) {
+  private var loginSignupCard: some View {
+    VStack(spacing: 16) {
       Text("Log in or create an account to view local development servers and more.")
+        .font(.system(size: 14))
         .foregroundColor(.secondary)
-        .font(.caption)
+        .multilineTextAlignment(.leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
 
-      signInButton
-      signUpButton
-    }
-    .padding()
-    .background(Color.white)
-    .cornerRadius(10)
-  }
-
-  @ViewBuilder
-  func createAvatar() -> some View {
-    if let profilePhotoURL = viewModel.userInfo?["profilePhoto"] as? String,
-      let url = URL(string: profilePhotoURL) {
-      AsyncImage(url: url) { image in
-        image
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-      } placeholder: {
-        Image(systemName: "person.circle.fill")
-          .font(.system(size: 60))
-          .foregroundColor(.blue)
+      VStack(spacing: 8) {
+        signInButton
+        signUpButton
       }
-      .frame(width: 60, height: 60)
-      .clipShape(Circle())
-    } else {
-      Image(systemName: "person.circle.fill")
-        .font(.system(size: 60))
-        .foregroundColor(.blue)
+
+      if viewModel.isAuthenticating {
+        ProgressView()
+          .scaleEffect(0.8)
+      }
     }
+    .padding(16)
+    .background(Color(.systemBackground))
+    .cornerRadius(12)
   }
 
   private var signInButton: some View {
     Button {
-      viewModel.signIn()
-    } label: {
-      HStack {
-        if viewModel.isAuthenticating {
-          ProgressView()
-            .scaleEffect(0.8)
-            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-        }
-        Text(viewModel.isAuthenticating ? "Signing In..." : "Log In")
-          .font(.headline)
-          .foregroundColor(.white)
+      Task {
+        await viewModel.signIn()
       }
-      .frame(maxWidth: .infinity)
-      .padding(.vertical, 12)
+    }
+    label: {
+      Text("Log In")
+        .font(.headline)
+        .fontWeight(.semibold)
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
     }
     .background(Color.black)
     .cornerRadius(8)
@@ -102,41 +127,100 @@ struct AccountSheet: View {
 
   private var signUpButton: some View {
     Button {
-      viewModel.signUp()
-    } label: {
-      HStack {
-        if viewModel.isAuthenticating {
-          ProgressView()
-            .scaleEffect(0.8)
-            .progressViewStyle(CircularProgressViewStyle(tint: .black))
-        }
-        Text(viewModel.isAuthenticating ? "Signing Up..." : "Sign Up")
-          .font(.headline)
-          .foregroundColor(.black)
+      Task {
+        await viewModel.signUp()
       }
-      .frame(maxWidth: .infinity)
-      .padding(.vertical, 12)
     }
-    .background(Color.gray.opacity(0.2))
+    label: {
+      Text("Sign Up")
+        .font(.headline)
+        .fontWeight(.semibold)
+        .foregroundColor(.black)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+    }
+    .background(Color(.systemGray5))
     .cornerRadius(8)
     .disabled(viewModel.isAuthenticating)
   }
 
-  private var signOutButton: some View {
+  private func accountRow(account: UserAccount) -> some View {
     Button {
-      viewModel.signOut()
-    } label: {
-      Text("Sign Out")
-        .font(.headline)
-        .foregroundColor(.white)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+      viewModel.selectAccount(accountId: account.id)
     }
-    .background(Color.red)
-    .cornerRadius(8)
-  }
-}
+    label: {
+      HStack(spacing: 12) {
+        createAvatar(account: account)
 
-#Preview {
-  AccountSheet()
+        VStack(alignment: .leading, spacing: 2) {
+          Text(account.ownerUserActor?.username ?? account.name)
+            .font(.headline)
+            .foregroundColor(.primary)
+            .multilineTextAlignment(.leading)
+        }
+
+        Spacer()
+
+        if viewModel.selectedAccountId == account.id {
+          Image(systemName: "checkmark")
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.gray)
+        }
+      }
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
+      .background(Color(.systemBackground))
+    }
+    .buttonStyle(PlainButtonStyle())
+  }
+
+  @ViewBuilder
+  private func createAvatar(account: UserAccount) -> some View {
+    let isOrganization = account.ownerUserActor == nil
+    let profilePhoto = account.ownerUserActor?.profilePhoto
+    let name = account.ownerUserActor?.fullName ?? account.name
+
+    if isOrganization {
+      let color = getAvatarColor(for: String(name.first ?? "o"))
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 32, height: 32)
+        .overlay(
+          Image(systemName: "building.2")
+            .font(.system(size: 18))
+            .foregroundColor(color.foreground)
+        )
+    } else if let profilePhoto,
+      let url = URL(string: profilePhoto) {
+      Avatar(url: url) { image in
+        image
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+      } placeholder: {
+        Circle()
+          .fill(Color(.systemGray5))
+          .overlay(
+            Image(systemName: "person")
+              .font(.system(size: 18))
+              .foregroundColor(.secondary)
+          )
+      }
+      .frame(width: 32, height: 32)
+      .clipShape(Circle())
+      .id("\(account.id)-\(profilePhoto)")
+    } else {
+      let firstLetter = (account.ownerUserActor?.username ?? account.name).prefix(1).uppercased()
+      let color = getAvatarColor(for: String(firstLetter))
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 40, height: 40)
+        .overlay(
+          Text(firstLetter)
+            .font(.system(size: 18, weight: .medium))
+            .foregroundColor(color.foreground)
+        )
+    }
+  }
 }

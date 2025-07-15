@@ -1,6 +1,7 @@
 import { getBareExtensions } from '@expo/config/paths';
 import assert from 'assert';
 import fs from 'fs';
+import type { SourceFileResolution } from 'metro-resolver/src/types';
 import path from 'path';
 
 import { createFastResolver, FailedToResolvePathError } from '../createExpoMetroResolver';
@@ -54,7 +55,7 @@ const createContext = ({
       : isServer
         ? ['main', 'module']
         : ['browser', 'module', 'main'],
-    nodeModulesPaths: ['node_modules', ...nodeModulesPaths],
+    nodeModulesPaths,
     originModulePath: origin,
     preferNativePlatform,
     sourceExts,
@@ -223,6 +224,35 @@ describe(createFastResolver, () => {
     });
 
     assert(results.type === 'sourceFile');
+  });
+
+  // This tests the `node_modules/react-native/node_modules/promise` structure
+  // If this changes, another example of a nested package should be picked
+  it('resolves nested `node_modules` packages', () => {
+    const resolver = createFastResolver({ preserveSymlinks: true, blockList: [] });
+
+    const indexPath = path.join(originProjectRoot, 'index.js');
+    const platform = 'ios';
+    const nodeModulesPaths = [
+      path.join(originProjectRoot, 'node_modules'),
+      path.join(originProjectRoot, '../../node_modules'),
+    ];
+
+    // First resolve `react-native`
+    const nclContext = createContext({ platform, origin: indexPath, nodeModulesPaths });
+    const nclResult = resolver(nclContext, 'react-native', platform);
+    expect(nclResult).toMatchObject({ type: 'sourceFile', filePath: expect.any(String) });
+
+    // Then resolve `promise` within `react-native`
+    const rnEntryFile = (nclResult as SourceFileResolution).filePath;
+    const rnContext = createContext({ platform, origin: rnEntryFile, nodeModulesPaths });
+    const rnResult = resolver(rnContext, 'promise', platform);
+    expect(rnResult).toMatchObject({ type: 'sourceFile', filePath: expect.any(String) });
+
+    // Ensure the resolved path of `promise` is within React Native's `node_modules`
+    expect(rnResult).toMatchObject({
+      filePath: expect.stringContaining('node_modules/react-native/node_modules/promise'),
+    });
   });
 
   describe('ios', () => {

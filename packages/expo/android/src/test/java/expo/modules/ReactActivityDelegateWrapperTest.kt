@@ -20,9 +20,9 @@ import org.junit.Before
 import org.junit.Test
 
 internal class ReactActivityDelegateWrapperTest {
-  lateinit var mockPackage0: MockPackage
+  private lateinit var mockPackage0: MockPackage
 
-  lateinit var mockPackage1: MockPackage
+  private lateinit var mockPackage1: MockPackage
 
   @RelaxedMockK
   lateinit var activity: ReactActivity
@@ -47,6 +47,7 @@ internal class ReactActivityDelegateWrapperTest {
   @Test
   fun `onBackPressed should call each handler's callback just once`() {
     val delegateWrapper = ReactActivityDelegateWrapper(activity, delegate)
+    delegateWrapper.setLoadAppReadyForTesting()
     every { mockPackage0.reactActivityLifecycleListener.onBackPressed() } returns true
 
     delegateWrapper.onBackPressed()
@@ -59,6 +60,7 @@ internal class ReactActivityDelegateWrapperTest {
   @Test
   fun `onBackPressed should return true if someone returns true`() {
     val delegateWrapper = ReactActivityDelegateWrapper(activity, delegate)
+    delegateWrapper.setLoadAppReadyForTesting()
     every { mockPackage0.reactActivityLifecycleListener.onBackPressed() } returns false
     every { mockPackage1.reactActivityLifecycleListener.onBackPressed() } returns true
     every { delegate.onBackPressed() } returns false
@@ -71,6 +73,7 @@ internal class ReactActivityDelegateWrapperTest {
   fun `onNewIntent should call each handler's callback just once`() {
     val intent = mockk<Intent>()
     val delegateWrapper = ReactActivityDelegateWrapper(activity, delegate)
+    delegateWrapper.setLoadAppReadyForTesting()
     every { mockPackage0.reactActivityLifecycleListener.onNewIntent(intent) } returns false
     every { mockPackage1.reactActivityLifecycleListener.onNewIntent(intent) } returns true
     every { delegate.onNewIntent(intent) } returns false
@@ -86,6 +89,7 @@ internal class ReactActivityDelegateWrapperTest {
   fun `onNewIntent should return true if someone returns true`() {
     val intent = mockk<Intent>()
     val delegateWrapper = ReactActivityDelegateWrapper(activity, delegate)
+    delegateWrapper.setLoadAppReadyForTesting()
     every { mockPackage0.reactActivityLifecycleListener.onNewIntent(intent) } returns false
     every { mockPackage1.reactActivityLifecycleListener.onNewIntent(intent) } returns true
     every { delegate.onNewIntent(intent) } returns false
@@ -97,7 +101,7 @@ internal class ReactActivityDelegateWrapperTest {
 
 internal class MockPackage : Package {
   val reactActivityLifecycleListener = mockk<ReactActivityLifecycleListener>(relaxed = true)
-  val reactActivityHandler = mockk<ReactActivityHandler>(relaxed = true)
+  private val reactActivityHandler = mockk<ReactActivityHandler>(relaxed = true)
 
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
     return listOf(reactActivityLifecycleListener)

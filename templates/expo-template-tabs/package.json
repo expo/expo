@@ -27,7 +27,7 @@
     "expo-web-browser": "~14.1.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.0",
+    "react-native": "0.80.1",
     "react-native-reanimated": "~3.18.0",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",

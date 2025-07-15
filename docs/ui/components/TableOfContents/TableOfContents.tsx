@@ -30,8 +30,8 @@ const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
 
 export type TableOfContentsProps = PropsWithChildren<{
   maxNestingDepth?: number;
-  selfRef?: RefObject<ScrollContainer>;
-  contentRef?: RefObject<ScrollContainer>;
+  selfRef?: RefObject<ScrollContainer | null>;
+  contentRef?: RefObject<ScrollContainer | null>;
 }>;
 
 export type TableOfContentsHandles = {
@@ -86,8 +86,8 @@ export const TableOfContents = forwardRef<
           contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR &&
         ref.current.offsetTop <= contentScrollPosition + window.innerHeight / 2;
 
-      if (isInView && isVersioned) {
-        if (level > BASE_HEADING_LEVEL + 1) {
+      if (isInView) {
+        if (level > BASE_HEADING_LEVEL + 1 && isVersioned) {
           const currentIndex = headings.findIndex(h => h.slug === slug);
           for (let i = currentIndex; i >= 0; i--) {
             const h = headings[i];

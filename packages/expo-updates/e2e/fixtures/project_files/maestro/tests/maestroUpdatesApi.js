@@ -19,9 +19,21 @@ function stopUpdatesServer() {
   http.get(`${serverBaseUrl}/stop-server`);
 }
 
-function restartUpdatesServer() {
-  http.get(`${serverBaseUrl}/restart-server`);
-  // Delay 0.5 second to allow server restart to complete
+function restartUpdatesServer(artificialDelay, serveOverriddenUrl) {
+  const delay = artificialDelay || 0;
+  var url = `${serverBaseUrl}/restart-server`;
+  const queryParams = [];
+  if (delay > 0) {
+    queryParams.push(`ms=${delay}`);
+  }
+  if (serveOverriddenUrl) {
+    queryParams.push(`serveOverriddenUrl=true`);
+  }
+  if (queryParams.length > 0) {
+    url = `${url}?${queryParams.join('&')}`;
+  }
+  http.get(url);
+  // Wait 0.5 second to allow server restart to complete
   http.get(`${serverBaseUrl}/delay?ms=500`);
 }
 

@@ -140,7 +140,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
     blurRadius?: number;
     /**
      * A color used to tint template images (a bitmap image where only the opacity matters).
-     * The color is applied to every non-transparent pixel, causing the image’s shape to adopt that color.
+     * The color is applied to every non-transparent pixel, causing the image's shape to adopt that color.
      * This effect is not applied to placeholders.
      * @default null
      */
@@ -264,12 +264,12 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      */
     accessible?: boolean;
     /**
-     * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
+     * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
      * @default undefined
      */
     accessibilityLabel?: string;
     /**
-     * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
+     * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
      *
      * @alias accessibilityLabel
      * @default undefined
@@ -313,6 +313,15 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      * @platform ios
      */
     useAppleWebpCodec?: boolean;
+    /**
+     * Force early resizing of the image to match the container size.
+     * This option helps to reduce the memory usage of the image view, especially when the image is larger than the container.
+     * It may affect the `resizeType` and `contentPosition` properties when the image view is resized dynamically.
+     *
+     * @default false
+     * @platform ios
+     */
+    enforceEarlyResizing?: boolean;
 }
 /**
  * It narrows down some props to types expected by the native/web side.
@@ -375,10 +384,14 @@ export type ImageContentPosition =
     bottom?: ImageContentPositionValue;
     left?: ImageContentPositionValue;
 } | ImageContentPositionString;
+/**
+ * It allows you to use an image as a background while rendering other content on top of it.
+ * It extends all `Image` props but provides separate styling controls for the container and the background image itself.
+ */
 export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
-    /** The style of the image container */
+    /** The style of the image container. */
     style?: StyleProp<ViewStyle> | undefined;
-    /** Style object for the image */
+    /** Style object for the image. */
     imageStyle?: StyleProp<RNImageStyle> | undefined;
     /** @hidden */
     children?: React.ReactNode | undefined;

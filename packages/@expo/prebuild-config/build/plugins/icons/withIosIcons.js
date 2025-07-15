@@ -29,7 +29,7 @@ function _fs() {
   return data;
 }
 function _path() {
-  const data = require("path");
+  const data = _interopRequireDefault(require("path"));
   _path = function () {
     return data;
   };
@@ -49,10 +49,21 @@ const {
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
 const withIosIcons = config => {
-  return (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
+  config = (0, _configPlugins().withDangerousMod)(config, ['ios', async config => {
     await setIconsAsync(config, config.modRequest.projectRoot);
     return config;
   }]);
+  config = (0, _configPlugins().withXcodeProject)(config, config => {
+    const icon = getIcons(config);
+    const projectName = config.modRequest.projectName;
+    if (icon && typeof icon === 'string' && _path().default.extname(icon) === '.icon' && projectName) {
+      const iconName = _path().default.basename(icon, '.icon');
+      setIconName(config.modResults, iconName);
+      addIconFileToProject(config.modResults, projectName, iconName);
+    }
+    return config;
+  });
+  return config;
 };
 exports.withIosIcons = withIosIcons;
 function getIcons(config) {
@@ -62,12 +73,25 @@ function getIcons(config) {
     if (typeof iosSpecificIcons === 'string') {
       return iosSpecificIcons || config.icon || null;
     }
+    if (typeof iosSpecificIcons === 'object') {
+      const paths = [iosSpecificIcons.light, iosSpecificIcons.dark, iosSpecificIcons.tinted].filter(Boolean);
+      for (const iconPath of paths) {
+        if (typeof iconPath === 'string' && _path().default.extname(iconPath) === '.icon') {
+          _configPlugins().WarningAggregator.addWarningIOS('icon', `Liquid glass icons (.icon) should be provided as a string to the "ios.icon" property, not as an object. Found: "${iconPath}"`);
+        }
+      }
+    }
 
     // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
     if (!iosSpecificIcons.light && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
       return config.icon || null;
     }
     return iosSpecificIcons;
+  }
+
+  // Top level icon property should not be used to specify a `.icon` folder
+  if (config.icon && typeof config.icon === 'string' && _path().default.extname(config.icon) === '.icon') {
+    _configPlugins().WarningAggregator.addWarningIOS('icon', `Liquid glass icons (.icon) should be provided via the "ios.icon" property, not the root "icon" property. Found: "${config.icon}"`);
   }
   if (config.icon) {
     return config.icon;
@@ -82,9 +106,12 @@ async function setIconsAsync(config, projectRoot) {
 
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
+  if (typeof icon === 'string' && _path().default.extname(icon) === '.icon') {
+    return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
+  }
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
-  await _fs().default.promises.mkdir((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
+  await _fs().default.promises.mkdir(_path().default.join(iosNamedProjectRoot, IMAGESET_PATH), {
     recursive: true
   });
   const imagesJson = [];
@@ -122,7 +149,7 @@ async function setIconsAsync(config, projectRoot) {
   }
 
   // Finally, write the Contents.json
-  await (0, _AssetContents().writeContentsJsonAsync)((0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH), {
+  await (0, _AssetContents().writeContentsJsonAsync)(_path().default.join(iosNamedProjectRoot, IMAGESET_PATH), {
     images: imagesJson
   });
 }
@@ -134,7 +161,7 @@ async function setIconsAsync(config, projectRoot) {
  */
 function getIosNamedProjectPath(projectRoot) {
   const projectName = getProjectName(projectRoot);
-  return (0, _path().join)(projectRoot, 'ios', projectName);
+  return _path().default.join(projectRoot, 'ios', projectName);
 }
 function getAppleIconName(size, scale, appearance) {
   let name = 'App-Icon';
@@ -180,7 +207,7 @@ async function generateUniversalIconAsync(projectRoot, {
     });
   }
   // Write image buffer to the file system.
-  const assetPath = (0, _path().join)(iosNamedProjectRoot, IMAGESET_PATH, filename);
+  const assetPath = _path().default.join(iosNamedProjectRoot, IMAGESET_PATH, filename);
   await _fs().default.promises.writeFile(assetPath, source);
   return {
     filename,
@@ -194,5 +221,43 @@ async function generateUniversalIconAsync(projectRoot, {
       }]
     } : {})
   };
+}
+async function addLiquidGlassIcon(iconPath, projectRoot, iosNamedProjectRoot) {
+  const iconName = _path().default.basename(iconPath, '.icon');
+  const sourceIconPath = _path().default.join(projectRoot, iconPath);
+  const targetIconPath = _path().default.join(iosNamedProjectRoot, `${iconName}.icon`);
+  if (!_fs().default.existsSync(sourceIconPath)) {
+    _configPlugins().WarningAggregator.addWarningIOS('icon', `Liquid glass icon file not found at path: ${iconPath}`);
+    return;
+  }
+  await _fs().default.promises.cp(sourceIconPath, targetIconPath, {
+    recursive: true
+  });
+}
+
+/**
+ * Adds the .icons name to the project
+ */
+function setIconName(project, iconName) {
+  const configurations = project.pbxXCBuildConfigurationSection();
+  for (const config of Object.values(configurations)) {
+    if (config?.buildSettings) {
+      config.buildSettings.ASSETCATALOG_COMPILER_APPICON_NAME = iconName;
+    }
+  }
+}
+
+/**
+ * Adds the .icon file to the project
+ */
+function addIconFileToProject(project, projectName, iconName) {
+  const iconPath = `${iconName}.icon`;
+  _configPlugins().IOSConfig.XcodeUtils.addResourceFileToGroup({
+    filepath: `${projectName}/${iconPath}`,
+    groupName: projectName,
+    project,
+    isBuildFile: true,
+    verbose: true
+  });
 }
 //# sourceMappingURL=withIosIcons.js.map

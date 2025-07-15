@@ -36,6 +36,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Blurhash',
+    route: 'image/blurhash',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBlurhash'));
+    },
+  },
+  {
     name: 'Image formats',
     route: 'image/formats',
     getComponent() {

@@ -265,6 +265,12 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/KeyboardControllerScreen'));
+    },
+    name: 'KeyboardController',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ClipboardPasteButtonScreen'));
     },
     name: 'ClipboardPasteButton',

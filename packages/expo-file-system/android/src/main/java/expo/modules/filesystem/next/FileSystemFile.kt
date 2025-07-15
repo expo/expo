@@ -3,6 +3,8 @@ package expo.modules.filesystem.next
 import android.net.Uri
 import android.util.Base64
 import android.webkit.MimeTypeMap
+import expo.modules.filesystem.InfoOptions
+import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
@@ -26,8 +28,11 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   }
 
   val exists: Boolean get() {
-    validatePermission(Permission.READ)
-    return file.isFile
+    return if (checkPermission(Permission.READ)) {
+      file.isFile
+    } else {
+      false
+    }
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
@@ -110,5 +115,33 @@ class FileSystemFile(file: File) : FileSystemPath(file) {
   val type: String? get() {
     return MimeTypeMap.getFileExtensionFromUrl(file.path)
       ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
+  }
+
+  fun info(options: InfoOptions?): FileInfo {
+    validateType()
+    validatePermission(Permission.READ)
+    if (!file.exists()) {
+      val fileInfo = FileInfo(
+        exists = false,
+        uri = slashifyFilePath(file.toURI().toString())
+      )
+      return fileInfo
+    }
+    when {
+      file.toURI().scheme == "file" -> {
+        val fileInfo = FileInfo(
+          exists = true,
+          uri = slashifyFilePath(file.toURI().toString()),
+          size = size,
+          modificationTime = modificationTime,
+          creationTime = creationTime
+        )
+        if (options != null && options.md5 == true) {
+          fileInfo.md5 = md5
+        }
+        return fileInfo
+      }
+      else -> throw UnableToGetInfoException("file schema ${file.toURI().scheme} is not supported")
+    }
   }
 }

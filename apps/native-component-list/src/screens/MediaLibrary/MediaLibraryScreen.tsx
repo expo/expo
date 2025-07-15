@@ -219,6 +219,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         first: PAGE_SIZE,
         after: state.endCursor ?? undefined,
         mediaType,
+        mediaSubtypes: [],
         sortBy,
         album: album?.id,
       });

@@ -23,7 +23,7 @@
 
     <activity
       android:name="expo.modules.imagepicker.ExpoCropImageActivity"
-      android:theme="@style/Theme.MaterialComponents.DayNight"
+      android:theme="@style/Base.Theme.AppCompat"
       android:exported="false"
       tools:replace="android:exported" />
     <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->

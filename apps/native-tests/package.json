@@ -18,7 +18,7 @@
     "native-component-list": "*",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-native": "0.80.0"
+    "react-native": "0.80.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

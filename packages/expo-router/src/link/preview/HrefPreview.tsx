@@ -9,12 +9,12 @@ import { useMemo } from 'react';
 
 import { PreviewRouteContext } from './PreviewRouteContext';
 import { RouteNode } from '../../Route';
+import { INTERNAL_SLOT_NAME } from '../../constants';
 import { store } from '../../global-state/router-store';
 import { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { getPathFromState } from '../linking';
-import { INTERNAL_SLOT_NAME } from '../../constants';
 
 export function HrefPreview({ href }: { href: Href }) {
   const navigation = useNavigation();
@@ -49,7 +49,7 @@ export function HrefPreview({ href }: { href: Href }) {
   );
 }
 
-export function getParamsAndNodeFromHref(href: Href) {
+function getParamsAndNodeFromHref(href: Href) {
   const hrefState = store.getStateForHref(href as any);
   if (hrefState?.routes[0] && hrefState.routes[0].name !== INTERNAL_SLOT_NAME) {
     const error = `Expo Router Error: Expected navigation state to begin with a ${INTERNAL_SLOT_NAME} route`;
@@ -115,7 +115,7 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
       index: 0,
       routeNames: [],
       routes: [],
-      type: 'stack',
+      type: '',
       stale: false,
     };
   },

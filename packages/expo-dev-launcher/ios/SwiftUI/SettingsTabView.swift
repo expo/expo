@@ -5,6 +5,8 @@ import SwiftUI
 struct SettingsTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @State private var showCopiedMessage = false
+  @State private var defaultPageSize: Int = 10
+  @State private var showCacheClearedMessage = false
 
   private func createBuildInfoJSON() -> String {
     let buildInfoDict: [String: Any] = [
@@ -40,6 +42,11 @@ struct SettingsTabView: View {
         Section {
           version
           copyToClipboardButton
+        }
+
+        if isAdminUser {
+          debugSettings
+          easUpdateConfig
         }
       }
     }
@@ -95,8 +102,71 @@ struct SettingsTabView: View {
       }
     }
   }
+
+  private var isAdminUser: Bool {
+    return viewModel.user?.isExpoAdmin == true
+  }
+
+  private var debugSettings: some View {
+    Section("Debug Settings") {
+      Button(showCacheClearedMessage ? "Network cache cleared!" : "Clear network cache") {
+        clearNetworkCache()
+      }
+      .foregroundColor(showCacheClearedMessage ? .green : nil)
+
+      VStack(alignment: .leading) {
+        Text("Default Page Size")
+        Text("Sets the number of items fetched for branches and updates")
+          .foregroundStyle(.secondary)
+          .font(.footnote)
+        Picker("", selection: $defaultPageSize) {
+          Text("1").tag(1)
+          Text("5").tag(5)
+          Text("10").tag(10)
+        }
+        .pickerStyle(.segmented)
+      }
+    }
+  }
+
+  private var easUpdateConfig: some View {
+    Section("EAS Update Configuration") {
+      VStack(alignment: .leading, spacing: 8) {
+        Text(createEASConfigJSON())
+          .font(.system(.caption, design: .monospaced))
+          .textSelection(.enabled)
+          .padding(.vertical, 4)
+      }
+    }
+  }
+
+  private func clearNetworkCache() {
+    URLCache.shared.removeAllCachedResponses()
+
+    showCacheClearedMessage = true
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+      showCacheClearedMessage = false
+    }
+  }
+
+  private func createEASConfigJSON() -> String {
+    let appId = viewModel.structuredBuildInfo.appId
+    let runtimeVersion = viewModel.structuredBuildInfo.runtimeVersion
+    let usesEASUpdates = viewModel.structuredBuildInfo.usesEASUpdates
+    let projectUrl = viewModel.structuredBuildInfo.projectUrl ?? ""
+
+    return """
+    {
+      "appId": "\(appId)",
+      "runtimeVersion": "\(runtimeVersion)",
+      "usesEASUpdates": \(usesEASUpdates),
+      "projectUrl": "\(projectUrl)"
+    }
+    """
+  }
 }
 
 #Preview {
   SettingsTabView()
+    .environmentObject(DevLauncherViewModel())
 }
