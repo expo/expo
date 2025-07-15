@@ -166,6 +166,9 @@ export async function exportAppAsync(
       await copyPublicFolderAsync(publicPath, outputPath);
     }
 
+    const isServerHosted =
+      devServer.isReactServerComponentsEnabled || (hostedNative && useServerRendering);
+
     let templateHtml: string | undefined;
     // Can be empty during web-only SSG.
     if (spaPlatforms.length) {
@@ -222,7 +225,7 @@ export async function exportAppAsync(
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
             files,
-            isServerHosted: devServer.isReactServerComponentsEnabled,
+            isServerHosted,
           });
 
           bundle.artifacts.forEach((artifact) => {
@@ -230,9 +233,7 @@ export async function exportAppAsync(
               // Add the script tag for the JS bundle.
               scriptTags.push({
                 platform,
-                src: devServer.isReactServerComponentsEnabled
-                  ? `/client/${artifact.filename}`
-                  : `/${artifact.filename}`,
+                src: `/${artifact.filename}`,
               });
             }
           });
