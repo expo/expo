@@ -11,6 +11,7 @@ public class LinkPreviewNativeModule: Module {
 
       Events(
         "onPreviewTapped",
+        "onPreviewTappedAnimationCompleted",
         "onWillPreviewOpen",
         "onDidPreviewOpen",
         "onPreviewWillClose",
