@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix duration property resetting to 0 on video repeat.
+- [Android] Fix duration property resetting to 0 on video repeat. ([#37984](https://github.com/expo/expo/pull/37984) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
 
