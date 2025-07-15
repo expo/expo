@@ -385,13 +385,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun refreshPlaybackInfo() {
-    this@VideoPlayer.duration = this@VideoPlayer.player.duration / 1000f
-    this@VideoPlayer.isLive = this@VideoPlayer.player.isCurrentMediaItemLive
+    duration = player.duration / 1000f
+    isLive = player.isCurrentMediaItemLive
   }
 
   private fun resetPlaybackInfo() {
-    this@VideoPlayer.duration = 0f
-    this@VideoPlayer.isLive = false
+    duration = 0f
+    isLive = false
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {
