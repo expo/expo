@@ -34,7 +34,7 @@ const utils_1 = require("./utils");
  */
 function Modal(props) {
     const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, ...viewProps } = props;
-    const { openModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
+    const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
     (0, react_1.useEffect)(() => {
@@ -43,7 +43,7 @@ function Modal(props) {
         }
     }, [detents]);
     (0, react_1.useEffect)(() => {
-        if (!currentModalId && visible) {
+        if (visible) {
             const newId = (0, non_secure_1.nanoid)();
             openModal({
                 animationType,
@@ -51,21 +51,24 @@ function Modal(props) {
                 transparent,
                 viewProps,
                 component: children,
-                detents,
                 uniqueId: newId,
                 parentNavigationProp: navigation,
+                detents,
             });
             setCurrentModalId(newId);
             return () => {
                 closeModal(newId);
             };
         }
-        else if (currentModalId && !visible) {
-            closeModal(currentModalId);
-            setCurrentModalId(undefined);
-        }
         return () => { };
     }, [visible]);
+    (0, react_1.useEffect)(() => {
+        if (currentModalId && visible) {
+            updateModal(currentModalId, {
+                component: children,
+            });
+        }
+    }, [children]);
     (0, react_1.useEffect)(() => {
         if (currentModalId) {
             const unsubscribeShow = addEventListener('show', (id) => {
@@ -85,7 +88,7 @@ function Modal(props) {
             };
         }
         return () => { };
-    }, [currentModalId, addEventListener, onClose]);
+    }, [currentModalId, addEventListener, onClose, onShow]);
     return null;
 }
 //# sourceMappingURL=Modal.js.map
