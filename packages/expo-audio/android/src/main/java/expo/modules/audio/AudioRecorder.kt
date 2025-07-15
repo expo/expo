@@ -76,6 +76,20 @@ class AudioRecorder(
     isPaused = false
   }
 
+  fun recordForDuration(durationMillis: Double) {
+    if (isPaused) {
+      recorder?.resume()
+    } else {
+      recorder?.apply {
+        setMaxDuration(durationMillis.toInt())
+        start()
+      }
+    }
+    startTime = System.currentTimeMillis()
+    isRecording = true
+    isPaused = false
+  }
+
   fun pauseRecording() {
     recorder?.pause()
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
@@ -211,7 +225,8 @@ class AudioRecorder(
 
   override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
     when (what) {
-      MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
+      MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED,
+      MEDIA_RECORDER_INFO_MAX_DURATION_REACHED -> {
         recorder?.stop()
         emit(
           RECORDING_STATUS_UPDATE,

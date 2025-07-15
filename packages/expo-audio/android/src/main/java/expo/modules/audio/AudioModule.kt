@@ -472,6 +472,13 @@ class AudioModule : Module() {
         }
       }
 
+      Function("recordForDuration") { recorder: AudioRecorder, durationMillis: Double ->
+        checkRecordingPermission()
+        if (recorder.isPrepared) {
+          recorder.recordForDuration(durationMillis)
+        }
+      }
+
       Function("pause") { recorder: AudioRecorder ->
         checkRecordingPermission()
         recorder.pauseRecording()
