@@ -182,18 +182,14 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
   // otherwise they would be saved in cache with scale = 1.0 which may result in
   // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
   context[.imageScaleFactor] = source.scale
+  
+  let sdCacheType = cachePolicy.toSdCacheType().rawValue
+  context[.queryCacheType] = sdCacheType
+  context[.storeCacheType] = sdCacheType
 
-  // Set which cache can be used to query and store the downloaded image.
-  // We want to store only original images (without transformations).
-  context[.queryCacheType] = SDImageCacheType.none.rawValue
-  context[.storeCacheType] = SDImageCacheType.none.rawValue
-
-  if source.isCachingAllowed {
-    let sdCacheType = cachePolicy.toSdCacheType().rawValue
+  if source.cacheOriginalImage {
     context[.originalQueryCacheType] = sdCacheType
     context[.originalStoreCacheType] = sdCacheType
-    context[.queryCacheType] = sdCacheType
-    context[.storeCacheType] = sdCacheType
   } else {
     context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
     context[.originalStoreCacheType] = SDImageCacheType.none.rawValue
