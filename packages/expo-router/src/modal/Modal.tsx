@@ -64,6 +64,13 @@ export interface ModalProps extends ViewProps {
    * while **Android is limited to three**.
    */
   detents?: ModalConfig['detents'];
+  /**
+   * See {@link ScreenProps["initialDetentIndex"]}.
+   *
+   * The initial detent index when sheet is presented.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  detentIndex?: number;
 }
 
 /**
@@ -101,6 +108,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
+    detentIndex,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -110,7 +118,7 @@ export function Modal(props: ModalProps) {
     if (!areDetentsValid(detents)) {
       throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
     }
-  }, [detents]);
+  }, [detents, detentIndex]);
   useEffect(() => {
     if (visible) {
       const newId = nanoid();
@@ -122,6 +130,7 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
+        detentIndex,
         detents,
       });
       setCurrentModalId(newId);
@@ -135,10 +144,11 @@ export function Modal(props: ModalProps) {
   useEffect(() => {
     if (currentModalId && visible) {
       updateModal(currentModalId, {
+        detentIndex,
         component: children,
       });
     }
-  }, [children]);
+  }, [children, detentIndex]);
 
   useEffect(() => {
     if (currentModalId) {
