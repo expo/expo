@@ -30,7 +30,7 @@ import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.HomeAction
 import expo.modules.devlauncher.compose.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
-import expo.modules.devlauncher.compose.primitives.pulseEffect
+import expo.modules.devmenu.compose.primitives.pulseEffect
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
