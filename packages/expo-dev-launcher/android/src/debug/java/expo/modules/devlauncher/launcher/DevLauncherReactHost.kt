@@ -1,7 +1,6 @@
 package expo.modules.devlauncher.launcher
 
 import android.app.Application
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
@@ -10,7 +9,6 @@ import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.shell.MainReactPackage
@@ -34,12 +32,7 @@ object DevLauncherReactHost {
     val jsBundleAssetPath = "expo_dev_launcher_android.bundle"
     val jsBundleLoader =
       JSBundleLoader.createAssetLoader(application, "assets://$jsBundleAssetPath", true)
-    val jsResolutionAlgorithm = createJSEngineResolutionAlgorithm(application)
-    val jsRuntimeFactory = if (jsResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
-      JSCInstance()
-    } else {
-      HermesInstance()
-    }
+    val jsRuntimeFactory = HermesInstance()
     val jsMainModuleName = "packages/expo-dev-launcher/bundle/index"
     val defaultReactHostDelegate =
       DefaultReactHostDelegate(
@@ -92,13 +85,5 @@ object DevLauncherReactHost {
     ) +
       devMenuRelatedPackages +
       additionalPackages
-  }
-
-  private fun createJSEngineResolutionAlgorithm(application: Application): JSEngineResolutionAlgorithm {
-    SoLoader.init(application.applicationContext, /* native exopackage */ false)
-    if (SoLoader.getLibraryPath("libjsc.so") != null) {
-      return JSEngineResolutionAlgorithm.JSC
-    }
-    return JSEngineResolutionAlgorithm.HERMES
   }
 }

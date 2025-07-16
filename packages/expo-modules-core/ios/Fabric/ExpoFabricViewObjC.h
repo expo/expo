@@ -4,7 +4,11 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
+#if __has_include(<React/React-Core-umbrella.h>)
 #import <React/React-Core-umbrella.h>
+#else
+#import <React_Core/React_Core-umbrella.h>
+#endif
 
 #ifdef __cplusplus
 
@@ -20,7 +24,7 @@
 @end
 
 #endif // __cplusplus
-#else // Paper
+#else  // Paper
 
 @interface ExpoFabricViewObjC : RCTView
 @end
@@ -38,7 +42,7 @@
 
 - (void)viewDidUpdateProps;
 
-- (void)setShadowNodeSize:(float) width height:(float) height;
+- (void)setShadowNodeSize:(float)width height:(float)height;
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 

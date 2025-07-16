@@ -1,6 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+#if __has_include(<React/React-Core-umbrella.h>)
 #import <React/React-Core-umbrella.h>
+#else
+#import <React_Core/React_Core-umbrella.h>
+#endif
 
 typedef void (^RCTPropBlockAlias)(id<RCTComponent> _Nonnull view, id _Nullable json);
 

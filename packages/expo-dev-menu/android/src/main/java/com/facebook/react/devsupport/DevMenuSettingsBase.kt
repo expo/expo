@@ -54,6 +54,8 @@ abstract class DevMenuSettingsBase(
       mPreferences.edit().putBoolean("remote_js_debug", remoteJSDebugEnabled).apply()
     }
 
+  // TODO(kudo,20250217) - Remove this when we drop react-native 0.78 support (this came up in 0.81.0)
+  @Suppress("NOTHING_TO_OVERRIDE")
   override var isStartSamplingProfilerOnInit: Boolean =
     mPreferences.getBoolean("start_sampling_profiler_on_init", false)
 
