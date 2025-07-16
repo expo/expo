@@ -28,6 +28,7 @@
 - Added tests for modal stacking ([#37856](https://github.com/expo/expo/pull/37856) by [@hirbod](https://github.com/hirbod))
 - simplify/optimize web-modal tests ([#38025](https://github.com/expo/expo/pull/38025) by [@hirbod](https://github.com/hirbod))
 - Fix e2e start-test for local runs ([#38066](https://github.com/expo/expo/pull/38066) by [@Ubax](https://github.com/Ubax))
+- test(router-e2e): use expo serve instead of Express servers in server E2E tests ([#38107](https://github.com/expo/expo/pull/38107) by [@hassankhan](https://github.com/hassankhan))
 
 ### ⚠️ Notices
 

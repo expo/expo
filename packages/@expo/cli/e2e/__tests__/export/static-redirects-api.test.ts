@@ -1,11 +1,8 @@
 /* eslint-env jest */
 import type { RedirectConfig } from 'expo-router';
-import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { executeExpoAsync } from '../../utils/expo';
-import { processFindPrefixedValue } from '../../utils/process';
-import { createBackgroundServer } from '../../utils/server';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -44,16 +41,15 @@ describe('server api redirects', () => {
   });
 
   describe('requests', () => {
-    const server = createBackgroundServer({
-      command: ['node', path.join(projectRoot, '__e2e__/static-redirects/express.js')],
-      host: (chunk) =>
-        processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
+    const server = createExpoServe({
       cwd: projectRoot,
-      env: { NODE_ENV: 'production', TEST_SECRET_KEY: 'test-secret-key' },
+      env: {
+        NODE_ENV: 'production',
+      },
     });
 
     beforeAll(async () => {
-      await server.startAsync();
+      await server.startAsync([outputName]);
     });
     afterAll(async () => {
       await server.stopAsync();

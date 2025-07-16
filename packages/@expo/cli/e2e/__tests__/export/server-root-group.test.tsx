@@ -2,9 +2,7 @@
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { executeExpoAsync } from '../../utils/expo';
-import { processFindPrefixedValue } from '../../utils/process';
-import { createBackgroundServer } from '../../utils/server';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
@@ -13,35 +11,30 @@ runExportSideEffects();
 
 describe('server-root-group', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputDir = path.join(projectRoot, 'dist-server-root-group');
+  const outputName = 'dist-server-root-group';
+  const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
     console.time('export-server-root-group');
-    await executeExpoAsync(
-      projectRoot,
-      ['export', '-p', 'web', '--output-dir', 'dist-server-root-group'],
-      {
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_SRC: 'server-root-group',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
-        },
-      }
-    );
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
+      env: {
+        NODE_ENV: 'production',
+        EXPO_USE_STATIC: 'server',
+        E2E_ROUTER_SRC: 'server-root-group',
+        E2E_ROUTER_ASYNC: 'development',
+        EXPO_USE_FAST_RESOLVER: 'true',
+      },
+    });
     console.timeEnd('export-server-root-group');
   });
 
   describe('requests', () => {
-    const server = createBackgroundServer({
-      command: ['node', path.join(projectRoot, '__e2e__/server-root-group/express.js')],
-      host: (chunk) =>
-        processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
+    const server = createExpoServe({
+      cwd: projectRoot,
     });
 
     beforeAll(async () => {
-      await server.startAsync();
+      await server.startAsync([outputName]);
     });
     afterAll(async () => {
       await server.stopAsync();

@@ -4,20 +4,19 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { executeExpoAsync } from '../../utils/expo';
-import { processFindPrefixedValue } from '../../utils/process';
-import { createBackgroundServer } from '../../utils/server';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
 describe('server-output', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputDir = path.join(projectRoot, 'dist-server');
+  const outputName = 'dist-server';
+  const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
     console.time('export-server');
-    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', 'dist-server'], {
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
@@ -30,10 +29,7 @@ describe('server-output', () => {
   });
 
   describe('requests', () => {
-    const server = createBackgroundServer({
-      command: ['node', path.join(projectRoot, '__e2e__/server/express.js')],
-      host: (chunk) =>
-        processFindPrefixedValue(chunk, 'Express server listening') && 'http://localhost',
+    const server = createExpoServe({
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
@@ -42,7 +38,7 @@ describe('server-output', () => {
     });
 
     beforeAll(async () => {
-      await server.startAsync();
+      await server.startAsync([outputName]);
     });
     afterAll(async () => {
       await server.stopAsync();
