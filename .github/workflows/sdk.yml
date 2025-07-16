@@ -56,7 +56,8 @@ jobs:
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # Temporary disable the Node engines requirements due to unexpected Node requirement from React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
