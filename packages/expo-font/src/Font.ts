@@ -22,7 +22,12 @@ import { registerStaticFont } from './server';
  */
 export function isLoaded(fontFamily: string): boolean {
   if (Platform.OS === 'web') {
-    return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded!(fontFamily);
+    if (typeof ExpoFontLoader.isLoaded !== 'function') {
+      throw new Error(
+        `expected ExpoFontLoader.isLoaded to be a function, was ${typeof ExpoFontLoader.isLoaded}`
+      );
+    }
+    return isLoadedInCache(fontFamily) || ExpoFontLoader.isLoaded(fontFamily);
   }
   return isLoadedNative(fontFamily);
 }

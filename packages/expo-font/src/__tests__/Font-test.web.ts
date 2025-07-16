@@ -1,18 +1,13 @@
 import { unmockAllProperties } from 'jest-expo';
 
-import ExpoFontLoader, { ExpoFontLoaderModule } from '../ExpoFontLoader';
+import ExpoFontLoader from '../ExpoFontLoader';
 import * as Font from '../index';
 
 jest.mock('../ExpoFontLoader.web', () => {
-  const mod = jest.requireActual('../ExpoFontLoader.web');
-  const mock: ExpoFontLoaderModule = {
-    loadAsync: jest.fn(),
-    getLoadedFonts: jest.fn(mod.default.getLoadedFonts),
-    unloadAllAsync: jest.fn(mod.default.unloadAllAsync),
-    unloadAsync: jest.fn(mod.default.unloadAsync),
-    isLoaded: jest.fn(mod.default.isLoaded),
+  const mod = jest.requireActual('../../mocks/ExpoFontLoader');
+  return {
+    ...mod,
   };
-  return mock;
 });
 
 afterEach(async () => {
