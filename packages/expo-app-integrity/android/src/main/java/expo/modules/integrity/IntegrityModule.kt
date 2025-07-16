@@ -9,7 +9,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
-import expo.modules.integrity.IntegrityException
 
 
 class IntegrityModule : Module() {
@@ -19,6 +18,7 @@ class IntegrityModule : Module() {
 
   companion object {
     private const val PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME = "prepareIntegrityTokenProvider"
+    private const val REQUEST_INTEGRITY_CHECK_METHOD_NAME = "requestIntegrityCheck"
   }
 
   override fun definition() = ModuleDefinition {
@@ -62,7 +62,7 @@ class IntegrityModule : Module() {
               IntegrityException(exception?.message ?: "Unknown error", exception)
             )
           }
-      } ?: promise.reject(IntegrityException(integrityTokenException?.message ?: "Make sure '$PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME' is called before requestIntegrityCheck", integrityTokenException))
+      } ?: promise.reject(IntegrityException(integrityTokenException?.message ?: "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME", integrityTokenException))
 
     }
   }
