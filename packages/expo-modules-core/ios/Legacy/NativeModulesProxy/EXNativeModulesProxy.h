@@ -1,6 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if __has_include(<React/React-Core-umbrella.h>)
 #import <React/React-Core-umbrella.h>
+#else
+#import <React_Core/React_Core-umbrella.h>
+#endif
 
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
@@ -26,7 +30,7 @@ NS_SWIFT_NAME(ModulesProxyConfig)
 NS_SWIFT_NAME(LegacyNativeModulesProxy)
 @interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
 
-@property (nonatomic, strong, readonly) EXModulesProxyConfig *nativeModulesConfig;
+@property(nonatomic, strong, readonly) EXModulesProxyConfig *nativeModulesConfig;
 
 - (nonnull instancetype)init;
 - (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
