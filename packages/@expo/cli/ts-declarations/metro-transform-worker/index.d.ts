@@ -71,7 +71,42 @@ declare module 'metro-transform-worker/private/index' {
     unstable_staticHermesOptimizedRequire?: boolean;
     unstable_transformProfile: TransformProfile;
   }>;
-  type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
+  // NOTE(cedric): this is a manual change exporting these existing Flow types for reuse in Expo
+  // See: https://github.com/facebook/metro/blob/3eeba3d459592aa5128995c8224933f6a23a43f1/packages/metro-transform-worker/src/index.js#L136-L168
+  export type Path = string;
+  export type BaseFile = Readonly<{
+    code: string;
+    filename: Path;
+    inputFileSize: number;
+  }>;
+  export type AssetFile = Readonly<
+    {
+      type: 'asset';
+    } & BaseFile
+  >;
+  export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
+  export type JSFile = Readonly<
+    {
+      ast?: null | undefined | _babel_types.File;
+      type: JSFileType;
+      functionMap?: FBSourceFunctionMap | null;
+      unstable_importDeclarationLocs?: ReadonlySet<string>;
+    } & BaseFile
+  >;
+  export type JSONFile = {
+    type: Type;
+  } & BaseFile;
+  export type TransformationContext = Readonly<{
+    config: JsTransformerConfig;
+    projectRoot: Path;
+    options: JsTransformOptions;
+  }>;
+  // See: https://github.com/facebook/metro/blob/3eeba3d459592aa5128995c8224933f6a23a43f1/packages/metro-transform-worker/src/index.js#L180-L183
+  export type TransformResponse = Readonly<{
+    dependencies: readonly TransformResultDependency[];
+    output: readonly JsOutput[];
+  }>;
+  // NOTE(cedric): this is a manual change exporting these existing Flow types for reuse in Expo
   export type JsOutput = Readonly<{
     data: Readonly<{
       code: string;
@@ -99,7 +134,7 @@ declare module 'metro-transform-worker/private/utils/assetTransformer' {
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-worker/src/utils/getMinifier.js
 declare module 'metro-transform-worker/private/utils/getMinifier' {
-  import type { Minifier } from 'metro-transform-worker/private/index.js';
+  import type { Minifier } from 'metro-transform-worker/private/index';
   function getMinifier(minifierPath: string): Minifier;
   export default getMinifier;
 }
