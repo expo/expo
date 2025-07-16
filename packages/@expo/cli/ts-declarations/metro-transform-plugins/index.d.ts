@@ -32,9 +32,8 @@ declare module 'metro-transform-plugins/private/constant-folding-plugin' {
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-plugins/src/import-export-plugin.js
 declare module 'metro-transform-plugins/private/import-export-plugin' {
   import type { PluginObj } from '@babel/core';
-  import type { Node, Statement, SourceLocation } from '@babel/types';
-  import type * as $$IMPORT_TYPEOF_1$$ from '@babel/types';
-  type Types = typeof $$IMPORT_TYPEOF_1$$;
+  import type * as _babel_types from '@babel/types';
+  type Types = typeof _babel_types;
   export type Options = Readonly<{
     importDefault: string;
     importAll: string;
@@ -46,22 +45,22 @@ declare module 'metro-transform-plugins/private/import-export-plugin' {
   type State = {
     exportAll: {
       file: string;
-      loc?: null | SourceLocation;
+      loc?: null | _babel_types.SourceLocation;
     }[];
     exportDefault: {
       local: string;
-      loc?: null | SourceLocation;
+      loc?: null | _babel_types.SourceLocation;
     }[];
     exportNamed: {
       local: string;
       remote: string;
-      loc?: null | SourceLocation;
+      loc?: null | _babel_types.SourceLocation;
     }[];
     imports: {
-      node: Statement;
+      node: _babel_types.Statement;
     }[];
-    importDefault: Node;
-    importAll: Node;
+    importDefault: _babel_types.Node;
+    importAll: _babel_types.Node;
     opts: Options;
   };
   function importExportPlugin($$PARAM_0$$: { types: Types }): PluginObj<State>;
@@ -112,9 +111,8 @@ declare module 'metro-transform-plugins/private/inline-plugin' {
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-plugins/src/inline-requires-plugin.js
 declare module 'metro-transform-plugins/private/inline-requires-plugin' {
-  import type { PluginObj } from '@babel/core';
-  import type * as $$IMPORT_TYPEOF_1$$ from '@babel/core';
-  type Babel = typeof $$IMPORT_TYPEOF_1$$;
+  import type * as _babel_core from '@babel/core';
+  type Babel = typeof _babel_core;
   export type PluginOptions = Readonly<{
     ignoredRequires?: readonly string[];
     inlineableCalls?: readonly string[];
@@ -127,7 +125,7 @@ declare module 'metro-transform-plugins/private/inline-requires-plugin' {
     inlineableCalls: Set<string>;
     membersAssigned: Map<string, Set<string>>;
   };
-  const $$EXPORT_DEFAULT_DECLARATION$$: ($$PARAM_0$$: Babel) => PluginObj<State>;
+  const $$EXPORT_DEFAULT_DECLARATION$$: ($$PARAM_0$$: Babel) => _babel_core.PluginObj<State>;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
@@ -144,12 +142,19 @@ declare module 'metro-transform-plugins/private/normalizePseudoGlobals' {
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-plugins/src/utils/createInlinePlatformChecks.js
 declare module 'metro-transform-plugins/private/utils/createInlinePlatformChecks' {
   import type { Scope } from '@babel/traverse';
-  import type { CallExpression, MemberExpression } from '@babel/types';
-  import type * as $$IMPORT_TYPEOF_1$$ from '@babel/types';
-  type Types = typeof $$IMPORT_TYPEOF_1$$;
+  import type * as _babel_types from '@babel/types';
+  type Types = typeof _babel_types;
   type PlatformChecks = {
-    isPlatformNode: (node: MemberExpression, scope: Scope, isWrappedModule: boolean) => boolean;
-    isPlatformSelectNode: (node: CallExpression, scope: Scope, isWrappedModule: boolean) => boolean;
+    isPlatformNode: (
+      node: _babel_types.MemberExpression,
+      scope: Scope,
+      isWrappedModule: boolean
+    ) => boolean;
+    isPlatformSelectNode: (
+      node: _babel_types.CallExpression,
+      scope: Scope,
+      isWrappedModule: boolean
+    ) => boolean;
   };
   function createInlinePlatformChecks(t: Types, requireName?: string): PlatformChecks;
   export default createInlinePlatformChecks;
