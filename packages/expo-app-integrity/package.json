@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "A native module that helps assert app integrity on mobile platforms",
   "sideEffects": false,
+  "main": "build/index.js",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
