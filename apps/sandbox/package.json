@@ -1,23 +1,17 @@
 {
   "name": "@expo/sandbox",
   "version": "0.0.0",
-  "main": "expo-router/entry",
+  "main": "./index",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios"
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "^7.3.10",
-    "@react-navigation/native": "^7.1.6",
     "expo": "~53.0.9",
-    "expo-linking": "~7.1.5",
-    "expo-router": "^5.0.7",
     "expo-splash-screen": "~0.30.8",
     "react": "19.1.0",
-    "react-native": "0.80.1",
-    "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "4.11.1-nightly-20250611-8b82e081e"
+    "react-native": "0.80.1"
   },
   "devDependencies": {
     "babel-preset-expo": "~13.1.11"

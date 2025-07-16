@@ -15,10 +15,13 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bacon.sandbox"
     },
     "plugins": [
       [
@@ -41,6 +44,9 @@
     "web": {
       "bundler": "metro",
       "output": "server"
+    },
+    "android": {
+      "package": "com.bacon.sandbox"
     }
   }
 }
