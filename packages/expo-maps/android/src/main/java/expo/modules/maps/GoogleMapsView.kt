@@ -76,7 +76,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private var manualCameraControl = false
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     cameraState = updateCameraState()
     val markerState = markerStateFromProps()
     val locationSource = locationSourceFromProps()

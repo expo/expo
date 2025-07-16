@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
-import { Button, View } from 'react-native';
+import React, { Fragment, useState } from 'react';
+import { Button, Text, View } from 'react-native';
 
 import { act, fireEvent, renderRouter, screen } from '../../testing-library';
 import { Modal } from '../Modal';
 
-const ComponentWithModal = (props?: { onModalClose: () => void }) => {
+const ComponentWithModal = (props?: { onModalClose?: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
   return (
     <View testID="ComponentWithModal">
       <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
-      <Modal visible={isOpen} onClose={props.onModalClose}>
-        <View testID="modal-content" />
-      </Modal>
+      <Button testID="close-modal" title="Close modal" onPress={() => setIsOpen(false)} />
+      <Button
+        testID="unmount-modal"
+        title="Unmount modal"
+        onPress={() => {
+          setIsMounted(false);
+        }}
+      />
+      {isMounted && (
+        <Modal visible={isOpen} onClose={props.onModalClose}>
+          <View testID="modal-content" />
+        </Modal>
+      )}
     </View>
   );
 };
@@ -24,23 +35,97 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-it('modal content is not visible when visible is false', async () => {
-  renderRouter({
-    index: ComponentWithModal,
+describe('Content visibility', () => {
+  it('modal content is not visible when visible is false', async () => {
+    renderRouter({
+      index: ComponentWithModal,
+    });
+
+    expect(screen.getByTestId('ComponentWithModal')).toBeVisible();
+    expect(screen.queryByTestId('modal-content')).toBeFalsy();
   });
 
-  expect(screen.getByTestId('ComponentWithModal')).toBeVisible();
-  expect(screen.queryByTestId('modal-content')).toBeFalsy();
-});
+  it('modal opens when visible is true', async () => {
+    renderRouter({
+      index: ComponentWithModal,
+    });
 
-it('modal opens when visible is true', async () => {
-  renderRouter({
-    index: ComponentWithModal,
+    act(() => fireEvent.press(screen.getByTestId('open-modal')));
+
+    expect(screen.getByTestId('modal-content')).toBeVisible();
   });
 
-  act(() => fireEvent.press(screen.getByTestId('open-modal')));
+  it('modal content is not visible when modal is closed', async () => {
+    renderRouter({
+      index: ComponentWithModal,
+    });
 
-  expect(screen.getByTestId('modal-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal')));
+    expect(screen.getByTestId('modal-content')).toBeVisible();
+
+    act(() => fireEvent.press(screen.getByTestId('close-modal')));
+    expect(screen.queryByTestId('modal-content')).toBeFalsy();
+  });
+
+  it('when modal is opened and state changes, modal content is still visible and updated', async () => {
+    const onClose = jest.fn();
+    const ComponentWithState = () => {
+      const [index, setIndex] = useState(0);
+      return (
+        <View>
+          <Button
+            testID="increase-index"
+            title="Increase index"
+            onPress={() => setIndex((prev) => prev + 1)}
+          />
+          <Modal visible onClose={onClose}>
+            <View testID="modal-content">
+              <Text>Index: {index}</Text>
+            </View>
+          </Modal>
+        </View>
+      );
+    };
+    renderRouter({
+      index: ComponentWithState,
+    });
+    expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 0');
+    act(() => fireEvent.press(screen.getByTestId('increase-index')));
+    expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 1');
+    act(() => fireEvent.press(screen.getByTestId('increase-index')));
+    expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 2');
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('when modal is opened and state is changed from modal, the modal is still visible and updated', async () => {
+    const onClose = jest.fn();
+    const ComponentWithState = () => {
+      const [index, setIndex] = useState(0);
+      return (
+        <View>
+          <Modal visible onClose={onClose}>
+            <View testID="modal-content">
+              <Text>Index: {index}</Text>
+            </View>
+            <Button
+              testID="increase-index"
+              title="Increase index"
+              onPress={() => setIndex((prev) => prev + 1)}
+            />
+          </Modal>
+        </View>
+      );
+    };
+    renderRouter({
+      index: ComponentWithState,
+    });
+    expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 0');
+    act(() => fireEvent.press(screen.getByTestId('increase-index')));
+    expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 1');
+    act(() => fireEvent.press(screen.getByTestId('increase-index')));
+    expect(screen.getByTestId('modal-content')).toHaveTextContent('Index: 2');
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });
 
 describe('ScreenStackItem props', () => {
@@ -230,5 +315,160 @@ describe('ScreenStackItem props', () => {
         index: CustomComponentWithModal,
       })
     ).toThrow('Invalid detents provided to Modal: [-1,0,2,1]');
+  });
+});
+
+describe('onClose', () => {
+  it('calls onClose when modal is closed', async () => {
+    const onClose = jest.fn();
+    renderRouter({
+      index: () => <ComponentWithModal onModalClose={onClose} />,
+    });
+
+    act(() => fireEvent.press(screen.getByTestId('open-modal')));
+    expect(screen.getByTestId('modal-content')).toBeVisible();
+
+    act(() => fireEvent.press(screen.getByTestId('close-modal')));
+    act(() => fireEvent.press(screen.getByTestId('close-modal')));
+
+    expect(screen.queryByTestId('modal-content')).toBeFalsy();
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call onClose when modal is unmounted', async () => {
+    const onClose = jest.fn();
+    renderRouter({
+      index: () => <ComponentWithModal onModalClose={onClose} />,
+    });
+
+    act(() => fireEvent.press(screen.getByTestId('open-modal')));
+    expect(screen.getByTestId('modal-content')).toBeVisible();
+
+    act(() => fireEvent.press(screen.getByTestId('unmount-modal')));
+    expect(screen.queryByTestId('modal-content')).toBeFalsy();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it.skip('calls onClose when modal is closed with native dismissal', async () => {
+    // TODO(@ubax): Find a way to simulate native dismissal
+  });
+});
+
+describe('multiple modals', () => {
+  const ComponentWithMultipleModals = (props?: {
+    modalIds: string[];
+    onModalClose?: (id: string) => void;
+  }) => {
+    const [openModals, setOpenModals] = useState<string[]>([]);
+    const closeModal = (id: string) => {
+      setOpenModals((prev: string[]) => prev.filter((modalId) => modalId !== id));
+    };
+    return (
+      <View testID="ComponentWithModal">
+        {props?.modalIds.map((id) => (
+          <Fragment key={id}>
+            <Button
+              testID={`open-modal-${id}`}
+              title={`Open modal ${id}`}
+              onPress={() => setOpenModals((prev: string[]) => [...prev, id])}
+            />
+            <Button
+              testID={`close-modal-${id}`}
+              title={`Close modal ${id}`}
+              onPress={() => {
+                closeModal(id);
+              }}
+            />
+            <Modal
+              visible={openModals.includes(id)}
+              onClose={() => {
+                props.onModalClose?.(id);
+                closeModal(id);
+              }}>
+              <View testID={`modal-${id}-content`} />
+            </Modal>
+          </Fragment>
+        ))}
+      </View>
+    );
+  };
+  it('when top modal is closed, all modals below stay open', async () => {
+    const onClose = jest.fn();
+    renderRouter({
+      index: () => (
+        <ComponentWithMultipleModals modalIds={['a', 'b', 'c']} onModalClose={onClose} />
+      ),
+    });
+
+    act(() => fireEvent.press(screen.getByTestId('open-modal-b')));
+    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-a')));
+    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-c')));
+    expect(screen.getByTestId('modal-c-content')).toBeVisible();
+
+    act(() => fireEvent.press(screen.getByTestId('close-modal-c')));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledWith('c');
+    expect(screen.queryByTestId('modal-c-content')).toBeFalsy();
+    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+  });
+
+  it('when middle modal is closed, all modals below stay open and all modals above are closed', async () => {
+    const onClose = jest.fn();
+    renderRouter({
+      index: () => (
+        <ComponentWithMultipleModals modalIds={['a', 'b', 'c', 'd']} onModalClose={onClose} />
+      ),
+    });
+
+    act(() => fireEvent.press(screen.getByTestId('open-modal-b')));
+    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-a')));
+    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-c')));
+    expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-d')));
+    expect(screen.getByTestId('modal-d-content')).toBeVisible();
+
+    act(() => fireEvent.press(screen.getByTestId('close-modal-a')));
+    expect(screen.queryByTestId('modal-a-content')).toBeFalsy();
+    expect(screen.queryByTestId('modal-d-content')).toBeFalsy();
+    expect(screen.queryByTestId('modal-c-content')).toBeFalsy();
+    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    expect(onClose).toHaveBeenCalledTimes(3);
+    expect(onClose).toHaveBeenCalledWith('a');
+    expect(onClose).toHaveBeenCalledWith('c');
+    expect(onClose).toHaveBeenCalledWith('d');
+  });
+
+  it('when lowest modal is closed, all modals above are closed as well', async () => {
+    const onClose = jest.fn();
+    renderRouter({
+      index: () => (
+        <ComponentWithMultipleModals modalIds={['a', 'b', 'c', 'd']} onModalClose={onClose} />
+      ),
+    });
+
+    act(() => fireEvent.press(screen.getByTestId('open-modal-b')));
+    expect(screen.getByTestId('modal-b-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-a')));
+    expect(screen.getByTestId('modal-a-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-c')));
+    expect(screen.getByTestId('modal-c-content')).toBeVisible();
+    act(() => fireEvent.press(screen.getByTestId('open-modal-d')));
+    expect(screen.getByTestId('modal-d-content')).toBeVisible();
+
+    act(() => fireEvent.press(screen.getByTestId('close-modal-b')));
+    expect(screen.queryByTestId('modal-a-content')).toBeFalsy();
+    expect(screen.queryByTestId('modal-d-content')).toBeFalsy();
+    expect(screen.queryByTestId('modal-c-content')).toBeFalsy();
+    expect(screen.queryByTestId('modal-b-content')).toBeFalsy();
+    expect(onClose).toHaveBeenCalledTimes(4);
+    expect(onClose).toHaveBeenCalledWith('a');
+    expect(onClose).toHaveBeenCalledWith('c');
+    expect(onClose).toHaveBeenCalledWith('d');
+    expect(onClose).toHaveBeenCalledWith('b');
   });
 });
