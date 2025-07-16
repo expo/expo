@@ -7,6 +7,7 @@
  */
 // A fork of the upstream metro-babel-transform-plugin/import-export-plugin that uses Expo-specific features
 // and adds support for export-namespace-from
+// https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js
 
 import type { PluginObj } from '@babel/core';
 import template from '@babel/template';
