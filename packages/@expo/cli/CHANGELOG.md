@@ -15,6 +15,7 @@
 - Support external URLs with static redirects ([#38041](https://github.com/expo/expo/pull/38041) by [@hassankhan](https://github.com/hassankhan))
 - Add `EXPO_UNSTABLE_LIVE_BINDINGS` to allow developer to disable live binding in `experimentalImportSupport`. ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Added support for cli extensions in the interactive devtools menu. ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
+- Added cli extension helpers for building extensions ([#38093](https://github.com/expo/expo/pull/38093) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
