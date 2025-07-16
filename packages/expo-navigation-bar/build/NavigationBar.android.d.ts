@@ -14,5 +14,6 @@ export declare function unstable_getPositionAsync(): Promise<NavigationBarPositi
 export declare function setBehaviorAsync(behavior: NavigationBarBehavior): Promise<void>;
 export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
 export declare function setStyle(style: NavigationBarStyle): void;
+export declare function setTransparent(transparent: boolean): void;
 export declare function useVisibility(): NavigationBarVisibility | null;
 //# sourceMappingURL=NavigationBar.android.d.ts.map

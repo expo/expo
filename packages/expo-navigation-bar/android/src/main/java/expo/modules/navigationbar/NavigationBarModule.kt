@@ -1,5 +1,6 @@
 package expo.modules.navigationbar
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,15 @@ import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.navigationbar.singletons.NavigationBar
+
+// The light scrim color used in the platform API 29+
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/com/android/internal/policy/DecorView.java;drc=6ef0f022c333385dba2c294e35b8de544455bf19;l=142
+internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+// The dark scrim color used in the platform.
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/res/color/system_bar_background_semi_transparent.xml
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/remote_color_resources_res/values/colors.xml;l=67
+internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
 class NavigationBarModule : Module() {
   private val currentActivity get() = appContext.throwingActivity
@@ -121,6 +131,34 @@ class NavigationBarModule : Module() {
         }
 
         return@AsyncFunction behavior
+      }
+    }.runOnQueue(Queues.MAIN)
+
+    @Suppress("DEPRECATION")
+    AsyncFunction("setTransparent") { transparent: Boolean ->
+      val activity = appContext.currentActivity ?: return@AsyncFunction
+
+      activity.window.run {
+        if (transparent) {
+          navigationBarColor = Color.TRANSPARENT
+
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isNavigationBarContrastEnforced = false
+          }
+        } else {
+          val isDarkMode = decorView.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK != Configuration.UI_MODE_NIGHT_YES
+
+          navigationBarColor = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !isDarkMode -> LightNavigationBarColor
+            else -> DarkNavigationBarColor
+          }
+
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isNavigationBarContrastEnforced = true
+          }
+        }
       }
     }.runOnQueue(Queues.MAIN)
   }
