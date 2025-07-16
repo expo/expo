@@ -123,7 +123,7 @@ public final class ImageView: ExpoView {
       cancelPendingOperation()
       return
     }
-    
+
     loadPlaceholderIfNecessary()
   }
 
