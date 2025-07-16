@@ -227,12 +227,10 @@ function importExportPlugin({ types: t }) {
                         }
                         else {
                             if (remote.name === 'default') {
-                                // $FlowFixMe[incompatible-use]
                                 state.exportDefault.push({ local: local.name, loc });
                             }
                             else {
                                 state.exportNamed.push({
-                                    // $FlowFixMe[incompatible-use]
                                     local: local.name,
                                     remote: remote.name,
                                     loc,
@@ -296,8 +294,6 @@ function importExportPlugin({ types: t }) {
                                 });
                                 break;
                             case 'ImportSpecifier':
-                                // $FlowFixMe[incompatible-type]
-                                // $FlowFixMe[incompatible-use]
                                 if (imported.name === 'default') {
                                     state.imports.push({
                                         node: withLocation(importTemplate({
@@ -308,9 +304,7 @@ function importExportPlugin({ types: t }) {
                                     });
                                 }
                                 else if (sharedModuleVariableDeclaration != null) {
-                                    sharedModuleVariableDeclaration.declarations.push(withLocation(t.variableDeclarator(t.cloneNode(local), t.memberExpression(t.cloneNode(sharedModuleImport), 
-                                    // $FlowFixMe[incompatible-call]
-                                    t.cloneNode(imported))), loc));
+                                    sharedModuleVariableDeclaration.declarations.push(withLocation(t.variableDeclarator(t.cloneNode(local), t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))), loc));
                                 }
                                 else {
                                     state.imports.push({
@@ -358,9 +352,7 @@ function importExportPlugin({ types: t }) {
                         }), e.loc));
                     });
                     state.exportAll.forEach((e) => {
-                        body.push(
-                        // $FlowFixMe[incompatible-call]
-                        ...withLocation(exportAllTemplate({
+                        body.push(...withLocation(exportAllTemplate({
                             FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
                             REQUIRED: path.scope.generateUidIdentifier(e.file),
                             KEY: path.scope.generateUidIdentifier('key'),

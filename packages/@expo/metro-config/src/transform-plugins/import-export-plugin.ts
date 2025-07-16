@@ -343,11 +343,9 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
               }
             } else {
               if (remote.name === 'default') {
-                // $FlowFixMe[incompatible-use]
                 state.exportDefault.push({ local: local.name, loc });
               } else {
                 state.exportNamed.push({
-                  // $FlowFixMe[incompatible-use]
                   local: local.name,
                   remote: remote.name,
                   loc,
@@ -438,8 +436,6 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                 break;
 
               case 'ImportSpecifier':
-                // $FlowFixMe[incompatible-type]
-                // $FlowFixMe[incompatible-use]
                 if (imported.name === 'default') {
                   state.imports.push({
                     node: withLocation(
@@ -456,11 +452,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                     withLocation(
                       t.variableDeclarator(
                         t.cloneNode(local),
-                        t.memberExpression(
-                          t.cloneNode(sharedModuleImport),
-                          // $FlowFixMe[incompatible-call]
-                          t.cloneNode(imported)
-                        )
+                        t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))
                       ),
                       loc
                     )
@@ -529,7 +521,6 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
 
           state.exportAll.forEach((e) => {
             body.push(
-              // $FlowFixMe[incompatible-call]
               ...withLocation(
                 exportAllTemplate({
                   FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
