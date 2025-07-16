@@ -847,7 +847,7 @@ export async function withMetroMultiPlatformAsync(
   if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
-    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
+    require('metro-config/private/defaults/defaults').moduleSystem = require.resolve(
       '@expo/cli/build/metro-require/require'
     );
   }

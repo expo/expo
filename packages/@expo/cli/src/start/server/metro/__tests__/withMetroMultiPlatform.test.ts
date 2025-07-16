@@ -1,7 +1,7 @@
 import { getBareExtensions } from '@expo/config/paths';
 import { vol } from 'memfs';
-import { ConfigT } from 'metro-config';
-import { CustomResolutionContext } from 'metro-resolver/src';
+import type { ConfigT } from 'metro-config';
+import type { CustomResolutionContext } from 'metro-resolver';
 import assert from 'node:assert';
 
 import { StickyModuleResolverInput } from '../createExpoStickyResolver';

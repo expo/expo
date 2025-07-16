@@ -321,7 +321,7 @@ export async function instantiateMetroAsync(
     } catch {
       // Add fallback for monorepo tests up until the fork is merged.
       Log.warn('Failed to load HMR serializer from @expo/metro-config, using fallback version.');
-      hmrJSBundle = require('metro/src/DeltaBundler/Serializers/hmrJSBundle');
+      hmrJSBundle = require('metro/private/DeltaBundler/Serializers/hmrJSBundle');
     }
 
     // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.
