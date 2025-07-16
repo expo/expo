@@ -86,7 +86,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   func exitFullscreen() {
     playerViewController.exitFullscreen()
+    #if os(tvOS)
     self.isFullscreen = false
+    #endif
   }
 
   func startPictureInPicture() throws {
