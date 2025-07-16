@@ -1,46 +1,63 @@
 import SwiftUI
 import ExpoModulesCore
 
+enum KeyboardType: String, Enumerable {
+  case defaultKeyboard = "default"
+  case emailAddress = "email-address"
+  case numeric = "numeric"
+  case phonePad = "phone-pad"
+  case asciiCapable = "ascii-capable"
+  case numbersAndPunctuation = "numbers-and-punctuation"
+  case url = "url"
+  case namePhonePad = "name-phone-pad"
+  case decimalPad = "decimal-pad"
+  case twitter = "twitter"
+  case webSearch = "web-search"
+  case asciiCapableNumberPad = "ascii-capable-number-pad"
+}
+
 final class TextFieldProps: ExpoSwiftUI.ViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
   @Field var multiline: Bool = false
   @Field var numberOfLines: Int?
-  @Field var keyboardType: String = "default"
+  @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
   @Field var autocorrection: Bool = true
   @Field var allowNewlines: Bool = true
   var onValueChanged = EventDispatcher()
 }
 
-func getKeyboardType(_ keyboardType: String?) -> UIKeyboardType {
-  switch keyboardType ?? "" {
-  case "default":
-    return .default
-  case "email-address":
-    return .emailAddress
-  case "numeric":
-    return .numberPad
-  case "phone-pad":
-    return .phonePad
-  case "ascii-capable":
-    return .asciiCapable
-  case "numbers-and-punctuation":
-    return .numbersAndPunctuation
-  case "url":
-    return .URL
-  case "name-phone-pad":
-    return .namePhonePad
-  case "decimal-pad":
-    return .decimalPad
-  case "twitter":
-    return .twitter
-  case "web-search":
-    return .webSearch
-  case "ascii-capable-number-pad":
-    return .asciiCapableNumberPad
-  default:
-    return .default
-  }
+func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
+    guard let keyboardType = keyboardType else {
+        return .default
+    }
+    
+    switch keyboardType {
+    case .defaultKeyboard:
+        return .default
+    case .emailAddress:
+        return .emailAddress
+    case .numeric:
+        return .numberPad
+    case .phonePad:
+        return .phonePad
+    case .asciiCapable:
+        return .asciiCapable
+    case .numbersAndPunctuation:
+        return .numbersAndPunctuation
+    case .url:
+        return .URL
+    case .namePhonePad:
+        return .namePhonePad
+    case .decimalPad:
+        return .decimalPad
+    case .twitter:
+        return .twitter
+    case .webSearch:
+        return .webSearch
+    case .asciiCapableNumberPad:
+        return .asciiCapableNumberPad
+    }
 }
 
 func allowMultiLine() -> Bool {

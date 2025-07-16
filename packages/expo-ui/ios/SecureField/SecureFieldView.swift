@@ -4,7 +4,7 @@ import ExpoModulesCore
 final class SecureFieldProps: ExpoSwiftUI.ViewProps {
   @Field var defaultValue: String = ""
   @Field var placeholder: String = ""
-  @Field var keyboardType: String = "default"
+  @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
   var onValueChanged = EventDispatcher()
 }
 
