@@ -1,6 +1,13 @@
 import { requireNativeView } from 'expo';
 import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
 
+type PrimitiveBaseProps = {
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: string;
+};
+
 export type HorizontalArrangement =
   | 'start'
   | 'end'
@@ -24,7 +31,7 @@ type LayoutBaseProps = {
   verticalArrangement?: VerticalArrangement;
   horizontalAlignment?: HorizontalAlignment;
   verticalAlignment?: VerticalAlignment;
-};
+} & PrimitiveBaseProps;
 
 //#region Row Component
 export type RowProps = LayoutBaseProps;
@@ -54,7 +61,7 @@ export function Column(props: ColumnProps) {
 export type ContainerProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-};
+} & PrimitiveBaseProps;
 const ContainerNativeView: React.ComponentType<ColumnProps> | null =
   Platform.OS === 'android' ? requireNativeView('ExpoUI', 'ContainerView') : null;
 export function Container(props: ContainerProps) {
@@ -85,7 +92,7 @@ export type TextProps = {
   color?: ColorValue;
   fontSize?: number;
   fontWeight?: TextFontWeight;
-};
+} & PrimitiveBaseProps;
 
 const TextNativeView: React.ComponentType<Omit<TextProps, 'children'> & { text: string }> | null =
   Platform.OS === 'android' ? requireNativeView('ExpoUI', 'TextView') : null;

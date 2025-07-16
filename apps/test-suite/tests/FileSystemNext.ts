@@ -689,6 +689,47 @@ export async function test({ describe, expect, it, ...t }) {
           expect(result.exists).toBe(false);
         });
       });
+      describe('When getting directory info', () => {
+        it('executes correctly on an empty directory', () => {
+          const url = `${testDirectory}executes_correctly_on_an_empty_directory/`;
+          const src = new Directory(url);
+          src.create();
+
+          const result = src.info();
+
+          expect(result.exists).toBe(true);
+          expect(result.modificationTime).not.toBeNull();
+          expect(result.creationTime).not.toBeNull();
+          expect(result.uri).toBe(url);
+          expect(result.size).toBe(0);
+        });
+        it('executes correctly on a non empty directory', () => {
+          const url = `${testDirectory}executes_correctly_on_a_non_empty_directory/`;
+          const src = new Directory(url);
+          src.create();
+          const file = new File(`${url}1.txt`);
+          file.write('Hello world');
+
+          const result = src.info();
+
+          expect(result.exists).toBe(true);
+          expect(result.modificationTime).not.toBeNull();
+          expect(result.creationTime).not.toBeNull();
+          expect(result.files).toContain('1.txt');
+          expect(result.uri).toBe(url);
+          expect(result.size).toBe(11);
+        });
+        it('returns exists false if a directory does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_a_file_does_not_exist`;
+          const src = new Directory(url);
+          src.create();
+          src.delete();
+
+          const result = src.info();
+
+          expect(result.exists).toBe(false);
+        });
+      });
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
   });

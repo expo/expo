@@ -52,7 +52,7 @@ enum MediaSubtype: String, Enumerable {
       (.videoTimelapse, .timelapse),
       (.videoCinematic, .videoCinematic)
     ]
-    if #available(iOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, *) {
       mapping.append((.spatialMedia, .spatialMedia))
     }
 
@@ -72,7 +72,7 @@ enum MediaSubtype: String, Enumerable {
     case .stream: .videoStreamed
     case .timelapse: .videoTimelapse
     case .spatialMedia:
-      if #available(iOS 16, *) {
+      if #available(iOS 16, tvOS 16, *) {
         .spatialMedia
       } else {
         []
