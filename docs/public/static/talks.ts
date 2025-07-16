@@ -1,24 +1,42 @@
 export const TALKS = [
   {
+    title: 'Keynote: streamline React Native development',
+    event: 'App.js Conf 2025',
+    description: 'Charlie Cheever, Jon Samp',
+    videoId: 'lnxanzsP1rM',
+    home: true,
+  },
+  {
+    title: 'Deploy Everywhere with Expo Router',
+    event: 'App.js Conf 2025',
+    description: 'Evan Bacon',
+    videoId: 'GKQ_0VfYweg',
+    home: true,
+  },
+  {
+    title: 'Embracing Native Code and Capabilities',
+    event: 'App.js Conf 2025',
+    description: 'Keith Kurak',
+    videoId: 'TLoHua8bzPg',
+    home: true,
+  },
+  {
     title: 'Keynote: flexibility & iteration speed',
     event: 'App.js Conf 2024',
     description: 'Charlie Cheever, James Ide',
     videoId: 'StTYy9Duk3E',
-    home: true,
   },
   {
     title: 'Getting the most out of Expo Development Builds',
     event: 'App.js Conf 2024',
     description: 'Kadi Kraman',
     videoId: '7J8LRpja9_o',
-    home: true,
   },
   {
     title: 'Fetch Once, Render Everywhere',
     event: 'App.js Conf 2024',
     description: 'Evan Bacon',
     videoId: 'BK2xbPW2uUU',
-    home: true,
   },
   {
     title: 'Launching Desktop Apps to Orbit with React Native',
@@ -338,6 +356,21 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Golden Workflow: Automate the creation of development builds',
+    event: 'EAS Tutorials',
+    videoId: 'u8MAJ0F18s0',
+  },
+  {
+    title: 'Golden Workflow: Share preview updates with your team',
+    event: 'EAS Tutorials',
+    videoId: 'v_rzRcVSQYQ',
+  },
+  {
+    title: 'Golden Workflow: Deploy your app to production with an automated workflow',
+    event: 'EAS Tutorials',
+    videoId: 'o-peODF6E2o',
+  },
   {
     title: 'How to publish your AI app to the app store | No code needed',
     event: 'Expo Tutorials',

@@ -12,7 +12,7 @@ object DevMenuDevSettings {
     if (devSettings != null) {
       return Bundle().apply {
         putBoolean("isElementInspectorShown", devSettings.isElementInspectorEnabled)
-        putBoolean("isHotLoadingEnabled", devDelegate.devInternalSettings?.isHotModuleReplacementEnabled ?: false)
+        putBoolean("isHotLoadingEnabled", devSettings.isHotModuleReplacementEnabled)
         putBoolean("isPerfMonitorShown", devSettings.isFpsDebugEnabled)
         putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)

@@ -740,7 +740,7 @@ public final class SQLiteModule: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     guard let buffer else {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      return Data()
     }
     defer { exsqlite3_free(buffer) }
     return Data(bytes: buffer, count: Int(size))
@@ -776,8 +776,7 @@ public final class SQLiteModule: Module {
 
   private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws -> Data {
     try maybeThrowForClosedDatabase(database)
-    var result: Data?
-    try changeset.withUnsafeBytes {
+    return try changeset.withUnsafeBytes {
       let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
       var outSize: Int32 = 0
       var outBuffer: UnsafeMutableRawPointer?
@@ -786,14 +785,10 @@ public final class SQLiteModule: Module {
         throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
       guard let outBuffer else {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+        return Data()
       }
       defer { exsqlite3_free(outBuffer) }
-      result = Data(bytes: outBuffer, count: Int(outSize))
+      return Data(bytes: outBuffer, count: Int(outSize))
     }
-    guard let result else {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    return result
   }
 }

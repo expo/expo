@@ -28,11 +28,11 @@
     "expo-notifications": "0.31.2",
     "expo-task-manager": "13.1.5",
     "native-component-list": "*",
-    "react-native-gesture-handler": "~2.24.0",
-    "react": "19.0.0",
-    "react-native": "0.79.2",
+    "react-native-gesture-handler": "~2.26.0",
+    "react": "19.1.0",
+    "react-native": "0.80.1",
     "react-native-safe-area-context": "5.4.0",
-    "react-native-screens": "4.9.2"
+    "react-native-screens": "4.11.1-nightly-20250611-8b82e081e"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,5 +1,5 @@
 import { PermissionStatus } from 'expo-modules-core';
-import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
+import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { RecordingPresets } from './RecordingConstants';
 import resolveAssetSource from './utils/resolveAssetSource';
 const nextId = (() => {
@@ -145,7 +145,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.src = source;
         this.media = this._createMediaElement();
     }
-    async seekTo(seconds) {
+    async seekTo(seconds, toleranceMillisBefore, toleranceMillisAfter) {
         this.media.currentTime = seconds;
     }
     // Not supported on web

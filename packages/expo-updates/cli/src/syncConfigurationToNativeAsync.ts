@@ -1,6 +1,6 @@
-import { getConfig } from '@expo/config';
-import { XML, AndroidConfig, IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
+import { getConfig } from 'expo/config';
+import { XML, AndroidConfig, IOSConfig } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 

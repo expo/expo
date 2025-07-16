@@ -74,7 +74,6 @@ import {
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
-  shouldEnableAsyncImports,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
@@ -354,7 +353,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       serializerIncludeMaps: includeSourceMaps,
       mainModuleName: resolvedMainModuleName,
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: !env.EXPO_NO_METRO_LAZY,
       asyncRoutes,
       baseUrl,
       isExporting,
@@ -386,7 +385,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'client',
       reactCompiler,
       mainModuleName: resolveMainModuleName(this.projectRoot, { platform }),
-      lazy: shouldEnableAsyncImports(this.projectRoot),
+      lazy: !env.EXPO_NO_METRO_LAZY,
       baseUrl,
       isExporting,
       asyncRoutes,

@@ -41,7 +41,7 @@ describe(updateDevelopmentSessionAsync, () => {
         runtime: 'native',
         url: 'exp://192.168.1.69:19001',
       })
-    ).rejects.toThrowError(/Expo server/);
+    ).rejects.toThrow(/Expo server/);
     expect(scope.isDone()).toBe(true);
   });
 });
@@ -80,7 +80,7 @@ describe(closeDevelopmentSessionAsync, () => {
         deviceIds: ['123'],
         url: 'exp://192.168.1.69:19001',
       })
-    ).rejects.toThrowError(/Expo server/);
+    ).rejects.toThrow(/Expo server/);
     expect(scope.isDone()).toBe(true);
   });
 });

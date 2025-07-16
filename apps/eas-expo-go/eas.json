@@ -9,7 +9,7 @@
     "base": {
       "credentialsSource": "local",
       "android": {
-        "image": "ubuntu-22.04-jdk-17-ndk-r21e",
+        "image": "latest",
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
@@ -21,10 +21,10 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk53-0.79.2",
+          "key": "sdk54-0.80.1",
           "customPaths": ["../expo-go/ios/Pods"]
         },
-        "image": "macos-sonoma-14.6-xcode-16.0",
+        "image": "latest",
         "cocoapods": "1.16.2",
         "resourceClass": "medium",
         "env": {

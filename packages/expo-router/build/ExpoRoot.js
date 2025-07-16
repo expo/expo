@@ -46,6 +46,8 @@ const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
 const imperative_api_1 = require("./imperative-api");
+const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
+const ModalContext_1 = require("./modal/ModalContext");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
@@ -70,13 +72,15 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (<ParentWrapper>
-        <react_native_safe_area_context_1.SafeAreaProvider 
+        <LinkPreviewContext_1.LinkPreviewContextProvider>
+          <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
-          {children}
-        </react_native_safe_area_context_1.SafeAreaProvider>
+            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+            {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+            {children}
+          </react_native_safe_area_context_1.SafeAreaProvider>
+        </LinkPreviewContext_1.LinkPreviewContextProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
@@ -139,8 +143,10 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
       <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <imperative_api_1.ImperativeApiEmitter />
-            <Content />
+            <ModalContext_1.ModalContextProvider>
+              <imperative_api_1.ImperativeApiEmitter />
+              <Content />
+            </ModalContext_1.ModalContextProvider>
           </WrapperComponent>
         </serverLocationContext_1.ServerContext.Provider>
       </NavigationContainer_1.NavigationContainer>

@@ -39,7 +39,7 @@ it('replaces invalid position with "relative"', () => {
     />
   );
   expect(toJSON()).toMatchSnapshot();
-  expect(console.warn).toBeCalledWith(`Unsupported position: 'fixed'`);
+  expect(console.warn).toHaveBeenCalledWith(`Unsupported position: 'fixed'`);
 });
 
 it('mocks out visibility: hidden by lowering the opacity', () => {

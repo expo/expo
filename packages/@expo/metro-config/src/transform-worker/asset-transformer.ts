@@ -16,6 +16,7 @@ import path from 'node:path';
 import url from 'node:url';
 
 import { getUniversalAssetData } from './getAssets';
+import { toPosixPath } from '../utils/filePath';
 
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template.statement(
@@ -71,19 +72,20 @@ export async function transform(
     // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
     isReactServer
   ) {
-    const clientReference = getClientReference()!;
     return {
       ast: {
         ...t.file(
           t.program([
             buildClientReferenceRequire({
-              FILE_PATH: JSON.stringify(clientReference),
+              FILE_PATH: JSON.stringify(
+                `./${toPosixPath(path.relative(options.projectRoot, absolutePath))}`
+              ),
             }),
           ])
         ),
         errors: [],
       },
-      reactClientReference: clientReference,
+      reactClientReference: getClientReference()!,
     };
   }
 

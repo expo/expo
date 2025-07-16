@@ -187,7 +187,13 @@ void JNIUtils::emitEventOnJSIObject(
     // TODO(@lukmccall): refactor when jsInvoker receives a runtime as a parameter
     jsi::Runtime &rt = jsiContext->runtimeHolder->get();
 
-    jsi::Object jsThis = jsWeakThis->lock(rt).asObject(rt);
+    jsi::Value unpackedValue = jsWeakThis->lock(rt);
+    if (unpackedValue.isUndefined()) {
+      // The JS object was deallocated - we can ignore emitting an event
+      return;
+    }
+
+    jsi::Object jsThis = unpackedValue.asObject(rt);
     EventEmitter::emitEvent(rt, jsThis, name, argsProvider(rt));
   });
 }

@@ -50,7 +50,9 @@ const getLinkingConfig_1 = require("../getLinkingConfig");
 const getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 const getRoutes_1 = require("../getRoutes");
 const routeInfo_1 = require("./routeInfo");
+const href_1 = require("../link/href");
 const useScreens_1 = require("../useScreens");
+const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const url_1 = require("../utils/url");
 const SplashScreen = __importStar(require("../views/Splash"));
 const storeRef = {
@@ -80,6 +82,11 @@ exports.store = {
     },
     get rootComponent() {
         return storeRef.current.rootComponent;
+    },
+    getStateForHref(href, options) {
+        href = (0, href_1.resolveHref)(href);
+        href = (0, href_1.resolveHrefStringWithSegments)(href, exports.store.getRouteInfo(), options);
+        return this.linking?.getStateFromPath(href, this.linking.config);
     },
     get linking() {
         return storeRef.current.linking;
@@ -134,6 +141,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         ...config,
         ignoreEntryPoints: true,
         platform: react_native_1.Platform.OS,
+        preserveRedirectAndRewrites: true,
     });
     const redirects = [config?.redirects, config?.rewrites]
         .filter(Boolean)
@@ -206,7 +214,20 @@ const routeInfoSubscribe = (callback) => {
     };
 };
 function useRouteInfo() {
-    return (0, react_1.useSyncExternalStore)(routeInfoSubscribe, exports.store.getRouteInfo, exports.store.getRouteInfo);
+    const routeInfo = (0, react_1.useSyncExternalStore)(routeInfoSubscribe, exports.store.getRouteInfo, exports.store.getRouteInfo);
+    const { isPreview, segments, params, pathname } = (0, PreviewRouteContext_1.usePreviewInfo)();
+    if (isPreview) {
+        return {
+            pathname: pathname ?? '',
+            segments: segments ?? [],
+            unstable_globalHref: '',
+            params: params ?? {},
+            searchParams: new URLSearchParams(),
+            pathnameWithParams: pathname ?? '',
+            isIndex: false,
+        };
+    }
+    return routeInfo;
 }
 function getCachedRouteInfo(state) {
     let routeInfo = routeInfoCache.get(state);

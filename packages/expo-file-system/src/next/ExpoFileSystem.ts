@@ -12,6 +12,8 @@ declare class ExpoFileSystemNextModule extends NativeModule {
     destination: File | Directory,
     options?: DownloadOptions
   ): Promise<string>;
+  totalDiskSpace: number;
+  availableDiskSpace: number;
 }
 
 export default isRunningInExpoGo()

@@ -1,0 +1,18 @@
+query Me {
+  meUserActor {
+    id
+    appCount
+    profilePhoto
+    username
+    isExpoAdmin
+    accounts {
+      id
+      name
+      ownerUserActor {
+        username
+        fullName
+        profilePhoto
+      }
+    }
+  }
+}

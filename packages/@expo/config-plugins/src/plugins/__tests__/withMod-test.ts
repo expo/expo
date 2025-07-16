@@ -36,7 +36,7 @@ describe(withMod, () => {
       slug: '',
     });
 
-    expect(action).toBeCalledWith(config);
+    expect(action).toHaveBeenCalledWith(config);
   });
   it('asserts multiple providers added', async () => {
     // Apply a provider mod.

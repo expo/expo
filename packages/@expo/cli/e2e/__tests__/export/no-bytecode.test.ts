@@ -41,7 +41,9 @@ describe('exports for hermes with no bytecode', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
+          bundle: expect.stringMatching(
+            /_expo\/static\/js\/ios\/entry-(?<md5>[0-9a-fA-F]{32})\.js/
+          ),
         },
       },
       version: 0,
@@ -97,7 +99,9 @@ describe('exports for hermes with no bytecode and no minification', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
+          bundle: expect.stringMatching(
+            /_expo\/static\/js\/ios\/entry-(?<md5>[0-9a-fA-F]{32})\.js/
+          ),
         },
       },
       version: 0,

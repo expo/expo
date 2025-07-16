@@ -1,12 +1,11 @@
 ---
 title: Stack
 description: Learn how to use the Stack navigator in Expo Router.
+hasVideoLink: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
+import { ReactNavigationOptions } from '~/ui/components/ReactNavigationOptions';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -164,6 +163,12 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Available header options
+
+The `Stack` navigator supports comprehensive header configuration options. Below are all the header-related options available:
+
+<ReactNavigationOptions category="header" />
+
 ### Set screen options dynamically
 
 To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
@@ -242,6 +247,12 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+### Other screen options
+
+For a complete list of all available other screen options including animations, gestures, and other configurations:
+
+<ReactNavigationOptions excludeCategories={['header']} />
 
 ## Custom push behavior
 
@@ -476,12 +487,3 @@ export default function Layout() {
 ```
 
 For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
-
-## More
-
-<BoxLink
-  title="Native Stack Navigator options"
-  Icon={BookOpen02Icon}
-  description="For a list of all options available in the stack layout, see React Navigation's documentation."
-  href="https://reactnavigation.org/docs/native-stack-navigator#options"
-/>

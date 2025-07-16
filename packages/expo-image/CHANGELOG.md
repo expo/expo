@@ -6,6 +6,54 @@
 
 ### 🎉 New features
 
+- Add support for `ImageRef` source in `generateBlurhashAsync` ([#37901](https://github.com/expo/expo/pull/37901) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Add generateBlurhashAsync ([#37817](https://github.com/expo/expo/pull/37817) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add a new prop - `enforceEarlyResizing` to reduce the memory usage of the image view. ([#37909](https://github.com/expo/expo/pull/37909) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [iOS] Speed up displaying local assets. ([#37795](https://github.com/expo/expo/pull/37795) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
+- [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
+
+### 💡 Others
+
+### 📚 3rd party library updates
+
+## 2.3.2 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- [iOS] Use specified cache type when no transformation is applied ([#37777](https://github.com/expo/expo/pull/37777) by [@jakex7](https://github.com/jakex7))
+
+## 2.3.1 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed contentPosition is not correct after switching theme. ([#37374](https://github.com/expo/expo/pull/37374) by [@kudo](https://github.com/kudo))
+
+### 📚 3rd party library updates
+
+- [Android] Bumped GIF Glide plugin to 3.0.5 for Android 16KB page size support. ([#37454](https://github.com/expo/expo/pull/37454) by [@kudo](https://github.com/kudo))
+
+## 2.3.0 - 2025-06-11
+
+### 🛠 Breaking changes
+
+- [iOS] `useAppleWebpCodec` has been moved from the source object to the component's prop to make it usable with the local assets. ([#37300](https://github.com/expo/expo/pull/37300) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix blurry images when using `tintColor` by scaling `imageThumbnailPixelSize` with screen density. ([#37235](https://github.com/expo/expo/pull/37235) by [@hirbod](https://github.com/hirbod))
+
+## 2.2.1 - 2025-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 - 2025-06-04
+
+### 🎉 New features
+
 - Add imperative api to lock/unlock/reload resource. ([#36912](https://github.com/expo/expo/pull/36912) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
@@ -13,8 +61,7 @@
 - Fix React Server Components support. ([#36801](https://github.com/expo/expo/pull/36801) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Fix PhotoLibrary assets being scaled twice. ([#36776](https://github.com/expo/expo/pull/36776) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Don't add transformers when unnecessary. ([#36884](https://github.com/expo/expo/pull/36884) by [@jakex7](https://github.com/jakex7))
-
-### 💡 Others
+- [Web] Fix `tintColor` in React 19. ([#37133](https://github.com/expo/expo/pull/37133) by [@bradleyayers](https://github.com/bradleyayers))
 
 ## 2.1.7 — 2025-05-06
 

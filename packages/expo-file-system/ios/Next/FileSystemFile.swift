@@ -33,15 +33,14 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   override var exists: Bool {
-    get throws {
-      try validatePermission(.read)
-
-      var isDirectory: ObjCBool = false
-      if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
-        return !isDirectory.boolValue
-      }
+    guard checkPermission(.read) else {
       return false
     }
+    var isDirectory: ObjCBool = false
+    if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
+      return !isDirectory.boolValue
+    }
+    return false
   }
 
   // TODO: Move to the constructor once error is rethrowed
@@ -51,26 +50,18 @@ internal final class FileSystemFile: FileSystemPath {
     }
   }
 
-  var size: Int64 {
-    get throws {
-      try validatePermission(.read)
-      let attributes: [FileAttributeKey: Any] = try FileManager.default.attributesOfItem(atPath: url.path)
-      guard let size = attributes[.size] else {
-        throw UnableToGetFileSizeException("attributes do not contain size")
-      }
-      guard let size = size as? NSNumber else {
-        throw UnableToGetFileSizeException("size is not a number")
-      }
-      return size.int64Value
-    }
-  }
-
   var md5: String {
     get throws {
       try validatePermission(.read)
       let fileData = try Data(contentsOf: url)
       let hash = Insecure.MD5.hash(data: fileData)
       return hash.map { String(format: "%02hhx", $0) }.joined()
+    }
+  }
+
+  var size: Int64 {
+    get throws {
+      return try getAttribute(.size, atPath: url.path)
     }
   }
 
@@ -111,5 +102,31 @@ internal final class FileSystemFile: FileSystemPath {
   func base64() throws -> String {
     try validatePermission(.read)
     return try Data(contentsOf: url).base64EncodedString()
+  }
+
+  func info(options: InfoOptions) throws -> FileInfo {
+    try validateType()
+    try validatePermission(.read)
+    if !exists {
+      let result = FileInfo()
+      result.exists = false
+      result.uri = url.absoluteString
+      return result
+    }
+    switch url.scheme {
+    case "file":
+      let result = FileInfo()
+      result.exists = true
+      result.uri = url.absoluteString
+      result.size = try size
+      result.modificationTime = try modificationTime
+      result.creationTime = try creationTime
+      if options.md5 {
+        result.md5 = try md5
+      }
+      return result
+    default:
+      throw UnableToGetInfoException("url scheme \(String(describing: url.scheme)) is not supported")
+    }
   }
 }

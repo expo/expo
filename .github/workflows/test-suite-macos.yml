@@ -10,15 +10,21 @@ on:
       - packages/expo-asset/**
       - packages/expo-constants/**
       - packages/expo-crypto/**
+      - packages/expo-eas-client/**
       - packages/expo-file-system/**
       - packages/expo-font/**
       - packages/expo-keep-awake/**
       - packages/expo-linking/**
       - packages/expo-local-authentication/**
+      - packages/expo-manifests/**
       - packages/expo-mesh-gradient/**
       - packages/expo-modules-autolinking/**
       - packages/expo-modules-core/**
       - packages/expo-sqlite/**
+      - packages/expo-structured-headers/**
+      - packages/expo-updates/**
+      - packages/expo-updates-interface/**
+      - packages/expo-web-browser/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -33,7 +39,7 @@ jobs:
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 16.0
-        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true

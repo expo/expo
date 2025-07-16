@@ -12,6 +12,8 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+  static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
+  static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -58,6 +60,8 @@ public final class ImageView: ExpoView {
 
   var lockResource: Bool = false
 
+  var enforceEarlyResizing: Bool = false
+
   var recyclingKey: String? {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
@@ -67,6 +71,13 @@ public final class ImageView: ExpoView {
   }
 
   var autoplay: Bool = true
+
+  var useAppleWebpCodec: Bool = true
+
+  /**
+   The ideal image size that fills in the container size while maintaining the source aspect ratio.
+   */
+  var imageIdealSize: CGSize = .zero
 
   // MARK: - Events
 
@@ -118,6 +129,15 @@ public final class ImageView: ExpoView {
     }
   }
 
+  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+      // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
+      // After that we have to recalculate the mask layer in `applyContentPosition`.
+      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    }
+  }
+
   // MARK: - Implementation
 
   func reload(force: Bool = false) {
@@ -134,22 +154,30 @@ public final class ImageView: ExpoView {
     if sdImageView.image == nil {
       sdImageView.contentMode = contentFit.toContentMode()
     }
-    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy)
+    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy, useAppleWebpCodec: useAppleWebpCodec)
 
     // Cancel currently running load requests.
     cancelPendingOperation()
 
-    context[.imageTransformer] = createTransformPipeline()
+    if blurRadius > 0 {
+      context[.imageTransformer] = createTransformPipeline()
+    }
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    if imageTintColor != nil {
+    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing
+    if shouldEarlyResize {
       context[.imagePreserveAspectRatio] = true
-      context[.imageThumbnailPixelSize] = sdImageView.bounds.size
+      context[.imageThumbnailPixelSize] = CGSize(
+        width: sdImageView.bounds.size.width * screenScale,
+        height: sdImageView.bounds.size.height * screenScale
+      )
     }
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
     context[ImageView.screenScaleKey] = screenScale
+    context[ImageView.frameSizeKey] = frame.size
+    context[ImageView.contentFitKey] = contentFit
 
     // Do it here so we don't waste resources trying to fetch from a remote URL
     if maybeRenderLocalAsset(from: source) {
@@ -223,15 +251,15 @@ public final class ImageView: ExpoView {
       ])
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
-      let idealSize = idealSize(
+      imageIdealSize = idealSize(
         contentPixelSize: image.size * image.scale,
         containerSize: frame.size,
         scale: scale,
         contentFit: contentFit
       ).rounded(.up)
 
-      let image = processImage(image, idealSize: idealSize, scale: scale)
-      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+      let image = processImage(image, idealSize: imageIdealSize, scale: scale)
+      applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
       renderSourceImage(image)
     } else {
       displayPlaceholderIfNecessary()
@@ -311,7 +339,7 @@ public final class ImageView: ExpoView {
     // to cache them or apply the same policy as with the proper image?
     // Basically they are also cached in memory as the `placeholderImage` property,
     // so just `disk` policy sounds like a good idea.
-    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk)
+    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk, useAppleWebpCodec: useAppleWebpCodec)
 
     let isPlaceholderHash = placeholder.isBlurhash || placeholder.isThumbhash
 
@@ -338,9 +366,6 @@ public final class ImageView: ExpoView {
   // MARK: - Processing
 
   private func createTransformPipeline() -> SDImagePipelineTransformer? {
-    if blurRadius <= 0 {
-      return nil
-    }
     let transformers: [SDImageTransformer] = [
       SDImageBlurTransformer(radius: blurRadius)
     ]

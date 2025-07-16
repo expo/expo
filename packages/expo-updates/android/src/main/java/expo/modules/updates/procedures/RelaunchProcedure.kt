@@ -19,12 +19,9 @@ import expo.modules.updates.statemachine.UpdatesStateEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 class RelaunchProcedure(
   private val context: Context,
@@ -59,7 +56,8 @@ class RelaunchProcedure(
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
-      logger
+      logger,
+      procedureScope
     )
     try {
       launchWith(newLauncher)
@@ -110,25 +108,9 @@ class RelaunchProcedure(
     }
   }
 
-  private suspend fun launchWith(newLauncher: DatabaseLauncher) =
-    suspendCancellableCoroutine { continuation ->
-      newLauncher.launch(
-        databaseHolder.database,
-        object : Launcher.LauncherCallback {
-          override fun onFailure(e: Exception) {
-            if (continuation.isActive) {
-              continuation.resumeWithException(e)
-            }
-          }
-
-          override fun onSuccess() {
-            if (continuation.isActive) {
-              continuation.resume(Unit)
-            }
-          }
-        }
-      )
-    }
+  private suspend fun launchWith(newLauncher: DatabaseLauncher) {
+    newLauncher.launch(databaseHolder.database)
+  }
 
   /**
    * For bridgeless mode, the restarting will pull the new [JSBundleLoader]
