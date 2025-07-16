@@ -3,10 +3,12 @@ import chalk from 'chalk';
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
-import { learnMore } from '../../utils/link';
+import { learnMore, link } from '../../utils/link';
 import { openBrowserAsync } from '../../utils/open';
-import { ExpoChoice, selectAsync } from '../../utils/prompts';
+import { ora } from '../../utils/ora';
+import { ExpoChoice, promptAsync, selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
+import { DevToolsPlugin, DevToolsPluginCliCommandParameter } from '../server/DevToolsPluginManager';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
@@ -141,22 +143,69 @@ export class DevServerManagerActions {
         { title: 'Reload app', value: 'reload' },
         // TODO: Maybe a "View Source" option to open code.
       ];
-      const pluginMenuItems = (
-        await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
-      ).map((plugin) => ({
-        title: chalk`Open {bold ${plugin.packageName}}`,
-        value: `devtoolsPlugin:${plugin.packageName}`,
-        action: async () => {
-          const url = new URL(
-            plugin.webpageEndpoint,
-            this.devServerManager
-              .getDefaultDevServer()
-              .getUrlCreator()
-              .constructUrl({ scheme: 'http' })
-          );
-          await openBrowserAsync(url.toString());
+      const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
+
+      // Group plugins by their packageName to avoid duplicates and merge their properties
+      const pluginMap = plugins.reduce(
+        (acc, plugin) => {
+          if (!acc[plugin.packageName]) {
+            acc[plugin.packageName] = {};
+          }
+          if ('webpageEndpoint' in plugin && plugin.webpageEndpoint) {
+            // If the plugin has a webpage endpoint, we can open it in the browser.
+            acc[plugin.packageName].devtool = plugin as DevToolsPlugin;
+          }
+          if ('cli' in plugin && (plugin.cli?.commands.length ?? 0) > 0 && plugin.executor) {
+            // If the plugin has an executor and one or more CLI commands, we can execute it
+            acc[plugin.packageName].cli = plugin;
+          }
+          return acc;
         },
-      }));
+        {} as Record<string, { cli?: DevToolsPlugin; devtool?: DevToolsPlugin }>
+      );
+
+      // Enumerate plugins and build menuitem strcuture - with a submenu for plugins that have both CLI commands and devtools.
+      const pluginMenuItems: MoreToolMenuItem[] = plugins
+        .map((plugin) => {
+          const commands = (plugin.cli?.commands ?? []).filter(
+            (p) => p.disabled?.includes('cli') !== true
+          );
+          if (commands.length > 0 && plugin.webpageEndpoint) {
+            // We have both a devtool and CLI commands for this plugin, so we create a submenu.
+            return {
+              title: chalk`{bold ${plugin.packageName}}`,
+              value: `plugin:${plugin.packageName}`,
+              action: async () => {
+                // Create on menu with the devtool and for each CLI command
+                const submenuItems: MoreToolMenuItem[] = [
+                  devtoolFactory(plugin, this.devServerManager),
+                  ...commands.map((descriptor) => ({
+                    title: descriptor.caption,
+                    value: descriptor.name,
+                    action: () => cliCommandExecutor(plugin, descriptor, this.devServerManager),
+                  })),
+                ].filter((item) => item !== null) as MoreToolMenuItem[];
+
+                try {
+                  const value = await selectAsync(chalk`{dim Select command}`, submenuItems);
+                  await submenuItems.find((item) => item.value === value)?.action?.();
+                } catch (error: any) {
+                  // Handle aborting prompt
+                  debug(`Failed to execute command: ${error.toString()}`);
+                }
+              },
+            };
+          } else if (plugin.webpageEndpoint) {
+            // Only devtools
+            return devtoolFactory(plugin, this.devServerManager);
+          } else if (plugin.cli && commands.length > 0) {
+            // Only Cli commands
+            return cliFactory(plugin, this.devServerManager);
+          }
+          return null;
+        })
+        .filter((menuItem) => menuItem !== undefined) as MoreToolMenuItem[];
+
       const menuItems = [...defaultMenuItems, ...pluginMenuItems];
       const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
       const menuItem = menuItems.find((item) => item.value === value);
@@ -178,3 +227,150 @@ export class DevServerManagerActions {
     this.devServerManager.broadcastMessage('devMenu');
   }
 }
+
+// Create factories for devtools and CLI commands
+const devtoolFactory = (
+  plugin: DevToolsPlugin,
+  devServerManager: DevServerManager
+): MoreToolMenuItem | null => {
+  if (plugin.webpageEndpoint == null) {
+    return null;
+  }
+
+  return {
+    title: chalk`Open {bold ${plugin.packageName}}`,
+    value: `devtoolsPlugin:${plugin.packageName}`,
+    action: async () => {
+      const url = new URL(
+        plugin.webpageEndpoint!,
+        devServerManager.getDefaultDevServer().getUrlCreator().constructUrl({ scheme: 'http' })
+      );
+      await openBrowserAsync(url.toString());
+    },
+  };
+};
+
+const cliFactory = (
+  plugin: DevToolsPlugin,
+  devServerManager: DevServerManager
+): MoreToolMenuItem | null => {
+  const cliConfig = plugin.cli;
+  const commands = (cliConfig?.commands ?? []).filter((p) => p.disabled?.includes('cli') !== true);
+
+  if (cliConfig == null || commands.length === 0) {
+    return null;
+  }
+  return {
+    title: chalk`{bold ${plugin.packageName}}`,
+    value: `cliPlugin:${plugin.packageName}`,
+    action: async () => {
+      // Show selector with plugin commands.
+      const commandMenuItems = commands.map((cmd) => ({
+        title: cmd.caption,
+        value: cmd.name,
+      }));
+
+      try {
+        const value = await selectAsync(chalk`{dim Select command}`, commandMenuItems);
+        const cmd = commands.find((c) => c.name === value);
+        if (cmd == null) {
+          Log.warn(`No command found for ${plugin.packageName}`);
+        } else {
+          await cliCommandExecutor(plugin, cmd, devServerManager);
+        }
+      } catch (error: any) {
+        // Handle aborting prompt
+        debug(`Failed to execute command: ${error.toString()}`);
+      }
+    },
+  };
+};
+
+const cliCommandExecutor = async (
+  plugin: DevToolsPlugin,
+  cmd: {
+    name: string;
+    caption: string;
+    parameters?: DevToolsPluginCliCommandParameter[];
+  },
+  devServerManager: DevServerManager
+) => {
+  const cliConfig = plugin.cli;
+  if (cliConfig == null) {
+    return;
+  }
+
+  if (plugin.executor == null) {
+    Log.warn(chalk`{bold ${plugin.packageName}} does not support CLI commands.`);
+    return;
+  }
+
+  // Get all connected apps
+  const metroServerOrigin = devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
+  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+
+  // Prompt for parameters if they are required.
+  let args: Record<string, string> = {};
+  if (cmd.parameters && cmd.parameters.length > 0) {
+    // Prompt for parameters if they are required.
+    args = await cmd.parameters.reduce(
+      async (accPromise, param) => {
+        const acc = await accPromise;
+        const result = await promptAsync({
+          name: param.name,
+          hint: param.description,
+          type: param.type,
+          message: param.description ?? param.name,
+        });
+        return { ...acc, [param.name]: result[param.name] };
+      },
+      Promise.resolve({} as Record<string, string>)
+    );
+  }
+
+  const spinner = ora(`Executing '${cmd.caption}'`).start();
+
+  try {
+    // Execute the command with the plugin executor.
+    const results = await plugin.executor({
+      command: cmd.name,
+      apps,
+      args: { ...args, source: 'cli' },
+    });
+    // Format the results - it can be a list of ExpoCliOutput objects - or void
+    let resultsString = '\n';
+    if (results) {
+      // Try to parse the output from the tool
+      try {
+        const parsedResults = JSON.parse(results) ?? [];
+        resultsString += parsedResults
+          .map((result: any) => {
+            switch (result.type) {
+              case 'text':
+                return result.url ? result.text + ': ' + link(result.url) : result.text;
+              case 'audio':
+                return result.url ? link(result.url, { text: 'Audio', dim: true }) : 'Audio';
+              case 'image':
+                return result.url ? link(result.url, { text: 'Image', dim: true }) : 'Image';
+              default:
+                return '';
+            }
+          })
+          .join('\n');
+      } catch (e) {
+        resultsString += results;
+      }
+    }
+    spinner.succeed(`${cmd.caption} succeeded:${resultsString}`).stop();
+  } catch (error: any) {
+    // @ts-ignore
+    if (__DEV__) {
+      spinner.stop();
+      // In development mode, log the error to the console for debugging.
+      console.error(chalk.red(`Error executing command '${cmd.name}':`));
+      console.error(error);
+    } else {
+      spinner.fail(`Failed executing task.\n${error.toString().trim()}`);
+    }
+  }
+};
