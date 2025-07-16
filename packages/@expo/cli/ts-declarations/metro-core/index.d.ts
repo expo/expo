@@ -1,7 +1,7 @@
 // #region metro-core
 declare module 'metro-core' {
-  export * from 'metro-core/src/index';
-  export { default } from 'metro-core/src/index';
+  export * from 'metro-core/private/index';
+  export { default } from 'metro-core/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/canonicalize.js

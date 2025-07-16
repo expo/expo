@@ -1,6 +1,6 @@
 // #region metro-transform-worker
 declare module 'metro-transform-worker' {
-  export * from 'metro-transform-worker/src/index';
+  export * from 'metro-transform-worker/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-worker/src/index.js

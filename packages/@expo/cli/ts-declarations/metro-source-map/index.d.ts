@@ -1,6 +1,6 @@
 // #region metro-source-map
 declare module 'metro-source-map' {
-  export * from 'metro-source-map/src/source-map';
+  export * from 'metro-source-map/private/source-map';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-source-map/src/B64Builder.js

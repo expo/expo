@@ -1,12 +1,12 @@
 // #region metro-config
 declare module 'metro-config' {
-  export * from 'metro-config/src/index';
-  export { default } from 'metro-config/src/index';
+  export * from 'metro-config/private/index';
+  export { default } from 'metro-config/private/index';
 }
 
 // NOTE(cedric): this is a manual change, to avoid having to import `../configTypes.flow`
-declare module 'metro-config/src/configTypes' {
-  export * from 'metro-config/src/configTypes.flow';
+declare module 'metro-config/private/configTypes' {
+  export * from 'metro-config/private/configTypes.flow';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/configTypes.flow.js

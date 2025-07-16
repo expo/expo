@@ -1,7 +1,7 @@
 // #region metro
 declare module 'metro' {
-  export * from 'metro/src/index';
-  export { default } from 'metro/src/index';
+  export * from 'metro/private/index';
+  export { default } from 'metro/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Assets.js
@@ -2908,8 +2908,8 @@ declare module 'metro/private/shared/output/writeFile' {
 }
 
 // NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
-declare module 'metro/src/shared/types' {
-  export * from 'metro/src/shared/types.flow';
+declare module 'metro/private/shared/types' {
+  export * from 'metro/private/shared/types.flow';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/types.flow.js

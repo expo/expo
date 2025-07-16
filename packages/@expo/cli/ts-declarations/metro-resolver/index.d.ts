@@ -1,6 +1,6 @@
 // #region metro-resolver
 declare module 'metro-resolver' {
-  export * from 'metro-resolver/src/index';
+  export * from 'metro-resolver/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/createDefaultContext.js

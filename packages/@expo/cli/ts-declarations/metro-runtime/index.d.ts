@@ -1,5 +1,23 @@
 // #region metro-runtime
-// metro-runtime has no entrypoint
+declare module 'metro-runtime/modules/asyncRequire' {
+  export { default } from 'metro-runtime/private/modules/asyncRequire';
+}
+
+declare module 'metro-runtime/modules/empty-module' {
+  // This has no exports
+}
+
+declare module 'metro-runtime/modules/HMRClient' {
+  export { default } from 'metro-runtime/private/modules/HMRClient';
+}
+
+declare module 'metro-runtime/modules/null-module' {
+  export { default } from 'metro-runtime/private/modules/null-module';
+}
+
+declare module 'metro-runtime/polyfills/require' {
+  export * from 'metro-runtime/private/polyfills/require';
+}
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-runtime/src/modules/asyncRequire.js
 declare module 'metro-runtime/private/modules/asyncRequire' {

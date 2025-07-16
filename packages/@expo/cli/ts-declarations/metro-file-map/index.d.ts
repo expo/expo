@@ -1,7 +1,7 @@
 // #region metro-file-map
 declare module 'metro-file-map' {
-  export * from 'metro-file-map/src/index';
-  export { default } from 'metro-file-map/src/index';
+  export * from 'metro-file-map/private/index';
+  export { default } from 'metro-file-map/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-file-map/src/cache/DiskCacheManager.js

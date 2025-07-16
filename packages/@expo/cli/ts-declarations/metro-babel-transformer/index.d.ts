@@ -1,7 +1,7 @@
 // #region metro-babel-transformer
 declare module 'metro-babel-transformer' {
-  export * from 'metro-babel-transformer/src/index';
-  export { default } from 'metro-babel-transformer/src/index';
+  export * from 'metro-babel-transformer/private/index';
+  export { default } from 'metro-babel-transformer/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-babel-transformer/src/index.js

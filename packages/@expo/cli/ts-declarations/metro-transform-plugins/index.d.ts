@@ -1,6 +1,6 @@
 // #region metro-transform-plugins
 declare module 'metro-transform-plugins' {
-  export * from 'metro-transform-plugins/src/index';
+  export * from 'metro-transform-plugins/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-plugins/src/addParamsToDefineCall.js
