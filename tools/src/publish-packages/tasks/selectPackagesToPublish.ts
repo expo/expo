@@ -131,7 +131,7 @@ async function promptToPublishParcel(
     {
       type: 'list',
       name: 'action',
-      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?${explainer ? ` ${explainer}` : ''}`,
+      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?${explainer ? `\n${explainer}` : ''}`,
       choices,
       default: lastAction || 'yes',
     },

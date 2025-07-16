@@ -242,7 +242,9 @@ export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: Comm
   } else if (sdkBranch != null) {
     state.releaseType = ReleaseType.PATCH;
     if (highestReleaseType !== ReleaseType.PATCH) {
-      explainer = `Based on changes made in this package, it should normally be released as ${highestReleaseType}, but when releasing from an SDK branch (currently ${sdkBranch}) a patch bump is recommended instead.`;
+      explainer = chalk.dim(
+        `Based on changes made in this package, it should normally be released as ${chalk.blue(highestReleaseType)}, but when releasing from an SDK branch (currently ${chalk.blue(sdkBranch)}) a ${chalk.blue('patch')} bump is recommended instead.`
+      );
     }
   } else {
     // Set the release type depending on changes made in the package.
