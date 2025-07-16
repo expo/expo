@@ -11,9 +11,9 @@
 
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
-import getAppendScripts from 'metro/src/lib/getAppendScripts';
+import CountingSet from 'metro/private/lib/CountingSet';
+import countLines from 'metro/private/lib/countLines';
+import getAppendScripts from 'metro/private/lib/getAppendScripts';
 
 import { processModules } from './processModules';
 

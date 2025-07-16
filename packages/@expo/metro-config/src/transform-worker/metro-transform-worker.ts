@@ -15,15 +15,15 @@ import * as babylon from '@babel/parser';
 import template from '@babel/template';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
+import JsFileWrapping from 'metro/private/ModuleGraph/worker/JsFileWrapping';
+import generateImportNames from 'metro/private/ModuleGraph/worker/generateImportNames';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
+} from 'metro/private/ModuleGraph/worker/importLocationsPlugin';
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
 import { stableHash } from 'metro-cache';
-import getMetroCacheKey from 'metro-cache-key';
+import { getCacheKey as getMetroCacheKey } from 'metro-cache-key';
 import {
   fromRawMappings,
   functionMapBabelPlugin,
@@ -33,7 +33,7 @@ import {
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
 import metroTransformPlugins from 'metro-transform-plugins';
 import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
-import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
+import getMinifier from 'metro-transform-worker/private/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -780,12 +780,12 @@ export function getCacheKey(config: JsTransformerConfig): string {
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
-    require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('metro-transform-worker/private/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
-    require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-    require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
+    require.resolve('metro/private/ModuleGraph/worker/generateImportNames'),
+    require.resolve('metro/private/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
   ]);
 

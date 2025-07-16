@@ -10,7 +10,7 @@
  */
 import template from '@babel/template';
 import * as t from '@babel/types';
-import { generateAssetCodeFileAst } from 'metro/src/Bundler/util';
+import { generateAssetCodeFileAst } from 'metro/private/Bundler/util';
 import { BabelTransformerArgs } from 'metro-babel-transformer';
 import path from 'node:path';
 import url from 'node:url';

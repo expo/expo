@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { AssetData, Module } from 'metro';
-import { getAssetData } from 'metro/src/Assets';
-import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js.js';
+import { getAssetData } from 'metro/private/Assets';
+import { getJsOutput, isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js.js';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';

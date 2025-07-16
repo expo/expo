@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import countLines from 'metro/src/lib/countLines';
+import countLines from 'metro/private/lib/countLines';
 import type {
   JsTransformerConfig,
   JsTransformOptions,

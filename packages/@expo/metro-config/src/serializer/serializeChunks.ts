@@ -13,8 +13,8 @@ import {
   ReadOnlyGraph,
   SerializerOptions,
 } from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
+import sourceMapStringMod from 'metro/private/DeltaBundler/Serializers/sourceMapString';
+import bundleToString from 'metro/private/lib/bundleToString';
 import { ConfigT, SerializerConfigT } from 'metro-config';
 import path from 'path';
 

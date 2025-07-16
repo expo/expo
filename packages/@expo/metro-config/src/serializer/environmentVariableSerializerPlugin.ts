@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ReadOnlyGraph, MixedOutput, Module, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
+import CountingSet from 'metro/private/lib/CountingSet';
+import countLines from 'metro/private/lib/countLines';
 
 import { SerializerParameters } from './withExpoSerializers';
 

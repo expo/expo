@@ -6,8 +6,8 @@
  */
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 import { MetroConfig, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
+import sourceMapStringMod from 'metro/private/DeltaBundler/Serializers/sourceMapString';
+import bundleToString from 'metro/private/lib/bundleToString';
 import { ConfigT, InputConfigT } from 'metro-config';
 
 import { stringToUUID } from './debugId';
