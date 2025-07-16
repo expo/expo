@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added cli extension for triggering and listing registered background tasks ([#38095](https://github.com/expo/expo/pull/38095) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
