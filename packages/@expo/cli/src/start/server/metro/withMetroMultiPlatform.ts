@@ -442,6 +442,9 @@ export function withExtendedResolver(
   if (stickyModuleResolverInput) {
     Log.log(chalk.dim`Sticky resolver is enabled.`);
   }
+  if (env.EXPO_FORCE_BUILTINS) {
+    Log.warn(`Experimental built-in modules are enabled.`);
+  }
 
   const defaultResolver = metroResolver.resolve;
   const resolver = isFastResolverEnabled
@@ -626,8 +629,8 @@ export function withExtendedResolver(
     'regenerator-runtime/runtime',
     'react-refresh/runtime',
   ];
-  const builtinMatcher = new RegExp(`^(expo:)(${builtins.join('|')})$`);
-  // const aliasToBuiltinMatcher = new RegExp(`^(expo:)?(${builtins.join('|')})$`);
+  const builtinMatcher = new RegExp(`^(?:expo:)(${builtins.join('|')})$`);
+  const aliasToBuiltinMatcher = new RegExp(`^(?:expo:)?(${builtins.join('|')})$`);
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
@@ -685,62 +688,72 @@ export function withExtendedResolver(
           return false;
         }
 
-        return !!builtinMatcher.test(moduleName);
-        // let match =
-        //   /^(expo:)?(react-native-is-edge-to-edge|@react-navigation\/bottom-tabs|stacktrace-parser|@radix-ui\/react-slot|@react-navigation\/native-stack|@react-navigation\/elements|@react-navigation\/core|@react-navigation\/native|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-runtime|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
-        //     moduleName
-        //   );
-
-        // import "expo-blur"
-        // import "expo-font"
-        // import "expo-haptics"
-        // import "expo-image"
-        // import "expo-linking"
-        // import "expo-splash-screen"
-        // import "expo-symbols"
-        // import "expo-system-ui"
-        // import "expo-web-browser"
-
-        // import "react-native-gesture-handler"
-        // import "react-native-reanimated"
-        // import "react-native-safe-area-context"
-        // import "react-native-screens"
-        // import "react-native-webview"
-
-        if (!match) {
-          if (
-            context.originModulePath.endsWith('InitializeCore.js') &&
-            moduleName.startsWith('../../src/private/setup/setUpDOM')
-          ) {
-            match = true;
-            return {
-              name: 'react-native/src/private/setup/setUpDOM',
-              match: true,
-            };
+        // When `EXPO_FORCE_BUILTINS=1` force any possible built-in to use the native built-in.
+        if (env.EXPO_FORCE_BUILTINS) {
+          const hasMatch = moduleName.match(aliasToBuiltinMatcher)?.[1];
+          if (hasMatch) {
+            debug(`Resolving built-in module "${hasMatch}".`);
+            return { name: hasMatch, match: true };
           }
-          // TODO: Match `(\/index(\.[tj]sx?)?)?` and strip the extras.
-
-          // TODO: Account for .js extensions.
-          match =
-            /^(expo:)?(react-native|react-native\/index|react-native\/Libraries\/Utilities\/HMRClient|react-native\/Libraries\/Core\/Devtools\/getDevServer|react-native\/Libraries\/WebSocket\/WebSocket|react-native\/Libraries\/NativeModules\/specs\/NativeLogBox|react-native\/Libraries\/Core\/ExceptionsManager|react-native\/Libraries\/Network\/RCTNetworking|react-native\/Libraries\/Core\/Devtools\/symbolicateStackTrace|react-native\/Libraries\/Components\/View\/ReactNativeStyleAttributes|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(
-              moduleName
-            );
-          // else if (
-          //   context.originModulePath.includes('/react-native/') &&
-          //   moduleName.includes('/ReactNative/RendererProxy')
-          // ) {
-          //   match = true;
-          //   return {
-          //     name: 'react-native/Libraries/ReactNative/RendererProxy',
-          //     match: true,
-          //   };
-          // }
+          return false;
         }
 
-        if (!match && !moduleName.startsWith('.') && moduleName.includes('/')) {
-          memoLog(moduleName);
-        }
-        return match;
+        return !!builtinMatcher.test(moduleName);
+        // // let match =
+        // //   /^(expo:)?(react-native-is-edge-to-edge|@react-navigation\/bottom-tabs|stacktrace-parser|@radix-ui\/react-slot|@react-navigation\/native-stack|@react-navigation\/elements|@react-navigation\/core|@react-navigation\/native|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-runtime|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
+        // //     moduleName
+        // //   );
+
+        // // import "expo-blur"
+        // // import "expo-font"
+        // // import "expo-haptics"
+        // // import "expo-image"
+        // // import "expo-linking"
+        // // import "expo-splash-screen"
+        // // import "expo-symbols"
+        // // import "expo-system-ui"
+        // // import "expo-web-browser"
+
+        // // import "react-native-gesture-handler"
+        // // import "react-native-reanimated"
+        // // import "react-native-safe-area-context"
+        // // import "react-native-screens"
+        // // import "react-native-webview"
+
+        // if (!match) {
+        //   if (
+        //     context.originModulePath.endsWith('InitializeCore.js') &&
+        //     moduleName.startsWith('../../src/private/setup/setUpDOM')
+        //   ) {
+        //     match = true;
+        //     return {
+        //       name: 'react-native/src/private/setup/setUpDOM',
+        //       match: true,
+        //     };
+        //   }
+        //   // TODO: Match `(\/index(\.[tj]sx?)?)?` and strip the extras.
+
+        //   // TODO: Account for .js extensions.
+        //   match =
+        //     /^(expo:)?(react-native|react-native\/index|react-native\/Libraries\/Utilities\/HMRClient|react-native\/Libraries\/Core\/Devtools\/getDevServer|react-native\/Libraries\/WebSocket\/WebSocket|react-native\/Libraries\/NativeModules\/specs\/NativeLogBox|react-native\/Libraries\/Core\/ExceptionsManager|react-native\/Libraries\/Network\/RCTNetworking|react-native\/Libraries\/Core\/Devtools\/symbolicateStackTrace|react-native\/Libraries\/Components\/View\/ReactNativeStyleAttributes|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(
+        //       moduleName
+        //     );
+        //   // else if (
+        //   //   context.originModulePath.includes('/react-native/') &&
+        //   //   moduleName.includes('/ReactNative/RendererProxy')
+        //   // ) {
+        //   //   match = true;
+        //   //   return {
+        //   //     name: 'react-native/Libraries/ReactNative/RendererProxy',
+        //   //     match: true,
+        //   //   };
+        //   // }
+        // }
+
+        // if (!match && !moduleName.startsWith('.') && moduleName.includes('/')) {
+        //   memoLog(moduleName);
+        // }
+        // return match;
       },
       replace: 'builtin',
     },

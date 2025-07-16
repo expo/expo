@@ -269,6 +269,9 @@ class Env {
   get EXPO_BUNDLE_BUILT_IN(): boolean {
     return boolish('EXPO_BUNDLE_BUILT_IN', false);
   }
+  get EXPO_FORCE_BUILTINS(): boolean {
+    return boolish('EXPO_FORCE_BUILTINS', false);
+  }
 }
 
 export const env = new Env();
