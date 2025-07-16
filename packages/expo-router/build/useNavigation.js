@@ -115,6 +115,9 @@ function useNavigation(parent) {
                 ids.push(navigation.getId() || '/');
                 navigation = navigation.getParent();
             }
+            if (!ids.length) {
+                throw new Error(`No child navigation object named "${parent}" found. This can happen if you are calling useNavigation() or a named Screen (<Stack.Screen name="${parent}"/>) in a route instead of a layout file.`);
+            }
             throw new Error(`Could not find parent navigation with route "${parent}". Available routes are: '${ids.join("', '")}'`);
         }
     }
