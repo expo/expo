@@ -7,7 +7,7 @@ declare module 'metro-babel-transformer' {
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-babel-transformer/src/index.js
 declare module 'metro-babel-transformer/private/index' {
   import type * as _babel_types from '@babel/types';
-  import type { BabelFileMetadata } from '@babel/core';
+  import type { BabelFileMetadata, TransformOptions } from '@babel/core';
   export type CustomTransformOptions = {
     [$$Key$$: string]: any;
   };
@@ -33,7 +33,7 @@ declare module 'metro-babel-transformer/private/index' {
   export type BabelTransformerArgs = Readonly<{
     filename: string;
     options: BabelTransformerOptions;
-    plugins?: any['plugins'];
+    plugins?: TransformOptions['plugins'];
     src: string;
   }>;
   export type BabelFileFunctionMapMetadata = Readonly<{
@@ -54,7 +54,16 @@ declare module 'metro-babel-transformer/private/index' {
     transform: ($$PARAM_0$$: BabelTransformerArgs) => Readonly<{
       ast: _babel_types.File;
       functionMap?: BabelFileFunctionMapMetadata;
-      metadata?: MetroBabelFileMetadata;
+      metadata?: MetroBabelFileMetadata & {
+        // NOTE(cedric): manual change, see: babel-preset-expo/src/{client-module-proxy-plugin.ts,server-actions-plugin.ts}
+        reactServerReference?: string;
+        // NOTE(cedric): manual change, see: babel-preset-expo/src/client-module-proxy-plugin.ts
+        reactClientReference?: string;
+        // NOTE(cedric): manual change, see: babel-preset-expo/src/use-dom-directive-plugin.ts
+        expoDomComponentReference?: string;
+        // NOTE(cedric): manual change, see: babel-preset-expo/src/detect-dynamic-exports.ts
+        hasCjsExports?: boolean;
+      };
     }>;
     getCacheKey?: () => string;
   }>;
