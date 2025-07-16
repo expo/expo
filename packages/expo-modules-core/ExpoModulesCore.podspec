@@ -101,6 +101,9 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
   s.exclude_files = ['ios/Tests/']
+  s.resource_bundles = {
+    'ExpoModulesCore' => ['ios/**/bundle.hbc']
+  }
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 

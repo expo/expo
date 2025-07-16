@@ -2,6 +2,7 @@
 
 #import <ReactCommon/RCTTurboModule.h>
 #import <ExpoModulesCore/ExpoBridgeModule.h>
+#import <ExpoModulesCore/EXHBCRuntimeManager.h>
 #import <ExpoModulesCore/Swift.h>
 
 // The runtime executor is included as of React Native 0.74 in bridgeless mode.
@@ -9,7 +10,9 @@
 #import <ReactCommon/RCTRuntimeExecutor.h>
 #endif // React Native >=0.74
 
-@implementation ExpoBridgeModule
+@implementation ExpoBridgeModule {
+  EXHBCRuntimeDelegate *_hbcDelegate;
+}
 
 @synthesize bridge = _bridge;
 
@@ -19,6 +22,7 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 {
   if (self = [super init]) {
     _appContext = [[EXAppContext alloc] init];
+    _hbcDelegate = [EXHBCRuntimeDelegate createWithAppContext:_appContext];
   }
   return self;
 }
@@ -27,6 +31,7 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 {
   if (self = [super init]) {
     _appContext = appContext;
+    _hbcDelegate = [EXHBCRuntimeDelegate createWithAppContext:_appContext];
   }
   return self;
 }
@@ -47,6 +52,8 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 
 #if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
   _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
+  // Inject HBC files after runtime is available
+  [_hbcDelegate didInitializeRuntime];
 #endif // React Native <0.74
 }
 
@@ -54,6 +61,8 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 - (void)setRuntimeExecutor:(RCTRuntimeExecutor *)runtimeExecutor
 {
   _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge withExecutor:runtimeExecutor];
+  // Inject HBC files after runtime is available
+  [_hbcDelegate didInitializeRuntime];
 }
 #endif // React Native >=0.74
 
@@ -81,6 +90,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installModules)
     // TODO: Keep this condition until we remove the other way of installing modules.
     // See `setBridge` method above.
     _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
+    // Inject HBC files after runtime is available
+    [_hbcDelegate didInitializeRuntime];
   }
   return nil;
 }
