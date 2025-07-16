@@ -8,7 +8,7 @@
 
 - Add `TextDecoderStream` and `TextEncoderStream` APIs to the native runtime. ([#37507](https://github.com/expo/expo/pull/37507) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable async requires by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
-- Feat/expose fetch redirect ([#38078](https://github.com/expo/expo/pull/38078) by [@andipro123](https://github.com/andipro123))
+- Added `redirect` option support to `expo/fetch` ([#38078](https://github.com/expo/expo/pull/38078) by [@andipro123](https://github.com/andipro123))
 
 ### 🐛 Bug fixes
 
