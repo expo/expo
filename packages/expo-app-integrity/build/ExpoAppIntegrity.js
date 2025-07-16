@@ -27,4 +27,10 @@ export async function requestIntegrityCheck(challenge) {
     }
     return IntegrityModule.requestIntegrityCheck(challenge);
 }
+export async function prepareIntegrityTokenProvider(cloudProjectNumber) {
+    if (Platform.OS !== 'android') {
+        throw new Error('prepareIntegrityTokenProvider is only available on Android');
+    }
+    return IntegrityModule.prepareIntegrityTokenProvider(cloudProjectNumber);
+}
 //# sourceMappingURL=ExpoAppIntegrity.js.map

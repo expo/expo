@@ -9,12 +9,17 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
+import expo.modules.integrity.IntegrityException
+
 
 class IntegrityModule : Module() {
   private var integrityTokenProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? =
     null
   private var integrityTokenException: Exception? = null
-  private val integrityExceptionMessage = "E_INTEGRITY_ERROR";
+
+  companion object {
+    private const val PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME = "prepareIntegrityTokenProvider"
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoAppIntegrity")
@@ -23,7 +28,7 @@ class IntegrityModule : Module() {
       true
     }
 
-    AsyncFunction("initializeIntegrityTokenProvider") { cloudProjectNumber: String, promise: Promise ->
+    AsyncFunction(PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME) { cloudProjectNumber: String, promise: Promise ->
       val integrityManager = IntegrityManagerFactory.createStandard(appContext.reactContext?.applicationContext)
       integrityManager.prepareIntegrityToken(
         PrepareIntegrityTokenRequest.builder()
@@ -34,7 +39,7 @@ class IntegrityModule : Module() {
         promise.resolve()
       }.addOnFailureListener {
         integrityTokenException = it
-        promise.reject("", integrityExceptionMessage, integrityTokenException)
+        promise.reject(IntegrityException(integrityTokenException?.message ?: "Unknown error", integrityTokenException))
       }
     }
 
@@ -54,12 +59,11 @@ class IntegrityModule : Module() {
           }
           .addOnFailureListener { exception: Exception? ->
             promise.reject(
-              "",
-              integrityExceptionMessage,
-              exception
+              IntegrityException(exception?.message ?: "Unknown error", exception)
             )
           }
-      } ?: promise.reject("", integrityExceptionMessage, integrityTokenException)
+      } ?: promise.reject(IntegrityException(integrityTokenException?.message ?: "Make sure '$PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME' is called before requestIntegrityCheck", integrityTokenException))
+
     }
   }
 }

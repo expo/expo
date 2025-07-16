@@ -33,3 +33,10 @@ export async function requestIntegrityCheck(challenge: string) {
   }
   return IntegrityModule.requestIntegrityCheck(challenge);
 }
+
+export async function prepareIntegrityTokenProvider(cloudProjectNumber: string) {
+  if (Platform.OS !== 'android') {
+    throw new Error('prepareIntegrityTokenProvider is only available on Android');
+  }
+  return IntegrityModule.prepareIntegrityTokenProvider(cloudProjectNumber);
+}
