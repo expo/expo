@@ -249,7 +249,7 @@ declare module 'metro-file-map/private/flow-types' {
     files: FileSystemState;
     pluginState?: null | SerializableState;
   }>;
-  type V8Serializable = {};
+  type V8Serializable = object;
   export interface FileMapPlugin<SerializableState = V8Serializable> {
     readonly name: string;
     initialize(initOptions: FileMapPluginInitOptions<SerializableState>): Promise<void>;
