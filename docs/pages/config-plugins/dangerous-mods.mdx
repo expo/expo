@@ -34,8 +34,8 @@ Following the directory structure and steps to create a config plugin (steps 3, 
 
 ```tsx withCustomPodfile.ts
 import { ConfigPlugin, IOSConfig, withDangerousMod } from 'expo/config-plugins';
-import { promises as fs } from 'fs';
-import * as path from 'path';
+import fs from 'fs/promises';
+import path from 'path';
 
 const withCustomPodfile: ConfigPlugin = config => {
   return withDangerousMod(config, [
