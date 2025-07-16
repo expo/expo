@@ -48,7 +48,7 @@
     "expo-application": "~6.1.5",
     "expo-asset": "~11.1.7",
     "expo-blur": "~14.1.5",
-    "expo-camera": "~16.1.10",
+    "expo-camera": "~16.1.11",
     "expo-constants": "~17.1.7",
     "expo-device": "~7.1.4",
     "expo-font": "~13.3.2",
