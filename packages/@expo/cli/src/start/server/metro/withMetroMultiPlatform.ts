@@ -64,7 +64,7 @@ function withWebPolyfills(
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform?: string | null }): readonly string[] => {
+  const getPolyfills = (ctx: { platform: string | null }): readonly string[] => {
     const virtualEnvVarId = `\0polyfill:environment-variables`;
 
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
