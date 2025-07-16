@@ -387,10 +387,8 @@ export async function exportEmbedAssetsAsync(
   options: Pick<Options, 'platform'>
 ) {
   try {
-    const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions({
-      ...bundleRequest,
-      bundleType: 'todo',
-    });
+    const { entryFile, onProgress, resolverOptions, transformOptions } =
+      splitBundleOptions(bundleRequest);
 
     assertMetroPrivateServer(server);
 
