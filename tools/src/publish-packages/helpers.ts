@@ -222,6 +222,7 @@ export function resolveSuggestedVersion(
 export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: CommandOptions) {
   const prerelease = options.prerelease === true ? 'rc' : options.prerelease || undefined;
   const { pkg, pkgView, state } = parcel;
+  let explainer: string | null = null;
 
   // Find the highest release type among parcel's dependencies.
   const accumulatedTypes = recursivelyAccumulateReleaseTypes(parcel);
@@ -230,7 +231,7 @@ export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: Comm
     ReleaseType.PATCH
   );
   const allVersions = pkgView?.versions ?? [];
-  const isOnSDKBranch = (await Git.getSDKVersionFromBranchNameAsync()) != null;
+  const sdkBranch = await Git.getSDKVersionFromBranchNameAsync();
 
   if (prerelease) {
     // Make it a prerelease version if `--prerelease` was passed and assign to the state.
@@ -238,8 +239,11 @@ export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: Comm
   } else if (getPrereleaseIdentifier(pkg.packageVersion)) {
     // If the current version is a prerelease, just increment its number.
     state.releaseType = ReleaseType.PRERELEASE;
-  } else if (isOnSDKBranch) {
+  } else if (sdkBranch != null) {
     state.releaseType = ReleaseType.PATCH;
+    if (highestReleaseType !== ReleaseType.PATCH) {
+      explainer = `Based on changes made in this package, it should normally be released as ${highestReleaseType}, but when releasing from an SDK branch (currently ${sdkBranch}) a patch bump is recommended instead.`;
+    }
   } else {
     // Set the release type depending on changes made in the package.
     state.releaseType = highestReleaseType;
@@ -258,7 +262,10 @@ export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: Comm
   } else {
     state.releaseVersion = pkg.packageVersion;
   }
-  return state.releaseVersion;
+  return {
+    releaseVersion: state.releaseVersion,
+    explainer,
+  };
 }
 
 /**
