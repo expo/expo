@@ -32,11 +32,15 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^4.1.7"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react-native": "*"
   }
 }

@@ -10,7 +10,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
 
-
 class IntegrityModule : Module() {
   private var integrityTokenProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? =
     null
@@ -23,10 +22,6 @@ class IntegrityModule : Module() {
 
   override fun definition() = ModuleDefinition {
     Name("ExpoAppIntegrity")
-
-    Function("isSupported") {
-      true
-    }
 
     AsyncFunction(PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME) { cloudProjectNumber: String, promise: Promise ->
       val cloudProjectNumberLong = cloudProjectNumber.toLongOrNull()
@@ -82,7 +77,6 @@ class IntegrityModule : Module() {
           integrityTokenException
         )
       )
-
     }
   }
 }

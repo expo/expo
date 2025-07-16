@@ -1,7 +1,7 @@
-export declare function isAvailable(): void;
-export declare function generateKey(): Promise<string>;
-export declare function attestKey(key: string, challenge: string): Promise<string>;
-export declare function generateAssertion(key: string, json: string): Promise<string>;
-export declare function requestIntegrityCheck(challenge: string): Promise<any>;
-export declare function prepareIntegrityTokenProvider(cloudProjectNumber: string): Promise<any>;
+import { ExpoAppIntegrityModule } from './ExpoAppIntegrity.types';
+/**
+ * @hidden
+ */
+declare const _default: ExpoAppIntegrityModule;
+export default _default;
 //# sourceMappingURL=ExpoAppIntegrity.d.ts.map

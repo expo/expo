@@ -1,1 +1,1 @@
-export * from './ExpoAppIntegrity';
+export * from './AppIntegrity';

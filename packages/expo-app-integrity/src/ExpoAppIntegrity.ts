@@ -1,42 +1,8 @@
-import { Platform } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
 
-import IntegrityModule from './IntegrityModule';
+import { ExpoAppIntegrityModule } from './ExpoAppIntegrity.types';
 
-export function isAvailable() {
-  IntegrityModule.isAvailable();
-}
-
-export async function generateKey() {
-  if (Platform.OS !== 'ios') {
-    throw new Error('generateAssertion is only available on iOS');
-  }
-  return IntegrityModule.generateKey();
-}
-
-export async function attestKey(key: string, challenge: string) {
-  if (Platform.OS !== 'ios') {
-    throw new Error('generateAssertion is only available on iOS');
-  }
-  return IntegrityModule.attestKey(key, challenge);
-}
-
-export async function generateAssertion(key: string, json: string) {
-  if (Platform.OS !== 'ios') {
-    throw new Error('generateAssertion is only available on iOS');
-  }
-  return IntegrityModule.generateAssertion(key, json);
-}
-
-export async function requestIntegrityCheck(challenge: string) {
-  if (Platform.OS !== 'android') {
-    throw new Error('requestIntegrityCheck is only available on Android');
-  }
-  return IntegrityModule.requestIntegrityCheck(challenge);
-}
-
-export async function prepareIntegrityTokenProvider(cloudProjectNumber: string) {
-  if (Platform.OS !== 'android') {
-    throw new Error('prepareIntegrityTokenProvider is only available on Android');
-  }
-  return IntegrityModule.prepareIntegrityTokenProvider(cloudProjectNumber);
-}
+/**
+ * @hidden
+ */
+export default requireNativeModule<ExpoAppIntegrityModule>('ExpoAppIntegrity');

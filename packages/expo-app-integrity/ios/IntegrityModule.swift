@@ -8,10 +8,6 @@ public class IntegrityModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoAppIntegrity")
     
-    Function("isSupported") {
-      return service.isSupported
-    }
-    
     AsyncFunction("generateKey") {
       do {
         return try await service.generateKey()
@@ -32,10 +28,9 @@ public class IntegrityModule: Module {
       }
     }
     
-    AsyncFunction("generateAssertion") { (key: String, json: String) -> String in
-      guard let clientDataHash = try? JSONEncoder().encode(json) else {
-        throw IntegrityException("Invalid json provided")
-      }
+    AsyncFunction("generateAssertion") { (key: String, challenge: String) -> String in
+      let data = Data(challenge.utf8)
+      let clientDataHash = Data(SHA256.hash(data: data))
       do {
         let result = try await service.generateAssertion(key, clientDataHash: clientDataHash)
         return String(decoding: result, as: UTF8.self)
