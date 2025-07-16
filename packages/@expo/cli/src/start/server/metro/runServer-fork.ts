@@ -6,9 +6,9 @@
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import Metro, { RunServerOptions, Server } from 'metro';
-import MetroHmrServer from 'metro/src/HmrServer';
-import createWebsocketServer from 'metro/src/lib/createWebsocketServer';
+import Metro from 'metro';
+import MetroHmrServer from 'metro/private/HmrServer';
+import createWebsocketServer from 'metro/private/lib/createWebsocketServer';
 import { ConfigT } from 'metro-config';
 import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
@@ -30,7 +30,7 @@ export const runServer = async (
     waitForBundler = false,
     websocketEndpoints = {},
     watch,
-  }: RunServerOptions,
+  }: Metro.RunServerOptions,
   {
     mockServer,
   }: {
@@ -40,7 +40,7 @@ export const runServer = async (
 ): Promise<{
   server: http.Server | https.Server;
   hmrServer: MetroHmrServer | null;
-  metro: Server;
+  metro: Metro.Server;
 }> => {
   // await earlyPortCheck(host, config.server.port);
 
@@ -124,7 +124,7 @@ export const runServer = async (
   return new Promise<{
     server: http.Server | https.Server;
     hmrServer: MetroHmrServer;
-    metro: Server;
+    metro: Metro.Server;
   }>((resolve, reject) => {
     httpServer.on('error', (error) => {
       reject(error);

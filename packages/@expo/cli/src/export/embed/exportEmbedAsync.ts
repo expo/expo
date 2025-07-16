@@ -9,10 +9,10 @@ import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets'
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
+import MetroServer from 'metro/private/Server';
+import splitBundleOptions from 'metro/private/lib/splitBundleOptions';
+import output from 'metro/private/shared/output/bundle';
+import type { BundleOptions } from 'metro/private/shared/types';
 import path from 'path';
 
 import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
@@ -43,7 +43,7 @@ const debug = require('debug')('expo:export:embed');
  * Extended type for the Metro server build result to support the `code` property as a `Buffer`.
  */
 type ExtendedMetroServerBuildResult =
-  | Awaited<ReturnType<Server['build']>>
+  | Awaited<ReturnType<MetroServer['build']>>
   | {
       code: string | Buffer;
     };
@@ -324,7 +324,7 @@ export async function createMetroServerAndBundleRequestAsync(
     | 'resetCache'
     | 'unstableTransformProfile'
   >
-): Promise<{ server: Server; bundleRequest: BundleOptions }> {
+): Promise<{ server: MetroServer; bundleRequest: BundleOptions }> {
   const exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
 
   // TODO: This is slow ~40ms
@@ -353,10 +353,10 @@ export async function createMetroServerAndBundleRequestAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
-  // TODO(cedric): check if we can use the proper `bundleType=bundle` and `entryPoint=mainModuleName` properties
+  // TODO(cedric): check if we can use the proper `entryPoint=mainModuleName` properties
   // @ts-expect-error: see above
   const bundleRequest: BundleOptions = {
-    ...Server.DEFAULT_BUNDLE_OPTIONS,
+    ...MetroServer.DEFAULT_BUNDLE_OPTIONS,
     ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
       splitChunks: false,
       mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
@@ -373,7 +373,7 @@ export async function createMetroServerAndBundleRequestAsync(
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
-  const server = new Server(config, {
+  const server = new MetroServer(config, {
     watch: false,
   });
 
@@ -381,16 +381,14 @@ export async function createMetroServerAndBundleRequestAsync(
 }
 
 export async function exportEmbedAssetsAsync(
-  server: Server,
+  server: MetroServer,
   bundleRequest: BundleOptions,
   projectRoot: string,
   options: Pick<Options, 'platform'>
 ) {
   try {
-    const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions({
-      ...bundleRequest,
-      bundleType: 'todo',
-    });
+    const { entryFile, onProgress, resolverOptions, transformOptions } =
+      splitBundleOptions(bundleRequest);
 
     assertMetroPrivateServer(server);
 
