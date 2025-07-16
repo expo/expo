@@ -17,7 +17,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue with named screen on web and triggers.
+- Fix issue with named screen on web and triggers. ([#38087](https://github.com/expo/expo/pull/38087) by [@EvanBacon](https://github.com/EvanBacon))
 - use boxShadow style props to reduce warnings. ([#38022](https://github.com/expo/expo/pull/38022) by [@EvanBacon](https://github.com/EvanBacon))
 - fix link with preview on web and Android ([#37800](https://github.com/expo/expo/pull/37800) by [@Ubax](https://github.com/Ubax))
 - fix <Stack.Screen> in HrefPreview ([#37830](https://github.com/expo/expo/pull/37830) by [@Ubax](https://github.com/Ubax))
