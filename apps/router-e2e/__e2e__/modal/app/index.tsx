@@ -149,7 +149,7 @@ export default function Index() {
         </Modal>
       )}
       <FitForm />
-      <ResizeForm />
+      <InitalDetentForm />
     </View>
   );
 }
@@ -200,7 +200,7 @@ function FitForm() {
   );
 }
 
-function ResizeForm() {
+function InitalDetentForm() {
   const [open, setIsOpen] = useState(false);
   return (
     <>
