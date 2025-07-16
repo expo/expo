@@ -62,7 +62,7 @@ let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
-  const { Graph } = require('metro/src/DeltaBundler/Graph');
+  const { Graph } = require('metro/private/DeltaBundler/Graph');
 
   const original_traverseDependencies = Graph.prototype.traverseDependencies;
   if (!original_traverseDependencies.__patched) {
