@@ -12,6 +12,7 @@
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
 - Add `EXPO_USE_STICKY_RESOLVER` to enable experimental sticky resolution to native modules ([#37201](https://github.com/expo/expo/pull/37201) by [@kitten](https://github.com/kitten))
 - Added support for cli extensions in the interactive devtools menu. ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
+- Added cli extension helpers for building extensions ([#38093](https://github.com/expo/expo/pull/38093) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
