@@ -12,30 +12,13 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 
 /**
- * Unit test version of CertificateFixtures that loads certificates from classpath resources
- * instead of Android assets. This allows tests to run without Android context dependency.
- * 
  * These are generated using https://github.com/expo/code-signing-certificates/blob/main/scripts/generateCertificatesForTests.ts
  */
 enum class TestCertificateType(val certName: String) {
   CHAIN_INTERMEDIATE("chainIntermediate"),
   CHAIN_LEAF("chainLeaf"),
   CHAIN_ROOT("chainRoot"),
-  INVALID_SIGNATURE_CHAIN_LEAF("invalidSignatureChainLeaf"),
-  NOT_CODE_SIGNING_EXTENDED_USAGE("noCodeSigningExtendedUsage"),
-  NO_KEY_USAGE("noKeyUsage"),
-  SIGNATURE_INVALID("signatureInvalid"),
-  VALID("test"),
-  VALIDITY_EXPIRED("validityExpired"),
-  CHAIN_NOT_CA_ROOT("chainNotCARoot"),
-  CHAIN_NOT_CA_INTERMEDIATE("chainNotCAIntermediate"),
-  CHAIN_NOT_CA_LEAF("chainNotCALeaf"),
-  CHAIN_PATH_LEN_VIOLATION_ROOT("chainPathLenViolationRoot"),
-  CHAIN_PATH_LEN_VIOLATION_INTERMEDIATE("chainPathLenViolationIntermediate"),
-  CHAIN_PATH_LEN_VIOLATION_LEAF("chainPathLenViolationLeaf"),
-  CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_ROOT("chainExpoProjectInformationViolationRoot"),
-  CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_INTERMEDIATE("chainExpoProjectInformationViolationIntermediate"),
-  CHAIN_EXPO_PROJECT_INFORMATION_VIOLATION_LEAF("chainExpoProjectInformationViolationLeaf")
+  VALID("test")
 }
 
 fun getTestCertificate(testCertificateType: TestCertificateType): String {
