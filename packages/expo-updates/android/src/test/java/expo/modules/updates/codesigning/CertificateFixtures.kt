@@ -47,15 +47,6 @@ fun getTestCertificate(testCertificateType: TestCertificateType): String {
     ?: throw IllegalStateException("Certificate not found: $resourcePath")
 }
 
-fun getTestPrivateKey(testCertificateType: TestCertificateType): String {
-  val resourcePath = "/certificates/privatekeys/${testCertificateType.certName}-privateKey.pem"
-  return CertificateFixtures::class.java
-    .getResourceAsStream(resourcePath)
-    ?.readBytes()
-    ?.decodeToString()
-    ?: throw IllegalStateException("Private key not found: $resourcePath")
-}
-
 object CertificateFixtures {
   // Same test data as the original CertificateFixtures
   const val testExpoUpdatesManifestBody = "{\"id\":\"0754dad0-d200-d634-113c-ef1f26106028\",\"createdAt\":\"2021-11-23T00:57:14.437Z\",\"runtimeVersion\":\"1\",\"assets\":[{\"hash\":\"cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d\",\"key\":\"489ea2f19fa850b65653ab445637a181.jpg\",\"contentType\":\"image/jpeg\",\"url\":\"http://192.168.64.1:3000/api/assets?asset=updates/1/assets/489ea2f19fa850b65653ab445637a181&runtimeVersion=1&platform=android\",\"fileExtension\":\".jpg\"}],\"launchAsset\":{\"hash\":\"323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8\",\"key\":\"696a70cf7035664c20ea86f67dae822b.bundle\",\"contentType\":\"application/javascript\",\"url\":\"http://192.168.64.1:3000/api/assets?asset=updates/1/bundles/android-696a70cf7035664c20ea86f67dae822b.js&runtimeVersion=1&platform=android\",\"fileExtension\":\".bundle\"},\"extra\":{\"scopeKey\":\"@test/app\",\"eas\":{\"projectId\":\"285dc9ca-a25d-4f60-93be-36dc312266d7\"}}}"
