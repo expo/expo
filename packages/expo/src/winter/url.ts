@@ -106,6 +106,7 @@ URL.revokeObjectURL = function revokeObjectURL(_url) {
 
 URL.canParse = function canParse(url: string, base?: string): boolean {
   try {
+    // eslint-disable-next-line no-new
     new URL(url, base);
     return true;
   } catch {
