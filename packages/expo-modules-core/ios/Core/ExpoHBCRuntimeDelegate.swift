@@ -54,6 +54,9 @@ public class ExpoHBCRuntimeDelegate: NSObject {
    * Discovers and injects HBC files from Expo module bundles.
    */
   private func injectHBCFiles(runtime: ExpoRuntime, appContext: AppContext) throws {
+    // First, inject debug marker to verify the system is working
+    injectDebugMarker(runtime: runtime)
+    
     let hbcFiles = discoverHBCFiles()
     
     guard !hbcFiles.isEmpty else {
@@ -66,6 +69,25 @@ public class ExpoHBCRuntimeDelegate: NSObject {
     for hbcFile in hbcFiles {
       try injectHBCFile(at: hbcFile, runtime: runtime)
     }
+  }
+  
+  /**
+   * Injects a debug marker to verify the injection system is working.
+   */
+  private func injectDebugMarker(runtime: ExpoRuntime) {
+    NSLog("ExpoHBCRuntimeDelegate: Injecting debug marker")
+    
+    let debugScript = """
+      // Expo HBC Injection Debug Marker
+      globalThis.EXPO_HBC_INJECTED = true;
+      globalThis.EXPO_HBC_INJECTION_TIME = Date.now();
+      console.log('Expo HBC injection system is working! Time:', globalThis.EXPO_HBC_INJECTION_TIME);
+      """
+    
+    let debugData = debugScript.data(using: .utf8)!
+    _ = EXHBCRuntimeManager.injectHermesBytecode(debugData, runtime: runtime)
+    
+    NSLog("ExpoHBCRuntimeDelegate: Debug marker injected successfully")
   }
   
   /**
