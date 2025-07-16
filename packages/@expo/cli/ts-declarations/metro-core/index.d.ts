@@ -142,7 +142,7 @@ declare module 'metro-core/private/Terminal' {
       stream: UnderlyingStream,
       $$PARAM_1$$: {
         ttyPrint?: boolean;
-      }
+      } = {}
     );
     _scheduleUpdate(): void;
     waitForUpdates(): Promise<void>;
