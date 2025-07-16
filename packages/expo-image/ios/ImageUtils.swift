@@ -182,7 +182,7 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
   // otherwise they would be saved in cache with scale = 1.0 which may result in
   // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
   context[.imageScaleFactor] = source.scale
-  
+
   let sdCacheType = cachePolicy.toSdCacheType().rawValue
   context[.queryCacheType] = sdCacheType
   context[.storeCacheType] = sdCacheType
