@@ -112,7 +112,7 @@ declare module 'metro-source-map/private/Consumer/createConsumer' {
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-source-map/src/Consumer/DelegatingConsumer.js
 declare module 'metro-source-map/private/Consumer/DelegatingConsumer' {
   import type { MixedSourceMap } from 'metro-source-map/private/source-map';
-  import type { LookupBias } from 'metro-source-map/private/Consumer/constants.js';
+  import type { LookupBias } from 'metro-source-map/private/Consumer/constants';
   import type {
     GeneratedPositionLookup,
     IConsumer,
@@ -495,6 +495,13 @@ declare module 'metro-source-map/private/source-map' {
   ): Promise<Generator>;
   export { functionMapBabelPlugin } from 'metro-source-map/private/generateFunctionMap';
   export { default as normalizeSourcePath } from 'metro-source-map/private/Consumer/normalizeSourcePath';
-  export function toBabelSegments(sourceMap: BasicSourceMap): any[];
-  export function toSegmentTuple(mapping: any): MetroSourceMapSegmentTuple;
+  // NOTE(cedric): see https://github.com/facebook/metro/blob/3eeba3d459592aa5128995c8224933f6a23a43f1/flow-typed/npm/babel_v7.x.x.js#L23
+  export type BabelSourceMapSegment = {
+    name?: null | string;
+    source?: null | string;
+    generated: { line: number; column: number };
+    original?: { line: number; column: number };
+  } & Record<string, any>;
+  export function toBabelSegments(sourceMap: BasicSourceMap): BabelSourceMapSegment[];
+  export function toSegmentTuple(mapping: BabelSourceMapSegment): MetroSourceMapSegmentTuple;
 }
