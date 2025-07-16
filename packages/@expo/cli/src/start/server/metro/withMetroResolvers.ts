@@ -30,7 +30,7 @@ export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
 }
 
 function optionsKeyForContext(context: ResolutionContext) {
-  const canonicalize = require('metro-core/src/canonicalize');
+  const canonicalize = require('metro-core/private/canonicalize');
 
   // Compound key for the resolver cache
   return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';

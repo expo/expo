@@ -11,18 +11,18 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import assert from 'assert';
 import chalk from 'chalk';
 import { DeltaResult, TransformInputOptions } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import baseJSBundle from 'metro/private/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
   type SourceMapGeneratorOptions,
-} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-import type MetroHmrServer from 'metro/src/HmrServer';
-import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
-import { GraphRevision } from 'metro/src/IncrementalBundler';
-import bundleToString from 'metro/src/lib/bundleToString';
-import getGraphId from 'metro/src/lib/getGraphId';
+} from 'metro/private/DeltaBundler/Serializers/sourceMapGenerator';
+import type MetroHmrServer from 'metro/private/HmrServer';
+import type { Client as MetroHmrClient } from 'metro/private/HmrServer';
+import { GraphRevision } from 'metro/private/IncrementalBundler';
+import bundleToString from 'metro/private/lib/bundleToString';
+import getGraphId from 'metro/private/lib/getGraphId';
 import { TransformProfile } from 'metro-babel-transformer';
-import type { CustomResolverOptions } from 'metro-resolver/src/types';
+import type { CustomResolverOptions } from 'metro-resolver/private/types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -82,7 +82,7 @@ export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
 >;
 type MetroOnProgress = NonNullable<
-  import('metro/src/DeltaBundler/types').Options<void>['onProgress']
+  import('metro/private/DeltaBundler/types').Options<void>['onProgress']
 >;
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
@@ -1797,7 +1797,7 @@ function wrapBundle(str: string) {
 }
 
 async function sourceMapStringAsync(
-  modules: readonly import('metro/src/DeltaBundler/types').Module<any>[],
+  modules: readonly import('metro/private/DeltaBundler/types').Module<any>[],
   options: SourceMapGeneratorOptions
 ): Promise<string> {
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {

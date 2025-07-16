@@ -7,7 +7,7 @@
 import { ExpoConfig, Platform } from '@expo/config';
 import chalk from 'chalk';
 import fs from 'fs';
-import Bundler from 'metro/src/Bundler';
+import Bundler from 'metro/private/Bundler';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
 import * as metroResolver from 'metro-resolver';

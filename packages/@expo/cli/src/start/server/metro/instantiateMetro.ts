@@ -5,11 +5,11 @@ import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
 import { ReadOnlyGraph } from 'metro';
-import Bundler from 'metro/src/Bundler';
-import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
-import MetroHmrServer from 'metro/src/HmrServer';
-import RevisionNotFoundError from 'metro/src/IncrementalBundler/RevisionNotFoundError';
-import formatBundlingError from 'metro/src/lib/formatBundlingError';
+import Bundler from 'metro/private/Bundler';
+import type { TransformOptions } from 'metro/private/DeltaBundler/Worker';
+import MetroHmrServer from 'metro/private/HmrServer';
+import RevisionNotFoundError from 'metro/private/IncrementalBundler/RevisionNotFoundError';
+import formatBundlingError from 'metro/private/lib/formatBundlingError';
 import { loadConfig, resolveConfig, ConfigT } from 'metro-config';
 import { Terminal } from 'metro-core';
 import util from 'node:util';
@@ -321,7 +321,7 @@ export async function instantiateMetroAsync(
     } catch {
       // Add fallback for monorepo tests up until the fork is merged.
       Log.warn('Failed to load HMR serializer from @expo/metro-config, using fallback version.');
-      hmrJSBundle = require('metro/src/DeltaBundler/Serializers/hmrJSBundle');
+      hmrJSBundle = require('metro/private/DeltaBundler/Serializers/hmrJSBundle');
     }
 
     // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.

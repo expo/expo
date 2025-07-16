@@ -9,10 +9,10 @@ import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets'
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
+import Server from 'metro/private/Server';
+import splitBundleOptions from 'metro/private/lib/splitBundleOptions';
+import output from 'metro/private/shared/output/bundle';
+import type { BundleOptions } from 'metro/private/shared/types';
 import path from 'path';
 
 import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';

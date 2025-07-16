@@ -1,5 +1,5 @@
 import type { ReportableEvent } from 'metro';
-import type { TerminalReportableEvent } from 'metro/src/lib/TerminalReporter';
+import type { TerminalReportableEvent } from 'metro/private/lib/TerminalReporter';
 import type { Terminal } from 'metro-core';
 import type { WatcherStatus } from 'metro-file-map';
 
