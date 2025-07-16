@@ -3,21 +3,17 @@ declare module 'metro-transform-worker' {
   export * from 'metro-transform-worker/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-transform-worker/src/index.js
-declare module 'metro-transform-worker/src/index' {
-  // NOTE(cedric): this is a manual change exporting this existing Flow type for reuse in Expo
-  import type * as _babel_types from '@babel/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-worker/src/index.js
+declare module 'metro-transform-worker/private/index' {
   import type { CustomTransformOptions, TransformProfile } from 'metro-babel-transformer';
   import type {
     BasicSourceMap,
     FBSourceFunctionMap,
     MetroSourceMapSegmentTuple,
   } from 'metro-source-map';
-  import type { TransformResultDependency } from 'metro/src/DeltaBundler';
-  import type { AllowOptionalDependencies } from 'metro/src/DeltaBundler/types.flow';
-  import type { DynamicRequiresBehavior } from 'metro/src/ModuleGraph/worker/collectDependencies';
-  // NOTE(cedric): this is a manual change exporting this existing Flow type for reuse in Expo
-  export type MinifierConfig = Readonly<{
+  import type { AllowOptionalDependencies } from 'metro/private/DeltaBundler/types.flow';
+  import type { DynamicRequiresBehavior } from 'metro/private/ModuleGraph/worker/collectDependencies';
+  type MinifierConfig = Readonly<{
     [$$Key$$: string]: any;
   }>;
   export type MinifierOptions = {
@@ -72,38 +68,10 @@ declare module 'metro-transform-worker/src/index' {
     unstable_disableES6Transforms?: boolean;
     unstable_memoizeInlineRequires?: boolean;
     unstable_nonMemoizedInlineRequires?: readonly string[];
+    unstable_staticHermesOptimizedRequire?: boolean;
     unstable_transformProfile: TransformProfile;
   }>;
-  // NOTE(cedric): this is a manual change exporting these existing Flow types for reuse in Expo
-  export type Path = string;
-  export type BaseFile = Readonly<{
-    code: string;
-    filename: Path;
-    inputFileSize: number;
-  }>;
-  export type AssetFile = Readonly<
-    {
-      type: 'asset';
-    } & BaseFile
-  >;
-  export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
-  export type JSFile = Readonly<
-    {
-      ast?: null | undefined | _babel_types.File;
-      type: JSFileType;
-      functionMap?: FBSourceFunctionMap | null;
-      unstable_importDeclarationLocs?: ReadonlySet<string>;
-    } & BaseFile
-  >;
-  export type JSONFile = {
-    type: Type;
-  } & BaseFile;
-  export type TransformationContext = Readonly<{
-    config: JsTransformerConfig;
-    projectRoot: Path;
-    options: JsTransformOptions;
-  }>;
-  // NOTE(cedric): this is a manual change exporting these existing Flow types for reuse in Expo
+  type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
   export type JsOutput = Readonly<{
     data: Readonly<{
       code: string;
@@ -113,16 +81,11 @@ declare module 'metro-transform-worker/src/index' {
     }>;
     type: JSFileType;
   }>;
-  // NOTE(cedric): this is a manual change exporting this existing Flow type for reuse in Expo
-  export type TransformResponse = Readonly<{
-    dependencies: readonly TransformResultDependency[];
-    output: readonly JsOutput[];
-  }>;
-  export { default as getCacheKey } from 'metro-cache-key';
+  export { getCacheKey } from 'metro-transform-worker/metro-cache-key';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-transform-worker/src/utils/assetTransformer.js
-declare module 'metro-transform-worker/src/utils/assetTransformer' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-worker/src/utils/assetTransformer.js
+declare module 'metro-transform-worker/private/utils/assetTransformer' {
   import type { File } from '@babel/types';
   import type { BabelTransformerArgs } from 'metro-babel-transformer';
   export function transform(
@@ -134,9 +97,9 @@ declare module 'metro-transform-worker/src/utils/assetTransformer' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-transform-worker/src/utils/getMinifier.js
-declare module 'metro-transform-worker/src/utils/getMinifier' {
-  import type { Minifier } from 'metro-transform-worker/src/index';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-transform-worker/src/utils/getMinifier.js
+declare module 'metro-transform-worker/private/utils/getMinifier' {
+  import type { Minifier } from 'metro-transform-worker/private/index.js';
   function getMinifier(minifierPath: string): Minifier;
   export default getMinifier;
 }

@@ -3,10 +3,10 @@ declare module 'metro-resolver' {
   export * from 'metro-resolver/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/createDefaultContext.js
-declare module 'metro-resolver/src/createDefaultContext' {
-  import type { ResolutionContext } from 'metro-resolver/src/types';
-  import type { TransformResultDependency } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/createDefaultContext.js
+declare module 'metro-resolver/private/createDefaultContext' {
+  import type { ResolutionContext } from 'metro-resolver/private/types';
+  import type { TransformResultDependency } from 'metro/private/DeltaBundler/types.flow';
   type PartialContext = Readonly<
     {
       redirectModulePath?: ResolutionContext['redirectModulePath'];
@@ -24,8 +24,8 @@ declare module 'metro-resolver/src/createDefaultContext' {
   export default createDefaultContext;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/FailedToResolveNameError.js
-declare module 'metro-resolver/src/errors/FailedToResolveNameError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/FailedToResolveNameError.js
+declare module 'metro-resolver/private/errors/FailedToResolveNameError' {
   class FailedToResolveNameError extends Error {
     dirPaths: readonly string[];
     extraPaths: readonly string[];
@@ -34,9 +34,9 @@ declare module 'metro-resolver/src/errors/FailedToResolveNameError' {
   export default FailedToResolveNameError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/FailedToResolvePathError.js
-declare module 'metro-resolver/src/errors/FailedToResolvePathError' {
-  import type { FileAndDirCandidates } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/FailedToResolvePathError.js
+declare module 'metro-resolver/private/errors/FailedToResolvePathError' {
+  import type { FileAndDirCandidates } from 'metro-resolver/private/types';
   class FailedToResolvePathError extends Error {
     candidates: FileAndDirCandidates;
     constructor(candidates: FileAndDirCandidates);
@@ -44,23 +44,23 @@ declare module 'metro-resolver/src/errors/FailedToResolvePathError' {
   export default FailedToResolvePathError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/FailedToResolveUnsupportedError.js
-declare module 'metro-resolver/src/errors/FailedToResolveUnsupportedError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/FailedToResolveUnsupportedError.js
+declare module 'metro-resolver/private/errors/FailedToResolveUnsupportedError' {
   class FailedToResolveUnsupportedError extends Error {
     constructor(message: string);
   }
   export default FailedToResolveUnsupportedError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/formatFileCandidates.js
-declare module 'metro-resolver/src/errors/formatFileCandidates' {
-  import type { FileCandidates } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/formatFileCandidates.js
+declare module 'metro-resolver/private/errors/formatFileCandidates' {
+  import type { FileCandidates } from 'metro-resolver/private/types';
   function formatFileCandidates(candidates: FileCandidates): string;
   export default formatFileCandidates;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/InvalidPackageConfigurationError.js
-declare module 'metro-resolver/src/errors/InvalidPackageConfigurationError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/InvalidPackageConfigurationError.js
+declare module 'metro-resolver/private/errors/InvalidPackageConfigurationError' {
   /**
    * Raised when a package contains an invalid `package.json` configuration.
    */
@@ -77,9 +77,9 @@ declare module 'metro-resolver/src/errors/InvalidPackageConfigurationError' {
   export default InvalidPackageConfigurationError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/InvalidPackageError.js
-declare module 'metro-resolver/src/errors/InvalidPackageError' {
-  import type { FileCandidates } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/InvalidPackageError.js
+declare module 'metro-resolver/private/errors/InvalidPackageError' {
+  import type { FileCandidates } from 'metro-resolver/private/types';
   class InvalidPackageError extends Error {
     fileCandidates: FileCandidates;
     indexCandidates: FileCandidates;
@@ -95,8 +95,8 @@ declare module 'metro-resolver/src/errors/InvalidPackageError' {
   export default InvalidPackageError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/PackageImportNotResolvedError.js
-declare module 'metro-resolver/src/errors/PackageImportNotResolvedError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/PackageImportNotResolvedError.js
+declare module 'metro-resolver/private/errors/PackageImportNotResolvedError' {
   /**
    * Raised when package imports do not define or permit a target subpath in the
    * package for the given import specifier.
@@ -114,8 +114,8 @@ declare module 'metro-resolver/src/errors/PackageImportNotResolvedError' {
   export default PackageImportNotResolvedError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/errors/PackagePathNotExportedError.js
-declare module 'metro-resolver/src/errors/PackagePathNotExportedError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/errors/PackagePathNotExportedError.js
+declare module 'metro-resolver/private/errors/PackagePathNotExportedError' {
   /**
    * Raised when package exports do not define or permit a target subpath in the
    * package for the given module.
@@ -124,9 +124,9 @@ declare module 'metro-resolver/src/errors/PackagePathNotExportedError' {
   export default PackagePathNotExportedError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/index.js
-declare module 'metro-resolver/src/index' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/index.js
+declare module 'metro-resolver/private/index' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/index.js
 
   export type {
     AssetFileResolution,
@@ -142,20 +142,24 @@ declare module 'metro-resolver/src/index' {
     Resolution,
     ResolveAsset,
     Result,
-  } from 'metro-resolver/src/types';
+  } from 'metro-resolver/private/types';
 
   // NOTE(cedric): the flow translation API can't resolve types when using inline requires in object properties
-  export { default as FailedToResolveNameError } from 'metro-resolver/src/errors/FailedToResolveNameError';
-  export { default as FailedToResolvePathError } from 'metro-resolver/src/errors/FailedToResolvePathError';
-  export { default as FailedToResolveUnsupportedError } from 'metro-resolver/src/errors/FailedToResolveUnsupportedError';
-  export { default as formatFileCandidates } from 'metro-resolver/src/errors/formatFileCandidates';
-  export { default as InvalidPackageError } from 'metro-resolver/src/errors/InvalidPackageError';
-  export { default as resolve } from 'metro-resolver/src/resolve';
+  export { default as FailedToResolveNameError } from 'metro-resolver/private/errors/FailedToResolveNameError';
+  export { default as FailedToResolvePathError } from 'metro-resolver/private/errors/FailedToResolvePathError';
+  export { default as FailedToResolveUnsupportedError } from 'metro-resolver/private/errors/FailedToResolveUnsupportedError';
+  export { default as formatFileCandidates } from 'metro-resolver/private/errors/formatFileCandidates';
+  export { default as InvalidPackageError } from 'metro-resolver/private/errors/InvalidPackageError';
+  export { default as resolve } from 'metro-resolver/private/resolve';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/PackageExportsResolve.js
-declare module 'metro-resolver/src/PackageExportsResolve' {
-  import type { ExportsField, FileResolution, ResolutionContext } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/PackageExportsResolve.js
+declare module 'metro-resolver/private/PackageExportsResolve' {
+  import type {
+    ExportsField,
+    FileResolution,
+    ResolutionContext,
+  } from 'metro-resolver/private/types';
   export function resolvePackageTargetFromExports(
     context: ResolutionContext,
     packagePath: string,
@@ -166,9 +170,13 @@ declare module 'metro-resolver/src/PackageExportsResolve' {
   ): FileResolution;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/PackageImportsResolve.js
-declare module 'metro-resolver/src/PackageImportsResolve' {
-  import type { ExportsLikeMap, FileResolution, ResolutionContext } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/PackageImportsResolve.js
+declare module 'metro-resolver/private/PackageImportsResolve' {
+  import type {
+    ExportsLikeMap,
+    FileResolution,
+    ResolutionContext,
+  } from 'metro-resolver/private/types';
   /**
    * Resolve a package subpath based on the entry points defined in the package's
    * "imports" field. If there is no match for the given subpath (which may be
@@ -189,9 +197,9 @@ declare module 'metro-resolver/src/PackageImportsResolve' {
   ): FileResolution;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/PackageResolve.js
-declare module 'metro-resolver/src/PackageResolve' {
-  import type { PackageInfo, ResolutionContext } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/PackageResolve.js
+declare module 'metro-resolver/private/PackageResolve' {
+  import type { PackageInfo, ResolutionContext } from 'metro-resolver/private/types';
   /**
    * Resolve the main entry point subpath for a package.
    *
@@ -223,9 +231,9 @@ declare module 'metro-resolver/src/PackageResolve' {
   ): string | false;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/resolve.js
-declare module 'metro-resolver/src/resolve' {
-  import type { Resolution, ResolutionContext } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/resolve.js
+declare module 'metro-resolver/private/resolve' {
+  import type { Resolution, ResolutionContext } from 'metro-resolver/private/types';
   function resolve(
     context: ResolutionContext,
     moduleName: string,
@@ -234,9 +242,9 @@ declare module 'metro-resolver/src/resolve' {
   export default resolve;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/resolveAsset.js
-declare module 'metro-resolver/src/resolveAsset' {
-  import type { AssetResolution, ResolutionContext } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/resolveAsset.js
+declare module 'metro-resolver/private/resolveAsset' {
+  import type { AssetResolution, ResolutionContext } from 'metro-resolver/private/types';
   /**
    * Resolve a file path as an asset. Returns the set of files found after
    * expanding asset resolutions (e.g. `icon@2x.png`). Users may override this
@@ -246,9 +254,9 @@ declare module 'metro-resolver/src/resolveAsset' {
   export default resolveAsset;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/types.js
-declare module 'metro-resolver/src/types' {
-  import type { TransformResultDependency } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/types.js
+declare module 'metro-resolver/private/types' {
+  import type { TransformResultDependency } from 'metro/private/DeltaBundler/types.flow';
   export type Result<TResolution, TCandidates> =
     | {
         readonly type: 'resolved';
@@ -455,8 +463,8 @@ declare module 'metro-resolver/src/types' {
   };
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/utils/isAssetFile.js
-declare module 'metro-resolver/src/utils/isAssetFile' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/utils/isAssetFile.js
+declare module 'metro-resolver/private/utils/isAssetFile' {
   /**
    * Determine if a file path should be considered an asset file based on the
    * given `assetExts`.
@@ -465,23 +473,23 @@ declare module 'metro-resolver/src/utils/isAssetFile' {
   export default isAssetFile;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/utils/isSubpathDefinedInExportsLike.js
-declare module 'metro-resolver/src/utils/isSubpathDefinedInExportsLike' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/utils/isSubpathDefinedInExportsLike.js
+declare module 'metro-resolver/private/utils/isSubpathDefinedInExportsLike' {
   /**
    * Identifies whether the given subpath is defined in the given "exports"-like
    * mapping. Does not reduce exports conditions (therefore does not identify
    * whether the subpath is mapped to a value).
    */
-  import type { NormalizedExportsLikeMap } from 'metro-resolver/src/types';
+  import type { NormalizedExportsLikeMap } from 'metro-resolver/private/types';
   export function isSubpathDefinedInExportsLike(
     exportsLikeMap: NormalizedExportsLikeMap,
     subpath: string
   ): boolean;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/utils/matchSubpathFromExportsLike.js
-declare module 'metro-resolver/src/utils/matchSubpathFromExportsLike' {
-  import type { NormalizedExportsLikeMap, ResolutionContext } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/utils/matchSubpathFromExportsLike.js
+declare module 'metro-resolver/private/utils/matchSubpathFromExportsLike' {
+  import type { NormalizedExportsLikeMap, ResolutionContext } from 'metro-resolver/private/types';
   /**
    * Get the mapped replacement for the given subpath.
    *
@@ -500,8 +508,8 @@ declare module 'metro-resolver/src/utils/matchSubpathFromExportsLike' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/utils/matchSubpathPattern.js
-declare module 'metro-resolver/src/utils/matchSubpathPattern' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/utils/matchSubpathPattern.js
+declare module 'metro-resolver/private/utils/matchSubpathPattern' {
   /**
    * If a subpath pattern expands to the passed subpath, return the subpath match
    * (value to substitute for '*'). Otherwise, return `null`.
@@ -511,13 +519,13 @@ declare module 'metro-resolver/src/utils/matchSubpathPattern' {
   export function matchSubpathPattern(subpathPattern: string, subpath: string): string | null;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/utils/reduceExportsLikeMap.js
-declare module 'metro-resolver/src/utils/reduceExportsLikeMap' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/utils/reduceExportsLikeMap.js
+declare module 'metro-resolver/private/utils/reduceExportsLikeMap' {
   /**
    * Reduce an "exports"-like mapping to a flat subpath mapping after resolving
    * conditional exports.
    */
-  import type { FlattenedExportMap, NormalizedExportsLikeMap } from 'metro-resolver/src/types';
+  import type { FlattenedExportMap, NormalizedExportsLikeMap } from 'metro-resolver/private/types';
   export function reduceExportsLikeMap(
     exportsLikeMap: NormalizedExportsLikeMap,
     conditionNames: ReadonlySet<string>,
@@ -525,8 +533,8 @@ declare module 'metro-resolver/src/utils/reduceExportsLikeMap' {
   ): FlattenedExportMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-resolver/src/utils/toPosixPath.js
-declare module 'metro-resolver/src/utils/toPosixPath' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-resolver/src/utils/toPosixPath.js
+declare module 'metro-resolver/private/utils/toPosixPath' {
   /**
    * Replace path separators in the passed string to coerce to a POSIX path. This
    * is a no-op on POSIX systems.

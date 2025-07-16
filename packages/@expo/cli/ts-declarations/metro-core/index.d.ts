@@ -4,20 +4,20 @@ declare module 'metro-core' {
   export { default } from 'metro-core/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/canonicalize.js
-declare module 'metro-core/src/canonicalize' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/canonicalize.js
+declare module 'metro-core/private/canonicalize' {
   function canonicalize(key: string, value: any): any;
   export default canonicalize;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/errors.js
-declare module 'metro-core/src/errors' {
-  export { default as AmbiguousModuleResolutionError } from 'metro-core/src/errors/AmbiguousModuleResolutionError';
-  export { default as PackageResolutionError } from 'metro-core/src/errors/PackageResolutionError';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/errors.js
+declare module 'metro-core/private/errors' {
+  export { default as AmbiguousModuleResolutionError } from 'metro-core/private/errors/AmbiguousModuleResolutionError';
+  export { default as PackageResolutionError } from 'metro-core/private/errors/PackageResolutionError';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/errors/AmbiguousModuleResolutionError.js
-declare module 'metro-core/src/errors/AmbiguousModuleResolutionError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/errors/AmbiguousModuleResolutionError.js
+declare module 'metro-core/private/errors/AmbiguousModuleResolutionError' {
   import type { DuplicateHasteCandidatesError } from 'metro-file-map';
   class AmbiguousModuleResolutionError extends Error {
     fromModulePath: string;
@@ -27,8 +27,8 @@ declare module 'metro-core/src/errors/AmbiguousModuleResolutionError' {
   export default AmbiguousModuleResolutionError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/errors/PackageResolutionError.js
-declare module 'metro-core/src/errors/PackageResolutionError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/errors/PackageResolutionError.js
+declare module 'metro-core/private/errors/PackageResolutionError' {
   import type { InvalidPackageError } from 'metro-resolver';
   class PackageResolutionError extends Error {
     originModulePath: string;
@@ -43,17 +43,17 @@ declare module 'metro-core/src/errors/PackageResolutionError' {
   export default PackageResolutionError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/index.js
-declare module 'metro-core/src/index' {
-  export { default as AmbiguousModuleResolutionError } from 'metro-core/src/errors/AmbiguousModuleResolutionError';
-  export { default as Logger } from 'metro-core/src/Logger';
-  export { default as PackageResolutionError } from 'metro-core/src/errors/PackageResolutionError';
-  export { default as Terminal } from 'metro-core/src/Terminal';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/index.js
+declare module 'metro-core/private/index' {
+  export { default as AmbiguousModuleResolutionError } from 'metro-core/private/errors/AmbiguousModuleResolutionError';
+  export { default as Logger } from 'metro-core/private/Logger';
+  export { default as PackageResolutionError } from 'metro-core/private/errors/PackageResolutionError';
+  export { default as Terminal } from 'metro-core/private/Terminal';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/Logger.js
-declare module 'metro-core/src/Logger' {
-  import type { BundleOptions } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/Logger.js
+declare module 'metro-core/private/Logger' {
+  import type { BundleOptions } from 'metro/private/shared/types.flow';
   export type ActionLogEntryData = {
     action_name: string;
     log_entry_label?: string;
@@ -71,6 +71,7 @@ declare module 'metro-core/src/Logger' {
     action_result?: string;
     duration_ms?: number;
     entry_point?: string;
+    file_name?: string;
     log_entry_label: string;
     log_session?: string;
     start_timestamp?: [number, number];
@@ -92,10 +93,11 @@ declare module 'metro-core/src/Logger' {
   export function log(logEntry: LogEntry): LogEntry;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-core/src/Terminal.js
-declare module 'metro-core/src/Terminal' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-core/src/Terminal.js
+declare module 'metro-core/private/Terminal' {
   import type * as _nodeStream from 'node:stream';
   import type * as _nodeNet from 'node:net';
+  import tty from 'node:tty';
   type UnderlyingStream = _nodeNet.Socket | _nodeStream.Writable;
   /**
    * We don't just print things to the console, sometimes we also want to show
@@ -128,15 +130,27 @@ declare module 'metro-core/src/Terminal' {
   class Terminal {
     _logLines: string[];
     _nextStatusStr: string;
-    _scheduleUpdate: () => void;
     _statusStr: string;
     _stream: UnderlyingStream;
-    constructor(stream: UnderlyingStream);
-    _update(): void;
+    _ttyStream: null | undefined | tty.WriteStream;
+    _updatePromise: Promise<void> | null;
+    _isUpdating: boolean;
+    _isPendingUpdate: boolean;
+    _shouldFlush: boolean;
+    _writeStatusThrottled: ($$PARAM_0$$: string) => void;
+    constructor(
+      stream: UnderlyingStream,
+      $$PARAM_1$$: {
+        ttyPrint?: boolean;
+      }
+    );
+    _scheduleUpdate(): void;
+    waitForUpdates(): Promise<void>;
+    flush(): Promise<void>;
+    _update(): Promise<void>;
     status(format: string, ...args: any[]): string;
     log(format: string, ...args: any[]): void;
     persistStatus(): void;
-    flush(): void;
   }
   export default Terminal;
 }

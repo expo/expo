@@ -9,9 +9,9 @@ declare module 'metro-config/src/configTypes' {
   export * from 'metro-config/src/configTypes.flow';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/configTypes.flow.js
-declare module 'metro-config/src/configTypes.flow' {
-  import type { IntermediateStackFrame } from 'metro/src/Server/symbolicate';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/configTypes.flow.js
+declare module 'metro-config/private/configTypes.flow' {
+  import type { IntermediateStackFrame } from 'metro/private/Server/symbolicate';
   import type { HandleFunction, Server } from 'connect';
   import type { CacheStore } from 'metro-cache';
   import type $$IMPORT_TYPEOF_1$$ from 'metro-cache';
@@ -19,15 +19,15 @@ declare module 'metro-config/src/configTypes.flow' {
   import type { CacheManagerFactory } from 'metro-file-map';
   import type { CustomResolver } from 'metro-resolver';
   import type { JsTransformerConfig } from 'metro-transform-worker';
-  import type { TransformResult } from 'metro/src/DeltaBundler';
+  import type { TransformResult } from 'metro/private/DeltaBundler';
   import type {
     DeltaResult,
     Module,
     ReadOnlyGraph,
     SerializerOptions,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type { Reporter } from 'metro/src/lib/reporting';
-  import type MetroServer from 'metro/src/Server';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { Reporter } from 'metro/private/lib/reporting';
+  import type MetroServer from 'metro/private/Server';
   export type ExtraTransformOptions = Readonly<{
     preloadedModules?:
       | Readonly<{
@@ -46,7 +46,6 @@ declare module 'metro-config/src/configTypes.flow' {
         | boolean;
       nonInlinedRequires?: readonly string[];
       unstable_disableES6Transforms?: boolean;
-      unstable_inlinePlatform?: boolean;
       unstable_memoizeInlineRequires?: boolean;
       unstable_nonMemoizedInlineRequires?: readonly string[];
     }>;
@@ -166,7 +165,6 @@ declare module 'metro-config/src/configTypes.flow' {
     transformVariants: {
       readonly [name: string]: object;
     };
-    workerPath: string;
     publicPath: string;
     unstable_workerThreads: boolean;
   } & JsTransformerConfig;
@@ -303,9 +301,9 @@ declare module 'metro-config/src/configTypes.flow' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/defaults/defaults.js
-declare module 'metro-config/src/defaults/defaults' {
-  import type { RootPerfLogger } from 'metro-config/src/configTypes.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/defaults/defaults.js
+declare module 'metro-config/private/defaults/defaults' {
+  import type { RootPerfLogger } from 'metro-config/private/configTypes.flow';
   export const assetExts: any;
   export const assetResolutions: any;
   export const sourceExts: any;
@@ -313,43 +311,43 @@ declare module 'metro-config/src/defaults/defaults' {
   export const moduleSystem: string;
   export const platforms: any;
   export const DEFAULT_METRO_MINIFIER_PATH: 'metro-minify-terser';
-  export { default as defaultCreateModuleIdFactory } from 'metro/src/lib/createModuleIdFactory';
+  export { default as defaultCreateModuleIdFactory } from 'metro-config/metro/private/lib/createModuleIdFactory';
   export const noopPerfLoggerFactory: () => RootPerfLogger;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/defaults/index.js
-declare module 'metro-config/src/defaults/index' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/defaults/index.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/defaults/index.js
+declare module 'metro-config/private/defaults/index' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/defaults/index.js
 
   // NOTE(cedric): This file can't be typed properly due to complex CJS structures
   // NOTE(cedric): This file has lots more exports, but neither of them should be used directly by Expo
 
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
+  import type { ConfigT } from 'metro-config/private/configTypes.flow';
   export default interface getDefaultConfig {
     (rootPath: string | null): Promise<ConfigT>;
     getDefaultValues: (rootPath: string | null) => ConfigT;
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/defaults/validConfig.js
-declare module 'metro-config/src/defaults/validConfig' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/defaults/validConfig.js
+declare module 'metro-config/private/defaults/validConfig' {
   const $$EXPORT_DEFAULT_DECLARATION$$: () => any;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/index.js
-declare module 'metro-config/src/index' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/index.js
+declare module 'metro-config/private/index' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/index.js
 
   // NOTE(cedric): Metro uses this weird Flow syntax /*:: */ to override the exported types...
-  export type * from 'metro-config/src/configTypes.flow';
-  export { default as getDefaultConfig } from 'metro-config/src/defaults';
-  export { loadConfig, mergeConfig, resolveConfig } from 'metro-config/src/loadConfig';
+  export type * from 'metro-config/private/configTypes.flow';
+  export { default as getDefaultConfig } from 'metro-config/private/defaults';
+  export { loadConfig, mergeConfig, resolveConfig } from 'metro-config/private/loadConfig';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro-config/src/loadConfig.js
-declare module 'metro-config/src/loadConfig' {
-  import type { ConfigT, InputConfigT, YargArguments } from 'metro-config/src/configTypes.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-config/src/loadConfig.js
+declare module 'metro-config/private/loadConfig' {
+  import type { ConfigT, InputConfigT, YargArguments } from 'metro-config/private/configTypes.flow';
   type CosmiConfigResult = {
     filepath: string;
     isEmpty: boolean;

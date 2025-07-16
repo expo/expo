@@ -4,8 +4,8 @@ declare module 'metro' {
   export { default } from 'metro/src/index';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/Assets.js
-declare module 'metro/src/Assets' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Assets.js
+declare module 'metro/private/Assets' {
   export type AssetInfo = {
     readonly files: string[];
     readonly hash: string;
@@ -70,14 +70,14 @@ declare module 'metro/src/Assets' {
   export function isAssetTypeAnImage(type: string): boolean;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/Bundler.js
-declare module 'metro/src/Bundler' {
-  import type { TransformResultWithSource } from 'metro/src/DeltaBundler';
-  import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
-  import type EventEmitter from 'events';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import Transformer from 'metro/src/DeltaBundler/Transformer';
-  import DependencyGraph from 'metro/src/node-haste/DependencyGraph';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Bundler.js
+declare module 'metro/private/Bundler' {
+  import type { TransformResultWithSource } from 'metro/private/DeltaBundler';
+  import type { TransformOptions } from 'metro/private/DeltaBundler/Worker';
+  import type EventEmitter from 'node:events';
+  import type { ConfigT } from 'metro-config';
+  import Transformer from 'metro/private/DeltaBundler/Transformer';
+  import DependencyGraph from 'metro/private/node-haste/DependencyGraph';
   export type BundlerOptions = Readonly<{
     hasReducedPerformance?: boolean;
     watch?: boolean;
@@ -100,10 +100,10 @@ declare module 'metro/src/Bundler' {
   export default Bundler;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/Bundler/util.js
-declare module 'metro/src/Bundler/util' {
-  import type { AssetDataWithoutFiles } from 'metro/src/Assets';
-  import type { ModuleTransportLike } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Bundler/util.js
+declare module 'metro/private/Bundler/util' {
+  import type { AssetDataWithoutFiles } from 'metro/private/Assets';
+  import type { ModuleTransportLike } from 'metro/private/shared/types.flow';
   import type { File } from '@babel/types';
   type SubTree<T extends ModuleTransportLike> = (
     moduleTransport: T,
@@ -120,81 +120,17 @@ declare module 'metro/src/Bundler/util' {
   ): File;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/cli-utils.js
-declare module 'metro/src/cli-utils' {
-  export const watchFile: (filename: string, callback: () => any) => Promise<void>;
-  export const makeAsyncCommand: <T>(command: (argv: T) => Promise<void>) => (argv: T) => void;
-}
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/cli.js
-declare module 'metro/src/cli' {
-  // This has no exports
-}
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/cli/parseKeyValueParamArray.js
-declare module 'metro/src/cli/parseKeyValueParamArray' {
-  function coerceKeyValueArray(keyValueArray: readonly string[]): {
-    [key: string]: string;
-  };
-  export default coerceKeyValueArray;
-}
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/commands/build.js
-// NOTE(cedric): yargs is custom-typed in metro
-// declare module 'metro/src/commands/build' {
-//   import type { ModuleObject } from 'yargs';
-//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<
-//     ModuleObject,
-//     keyof {
-//       handler: Function;
-//     }
-//   > & {
-//     handler: Function;
-//   };
-//   export default $$EXPORT_DEFAULT_DECLARATION$$;
-// }
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/commands/dependencies.js
-// NOTE(cedric): yargs is custom-typed in metro
-// declare module 'metro/src/commands/dependencies' {
-//   import type { ModuleObject } from 'yargs';
-//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<
-//     ModuleObject,
-//     keyof {
-//       handler: Function;
-//     }
-//   > & {
-//     handler: Function;
-//   };
-//   export default $$EXPORT_DEFAULT_DECLARATION$$;
-// }
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/commands/serve.js
-// NOTE(cedric): yargs is custom-typed in metro
-// declare module 'metro/src/commands/serve' {
-//   import type { ModuleObject } from 'yargs';
-//   const $$EXPORT_DEFAULT_DECLARATION$$: () => Omit<
-//     ModuleObject,
-//     keyof {
-//       handler: Function;
-//     }
-//   > & {
-//     handler: Function;
-//   };
-//   export default $$EXPORT_DEFAULT_DECLARATION$$;
-// }
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler.js
-declare module 'metro/src/DeltaBundler' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler.js
+declare module 'metro/private/DeltaBundler' {
   import type {
     DeltaResult,
     Graph,
     MixedOutput,
     Options,
     ReadOnlyGraph,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type EventEmitter from 'events';
-  import DeltaCalculator from 'metro/src/DeltaBundler/DeltaCalculator';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type EventEmitter from 'node:events';
+  import DeltaCalculator from 'metro/private/DeltaBundler/DeltaCalculator';
   export type {
     DeltaResult,
     Graph,
@@ -206,7 +142,7 @@ declare module 'metro/src/DeltaBundler' {
     TransformResult,
     TransformResultDependency,
     TransformResultWithSource,
-  } from 'metro/src/DeltaBundler/types.flow';
+  } from 'metro/private/DeltaBundler/types.flow';
   /**
    * `DeltaBundler` uses the `DeltaTransformer` to build bundle deltas. This
    * module handles all the transformer instances so it can support multiple
@@ -236,19 +172,19 @@ declare module 'metro/src/DeltaBundler' {
   export default DeltaBundler;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/buildSubgraph.js
-declare module 'metro/src/DeltaBundler/buildSubgraph' {
-  import type { RequireContext } from 'metro/src/lib/contextModule';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/buildSubgraph.js
+declare module 'metro/private/DeltaBundler/buildSubgraph' {
+  import type { RequireContext } from 'metro/private/lib/contextModule';
   import type {
-    Dependency,
     ModuleData,
+    ResolvedDependency,
     ResolveFn,
     TransformFn,
-  } from 'metro/src/DeltaBundler/types.flow';
+  } from 'metro/private/DeltaBundler/types.flow';
   type Parameters<T> = Readonly<{
     resolve: ResolveFn;
     transform: TransformFn<T>;
-    shouldTraverse: ($$PARAM_0$$: Dependency) => boolean;
+    shouldTraverse: ($$PARAM_0$$: ResolvedDependency) => boolean;
   }>;
   export function buildSubgraph<T>(
     entryPaths: ReadonlySet<string>,
@@ -260,11 +196,11 @@ declare module 'metro/src/DeltaBundler/buildSubgraph' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/DeltaCalculator.js
-declare module 'metro/src/DeltaBundler/DeltaCalculator' {
-  import type { DeltaResult, Options } from 'metro/src/DeltaBundler/types.flow';
-  import { Graph } from 'metro/src/DeltaBundler/Graph';
-  import { EventEmitter } from 'events';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/DeltaCalculator.js
+declare module 'metro/private/DeltaBundler/DeltaCalculator' {
+  import type { DeltaResult, Options } from 'metro/private/DeltaBundler/types.flow';
+  import { Graph } from 'metro/private/DeltaBundler/Graph';
+  import { EventEmitter } from 'node:events';
   /**
    * This class is in charge of calculating the delta of changed modules that
    * happen between calls. To do so, it subscribes to file changes, so it can
@@ -299,9 +235,9 @@ declare module 'metro/src/DeltaBundler/DeltaCalculator' {
   export default DeltaCalculator;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/getTransformCacheKey.js
-declare module 'metro/src/DeltaBundler/getTransformCacheKey' {
-  import type { TransformerConfig } from 'metro/src/DeltaBundler/Worker';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/getTransformCacheKey.js
+declare module 'metro/private/DeltaBundler/getTransformCacheKey' {
+  import type { TransformerConfig } from 'metro/private/DeltaBundler/Worker';
   function getTransformCacheKey(opts: {
     readonly cacheVersion: string;
     readonly projectRoot: string;
@@ -310,8 +246,8 @@ declare module 'metro/src/DeltaBundler/getTransformCacheKey' {
   export default getTransformCacheKey;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Graph.js
-declare module 'metro/src/DeltaBundler/Graph' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Graph.js
+declare module 'metro/private/DeltaBundler/Graph' {
   /**
    * Portions of this code are based on the Synchronous Cycle Collection
    * algorithm described in:
@@ -332,7 +268,7 @@ declare module 'metro/src/DeltaBundler/Graph' {
    *    nodes and entries in the importBundleNodes set.
    */
 
-  import type { RequireContext } from 'metro/src/lib/contextModule';
+  import type { RequireContext } from 'metro/private/lib/contextModule';
   import type {
     Dependencies,
     Dependency,
@@ -341,14 +277,20 @@ declare module 'metro/src/DeltaBundler/Graph' {
     Module,
     ModuleData,
     Options,
+    ResolvedDependency,
     TransformInputOptions,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import CountingSet from 'metro/src/lib/CountingSet';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import CountingSet from 'metro/private/lib/CountingSet';
   export type Result<T> = {
     added: Map<string, Module<T>>;
     modified: Map<string, Module<T>>;
     deleted: Set<string>;
   };
+  /**
+   * Internal data structure that the traversal logic uses to know which of the
+   * files have been modified. This allows to return the added modules before the
+   * modified ones (which is useful for things like Hot Module Reloading).
+   **/
   /**
    * Internal data structure that the traversal logic uses to know which of the
    * files have been modified. This allows to return the added modules before the
@@ -418,8 +360,8 @@ declare module 'metro/src/DeltaBundler/Graph' {
         shallow: boolean;
       }
     ): void;
-    _incrementImportBundleReference(dependency: Dependency, parentModule: Module<T>): void;
-    _decrementImportBundleReference(dependency: Dependency, parentModule: Module<T>): void;
+    _incrementImportBundleReference(dependency: ResolvedDependency, parentModule: Module<T>): void;
+    _decrementImportBundleReference(dependency: ResolvedDependency, parentModule: Module<T>): void;
     _markModuleInUse(module: Module<T>): void;
     _children(module: Module<T>, options: InternalOptions<T>): Iterator<Module<T>>;
     _moduleSnapshot(module: Module<T>): ModuleData<T>;
@@ -434,17 +376,21 @@ declare module 'metro/src/DeltaBundler/Graph' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/mergeDeltas.js
-declare module 'metro/src/DeltaBundler/mergeDeltas' {
-  import type { DeltaBundle } from 'metro-runtime/src/modules/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/mergeDeltas.js
+declare module 'metro/private/DeltaBundler/mergeDeltas' {
+  import type { DeltaBundle } from 'metro-runtime/modules/types.flow';
   function mergeDeltas(delta1: DeltaBundle, delta2: DeltaBundle): DeltaBundle;
   export default mergeDeltas;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js
-declare module 'metro/src/DeltaBundler/Serializers/baseJSBundle' {
-  import type { Module, ReadOnlyGraph, SerializerOptions } from 'metro/src/DeltaBundler/types.flow';
-  import type { Bundle } from 'metro-runtime/src/modules/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js
+declare module 'metro/private/DeltaBundler/Serializers/baseJSBundle' {
+  import type {
+    Module,
+    ReadOnlyGraph,
+    SerializerOptions,
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { Bundle } from 'metro-runtime/modules/types.flow';
   function baseJSBundle(
     entryPoint: string,
     preModules: readonly Module[],
@@ -454,9 +400,9 @@ declare module 'metro/src/DeltaBundler/Serializers/baseJSBundle' {
   export default baseJSBundle;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/getAllFiles.js
-declare module 'metro/src/DeltaBundler/Serializers/getAllFiles' {
-  import type { Module, ReadOnlyGraph } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/getAllFiles.js
+declare module 'metro/private/DeltaBundler/Serializers/getAllFiles' {
+  import type { Module, ReadOnlyGraph } from 'metro/private/DeltaBundler/types.flow';
   type Options = {
     platform?: null | string;
     readonly processModuleFilter: (module: Module) => boolean;
@@ -469,10 +415,10 @@ declare module 'metro/src/DeltaBundler/Serializers/getAllFiles' {
   export default getAllFiles;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/getAssets.js
-declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
-  import type { AssetData } from 'metro/src/Assets';
-  import type { Module, ReadOnlyDependencies } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/getAssets.js
+declare module 'metro/private/DeltaBundler/Serializers/getAssets' {
+  import type { AssetData } from 'metro/private/Assets';
+  import type { Module, ReadOnlyDependencies } from 'metro/private/DeltaBundler/types.flow';
   type Options = {
     readonly processModuleFilter: (module: Module) => boolean;
     assetPlugins: readonly string[];
@@ -487,9 +433,9 @@ declare module 'metro/src/DeltaBundler/Serializers/getAssets' {
   export default getAssets;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/getExplodedSourceMap.js
-declare module 'metro/src/DeltaBundler/Serializers/getExplodedSourceMap' {
-  import type { Module } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/getExplodedSourceMap.js
+declare module 'metro/private/DeltaBundler/Serializers/getExplodedSourceMap' {
+  import type { Module } from 'metro/private/DeltaBundler/types.flow';
   import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
   export type ExplodedSourceMap = readonly {
     readonly map: MetroSourceMapSegmentTuple[];
@@ -505,12 +451,16 @@ declare module 'metro/src/DeltaBundler/Serializers/getExplodedSourceMap' {
   ): ExplodedSourceMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/getRamBundleInfo.js
-declare module 'metro/src/DeltaBundler/Serializers/getRamBundleInfo' {
-  import type { ModuleTransportLike } from 'metro/src/shared/types.flow';
-  import type { Module, ReadOnlyGraph, SerializerOptions } from 'metro/src/DeltaBundler/types.flow';
-  import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-  import type { GetTransformOptions } from 'metro-config/src/configTypes.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/getRamBundleInfo.js
+declare module 'metro/private/DeltaBundler/Serializers/getRamBundleInfo' {
+  import type { ModuleTransportLike } from 'metro/private/shared/types.flow';
+  import type {
+    Module,
+    ReadOnlyGraph,
+    SerializerOptions,
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { SourceMapGeneratorOptions } from 'metro/private/DeltaBundler/Serializers/sourceMapGenerator';
+  import type { GetTransformOptions } from 'metro-config';
   type Options = Readonly<
     {
       getTransformOptions?: null | GetTransformOptions;
@@ -533,15 +483,15 @@ declare module 'metro/src/DeltaBundler/Serializers/getRamBundleInfo' {
   export default getRamBundleInfo;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL.js
-declare module 'metro/src/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL.js
+declare module 'metro/private/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL' {
   function getInlineSourceMappingURL(sourceMap: string): string;
   export default getInlineSourceMappingURL;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/helpers/getSourceMapInfo.js
-declare module 'metro/src/DeltaBundler/Serializers/helpers/getSourceMapInfo' {
-  import type { Module } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/helpers/getSourceMapInfo.js
+declare module 'metro/private/DeltaBundler/Serializers/helpers/getSourceMapInfo' {
+  import type { Module } from 'metro/private/DeltaBundler/types.flow';
   import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
   function getSourceMapInfo(
     module: Module,
@@ -562,22 +512,16 @@ declare module 'metro/src/DeltaBundler/Serializers/helpers/getSourceMapInfo' {
   export default getSourceMapInfo;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/helpers/getTransitiveDependencies.js
-declare module 'metro/src/DeltaBundler/Serializers/helpers/getTransitiveDependencies' {
-  import type { ReadOnlyGraph } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/helpers/getTransitiveDependencies.js
+declare module 'metro/private/DeltaBundler/Serializers/helpers/getTransitiveDependencies' {
+  import type { ReadOnlyGraph } from 'metro/private/DeltaBundler/types.flow';
   function getTransitiveDependencies<T>(path: string, graph: ReadOnlyGraph<T>): Set<string>;
   export default getTransitiveDependencies;
 }
 
-// NOTE(cedric): this is a workaround for a jest-resolve bug to import this file with explicit extension
-// See: https://github.com/lukeed/resolve.exports/issues/40
-declare module 'metro/src/DeltaBundler/Serializers/helpers/js.js' {
-  export * from 'metro/src/DeltaBundler/Serializers/helpers/js';
-}
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/helpers/js.js
-declare module 'metro/src/DeltaBundler/Serializers/helpers/js' {
-  import type { MixedOutput, Module } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/helpers/js.js
+declare module 'metro/private/DeltaBundler/Serializers/helpers/js' {
+  import type { MixedOutput, Module } from 'metro/private/DeltaBundler/types.flow';
   import type { JsOutput } from 'metro-transform-worker';
   export type Options = Readonly<{
     createModuleId: ($$PARAM_0$$: string) => number | string;
@@ -598,9 +542,9 @@ declare module 'metro/src/DeltaBundler/Serializers/helpers/js' {
   export function wrapModule(module: Module, options: Options): string;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/helpers/processModules.js
-declare module 'metro/src/DeltaBundler/Serializers/helpers/processModules' {
-  import type { Module } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/helpers/processModules.js
+declare module 'metro/private/DeltaBundler/Serializers/helpers/processModules' {
+  import type { Module } from 'metro/private/DeltaBundler/types.flow';
   function processModules(
     modules: readonly Module[],
     $$PARAM_1$$: Readonly<{
@@ -616,11 +560,11 @@ declare module 'metro/src/DeltaBundler/Serializers/helpers/processModules' {
   export default processModules;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/hmrJSBundle.js
-declare module 'metro/src/DeltaBundler/Serializers/hmrJSBundle' {
-  import type { EntryPointURL } from 'metro/src/HmrServer';
-  import type { DeltaResult, ReadOnlyGraph } from 'metro/src/DeltaBundler/types.flow';
-  import type { HmrModule } from 'metro-runtime/src/modules/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/hmrJSBundle.js
+declare module 'metro/private/DeltaBundler/Serializers/hmrJSBundle' {
+  import type { EntryPointURL } from 'metro/private/HmrServer';
+  import type { DeltaResult, ReadOnlyGraph } from 'metro/private/DeltaBundler/types.flow';
+  import type { HmrModule } from 'metro-runtime/modules/types.flow';
   type Options = Readonly<{
     clientUrl: EntryPointURL;
     createModuleId: ($$PARAM_0$$: string) => number;
@@ -640,9 +584,9 @@ declare module 'metro/src/DeltaBundler/Serializers/hmrJSBundle' {
   export default hmrJSBundle;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/sourceMapGenerator.js
-declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
-  import type { Module } from 'metro/src/DeltaBundler/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/sourceMapGenerator.js
+declare module 'metro/private/DeltaBundler/Serializers/sourceMapGenerator' {
+  import type { Module } from 'metro/private/DeltaBundler/types.flow';
   import { fromRawMappings, fromRawMappingsNonBlocking } from 'metro-source-map';
   export type SourceMapGeneratorOptions = Readonly<{
     excludeSource: boolean;
@@ -660,10 +604,10 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapGenerator' {
   ): ReturnType<typeof fromRawMappingsNonBlocking>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/sourceMapObject.js
-declare module 'metro/src/DeltaBundler/Serializers/sourceMapObject' {
-  import type { Module } from 'metro/src/DeltaBundler/types.flow';
-  import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/sourceMapObject.js
+declare module 'metro/private/DeltaBundler/Serializers/sourceMapObject' {
+  import type { Module } from 'metro/private/DeltaBundler/types.flow';
+  import type { SourceMapGeneratorOptions } from 'metro/private/DeltaBundler/Serializers/sourceMapGenerator';
   import type { MixedSourceMap } from 'metro-source-map';
   export function sourceMapObject(
     modules: readonly Module[],
@@ -675,10 +619,10 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapObject' {
   ): Promise<MixedSourceMap>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Serializers/sourceMapString.js
-declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
-  import type { Module } from 'metro/src/DeltaBundler/types.flow';
-  import type { SourceMapGeneratorOptions } from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/sourceMapString.js
+declare module 'metro/private/DeltaBundler/Serializers/sourceMapString' {
+  import type { Module } from 'metro/private/DeltaBundler/types.flow';
+  import type { SourceMapGeneratorOptions } from 'metro/private/DeltaBundler/Serializers/sourceMapGenerator';
   export function sourceMapString(
     modules: readonly Module[],
     options: SourceMapGeneratorOptions
@@ -689,17 +633,19 @@ declare module 'metro/src/DeltaBundler/Serializers/sourceMapString' {
   ): Promise<string>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Transformer.js
-declare module 'metro/src/DeltaBundler/Transformer' {
-  import type { TransformResult, TransformResultWithSource } from 'metro/src/DeltaBundler';
-  import type { TransformOptions } from 'metro/src/DeltaBundler/Worker';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import WorkerFarm from 'metro/src/DeltaBundler/WorkerFarm';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Transformer.js
+declare module 'metro/private/DeltaBundler/Transformer' {
+  import type { TransformResult, TransformResultWithSource } from 'metro/private/DeltaBundler';
+  import type { TransformOptions } from 'metro/private/DeltaBundler/Worker';
+  import type { ConfigT } from 'metro-config';
+  import WorkerFarm from 'metro/private/DeltaBundler/WorkerFarm';
   import { Cache } from 'metro-cache';
-  type GetOrComputeSha1Fn = ($$PARAM_0$$: string) => Promise<{
-    content?: Buffer;
-    sha1: string;
-  }>;
+  type GetOrComputeSha1Fn = ($$PARAM_0$$: string) => Promise<
+    Readonly<{
+      content?: Buffer;
+      sha1: string;
+    }>
+  >;
   class Transformer {
     _config: ConfigT;
     _cache: Cache<TransformResult>;
@@ -722,26 +668,19 @@ declare module 'metro/src/DeltaBundler/Transformer' {
   export default Transformer;
 }
 
-// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
-declare module 'metro/src/DeltaBundler/types' {
-  export * from 'metro/src/DeltaBundler/types.flow';
-}
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/types.flow.js
-declare module 'metro/src/DeltaBundler/types.flow' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/types.flow.js
+declare module 'metro/private/DeltaBundler/types.flow' {
   import type * as _babel_types from '@babel/types';
-  import type { RequireContext } from 'metro/src/lib/contextModule';
-  import type { RequireContextParams } from 'metro/src/ModuleGraph/worker/collectDependencies';
-  import type { Graph } from 'metro/src/DeltaBundler/Graph';
+  import type { RequireContext } from 'metro/private/lib/contextModule';
+  import type { RequireContextParams } from 'metro/private/ModuleGraph/worker/collectDependencies';
+  import type { Graph } from 'metro/private/DeltaBundler/Graph';
   import type { JsTransformOptions } from 'metro-transform-worker';
-  import CountingSet from 'metro/src/lib/CountingSet';
+  import CountingSet from 'metro/private/lib/CountingSet';
   export type MixedOutput = {
     readonly data: any;
     readonly type: string;
   };
-  // NOTE(cedric): this is a manual change for worker support through `require.unstable_resolveWorker()`
   export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak' | 'worker';
-  // export type AsyncDependencyType = 'async' | 'maybeSync' | 'prefetch' | 'weak';
   export type TransformResultDependency = Readonly<{
     /**
      * The literal name provided to a require or import call. For example 'foo' in
@@ -774,10 +713,15 @@ declare module 'metro/src/DeltaBundler/types.flow' {
       contextParams?: RequireContextParams;
     }>;
   }>;
-  export type Dependency = Readonly<{
+  export type ResolvedDependency = Readonly<{
     absolutePath: string;
     data: TransformResultDependency;
   }>;
+  export type Dependency =
+    | ResolvedDependency
+    | Readonly<{
+        data: TransformResultDependency;
+      }>;
   export type Module<T = MixedOutput> = Readonly<{
     dependencies: Map<string, Dependency>;
     inverseDependencies: CountingSet<string>;
@@ -795,16 +739,7 @@ declare module 'metro/src/DeltaBundler/types.flow' {
   }>;
   export type Dependencies<T = MixedOutput> = Map<string, Module<T>>;
   export type ReadOnlyDependencies<T = MixedOutput> = ReadonlyMap<string, Module<T>>;
-  export type TransformInputOptions = Pick<
-    JsTransformOptions,
-    Exclude<
-      keyof JsTransformOptions,
-      keyof {
-        inlinePlatform: boolean;
-        inlineRequires: boolean;
-      }
-    >
-  >;
+  export type TransformInputOptions = Omit<JsTransformOptions, 'inlinePlatform' | 'inlineRequires'>;
   export type GraphInputOptions = Readonly<{
     entryPoints: ReadonlySet<string>;
     transformOptions: TransformInputOptions;
@@ -877,21 +812,21 @@ declare module 'metro/src/DeltaBundler/types.flow' {
   }>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Worker.js
-declare module 'metro/src/DeltaBundler/Worker' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Worker.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Worker.js
+declare module 'metro/private/DeltaBundler/Worker' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Worker.js
 
   // NOTE(cedric): Metro uses this weird Flow syntax /*:: */ to override the exported types...
-  export * from 'metro/src/DeltaBundler/Worker.flow';
-  export { default } from 'metro/src/DeltaBundler/Worker.flow';
+  export * from 'metro/private/DeltaBundler/Worker.flow';
+  export { default } from 'metro/private/DeltaBundler/Worker.flow';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/Worker.flow.js
-declare module 'metro/src/DeltaBundler/Worker.flow' {
-  import type { TransformResult } from 'metro/src/DeltaBundler/types.flow';
-  import type { LogEntry } from 'metro-core/src/Logger';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Worker.flow.js
+declare module 'metro/private/DeltaBundler/Worker.flow' {
+  import type { TransformResult } from 'metro/private/DeltaBundler/types.flow';
+  import type { LogEntry } from 'metro-core/private/Logger';
   import type { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
-  export type { JsTransformOptions as TransformOptions } from 'metro-transform-worker';
+  export type { JsTransformOptions as TransformOptions } from 'metro/metro-transform-worker';
   export type Worker = {
     readonly transform: typeof transform;
   };
@@ -916,12 +851,16 @@ declare module 'metro/src/DeltaBundler/Worker.flow' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/DeltaBundler/WorkerFarm.js
-declare module 'metro/src/DeltaBundler/WorkerFarm' {
-  import type { TransformResult } from 'metro/src/DeltaBundler';
-  import type { TransformerConfig, TransformOptions, Worker } from 'metro/src/DeltaBundler/Worker';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import type { Readable } from 'stream';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/WorkerFarm.js
+declare module 'metro/private/DeltaBundler/WorkerFarm' {
+  import type { TransformResult } from 'metro/private/DeltaBundler';
+  import type {
+    TransformerConfig,
+    TransformOptions,
+    Worker,
+  } from 'metro/private/DeltaBundler/Worker';
+  import type { ConfigT } from 'metro-config';
+  import type { Readable } from 'node:stream';
   type WorkerInterface = {
     getStdout(): Readable;
     getStderr(): Readable;
@@ -958,14 +897,14 @@ declare module 'metro/src/DeltaBundler/WorkerFarm' {
   export default WorkerFarm;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/HmrServer.js
-declare module 'metro/src/HmrServer' {
-  import type { GraphOptions } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/HmrServer.js
+declare module 'metro/private/HmrServer' {
+  import type { GraphOptions } from 'metro/private/shared/types.flow';
   import type { ConfigT, RootPerfLogger } from 'metro-config';
-  import type { HmrErrorMessage, HmrUpdateMessage } from 'metro-runtime/src/modules/types.flow';
-  import type { UrlWithParsedQuery } from 'url';
-  import type IncrementalBundler from 'metro/src/IncrementalBundler';
-  import type { RevisionId } from 'metro/src/IncrementalBundler';
+  import type { HmrErrorMessage, HmrUpdateMessage } from 'metro-runtime/modules/types.flow';
+  import type { UrlWithParsedQuery } from 'node:url';
+  import type IncrementalBundler from 'metro/private/IncrementalBundler';
+  import type { RevisionId } from 'metro/private/IncrementalBundler';
   export type EntryPointURL = UrlWithParsedQuery;
   export type Client = {
     optedIntoHMR: boolean;
@@ -988,7 +927,7 @@ declare module 'metro/src/HmrServer' {
    * getting connected, disconnected or having errors (through the
    * `onClientConnect`, `onClientDisconnect` and `onClientError` methods).
    */
-  class HmrServer<TClient extends Client = Client> {
+  class HmrServer<TClient extends Client> {
     _config: ConfigT;
     _bundler: IncrementalBundler;
     _createModuleId: (path: string) => number;
@@ -1039,19 +978,19 @@ declare module 'metro/src/HmrServer' {
   export default HmrServer;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/IncrementalBundler.js
-declare module 'metro/src/IncrementalBundler' {
-  import type { DeltaResult, Graph, Module } from 'metro/src/DeltaBundler';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/IncrementalBundler.js
+declare module 'metro/private/IncrementalBundler' {
+  import type { DeltaResult, Graph, Module } from 'metro/private/DeltaBundler';
   import type {
     Options as DeltaBundlerOptions,
     ReadOnlyDependencies,
     TransformInputOptions,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type { GraphId } from 'metro/src/lib/getGraphId';
-  import type { ResolverInputOptions } from 'metro/src/shared/types.flow';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import Bundler from 'metro/src/Bundler';
-  import DeltaBundler from 'metro/src/DeltaBundler';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { GraphId } from 'metro/private/lib/getGraphId';
+  import type { ResolverInputOptions } from 'metro/private/shared/types.flow';
+  import type { ConfigT } from 'metro-config';
+  import Bundler from 'metro/private/Bundler';
+  import DeltaBundler from 'metro/private/DeltaBundler';
   export type RevisionId = string;
   export type OutputGraph = Graph;
   type OtherOptions = Readonly<{
@@ -1127,9 +1066,9 @@ declare module 'metro/src/IncrementalBundler' {
   export default IncrementalBundler;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/IncrementalBundler/GraphNotFoundError.js
-declare module 'metro/src/IncrementalBundler/GraphNotFoundError' {
-  import type { GraphId } from 'metro/src/lib/getGraphId';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/IncrementalBundler/GraphNotFoundError.js
+declare module 'metro/private/IncrementalBundler/GraphNotFoundError' {
+  import type { GraphId } from 'metro/private/lib/getGraphId';
   class GraphNotFoundError extends Error {
     graphId: GraphId;
     constructor(graphId: GraphId);
@@ -1137,8 +1076,8 @@ declare module 'metro/src/IncrementalBundler/GraphNotFoundError' {
   export default GraphNotFoundError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/IncrementalBundler/ResourceNotFoundError.js
-declare module 'metro/src/IncrementalBundler/ResourceNotFoundError' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/IncrementalBundler/ResourceNotFoundError.js
+declare module 'metro/private/IncrementalBundler/ResourceNotFoundError' {
   class ResourceNotFoundError extends Error {
     resourcePath: string;
     constructor(resourcePath: string);
@@ -1146,9 +1085,9 @@ declare module 'metro/src/IncrementalBundler/ResourceNotFoundError' {
   export default ResourceNotFoundError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/IncrementalBundler/RevisionNotFoundError.js
-declare module 'metro/src/IncrementalBundler/RevisionNotFoundError' {
-  import type { RevisionId } from 'metro/src/IncrementalBundler';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/IncrementalBundler/RevisionNotFoundError.js
+declare module 'metro/private/IncrementalBundler/RevisionNotFoundError' {
+  import type { RevisionId } from 'metro/private/IncrementalBundler';
   class RevisionNotFoundError extends Error {
     revisionId: RevisionId;
     constructor(revisionId: RevisionId);
@@ -1156,16 +1095,16 @@ declare module 'metro/src/IncrementalBundler/RevisionNotFoundError' {
   export default RevisionNotFoundError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/index.js
-declare module 'metro/src/index' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/index.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/index.js
+declare module 'metro/private/index' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/index.js
 
   // NOTE(cedric): Metro uses this weird Flow syntax /*:: */ to override the exported types...
-  export * from 'metro/src/index.flow';
+  export * from 'metro/private/index.flow';
 
   // NOTE(cedric): these are exported in Metro's own custom `index.d.ts`
-  export * from 'metro/src/Assets'; // lmao, the typo
-  export * from 'metro/src/DeltaBundler/types.flow';
+  export * from 'metro/private/Assets'; // lmao, the typo
+  export * from 'metro/private/DeltaBundler/types.flow';
   // NOTE(cedric): only exporting select types due to type conflicts
   export {
     Dependency,
@@ -1179,34 +1118,29 @@ declare module 'metro/src/index' {
     DependencyTransformer,
     DynamicRequiresBehavior,
     ImportQualifier,
-  } from 'metro/src/ModuleGraph/worker/collectDependencies';
-  export * from 'metro/src/Server';
-  export * from 'metro/src/lib/reporting';
-
-  // NOTE(cedric): add this since we had this already, might be nice to deprecate
-  export { default as Server } from 'metro/src/Server';
+  } from 'metro/private/ModuleGraph/worker/collectDependencies';
+  export * from 'metro/private/Server';
+  export * from 'metro/private/lib/reporting';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/index.flow.js
-declare module 'metro/src/index.flow' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/index.flow.js
+declare module 'metro/private/index.flow' {
   import type * as _ws from 'ws';
-  import type { ReadOnlyGraph } from 'metro/src/DeltaBundler';
-  import type { ServerOptions } from 'metro/src/Server';
-  import type { OutputOptions, RequestOptions } from 'metro/src/shared/types.flow';
+  import type { AssetData } from 'metro/private/Assets';
+  import type { ReadOnlyGraph } from 'metro/private/DeltaBundler';
+  import type { ServerOptions } from 'metro/private/Server';
+  import type { BuildOptions } from 'metro/private/shared/types.flow';
+  import type { OutputOptions, RequestOptions } from 'metro/private/shared/types.flow.js';
   import type { HandleFunction } from 'connect';
-  import type { Server as HttpServer } from 'http';
-  import type { Server as HttpsServer } from 'https';
-  import type {
-    ConfigT,
-    InputConfigT,
-    MetroConfig,
-    Middleware,
-  } from 'metro-config/src/configTypes.flow';
+  import type { Server as HttpServer } from 'node:http';
+  import type { Server as HttpsServer } from 'node:https';
+  import type { TransformProfile } from 'metro-babel-transformer';
+  import type { ConfigT, InputConfigT, MetroConfig, Middleware } from 'metro-config';
   import type { CustomResolverOptions } from 'metro-resolver';
   import type { CustomTransformOptions } from 'metro-transform-worker';
   import type $$IMPORT_TYPEOF_1$$ from 'yargs';
   type Yargs = typeof $$IMPORT_TYPEOF_1$$;
-  import MetroServer from 'metro/src/Server';
+  import MetroServer from 'metro/private/Server';
   type MetroMiddleWare = {
     attachHmrServer: (httpServer: HttpServer | HttpsServer) => void;
     end: () => Promise<void>;
@@ -1237,6 +1171,9 @@ declare module 'metro/src/index.flow' {
       [path: string]: _ws.WebSocketServer;
     }>;
   }>;
+  export type RunServerResult = {
+    httpServer?: HttpServer | HttpsServer;
+  };
   type BuildGraphOptions = {
     entries: readonly string[];
     customTransformOptions?: CustomTransformOptions;
@@ -1248,8 +1185,11 @@ declare module 'metro/src/index.flow' {
   };
   export type RunBuildOptions = {
     entry: string;
+    assets?: boolean;
     dev?: boolean;
     out?: string;
+    bundleOut?: string;
+    sourceMapOut?: string;
     onBegin?: () => void;
     onComplete?: () => void;
     onProgress?: (transformedFileCount: number, totalFileCount: number) => void;
@@ -1257,10 +1197,12 @@ declare module 'metro/src/index.flow' {
     output?: Readonly<{
       build: (
         $$PARAM_0$$: MetroServer,
-        $$PARAM_1$$: RequestOptions
+        $$PARAM_1$$: RequestOptions,
+        $$PARAM_2$$: void | BuildOptions
       ) => Promise<{
         code: string;
         map: string;
+        assets?: readonly AssetData[];
       }>;
       save: (
         $$PARAM_0$$: {
@@ -1276,21 +1218,31 @@ declare module 'metro/src/index.flow' {
     sourceMapUrl?: string;
     customResolverOptions?: CustomResolverOptions;
     customTransformOptions?: CustomTransformOptions;
+    unstable_transformProfile?: TransformProfile;
   };
-  type BuildCommandOptions = object | null;
-  type ServeCommandOptions = object | null;
+  export type RunBuildResult = {
+    code: string;
+    map: string;
+    assets?: readonly AssetData[];
+  };
+  type BuildCommandOptions = {} | null;
+  type ServeCommandOptions = {} | null;
+  export type { AssetData } from 'metro/private/Assets';
+  export type { Reporter, ReportableEvent } from 'metro/private/lib/reporting';
+  export type { TerminalReportableEvent } from 'metro/private/lib/TerminalReporter';
   export type { MetroConfig };
   type AttachMetroCLIOptions = {
     build?: BuildCommandOptions;
     serve?: ServeCommandOptions;
     dependencies?: any;
   };
-  export { Terminal } from 'metro-core';
-  export { default as TerminalReporter } from 'metro/src/lib/TerminalReporter';
+  export { Terminal } from 'metro/metro-core';
+  export { default as JsonReporter } from 'metro/private/lib/JsonReporter';
+  export { default as TerminalReporter } from 'metro/private/lib/TerminalReporter';
   export function runMetro(config: InputConfigT, options?: RunMetroOptions): void;
-  export { loadConfig } from 'metro-config';
-  export { mergeConfig } from 'metro-config';
-  export { resolveConfig } from 'metro-config';
+  export { loadConfig } from 'metro/metro-config';
+  export { mergeConfig } from 'metro/metro-config';
+  export { resolveConfig } from 'metro/metro-config';
   export let createConnectMiddleware: (
     config: ConfigT,
     options?: RunMetroOptions
@@ -1298,14 +1250,8 @@ declare module 'metro/src/index.flow' {
   export const runServer: (
     config: ConfigT,
     $$PARAM_1$$: RunServerOptions
-  ) => Promise<HttpServer | HttpsServer>;
-  export const runBuild: (
-    config: ConfigT,
-    $$PARAM_1$$: RunBuildOptions
-  ) => Promise<{
-    code: string;
-    map: string;
-  }>;
+  ) => Promise<RunServerResult>;
+  export const runBuild: (config: ConfigT, $$PARAM_1$$: RunBuildOptions) => Promise<RunBuildResult>;
   export const buildGraph: (
     config: InputConfigT,
     $$PARAM_1$$: BuildGraphOptions
@@ -1313,8 +1259,8 @@ declare module 'metro/src/index.flow' {
   export const attachMetroCli: (yargs: Yargs, options?: AttachMetroCLIOptions) => Yargs;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/BatchProcessor.js
-declare module 'metro/src/lib/BatchProcessor' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/BatchProcessor.js
+declare module 'metro/private/lib/BatchProcessor' {
   type ProcessBatch<TItem, TResult> = (batch: TItem[]) => Promise<TResult[]>;
   type BatchProcessorOptions = {
     maximumDelayMs: number;
@@ -1351,9 +1297,9 @@ declare module 'metro/src/lib/BatchProcessor' {
   export default BatchProcessor;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/bundleToString.js
-declare module 'metro/src/lib/bundleToString' {
-  import type { Bundle, BundleMetadata } from 'metro-runtime/src/modules/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/bundleToString.js
+declare module 'metro/private/lib/bundleToString' {
+  import type { Bundle, BundleMetadata } from 'metro-runtime/modules/types.flow';
   /**
    * Serializes a bundle into a plain JS bundle.
    */
@@ -1364,12 +1310,12 @@ declare module 'metro/src/lib/bundleToString' {
   export default bundleToString;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/contextModule.js
-declare module 'metro/src/lib/contextModule' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/contextModule.js
+declare module 'metro/private/lib/contextModule' {
   import type {
     ContextMode,
     RequireContextParams,
-  } from 'metro/src/ModuleGraph/worker/collectDependencies';
+  } from 'metro/private/ModuleGraph/worker/collectDependencies';
   export type RequireContext = Readonly<{
     recursive: boolean;
     filter: RegExp;
@@ -1387,9 +1333,9 @@ declare module 'metro/src/lib/contextModule' {
   export function fileMatchesContext(testPath: string, context: RequireContext): boolean;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/contextModuleTemplates.js
-declare module 'metro/src/lib/contextModuleTemplates' {
-  import type { ContextMode } from 'metro/src/ModuleGraph/worker/collectDependencies';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/contextModuleTemplates.js
+declare module 'metro/private/lib/contextModuleTemplates' {
+  import type { ContextMode } from 'metro/private/ModuleGraph/worker/collectDependencies';
   /**
    * Generate a context module as a virtual file string.
    *
@@ -1406,9 +1352,9 @@ declare module 'metro/src/lib/contextModuleTemplates' {
   ): string;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/CountingSet.js
-declare module 'metro/src/lib/CountingSet' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/CountingSet.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/CountingSet.js
+declare module 'metro/private/lib/CountingSet' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/CountingSet.js
 
   export interface ReadOnlyCountingSet<T> extends Iterable<T> {
     get size(): number;
@@ -1455,20 +1401,20 @@ declare module 'metro/src/lib/CountingSet' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/countLines.js
-declare module 'metro/src/lib/countLines' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/countLines.js
+declare module 'metro/private/lib/countLines' {
   const countLines: (string: string) => number;
   export default countLines;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/createModuleIdFactory.js
-declare module 'metro/src/lib/createModuleIdFactory' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/createModuleIdFactory.js
+declare module 'metro/private/lib/createModuleIdFactory' {
   function createModuleIdFactory(): (path: string) => number;
   export default createModuleIdFactory;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/createWebsocketServer.js
-declare module 'metro/src/lib/createWebsocketServer' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/createWebsocketServer.js
+declare module 'metro/private/lib/createWebsocketServer' {
   import ws from 'ws';
   type WebsocketServiceInterface<T> = {
     readonly onClientConnect: (
@@ -1502,17 +1448,17 @@ declare module 'metro/src/lib/createWebsocketServer' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/debounceAsyncQueue.js
-declare module 'metro/src/lib/debounceAsyncQueue' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/debounceAsyncQueue.js
+declare module 'metro/private/lib/debounceAsyncQueue' {
   function debounceAsyncQueue<T>(fn: () => Promise<T>, delay: number): () => Promise<T>;
   export default debounceAsyncQueue;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/formatBundlingError.js
-declare module 'metro/src/lib/formatBundlingError' {
-  import type { FormattedError } from 'metro-runtime/src/modules/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/formatBundlingError.js
+declare module 'metro/private/lib/formatBundlingError' {
+  import type { FormattedError } from 'metro-runtime/modules/types.flow';
   export type CustomError = Error & {
-    type?: string;
+    readonly type?: string;
     filename?: string;
     lineNumber?: number;
     errors?: {
@@ -1525,9 +1471,9 @@ declare module 'metro/src/lib/formatBundlingError' {
   export default formatBundlingError;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/getAppendScripts.js
-declare module 'metro/src/lib/getAppendScripts' {
-  import type { Module } from 'metro/src/DeltaBundler';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/getAppendScripts.js
+declare module 'metro/private/lib/getAppendScripts' {
+  import type { Module } from 'metro/private/DeltaBundler';
   type Options<T extends number | string> = Readonly<{
     asyncRequireModulePath: string;
     createModuleId: ($$PARAM_0$$: string) => T;
@@ -1548,10 +1494,10 @@ declare module 'metro/src/lib/getAppendScripts' {
   export default getAppendScripts;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/getGraphId.js
-declare module 'metro/src/lib/getGraphId' {
-  import type { TransformInputOptions } from 'metro/src/DeltaBundler/types.flow';
-  import type { ResolverInputOptions } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/getGraphId.js
+declare module 'metro/private/lib/getGraphId' {
+  import type { TransformInputOptions } from 'metro/private/DeltaBundler/types.flow';
+  import type { ResolverInputOptions } from 'metro/private/shared/types.flow';
   export type GraphId = string;
   function getGraphId(
     entryFile: string,
@@ -1566,14 +1512,14 @@ declare module 'metro/src/lib/getGraphId' {
   export default getGraphId;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/getMaxWorkers.js
-declare module 'metro/src/lib/getMaxWorkers' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/getMaxWorkers.js
+declare module 'metro/private/lib/getMaxWorkers' {
   const $$EXPORT_DEFAULT_DECLARATION$$: (workers: null | undefined | number) => number;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/getPreludeCode.js
-declare module 'metro/src/lib/getPreludeCode' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/getPreludeCode.js
+declare module 'metro/private/lib/getPreludeCode' {
   function getPreludeCode($$PARAM_0$$: {
     readonly extraVars?: {
       [$$Key$$: string]: any;
@@ -1585,25 +1531,17 @@ declare module 'metro/src/lib/getPreludeCode' {
   export default getPreludeCode;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/getPrependedScripts.js
-declare module 'metro/src/lib/getPrependedScripts' {
-  import type Bundler from 'metro/src/Bundler';
-  import type { TransformInputOptions } from 'metro/src/DeltaBundler/types.flow';
-  import type { ResolverInputOptions } from 'metro/src/shared/types.flow';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import type DeltaBundler from 'metro/src/DeltaBundler';
-  import type { Module } from 'metro/src/DeltaBundler';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/getPrependedScripts.js
+declare module 'metro/private/lib/getPrependedScripts' {
+  import type Bundler from 'metro/private/Bundler';
+  import type { TransformInputOptions } from 'metro/private/DeltaBundler/types.flow';
+  import type { ResolverInputOptions } from 'metro/private/shared/types.flow';
+  import type { ConfigT } from 'metro-config/private/configTypes.flow';
+  import type DeltaBundler from 'metro/private/DeltaBundler';
+  import type { Module } from 'metro/private/DeltaBundler';
   function getPrependedScripts(
     config: ConfigT,
-    options: Pick<
-      TransformInputOptions,
-      Exclude<
-        keyof TransformInputOptions,
-        keyof {
-          type: TransformInputOptions['type'];
-        }
-      >
-    >,
+    options: Omit<TransformInputOptions, 'type'>,
     resolverOptions: ResolverInputOptions,
     bundler: Bundler,
     deltaBundler: DeltaBundler
@@ -1611,9 +1549,15 @@ declare module 'metro/src/lib/getPrependedScripts' {
   export default getPrependedScripts;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/JsonReporter.js
-declare module 'metro/src/lib/JsonReporter' {
-  import type { Writable } from 'stream';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/isResolvedDependency.js
+declare module 'metro/private/lib/isResolvedDependency' {
+  import type { Dependency } from 'metro/private/DeltaBundler/types.flow';
+  export function isResolvedDependency(dep: Dependency): any;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/JsonReporter.js
+declare module 'metro/private/lib/JsonReporter' {
+  import type { Writable } from 'node:stream';
   export type SerializedError = {
     message: string;
     stack: string;
@@ -1637,8 +1581,8 @@ declare module 'metro/src/lib/JsonReporter' {
   export default JsonReporter;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/logToConsole.js
-declare module 'metro/src/lib/logToConsole' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/logToConsole.js
+declare module 'metro/private/lib/logToConsole' {
   import type { Terminal } from 'metro-core';
   const $$EXPORT_DEFAULT_DECLARATION$$: (
     terminal: Terminal,
@@ -1649,9 +1593,9 @@ declare module 'metro/src/lib/logToConsole' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/parseCustomResolverOptions.js
-declare module 'metro/src/lib/parseCustomResolverOptions' {
-  import type { CustomResolverOptions } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/parseCustomResolverOptions.js
+declare module 'metro/private/lib/parseCustomResolverOptions' {
+  import type { CustomResolverOptions } from 'metro-resolver/private/types';
   const $$EXPORT_DEFAULT_DECLARATION$$: (urlObj: {
     readonly query?: {
       [$$Key$$: string]: string;
@@ -1660,8 +1604,8 @@ declare module 'metro/src/lib/parseCustomResolverOptions' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/parseCustomTransformOptions.js
-declare module 'metro/src/lib/parseCustomTransformOptions' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/parseCustomTransformOptions.js
+declare module 'metro/private/lib/parseCustomTransformOptions' {
   import type { CustomTransformOptions } from 'metro-transform-worker';
   const $$EXPORT_DEFAULT_DECLARATION$$: (urlObj: {
     readonly query?: {
@@ -1671,18 +1615,40 @@ declare module 'metro/src/lib/parseCustomTransformOptions' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/parseOptionsFromUrl.js
-declare module 'metro/src/lib/parseOptionsFromUrl' {
-  import type { BundleOptions } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/parseJsonBody.js
+declare module 'metro/private/lib/parseJsonBody' {
+  import type { IncomingMessage } from 'node:http';
+  /**
+   * Attempt to parse a request body as JSON.
+   */
+  function parseJsonBody(
+    req: IncomingMessage,
+    options?: {
+      strict?: boolean;
+    }
+  ): Promise<any>;
+  export default parseJsonBody;
+}
+
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/parseOptionsFromUrl.js
+declare module 'metro/private/lib/parseOptionsFromUrl' {
+  import type { BundleOptions } from 'metro/private/shared/types.flow';
   const $$EXPORT_DEFAULT_DECLARATION$$: (
     normalizedRequestUrl: string,
     platforms: Set<string>
-  ) => BundleOptions;
+  ) => Omit<
+    BundleOptions,
+    keyof {
+      bundleType: string;
+    }
+  > & {
+    bundleType: string;
+  };
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/RamBundleParser.js
-declare module 'metro/src/lib/RamBundleParser' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/RamBundleParser.js
+declare module 'metro/private/lib/RamBundleParser' {
   /**
    * Implementation of a RAM bundle parser in JS.
    *
@@ -1705,15 +1671,15 @@ declare module 'metro/src/lib/RamBundleParser' {
   export default RamBundleParser;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/relativizeSourceMap.js
-declare module 'metro/src/lib/relativizeSourceMap' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/relativizeSourceMap.js
+declare module 'metro/private/lib/relativizeSourceMap' {
   import type { MixedSourceMap } from 'metro-source-map';
   function relativizeSourceMapInline(sourceMap: MixedSourceMap, sourcesRoot: string): void;
   export default relativizeSourceMapInline;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/reporting.js
-declare module 'metro/src/lib/reporting' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/reporting.js
+declare module 'metro/private/lib/reporting' {
   import type { Terminal } from 'metro-core';
   import type { HealthCheckResult, WatcherStatus } from 'metro-file-map';
   import type { CustomResolverOptions } from 'metro-resolver';
@@ -1873,30 +1839,30 @@ declare module 'metro/src/lib/reporting' {
    * calling this, add a new type of ReportableEvent instead, and implement a
    * proper handler in the reporter(s).
    */
-  export function logWarning(terminal: Terminal, format: string, ...args: any[]): void;
 
   /**
    * Similar to `logWarning`, but for messages that require the user to act.
    */
-  export function logError(terminal: Terminal, format: string, ...args: any[]): void;
 
   /**
    * Similar to `logWarning`, but for informational messages.
    */
-  export function logInfo(terminal: Terminal, format: string, ...args: any[]): void;
 
   /**
    * A reporter that does nothing. Errors and warnings will be swallowed, that
    * is generally not what you want.
    */
+  export function logWarning(terminal: Terminal, format: string, ...args: any[]): void;
+  export function logError(terminal: Terminal, format: string, ...args: any[]): void;
+  export function logInfo(terminal: Terminal, format: string, ...args: any[]): void;
   export const nullReporter: {
     update(): void;
   };
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/splitBundleOptions.js
-declare module 'metro/src/lib/splitBundleOptions' {
-  import type { BundleOptions, SplitBundleOptions } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/splitBundleOptions.js
+declare module 'metro/private/lib/splitBundleOptions' {
+  import type { BundleOptions, SplitBundleOptions } from 'metro/private/shared/types.flow';
   /**
    * Splits a BundleOptions object into smaller, more manageable parts.
    */
@@ -1904,9 +1870,9 @@ declare module 'metro/src/lib/splitBundleOptions' {
   export default splitBundleOptions;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/TerminalReporter.js
-declare module 'metro/src/lib/TerminalReporter' {
-  import type { BundleDetails, ReportableEvent } from 'metro/src/lib/reporting';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/TerminalReporter.js
+declare module 'metro/private/lib/TerminalReporter' {
+  import type { BundleDetails, ReportableEvent } from 'metro/private/lib/reporting';
   import type { Terminal } from 'metro-core';
   import type { HealthCheckResult, WatcherStatus } from 'metro-file-map';
   type BundleProgress = {
@@ -1937,14 +1903,7 @@ declare module 'metro/src/lib/TerminalReporter' {
         type: 'unstable_server_menu_cleared';
       };
   type BuildPhase = 'in_progress' | 'done' | 'failed';
-  // NOTE(cedric): manually corrected, its an internal Flow type
-  type ErrnoError = {
-    errno: number;
-    code: string;
-    path: string;
-    syscall: string;
-  };
-  type SnippetError = ErrnoError & {
+  type SnippetError = any & {
     filename?: string;
     snippet?: string;
   };
@@ -1986,18 +1945,18 @@ declare module 'metro/src/lib/TerminalReporter' {
   export default TerminalReporter;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/lib/transformHelpers.js
-declare module 'metro/src/lib/transformHelpers' {
-  import type Bundler from 'metro/src/Bundler';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/transformHelpers.js
+declare module 'metro/private/lib/transformHelpers' {
+  import type Bundler from 'metro/private/Bundler';
   import type {
     BundlerResolution,
     TransformInputOptions,
     TransformResultDependency,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type { ResolverInputOptions } from 'metro/src/shared/types.flow';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import type DeltaBundler from 'metro/src/DeltaBundler';
-  import type { TransformFn } from 'metro/src/DeltaBundler';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { ResolverInputOptions } from 'metro/private/shared/types.flow';
+  import type { ConfigT } from 'metro-config';
+  import type DeltaBundler from 'metro/private/DeltaBundler';
+  import type { TransformFn } from 'metro/private/DeltaBundler';
   export function getTransformFn(
     entryFiles: readonly string[],
     bundler: Bundler,
@@ -2013,20 +1972,20 @@ declare module 'metro/src/lib/transformHelpers' {
   ): Promise<(from: string, dependency: TransformResultDependency) => BundlerResolution>;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/ModuleGraph/worker/collectDependencies.js
-declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/ModuleGraph/worker/collectDependencies.js
+declare module 'metro/private/ModuleGraph/worker/collectDependencies' {
   import type { NodePath } from '@babel/traverse';
   import type {
     CallExpression,
-    File,
     Identifier,
     StringLiteral,
     SourceLocation,
+    File,
   } from '@babel/types';
   import type {
     AllowOptionalDependencies,
     AsyncDependencyType,
-  } from 'metro/src/DeltaBundler/types.flow';
+  } from 'metro/private/private/DeltaBundler/types.flow';
   export type Dependency = Readonly<{
     data: DependencyData;
     name: string;
@@ -2115,8 +2074,8 @@ declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
   export default collectDependencies;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/ModuleGraph/worker/generateImportNames.js
-declare module 'metro/src/ModuleGraph/worker/generateImportNames' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/ModuleGraph/worker/generateImportNames.js
+declare module 'metro/private/ModuleGraph/worker/generateImportNames' {
   import type * as _babel_types from '@babel/types';
   /**
    * Select unused names for "metroImportDefault" and "metroImportAll", by
@@ -2129,47 +2088,59 @@ declare module 'metro/src/ModuleGraph/worker/generateImportNames' {
   export default generateImportNames;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/ModuleGraph/worker/importLocationsPlugin.js
-declare module 'metro/src/ModuleGraph/worker/importLocationsPlugin' {
-  import type * as _babel_types from '@babel/types';
-  import type { PluginObj } from '@babel/core';
-  type Types = typeof _babel_types;
-  export function importLocationsPlugin($$PARAM_0$$: { types: Types }): PluginObj;
-  export function locToKey(loc: _babel_types.SourceLocation): string;
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/ModuleGraph/worker/importLocationsPlugin.js
+declare module 'metro/private/ModuleGraph/worker/importLocationsPlugin' {
+  import type { File, PluginObj } from '@babel/core';
+  import type * as $$IMPORT_TYPEOF_1$$ from '@babel/types';
+  type Types = typeof $$IMPORT_TYPEOF_1$$;
+  type ImportDeclarationLocs = Set<string>;
+  type State = {
+    importDeclarationLocs: ImportDeclarationLocs;
+    file: File;
+  };
+  export function importLocationsPlugin($$PARAM_0$$: { types: Types }): PluginObj<State>;
+  export function locToKey(loc: Types.SourceLocation): string;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/ModuleGraph/worker/JsFileWrapping.js
-declare module 'metro/src/ModuleGraph/worker/JsFileWrapping' {
-  import type * as _babel_types from '@babel/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/ModuleGraph/worker/JsFileWrapping.js
+declare module 'metro/private/ModuleGraph/worker/JsFileWrapping' {
+  import type { File } from '@babel/types';
   export const WRAP_NAME: '$$_REQUIRE';
-  export function wrapJson(source: string, globalPrefix: string): string;
+  export function wrapJson(
+    source: string,
+    globalPrefix: string,
+    unstable_useStaticHermesModuleFactory?: boolean
+  ): string;
   export function jsonToCommonJS(source: string): string;
   export function wrapModule(
-    fileAst: _babel_types.File,
+    fileAst: File,
     importDefaultName: string,
     importAllName: string,
     dependencyMapName: string,
     globalPrefix: string,
-    skipRequireRename: boolean
+    skipRequireRename: boolean,
+    $$PARAM_6$$: Readonly<{
+      unstable_useStaticHermesModuleFactory?: boolean;
+    }>
   ): {
-    ast: _babel_types.File;
+    ast: File;
     requireName: string;
   };
-  export function wrapPolyfill(fileAst: _babel_types.File): _babel_types.File;
+  export function wrapPolyfill(fileAst: File): File;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/DependencyGraph.js
-declare module 'metro/src/node-haste/DependencyGraph' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/DependencyGraph.js
+declare module 'metro/private/node-haste/DependencyGraph' {
   import type {
     BundlerResolution,
     TransformResultDependency,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type { ResolverInputOptions } from 'metro/src/shared/types.flow';
-  import type Package from 'metro/src/node-haste/Package';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
-  import { ModuleResolver } from 'metro/src/node-haste/DependencyGraph/ModuleResolution';
-  import ModuleCache from 'metro/src/node-haste/ModuleCache';
-  import { EventEmitter } from 'events';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { ResolverInputOptions } from 'metro/private/shared/types.flow';
+  import type Package from 'metro/private/node-haste/Package';
+  import type { ConfigT } from 'metro-config';
+  import { ModuleResolver } from 'metro/private/node-haste/DependencyGraph/ModuleResolution';
+  import ModuleCache from 'metro/private/node-haste/ModuleCache';
+  import { EventEmitter } from 'node:events';
   import type MetroFileMap from 'metro-file-map';
   import type {
     ChangeEvent,
@@ -2247,9 +2218,9 @@ declare module 'metro/src/node-haste/DependencyGraph' {
   export default DependencyGraph;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/DependencyGraph/createFileMap.js
-declare module 'metro/src/node-haste/DependencyGraph/createFileMap' {
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/DependencyGraph/createFileMap.js
+declare module 'metro/private/node-haste/DependencyGraph/createFileMap' {
+  import type { ConfigT } from 'metro-config';
   import MetroFileMap from 'metro-file-map';
   function createFileMap(
     config: ConfigT,
@@ -2263,14 +2234,14 @@ declare module 'metro/src/node-haste/DependencyGraph/createFileMap' {
   export default createFileMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/DependencyGraph/ModuleResolution.js
-declare module 'metro/src/node-haste/DependencyGraph/ModuleResolution' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/DependencyGraph/ModuleResolution.js
+declare module 'metro/private/node-haste/DependencyGraph/ModuleResolution' {
   import type {
     BundlerResolution,
     TransformResultDependency,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type { Reporter } from 'metro/src/lib/reporting';
-  import type { ResolverInputOptions } from 'metro/src/shared/types.flow';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { Reporter } from 'metro/private/lib/reporting';
+  import type { ResolverInputOptions } from 'metro/private/shared/types.flow';
   import type {
     CustomResolver,
     DoesFileExist,
@@ -2279,7 +2250,7 @@ declare module 'metro/src/node-haste/DependencyGraph/ModuleResolution' {
     Resolution,
     ResolveAsset,
   } from 'metro-resolver';
-  import type { PackageJson } from 'metro-resolver/src/types';
+  import type { PackageJson } from 'metro-resolver/private/types';
   export type DirExistsFn = (filePath: string) => boolean;
   export type Packageish = {
     path: string;
@@ -2353,6 +2324,7 @@ declare module 'metro/src/node-haste/DependencyGraph/ModuleResolution' {
     originModulePath: string;
     targetModuleName: string;
     cause: null | undefined | Error;
+    readonly type: 'UnableToResolveError';
     constructor(
       originModulePath: string,
       targetModuleName: string,
@@ -2368,8 +2340,8 @@ declare module 'metro/src/node-haste/DependencyGraph/ModuleResolution' {
   }
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/lib/AssetPaths.js
-declare module 'metro/src/node-haste/lib/AssetPaths' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/lib/AssetPaths.js
+declare module 'metro/private/node-haste/lib/AssetPaths' {
   export type AssetPath = {
     assetName: string;
     name: string;
@@ -2388,8 +2360,8 @@ declare module 'metro/src/node-haste/lib/AssetPaths' {
   ): null | undefined | AssetPath;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/lib/parsePlatformFilePath.js
-declare module 'metro/src/node-haste/lib/parsePlatformFilePath' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/lib/parsePlatformFilePath.js
+declare module 'metro/private/node-haste/lib/parsePlatformFilePath' {
   type PlatformFilePathParts = {
     dirPath: string;
     baseName: string;
@@ -2407,10 +2379,10 @@ declare module 'metro/src/node-haste/lib/parsePlatformFilePath' {
   export default parsePlatformFilePath;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/Module.js
-declare module 'metro/src/node-haste/Module' {
-  import type ModuleCache from 'metro/src/node-haste/ModuleCache';
-  import type Package from 'metro/src/node-haste/Package';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/Module.js
+declare module 'metro/private/node-haste/Module' {
+  import type ModuleCache from 'metro/private/node-haste/ModuleCache';
+  import type Package from 'metro/private/node-haste/Package';
   class Module {
     path: string;
     _moduleCache: ModuleCache;
@@ -2422,10 +2394,10 @@ declare module 'metro/src/node-haste/Module' {
   export default Module;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/ModuleCache.js
-declare module 'metro/src/node-haste/ModuleCache' {
-  import Module from 'metro/src/node-haste/Module';
-  import Package from 'metro/src/node-haste/Package';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/ModuleCache.js
+declare module 'metro/private/node-haste/ModuleCache' {
+  import Module from 'metro/private/node-haste/Module';
+  import Package from 'metro/private/node-haste/Package';
   type GetClosestPackageFn = (absoluteFilePath: string) =>
     | null
     | undefined
@@ -2475,9 +2447,9 @@ declare module 'metro/src/node-haste/ModuleCache' {
   export default ModuleCache;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/node-haste/Package.js
-declare module 'metro/src/node-haste/Package' {
-  import type { PackageJson } from 'metro-resolver/src/types';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/node-haste/Package.js
+declare module 'metro/private/node-haste/Package' {
+  import type { PackageJson } from 'metro-resolver/private/types';
   class Package {
     path: string;
     _root: string;
@@ -2489,34 +2461,36 @@ declare module 'metro/src/node-haste/Package' {
   export default Package;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/Server.js
-declare module 'metro/src/Server' {
-  import type { AssetData } from 'metro/src/Assets';
-  import type { ExplodedSourceMap } from 'metro/src/DeltaBundler/Serializers/getExplodedSourceMap';
-  import type { RamBundleInfo } from 'metro/src/DeltaBundler/Serializers/getRamBundleInfo';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Server.js
+declare module 'metro/private/Server' {
+  import type { AssetData } from 'metro/private/Assets';
+  import type { ExplodedSourceMap } from 'metro/private/DeltaBundler/Serializers/getExplodedSourceMap';
+  import type { RamBundleInfo } from 'metro/private/DeltaBundler/Serializers/getRamBundleInfo';
   import type {
     Module,
+    ReadOnlyDependencies,
     ReadOnlyGraph,
     TransformInputOptions,
-  } from 'metro/src/DeltaBundler/types.flow';
-  import type { RevisionId } from 'metro/src/IncrementalBundler';
-  import type { GraphId } from 'metro/src/lib/getGraphId';
-  import type { Reporter } from 'metro/src/lib/reporting';
+  } from 'metro/private/DeltaBundler/types.flow';
+  import type { RevisionId } from 'metro/private/IncrementalBundler';
+  import type { GraphId } from 'metro/private/lib/getGraphId';
+  import type { Reporter } from 'metro/private/lib/reporting';
   import type {
+    BuildOptions,
     BundleOptions,
     GraphOptions,
     ResolverInputOptions,
     SplitBundleOptions,
-  } from 'metro/src/shared/types.flow';
+  } from 'metro/private/shared/types.flow';
   import type { IncomingMessage } from 'connect';
-  import type { ServerResponse } from 'http';
-  import type { ConfigT, RootPerfLogger } from 'metro-config/src/configTypes.flow';
-  import type { ActionLogEntryData, ActionStartLogEntry, LogEntry } from 'metro-core/src/Logger';
-  import type { CustomResolverOptions } from 'metro-resolver/src/types';
+  import type { ServerResponse } from 'node:http';
+  import type { ConfigT, RootPerfLogger } from 'metro-config';
+  import type { ActionLogEntryData, ActionStartLogEntry } from 'metro-core/private/Logger';
+  import type { CustomResolverOptions } from 'metro-resolver/private/types';
   import type { CustomTransformOptions } from 'metro-transform-worker';
-  import { SourcePathsMode } from 'metro/src/shared/types.flow';
-  import IncrementalBundler from 'metro/src/IncrementalBundler';
-  import MultipartResponse from 'metro/src/Server/MultipartResponse';
+  import { SourcePathsMode } from 'metro/private/shared/types.flow';
+  import IncrementalBundler from 'metro/private/IncrementalBundler';
+  import MultipartResponse from 'metro/private/Server/MultipartResponse';
   import { Logger } from 'metro-core';
   export type SegmentLoadData = {
     [$$Key$$: number]: [number[], null | undefined | number];
@@ -2568,12 +2542,30 @@ declare module 'metro/src/Server' {
     end(): void;
     getBundler(): IncrementalBundler;
     getCreateModuleId(): (path: string) => number;
-    build(options: BundleOptions): Promise<{
+    _serializeGraph(
+      $$PARAM_0$$: Readonly<{
+        splitOptions: SplitBundleOptions;
+        prepend: readonly Module[];
+        graph: ReadOnlyGraph;
+      }>
+    ): Promise<{
       code: string;
       map: string;
     }>;
+    build(
+      bundleOptions: BundleOptions,
+      $$PARAM_1$$: BuildOptions
+    ): Promise<{
+      code: string;
+      map: string;
+      assets?: readonly AssetData[];
+    }>;
     getRamBundleInfo(options: BundleOptions): Promise<RamBundleInfo>;
     getAssets(options: BundleOptions): Promise<readonly AssetData[]>;
+    _getAssetsFromDependencies(
+      dependencies: ReadOnlyDependencies,
+      platform: null | undefined | string
+    ): Promise<readonly AssetData[]>;
     getOrderedDependencyPaths(options: {
       readonly dev: boolean;
       readonly entryFile: string;
@@ -2605,10 +2597,9 @@ declare module 'metro/src/Server' {
       res: ServerResponse
     ): Promise<void>;
     _createRequestProcessor<T>($$PARAM_0$$: {
+      readonly bundleType?: 'assets' | 'bundle' | 'map';
       readonly createStartEntry: (context: ProcessStartContext) => ActionLogEntryData;
-      readonly createEndEntry: (
-        context: ProcessEndContext<T>
-      ) => Pick<ActionStartLogEntry, Exclude<keyof ActionStartLogEntry, keyof LogEntry>>;
+      readonly createEndEntry: (context: ProcessEndContext<T>) => Partial<ActionStartLogEntry>;
       readonly build: (context: ProcessStartContext) => Promise<T>;
       readonly delete?: (context: ProcessDeleteContext) => Promise<void>;
       readonly finish: (context: ProcessEndContext<T>) => void;
@@ -2691,9 +2682,9 @@ declare module 'metro/src/Server' {
   export default Server;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/Server/MultipartResponse.js
-declare module 'metro/src/Server/MultipartResponse' {
-  import type { IncomingMessage, ServerResponse } from 'http';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Server/MultipartResponse.js
+declare module 'metro/private/Server/MultipartResponse' {
+  import type { IncomingMessage, ServerResponse } from 'node:http';
   type Data = string | Buffer | Uint8Array;
   type Headers = {
     [$$Key$$: string]: string | number;
@@ -2716,10 +2707,10 @@ declare module 'metro/src/Server/MultipartResponse' {
   export default MultipartResponse;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/Server/symbolicate.js
-declare module 'metro/src/Server/symbolicate' {
-  import type { ExplodedSourceMap } from 'metro/src/DeltaBundler/Serializers/getExplodedSourceMap';
-  import type { ConfigT } from 'metro-config/src/configTypes.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/Server/symbolicate.js
+declare module 'metro/private/Server/symbolicate' {
+  import type { ExplodedSourceMap } from 'metro/private/DeltaBundler/Serializers/getExplodedSourceMap';
+  import type { ConfigT } from 'metro-config';
   export type StackFrameInput = {
     readonly file?: null | string;
     readonly lineNumber?: null | number;
@@ -2739,19 +2730,27 @@ declare module 'metro/src/Server/symbolicate' {
   export default symbolicate;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/bundle.js
-declare module 'metro/src/shared/output/bundle' {
-  // See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/bundle.js
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/bundle.js
+declare module 'metro/private/shared/output/bundle' {
+  // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/bundle.js
 
   // NOTE(cedric): Metro uses this weird Flow syntax /*:: */ to override the exported types...
-  export * from 'metro/src/shared/output/bundle.flow';
+  export * from 'metro/private/shared/output/bundle.flow';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/bundle.flow.js
-declare module 'metro/src/shared/output/bundle.flow' {
-  import type { OutputOptions, RequestOptions } from 'metro/src/shared/types.flow';
-  import Server from 'metro/src/Server';
-  export function build(packagerClient: Server, requestOptions: RequestOptions): void;
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/bundle.flow.js
+declare module 'metro/private/shared/output/bundle.flow' {
+  import type {
+    BuildOptions,
+    OutputOptions,
+    RequestOptions,
+  } from 'metro/private/shared/types.flow';
+  import Server from 'metro/private/Server';
+  export function build(
+    packagerClient: Server,
+    requestOptions: RequestOptions,
+    buildOptions?: BuildOptions
+  ): void;
   export function save(
     bundle: {
       code: string;
@@ -2763,8 +2762,8 @@ declare module 'metro/src/shared/output/bundle.flow' {
   export const formatName: 'bundle';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/meta.js
-declare module 'metro/src/shared/output/meta' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/meta.js
+declare module 'metro/private/shared/output/meta' {
   const $$EXPORT_DEFAULT_DECLARATION$$: (
     code: Buffer | string,
     encoding: 'ascii' | 'utf16le' | 'utf8'
@@ -2772,11 +2771,11 @@ declare module 'metro/src/shared/output/meta' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle.js
-declare module 'metro/src/shared/output/RamBundle' {
-  import type { RamBundleInfo } from 'metro/src/DeltaBundler/Serializers/getRamBundleInfo';
-  import type { OutputOptions, RequestOptions } from 'metro/src/shared/types.flow';
-  import Server from 'metro/src/Server';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle.js
+declare module 'metro/private/shared/output/RamBundle' {
+  import type { RamBundleInfo } from 'metro/private/DeltaBundler/Serializers/getRamBundleInfo';
+  import type { OutputOptions, RequestOptions } from 'metro/private/shared/types.flow';
+  import Server from 'metro/private/Server';
   export function build(packagerClient: Server, requestOptions: RequestOptions): void;
   export function save(
     bundle: RamBundleInfo,
@@ -2786,10 +2785,10 @@ declare module 'metro/src/shared/output/RamBundle' {
   export const formatName: 'bundle';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle/as-assets.js
-declare module 'metro/src/shared/output/RamBundle/as-assets' {
-  import type { RamBundleInfo } from 'metro/src/DeltaBundler/Serializers/getRamBundleInfo';
-  import type { OutputOptions } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle/as-assets.js
+declare module 'metro/private/shared/output/RamBundle/as-assets' {
+  import type { RamBundleInfo } from 'metro/private/DeltaBundler/Serializers/getRamBundleInfo';
+  import type { OutputOptions } from 'metro/private/shared/types.flow';
   /**
    * Saves all JS modules of an app as single files
    * The startup code (prelude, polyfills etc.) are written to the file
@@ -2805,14 +2804,14 @@ declare module 'metro/src/shared/output/RamBundle/as-assets' {
   export default saveAsAssets;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle/as-indexed-file.js
-declare module 'metro/src/shared/output/RamBundle/as-indexed-file' {
-  import type { RamBundleInfo } from 'metro/src/DeltaBundler/Serializers/getRamBundleInfo';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle/as-indexed-file.js
+declare module 'metro/private/shared/output/RamBundle/as-indexed-file' {
+  import type { RamBundleInfo } from 'metro/private/DeltaBundler/Serializers/getRamBundleInfo';
   import type {
     ModuleGroups,
     ModuleTransportLike,
     OutputOptions,
-  } from 'metro/src/shared/types.flow';
+  } from 'metro/private/shared/types.flow';
   export function save(
     bundle: RamBundleInfo,
     options: OutputOptions,
@@ -2830,9 +2829,9 @@ declare module 'metro/src/shared/output/RamBundle/as-indexed-file' {
   ): void;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle/buildSourcemapWithMetadata.js
-declare module 'metro/src/shared/output/RamBundle/buildSourcemapWithMetadata' {
-  import type { ModuleGroups, ModuleTransportLike } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle/buildSourcemapWithMetadata.js
+declare module 'metro/private/shared/output/RamBundle/buildSourcemapWithMetadata' {
+  import type { ModuleGroups, ModuleTransportLike } from 'metro/private/shared/types.flow';
   import type { IndexMap } from 'metro-source-map';
   type Params = {
     fixWrapperOffset: boolean;
@@ -2844,15 +2843,15 @@ declare module 'metro/src/shared/output/RamBundle/buildSourcemapWithMetadata' {
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle/magic-number.js
-declare module 'metro/src/shared/output/RamBundle/magic-number' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle/magic-number.js
+declare module 'metro/private/shared/output/RamBundle/magic-number' {
   const $$EXPORT_DEFAULT_DECLARATION$$: 0xfb0bd1e5;
   export default $$EXPORT_DEFAULT_DECLARATION$$;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle/util.js
-declare module 'metro/src/shared/output/RamBundle/util' {
-  import type { ModuleGroups, ModuleTransportLike } from 'metro/src/shared/types.flow';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle/util.js
+declare module 'metro/private/shared/output/RamBundle/util' {
+  import type { ModuleGroups, ModuleTransportLike } from 'metro/private/shared/types.flow';
   import type { BasicSourceMap, IndexMap } from 'metro-source-map';
   type CombineOptions = {
     fixWrapperOffset: boolean;
@@ -2868,7 +2867,7 @@ declare module 'metro/src/shared/output/RamBundle/util' {
     moduleGroups?: null | undefined | ModuleGroups,
     options?: null | undefined | CombineOptions
   ): IndexMap;
-  export { default as countLines } from 'metro/src/lib/countLines';
+  export { default as countLines } from 'metro/private/lib/countLines';
   export const joinModules: (
     modules: readonly {
       readonly code: string;
@@ -2877,8 +2876,8 @@ declare module 'metro/src/shared/output/RamBundle/util' {
   export function lineToLineSourceMap(source: string, filename?: string): BasicSourceMap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/RamBundle/write-sourcemap.js
-declare module 'metro/src/shared/output/RamBundle/write-sourcemap' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/RamBundle/write-sourcemap.js
+declare module 'metro/private/shared/output/RamBundle/write-sourcemap' {
   function writeSourcemap(
     fileName: string,
     contents: string,
@@ -2887,34 +2886,28 @@ declare module 'metro/src/shared/output/RamBundle/write-sourcemap' {
   export default writeSourcemap;
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/unbundle.js
-declare module 'metro/src/shared/output/unbundle' {
-  export { default } from 'metro/src/shared/output/RamBundle';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/unbundle.js
+declare module 'metro/private/shared/output/unbundle' {
+  export { default } from 'metro/private/shared/output/RamBundle';
 }
 
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/output/writeFile.js
-declare module 'metro/src/shared/output/writeFile' {
-  import fs from 'fs';
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/output/writeFile.js
+declare module 'metro/private/shared/output/writeFile' {
+  import fs from 'node:fs';
   const writeFile: typeof fs.promises.writeFile;
   export default writeFile;
 }
 
-// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
-declare module 'metro/src/shared/types' {
-  export * from 'metro/src/shared/types.flow';
-}
-
-// See: https://github.com/facebook/metro/blob/v0.82.0/packages/metro/src/shared/types.flow.js
-declare module 'metro/src/shared/types.flow' {
+// See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/types.flow.js
+declare module 'metro/private/shared/types.flow' {
   import type {
     Options as DeltaBundlerOptions,
     TransformInputOptions,
-  } from 'metro/src/DeltaBundler/types.flow';
+  } from 'metro/private/DeltaBundler/types.flow';
   import type { TransformProfile } from 'metro-babel-transformer';
   import type { CustomResolverOptions } from 'metro-resolver';
   import type { MetroSourceMapSegmentTuple, MixedSourceMap } from 'metro-source-map';
   import type { CustomTransformOptions, MinifierOptions } from 'metro-transform-worker';
-  type BundleType = 'bundle' | 'delta' | 'meta' | 'map' | 'ram' | 'cli' | 'hmr' | 'todo' | 'graph';
   type MetroSourceMapOrMappings = MixedSourceMap | MetroSourceMapSegmentTuple[];
   export enum SourcePathsMode {
     Absolute = 'absolute',
@@ -2927,7 +2920,6 @@ declare module 'metro/src/shared/types.flow' {
     export function getName(value: SourcePathsMode): string;
   }
   export type BundleOptions = {
-    bundleType: BundleType;
     readonly customResolverOptions: CustomResolverOptions;
     customTransformOptions: CustomTransformOptions;
     dev: boolean;
@@ -2948,6 +2940,9 @@ declare module 'metro/src/shared/types.flow' {
     readonly unstable_transformProfile: TransformProfile;
     readonly sourcePaths: SourcePathsMode;
   };
+  export type BuildOptions = Readonly<{
+    withAssets?: boolean;
+  }>;
   export type ResolverInputOptions = Readonly<{
     customResolverOptions?: CustomResolverOptions;
     dev: boolean;
@@ -2965,14 +2960,14 @@ declare module 'metro/src/shared/types.flow' {
     readonly lazy: boolean;
     readonly shallow: boolean;
   };
-  export type SplitBundleOptions = {
-    readonly entryFile: string;
-    readonly resolverOptions: ResolverInputOptions;
-    readonly transformOptions: TransformInputOptions;
-    readonly serializerOptions: SerializerOptions;
-    readonly graphOptions: GraphOptions;
-    readonly onProgress: DeltaBundlerOptions['onProgress'];
-  };
+  export type SplitBundleOptions = Readonly<{
+    entryFile: string;
+    resolverOptions: ResolverInputOptions;
+    transformOptions: TransformInputOptions;
+    serializerOptions: SerializerOptions;
+    graphOptions: GraphOptions;
+    onProgress: DeltaBundlerOptions['onProgress'];
+  }>;
   export type ModuleGroups = {
     groups: Map<number, Set<number>>;
     modulesById: Map<number, ModuleTransportLike>;
@@ -3017,6 +3012,7 @@ declare module 'metro/src/shared/types.flow' {
     onProgress?: (transformedFileCount: number, totalFileCount: number) => void;
     readonly customResolverOptions?: CustomResolverOptions;
     readonly customTransformOptions?: CustomTransformOptions;
+    readonly unstable_transformProfile?: TransformProfile;
   };
   export type { MinifierOptions };
 }
