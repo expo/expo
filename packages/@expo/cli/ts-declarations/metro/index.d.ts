@@ -669,6 +669,11 @@ declare module 'metro/private/DeltaBundler/Transformer' {
   export default Transformer;
 }
 
+// NOTE(cedric): this is a re-export to avoid having to import `/types.flow`
+declare module 'metro/private/DeltaBundler/types' {
+  export * from 'metro/private/DeltaBundler/types.flow';
+}
+
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/types.flow.js
 declare module 'metro/private/DeltaBundler/types.flow' {
   import type * as _babel_types from '@babel/types';
