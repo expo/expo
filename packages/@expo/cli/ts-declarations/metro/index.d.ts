@@ -2138,7 +2138,7 @@ declare module 'metro/private/ModuleGraph/worker/JsFileWrapping' {
     skipRequireRename: boolean,
     $$PARAM_6$$: Readonly<{
       unstable_useStaticHermesModuleFactory?: boolean;
-    }>
+    }> = {}
   ): {
     ast: File;
     requireName: string;
