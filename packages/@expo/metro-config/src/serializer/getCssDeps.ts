@@ -1,5 +1,5 @@
 import type { Module } from 'metro';
-import { isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js.js';
+import { isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js';
 import path from 'path';
 
 import { CSSMetadata } from './jsOutput';

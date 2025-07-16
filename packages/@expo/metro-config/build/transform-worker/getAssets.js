@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUniversalAssetData = getUniversalAssetData;
 exports.default = getAssets;
 const Assets_1 = require("metro/private/Assets");
-const js_js_1 = require("metro/private/DeltaBundler/Serializers/helpers/js.js");
+const js_js_1 = require("metro/private/DeltaBundler/Serializers/helpers/js");
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));

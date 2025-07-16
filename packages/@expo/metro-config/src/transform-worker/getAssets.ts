@@ -7,7 +7,7 @@
  */
 import type { AssetData, Module } from 'metro';
 import { getAssetData } from 'metro/private/Assets';
-import { getJsOutput, isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js.js';
+import { getJsOutput, isJsModule } from 'metro/private/DeltaBundler/Serializers/helpers/js';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
