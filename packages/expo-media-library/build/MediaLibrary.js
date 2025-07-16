@@ -388,15 +388,17 @@ export async function getAssetsAsync(assetsOptions = {}) {
     if (!MediaLibrary.getAssetsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
     }
-    const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
+    const { first, after, album, sortBy, mediaType, createdAfter, createdBefore, mediaSubtypes, resolveWithFullInfo, } = assetsOptions;
     const options = {
         first: first == null ? 20 : first,
         after: getId(after),
         album: getId(album),
         sortBy: arrayize(sortBy),
         mediaType: arrayize(mediaType || [MediaType.photo]),
+        mediaSubtypes: arrayize(mediaSubtypes),
         createdAfter: dateToNumber(createdAfter),
         createdBefore: dateToNumber(createdBefore),
+        resolveWithFullInfo: resolveWithFullInfo ?? false,
     };
     if (first != null && typeof options.first !== 'number') {
         throw new Error('Option "first" must be a number!');

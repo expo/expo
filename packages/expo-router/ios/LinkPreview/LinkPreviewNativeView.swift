@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
+class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPreviewModalDismissible {
   private var trigger: NativeLinkPreviewTrigger?
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
@@ -10,6 +10,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
 
   let onPreviewTapped = EventDispatcher()
+  let onPreviewTappedAnimationCompleted = EventDispatcher()
   let onWillPreviewOpen = EventDispatcher()
   let onDidPreviewOpen = EventDispatcher()
   let onPreviewWillClose = EventDispatcher()
@@ -19,6 +20,12 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     self.interaction = UIContextMenuInteraction(delegate: self)
+  }
+
+  // MARK: - LinkPreviewModalDismissable
+
+  func isDismissible() -> Bool {
+    return false
   }
 
   // MARK: - Props
@@ -137,9 +144,10 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate {
     willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionCommitAnimating
   ) {
-    linkPreviewNativeNavigation.pushPreloadedView()
+    self.onPreviewTapped()
     animator.addCompletion { [weak self] in
-      self?.onPreviewTapped()
+      self?.linkPreviewNativeNavigation.pushPreloadedView()
+      self?.onPreviewTappedAnimationCompleted()
     }
   }
 

@@ -2,9 +2,10 @@ package expo.modules.devlauncher.launcher
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.Uri
 import com.google.gson.Gson
 import expo.modules.manifests.core.Manifest
+import androidx.core.content.edit
+import androidx.core.net.toUri
 
 private const val RECENTLY_OPENED_APPS_SHARED_PREFERENCES = "expo.modules.devlauncher.recentyopenedapps"
 
@@ -13,7 +14,7 @@ private const val TIME_TO_REMOVE = 1000 * 60 * 60 * 24 * 3 // 3 days
 data class DevLauncherAppEntry(
   val timestamp: Long,
   val name: String?,
-  val url: String?,
+  val url: String,
   val isEASUpdate: Boolean?,
   val updateMessage: String?,
   val branchName: String?
@@ -24,7 +25,7 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
 
   fun appWasOpened(url: String, queryParams: Map<String, String>, manifest: Manifest?) {
     var appEntry = mutableMapOf<String, Any>()
-    val uri = Uri.parse(url)
+    val uri = url.toUri()
 
     if (sharedPreferences.contains(url)) {
       val previousEntryJsonString = sharedPreferences.getString(url, null)
@@ -59,9 +60,9 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
     appEntry["url"] = url
 
     sharedPreferences
-      .edit()
-      .putString(url, Gson().toJson(appEntry))
-      .apply()
+      .edit(commit = true) {
+        putString(url, Gson().toJson(appEntry))
+      }
   }
 
   fun getRecentlyOpenedApps(): List<DevLauncherAppEntry> {
@@ -79,11 +80,11 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
       result.add(appEntry)
     }
 
-    sharedPreferences.edit().apply {
+    sharedPreferences.edit(commit = true) {
       toRemove.forEach {
         remove(it)
       }
-    }.apply()
+    }
 
     return result
   }
@@ -99,7 +100,7 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
   }
 
   fun clearRegistry() {
-    sharedPreferences.edit().clear().apply()
+    sharedPreferences.edit(commit = true) { clear() }
   }
 
   object TimeHelper {

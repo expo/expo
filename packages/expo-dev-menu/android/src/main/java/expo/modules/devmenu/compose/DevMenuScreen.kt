@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.SheetDetent.Companion.Hidden
@@ -27,12 +28,15 @@ import expo.modules.devmenu.compose.ui.MenuContainer
 import expo.modules.devmenu.compose.ui.MenuInfo
 import expo.modules.devmenu.compose.ui.MenuSwitch
 import expo.modules.devmenu.compose.ui.Warning
+import expo.modules.devmenu.compose.utils.copyToClipboard
 
 @Composable
 fun DevMenuContent(
   appInfo: DevMenuState.AppInfo,
   onAction: DevMenuActionHandler = {}
 ) {
+  val context = LocalContext.current
+
   Column {
     BundlerInfo(
       state = BundlerInfoState(
@@ -96,7 +100,18 @@ fun DevMenuContent(
         Divider()
         MenuInfo("Runtime version", appInfo.runtimeVersion ?: "N/A")
         Divider()
-        MenuButton("Tap to Copy All", icon = null, labelTextColor = Theme.colors.text.link)
+        MenuButton(
+          "Tap to Copy All",
+          icon = null,
+          labelTextColor = Theme.colors.text.link,
+          onClick = {
+            copyToClipboard(
+              context,
+              label = "Application Info",
+              text = appInfo.toJson()
+            )
+          }
+        )
       }
 
       Spacer(Modifier.size(Theme.spacing.large))

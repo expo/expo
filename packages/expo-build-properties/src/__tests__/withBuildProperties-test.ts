@@ -252,4 +252,28 @@ describe(withBuildProperties, () => {
       value: 'armeabi-v7a,arm64-v8a',
     });
   });
+
+  it('generates the android.exclusiveMavenMirror property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { exclusiveMavenMirror: 'https://my.internal.proxy.net/' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'exclusiveEnterpriseRepository',
+      value: 'https://my.internal.proxy.net/',
+    });
+  });
 });

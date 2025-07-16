@@ -323,8 +323,6 @@
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
 
-  self.manifest = nil;
-  self.manifestURL = nil;
   self.networkInterceptor = nil;
 
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
@@ -757,7 +755,7 @@
   // the `u.expo.dev` determines that it is the modern manifest protocol
   NSString *projectUrl = @"";
   if (_updatesInterface) {
-    projectUrl = [constants valueForKeyPath:@"manifest.updates.url"];
+    projectUrl = [[self.manifest updatesInfo] valueForKey:@"url"];
   }
 
   NSURL *url = [NSURL URLWithString:projectUrl];
@@ -765,7 +763,7 @@
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
 
-  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: @"";
+  NSString *appId = [constants valueForKeyPath:@"manifest.extra.eas.projectId"] ?: [self.manifest easProjectId];
   BOOL hasAppId = appId.length > 0;
 
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;

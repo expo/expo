@@ -56,8 +56,8 @@ class VideoManager {
         continue
       }
       if player.staysActiveInBackground == true {
-        player.setTracksEnabled(videoView.isInPictureInPicture)
-      } else if !videoView.isInPictureInPicture {
+        player.setTracksEnabled(videoView.playerViewController.isInPictureInPicture)
+      } else if !videoView.playerViewController.isInPictureInPicture {
         player.ref.pause()
       }
     }

@@ -88,7 +88,7 @@ redirects[development/develop-your-project]=develop/development-builds/use-devel
 redirects[develop/development-builds/installation]=develop/development-builds/create-a-build
 
 # Guides that have been deleted
-redirects[guides/web-performance/]=guides/analyzing-bundles
+redirects[guides/web-performance]=guides/analyzing-bundles
 redirects[push-notifications/obtaining-a-device-token-for-fcm-or-apns]=push-notifications/sending-notifications-custom
 
 # Redirects after adding Home to the docs
@@ -237,7 +237,7 @@ redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[guides/how-expo-works]=faq
 redirects[config/app]=workflow/configuration
 redirects[guides/authentication.md]=guides/authentication
-redirects[versions/latest/workflow/linking/]=guides/linking
+redirects[versions/latest/workflow/linking]=guides/linking
 redirects[versions/latest/sdk/overview]=versions/latest
 
 # Deprecated webpack
@@ -310,8 +310,15 @@ redirects[eas-workflows/variables]=eas/workflows/syntax/#jobsjob_idoutputs
 redirects[eas-workflows/upgrade]=eas/workflows/automating-eas-cli
 redirects[eas/workflows/upgrade]=eas/workflows/automating-eas-cli
 
+# After moving eas/workflows/examples to eas/workflows/examples/*
+redirects[eas/workflows/examples]=eas/workflows/examples/introduction
+redirects[eas/workflows/examples/#development-builds-workflow]=eas/workflows/examples/create-development-builds
+redirects[eas/workflows/examples/#preview-updates-workflow]=eas/workflows/examples/publish-preview-update
+redirects[eas/workflows/examples/#deploy-to-production-workflow]=eas/workflows/examples/deploy-to-production
+redirects[eas/workflows/reference/e2e-tests]=eas/workflows/examples/e2e-tests
+
 # After moving e2e-tests to eas/workflows/reference
-redirects[build-reference/e2e-tests]=eas/workflows/reference/e2e-tests
+redirects[build-reference/e2e-tests]=eas/workflows/examples/e2e-tests
 
 # After adding distribution section under EAS
 redirects[distribution/publishing-websites]=guides/publishing-websites

@@ -6,17 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Exclude setting `.allowBluetooth` on tvOS. ([#37950](https://github.com/expo/expo/pull/37950) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Fix resolving issues with AudioEventKeys on webpack. Export mark types export with `type`. ([#37421](https://github.com/expo/expo/pull/37421) by [@behenate](https://github.com/behenate))
+- [iOS] Throw an error when attempting to record when recording is not allowed. ([#37929](https://github.com/expo/expo/pull/37929) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.8 - 2025-07-03
+
+### 🎉 New features
+
 - [iOS] Support setting seek tolerences when calling `seekTo` on the player. ([#37669](https://github.com/expo/expo/pull/37669) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix ducking behaviour. ([#37788](https://github.com/expo/expo/pull/37788) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix issues with audio focus management. ([#37698](https://github.com/expo/expo/pull/37698) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix connected bluetooth devices not playing back recordings. ([#37580](https://github.com/expo/expo/pull/37580) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix issue where the currentTime is out of sync when seeking before playing. ([#37668](https://github.com/expo/expo/pull/37668) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
+- [iOS] Fix ducking behaviour. ([#37788](https://github.com/expo/expo/pull/37788) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 0.4.7 - 2025-06-26
 

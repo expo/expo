@@ -113,6 +113,8 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     [previewElement, rest.href]
   );
 
+  const isPreviewTapped = useRef(false);
+
   if (shouldLinkExternally(String(rest.href)) || rest.replace) {
     return <BaseExpoRouterLink children={children} {...rest} />;
   }
@@ -124,6 +126,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         actionsHandlers[id]?.();
       }}
       onWillPreviewOpen={() => {
+        isPreviewTapped.current = false;
         router.prefetch(rest.href);
         setIsPreviewOpen(true);
         setIsCurrenPreviewOpen(true);
@@ -131,11 +134,24 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       onDidPreviewOpen={() => {
         updateNextScreenId(rest.href);
       }}
+      onPreviewWillClose={() => {
+        // When preview was not tapped, then we need to enable the screen stack animation
+        // Otherwise a quick user could tap another link before onDidPreviewClose is called
+        if (!isPreviewTapped.current) {
+          setIsCurrenPreviewOpen(false);
+          setIsPreviewOpen(false);
+        }
+      }}
       onPreviewDidClose={() => {
-        setIsPreviewOpen(false);
-        setIsCurrenPreviewOpen(false);
+        // If preview was tapped we need to enable the screen stack animation
+        // For other cases we did it in onPreviewWillClose
+        if (isPreviewTapped.current) {
+          setIsCurrenPreviewOpen(false);
+          setIsPreviewOpen(false);
+        }
       }}
       onPreviewTapped={() => {
+        isPreviewTapped.current = true;
         router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
       }}>
       <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>

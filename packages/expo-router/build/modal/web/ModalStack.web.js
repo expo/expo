@@ -1,15 +1,45 @@
 "use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouterModalScreen = exports.RouterModal = void 0;
-exports.convertStackStateToNonModalState = convertStackStateToNonModalState;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
-const react_1 = __importDefault(require("react"));
+const react_1 = __importStar(require("react"));
 const ModalStackRouteDrawer_web_1 = require("./ModalStackRouteDrawer.web");
+const TransparentModalStackRouteDrawer_web_1 = require("./TransparentModalStackRouteDrawer.web");
 const utils_1 = require("./utils");
 const withLayoutContext_1 = require("../../layouts/withLayoutContext");
 function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
@@ -25,17 +55,26 @@ function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
 const ModalStackView = ({ state, navigation, descriptors, describe }) => {
     const isWeb = process.env.EXPO_OS === 'web';
     const { colors } = (0, native_1.useTheme)();
-    const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(state, descriptors, isWeb);
+    const { routes: filteredRoutes, index: nonModalIndex } = (0, utils_1.convertStackStateToNonModalState)(state, descriptors, isWeb);
     const newStackState = { ...state, routes: filteredRoutes, index: nonModalIndex };
+    const dismiss = (0, react_1.useCallback)(() => {
+        navigation.goBack();
+    }, [navigation]);
+    const overlayRoutes = react_1.default.useMemo(() => {
+        if (!isWeb)
+            return [];
+        const idx = (0, utils_1.findLastNonModalIndex)(state, descriptors);
+        return state.routes.slice(idx + 1);
+    }, [isWeb, state, descriptors]);
     return (<div style={{ flex: 1, display: 'flex' }}>
       <native_stack_1.NativeStackView state={newStackState} navigation={navigation} descriptors={descriptors} describe={describe}/>
       {isWeb &&
-            state.routes.map((route, i) => {
-                const isModalType = (0, utils_1.isModalPresentation)(descriptors[route.key].options);
-                const isActive = i === state.index && isModalType;
-                if (!isActive)
-                    return null;
-                return (<ModalStackRouteDrawer_web_1.ModalStackRouteDrawer key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={() => navigation.goBack()} themeColors={colors}/>);
+            overlayRoutes.map((route) => {
+                const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
+                const ModalComponent = isTransparentModal
+                    ? TransparentModalStackRouteDrawer_web_1.TransparentModalStackRouteDrawer
+                    : ModalStackRouteDrawer_web_1.ModalStackRouteDrawer;
+                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} themeColors={colors}/>);
             })}
     </div>);
 };
@@ -44,27 +83,4 @@ const RouterModal = (0, withLayoutContext_1.withLayoutContext)(createModalStack(
 exports.RouterModal = RouterModal;
 const RouterModalScreen = RouterModal.Screen;
 exports.RouterModalScreen = RouterModalScreen;
-/**
- * Returns a copy of the given Stack navigation state with any modal-type routes removed
- * (only when running on the web) and a recalculated `index` that still points at the
- * currently active non-modal route. If the active route *is* a modal that gets
- * filtered out, we fall back to the last remaining route – this matches the logic
- * used inside `ModalStackView` so that the underlying `NativeStackView` never tries
- * to render a modal screen that is simultaneously being shown in the overlay.
- *
- * This helper is exported primarily for unit-testing; it should be considered
- * internal to `ModalStack.web` and not a public API.
- *
- * @internal
- */
-function convertStackStateToNonModalState(state, descriptors, isWeb) {
-    const routes = state.routes.filter((route) => {
-        const isModalType = (0, utils_1.isModalPresentation)(descriptors[route.key].options);
-        return !(isWeb && isModalType);
-    });
-    let index = routes.findIndex((r) => r.key === state.routes[state.index]?.key);
-    if (index < 0)
-        index = routes.length - 1;
-    return { routes, index };
-}
 //# sourceMappingURL=ModalStack.web.js.map

@@ -15,7 +15,10 @@ import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { DependencyData } from '../transform-worker/collect-dependencies';
+import {
+  DependencyData,
+  MutableInternalDependency,
+} from '../transform-worker/collect-dependencies';
 import { collectDependenciesForShaking } from '../transform-worker/metro-transform-worker';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
@@ -507,13 +510,15 @@ export async function treeShakeSerializer(
       // Unless it's an empty module.
       isEmptyModule(graphEntryForTargetImport)
     ) {
-      // Remove a random instance of the dep count to track if there are multiple imports.
-      // TODO: Get the exact instance of the import.
+      // TODO: Get the exact instance of the import. This help with more readable errors when import was not counted.
+      const importData = importInstance.data.data as MutableInternalDependency;
+      assert(
+        'imports' in importData,
+        'Expo InternalDependency type expected, but `imports` key is missing.'
+      );
+      importData.imports -= 1;
 
-      // @ts-expect-error: typed as readonly
-      importInstance.data.data.locs.pop();
-
-      if (importInstance.data.data.locs.length === 0) {
+      if (importData.imports <= 0) {
         // Remove dependency from this module so it doesn't appear in the dependency map.
         graphModule.dependencies.delete(targetHashId);
 

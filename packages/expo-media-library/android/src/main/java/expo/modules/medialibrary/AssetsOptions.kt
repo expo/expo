@@ -10,5 +10,6 @@ data class AssetsOptions(
   @Field val sortBy: List<String>,
   @Field val mediaType: List<String>,
   @Field val createdAfter: Double?,
-  @Field val createdBefore: Double?
+  @Field val createdBefore: Double?,
+  @Field val resolveWithFullInfo: Boolean?
 ) : Record
