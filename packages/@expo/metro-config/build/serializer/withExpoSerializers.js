@@ -14,8 +14,8 @@ exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcess
  * LICENSE file in the root directory of this source tree.
  */
 const jsc_safe_url_1 = require("jsc-safe-url");
-const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
-const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
+const sourceMapString_1 = __importDefault(require("metro/private/DeltaBundler/Serializers/sourceMapString"));
+const bundleToString_1 = __importDefault(require("metro/private/lib/bundleToString"));
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
@@ -46,7 +46,6 @@ function withSerializerPlugins(config, processors, options = {}) {
     // Meaning that any user-provided changes are not propagated to the serializer config
     // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
     config.serializer ??= {};
-    // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
     config.serializer.customSerializer = expoSerializer;
     return config;
 }

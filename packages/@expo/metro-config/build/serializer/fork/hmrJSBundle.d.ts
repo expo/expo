@@ -9,7 +9,7 @@
  * https://github.com/facebook/metro/blob/87f717b8f5987827c75c82b3cb390060672628f0/packages/metro/src/DeltaBundler/Serializers/hmrJSBundle.js#L1C1-L152C30
  */
 import type { DeltaResult, ReadOnlyGraph } from 'metro';
-import type { HmrModule } from 'metro-runtime/src/modules/types.flow';
+import type { HmrModule } from 'metro-runtime/private/modules/types.flow';
 import type { UrlWithParsedQuery as EntryPointURL } from 'node:url';
 type Options = {
     clientUrl: EntryPointURL;

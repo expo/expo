@@ -18,9 +18,9 @@ exports.getBaseUrlOption = getBaseUrlOption;
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
 const jsc_safe_url_1 = require("jsc-safe-url");
-const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
-const getAppendScripts_1 = __importDefault(require("metro/src/lib/getAppendScripts"));
+const CountingSet_1 = __importDefault(require("metro/private/lib/CountingSet"));
+const countLines_1 = __importDefault(require("metro/private/lib/countLines"));
+const getAppendScripts_1 = __importDefault(require("metro/private/lib/getAppendScripts"));
 const processModules_1 = require("./processModules");
 function getPlatformOption(graph, options) {
     if (graph.transformOptions?.platform != null) {

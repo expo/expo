@@ -1,5 +1,5 @@
-import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
-import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
+import type { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
+import type { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 export interface LoadOptions {
     config?: string;

@@ -13,8 +13,8 @@ exports.getSortedModules = getSortedModules;
  * LICENSE file in the root directory of this source tree.
  */
 const assert_1 = __importDefault(require("assert"));
-const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
-const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
+const sourceMapString_1 = __importDefault(require("metro/private/DeltaBundler/Serializers/sourceMapString"));
+const bundleToString_1 = __importDefault(require("metro/private/lib/bundleToString"));
 const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportHermes_1 = require("./exportHermes");
