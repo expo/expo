@@ -311,7 +311,7 @@ declare module 'metro-config/private/defaults/defaults' {
   export const moduleSystem: string;
   export const platforms: any;
   export const DEFAULT_METRO_MINIFIER_PATH: 'metro-minify-terser';
-  export { default as defaultCreateModuleIdFactory } from 'metro-config/metro/private/lib/createModuleIdFactory';
+  export { default as defaultCreateModuleIdFactory } from 'metro/private/lib/createModuleIdFactory';
   export const noopPerfLoggerFactory: () => RootPerfLogger;
 }
 
