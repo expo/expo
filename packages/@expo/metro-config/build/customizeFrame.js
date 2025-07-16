@@ -34,6 +34,8 @@ exports.INTERNAL_CALLSITES_REGEX = new RegExp([
     '/InternalBytecode/InternalBytecode\\.js$',
     // Block native code invocations
     `\\[native code\\]`,
+    // Block builtin code invocations. This is defined in the sourceUrl for built-in modules.
+    `\\[builtin code\\]`,
     // Hide react-dom (web)
     'node_modules/react-dom/.+\\.js$',
     // Hide node.js evaluation code

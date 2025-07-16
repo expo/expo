@@ -220,9 +220,9 @@ const shouldIgnoreRequestForExports = (path: string) => path.startsWith('.') || 
 
 // adapted from
 // https://github.com/lukeed/escalade/blob/2477005062cdbd8407afc90d3f48f4930354252b/src/sync.js
-function findClosestPackageJson(
+export function findClosestPackageJson(
   start: string,
-  options: UpstreamResolveOptionsWithConditions
+  options: Pick<UpstreamResolveOptionsWithConditions, 'isDirectory' | 'pathExists'>
 ): string | undefined {
   let dir = pathResolve('.', start);
   if (!options.isDirectory!(dir)) {

@@ -265,6 +265,10 @@ class Env {
   get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
+
+  get EXPO_BUNDLE_BUILT_IN(): boolean {
+    return boolish('EXPO_BUNDLE_BUILT_IN', false);
+  }
 }
 
 export const env = new Env();

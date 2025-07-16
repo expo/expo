@@ -831,6 +831,53 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return { ...bundle, files };
   }
 
+  async exportBuiltinBundleAsync(
+    options: Omit<
+      ExpoMetroOptions,
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
+    extraOptions: {
+      sourceMapUrl?: string;
+      unstable_transformProfile?: TransformProfile;
+    } = {}
+  ): Promise<{ artifacts: SerialAsset[]; assets: readonly BundleAssetWithFileHashes[] }> {
+    const { baseUrl, routerRoot, isExporting } = this.instanceMetroOptions;
+    assert(options.mainModuleName != null, 'mainModuleName must be provided in options.');
+    assert(
+      baseUrl != null && routerRoot != null && isExporting != null,
+      'The server must be started before calling legacySinglePageExportBundleAsync.'
+    );
+
+    const opts: ExpoMetroOptions = {
+      ...this.instanceMetroOptions,
+      baseUrl,
+      routerRoot,
+      isExporting,
+      ...options,
+      modulesOnly: false,
+      runModule: false,
+      environment: 'client',
+      serializerOutput: 'static',
+    };
+
+    // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
+    if (!opts.mainModuleName.startsWith('/') && !path.isAbsolute(opts.mainModuleName)) {
+      opts.mainModuleName = './' + opts.mainModuleName;
+    }
+
+    const output = await this.metroLoadModuleContents(opts.mainModuleName, opts, extraOptions);
+
+    if (output.assets?.length) {
+      Log.error('assets', output.assets.map((asset) => path.join(asset.fileSystemLocation, asset.name)).join('\n'));
+      // throw new Error('Bundling built-in modules with assets is not supported.');
+    }
+
+    return {
+      artifacts: output.artifacts!,
+      assets: output.assets!,
+    };
+  }
+
   async legacySinglePageExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,

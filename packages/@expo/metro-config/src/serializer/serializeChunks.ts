@@ -326,6 +326,11 @@ export class Chunk {
   }
 
   private getAdjustedSourceMapUrl(serializerConfig: Partial<SerializerConfigT>): string | null {
+    if (process.env.EXPO_BUNDLE_BUILT_IN === '1') {
+      // Remove `//# sourceMappingURL` comments and `//# sourceURL` comments from the source code.
+      return null;
+    }
+
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       return this.options.sourceMapUrl ?? null;
@@ -616,7 +621,7 @@ export class Chunk {
     // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
     // also create hermes bytecode. We may need to disable in one of the two places.
     return (
-      !this.options.dev &&
+      // !this.options.dev &&
       this.supportsBytecode() &&
       this.graph.transformOptions.customTransformOptions?.engine === 'hermes'
     );
