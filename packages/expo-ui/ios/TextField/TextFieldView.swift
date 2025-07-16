@@ -28,36 +28,35 @@ final class TextFieldProps: ExpoSwiftUI.ViewProps {
 }
 
 func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
-    guard let keyboardType = keyboardType else {
-        return .default
-    }
-    
-    switch keyboardType {
-    case .defaultKeyboard:
-        return .default
-    case .emailAddress:
-        return .emailAddress
-    case .numeric:
-        return .numberPad
-    case .phonePad:
-        return .phonePad
-    case .asciiCapable:
-        return .asciiCapable
-    case .numbersAndPunctuation:
-        return .numbersAndPunctuation
-    case .url:
-        return .URL
-    case .namePhonePad:
-        return .namePhonePad
-    case .decimalPad:
-        return .decimalPad
-    case .twitter:
-        return .twitter
-    case .webSearch:
-        return .webSearch
-    case .asciiCapableNumberPad:
-        return .asciiCapableNumberPad
-    }
+  guard let keyboardType = keyboardType else {
+    return .default
+  }
+  switch keyboardType {
+  case .defaultKeyboard:
+    return .default
+  case .emailAddress:
+    return .emailAddress
+  case .numeric:
+    return .numberPad
+  case .phonePad:
+    return .phonePad
+  case .asciiCapable:
+    return .asciiCapable
+  case .numbersAndPunctuation:
+    return .numbersAndPunctuation
+  case .url:
+    return .URL
+  case .namePhonePad:
+    return .namePhonePad
+  case .decimalPad:
+    return .decimalPad
+  case .twitter:
+    return .twitter
+  case .webSearch:
+    return .webSearch
+  case .asciiCapableNumberPad:
+    return .asciiCapableNumberPad
+  }
 }
 
 func allowMultiLine() -> Bool {
