@@ -144,6 +144,7 @@ function createBuiltinModuleIdFactory(
   if (!env.EXPO_BUNDLE_BUILT_IN) {
     throw new Error('custom module ID factory only used for builtins');
   }
+
   const MAPPING = {
     'node_modules/react/index.js': 'react',
     'node_modules/react/jsx-runtime.js': 'react/jsx-runtime',
@@ -610,6 +611,24 @@ export function withExtendedResolver(
     );
   }
 
+  const builtins = [
+    'react',
+    'react/jsx-dev-runtime',
+    'react/jsx-runtime',
+    'whatwg-fetch',
+    'react-devtools-core',
+    'base64-js',
+    'buffer',
+    'punycode',
+    'whatwg-url-without-unicode',
+    'event-target-shim',
+    'scheduler',
+    'regenerator-runtime/runtime',
+    'react-refresh/runtime',
+  ];
+  const builtinMatcher = new RegExp(`^(expo:)(${builtins.join('|')})$`);
+  // const aliasToBuiltinMatcher = new RegExp(`^(expo:)?(${builtins.join('|')})$`);
+
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
   const externals: {
@@ -666,8 +685,7 @@ export function withExtendedResolver(
           return false;
         }
 
-        let match = /^(expo:)(react|scheduler)$/.test(moduleName);
-        return match;
+        return !!builtinMatcher.test(moduleName);
         // let match =
         //   /^(expo:)?(react-native-is-edge-to-edge|@react-navigation\/bottom-tabs|stacktrace-parser|@radix-ui\/react-slot|@react-navigation\/native-stack|@react-navigation\/elements|@react-navigation\/core|@react-navigation\/native|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-runtime|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
         //     moduleName
