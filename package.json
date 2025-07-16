@@ -4,7 +4,6 @@
   "private": true,
   "author": "Expo",
   "license": "MIT",
-  "packageManager": "yarn@1.22.19",
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
