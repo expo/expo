@@ -291,11 +291,6 @@ declare module 'metro/private/DeltaBundler/Graph' {
    * files have been modified. This allows to return the added modules before the
    * modified ones (which is useful for things like Hot Module Reloading).
    **/
-  /**
-   * Internal data structure that the traversal logic uses to know which of the
-   * files have been modified. This allows to return the added modules before the
-   * modified ones (which is useful for things like Hot Module Reloading).
-   **/
   type Delta<T> = Readonly<{
     added: Set<string>;
     touched: Set<string>;
@@ -517,6 +512,12 @@ declare module 'metro/private/DeltaBundler/Serializers/helpers/getTransitiveDepe
   import type { ReadOnlyGraph } from 'metro/private/DeltaBundler/types.flow';
   function getTransitiveDependencies<T>(path: string, graph: ReadOnlyGraph<T>): Set<string>;
   export default getTransitiveDependencies;
+}
+
+// NOTE(cedric): this is a workaround for a jest-resolve bug to import this file with explicit extension
+// See: https://github.com/lukeed/resolve.exports/issues/40
+declare module 'metro/private/DeltaBundler/Serializers/helpers/js.js' {
+  export * from 'metro/private/DeltaBundler/Serializers/helpers/js';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/DeltaBundler/Serializers/helpers/js.js
@@ -826,7 +827,7 @@ declare module 'metro/private/DeltaBundler/Worker.flow' {
   import type { TransformResult } from 'metro/private/DeltaBundler/types.flow';
   import type { LogEntry } from 'metro-core/private/Logger';
   import type { JsTransformerConfig, JsTransformOptions } from 'metro-transform-worker';
-  export type { JsTransformOptions as TransformOptions } from 'metro/metro-transform-worker';
+  export type { JsTransformOptions as TransformOptions } from 'metro-transform-worker';
   export type Worker = {
     readonly transform: typeof transform;
   };
@@ -927,7 +928,7 @@ declare module 'metro/private/HmrServer' {
    * getting connected, disconnected or having errors (through the
    * `onClientConnect`, `onClientDisconnect` and `onClientError` methods).
    */
-  class HmrServer<TClient extends Client> {
+  class HmrServer<TClient extends Client = Client> {
     _config: ConfigT;
     _bundler: IncrementalBundler;
     _createModuleId: (path: string) => number;
@@ -1129,8 +1130,11 @@ declare module 'metro/private/index.flow' {
   import type { AssetData } from 'metro/private/Assets';
   import type { ReadOnlyGraph } from 'metro/private/DeltaBundler';
   import type { ServerOptions } from 'metro/private/Server';
-  import type { BuildOptions } from 'metro/private/shared/types.flow';
-  import type { OutputOptions, RequestOptions } from 'metro/private/shared/types.flow.js';
+  import type {
+    BuildOptions,
+    OutputOptions,
+    RequestOptions,
+  } from 'metro/private/shared/types.flow';
   import type { HandleFunction } from 'connect';
   import type { Server as HttpServer } from 'node:http';
   import type { Server as HttpsServer } from 'node:https';
@@ -1225,8 +1229,8 @@ declare module 'metro/private/index.flow' {
     map: string;
     assets?: readonly AssetData[];
   };
-  type BuildCommandOptions = {} | null;
-  type ServeCommandOptions = {} | null;
+  type BuildCommandOptions = object | null;
+  type ServeCommandOptions = object | null;
   export type { AssetData } from 'metro/private/Assets';
   export type { Reporter, ReportableEvent } from 'metro/private/lib/reporting';
   export type { TerminalReportableEvent } from 'metro/private/lib/TerminalReporter';
@@ -1236,13 +1240,11 @@ declare module 'metro/private/index.flow' {
     serve?: ServeCommandOptions;
     dependencies?: any;
   };
-  export { Terminal } from 'metro/metro-core';
+  export { Terminal } from 'metro-core';
   export { default as JsonReporter } from 'metro/private/lib/JsonReporter';
   export { default as TerminalReporter } from 'metro/private/lib/TerminalReporter';
   export function runMetro(config: InputConfigT, options?: RunMetroOptions): void;
-  export { loadConfig } from 'metro/metro-config';
-  export { mergeConfig } from 'metro/metro-config';
-  export { resolveConfig } from 'metro/metro-config';
+  export { loadConfig, mergeConfig, resolveConfig } from 'metro-config';
   export let createConnectMiddleware: (
     config: ConfigT,
     options?: RunMetroOptions
@@ -1551,8 +1553,8 @@ declare module 'metro/private/lib/getPrependedScripts' {
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/isResolvedDependency.js
 declare module 'metro/private/lib/isResolvedDependency' {
-  import type { Dependency } from 'metro/private/DeltaBundler/types.flow';
-  export function isResolvedDependency(dep: Dependency): any;
+  import type { Dependency, ResolvedDependency } from 'metro/private/DeltaBundler/types.flow';
+  export function isResolvedDependency(dep: Dependency): Dependency is ResolvedDependency;
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/lib/JsonReporter.js
@@ -1839,22 +1841,22 @@ declare module 'metro/private/lib/reporting' {
    * calling this, add a new type of ReportableEvent instead, and implement a
    * proper handler in the reporter(s).
    */
+  export function logWarning(terminal: Terminal, format: string, ...args: any[]): void;
 
   /**
    * Similar to `logWarning`, but for messages that require the user to act.
    */
+  export function logError(terminal: Terminal, format: string, ...args: any[]): void;
 
   /**
    * Similar to `logWarning`, but for informational messages.
    */
+  export function logInfo(terminal: Terminal, format: string, ...args: any[]): void;
 
   /**
    * A reporter that does nothing. Errors and warnings will be swallowed, that
    * is generally not what you want.
    */
-  export function logWarning(terminal: Terminal, format: string, ...args: any[]): void;
-  export function logError(terminal: Terminal, format: string, ...args: any[]): void;
-  export function logInfo(terminal: Terminal, format: string, ...args: any[]): void;
   export const nullReporter: {
     update(): void;
   };
@@ -1903,7 +1905,14 @@ declare module 'metro/private/lib/TerminalReporter' {
         type: 'unstable_server_menu_cleared';
       };
   type BuildPhase = 'in_progress' | 'done' | 'failed';
-  type SnippetError = any & {
+  // NOTE(cedric): manually corrected, its an internal Flow type
+  type ErrnoError = {
+    errno: number;
+    code: string;
+    path: string;
+    syscall: string;
+  };
+  type SnippetError = ErrnoError & {
     filename?: string;
     snippet?: string;
   };
@@ -1985,7 +1994,7 @@ declare module 'metro/private/ModuleGraph/worker/collectDependencies' {
   import type {
     AllowOptionalDependencies,
     AsyncDependencyType,
-  } from 'metro/private/private/DeltaBundler/types.flow';
+  } from 'metro/private/DeltaBundler/types.flow';
   export type Dependency = Readonly<{
     data: DependencyData;
     name: string;
@@ -2896,6 +2905,11 @@ declare module 'metro/private/shared/output/writeFile' {
   import fs from 'node:fs';
   const writeFile: typeof fs.promises.writeFile;
   export default writeFile;
+}
+
+// NOTE(cedric): this is a manual change, to avoid having to import `../types.flow`
+declare module 'metro/src/shared/types' {
+  export * from 'metro/src/shared/types.flow';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/shared/types.flow.js
