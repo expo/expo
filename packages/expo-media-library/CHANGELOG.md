@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Fix `getAssetsAsync` loading performance, add `resolveWithFullInfo` option to control whether to load full EXIF data for images. This is a breaking change for Android apps, as it might break the orientation of images in some cases. ([#37957](https://github.com/expo/expo/pull/37957) by [@kosmydel](https://github.com/kosmydel)).
+
 ### 🎉 New features
 
 - [iOS] Add support for filtering assets by media subtype. by [@clarkg](https://github.com/clarkg) ([#36756](https://github.com/expo/expo/pull/36756) by [@clarkg](https://github.com/clarkg))
