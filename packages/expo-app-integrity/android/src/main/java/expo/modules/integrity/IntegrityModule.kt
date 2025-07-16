@@ -29,21 +29,34 @@ class IntegrityModule : Module() {
     }
 
     AsyncFunction(PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME) { cloudProjectNumber: String, promise: Promise ->
-      val integrityManager = IntegrityManagerFactory.createStandard(appContext.reactContext?.applicationContext)
+      val cloudProjectNumberLong = cloudProjectNumber.toLongOrNull()
+
+      if (cloudProjectNumberLong == null) {
+        promise.reject(IntegrityException("Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number."))
+        return@AsyncFunction
+      }
+
+      val integrityManager =
+        IntegrityManagerFactory.createStandard(appContext.reactContext?.applicationContext)
       integrityManager.prepareIntegrityToken(
         PrepareIntegrityTokenRequest.builder()
-          .setCloudProjectNumber(cloudProjectNumber.toLong())
+          .setCloudProjectNumber(cloudProjectNumberLong)
           .build()
       ).addOnSuccessListener {
         integrityTokenProvider = it
         promise.resolve()
       }.addOnFailureListener {
         integrityTokenException = it
-        promise.reject(IntegrityException(integrityTokenException?.message ?: "Unknown error", integrityTokenException))
+        promise.reject(
+          IntegrityException(
+            integrityTokenException?.message ?: "Unknown error",
+            integrityTokenException
+          )
+        )
       }
     }
 
-    AsyncFunction("requestIntegrityCheck") { challenge: String, promise: Promise ->
+    AsyncFunction(REQUEST_INTEGRITY_CHECK_METHOD_NAME) { challenge: String, promise: Promise ->
       integrityTokenProvider?.let {
         val integrityTokenResponse: Task<StandardIntegrityToken> =
           it.request(
@@ -62,7 +75,13 @@ class IntegrityModule : Module() {
               IntegrityException(exception?.message ?: "Unknown error", exception)
             )
           }
-      } ?: promise.reject(IntegrityException(integrityTokenException?.message ?: "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME", integrityTokenException))
+      } ?: promise.reject(
+        IntegrityException(
+          integrityTokenException?.message
+            ?: "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME",
+          integrityTokenException
+        )
+      )
 
     }
   }
