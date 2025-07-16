@@ -396,6 +396,14 @@ function unknownModuleError(id: ModuleID, moduleIdHint?: string): Error {
   return Error(message);
 }
 
+// Emulate the Node.js `import { builtinModules } from 'module'` API.
+// Use `__expo__r.builtinModules`
+Object.defineProperty(expo_require, 'builtinModules', {
+  get() {
+    return Array.from(modules.keys());
+  },
+});
+
 if (__DEV__) {
   expo_require.getModules = (): ModuleList => {
     return modules;
