@@ -24,14 +24,14 @@ class IntegrityModule : Module() {
     }
 
     AsyncFunction("initializeIntegrityTokenProvider") { cloudProjectNumber: String, promise: Promise ->
-      val applicationContext = appContext.reactContext?.applicationContext
-      val integrityManager = IntegrityManagerFactory.createStandard(applicationContext)
+      val integrityManager = IntegrityManagerFactory.createStandard(appContext.reactContext?.applicationContext)
       integrityManager.prepareIntegrityToken(
         PrepareIntegrityTokenRequest.builder()
           .setCloudProjectNumber(cloudProjectNumber.toLong())
           .build()
       ).addOnSuccessListener {
         integrityTokenProvider = it
+        promise.resolve()
       }.addOnFailureListener {
         integrityTokenException = it
         promise.reject("", integrityExceptionMessage, integrityTokenException)

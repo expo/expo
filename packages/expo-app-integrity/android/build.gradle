@@ -6,22 +6,11 @@ plugins {
 group = 'expo.modules.integrity'
 version = '0.0.0'
 
-def properties = new Properties()
-if (rootProject.file("local.properties").exists()) {
-  properties.load(rootProject.file("local.properties").newDataInputStream())
-}
-
 android {
   namespace 'expo.modules.integrity'
   defaultConfig {
     versionCode 1
     versionName "0.0.0"
-
-    buildConfigField "String", "GOOGLE_CLOUD_NUMBER", "\"${properties.getProperty("GOOGLE_CLOUD_NUMBER", "")}\""
-  }
-
-  buildFeatures {
-    buildConfig = true
   }
 }
 
