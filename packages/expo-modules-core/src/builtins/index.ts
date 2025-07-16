@@ -1,4 +1,19 @@
 // Globals that have no dependencies and are injected in the native engine.
 // These cannot be sent over the air.
 
-globalThis.BACON = true;
+import 'react';
+import 'react/jsx-dev-runtime';
+import 'react/jsx-runtime';
+import 'url';
+import 'whatwg-fetch';
+import 'react-devtools-core';
+import 'base64-js';
+import 'buffer';
+import 'punycode';
+import 'whatwg-url-without-unicode';
+import 'pretty-format';
+import 'event-target-shim';
+import 'invariant';
+import 'scheduler';
+import 'regenerator-runtime/runtime';
+import 'react-refresh/runtime';

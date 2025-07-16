@@ -64,8 +64,6 @@ function withWebPolyfills(
     getMetroBundler: () => Bundler;
   }
 ): ConfigT {
-  
-
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
@@ -109,9 +107,7 @@ function withWebPolyfills(
 
     // Move all polyfills to the native built-in bundle.
     if (env.EXPO_BUNDLE_BUILT_IN) {
-      return [
-        ...polyfills
-      ]
+      return [...polyfills];
     }
 
     return [
@@ -201,21 +197,24 @@ function createBuiltinModuleIdFactory(
       'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
     'node_modules/react-native/Libraries/Utilities/HMRClient.js':
       'react-native/Libraries/Utilities/HMRClient',
-    
-      'node_modules/react-native/Libraries/Core/Devtools/getDevServer.js':
+
+    'node_modules/react-native/Libraries/Core/Devtools/getDevServer.js':
       'react-native/Libraries/Core/Devtools/getDevServer',
-      'node_modules/react-native/Libraries/WebSocket/WebSocket.js':
+    'node_modules/react-native/Libraries/WebSocket/WebSocket.js':
       'react-native/Libraries/WebSocket/WebSocket',
-      'node_modules/react-native/Libraries/NativeModules/specs/NativeLogBox.js': 'react-native/Libraries/NativeModules/specs/NativeLogBox',
-      'node_modules/react-native/Libraries/Core/ExceptionsManager.js': 'react-native/Libraries/Core/ExceptionsManager',
-      'node_modules/react-native/Libraries/Network/RCTNetworking.ios.js': 'react-native/Libraries/Network/RCTNetworking',
+    'node_modules/react-native/Libraries/NativeModules/specs/NativeLogBox.js':
+      'react-native/Libraries/NativeModules/specs/NativeLogBox',
+    'node_modules/react-native/Libraries/Core/ExceptionsManager.js':
+      'react-native/Libraries/Core/ExceptionsManager',
+    'node_modules/react-native/Libraries/Network/RCTNetworking.ios.js':
+      'react-native/Libraries/Network/RCTNetworking',
 
-      'node_modules/react-native/Libraries/Core/Devtools/symbolicateStackTrace.js': 'react-native/Libraries/Core/Devtools/symbolicateStackTrace',
-      'node_modules/react-native/Libraries/Components/View/ReactNativeStyleAttributes.js': 'react-native/Libraries/Components/View/ReactNativeStyleAttributes',
+    'node_modules/react-native/Libraries/Core/Devtools/symbolicateStackTrace.js':
+      'react-native/Libraries/Core/Devtools/symbolicateStackTrace',
+    'node_modules/react-native/Libraries/Components/View/ReactNativeStyleAttributes.js':
+      'react-native/Libraries/Components/View/ReactNativeStyleAttributes',
 
-
-      'node_modules/metro-runtime/src/modules/HMRClient.js': 'metro-runtime/src/modules/HMRClient',
-
+    'node_modules/metro-runtime/src/modules/HMRClient.js': 'metro-runtime/src/modules/HMRClient',
 
     //
     'packages/expo-modules-core/src/index.ts': 'expo-modules-core',
@@ -233,47 +232,51 @@ function createBuiltinModuleIdFactory(
     // 'node_modules/@react-native/virtualized-lists/index.js': '@react-native/virtualized-lists',
     // base64-js
 
-"packages/expo-linking/build/Linking.js": "expo-linking",
-"packages/expo-blur/build/index.js": "expo-blur",
-"packages/expo-font/build/index.js": "expo-font",
-"packages/expo-haptics/src/Haptics.ts": "expo-haptics",
-"packages/expo-image/src/index.ts": "expo-image",
-"packages/expo-splash-screen/build/index.native.js": "expo-splash-screen",
-"packages/expo-symbols/build/index.js": "expo-symbols",
-"packages/expo-system-ui/build/SystemUI.js": "expo-system-ui",
- "packages/expo-web-browser/build/WebBrowser.js": "expo-web-browser",
-"node_modules/react-native-gesture-handler/src/index.ts": "react-native-gesture-handler",
-"node_modules/react-native-reanimated/src/index.ts": "react-native-reanimated",
-"node_modules/react-native-is-edge-to-edge/dist/index.mjs": "react-native-is-edge-to-edge",
-"node_modules/react-native-safe-area-context/src/index.tsx": "react-native-safe-area-context",
-"node_modules/react-native-screens/src/index.tsx": "react-native-screens",
-"node_modules/react-freeze/src/index.tsx": "react-freeze",
+    'packages/expo-linking/build/Linking.js': 'expo-linking',
+    'packages/expo-blur/build/index.js': 'expo-blur',
+    'packages/expo-font/build/index.js': 'expo-font',
+    'packages/expo-haptics/src/Haptics.ts': 'expo-haptics',
+    'packages/expo-image/src/index.ts': 'expo-image',
+    'packages/expo-splash-screen/build/index.native.js': 'expo-splash-screen',
+    'packages/expo-symbols/build/index.js': 'expo-symbols',
+    'packages/expo-system-ui/build/SystemUI.js': 'expo-system-ui',
+    'packages/expo-web-browser/build/WebBrowser.js': 'expo-web-browser',
+    'node_modules/react-native-gesture-handler/src/index.ts': 'react-native-gesture-handler',
+    'node_modules/react-native-reanimated/src/index.ts': 'react-native-reanimated',
+    'node_modules/react-native-is-edge-to-edge/dist/index.mjs': 'react-native-is-edge-to-edge',
+    'node_modules/react-native-safe-area-context/src/index.tsx': 'react-native-safe-area-context',
+    'node_modules/react-native-screens/src/index.tsx': 'react-native-screens',
+    'node_modules/react-freeze/src/index.tsx': 'react-freeze',
 
-"node_modules/warn-once/index.js": "warn-once",
-"node_modules/escape-string-regexp/index.js": "escape-string-regexp",
-"node_modules/react-native-webview/src/index.ts": 'react-native-webview',
+    'node_modules/warn-once/index.js': 'warn-once',
+    'node_modules/escape-string-regexp/index.js': 'escape-string-regexp',
+    'node_modules/react-native-webview/src/index.ts': 'react-native-webview',
 
-"node_modules/@react-native-masked-view/masked-view/index.js": '@react-native-masked-view/masked-view',
-// React Navigation
-"node_modules/color/index.js": 'color',
-"node_modules/color-string/index.js": 'color-string',
-"node_modules/color-convert/index.js": 'color-convert',
+    'node_modules/@react-native-masked-view/masked-view/index.js':
+      '@react-native-masked-view/masked-view',
+    // React Navigation
+    'node_modules/color/index.js': 'color',
+    'node_modules/color-string/index.js': 'color-string',
+    'node_modules/color-convert/index.js': 'color-convert',
 
-"node_modules/@radix-ui/react-compose-refs/dist/index.js": "@radix-ui/react-compose-refs",
-"node_modules/nanoid/non-secure/index.js": 'nanoid/non-secure',
-"node_modules/@react-navigation/routers/lib/module/index.js": '@react-navigation/routers',
-"node_modules/use-latest-callback/esm.mjs": 'use-latest-callback',
-"node_modules/query-string/index.js": 'query-string',
-"node_modules/react-is/index.js": 'react-is',
-"node_modules/use-sync-external-store/with-selector.js": 'use-sync-external-store/with-selector',
-"node_modules/@react-navigation/core/lib/module/index.js": '@react-navigation/core',
+    'node_modules/@radix-ui/react-compose-refs/dist/index.js': '@radix-ui/react-compose-refs',
+    'node_modules/nanoid/non-secure/index.js': 'nanoid/non-secure',
+    'node_modules/@react-navigation/routers/lib/module/index.js': '@react-navigation/routers',
+    'node_modules/use-latest-callback/esm.mjs': 'use-latest-callback',
+    'node_modules/query-string/index.js': 'query-string',
+    'node_modules/react-is/index.js': 'react-is',
+    'node_modules/use-sync-external-store/with-selector.js':
+      'use-sync-external-store/with-selector',
+    'node_modules/@react-navigation/core/lib/module/index.js': '@react-navigation/core',
 
-"node_modules/@react-navigation/native/lib/module/index.js": '@react-navigation/native',
-"node_modules/@react-navigation/elements/lib/module/index.js": '@react-navigation/elements',
-"node_modules/@react-navigation/bottom-tabs/lib/module/index.js": '@react-navigation/bottom-tabs',
-"node_modules/@radix-ui/react-slot/dist/index.mjs": "@radix-ui/react-slot",
-"node_modules/@react-navigation/native-stack/lib/module/index.js": '@react-navigation/native-stack',
-"node_modules/stacktrace-parser/dist/stack-trace-parser.cjs.js": 'stacktrace-parser',
+    'node_modules/@react-navigation/native/lib/module/index.js': '@react-navigation/native',
+    'node_modules/@react-navigation/elements/lib/module/index.js': '@react-navigation/elements',
+    'node_modules/@react-navigation/bottom-tabs/lib/module/index.js':
+      '@react-navigation/bottom-tabs',
+    'node_modules/@radix-ui/react-slot/dist/index.mjs': '@radix-ui/react-slot',
+    'node_modules/@react-navigation/native-stack/lib/module/index.js':
+      '@react-navigation/native-stack',
+    'node_modules/stacktrace-parser/dist/stack-trace-parser.cjs.js': 'stacktrace-parser',
   };
 
   function isVirtualModule(path: string) {
@@ -301,25 +304,25 @@ function createBuiltinModuleIdFactory(
       );
 
       function findNearest(from: string) {
-      const pkgPath = findClosestPackageJson(from, {
-        isDirectory(p) {
-          return !!fs.statSync(p, { throwIfNoEntry: false })?.isDirectory();
-        },
-        pathExists(file) {
-          return !!fs.existsSync(file);
-        },
-      });
+        const pkgPath = findClosestPackageJson(from, {
+          isDirectory(p) {
+            return !!fs.statSync(p, { throwIfNoEntry: false })?.isDirectory();
+          },
+          pathExists(file) {
+            return !!fs.existsSync(file);
+          },
+        });
 
-      if (pkgPath) {
+        if (pkgPath) {
           const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
           if (pkg.name == null) {
             return findNearest(path.dirname(path.dirname(pkgPath)));
           }
           return [pkgPath, pkg];
+        }
+        return null;
       }
-      return null;
-    }
 
       const res = findNearest(absPath);
 
@@ -364,7 +367,7 @@ function createBuiltinModuleIdFactory(
       return relPath;
     };
 
-    return 'native:' + result();
+    return 'expo:' + result();
   };
 
   const memoizedGetModulePath = memoize(getModulePath);
@@ -664,26 +667,25 @@ export function withExtendedResolver(
         }
 
         let match =
-          /^(native:)?(react-native-is-edge-to-edge|@react-navigation\/bottom-tabs|stacktrace-parser|@radix-ui\/react-slot|@react-navigation\/native-stack|@react-navigation\/elements|@react-navigation\/core|@react-navigation\/native|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-runtime|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
+          /^(expo:)?(react-native-is-edge-to-edge|@react-navigation\/bottom-tabs|stacktrace-parser|@radix-ui\/react-slot|@react-navigation\/native-stack|@react-navigation\/elements|@react-navigation\/core|@react-navigation\/native|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-runtime|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
             moduleName
           );
 
-// import "expo-blur"
-// import "expo-font"
-// import "expo-haptics"
-// import "expo-image"
-// import "expo-linking"
-// import "expo-splash-screen"
-// import "expo-symbols"
-// import "expo-system-ui"
-// import "expo-web-browser"
+        // import "expo-blur"
+        // import "expo-font"
+        // import "expo-haptics"
+        // import "expo-image"
+        // import "expo-linking"
+        // import "expo-splash-screen"
+        // import "expo-symbols"
+        // import "expo-system-ui"
+        // import "expo-web-browser"
 
-// import "react-native-gesture-handler"
-// import "react-native-reanimated"
-// import "react-native-safe-area-context"
-// import "react-native-screens"
-// import "react-native-webview"
-
+        // import "react-native-gesture-handler"
+        // import "react-native-reanimated"
+        // import "react-native-safe-area-context"
+        // import "react-native-screens"
+        // import "react-native-webview"
 
         if (!match) {
           if (
@@ -698,12 +700,9 @@ export function withExtendedResolver(
           }
           // TODO: Match `(\/index(\.[tj]sx?)?)?` and strip the extras.
 
-
-
-
           // TODO: Account for .js extensions.
           match =
-            /^(native:)?(react-native|react-native\/index|react-native\/Libraries\/Utilities\/HMRClient|react-native\/Libraries\/Core\/Devtools\/getDevServer|react-native\/Libraries\/WebSocket\/WebSocket|react-native\/Libraries\/NativeModules\/specs\/NativeLogBox|react-native\/Libraries\/Core\/ExceptionsManager|react-native\/Libraries\/Network\/RCTNetworking|react-native\/Libraries\/Core\/Devtools\/symbolicateStackTrace|react-native\/Libraries\/Components\/View\/ReactNativeStyleAttributes|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(
+            /^(expo:)?(react-native|react-native\/index|react-native\/Libraries\/Utilities\/HMRClient|react-native\/Libraries\/Core\/Devtools\/getDevServer|react-native\/Libraries\/WebSocket\/WebSocket|react-native\/Libraries\/NativeModules\/specs\/NativeLogBox|react-native\/Libraries\/Core\/ExceptionsManager|react-native\/Libraries\/Network\/RCTNetworking|react-native\/Libraries\/Core\/Devtools\/symbolicateStackTrace|react-native\/Libraries\/Components\/View\/ReactNativeStyleAttributes|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(
               moduleName
             );
           // else if (
@@ -924,8 +923,8 @@ export function withExtendedResolver(
               filePath: virtualModuleId,
             };
           } else if (external.replace === 'builtin') {
-            const contents = `module.exports=__native__r('native:${interopName.replace(/^native:/, '')}')`;
-            const virtualModuleId = `\0native:${interopName}`;
+            const contents = `module.exports=__expo__r('expo:${interopName.replace(/^expo:/, '')}')`;
+            const virtualModuleId = `\0expo:${interopName}`;
             debug('Virtualizing Native built-in (custom):', interopName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
@@ -1225,7 +1224,8 @@ export async function withMetroMultiPlatformAsync(
     require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
       '@expo/cli/build/metro-require/native-require'
     );
-    config.transformer!.globalPrefix = '__native';
+    // __expo__d and __expo__r
+    config.transformer!.globalPrefix = '__expo';
   }
 
   if (!config.projectRoot) {

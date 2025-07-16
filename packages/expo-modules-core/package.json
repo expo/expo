@@ -15,7 +15,8 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "builtin:ios": "expo export:builtin -p ios --pkg src/builtins/index.ts --dev && cp dist/_expo/static/js/ios/index-*.hbc ./ios/bundle.hbc"
   },
   "keywords": [
     "expo",

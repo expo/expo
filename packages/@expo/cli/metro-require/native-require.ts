@@ -39,8 +39,8 @@ interface FactoryFn {
   (
     global: any,
     require: RequireFn,
-    metroImportDefault: RequireFn,
-    metroImportAll: RequireFn,
+    importDefault: RequireFn,
+    importAll: RequireFn,
     moduleObject: Module,
     exports: any,
     dependencyMap?: DependencyMap
@@ -94,9 +94,9 @@ export type DefineFn = (
 type VerboseModuleNameForDev = string;
 type ModuleDefiner = (moduleId: ModuleID) => void;
 
-if (__DEV__ || !global.__native__d) {
-  global.__native__r = metroRequire as RequireFn;
-  global.__native__d = define as DefineFn;
+if (__DEV__ || !global.__expo__d) {
+  global.__expo__r = expo_require as RequireFn;
+  global.__expo__d = define as DefineFn;
   //   global.__c = clear;
   //   global.__registerSegment = registerSegment;
 }
@@ -143,7 +143,7 @@ function define(factory: FactoryFn, moduleId: ModuleID, dependencyMap?: Dependen
   }
 }
 
-function metroRequire(
+function expo_require(
   moduleId: ModuleID | VerboseModuleNameForDev,
   moduleIdHint?: string
 ): Exports {
@@ -195,26 +195,26 @@ function metroRequire(
 //   return modules.every((module) => !isIgnored(module));
 // }
 
-function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any | Exports {
+function expo_import_default(moduleId: ModuleID | VerboseModuleNameForDev): any | Exports {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedDefault !== EMPTY) {
     return modules.get(moduleId)!.importedDefault;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = expo_require(moduleId);
   const importedDefault: any | Exports = exports && exports.__esModule ? exports.default : exports;
 
   return (modules.get(moduleId)!.importedDefault = importedDefault);
 }
-metroRequire.importDefault = metroImportDefault;
+expo_require.importDefault = expo_import_default;
 
-function metroImportAll(
+function expo_import_all(
   moduleId: ModuleID | VerboseModuleNameForDev
 ): any | Exports | Record<string, any> {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedAll !== EMPTY) {
     return modules.get(moduleId)!.importedAll;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = expo_require(moduleId);
   let importedAll: Exports | Record<string, any>;
 
   if (exports && exports.__esModule) {
@@ -238,9 +238,9 @@ function metroImportAll(
 }
 
 // NOTE(EvanBacon): Tag for e2e testing.
-metroRequire[Symbol.for('expo.embeddedRequire')] = true;
+expo_require[Symbol.for('expo.require')] = true;
 
-metroRequire.importAll = metroImportAll;
+expo_require.importAll = expo_import_all;
 
 // let inGuard = false;
 // function guardedLoadModule(
@@ -278,12 +278,12 @@ metroRequire.importAll = metroImportAll;
 //   const localId = moduleId & LOCAL_ID_MASK;
 //   return { segmentId, localId };
 // }
-// metroRequire.unpackModuleId = unpackModuleId;
+// expo_require.unpackModuleId = unpackModuleId;
 
 // function packModuleId(value: { localId: number; segmentId: number }): ModuleID {
 //   return (value.segmentId << ID_MASK_SHIFT) + value.localId;
 // }
-// metroRequire.packModuleId = packModuleId;
+// expo_require.packModuleId = packModuleId;
 
 const moduleDefinersBySegmentID: (ModuleDefiner | undefined)[] = [];
 const definingSegmentByModuleID: Map<ModuleID, number> = new Map();
@@ -361,9 +361,9 @@ function loadModuleImplementation(
     // and metro/src/ModuleGraph/worker.js
     factory?.(
       global,
-      metroRequire,
-      metroImportDefault,
-      metroImportAll,
+      expo_require,
+      expo_import_default,
+      expo_import_all,
       moduleObject,
       moduleObject.exports,
       dependencyMap
@@ -397,7 +397,7 @@ function unknownModuleError(id: ModuleID, moduleIdHint?: string): Error {
 }
 
 if (__DEV__) {
-  metroRequire.getModules = (): ModuleList => {
+  expo_require.getModules = (): ModuleList => {
     return modules;
   };
 }
