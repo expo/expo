@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Module, MixedOutput } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
+import CountingSet from 'metro/private/lib/CountingSet';
+import countLines from 'metro/private/lib/countLines';
 
 import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';

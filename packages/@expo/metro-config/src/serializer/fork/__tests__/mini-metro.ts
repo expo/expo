@@ -1,5 +1,5 @@
 import { Dependency, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
+import CountingSet from 'metro/private/lib/CountingSet';
 import * as path from 'path';
 
 import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';

@@ -1,4 +1,4 @@
-import CountingSet from 'metro/src/lib/CountingSet';
+import CountingSet from 'metro/private/lib/CountingSet';
 
 import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
 

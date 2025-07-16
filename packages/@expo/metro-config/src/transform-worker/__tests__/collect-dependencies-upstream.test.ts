@@ -18,7 +18,7 @@ import dedent from 'dedent';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
+} from 'metro/private/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
 import type {

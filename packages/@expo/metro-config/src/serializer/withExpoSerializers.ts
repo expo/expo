@@ -88,7 +88,6 @@ export function withSerializerPlugins(
 
   // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
   config.serializer ??= {};
-  // @ts-expect-error TODO(cedric): it's a read only property, but we can actually write it
   config.serializer.customSerializer = expoSerializer;
 
   return config;
