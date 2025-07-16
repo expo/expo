@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
+import type { BundleOptions as MetroBundleOptions } from 'metro/private/shared/types';
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
