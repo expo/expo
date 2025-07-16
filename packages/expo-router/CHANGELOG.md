@@ -13,6 +13,7 @@
 - Add submenus to link preview context menu ([#37784](https://github.com/expo/expo/pull/37784) by [@Ubax](https://github.com/Ubax))
 - [web] Add styled modals and sheets on web with a custom modal stack using vaul ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
 - [web] Add transparent modal support and allow modal stacking ([#37856](https://github.com/expo/expo/pull/37856) by [@hirbod](https://github.com/hirbod))
+- [web] Use web modal in `Modal` ([#37732](https://github.com/expo/expo/pull/37732) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -25,6 +26,9 @@
 - fix(web): a11y focus trap issues in web modals ([#38026](https://github.com/expo/expo/pull/38026) by [@hirbod](https://github.com/hirbod))
 - Fix web modal styling ([#38040](https://github.com/expo/expo/pull/38040) by [@Ubax](https://github.com/Ubax))
 - fix(web): fitToContents modal support on desktop, aligned default styles more with iOS ([#38028](https://github.com/expo/expo/pull/38028) by [@hirbod](https://github.com/hirbod))
+- fix navigation from preview to modal ([#37832](https://github.com/expo/expo/pull/37832) by [@Ubax](https://github.com/Ubax))
+- Unhandled rejections due to missing SplashModule internal functions in Expo Go ([#38045](https://github.com/expo/expo/pull/38045)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix children update in modal ([#38064](https://github.com/expo/expo/pull/38064) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

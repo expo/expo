@@ -133,13 +133,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  fun getDevSettings(): Bundle {
+  fun getDevSettings(): DevToolsSettings {
     val reactHost = delegate?.reactHost()
     if (reactHost != null) {
       return DevMenuDevSettings.getDevSettings(reactHost)
     }
 
-    return Bundle.EMPTY
+    return DevToolsSettings()
   }
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
@@ -233,7 +233,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun updateStateIfNeeded(activity: Activity, bindingView: BindingView) {
     val currentReactInstance = currentReactInstance.get() ?: return
-    val appInfo = AppInfo.getAppInfo(currentReactInstance, activity)
+    val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
   }
 

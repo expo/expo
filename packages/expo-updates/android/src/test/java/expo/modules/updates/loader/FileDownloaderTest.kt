@@ -1,7 +1,6 @@
 package expo.modules.updates.loader
 
 import android.net.Uri
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
@@ -25,10 +24,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.io.File
 import java.util.*
 
-@RunWith(AndroidJUnit4ClassRunner::class)
+@RunWith(RobolectricTestRunner::class)
 class FileDownloaderTest {
   private lateinit var logger: UpdatesLogger
 

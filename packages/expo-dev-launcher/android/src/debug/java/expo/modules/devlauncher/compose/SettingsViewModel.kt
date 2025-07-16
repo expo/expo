@@ -1,14 +1,19 @@
 package expo.modules.devlauncher.compose
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import expo.modules.devlauncher.services.AppService
+import expo.modules.devlauncher.services.ApplicationInfo
+import expo.modules.devlauncher.services.inject
 import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 
 data class SettingsState(
   val showMenuAtLaunch: Boolean = false,
   val isShakeEnable: Boolean = true,
   val isThreeFingerLongPressEnable: Boolean = true,
-  val isKeyCommandEnabled: Boolean = true
+  val isKeyCommandEnabled: Boolean = true,
+  val applicationInfo: ApplicationInfo? = null
 )
 
 sealed interface SettingsAction {
@@ -18,15 +23,17 @@ sealed interface SettingsAction {
   data class ToggleKeyCommandEnable(val newValue: Boolean) : SettingsAction
 }
 
-class SettingsViewModel : ViewModel() {
+class SettingsViewModel(application: Application) : AndroidViewModel(application) {
   private val menuPreferences = DevMenuPreferencesHandle
+  private val appService = inject<AppService>()
 
   private val _state = mutableStateOf(
     SettingsState(
       showMenuAtLaunch = menuPreferences.showsAtLaunch,
       isShakeEnable = menuPreferences.motionGestureEnabled,
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
-      isKeyCommandEnabled = menuPreferences.keyCommandsEnabled
+      isKeyCommandEnabled = menuPreferences.keyCommandsEnabled,
+      applicationInfo = appService.applicationInfo
     )
   )
 

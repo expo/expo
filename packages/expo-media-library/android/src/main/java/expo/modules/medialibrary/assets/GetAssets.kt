@@ -39,7 +39,7 @@ internal class GetAssets(
           assetsInfo,
           limit.toInt(),
           offset,
-          false
+          assetOptions.resolveWithFullInfo ?: false
         )
         val response = Bundle().apply {
           putParcelableArrayList("assets", assetsInfo)

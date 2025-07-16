@@ -28,3 +28,13 @@ data class PathInfo(
   @Field var exists: Boolean,
   @Field var isDirectory: Boolean?
 ) : Record
+
+data class DirectoryInfo(
+  @Field var exists: Boolean,
+  @Field var uri: String?,
+  @Field var files: List<String>? = null,
+  @Field var md5: String? = null,
+  @Field var size: Long? = null,
+  @Field var modificationTime: Long? = null,
+  @Field var creationTime: Long? = null
+) : Record
