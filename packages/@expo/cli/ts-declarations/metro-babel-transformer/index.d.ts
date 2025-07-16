@@ -13,6 +13,8 @@ declare module 'metro-babel-transformer/private/index' {
   };
   export type TransformProfile = 'default' | 'hermes-stable' | 'hermes-canary';
   type BabelTransformerOptions = Readonly<{
+    // NOTE(@kitten): we pass on `BabelTransformOptions.type` to the Expo Babel caller and use it in `babel-preset-expo` to force `enableBabelRuntime` to `false`
+    type?: 'script' | 'module' | 'asset';
     customTransformOptions?: CustomTransformOptions;
     dev: boolean;
     enableBabelRCLookup?: boolean;

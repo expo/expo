@@ -1,6 +1,6 @@
 // #region metro-cache-key
 declare module 'metro-cache-key' {
-  export { default } from 'metro-cache-key/private/index';
+  export * from 'metro-cache-key/private/index';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro-cache-key/src/index.js
