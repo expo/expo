@@ -152,28 +152,6 @@ const config = {
 export default withCustomProductName(config, 'new_name');
 ```
 
-### Experimental functionality
-
-Some parts of the mod system aren't fully fleshed out. These parts use `withDangerousMod` to read/write data without a base mod. These methods essentially act as their own base mod and cannot be extended. For example, Icons currently use the dangerous mod to perform a single generation step with no ability to customize the results.
-
-```ts my-config-plugin.ts
-import { ExpoConfig } from 'expo/config';
-
-export const withIcons = (config: ExpoConfig): ExpoConfig => {
-  return withDangerousMod(config, [
-    'ios',
-    async (config: ExpoConfig): Promise<ExpoConfig> => {
-      /* @info No modifications are made to the config. */
-      await setIconsAsync(config, config.modRequest.projectRoot);
-      /* @end */
-      return config;
-    },
-  ]);
-};
-```
-
-Be careful using `withDangerousMod` as it is subject to change in the future. The order with which it gets executed is not reliable either. Currently, dangerous mods run first before all other modifiers because Expo uses dangerous mods internally for large file system refactoring like when a library's name changes.
-
 ## Plugin module resolution
 
 When implementing plugins, there are two fundamental approaches to consider:
