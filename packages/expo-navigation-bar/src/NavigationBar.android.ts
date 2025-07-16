@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { processColor } from 'react-native';
+import { Appearance, processColor } from 'react-native';
 import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
@@ -59,7 +59,7 @@ export async function getBorderColorAsync(): Promise<string> {
 
 export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
   if (isEdgeToEdge()) {
-    // TODO: Add native setHidden
+    await ExpoNavigationBar.setHidden(visibility === 'hidden');
     return;
   }
 
@@ -71,11 +71,6 @@ export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
 }
 
 export async function setButtonStyleAsync(style: NavigationBarButtonStyle): Promise<void> {
-  if (isEdgeToEdge()) {
-    // TODO: Add native setStyle
-    return;
-  }
-
   await ExpoNavigationBar.setButtonStyleAsync(style);
 }
 
@@ -126,7 +121,7 @@ export async function getBehaviorAsync(): Promise<NavigationBarBehavior> {
 
 export function setStyle(style: NavigationBarStyle) {
   if (isEdgeToEdge()) {
-    // TODO: Add native setStyle
+    ExpoNavigationBar.setButtonStyleAsync(styleToBarStyle(style));
     return;
   }
 
@@ -171,4 +166,17 @@ export function useVisibility(): NavigationBarVisibility | null {
   }, []);
 
   return visibility;
+}
+
+function styleToBarStyle(style: NavigationBarStyle = 'auto'): 'light' | 'dark' {
+  const colorScheme = Appearance?.getColorScheme() ?? 'light';
+
+  switch (style) {
+    case 'auto':
+      return colorScheme === 'light' ? 'dark' : 'light';
+    case 'inverted':
+      return colorScheme === 'light' ? 'light' : 'dark';
+    default:
+      return style;
+  }
 }
