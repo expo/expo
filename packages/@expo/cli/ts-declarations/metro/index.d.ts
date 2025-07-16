@@ -1122,6 +1122,9 @@ declare module 'metro/private/index' {
   } from 'metro/private/ModuleGraph/worker/collectDependencies';
   export * from 'metro/private/Server';
   export * from 'metro/private/lib/reporting';
+
+  // NOTE(cedric): we also export ServerOptions from this file, let's also export Server itself
+  export type { default as Server } from 'metro/private/Server';
 }
 
 // See: https://github.com/facebook/metro/blob/v0.83.0/packages/metro/src/index.flow.js
