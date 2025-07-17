@@ -7,6 +7,7 @@ import android.provider.OpenableColumns
 import android.util.Base64
 import androidx.core.net.toUri
 import expo.modules.imagepicker.exporters.CompressionImageExporter
+import expo.modules.imagepicker.exporters.DateExporter
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.RawImageExporter
 import expo.modules.kotlin.providers.AppContextProvider
@@ -58,6 +59,7 @@ internal class MediaHandler(
       ?.let { exportedImage.exif(context.contentResolver) }
 
     val fileData = getAdditionalFileData(sourceUri)
+    val fileDate = DateExporter().date(context.contentResolver, sourceUri, MediaType.IMAGE)
 
     return ImagePickerAsset(
       type = MediaType.IMAGE,
@@ -66,6 +68,7 @@ internal class MediaHandler(
       height = exportedImage.height,
       fileName = fileData?.fileName ?: outputFile.name,
       fileSize = fileData?.fileSize ?: outputFile.length(),
+      fileDate = fileDate,
       mimeType = mimeType,
       base64 = base64,
       exif = exif,
@@ -100,6 +103,7 @@ internal class MediaHandler(
 
       val fileData = getAdditionalFileData(sourceUri)
       val mimeType = getType(context.contentResolver, sourceUri)
+      val fileDate = DateExporter().date(context.contentResolver, sourceUri, MediaType.VIDEO)
 
       // Extract basic metadata
       var width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
@@ -122,6 +126,7 @@ internal class MediaHandler(
         height = height,
         fileName = fileData?.fileName,
         fileSize = fileData?.fileSize,
+        fileDate = fileDate,
         mimeType = mimeType,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = rotation,

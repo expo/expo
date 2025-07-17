@@ -289,6 +289,11 @@ export type ImagePickerAsset = {
    */
   fileSize?: number;
   /**
+   * The date of the file, as shown in the system media library.
+   * Returns null if the file comes from the camera.
+   */
+  fileDate?: number;
+  /**
    * The `exif` field is included if the `exif` option is truthy, and is an object containing the
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
    * respective EXIF values for those tags.
