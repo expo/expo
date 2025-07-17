@@ -75,6 +75,11 @@ class IntegrityModule : Module() {
               IntegrityException(exception?.message ?: "Unknown error", exception)
             )
           }
+          .addOnCanceledListener {
+            promise.reject(
+              IntegrityException("Request cancelled")
+            )
+          }
       } ?: promise.reject(
         IntegrityException(
           integrityTokenException?.message
