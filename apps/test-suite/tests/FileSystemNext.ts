@@ -6,6 +6,8 @@ import * as FS from 'expo-file-system';
 import { File, Directory, Paths } from 'expo-file-system/next';
 import { Platform } from 'react-native';
 
+import ExponentTest from '../ExponentTest';
+
 export const name = 'FileSystem@next';
 
 export async function test({ describe, expect, it, ...t }) {
@@ -48,6 +50,9 @@ export async function test({ describe, expect, it, ...t }) {
       });
     } else {
       it('Supports some operations on SAF picker files', async () => {
+        if (ExponentTest.isInCI) {
+          return;
+        }
         const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
         if (!saf.granted) {
           throw new Error();
