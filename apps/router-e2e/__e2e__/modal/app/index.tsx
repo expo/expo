@@ -149,8 +149,40 @@ export default function Index() {
         </Modal>
       )}
       <FitForm />
+      <FooterForm />
     </View>
   );
+}
+
+function FooterForm() {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <>
+      <Button title="Open Footer" onPress={() => setIsOpen((open) => !open)} />
+      <Modal
+        visible={open}
+        onClose={() => setIsOpen(false)}
+        presentationStyle="formSheet"
+        detents={[0.5]}
+        footer={UnstableFooter}
+        style={{
+          paddingTop: 20,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Button title="Close" />
+      </Modal>
+    </>
+  )
+}
+
+function UnstableFooter() {
+  return (
+    <View style={{ height: 50, backgroundColor: '#00CCAD' }}>
+      <Text>Test Footer</Text>
+    </View>
+  )
 }
 
 function FitForm() {

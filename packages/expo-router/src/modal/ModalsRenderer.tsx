@@ -48,6 +48,7 @@ export const ModalsRenderer = ({
             config.viewProps?.style,
           ]}
           sheetAllowedDetents={config.detents}
+          unstable_sheetFooter={config.footer}
           style={[
             StyleSheet.absoluteFill,
             {
