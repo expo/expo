@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.composeunstyled.Button
 import expo.modules.devmenu.compose.primitives.Heading
+import expo.modules.devmenu.compose.ripple.ripple
 import expo.modules.devmenu.compose.theme.ButtonStyle
 import expo.modules.devmenu.compose.theme.Theme
 
@@ -21,7 +22,8 @@ fun ActionButton(
   Button(
     onClick = onClick,
     shape = RoundedCornerShape(Theme.sizing.borderRadius.medium),
-    backgroundColor = style.background
+    backgroundColor = style.background,
+    indication = ripple(color = style.foreground)
   ) {
     Box(
       contentAlignment = Alignment.Companion.Center,

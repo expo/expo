@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.FileUtils
 import expo.modules.core.utilities.FileUtilities
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -11,8 +13,8 @@ import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.IOUtils
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
 private const val OPEN_DOCUMENT_CODE = 4137
@@ -80,8 +82,13 @@ class DocumentPickerModule : Module() {
     )
     val outputFile = File(outputFilePath)
     context.contentResolver.openInputStream(documentUri).use { inputStream ->
+      inputStream ?: throw FileNotFoundException("Inputstream for $documentUri was null.")
       FileOutputStream(outputFile).use { outputStream ->
-        IOUtils.copy(inputStream, outputStream)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          FileUtils.copy(inputStream, outputStream)
+        } else {
+          inputStream.copyTo(outputStream)
+        }
       }
     }
     return Uri.fromFile(outputFile)

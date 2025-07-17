@@ -1,6 +1,7 @@
 package expo.modules.devmenu
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
@@ -16,11 +17,13 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import expo.interfaces.devmenu.ReactHostWrapper
+import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.compose.BindingView
 import expo.modules.devmenu.compose.DevMenuViewModel
+import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 
 class DevMenuPackage : Package, ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
@@ -69,6 +72,17 @@ class DevMenuPackage : Package, ReactPackage {
 
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
           return DevMenuManager.onKeyEvent(keyCode, event)
+        }
+      }
+    )
+  }
+
+  override fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener?>? {
+    return listOf(
+      object : ApplicationLifecycleListener {
+        override fun onCreate(application: Application) {
+          DevMenuPreferencesHandle.init(application)
+          AppInfo.init(application)
         }
       }
     )

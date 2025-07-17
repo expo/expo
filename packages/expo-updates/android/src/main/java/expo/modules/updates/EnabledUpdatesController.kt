@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -55,12 +56,14 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
-  private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val fileDownloader by lazy {
+    FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
+  }
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()

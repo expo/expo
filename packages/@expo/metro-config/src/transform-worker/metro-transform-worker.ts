@@ -49,6 +49,7 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import { importExportPlugin } from '../transform-plugins/import-export-plugin';
 
 export { JsTransformOptions };
 
@@ -240,7 +241,7 @@ export function applyImportSupport<TFile extends t.File>(
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //
-      [metroTransformPlugins.importExportPlugin, babelPluginOpts]
+      [importExportPlugin, babelPluginOpts]
     );
   }
 

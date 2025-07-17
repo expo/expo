@@ -2,6 +2,8 @@ import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
+import { toString } from './utilities';
+
 // Read more: https://github.com/FormidableLabs/prism-react-renderer#custom-language-support
 async function initPrismAsync() {
   (typeof global !== 'undefined' ? global : window).Prism = Prism;
@@ -206,7 +208,7 @@ export function getCodeBlockDataFromChildren(children?: ReactNode, className?: s
     children as ReactElement,
     'className'
   );
-  const code = parseValue(codeNode?.children?.toString() ?? '');
+  const code = parseValue(toString(codeNode?.children));
   const codeLanguage =
     typeof codeNode?.className === 'string' ? codeNode.className.split('-')[1] : 'jsx';
 

@@ -19,27 +19,21 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private var blurReduction = 4f
   private var blurRadius = 50f
   internal var tint: TintStyle = TintStyle.DEFAULT
+  private var isBlurViewConfigured = false
 
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-
-    val decorView = appContext.throwingActivity.window?.decorView
-    val rootView = decorView?.findViewById<ViewGroup>(android.R.id.content) ?: throw Exceptions.MissingRootView()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      it.setupWith(rootView, RenderEffectBlur())
-        .setFrameClearDrawable(decorView.background)
-    } else {
-      @Suppress("DEPRECATION")
-      it.setupWith(rootView, eightbitlab.com.blurview.RenderScriptBlur(context))
-        .setFrameClearDrawable(decorView.background)
-    }
     addView(it)
   }
 
   fun setBlurRadius(radius: Float) {
+    blurRadius = radius
+
+    if (!isBlurViewConfigured) return
+
     when (blurMethod) {
       BlurMethod.NONE -> {
-        this.setBackgroundColor(tint.toBlurEffect(blurRadius))
+        this.setBackgroundColor(tint.toBlurEffect(radius))
       }
 
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
@@ -52,11 +46,13 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
         }
       }
     }
-    blurRadius = radius
   }
 
   fun setBlurMethod(method: BlurMethod) {
     blurMethod = method
+
+    if (!isBlurViewConfigured) return
+
     when (method) {
       BlurMethod.NONE -> {
         blurView.setBlurEnabled(false)
@@ -77,6 +73,8 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   }
 
   fun applyTint() {
+    if (!isBlurViewConfigured) return
+
     when (blurMethod) {
       BlurMethod.DIMEZIS_BLUR_VIEW -> {
         blurView.setOverlayColor(tint.toBlurEffect(blurRadius))
@@ -87,5 +85,76 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       }
     }
     blurView.invalidate()
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+
+    // Now we can safely walk the parent hierarchy
+    if (!isBlurViewConfigured) {
+      isBlurViewConfigured = true
+      configureBlurView()
+    }
+  }
+
+  private fun configureBlurView() {
+    val rootView = findOptimalBlurRoot()
+    val decorView = appContext.throwingActivity.window?.decorView
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      blurView.setupWith(rootView, RenderEffectBlur())
+        .setFrameClearDrawable(decorView?.background)
+    } else {
+      @Suppress("DEPRECATION")
+      blurView.setupWith(rootView, eightbitlab.com.blurview.RenderScriptBlur(context))
+        .setFrameClearDrawable(decorView?.background)
+    }
+
+    // Apply any blur settings that were set before configuration
+    applyCurrentBlurSettings()
+  }
+
+  /**
+   * Apply blur settings that may have been set before the BlurView was configured.
+   */
+  private fun applyCurrentBlurSettings() {
+    setBlurRadius(blurRadius)
+    setBlurMethod(blurMethod)
+    applyTint()
+  }
+
+  /**
+   * Attempts to find the nearest Screen ancestor (from react-native-screens).
+   * Falls back to app root if no Screen is found.
+   */
+  private fun findOptimalBlurRoot(): ViewGroup {
+    val screenAncestor = findNearestScreenAncestor()
+    return screenAncestor ?: getAppRootFallback()
+  }
+
+  /**
+   * Walks up the view hierarchy looking for react-native-screens Screen components
+   * using class name detection to avoid hard dependencies.
+   */
+  private fun findNearestScreenAncestor(): ViewGroup? {
+    var currentParent = parent
+    while (currentParent != null) {
+      if (isReactNativeScreen(currentParent)) {
+        return currentParent as? ViewGroup
+      }
+      currentParent = currentParent.parent
+    }
+    return null
+  }
+
+  private fun isReactNativeScreen(view: Any): Boolean {
+    val className = view.javaClass.name
+    return className == "com.swmansion.rnscreens.Screen"
+  }
+
+  private fun getAppRootFallback(): ViewGroup {
+    val decorView = appContext.throwingActivity.window?.decorView
+    return decorView?.findViewById(android.R.id.content)
+      ?: throw Exceptions.MissingRootView()
   }
 }

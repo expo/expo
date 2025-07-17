@@ -69,6 +69,7 @@ const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
+const import_export_plugin_1 = require("../transform-plugins/import-export-plugin");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -173,7 +174,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         // Ensure the iife "globals" don't have conflicting variables in the module.
         renameTopLevelModuleVariables, 
         //
-        [metro_transform_plugins_1.default.importExportPlugin, babelPluginOpts]);
+        [import_export_plugin_1.importExportPlugin, babelPluginOpts]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
     // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.

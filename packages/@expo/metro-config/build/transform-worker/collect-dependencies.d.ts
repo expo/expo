@@ -44,10 +44,12 @@ type MutableDependencyData = {
     };
 };
 export type DependencyData = Readonly<MutableDependencyData>;
-type MutableInternalDependency = MutableDependencyData & {
+export type MutableInternalDependency = MutableDependencyData & {
     locs: t.SourceLocation[];
     index: number;
     name: string;
+    /** Usage of the dep, number of imports of the dep in other modules, used for tree shaking. */
+    imports: number;
 };
 export type InternalDependency = Readonly<MutableInternalDependency>;
 export type State = {

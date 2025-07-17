@@ -16,6 +16,11 @@ import resolveFrom from 'resolve-from';
 
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
+import {
+  createStickyModuleResolverInput,
+  createStickyModuleResolver,
+  StickyModuleResolverInput,
+} from './createExpoStickyResolver';
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -144,6 +149,7 @@ export function withExtendedResolver(
   config: ConfigT,
   {
     tsconfig,
+    stickyModuleResolverInput,
     isTsconfigPathsEnabled,
     isFastResolverEnabled,
     isExporting,
@@ -152,6 +158,7 @@ export function withExtendedResolver(
     getMetroBundler,
   }: {
     tsconfig: TsConfigPaths | null;
+    stickyModuleResolverInput?: StickyModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
@@ -168,6 +175,9 @@ export function withExtendedResolver(
   }
   if (isFastResolverEnabled) {
     Log.log(chalk.dim`Fast resolver is enabled.`);
+  }
+  if (stickyModuleResolverInput) {
+    Log.log(chalk.dim`Sticky resolver is enabled.`);
   }
 
   const defaultResolver = metroResolver.resolve;
@@ -611,6 +621,10 @@ export function withExtendedResolver(
       return null;
     },
 
+    createStickyModuleResolver(stickyModuleResolverInput, {
+      getStrictResolver,
+    }),
+
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     function requestPostRewrites(
@@ -809,6 +823,7 @@ export async function withMetroMultiPlatformAsync(
     exp,
     platformBundlers,
     isTsconfigPathsEnabled,
+    isStickyResolverEnabled,
     isFastResolverEnabled,
     isExporting,
     isReactCanaryEnabled,
@@ -820,6 +835,7 @@ export async function withMetroMultiPlatformAsync(
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
+    isStickyResolverEnabled?: boolean;
     isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactCanaryEnabled: boolean;
@@ -889,7 +905,16 @@ export async function withMetroMultiPlatformAsync(
 
   config = withWebPolyfills(config, { getMetroBundler });
 
+  let stickyModuleResolverInput: StickyModuleResolverInput | undefined;
+  if (isStickyResolverEnabled) {
+    stickyModuleResolverInput = await createStickyModuleResolverInput({
+      platforms: expoConfigPlatforms,
+      projectRoot,
+    });
+  }
+
   return withExtendedResolver(config, {
+    stickyModuleResolverInput,
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,

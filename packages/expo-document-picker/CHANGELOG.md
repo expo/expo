@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- remove use of `IOUtils` for stream copying ([#38096](https://github.com/expo/expo/pull/38096) by [@vonovak](https://github.com/vonovak))
+
 ## 13.1.6 - 2025-06-18
 
 ### 🐛 Bug fixes

@@ -26,7 +26,6 @@ import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
@@ -122,7 +121,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
     maybeStartDetectors(reactContext.applicationContext)
-    preferences = DevMenuPreferencesHandle(reactContext).also {
+    preferences = DevMenuPreferencesHandle.also {
       if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty()) || hasDisableOnboardingQueryParam(launchUrl.orEmpty())) {
         it.isOnboardingFinished = true
       }
@@ -134,13 +133,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  fun getDevSettings(): Bundle {
+  fun getDevSettings(): DevToolsSettings {
     val reactHost = delegate?.reactHost()
     if (reactHost != null) {
       return DevMenuDevSettings.getDevSettings(reactHost)
     }
 
-    return Bundle.EMPTY
+    return DevToolsSettings()
   }
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
@@ -234,7 +233,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   fun updateStateIfNeeded(activity: Activity, bindingView: BindingView) {
     val currentReactInstance = currentReactInstance.get() ?: return
-    val appInfo = AppInfo.getAppInfo(currentReactInstance, activity)
+    val appInfo = AppInfo.getAppInfo(currentReactInstance)
     bindingView.viewModel.updateAppInfo(appInfo)
   }
 

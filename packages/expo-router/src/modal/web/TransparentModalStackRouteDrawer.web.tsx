@@ -23,6 +23,7 @@ function TransparentModalStackRouteDrawer({
   return (
     <Drawer.Root
       defaultOpen
+      autoFocus
       key={`${routeKey}-transparent`}
       dismissible={options.gestureEnabled ?? false}
       onAnimationEnd={handleOpenChange}>

@@ -13,7 +13,7 @@ export interface ModalProps extends ViewProps {
     visible: boolean;
     /**
      * Callback that is called after modal is closed.
-     * This is called when the modal is dismissed by the user or programmatically.
+     * This is called when the modal is closed programmatically or when the user dismisses it.
      */
     onClose?: () => void;
     /**
@@ -59,6 +59,8 @@ export interface ModalProps extends ViewProps {
  * A standalone modal component that can be used in Expo Router apps.
  * It always renders on top of the application's content.
  * Internally, the modal is rendered as a `Stack.Screen`, with the presentation style determined by the `presentationStyle` prop.
+ *
+ * **Props should be set before the modal is opened. Changes to the props will take effect after the modal is reopened.**
  *
  * This component is not linkable. If you need to link to a modal, use `<Stack.Screen options={{ presentationStyle: "modal" }} />` instead.
  *

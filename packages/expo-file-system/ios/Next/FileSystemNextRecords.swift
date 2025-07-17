@@ -24,3 +24,12 @@ struct PathInfo: Record {
   @Field var exists: Bool
   @Field var isDirectory: Bool?
 }
+
+struct DirectoryInfo: Record {
+  @Field var exists: Bool
+  @Field var uri: String?
+  @Field var files: [String]?
+  @Field var size: Int64?
+  @Field var modificationTime: Int64?
+  @Field var creationTime: Int64?
+}

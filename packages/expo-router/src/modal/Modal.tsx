@@ -8,6 +8,7 @@ import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
 import { useNavigation } from '../useNavigation';
+import { areDetentsValid } from './utils';
 
 export interface ModalProps extends ViewProps {
   /**
@@ -22,7 +23,7 @@ export interface ModalProps extends ViewProps {
   visible: boolean;
   /**
    * Callback that is called after modal is closed.
-   * This is called when the modal is dismissed by the user or programmatically.
+   * This is called when the modal is closed programmatically or when the user dismisses it.
    */
   onClose?: () => void;
   /**
@@ -70,6 +71,8 @@ export interface ModalProps extends ViewProps {
  * It always renders on top of the application's content.
  * Internally, the modal is rendered as a `Stack.Screen`, with the presentation style determined by the `presentationStyle` prop.
  *
+ * **Props should be set before the modal is opened. Changes to the props will take effect after the modal is reopened.**
+ *
  * This component is not linkable. If you need to link to a modal, use `<Stack.Screen options={{ presentationStyle: "modal" }} />` instead.
  *
  * @example
@@ -97,13 +100,19 @@ export function Modal(props: ModalProps) {
     animationType,
     presentationStyle,
     transparent,
+    detents,
     ...viewProps
   } = props;
-  const { openModal, closeModal, addEventListener } = useModalContext();
+  const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
-    if (!currentModalId && visible) {
+    if (!areDetentsValid(detents)) {
+      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+    }
+  }, [detents]);
+  useEffect(() => {
+    if (visible) {
       const newId = nanoid();
       openModal({
         animationType,
@@ -113,17 +122,23 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
+        detents,
       });
       setCurrentModalId(newId);
       return () => {
         closeModal(newId);
       };
-    } else if (currentModalId && !visible) {
-      closeModal(currentModalId);
-      setCurrentModalId(undefined);
     }
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    if (currentModalId && visible) {
+      updateModal(currentModalId, {
+        component: children,
+      });
+    }
+  }, [children]);
 
   useEffect(() => {
     if (currentModalId) {
@@ -144,6 +159,6 @@ export function Modal(props: ModalProps) {
       };
     }
     return () => {};
-  }, [currentModalId, addEventListener, onClose]);
+  }, [currentModalId, addEventListener, onClose, onShow]);
   return null;
 }

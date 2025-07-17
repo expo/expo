@@ -84,10 +84,12 @@ type MutableDependencyData = {
 
 export type DependencyData = Readonly<MutableDependencyData>;
 
-type MutableInternalDependency = MutableDependencyData & {
+export type MutableInternalDependency = MutableDependencyData & {
   locs: t.SourceLocation[];
   index: number;
   name: string;
+  /** Usage of the dep, number of imports of the dep in other modules, used for tree shaking. */
+  imports: number;
 };
 
 export type InternalDependency = Readonly<MutableInternalDependency>;
@@ -733,13 +735,15 @@ function registerDependency(
   qualifier: ImportQualifier,
   path: NodePath<any>
 ): InternalDependency {
-  const dependency = state.dependencyRegistry.registerDependency(qualifier);
+  const dependency: MutableInternalDependency =
+    state.dependencyRegistry.registerDependency(qualifier);
 
   const loc = getNearestLocFromPath(path);
   if (loc != null) {
     dependency.locs.push(loc);
   }
 
+  dependency.imports += 1;
   return dependency;
 }
 
@@ -1003,6 +1007,7 @@ class DependencyRegistry {
         index: this._dependencies.size,
         key: hashKey(key),
         exportNames: qualifier.exportNames,
+        imports: 0,
       };
 
       if (qualifier.optional) {

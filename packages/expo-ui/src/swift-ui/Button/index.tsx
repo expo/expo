@@ -23,6 +23,7 @@ export type ButtonRole = 'default' | 'cancel' | 'destructive';
  * - `plain` - A button with no border or background and a less prominent text.
  * macOS-only styles:
  * - `glass` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta version of Xcode)
+ * - `glassProminent` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta 3 version of Xcode)
  * - `accessoryBar` - A button style for accessory bars.
  * - `accessoryBarAction` - A button style for accessory bar actions.
  * - `card` - A button style for cards.
@@ -34,6 +35,7 @@ export type ButtonVariant =
   | 'bordered'
   | 'plain'
   | 'glass'
+  | 'glassProminent'
   | 'borderedProminent'
   | 'borderless'
   // MacOS-only;

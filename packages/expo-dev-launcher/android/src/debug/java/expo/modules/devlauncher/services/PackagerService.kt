@@ -110,7 +110,7 @@ class PackagerService(
       // We remove all existing development session packagers and
       // also local packagers with the same port as the new development session packagers
       val filteredPackager = packagers.filter {
-        !it.isDevelopmentSession || newPackagers.all { newPackager -> newPackager.port != it.port }
+        !it.isDevelopmentSession && newPackagers.all { newPackager -> newPackager.port != it.port }
       }
 
       filteredPackager.plus(

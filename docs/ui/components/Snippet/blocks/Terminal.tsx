@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
 import { Language, Prism } from 'prism-react-renderer';
 
@@ -13,10 +14,17 @@ type TerminalProps = {
   cmdCopy?: string;
   hideOverflow?: boolean;
   title?: string;
+  className?: string;
 };
 
-export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
-  <Snippet className="terminal-snippet [li_&]:mt-4">
+export const Terminal = ({
+  cmd,
+  cmdCopy,
+  hideOverflow,
+  className,
+  title = 'Terminal',
+}: TerminalProps) => (
+  <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
     <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>

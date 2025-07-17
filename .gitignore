@@ -75,6 +75,7 @@ templates/**/android/app/build
 templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
+templates/expo-template-bare-minimum/*.tgz
 
 # Codemod
 .codemod.bookmark

@@ -12,6 +12,7 @@ export var ActivityAction;
     ActivityAction["APN_SETTINGS"] = "android.settings.APN_SETTINGS";
     ActivityAction["APP_NOTIFICATION_REDACTION"] = "android.settings.ACTION_APP_NOTIFICATION_REDACTION";
     ActivityAction["APP_NOTIFICATION_SETTINGS"] = "android.settings.APP_NOTIFICATION_SETTINGS";
+    ActivityAction["APP_OPEN_BY_DEFAULT_SETTINGS"] = "android.settings.APP_OPEN_BY_DEFAULT_SETTINGS";
     ActivityAction["APP_OPS_SETTINGS"] = "android.settings.APP_OPS_SETTINGS";
     ActivityAction["APPLICATION_DETAILS_SETTINGS"] = "android.settings.APPLICATION_DETAILS_SETTINGS";
     ActivityAction["APPLICATION_DEVELOPMENT_SETTINGS"] = "android.settings.APPLICATION_DEVELOPMENT_SETTINGS";

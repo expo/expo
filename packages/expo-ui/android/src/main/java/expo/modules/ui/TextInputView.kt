@@ -18,6 +18,7 @@ import expo.modules.kotlin.views.ComposeProps
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import expo.modules.kotlin.views.AutoSizingComposable
@@ -66,7 +67,7 @@ class TextInputView(context: Context, appContext: AppContext) :
   private val onValueChanged by EventDispatcher()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     var value by remember { props.defaultValue }
     AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
       TextField(

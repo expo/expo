@@ -214,6 +214,10 @@ class FileSystemNextModule : Module() {
         FileSystemDirectory(File(uri.path))
       }
 
+      Function("info") { directory: FileSystemDirectory ->
+        directory.info()
+      }
+
       Function("delete") { directory: FileSystemDirectory ->
         directory.delete()
       }

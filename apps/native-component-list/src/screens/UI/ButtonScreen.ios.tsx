@@ -26,6 +26,9 @@ export default function ButtonScreen() {
           <Button style={styles.button} variant="glass">
             Glass button
           </Button>
+          <Button style={styles.button} variant="glassProminent">
+            Glass Prominent
+          </Button>
           <Button style={styles.button} variant="bordered">
             Bordered
           </Button>

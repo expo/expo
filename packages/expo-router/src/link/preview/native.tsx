@@ -45,6 +45,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
   onPreviewWillClose?: () => void;
   onPreviewDidClose?: () => void;
   onPreviewTapped?: () => void;
+  onPreviewTappedAnimationCompleted?: () => void;
   children: React.ReactNode;
 }
 const NativeLinkPreviewView: React.ComponentType<NativeLinkPreviewProps> | null =

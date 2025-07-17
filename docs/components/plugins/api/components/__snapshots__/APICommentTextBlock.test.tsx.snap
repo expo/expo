@@ -165,7 +165,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
 exports[`APICommentTextBlock no comment 1`] = `
 <div>
   <div
-    class="px-4 [table_&]:!mb-0 [table_&]:px-0"
+    class=""
   />
 </div>
 `;

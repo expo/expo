@@ -8,9 +8,12 @@
 
 ### 🐛 Bug fixes
 
-[iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix barcode options to correctly handle empty barcodeTypes ([#38100](https://github.com/expo/expo/pull/38100) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
 
 ### 💡 Others
+
+- Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 📚 3rd party library updates
 

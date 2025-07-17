@@ -64,7 +64,7 @@ describe('exports for hermes with no bytecode', () => {
 
     const bundle = await fs.promises.readFile(bundlePath, 'utf8');
     // Minified mark
-    expect(bundle).toMatch('__d((function(g,r,');
+    expect(bundle).toMatch('__d(function(g,r,');
   });
 });
 

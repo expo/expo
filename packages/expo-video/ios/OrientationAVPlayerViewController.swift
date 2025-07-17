@@ -8,7 +8,9 @@ import ExpoModulesCore
  */
 internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlayerViewControllerDelegate {
   weak var forwardDelegate: AVPlayerViewControllerDelegate?
+  #if !os(tvOS)
   var fullscreenOrientation: UIInterfaceOrientationMask = UIDevice.current.userInterfaceIdiom == .phone ? .allButUpsideDown : .all
+  #endif
   var autoExitOnRotate: Bool = false
 
   // Used to determine whether the user has rotated the device to the target orientation. Useful for auto-exit for example:
@@ -28,14 +30,19 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
       if !isFullscreen {
         hasRotatedToTargetOrientation = false
       }
+      #if os(tvOS)
+      hasRotatedToTargetOrientation = true
+      #else
       // Check if the current device orientation lines up with target orientation right away after entering fullscreen
       guard let deviceOrientationMask = UIDevice.current.orientation.toInterfaceOrientationMask(), isFullscreen else {
         return
       }
       hasRotatedToTargetOrientation = fullscreenOrientation.contains(deviceOrientationMask)
+      #endif
     }
   }
 
+  #if !os(tvOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     // Always remove the observer to avoid adding it multiple times
     NotificationCenter.default.removeObserver(
@@ -56,6 +63,7 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
     }
     return super.supportedInterfaceOrientations
   }
+  #endif
 
   convenience init(delegate: AVPlayerViewControllerDelegate?) {
     self.init()
@@ -63,11 +71,13 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
   }
 
   deinit {
+    #if !os(tvOS)
     NotificationCenter.default.removeObserver(
       self,
       name: UIDevice.orientationDidChangeNotification,
       object: nil
     )
+    #endif
   }
 
   func enterFullscreen(selectorUnsupportedFallback: (() -> Void)?) {
@@ -127,6 +137,7 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
     self.delegate = self
   }
 
+  #if !os(tvOS)
   @objc private func deviceOrientationDidChange(_ notification: Notification) {
     guard let deviceOrientationMask = UIDevice.current.orientation.toInterfaceOrientationMask(), isFullscreen else {
       return
@@ -170,6 +181,7 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
       }
     }
   }
+  #endif
 
   func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
     isInPictureInPicture = true
@@ -181,16 +193,17 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
     forwardDelegate?.playerViewControllerDidStopPictureInPicture?(playerViewController)
   }
 
-#if os(tvOS)
+  #if os(tvOS)
   func playerViewControllerWillBeginDismissalTransition(_ playerViewController: AVPlayerViewController) {
-    forwardDelegate?.playerViewControllerWillBeginDismissalTransition(playerViewController)
+    forwardDelegate?.playerViewControllerWillBeginDismissalTransition?(playerViewController)
   }
 
   func playerViewControllerDidEndDismissalTransition(_ playerViewController: AVPlayerViewController) {
-    forwardDelegate?.playerViewControllerDidEndDismissalTransition(playerViewController)
+    forwardDelegate?.playerViewControllerDidEndDismissalTransition?(playerViewController)
   }
-#endif
+  #endif
 
+  #if !os(tvOS)
   private func forceRotationUpdate() {
     if #available(iOS 16.0, *) {
       let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -199,8 +212,10 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
       UIViewController.attemptRotationToDeviceOrientation()
     }
   }
+  #endif
 }
 
+#if !os(tvOS)
 fileprivate extension UIDeviceOrientation {
   func toInterfaceOrientationMask() -> UIInterfaceOrientationMask? {
     switch self {
@@ -213,3 +228,4 @@ fileprivate extension UIDeviceOrientation {
     }
   }
 }
+#endif

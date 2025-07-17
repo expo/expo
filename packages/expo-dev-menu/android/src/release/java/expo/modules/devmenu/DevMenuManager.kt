@@ -33,7 +33,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  fun getDevSettings(): Bundle {
+  fun getDevSettings(): DevToolsSettings {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

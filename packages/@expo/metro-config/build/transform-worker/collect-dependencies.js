@@ -516,6 +516,7 @@ function registerDependency(state, qualifier, path) {
     if (loc != null) {
         dependency.locs.push(loc);
     }
+    dependency.imports += 1;
     return dependency;
 }
 function isOptionalDependency(name, path, state) {
@@ -721,6 +722,7 @@ class DependencyRegistry {
                 index: this._dependencies.size,
                 key: hashKey(key),
                 exportNames: qualifier.exportNames,
+                imports: 0,
             };
             if (qualifier.optional) {
                 newDependency.isOptional = true;

@@ -90,20 +90,12 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
         overlayRoutes.map((route) => {
           const isTransparentModal = isTransparentModalPresentation(descriptors[route.key].options);
 
-          if (isTransparentModal) {
-            return (
-              <TransparentModalStackRouteDrawer
-                key={route.key}
-                routeKey={route.key}
-                options={descriptors[route.key].options as ExtendedStackNavigationOptions}
-                renderScreen={descriptors[route.key].render}
-                onDismiss={dismiss}
-              />
-            );
-          }
+          const ModalComponent = isTransparentModal
+            ? TransparentModalStackRouteDrawer
+            : ModalStackRouteDrawer;
 
           return (
-            <ModalStackRouteDrawer
+            <ModalComponent
               key={route.key}
               routeKey={route.key}
               options={descriptors[route.key].options as ExtendedStackNavigationOptions}

@@ -85,7 +85,7 @@ async function diffAsync(repoRoot, outputPatchFilePath, options) {
     });
 }
 async function applyPatchAsync(projectRoot, patchFilePath) {
-    return await runGitAsync(['apply', patchFilePath], { cwd: projectRoot });
+    return await runGitAsync(['apply', '--ignore-whitespace', patchFilePath], { cwd: projectRoot });
 }
 async function getPatchChangedLinesAsync(patchFilePath) {
     const stdout = await runGitAsync(['apply', '--numstat', patchFilePath]);

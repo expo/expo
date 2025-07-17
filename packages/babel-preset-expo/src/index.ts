@@ -410,7 +410,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
         // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
         babelPresetReactNativeEnv.overrides.push({
-          plugins: [require('@babel/plugin-transform-export-namespace-from')],
+          plugins: [require('./babel-plugin-transform-export-namespace-from')],
         });
 
         return babelPresetReactNativeEnv;

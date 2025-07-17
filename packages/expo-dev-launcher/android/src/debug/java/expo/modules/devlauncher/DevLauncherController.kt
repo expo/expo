@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.UiThread
+import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
@@ -40,6 +41,7 @@ import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInte
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
+import expo.modules.devlauncher.services.DependencyInjection
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.manifests.core.Manifest
@@ -74,13 +76,20 @@ class DevLauncherController private constructor() :
   var devMenuManager: DevMenuManager = DevMenuManager
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
-    set(value) = DevLauncherKoinContext.app.koin.loadModules(
-      listOf(
-        module {
-          single { value }
-        }
+    set(value) = run {
+      if (value != null) {
+        DependencyInjection.appService.setUpUpdateInterface(value, context)
+      }
+
+      DevLauncherKoinContext.app.koin.loadModules(
+        listOf(
+          module {
+            single { value }
+          }
+        )
       )
-    )
+    }
+
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   override val devClientHost by lazy {
@@ -93,8 +102,10 @@ class DevLauncherController private constructor() :
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: Manifest? = null
     private set
+
   override var manifestURL: Uri? = null
     private set
+
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
   var canLaunchDevMenuOnStart = false
@@ -144,7 +155,7 @@ class DevLauncherController private constructor() :
       // default to the EXPO_UPDATE_URL value configured in AndroidManifest.xml when project url is unspecified for an EAS update
       if (isEASUpdate && projectUrl == null) {
         val projectUrlString = getMetadataValue(context, "expo.modules.updates.EXPO_UPDATE_URL")
-        parsedProjectUrl = Uri.parse(projectUrlString)
+        parsedProjectUrl = projectUrlString.toUri()
       }
 
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
@@ -206,7 +217,8 @@ class DevLauncherController private constructor() :
     }
   }
 
-  override fun getRecentlyOpenedApps(): List<DevLauncherAppEntry> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
+  override fun getRecentlyOpenedApps(): List<DevLauncherAppEntry> =
+    recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   override fun clearRecentlyOpenedApps() {
     recentlyOpedAppsRegistry.clearRegistry()
@@ -270,8 +282,8 @@ class DevLauncherController private constructor() :
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
         coroutineScope.launch {
           try {
-            loadApp(Uri.parse(lastOpenedApp.url), activityToBeInvalidated)
-          } catch (e: Throwable) {
+            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
+          } catch (_: Throwable) {
             navigateToLauncher()
           }
         }

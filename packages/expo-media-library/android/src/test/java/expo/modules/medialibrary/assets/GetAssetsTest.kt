@@ -40,7 +40,8 @@ internal class GetAssetsTest {
       createdBefore = null,
       sortBy = emptyList(),
       mediaType = emptyList(),
-      album = null
+      album = null,
+      resolveWithFullInfo = false
     )
 
   @Before

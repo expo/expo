@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.SheetDetent.Companion.Hidden
+import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.theme.Theme
@@ -27,12 +29,16 @@ import expo.modules.devmenu.compose.ui.MenuContainer
 import expo.modules.devmenu.compose.ui.MenuInfo
 import expo.modules.devmenu.compose.ui.MenuSwitch
 import expo.modules.devmenu.compose.ui.Warning
+import expo.modules.devmenu.compose.utils.copyToClipboard
 
 @Composable
 fun DevMenuContent(
   appInfo: DevMenuState.AppInfo,
+  devToolsSettings: DevToolsSettings,
   onAction: DevMenuActionHandler = {}
 ) {
+  val context = LocalContext.current
+
   Column {
     BundlerInfo(
       state = BundlerInfoState(
@@ -81,6 +87,7 @@ fun DevMenuContent(
         MenuSwitch(
           "Fast Refresh",
           icon = painterResource(R.drawable._expodevclientcomponents_assets_runicon),
+          toggled = devToolsSettings.isHotLoadingEnabled,
           onToggled = { newValue -> onAction(DevMenuAction.ToggleFastRefresh(newValue)) }
         )
       }
@@ -96,7 +103,18 @@ fun DevMenuContent(
         Divider()
         MenuInfo("Runtime version", appInfo.runtimeVersion ?: "N/A")
         Divider()
-        MenuButton("Tap to Copy All", icon = null, labelTextColor = Theme.colors.text.link)
+        MenuButton(
+          "Tap to Copy All",
+          icon = null,
+          labelTextColor = Theme.colors.text.link,
+          onClick = {
+            copyToClipboard(
+              context,
+              label = "Application Info",
+              text = appInfo.toJson()
+            )
+          }
+        )
       }
 
       Spacer(Modifier.size(Theme.spacing.large))
@@ -118,17 +136,7 @@ fun handleDevMenuAction(
   state: com.composables.core.ModalBottomSheetState,
   onAction: DevMenuActionHandler
 ): DevMenuActionHandler = customHandler@{ action ->
-  val shouldClose = when (action) {
-    DevMenuAction.Close -> false
-    DevMenuAction.Open -> false
-    DevMenuAction.GoHome -> true
-    DevMenuAction.OpenJSDebugger -> true
-    DevMenuAction.OpenReactNativeDevMenu -> true
-    DevMenuAction.Reload -> true
-    DevMenuAction.ToggleElementInspector -> true
-    is DevMenuAction.ToggleFastRefresh -> true
-    DevMenuAction.TogglePerformanceMonitor -> true
-  }
+  val shouldClose = action.shouldCloseMenu
 
   if (action == DevMenuAction.Close) {
     // If the action is to close the menu, we want to start the animation and then close the menu
@@ -185,6 +193,7 @@ fun DevMenuScreen(
   ) {
     DevMenuContent(
       appInfo = appInfo,
+      devToolsSettings = state.devToolsSettings,
       onAction = wrappedOnAction
     )
   }
@@ -199,7 +208,8 @@ fun DevMenuScreenRoot() {
         appName = "Expo App",
         runtimeVersion = "1.0.0",
         hostUrl = "http://localhost:19006"
-      )
+      ),
+      devToolsSettings = DevToolsSettings()
     )
   }
 }
