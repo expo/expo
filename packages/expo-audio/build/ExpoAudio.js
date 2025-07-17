@@ -56,7 +56,7 @@ export function useAudioPlayer(source = null, updateInterval = 500) {
  * Hook that provides real-time playback status updates for an `AudioPlayer`.
  *
  * This hook automatically subscribes to playback status changes and returns the current status.
- * The status includes information about playback state, current time, duration, loading state, etc.
+ * The status includes information about playback state, current time, duration, loading state, and more.
  *
  * @param player The `AudioPlayer` instance to monitor.
  * @returns The current `AudioStatus` object containing playback information.
@@ -168,7 +168,7 @@ export function useAudioRecorder(options, statusListener) {
  * Hook that provides real-time recording state updates for an `AudioRecorder`.
  *
  * This hook polls the recorder's status at regular intervals and returns the current recording state.
- * Use this when you need to monitor recording status without setting up a status listener.
+ * Use this when you need to monitor the recording status without setting up a status listener.
  *
  * @param recorder The `AudioRecorder` instance to monitor.
  * @param interval How often (in milliseconds) to poll the recorder's status. Defaults to 500ms.

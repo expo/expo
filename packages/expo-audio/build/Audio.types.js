@@ -53,15 +53,15 @@ export var IOSOutputFormat;
  */
 export var AudioQuality;
 (function (AudioQuality) {
-    /** Minimum quality - smallest file size, lowest fidelity. */
+    /** Minimum quality: smallest file size, lowest fidelity. */
     AudioQuality[AudioQuality["MIN"] = 0] = "MIN";
-    /** Low quality - good for voice recordings where file size matters. */
+    /** Low quality: good for voice recordings where file size matters. */
     AudioQuality[AudioQuality["LOW"] = 32] = "LOW";
-    /** Medium quality - balanced option for most use cases. */
+    /** Medium quality: balanced option for most use cases. */
     AudioQuality[AudioQuality["MEDIUM"] = 64] = "MEDIUM";
-    /** High quality - good fidelity, larger file size. */
+    /** High quality: good fidelity, larger file size. */
     AudioQuality[AudioQuality["HIGH"] = 96] = "HIGH";
-    /** Maximum quality - best fidelity, largest file size. */
+    /** Maximum quality: best fidelity, largest file size. */
     AudioQuality[AudioQuality["MAX"] = 127] = "MAX";
 })(AudioQuality || (AudioQuality = {}));
 //# sourceMappingURL=Audio.types.js.map

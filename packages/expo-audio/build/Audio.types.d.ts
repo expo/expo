@@ -19,15 +19,15 @@ export type AudioSource = string | number | null | {
  * Represents an available audio input device for recording.
  *
  * This type describes audio input sources like built-in microphones, external microphones,
- * or other audio input devices that can be used for recording. Each input has identifying
+ * or other audio input devices that can be used for recording. Each input has an identifying
  * information that can be used to select the preferred recording source.
  */
 export type RecordingInput = {
     /** Human-readable name of the audio input device. */
     name: string;
-    /** Type or category of the input device (e.g., 'Built-in Microphone', 'External Microphone'). */
+    /** Type or category of the input device (for example, 'Built-in Microphone', 'External Microphone'). */
     type: string;
-    /** Unique identifier for the input device, used to select this input for recording. */
+    /** Unique identifier for the input device, used to select the input ('Built-in Microphone', 'External Microphone') for recording. */
     uid: string;
 };
 /**
@@ -81,7 +81,7 @@ export type AudioStatus = {
  *
  * This type represents the status data emitted by `recordingStatusUpdate` events.
  * It contains high-level information about the recording session and any errors.
- * Used internally by the event system - most users should use `useAudioRecorderState()` instead.
+ * Used internally by the event system. Most users should use `useAudioRecorderState()` instead.
  */
 export type RecordingStatus = {
     /** Unique identifier for the recording session. */
@@ -90,7 +90,7 @@ export type RecordingStatus = {
     isFinished: boolean;
     /** Whether an error occurred during recording. */
     hasError: boolean;
-    /** Error message if an error occurred, null otherwise. */
+    /** Error message if an error occurred, `null` otherwise. */
     error: string | null;
     /** File URL of the completed recording, if available. */
     url: string | null;
@@ -187,15 +187,15 @@ export declare enum IOSOutputFormat {
  * Higher quality levels produce better sound but larger files and require more processing power.
  */
 export declare enum AudioQuality {
-    /** Minimum quality - smallest file size, lowest fidelity. */
+    /** Minimum quality: smallest file size, lowest fidelity. */
     MIN = 0,
-    /** Low quality - good for voice recordings where file size matters. */
+    /** Low quality: good for voice recordings where file size matters. */
     LOW = 32,
-    /** Medium quality - balanced option for most use cases. */
+    /** Medium quality: balanced option for most use cases. */
     MEDIUM = 64,
-    /** High quality - good fidelity, larger file size. */
+    /** High quality: good fidelity, larger file size. */
     HIGH = 96,
-    /** Maximum quality - best fidelity, largest file size. */
+    /** Maximum quality: best fidelity, largest file size. */
     MAX = 127
 }
 /**
@@ -251,15 +251,15 @@ export type RecordingOptions = {
     web?: RecordingOptionsWeb;
 };
 /**
- * Recording options for the Web.
+ * Recording options for the web.
  *
- * Web recording uses the MediaRecorder API, which has different capabilities
- * compared to native platforms. These options map directly to MediaRecorder settings.
+ * Web recording uses the `MediaRecorder` API, which has different capabilities
+ * compared to native platforms. These options map directly to `MediaRecorder` settings.
  *
  * @platform web
  */
 export type RecordingOptionsWeb = {
-    /** MIME type for the recording (e.g., 'audio/webm', 'audio/mp4'). */
+    /** MIME type for the recording (for example, 'audio/webm', 'audio/mp4'). */
     mimeType?: string;
     /** Target bits per second for the recording. */
     bitsPerSecond?: number;
@@ -267,7 +267,7 @@ export type RecordingOptionsWeb = {
 /**
  * Recording configuration options specific to iOS.
  *
- * iOS recording uses AVAudioRecorder with extensive format and quality options.
+ * iOS recording uses `AVAudioRecorder` with extensive format and quality options.
  * These settings provide fine-grained control over the recording characteristics.
  *
  * @platform ios
@@ -321,7 +321,7 @@ export type RecordingOptionsIos = {
 /**
  * Recording configuration options specific to Android.
  *
- * Android recording uses MediaRecorder with options for format, encoder, and file constraints.
+ * Android recording uses `MediaRecorder` with options for format, encoder, and file constraints.
  * These settings control the output format and quality characteristics.
  *
  * @platform android
@@ -406,7 +406,7 @@ export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
  * Audio interruption behavior modes for Android.
  *
  * Controls how your app's audio interacts with other apps' audio on Android.
- * Note that Android doesn't support 'mixWithOthers' mode - audio focus is more strictly managed.
+ * Note that Android doesn't support 'mixWithOthers' mode; audio focus is more strictly managed.
  *
  * @platform android
  */
