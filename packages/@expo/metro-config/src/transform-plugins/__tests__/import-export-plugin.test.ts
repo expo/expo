@@ -96,3 +96,33 @@ it('exports destructured named object renamed and direct member', () => {
 
   compare([importExportPlugin], code, expected, opts);
 });
+
+it('exports destructured named object with rest member', () => {
+  const code = `
+    export const {foo, ...bar} = {foo: 'bar', baz: 'bar'};
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {value: true});
+    const {foo, ...bar} = {foo: 'bar', baz: 'bar'};
+    exports.foo = foo;
+    exports.bar = bar;
+  `;
+
+  compare([importExportPlugin], code, expected, opts);
+});
+
+it('exports destructured named array rest members', () => {
+  const code = `
+    export const [foo, ...bar] = ['foo', 'bar','baz'];
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {value: true});
+    const [foo,...bar] = ['foo','bar','baz'];
+    exports.foo = foo;
+    exports.bar = bar;
+  `;
+
+  compare([importExportPlugin], code, expected, opts);
+});
