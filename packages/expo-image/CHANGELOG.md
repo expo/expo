@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.4.0 — 2025-07-17
+
+### 🎉 New features
+
 - [iOS] Add a new prop - `enforceEarlyResizing` to reduce the memory usage of the image view. ([#37909](https://github.com/expo/expo/pull/37909) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 - [iOS] Speed up displaying local assets. ([#37795](https://github.com/expo/expo/pull/37795) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix some operation were incorrectly cancelled. ([#37987](https://github.com/expo/expo/pull/37987) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 2.3.2 — 2025-07-01
 

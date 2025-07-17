@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- URL.canParse(..) no longer always returns false. ([#38122](https://github.com/expo/expo/pull/38122) by [@char](https://github.com/char))
-
 ### 💡 Others
+
+## 53.0.20 — 2025-07-17
+
+### 🐛 Bug fixes
+
+- URL.canParse(..) no longer always returns false. ([#38122](https://github.com/expo/expo/pull/38122) by [@char](https://github.com/char))
 
 ## 53.0.19 — 2025-07-08
 
