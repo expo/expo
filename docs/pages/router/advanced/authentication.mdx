@@ -304,6 +304,22 @@ export default function Index() {
 
 </Step>
 
+<Step label="7">
+
+Create the `(app)` layout: 
+
+```tsx app/(app)/_layout.tsx|collapseHeight=480
+import { Stack } from 'expo-router';
+
+
+export default function AppLayout() {
+  // Renders the navigation stack for all authenticated app routes
+  return <Stack />;
+}
+```
+
+</Step>
+
 You now have an app that will present the splash screen until the initial authentication state has loaded and will redirects to the sign-in screen if the user is not authenticated. If a user visits a deep link to any routes with the authentication check, they'll be redirected to the sign-in screen.
 
 ## Modals and per-route authentication
