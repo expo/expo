@@ -57,6 +57,10 @@ Static redirects allow you to specify a redirect configuration in your [app conf
           {
             "source": "/redirect/from/here",
             "destination": "/to/this/route"
+          },
+          {
+            "source": "/or/redirect/from/here",
+            "destination": "http://to.this.site"
           }
         ]
       }
@@ -68,7 +72,7 @@ Static redirects allow you to specify a redirect configuration in your [app conf
 Each redirect configuration should have the following properties:
 
 - **source**: The incoming request path pattern
-- **destination**: The path you want to route to
+- **destination**: The path you want to route to. This can be a path within your Expo Router project **or** an external URL.
 
 Redirect configuration can have the following optional property:
 
