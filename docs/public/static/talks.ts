@@ -357,6 +357,36 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'How to Add In-App Subscriptions with RevenueCat + Expo',
+    event: 'Expo Tutorials',
+    videoId: 'R3fLKC-2Qh0',
+  },
+  {
+    title: 'How to build a Custom Expo Module',
+    event: 'Expo Tutorials',
+    videoId: 'zReFsPgUdMs',
+  },
+  {
+    title: 'Speed up your Expo Builds with Remote Build Cache',
+    event: 'Expo Tutorials',
+    videoId: '5SmaC-JQS_k',
+  },
+  {
+    title: 'Build a Local-First Sketch App with Expo, Instant & Reanimated',
+    event: 'Expo Tutorials',
+    videoId: 'DEJIcaGN3vY',
+  },
+  {
+    title: 'How to use Expo Background Tasks',
+    event: 'Expo Tutorials',
+    videoId: '4lFus7TvayI',
+  },
+  {
+    title: 'Building auth and onboarding flows with protected routes',
+    event: 'Expo Tutorials',
+    videoId: 'zHZjJDTTHJg',
+  },
+  {
     title: 'Golden Workflow: Automate the creation of development builds',
     event: 'EAS Tutorials',
     videoId: 'u8MAJ0F18s0',
