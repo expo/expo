@@ -38,7 +38,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   var testID: String? = null
 
   @Composable
-  abstract fun Content(modifier: Modifier)
+  abstract fun Content(modifier: Modifier = Modifier)
 
   override val shouldUseAndroidLayout = withHostingView
 
