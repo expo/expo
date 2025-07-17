@@ -178,7 +178,6 @@ export enum ActivityAction {
   SIM_PREFERENCE_SETTINGS = 'android.settings.SIM_PREFERENCE_SETTINGS',
   SIM_SUB_INFO_SETTINGS = 'com.android.settings.sim.SIM_SUB_INFO_SETTINGS',
   SOUND_SETTINGS = 'android.settings.SOUND_SETTINGS',
-  SOUND_SETTINGS = 'com.android.settings.SOUND_SETTINGS',
   SPA_SEARCH_LANDING = 'android.settings.SPA_SEARCH_LANDING',
   STORAGE_MANAGER_SETTINGS = 'android.settings.STORAGE_MANAGER_SETTINGS',
   STYLUS_USI_DETAILS_SETTINGS = 'com.android.settings.STYLUS_USI_DETAILS_SETTINGS',
