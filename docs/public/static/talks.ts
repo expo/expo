@@ -237,6 +237,11 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'Shipping with Expo: How to get your Bolt app to the app stores',
+    event: 'Expo Live Stream',
+    videoId: 'ViU7207_W54',
+  },
+  {
     title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
     event: 'Expo Live Stream',
     videoId: 'XCTaMu0qnFY',
