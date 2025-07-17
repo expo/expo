@@ -10,7 +10,7 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   override fun validateType() {
-    if (file.exists() == true && !file.isDirectory()) {
+    if (file.exists() && !file.isDirectory()) {
       throw InvalidTypeFolderException()
     }
   }
