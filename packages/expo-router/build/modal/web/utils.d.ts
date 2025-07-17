@@ -6,6 +6,13 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
 /**
+ * Heoper to determine the detent index from the given `sheetInitialDetentIndex` option.
+ *
+ * @param options - The navigation options.
+ * @returns The actual detent index.
+ */
+export declare function getInitialDetentIndex(options?: ExtendedStackNavigationOptions | null): number;
+/**
  * Helper to determine if a given screen should be treated as a modal-type presentation
  *
  * @param options - The navigation options.

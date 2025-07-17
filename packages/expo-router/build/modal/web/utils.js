@@ -4,12 +4,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getInitialDetentIndex = getInitialDetentIndex;
 exports.isModalPresentation = isModalPresentation;
 exports.isTransparentModalPresentation = isTransparentModalPresentation;
 exports.useIsDesktop = useIsDesktop;
 exports.convertStackStateToNonModalState = convertStackStateToNonModalState;
 exports.findLastNonModalIndex = findLastNonModalIndex;
 const react_1 = __importDefault(require("react"));
+/**
+ * Heoper to determine the detent index from the given `sheetInitialDetentIndex` option.
+ *
+ * @param options - The navigation options.
+ * @returns The actual detent index.
+ */
+function getInitialDetentIndex(options) {
+    const sheetAllowedDetents = options?.sheetAllowedDetents;
+    const sheetInitialDetentIndex = options?.sheetInitialDetentIndex ?? 0;
+    if (Array.isArray(sheetAllowedDetents)) {
+        return sheetInitialDetentIndex === 'last'
+            ? sheetAllowedDetents.length - 1
+            : sheetInitialDetentIndex;
+    }
+    return 0;
+}
 /**
  * Helper to determine if a given screen should be treated as a modal-type presentation
  *

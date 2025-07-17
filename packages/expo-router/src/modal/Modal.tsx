@@ -70,7 +70,7 @@ export interface ModalProps extends ViewProps {
    * The initial detent index when sheet is presented.
    * Works only when `presentation` is set to `formSheet`.
    */
-  detentIndex?: number;
+  detentIndex?: ModalConfig['detentIndex'];
 }
 
 /**
