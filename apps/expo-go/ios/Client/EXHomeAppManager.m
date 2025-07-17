@@ -29,6 +29,10 @@
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 
+@interface EXHomeAppManager ()
+@property (nonatomic, strong) HomeViewController *swiftUIViewController;
+@end
+
 @implementation EXHomeAppManager
 
 - (NSDictionary *)extraParams
@@ -63,6 +67,14 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
   return params;
 }
 
+- (UIView *)rootView
+{
+  if (!_swiftUIViewController) {
+    _swiftUIViewController = [[HomeViewController alloc] init];
+  }
+  return _swiftUIViewController.view;
+}
+
 #pragma mark - interfacing with home JS
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest
@@ -70,33 +82,23 @@ NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
   if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"]) {
     return;
   }
-  NSDictionary *params = @{
-    @"manifestUrl": manifestUrl.absoluteString,
-    @"manifest": manifest.rawManifestJSON,
-  };
-  [self _dispatchHomeJSEvent:@"addHistoryItem" body:params onSuccess:nil onFailure:nil];
+  
+  [_swiftUIViewController addHistoryItemWithUrl:manifestUrl manifest:manifest.rawManifestJSON];
 }
 
 - (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion
 {
-  [self _dispatchHomeJSEvent:@"getHistoryUrlForExperienceId"
-                        body:@{ @"experienceId": scopeKey }
-                   onSuccess:^(NSDictionary *result) {
-                     NSString *url = result[@"url"];
-                     completion(url);
-                   } onFailure:^(NSString *errorMessage) {
-                     completion(nil);
-                   }];
+  // TODO: Implement history URL lookup in SwiftUI
+  // For now, return nil - this would be implemented in the SwiftUI layer
+  completion(nil);
 }
 
 - (void)showQRReader
 {
-  [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
 }
 
 - (void)dispatchForegroundHomeEvent
 {
-  [self _dispatchHomeJSEvent:@"foregroundHome" body:@{} onSuccess:nil onFailure:nil];
 }
 
 #pragma mark - EXReactAppManager
