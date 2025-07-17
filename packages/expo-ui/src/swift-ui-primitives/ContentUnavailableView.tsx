@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 import { CommonViewModifierProps } from './types';
 
 export interface ContentUnavailableViewProps extends CommonViewModifierProps {
-
   /**
    * A short title that describes why the content is not available.
    */
