@@ -7,9 +7,9 @@ internal final class ContentUnavailableViewProps: ExpoSwiftUI.ViewProps, CommonV
   @Field var fixedSize: Bool?
   @Field var frame: FrameOptions?
   @Field var padding: PaddingOptions?
-  @Field var title: String?
-  @Field var systemImage: String?
-  @Field var description: String?
+  @Field var title: String = ""
+  @Field var systemImage: String = ""
+  @Field var description: String = ""
   @Field var testID: String?
 }
 
@@ -18,7 +18,7 @@ struct ContentUnavailableView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 17.0, *) {
-      SwiftUI.ContentUnavailableView(props.title ?? "", systemImage: props.systemImage ?? "", description: Text(props.description ?? ""))
+      SwiftUI.ContentUnavailableView(props.title, systemImage: props.systemImage, description: Text(props.description))
         .modifier(CommonViewModifiers(props: props))
     }
   }
