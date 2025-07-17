@@ -20,8 +20,6 @@ describe('server api redirects', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'static-redirects',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
             { source: '/redirect/methods', destination: '/methods' },
             { source: '/redirect/dynamic/[slug]', destination: '/dynamic/[slug]' },

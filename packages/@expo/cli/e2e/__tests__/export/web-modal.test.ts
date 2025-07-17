@@ -24,7 +24,6 @@ describe('export web-modal example', () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'web-modal',
         E2E_ROUTER_ASYNC: 'production',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     });
   });
