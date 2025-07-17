@@ -3,6 +3,9 @@ package expo.modules.filesystem.next
 import android.net.Uri
 import android.os.Build
 import androidx.core.net.toUri
+import expo.modules.filesystem.next.unifiedfile.JavaFile
+import expo.modules.filesystem.next.unifiedfile.SAFDocumentFile
+import expo.modules.filesystem.next.unifiedfile.UnifiedFileInterface
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
@@ -13,29 +16,45 @@ import kotlin.io.path.moveTo
 import kotlin.io.path.readAttributes
 import kotlin.time.Duration.Companion.milliseconds
 
+val Uri.isContentUri get(): Boolean {
+  return scheme == "content"
+}
+
 abstract class FileSystemPath(var uri: Uri) : SharedObject() {
-  private var fileAdapter: FileSystemFileAdapter? = null
-  val file: FileSystemFileAdapter get() {
+  private var fileAdapter: UnifiedFileInterface? = null
+  val file: UnifiedFileInterface get() {
     val currentAdapter = fileAdapter
     if (currentAdapter?.uri == uri) {
       return currentAdapter
     }
-    val newAdapter = FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), uri)
+    val newAdapter = if (uri.isContentUri) {
+      SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), uri)
+    } else {
+      JavaFile(uri)
+    }
     fileAdapter = newAdapter
     return newAdapter
   }
-  val javaFile get() = file.javaFile ?: throw Exception("This method cannot be used with content URIs: $uri")
-  val isContentURI get() = file.isContentURI
+  val javaFile: File get() =
+    if (uri.isContentUri) {
+      throw Exception("This method cannot be used with content URIs: $uri")
+    } else {
+      (file as File)
+    }
 
   fun delete() {
     if (!file.exists()) {
       throw UnableToDeleteException("uri '${file.uri}' does not exist")
     }
-    if (file.isDirectory) {
-      file.listFiles().forEach { child ->
-        if (child.isDirectory) {
+    if (file.isDirectory()) {
+      file.listFilesAsUnified().forEach { child ->
+        if (child.isDirectory()) {
           // Recursively delete subdirectories
-          FileSystemFileAdapter(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
+          if (uri.isContentUri) {
+            SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
+          } else {
+            JavaFile(child.uri).delete()
+          }
         } else {
           if (!child.delete()) {
             throw UnableToDeleteException("failed to delete '${child.uri}'")
@@ -85,7 +104,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   }
 
   fun checkPermission(permission: Permission): Boolean {
-    if (file.isContentURI) {
+    if (uri.isContentUri) {
       // TODO: Consider adding a check for content URIs (not in legacy FS)
       return true
     }

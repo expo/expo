@@ -10,14 +10,14 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   override fun validateType() {
-    if (file.exists() == true && !file.isDirectory) {
+    if (file.exists() == true && !file.isDirectory()) {
       throw InvalidTypeFolderException()
     }
   }
 
   val exists: Boolean get() {
     return if (checkPermission(Permission.READ)) {
-      file.isDirectory
+      file.isDirectory()
     } else {
       false
     }
@@ -87,10 +87,10 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun listAsRecords(): List<Map<String, Any>> {
     validateType()
     validatePermission(Permission.READ)
-    return file.listFiles().map {
+    return file.listFilesAsUnified().map {
       val uriString = it.uri.toString()
       mapOf(
-        "isDirectory" to it.isDirectory,
+        "isDirectory" to it.isDirectory(),
         "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
       )
     }

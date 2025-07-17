@@ -21,14 +21,14 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   // After calling this function, we can use the `isDirectory` and `isFile` functions safely as they will match the shared class used.
   override fun validateType() {
     validatePermission(Permission.READ)
-    if (file.exists() && file.isDirectory) {
+    if (file.exists() && file.isDirectory()) {
       throw InvalidTypeFileException()
     }
   }
 
   val exists: Boolean get() {
     return if (checkPermission(Permission.READ)) {
-      file.isFile
+      file.isFile()
     } else {
       false
     }
@@ -38,7 +38,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     validateType()
     validatePermission(Permission.WRITE)
     validateCanCreate(options)
-    if (isContentURI) {
+    if (uri.isContentUri) {
       throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
     } else {
       if (options.overwrite && exists) {
