@@ -36,10 +36,10 @@ export const ImageScreens = [
     },
   },
   {
-    name: 'Blurhash',
-    route: 'image/blurhash',
+    name: 'Generate Placeholders',
+    route: 'image/generate-placeholders',
     getComponent() {
-      return optionalRequire(() => require('./ImageBlurhash'));
+      return optionalRequire(() => require('./ImageGeneratePlaceholders'));
     },
   },
   {

@@ -26,7 +26,7 @@ Loading errors are handled in the parent route, via the [`ErrorBoundary`](/route
 
 Async routes cannot be statically analyzed during development, so all files will be treated as routes even if they don't export a default component. After the component is bundled and loaded, any invalid route will use a fallback warning screen.
 
-For those familiar with advanced bundling techniques, the async routes feature is composed of [React Suspense](https://react.dev/docs/concurrent-mode-suspense), [route-based bundle splitting](https://legacy.reactjs.org/docs/code-splitting.html#route-based-code-splitting) and [lazy bundling](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0605-lazy-bundling.md) (in development).
+For those familiar with advanced bundling techniques, the async routes feature is composed of [React Suspense](https://react.dev/reference/react/Suspense), [route-based bundle splitting](https://legacy.reactjs.org/docs/code-splitting.html#route-based-code-splitting) and [lazy bundling](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0605-lazy-bundling.md) (in development).
 
 ## Setup
 
