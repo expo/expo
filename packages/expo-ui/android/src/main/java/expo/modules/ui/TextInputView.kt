@@ -33,8 +33,8 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
-  val trailingIcon: MutableState<String?> = mutableStateOf(null),
-  val leadingIcon: MutableState<String?> = mutableStateOf(null)
+  val leadingIcon: MutableState<String?> = mutableStateOf(null),
+  val trailingIcon: MutableState<String?> = mutableStateOf(null)
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -86,8 +86,8 @@ class TextInputView(context: Context, appContext: AppContext) :
           autoCorrectEnabled = props.autocorrection.value,
           capitalization = props.autoCapitalize.value.autoCapitalize()
         ),
-        trailingIcon = props.trailingIcon.value?.let { { MaterialIcon(it) } },
-        leadingIcon = props.leadingIcon.value?.let { { MaterialIcon(it) } }
+        leadingIcon = props.leadingIcon.value?.let { { MaterialIcon(it) } },
+        trailingIcon = props.trailingIcon.value?.let { { MaterialIcon(it) } }
       )
     }
   }

@@ -65,13 +65,13 @@ export type TextInputProps = {
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
     /**
-     * Optional trailing icon to be displayed at the end of the text input container.
-     */
-    trailingIcon?: MaterialIcon;
-    /**
      * Optional leading icon to be displayed at the beginning of the text input container.
      */
     leadingIcon?: MaterialIcon;
+    /**
+     * Optional trailing icon to be displayed at the end of the text input container.
+     */
+    trailingIcon?: MaterialIcon;
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
