@@ -54,6 +54,11 @@ export interface ModalProps extends ViewProps {
      * while **Android is limited to three**.
      */
     detents?: ModalConfig['detents'];
+    /**
+     * The corner radius that the sheet will try to render with.
+     * Works only when `presentation` is set to `formSheet`.
+     */
+    cornerRadius?: ModalConfig['cornerRadius'];
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.

@@ -64,6 +64,11 @@ export interface ModalProps extends ViewProps {
    * while **Android is limited to three**.
    */
   detents?: ModalConfig['detents'];
+  /**
+   * The corner radius that the sheet will try to render with.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  cornerRadius?: ModalConfig['cornerRadius'];
 }
 
 /**
@@ -101,6 +106,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
+    cornerRadius,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -123,6 +129,7 @@ export function Modal(props: ModalProps) {
         uniqueId: newId,
         parentNavigationProp: navigation,
         detents,
+        cornerRadius,
       });
       setCurrentModalId(newId);
       return () => {

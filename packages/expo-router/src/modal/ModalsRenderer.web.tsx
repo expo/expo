@@ -56,6 +56,7 @@ function Modal({ config, onDismissed }: ModalProps) {
         animation: getStackAnimationType(config),
         headerShown: false,
         sheetAllowedDetents: config.detents,
+        sheetCornerRadius: config.cornerRadius,
       }}
       renderScreen={() => (
         <View style={{ flex: 1 }}>
