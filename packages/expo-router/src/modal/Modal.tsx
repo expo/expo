@@ -197,14 +197,20 @@ export function Modal(props: ModalProps) {
     }
     return () => {};
   }, [currentModalId, addEventListener, onClose, onShow]);
-  if (!currentModalId || !visible) {
-    return null;
+
+  if (
+    currentModalId &&
+    visible &&
+    process.env.EXPO_OS &&
+    ['ios', 'android'].includes(process.env.EXPO_OS)
+  ) {
+    return (
+      <ModalPortalContent hostId={currentModalId}>
+        <ModalContent {...viewProps}>{children}</ModalContent>
+      </ModalPortalContent>
+    );
   }
-  return (
-    <ModalPortalContent hostId={currentModalId}>
-      <ModalContent {...viewProps}>{children}</ModalContent>
-    </ModalPortalContent>
-  );
+  return null;
 }
 
 function ModalContent(props: ViewProps) {

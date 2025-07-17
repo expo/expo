@@ -111,12 +111,15 @@ function Modal(props) {
         }
         return () => { };
     }, [currentModalId, addEventListener, onClose, onShow]);
-    if (!currentModalId || !visible) {
-        return null;
+    if (currentModalId &&
+        visible &&
+        process.env.EXPO_OS &&
+        ['ios', 'android'].includes(process.env.EXPO_OS)) {
+        return (<Portal_1.ModalPortalContent hostId={currentModalId}>
+        <ModalContent {...viewProps}>{children}</ModalContent>
+      </Portal_1.ModalPortalContent>);
     }
-    return (<Portal_1.ModalPortalContent hostId={currentModalId}>
-      <ModalContent {...viewProps}>{children}</ModalContent>
-    </Portal_1.ModalPortalContent>);
+    return null;
 }
 function ModalContent(props) {
     const { children, ...viewProps } = props;
