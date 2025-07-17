@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for cli extensions in the interactive devtools menu. ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 - [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
