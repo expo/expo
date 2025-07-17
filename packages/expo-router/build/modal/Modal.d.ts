@@ -1,5 +1,6 @@
 import { ViewProps } from 'react-native';
 import { type ModalConfig } from './ModalContext';
+import { DetentChangeData } from './types';
 export interface ModalProps extends ViewProps {
     /**
      * The content of the modal.
@@ -20,6 +21,13 @@ export interface ModalProps extends ViewProps {
      * Callback that is called after modal is shown.
      */
     onShow?: () => void;
+    /**
+     * Callback that is called after detent change.
+     * Works only when `presentation` is set to `formSheet`.
+     *
+     * Does not work on web.
+     */
+    onDetentChange?: (data: DetentChangeData) => void;
     /**
      * The animation type for the modal.
      * This can be one of 'none', 'slide', or 'fade'.

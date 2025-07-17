@@ -12,9 +12,15 @@ export interface ModalConfig {
   detents?: number[] | 'fitToContents';
 }
 
+export interface DetentChangeData {
+  index: number;
+  stable: boolean;
+}
+
 export interface ModalsRendererProps {
   children?: React.ReactNode;
   modalConfigs: ModalConfig[];
   onDismissed?: (id: string) => void;
   onShow?: (id: string) => void;
+  onDetentChange?: (id: string, data: DetentChangeData) => void;
 }

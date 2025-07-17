@@ -1,5 +1,4 @@
 'use client';
-
 import {
   createContext,
   use,
@@ -11,29 +10,44 @@ import {
 } from 'react';
 
 import { ModalsRenderer } from './ModalsRenderer';
-import { type ModalConfig } from './types';
+import { DetentChangeData, type ModalConfig } from './types';
 
 export { type ModalConfig };
 
-const ALLOWED_EVENT_TYPE_LISTENERS = ['close', 'show'] as const;
-type AllowedEventTypeListeners = (typeof ALLOWED_EVENT_TYPE_LISTENERS)[number];
+type EventCallbackMap = {
+  close: (id: string) => void;
+  show: (id: string) => void;
+  detentChange: (id: string, data: DetentChangeData) => void;
+};
+
+type AllowedEventTypeListeners = keyof EventCallbackMap;
+const ALLOWED_EVENT_TYPE_LISTENERS: AllowedEventTypeListeners[] = ['close', 'show', 'detentChange'];
 
 export interface ModalContextType {
   modalConfigs: ModalConfig[];
   openModal: (config: ModalConfig) => void;
   updateModal: (id: string, config: Omit<Partial<ModalConfig>, 'uniqueId'>) => void;
   closeModal: (id: string) => void;
-  addEventListener: (type: AllowedEventTypeListeners, callback: (id: string) => void) => () => void;
+  addEventListener: <T extends AllowedEventTypeListeners>(
+    type: T,
+    callback: EventCallbackMap[T]
+  ) => () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const ModalContextProvider = ({ children }: PropsWithChildren) => {
   const [modalConfigs, setModalConfigs] = useState<ModalConfig[]>([]);
-  const eventListeners = useRef<Record<AllowedEventTypeListeners, Set<(id: string) => void>>>({
+
+  // Use a more flexible type for event listeners
+  const eventListeners = useRef<{
+    [K in AllowedEventTypeListeners]: Set<EventCallbackMap[K]>;
+  }>({
     close: new Set(),
     show: new Set(),
+    detentChange: new Set(),
   });
+
   const prevModalConfigs = useRef<ModalConfig[]>([]);
 
   useEffect(() => {
@@ -71,6 +85,10 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
     eventListeners.current.show.forEach((callback) => callback(id));
   }, []);
 
+  const emitDetentChangeEvent = useCallback((id: string, data: DetentChangeData) => {
+    eventListeners.current.detentChange.forEach((callback) => callback(id, data));
+  }, []);
+
   const closeModal = useCallback((id: string) => {
     setModalConfigs((prev) => {
       const modalIndex = prev.findIndex((config) => config.uniqueId === id);
@@ -82,9 +100,8 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const addEventListener = useCallback(
-    (type: AllowedEventTypeListeners, callback: (id: string) => void) => {
+    <T extends AllowedEventTypeListeners>(type: T, callback: EventCallbackMap[T]) => {
       if (!ALLOWED_EVENT_TYPE_LISTENERS.includes(type)) return () => {};
-
       if (!callback) {
         console.warn('Passing undefined as a callback to addEventListener is forbidden');
         return () => {};
@@ -113,7 +130,8 @@ export const ModalContextProvider = ({ children }: PropsWithChildren) => {
         onDismissed={(id) => {
           closeModal(id);
         }}
-        onShow={emitShowEvent}>
+        onShow={emitShowEvent}
+        onDetentChange={emitDetentChangeEvent}>
         {children}
       </ModalsRenderer>
     </ModalContext.Provider>
