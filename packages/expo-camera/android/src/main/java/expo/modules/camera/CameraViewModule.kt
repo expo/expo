@@ -146,6 +146,10 @@ class CameraViewModule : Module() {
         }
     }
 
+    AsyncFunction("dismissScanner") {
+      // Aligned with iOS, this function is a no-op on Android since the scanner is dismissed automatically
+    }
+
     OnDestroy {
       try {
         moduleScope.cancel(ModuleDestroyedException())

@@ -410,6 +410,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoAppIntegrity (0.0.1):
+    - ExpoModulesCore
   - ExpoAppleAuthentication (7.2.4):
     - ExpoModulesCore
   - ExpoAsset (11.1.5):
@@ -3662,6 +3664,7 @@ DEPENDENCIES:
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - ExpoAppIntegrity (from `../../../packages/expo-app-integrity/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
@@ -3883,6 +3886,9 @@ EXTERNAL SOURCES:
   expo-dev-menu-interface:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-menu-interface/ios"
+  ExpoAppIntegrity:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-app-integrity/ios"
   ExpoAppleAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-apple-authentication/ios"
@@ -4261,6 +4267,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 4c8515fc532ea0926817c5b4fdc6b9a19b42363e
   expo-dev-menu: 547f393e5fbcd62bb2f8357998af38d697fa1b98
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
+  ExpoAppIntegrity: 2bba1c610a4757ecee7b2f40e38688f79ed2267e
   ExpoAppleAuthentication: 69a48d4633024124a33fda650dba706c216d6c76
   ExpoAsset: b5bfc6425d1e9a09e8e1368646b98fe5ae7ed074
   ExpoAudio: f6bcc6868e643e6fa74b6e20fd7d20ecc89b4e28

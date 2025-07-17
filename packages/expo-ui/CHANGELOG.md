@@ -14,6 +14,7 @@
 - Add support for controlling the state of the DisclosureGroup. ([#37704](https://github.com/expo/expo/pull/37704) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 - [Android] Add `autoCapitalize` property to `TextInput`. ([#37595](https://github.com/expo/expo/pull/37595) by [@mateoguzmana](https://github.com/mateoguzmana))
 - [Android] Add `testID` support to compose primitives. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
+- [iOS] Add `testID` property to views. ([#37919](https://github.com/expo/expo/pull/37919) by [@mateoguzmana](https://github.com/mateoguzmana))
 
 ### 🐛 Bug fixes
 

@@ -80,7 +80,7 @@ function _onPictureSaved({
 
 export default class CameraView extends Component<CameraViewProps> {
   /**
-   * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+   * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
    */
   static isModernBarcodeScannerAvailable: boolean = CameraManager.isModernBarcodeScannerAvailable;
   /**
