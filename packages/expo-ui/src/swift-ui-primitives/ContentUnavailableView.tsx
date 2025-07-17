@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import { Platform } from 'react-native';
+
 import { CommonViewModifierProps } from './types';
 
 export interface ContentUnavailableViewProps extends CommonViewModifierProps {
