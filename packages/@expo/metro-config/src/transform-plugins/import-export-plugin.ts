@@ -228,8 +228,8 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   {
                     const properties = d.id.properties;
                     properties.forEach((p) => {
-                      // @ts-expect-error Property 'value' does not exist on type 'RestElement'
-                      const name = p.value.name;
+                      // @ts-expect-error Property 'name' does not exist on type 'ArrayExpression'.
+                      const name = 'value' in p ? p.value.name : p.argument.name;
                       state.exportNamed.push({ local: name, remote: name, loc });
                     });
                   }
@@ -238,8 +238,8 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   {
                     const elements = d.id.elements;
                     elements.forEach((e) => {
-                      // @ts-expect-error Property 'name' does not exist on type 'ArrayPattern'.
-                      const name = e.name;
+                      // @ts-expect-error Property 'name' does not exist on type 'ArrayExpression'.
+                      const name = 'argument' in e ? e.argument.name : e.name;
                       state.exportNamed.push({ local: name, remote: name, loc });
                     });
                   }
