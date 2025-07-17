@@ -149,17 +149,6 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
       return
     }
 
-    if redirected && redirectMode == .error {
-      let error = FetchRedirectException()
-      self.error = error
-      if state == .bodyStreamingStarted {
-        emit(event: "didFailWithError", arguments: error.localizedDescription)
-      }
-      state = .errorReceived
-      emit(event: "readyForJSFinalization")
-      return
-    }
-
     if state == .responseReceived {
       self.sink.appendBufferBody(data: data)
     } else if state == .bodyStreamingStarted {
@@ -170,6 +159,14 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
 
   func urlSession(_ session: ExpoURLSessionTask, didRedirect response: URLResponse) {
     redirected = true
+
+    if redirectMode == .error {
+      let error = FetchRedirectException()
+      self.error = error
+      emit(event: "didFailWithError", arguments: error.localizedDescription)
+      state = .errorReceived
+      emit(event: "readyForJSFinalization")
+    }
   }
 
   func urlSession(_ session: ExpoURLSessionTask, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
