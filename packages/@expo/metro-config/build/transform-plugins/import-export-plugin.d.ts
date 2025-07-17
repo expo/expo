@@ -13,6 +13,8 @@ export type Options = Readonly<{
     importDefault: string;
     importAll: string;
     resolve: boolean;
+    /** Whether to use live bindings for exports and import. Improves circular dependencies resolution. */
+    liveBindings?: boolean;
     out?: {
         isESModule: boolean;
         [key: string]: unknown;
@@ -27,12 +29,14 @@ type State = {
     exportDefault: {
         local: string;
         loc?: BabelSourceLocation | null;
+        namespace?: string;
         [key: string]: unknown;
     }[];
     exportNamed: {
         local: string;
         remote: string;
         loc?: BabelSourceLocation | null;
+        namespace?: string;
         [key: string]: unknown;
     }[];
     imports: {
@@ -41,6 +45,14 @@ type State = {
     importDefault: BabelNode;
     importAll: BabelNode;
     opts: Options;
+    importedIdentifiers: Map<string, {
+        source: string;
+        imported: string;
+    }>;
+    namespaceForLocal: Map<string, {
+        namespace: string;
+        remote: string;
+    }>;
     [key: string]: unknown;
 };
 export declare function importExportPlugin({ types: t }: {

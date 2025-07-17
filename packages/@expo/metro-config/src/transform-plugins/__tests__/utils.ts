@@ -13,17 +13,22 @@ import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencie
 import { importExportPlugin } from '../import-export-plugin';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
 
-const opts = {
+const default_opts = {
   importAll: '_$$_IMPORT_ALL',
   importDefault: '_$$_IMPORT_DEFAULT',
 };
 
-export function showTransformedDeps(code: string, plugins: any[] = [importExportPlugin]) {
-  const { dependencies } = collectDependencies(transformToAst(plugins, code, opts), {
+export function showTransformedDeps(
+  code: string,
+  plugins: any[] = [importExportPlugin],
+  opts = {}
+) {
+  const mergedOpts = { ...default_opts, ...opts };
+  const { dependencies } = collectDependencies(transformToAst(plugins, code, mergedOpts), {
     asyncRequireModulePath: 'asyncRequire',
     dependencyMapName: null,
     dynamicRequires: 'reject',
-    inlineableCalls: [opts.importAll, opts.importDefault],
+    inlineableCalls: [mergedOpts.importAll, mergedOpts.importDefault],
     keepRequireNames: true,
     allowOptionalDependencies: false,
     unstable_allowRequireContext: false,

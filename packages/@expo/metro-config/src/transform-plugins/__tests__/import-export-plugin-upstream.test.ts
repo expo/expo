@@ -60,6 +60,7 @@ it('correctly transforms complex patterns', () => {
     import {i} from 'fifth';
   `;
 
+  // TODO: Check is creating unused identifiers an issue? Causes 2 change to 4 in the test below.
   const expected = `
     require('first-with-side-effect');
     var a = _$$_IMPORT_DEFAULT('second');
@@ -68,9 +69,9 @@ it('correctly transforms complex patterns', () => {
         e = _third.d,
         f = _third.f;
     var c = _$$_IMPORT_DEFAULT('third');
-    var _third2 = require('third'),
-        g = _third2.g,
-        h = _third2.h;
+    var _third4 = require('third'),
+        g = _third4.g,
+        h = _third4.h;
     require('fourth-with-side-effect');
     var i = require('fifth').i;
   `;
