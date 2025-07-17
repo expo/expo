@@ -29,8 +29,6 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
     return JavaFile(childFile.toUri())
   }
 
-//  override fun delete(): Boolean = super<File>.delete()
-
   override fun listFilesAsUnified(): List<UnifiedFileInterface> =
     super<File>.listFiles()?.map { JavaFile(it.toUri()) } ?: emptyList()
 }
