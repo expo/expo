@@ -39,6 +39,7 @@ class IntegrityModule : Module() {
           .build()
       ).addOnSuccessListener {
         integrityTokenProvider = it
+        integrityTokenException = null
         promise.resolve()
       }.addOnFailureListener {
         integrityTokenException = it
@@ -47,6 +48,10 @@ class IntegrityModule : Module() {
             integrityTokenException?.message ?: "Unknown error",
             integrityTokenException
           )
+        )
+      }.addOnCanceledListener {
+        promise.reject(
+          IntegrityException("Request cancelled")
         )
       }
     }
