@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Image, ImageRef } from 'expo-image';
 import { useState, useCallback } from 'react';
 import { StyleSheet, View, ScrollView, Text, Button, ActivityIndicator } from 'react-native';
 
@@ -21,38 +21,38 @@ interface PlaceholderState {
   error: string | null;
 }
 
-export default function ImageGeneratePlaceholders() {
-  const initialStates: PlaceholderState[] = [
-    {
-      type: PlaceholderType.Blurhash,
-      source: SourceType.Uri,
-      value: null,
-      loading: false,
-      error: null,
-    },
-    {
-      type: PlaceholderType.Blurhash,
-      source: SourceType.SharedRef,
-      value: null,
-      loading: false,
-      error: null,
-    },
-    {
-      type: PlaceholderType.Thumbhash,
-      source: SourceType.Uri,
-      value: null,
-      loading: false,
-      error: null,
-    },
-    {
-      type: PlaceholderType.Thumbhash,
-      source: SourceType.SharedRef,
-      value: null,
-      loading: false,
-      error: null,
-    },
-  ];
+const initialStates: PlaceholderState[] = [
+  {
+    type: PlaceholderType.Blurhash,
+    source: SourceType.Uri,
+    value: null,
+    loading: false,
+    error: null,
+  },
+  {
+    type: PlaceholderType.Blurhash,
+    source: SourceType.SharedRef,
+    value: null,
+    loading: false,
+    error: null,
+  },
+  {
+    type: PlaceholderType.Thumbhash,
+    source: SourceType.Uri,
+    value: null,
+    loading: false,
+    error: null,
+  },
+  {
+    type: PlaceholderType.Thumbhash,
+    source: SourceType.SharedRef,
+    value: null,
+    loading: false,
+    error: null,
+  },
+];
 
+export default function ImageGeneratePlaceholders() {
   const [placeholderStates, setPlaceholder] = useState<PlaceholderState[]>(initialStates);
   const [isGenerateClicked, setIsGenerateClicked] = useState(false);
 
@@ -78,7 +78,9 @@ export default function ImageGeneratePlaceholders() {
       try {
         const imageSource = await getImageSource(sourceType);
         const placeholder = await generatePlaceholder(imageSource, placeholderType);
-        if (!placeholder) throw new Error('Generated placeholder is empty.');
+        if (!placeholder) {
+          throw new Error('Generated placeholder is empty.');
+        }
         updatePlaceholderState(placeholderType, sourceType, { value: placeholder });
       } catch (error: any) {
         updatePlaceholderState(placeholderType, sourceType, {
@@ -92,7 +94,7 @@ export default function ImageGeneratePlaceholders() {
   );
 
   const getImageSource = useCallback(
-    async (sourceType: SourceType): Promise<any> => {
+    async (sourceType: SourceType): Promise<string | ImageRef> => {
       switch (sourceType) {
         case SourceType.Uri:
           return uri;
@@ -104,7 +106,10 @@ export default function ImageGeneratePlaceholders() {
   );
 
   const generatePlaceholder = useCallback(
-    async (imageSource: any, placeholderType: PlaceholderType): Promise<string | null> => {
+    async (
+      imageSource: string | ImageRef,
+      placeholderType: PlaceholderType
+    ): Promise<string | null> => {
       switch (placeholderType) {
         case PlaceholderType.Blurhash:
           return Image.generateBlurhashAsync(imageSource, [6, 6]);
@@ -122,8 +127,9 @@ export default function ImageGeneratePlaceholders() {
   }, [handleGenerationOfPlaceholder]);
 
   const renderResult = (placeholderState: PlaceholderState) => {
-    if (!isGenerateClicked) return null;
-
+    if (!isGenerateClicked) {
+      return null;
+    }
     const title = `${placeholderState.type === PlaceholderType.Blurhash ? 'Blurhash' : 'Thumbhash'} from ${placeholderState.source === SourceType.Uri ? 'URI' : 'SharedRef'}`;
 
     return (
