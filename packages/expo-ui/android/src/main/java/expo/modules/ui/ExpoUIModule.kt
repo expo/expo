@@ -47,6 +47,8 @@ class ExpoUIModule : Module() {
       Events("onValueChanged")
     }
 
+    View(TooltipBox::class)
+
     View(RowView::class)
     View(ColumnView::class)
     View(ContainerView::class)
