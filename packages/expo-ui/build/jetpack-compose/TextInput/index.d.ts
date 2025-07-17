@@ -1,5 +1,6 @@
 import { StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../types';
+import { MaterialIcon } from '../Button/types';
 /**
  * @hidden Not used anywhere yet.
  */
@@ -63,6 +64,14 @@ export type TextInputProps = {
      * @platform android
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
+    /**
+     * Optional trailing icon to be displayed at the end of the text input container.
+     */
+    trailingIcon?: MaterialIcon;
+    /**
+     * Optional leading icon to be displayed at the beginning of the text input container.
+     */
+    leadingIcon?: MaterialIcon;
 };
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
     value: string;
