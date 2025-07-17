@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Updated intent actions list.
+- Updated intent actions list. ([#38131](https://github.com/expo/expo/pull/38131) by [@jakex7](https://github.com/jakex7))
 
 ### 🎉 New features
 
