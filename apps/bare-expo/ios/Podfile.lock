@@ -410,7 +410,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoAppIntegrity (0.0.0):
+  - ExpoAppIntegrity (0.0.1):
     - ExpoModulesCore
   - ExpoAppleAuthentication (7.2.4):
     - ExpoModulesCore
