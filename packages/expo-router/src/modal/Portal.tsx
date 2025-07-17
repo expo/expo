@@ -3,6 +3,7 @@ import {
   use,
   useCallback,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
 } from 'react';
@@ -23,15 +24,11 @@ interface PortalHostConfig {
 }
 interface PortalContextType {
   getHost: (hostId: string) => PortalHostConfig | undefined;
-  addHost: (config: PortalHostConfig) => void;
   updateHost: (hostId: string, config: Partial<Omit<PortalHostConfig, 'hostId'>>) => void;
   removeHost: (hostId: string) => void;
 }
 
 export const PortalContext = createContext<PortalContextType>({
-  addHost: () => {
-    throw new Error('PortalContext not initialized. This is likely a bug in Expo Router.');
-  },
   getHost: () => {
     throw new Error('PortalContext not initialized. This is likely a bug in Expo Router.');
   },
@@ -46,10 +43,6 @@ export const PortalContext = createContext<PortalContextType>({
 export const PortalContextProvider = (props: PropsWithChildren) => {
   const [hostConfigs, setHostConfigs] = useState<Map<string, PortalHostConfig>>(() => new Map());
 
-  const addHost = useCallback((config: PortalHostConfig) => {
-    setHostConfigs((prev) => new Map(prev).set(config.hostId, config));
-  }, []);
-
   const getHost = useCallback(
     (hostId: string) => {
       return hostConfigs.get(hostId);
@@ -62,10 +55,14 @@ export const PortalContextProvider = (props: PropsWithChildren) => {
     (hostId: string, config: Partial<Omit<PortalHostConfig, 'hostId'>>) => {
       setHostConfigs((prev) => {
         const updated = new Map(prev);
-        const existingConfig = updated.get(hostId);
-        if (existingConfig) {
-          updated.set(hostId, { ...existingConfig, ...config });
-        }
+        const existingConfig = updated.get(hostId) ?? {
+          hostId,
+          size: { width: 0, height: 0 },
+          contentSize: { width: 0, height: 0 },
+          shouldUseContentHeight: false,
+          isRegistered: false,
+        };
+        updated.set(hostId, { ...existingConfig, ...config });
         return updated;
       });
     },
@@ -83,7 +80,6 @@ export const PortalContextProvider = (props: PropsWithChildren) => {
   return (
     <PortalContext.Provider
       value={{
-        addHost,
         getHost,
         updateHost,
         removeHost,
@@ -103,20 +99,30 @@ export interface ModalPortalHostProps {
 }
 
 export const ModalPortalHost = (props: ModalPortalHostProps) => {
-  const { addHost, removeHost, updateHost, getHost } = use(PortalContext);
+  const { removeHost, updateHost, getHost } = use(PortalContext);
+  const prevHostId = useRef<string | undefined>(undefined);
+  const prevShouldUseContentHeight = useRef<boolean | undefined>(undefined);
 
   useEffect(() => {
-    addHost({
-      hostId: props.hostId,
-      size: { width: 0, height: 0 },
-      contentSize: { width: 0, height: 0 },
-      shouldUseContentHeight: props.useContentHeight,
-      isRegistered: false,
-    });
+    if (prevHostId.current) {
+      throw new Error(
+        `Changing hostId is not allowed. Previous: ${prevHostId.current}, New: ${props.hostId}`
+      );
+    }
+    prevHostId.current = props.hostId;
     return () => {
       removeHost(props.hostId);
     };
   }, [props.hostId]);
+
+  useEffect(() => {
+    if (prevShouldUseContentHeight.current === undefined) {
+      prevShouldUseContentHeight.current = props.useContentHeight;
+      updateHost(props.hostId, { shouldUseContentHeight: props.useContentHeight });
+    } else {
+      throw new Error(`Changing useContentHeight is not allowed. Host: ${props.hostId}`);
+    }
+  }, [props.useContentHeight, updateHost]);
 
   const hostConfig = getHost(props.hostId);
 

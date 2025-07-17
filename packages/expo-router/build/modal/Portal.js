@@ -5,9 +5,6 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("./native");
 exports.PortalContext = (0, react_1.createContext)({
-    addHost: () => {
-        throw new Error('PortalContext not initialized. This is likely a bug in Expo Router.');
-    },
     getHost: () => {
         throw new Error('PortalContext not initialized. This is likely a bug in Expo Router.');
     },
@@ -20,9 +17,6 @@ exports.PortalContext = (0, react_1.createContext)({
 });
 const PortalContextProvider = (props) => {
     const [hostConfigs, setHostConfigs] = (0, react_1.useState)(() => new Map());
-    const addHost = (0, react_1.useCallback)((config) => {
-        setHostConfigs((prev) => new Map(prev).set(config.hostId, config));
-    }, []);
     const getHost = (0, react_1.useCallback)((hostId) => {
         return hostConfigs.get(hostId);
     }, [hostConfigs]);
@@ -30,10 +24,14 @@ const PortalContextProvider = (props) => {
     const updateHost = (0, react_1.useCallback)((hostId, config) => {
         setHostConfigs((prev) => {
             const updated = new Map(prev);
-            const existingConfig = updated.get(hostId);
-            if (existingConfig) {
-                updated.set(hostId, { ...existingConfig, ...config });
-            }
+            const existingConfig = updated.get(hostId) ?? {
+                hostId,
+                size: { width: 0, height: 0 },
+                contentSize: { width: 0, height: 0 },
+                shouldUseContentHeight: false,
+                isRegistered: false,
+            };
+            updated.set(hostId, { ...existingConfig, ...config });
             return updated;
         });
     }, []);
@@ -45,7 +43,6 @@ const PortalContextProvider = (props) => {
         });
     }, []);
     return (<exports.PortalContext.Provider value={{
-            addHost,
             getHost,
             updateHost,
             removeHost,
@@ -55,19 +52,27 @@ const PortalContextProvider = (props) => {
 };
 exports.PortalContextProvider = PortalContextProvider;
 const ModalPortalHost = (props) => {
-    const { addHost, removeHost, updateHost, getHost } = (0, react_1.use)(exports.PortalContext);
+    const { removeHost, updateHost, getHost } = (0, react_1.use)(exports.PortalContext);
+    const prevHostId = (0, react_1.useRef)(undefined);
+    const prevShouldUseContentHeight = (0, react_1.useRef)(undefined);
     (0, react_1.useEffect)(() => {
-        addHost({
-            hostId: props.hostId,
-            size: { width: 0, height: 0 },
-            contentSize: { width: 0, height: 0 },
-            shouldUseContentHeight: props.useContentHeight,
-            isRegistered: false,
-        });
+        if (prevHostId.current) {
+            throw new Error(`Changing hostId is not allowed. Previous: ${prevHostId.current}, New: ${props.hostId}`);
+        }
+        prevHostId.current = props.hostId;
         return () => {
             removeHost(props.hostId);
         };
     }, [props.hostId]);
+    (0, react_1.useEffect)(() => {
+        if (prevShouldUseContentHeight.current === undefined) {
+            prevShouldUseContentHeight.current = props.useContentHeight;
+            updateHost(props.hostId, { shouldUseContentHeight: props.useContentHeight });
+        }
+        else {
+            throw new Error(`Changing useContentHeight is not allowed. Host: ${props.hostId}`);
+        }
+    }, [props.useContentHeight, updateHost]);
     const hostConfig = getHost(props.hostId);
     const style = react_native_1.StyleSheet.flatten([
         props.style,

@@ -1,7 +1,7 @@
 'use client';
 
 import { requireNativeView } from 'expo';
-import { Platform, type ViewProps } from 'react-native';
+import { type ViewProps } from 'react-native';
 
 // #region Portal Host View
 export interface HostProps extends ViewProps {
@@ -12,7 +12,9 @@ export interface HostProps extends ViewProps {
 
 const supportedPlatforms = ['ios', 'android'] as const;
 
-const isPlatformSupported = (supportedPlatforms as readonly string[]).includes(Platform.OS);
+const isPlatformSupported = (supportedPlatforms as readonly string[]).includes(
+  process.env.EXPO_OS || ''
+);
 
 const NativeModalPortalHostView: React.ComponentType<HostProps> | null = isPlatformSupported
   ? requireNativeView('ExpoRouterModalPortal', 'ModalPortalHostView')
