@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.MeQuery
+import expo.modules.devlauncher.launcher.DevLauncherAppEntry
+import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
 import expo.modules.devlauncher.services.SessionService
@@ -19,29 +21,32 @@ import kotlinx.coroutines.launch
 sealed interface HomeAction {
   class OpenApp(val url: String) : HomeAction
   object RefetchRunningApps : HomeAction
+  object ResetRecentlyOpendApps : HomeAction
 }
 
-typealias HomeActionHandler = (HomeAction) -> Unit
-
 data class HomeState(
-  val appName: String = "BareExpo",
+  val appName: String = "Unknown App",
   val runningPackagers: Set<PackagerInfo> = emptySet(),
   val isFetchingPackagers: Boolean = false,
-  val currentAccount: MeQuery.Account? = null
+  val currentAccount: MeQuery.Account? = null,
+  val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList()
 )
 
 class HomeViewModel() : ViewModel() {
   val devLauncherController = inject<DevLauncherController>()
   val sessionService = inject<SessionService>()
   val packagerService = inject<PackagerService>()
+  val appService = inject<AppService>()
 
   private var _state = mutableStateOf(
     HomeState(
+      appName = appService.applicationInfo.appName,
       runningPackagers = packagerService.runningPackagers.value,
       currentAccount = when (val userState = sessionService.user.value) {
         UserState.Fetching, UserState.LoggedOut -> null
         is UserState.LoggedIn -> userState.selectedAccount
-      }
+      },
+      recentlyOpenedApps = devLauncherController.getRecentlyOpenedApps()
     )
   )
 
@@ -81,7 +86,7 @@ class HomeViewModel() : ViewModel() {
   fun onAction(action: HomeAction) {
     when (action) {
       is HomeAction.OpenApp ->
-        viewModelScope.launch {
+        devLauncherController.coroutineScope.launch {
           try {
             devLauncherController.loadApp(action.url.toUri(), mainActivity = null)
           } catch (e: Exception) {
@@ -90,6 +95,11 @@ class HomeViewModel() : ViewModel() {
         }
 
       HomeAction.RefetchRunningApps -> viewModelScope.launch { packagerService.refetchedPackager() }
+
+      HomeAction.ResetRecentlyOpendApps -> viewModelScope.launch {
+        devLauncherController.clearRecentlyOpenedApps()
+        _state.value = _state.value.copy(recentlyOpenedApps = emptyList())
+      }
     }
   }
 }

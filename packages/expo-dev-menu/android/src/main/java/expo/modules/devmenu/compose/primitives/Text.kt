@@ -15,6 +15,7 @@ import expo.modules.devmenu.compose.theme.Theme
 fun Text(
   text: String,
   fontSize: FontSize = Theme.typography.medium,
+  fontWeight: FontWeight = FontWeight.Normal,
   color: Color? = null,
   maxLines: Int = Int.MAX_VALUE,
   softWrap: Boolean = true,
@@ -26,7 +27,8 @@ fun Text(
     softWrap = softWrap,
     style = fontSize.font.merge(
       color = color ?: Theme.colors.text.default,
-      fontFamily = Theme.typography.inter
+      fontFamily = Theme.typography.inter,
+      fontWeight = fontWeight
     ),
     overflow = TextOverflow.Visible,
     modifier = modifier

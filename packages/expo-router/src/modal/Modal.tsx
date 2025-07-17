@@ -23,7 +23,7 @@ export interface ModalProps extends ViewProps {
   visible: boolean;
   /**
    * Callback that is called after modal is closed.
-   * This is called when the modal is dismissed by the user or programmatically.
+   * This is called when the modal is closed programmatically or when the user dismisses it.
    */
   onClose?: () => void;
   /**
@@ -100,18 +100,19 @@ export function Modal(props: ModalProps) {
     animationType,
     presentationStyle,
     transparent,
+    detents,
     ...viewProps
   } = props;
-  const { openModal, closeModal, addEventListener } = useModalContext();
+  const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
-    if (!areDetentsValid(props.detents)) {
-      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(props.detents)}`);
+    if (!areDetentsValid(detents)) {
+      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
     }
-  }, [props.detents]);
+  }, [detents]);
   useEffect(() => {
-    if (!currentModalId && visible) {
+    if (visible) {
       const newId = nanoid();
       openModal({
         animationType,
@@ -119,20 +120,25 @@ export function Modal(props: ModalProps) {
         transparent,
         viewProps,
         component: children,
-        detents: props.detents,
         uniqueId: newId,
         parentNavigationProp: navigation,
+        detents,
       });
       setCurrentModalId(newId);
       return () => {
         closeModal(newId);
       };
-    } else if (currentModalId && !visible) {
-      closeModal(currentModalId);
-      setCurrentModalId(undefined);
     }
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    if (currentModalId && visible) {
+      updateModal(currentModalId, {
+        component: children,
+      });
+    }
+  }, [children]);
 
   useEffect(() => {
     if (currentModalId) {
@@ -153,6 +159,6 @@ export function Modal(props: ModalProps) {
       };
     }
     return () => {};
-  }, [currentModalId, addEventListener, onClose]);
+  }, [currentModalId, addEventListener, onClose, onShow]);
   return null;
 }

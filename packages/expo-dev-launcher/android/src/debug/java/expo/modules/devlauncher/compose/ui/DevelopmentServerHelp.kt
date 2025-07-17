@@ -31,7 +31,7 @@ fun DevelopmentSessionHelper() {
         .fillMaxWidth()
     ) {
       Box(modifier = Modifier.padding(Theme.spacing.medium)) {
-        Mono("npx expo start")
+        Mono("npx expo start", fontSize = Theme.typography.small)
       }
     }
 

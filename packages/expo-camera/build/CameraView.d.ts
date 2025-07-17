@@ -4,7 +4,7 @@ import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraV
 import { PictureRef } from './PictureRef';
 export default class CameraView extends Component<CameraViewProps> {
     /**
-     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
      */
     static isModernBarcodeScannerAvailable: boolean;
     /**

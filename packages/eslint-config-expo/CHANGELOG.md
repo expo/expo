@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add lint rules for Expo DOM Components and the "use dom" directive. ([#36263](https://github.com/expo/expo/pull/36263) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -13,9 +13,11 @@
 
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 - Fixed `ReactActivityDelegateWrapper` lifecycle atomic issue. ([#37895](https://github.com/expo/expo/pull/37895) by [@kudo](https://github.com/kudo))
+- URL.canParse(..) no longer always returns false. ([#38122](https://github.com/expo/expo/pull/38122) by [@char](https://github.com/char))
 
 ### 💡 Others
 
+- Simplify expo-modules-core usage. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
 - Reexport `@expo/config/paths` paths as `expo/config/paths`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 
 ### ⚠️ Notices

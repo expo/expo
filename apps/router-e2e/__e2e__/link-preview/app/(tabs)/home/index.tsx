@@ -26,6 +26,17 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview: /home</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Spacer />
+      <Link href="/(tabs)/home/modal">Normal link: /(tabs)/home/modal</Link>
+      <Link href="/(tabs)/home/modal">
+        <Link.Trigger>Link.Preview: /(tabs)/home/modal</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Link href="/(tabs)/home/fullScreenModal">
+        <Link.Trigger>Link.Preview: /(tabs)/home/fullScreenModal</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Spacer />
       <Link href="/(tabs)/home/one">Normal link: /(tabs)/home/one</Link>
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Normal link with trigger: /(tabs)/home/one</Link.Trigger>
@@ -64,10 +75,6 @@ const HomeIndex = () => {
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Link.Preview 16:9: /(tabs)/home/one</Link.Trigger>
         <Link.Preview width={width} height={width * (9 / 16)} />
-      </Link>
-      <Link href={`/(tabs)/home/two?time=${time}`}>
-        <Link.Trigger>/(tabs)/home/two?time={time}</Link.Trigger>
-        <Link.Preview />
       </Link>
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Link.Menu: /(tabs)/home/one</Link.Trigger>
@@ -110,10 +117,17 @@ const HomeIndex = () => {
           </Link.Menu>
         </Link.Menu>
       </Link>
+      <Spacer />
+      <Link href={`/(tabs)/home/two?time=${time}`}>
+        <Link.Trigger>/(tabs)/home/two?time={time}</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Spacer />
       <Link href="/(tabs)/settings">
         <Link.Trigger>Link.Preview: /(tabs)/settings</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Spacer />
       <Link href="/(tabs)/home/slot/one">
         <Link.Trigger>Link.Preview: /(tabs)/home/slot/one</Link.Trigger>
         <Link.Preview />
@@ -121,5 +135,14 @@ const HomeIndex = () => {
     </View>
   );
 };
+
+const Spacer = () => (
+  <View
+    style={{
+      width: '100%',
+      height: 16,
+    }}
+  />
+);
 
 export default HomeIndex;

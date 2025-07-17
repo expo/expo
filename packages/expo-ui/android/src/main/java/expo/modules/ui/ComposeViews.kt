@@ -101,11 +101,11 @@ class RowView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
   override val props = LayoutProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     Row(
       horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
       verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = props.modifier.value
+      modifier = modifier.then(props.modifier.value)
     ) {
       Children()
     }
@@ -116,11 +116,11 @@ class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<Lay
   override val props = LayoutProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     Column(
       verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
       horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = props.modifier.value
+      modifier = modifier.then(props.modifier.value)
     ) {
       Children()
     }
@@ -169,7 +169,7 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
   override val props = TextProps()
 
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     Text(
       text = props.text.value,
       color = colorToComposeColor(props.color.value),
@@ -177,7 +177,7 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
         fontSize = props.fontSize.value.sp,
         fontWeight = props.fontWeight.value.toComposeFontWeight()
       ),
-      modifier = props.modifier.value
+      modifier = modifier.then(props.modifier.value)
     )
   }
 }
@@ -185,10 +185,10 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
 class ContainerView(context: Context, appContext: AppContext) :
   ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
   @Composable
-  override fun Content() {
+  override fun Content(modifier: Modifier) {
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      child.Content()
+      child.Content(modifier = modifier)
     }
   }
 }

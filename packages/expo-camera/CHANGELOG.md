@@ -8,7 +8,9 @@
 
 ### 🐛 Bug fixes
 
-[iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixes returning `PictureRef` objects.([#37393](https://github.com/expo/expo/pull/37393) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix barcode options to correctly handle empty barcodeTypes ([#38100](https://github.com/expo/expo/pull/38100) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+- [Android] Add dismissScanner to module to prevent undefined error. ([#38129](https://github.com/expo/expo/pull/38129) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
 
 ### 💡 Others
 

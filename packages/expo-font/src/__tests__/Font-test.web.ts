@@ -4,13 +4,9 @@ import ExpoFontLoader from '../ExpoFontLoader';
 import * as Font from '../index';
 
 jest.mock('../ExpoFontLoader.web', () => {
-  const mod = jest.requireActual('../ExpoFontLoader.web');
+  const mod = jest.requireActual('../../mocks/ExpoFontLoader');
   return {
-    ...mod.default,
-    loadAsync: jest.fn(mod.loadAsync),
-    unloadAllAsync: jest.fn(mod.unloadAllAsync),
-    isLoaded: jest.fn(mod.isLoaded),
-    unloadAsync: jest.fn(mod.unloadAsync),
+    ...mod,
   };
 });
 
