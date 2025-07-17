@@ -5,9 +5,8 @@ exports.NativeModalPortalHost = NativeModalPortalHost;
 exports.NativeModalPortalContentWrapper = NativeModalPortalContentWrapper;
 exports.NativeModalPortalContent = NativeModalPortalContent;
 const expo_1 = require("expo");
-const react_native_1 = require("react-native");
 const supportedPlatforms = ['ios', 'android'];
-const isPlatformSupported = supportedPlatforms.includes(react_native_1.Platform.OS);
+const isPlatformSupported = supportedPlatforms.includes(process.env.EXPO_OS || '');
 const NativeModalPortalHostView = isPlatformSupported
     ? (0, expo_1.requireNativeView)('ExpoRouterModalPortal', 'ModalPortalHostView')
     : null;

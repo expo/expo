@@ -15,7 +15,6 @@ interface PortalHostConfig {
 }
 interface PortalContextType {
     getHost: (hostId: string) => PortalHostConfig | undefined;
-    addHost: (config: PortalHostConfig) => void;
     updateHost: (hostId: string, config: Partial<Omit<PortalHostConfig, 'hostId'>>) => void;
     removeHost: (hostId: string) => void;
 }
