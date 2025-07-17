@@ -125,12 +125,15 @@ class CameraViewModule : Module() {
     AsyncFunction("launchScanner") { settings: BarcodeSettings ->
       val reactContext = appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
-      val options = GmsBarcodeScannerOptions.Builder()
-        .setBarcodeFormats(
-          settings.barcodeTypes.first().mapToBarcode(),
-          *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
-        )
-        .build()
+
+      val options = GmsBarcodeScannerOptions.Builder().apply {
+        if (settings.barcodeTypes.isNotEmpty()) {
+          setBarcodeFormats(
+            settings.barcodeTypes.first().mapToBarcode(),
+            *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+          )
+        }
+      }.build()
 
       val scanner = GmsBarcodeScanning.getClient(reactContext, options)
       scanner.startScan()

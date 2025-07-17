@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.compose.primitives
+package expo.modules.devmenu.compose.primitives
 
 import androidx.compose.animation.core.DurationBasedAnimationSpec
 import androidx.compose.animation.core.animateFloat

@@ -133,13 +133,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  fun getDevSettings(): Bundle {
+  fun getDevSettings(): DevToolsSettings {
     val reactHost = delegate?.reactHost()
     if (reactHost != null) {
       return DevMenuDevSettings.getDevSettings(reactHost)
     }
 
-    return Bundle.EMPTY
+    return DevToolsSettings()
   }
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
