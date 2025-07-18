@@ -6,9 +6,14 @@
  */
 import { type NodePath, traverse, types } from '@babel/core';
 import generate from '@babel/generator';
+import type {
+  AsyncDependencyType,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
-import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
 
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
