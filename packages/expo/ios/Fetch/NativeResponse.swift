@@ -157,15 +157,20 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
     // no-op in .bodyStreamingCanceled state
   }
 
-  func urlSession(_ session: ExpoURLSessionTask, didRedirect response: URLResponse) {
-    redirected = true
-
-    if redirectMode == .error {
+  func urlSession(_ session: ExpoURLSessionTask, willPerformHTTPRedirection response: URLResponse) -> Bool {
+    switch redirectMode {
+    case .follow:
+      redirected = true
+      return true
+    case .manual:
+      return false
+    case .error:
       let error = FetchRedirectException()
       self.error = error
       emit(event: "didFailWithError", arguments: error.localizedDescription)
       state = .errorReceived
       emit(event: "readyForJSFinalization")
+      return false
     }
   }
 
