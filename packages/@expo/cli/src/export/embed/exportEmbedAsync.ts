@@ -21,7 +21,6 @@ import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
@@ -392,8 +391,6 @@ export async function exportEmbedAssetsAsync(
       // @ts-ignore-error TODO(@kitten): Very unclear why this is here. Remove?
       bundleType: 'todo',
     });
-
-    assertMetroPrivateServer(server);
 
     const dependencies = await server._bundler.getDependencies(
       [entryFile],
