@@ -25,7 +25,8 @@ export interface ModalProps extends ViewProps {
      * Callback that is called after detent change.
      * Works only when `presentation` is set to `formSheet`.
      *
-     * Does not work on web.
+     * @platform ios
+     * @platform android
      */
     onDetentChange?: (data: DetentChangeData) => void;
     /**
