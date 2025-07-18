@@ -207,7 +207,7 @@ function InitalDetentForm() {
       <Button title="Open Initial Detent" onPress={() => setIsOpen((open) => !open)} />
       <Modal
         presentationStyle='formSheet'
-        detentIndex={1}
+        initialDetentIndex={1}
         visible={open}
         detents={[0.3, 0.5, 1]}
         style={{

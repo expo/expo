@@ -21,10 +21,10 @@ export function areDetentsValid(detents: ModalProps['detents']): boolean {
 
 export function isDetentIndexValid(
   detents: ModalProps['detents'],
-  detentIndex: ModalProps['detentIndex']
+  initialDetentIndex: ModalProps['initialDetentIndex']
 ) {
   const lastDetentIndex = Array.isArray(detents) ? detents.length - 1 : 0;
-  const resolvedDetentIndex = detentIndex === 'last' ? lastDetentIndex : detentIndex ?? 0;
+  const resolvedDetentIndex = initialDetentIndex === 'last' ? lastDetentIndex : initialDetentIndex ?? 0;
 
   return Number.isInteger(resolvedDetentIndex) && resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
 }

@@ -70,7 +70,7 @@ export interface ModalProps extends ViewProps {
    * The initial detent index when sheet is presented.
    * Works only when `presentation` is set to `formSheet`.
    */
-  detentIndex?: ModalConfig['detentIndex'];
+  initialDetentIndex?: ModalConfig['initialDetentIndex'];
 }
 
 /**
@@ -108,7 +108,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
-    detentIndex,
+    initialDetentIndex,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -120,11 +120,12 @@ export function Modal(props: ModalProps) {
         throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
       }
 
-      if (!isDetentIndexValid(detents, detentIndex)) {
-        throw new Error(`Initial detent index of ${detentIndex} is out of bounds of provided detents array.`)
+      if (!isDetentIndexValid(detents, initialDetentIndex)) {
+        throw new Error(`Initial detent index of ${initialDetentIndex} is out of bounds of provided detents array.`)
       }
     }
-  }, [detents, detentIndex]);
+  }, [detents, initialDetentIndex]);
+
   useEffect(() => {
     if (visible) {
       const newId = nanoid();
@@ -136,7 +137,7 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
-        detentIndex,
+        initialDetentIndex,
         detents,
       });
       setCurrentModalId(newId);
@@ -150,11 +151,10 @@ export function Modal(props: ModalProps) {
   useEffect(() => {
     if (currentModalId && visible) {
       updateModal(currentModalId, {
-        detentIndex,
         component: children,
       });
     }
-  }, [children, detentIndex]);
+  }, [children]);
 
   useEffect(() => {
     if (currentModalId) {

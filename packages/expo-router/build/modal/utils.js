@@ -14,9 +14,9 @@ function areDetentsValid(detents) {
     }
     return detents === 'fitToContents' || detents === undefined || detents === null;
 }
-function isDetentIndexValid(detents, detentIndex) {
+function isDetentIndexValid(detents, initialDetentIndex) {
     const lastDetentIndex = Array.isArray(detents) ? detents.length - 1 : 0;
-    const resolvedDetentIndex = detentIndex === 'last' ? lastDetentIndex : detentIndex ?? 0;
+    const resolvedDetentIndex = initialDetentIndex === 'last' ? lastDetentIndex : initialDetentIndex ?? 0;
     return Number.isInteger(resolvedDetentIndex) && resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
 }
 function getStackAnimationType(config) {

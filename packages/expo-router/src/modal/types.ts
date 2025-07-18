@@ -10,7 +10,7 @@ export interface ModalConfig {
   transparent?: boolean;
   viewProps?: ViewProps;
   detents?: number[] | 'fitToContents';
-  detentIndex?: number | 'last';
+  initialDetentIndex?: number | 'last';
 }
 
 export interface ModalsRendererProps {
