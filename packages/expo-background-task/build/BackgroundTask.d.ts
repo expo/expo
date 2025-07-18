@@ -48,5 +48,17 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
  * @returns A promise which fulfils when the task is triggered.
  */
 export declare function triggerTaskWorkerForTestingAsync(): Promise<boolean>;
+/**
+ * Adds a listener that is called when the background executor expires. On iOS, tasks can run
+ * for minutes, but the system can interrupt the process at any time. This listener is called
+ * when the system decides to stop the background tasks and should be used to clean up resources
+ * or save state.
+ * This listener is only available on iOS.
+ * @platform ios
+ * @return An object with a `remove` method to unsubscribe the listener.
+ */
+export declare function addExpirationListener(listener: () => void): {
+    remove: () => void;
+};
 export { BackgroundTaskStatus, BackgroundTaskResult, BackgroundTaskOptions, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.d.ts.map

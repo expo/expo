@@ -3,8 +3,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import useAppState from '../utilities/useAppState';
@@ -29,6 +29,16 @@ export default function BackgroundTaskScreen() {
     checkStatusAsync();
   }, []);
   useFocusEffect(onFocus);
+
+  useEffect(
+    () =>
+      BackgroundTask.addExpirationListener(() => {
+        Alert.alert('BackgroundTask', 'Background Task: onTasksExpired event received');
+        // Refresh the last run date when tasks expire
+        refreshLastRunDateAsync();
+      }).remove,
+    []
+  );
 
   const refreshLastRunDateAsync = async () => {
     const lastRunDateStr = await AsyncStorage.getItem(LAST_TASK_DATE_KEY);
