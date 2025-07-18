@@ -39,7 +39,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           label="GitHub"
           Icon={GithubIcon}
           href={sourceCodeUrl}
-          tooltip="View source code of package on GitHub"
+          tooltip="View source code on GitHub"
         />
       )}
       {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
