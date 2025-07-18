@@ -745,7 +745,7 @@ export async function treeShakeSerializer(
 
   function removeUnusedImportsFromModule(
     value: Module<MixedOutput>,
-    ast: types.Node | undefined,
+    ast: types.Node | undefined
   ): string[] {
     // json, asset, script, etc.
     if (!ast) {

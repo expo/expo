@@ -53,9 +53,6 @@ exports.collectDependenciesForShaking = collectDependenciesForShaking;
  */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
-const babylon = __importStar(require("@babel/parser"));
-const template_1 = __importDefault(require("@babel/template"));
-const t = __importStar(require("@babel/types"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
 const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
 const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
@@ -149,7 +146,7 @@ function applyUseStrictDirective(ast) {
     if (ast.program.sourceType === 'module' &&
         directives != null &&
         directives.findIndex((d) => d.value.value === 'use strict') === -1) {
-        directives.push(t.directive(t.directiveLiteral('use strict')));
+        directives.push(core_1.types.directive(core_1.types.directiveLiteral('use strict')));
     }
 }
 function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, }) {
@@ -272,7 +269,7 @@ async function transformJS(file, { config, options }) {
     }
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
-    let ast = file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
+    let ast = file.ast ?? nullthrows((0, core_1.parse)(file.code, { sourceType: 'unambiguous' }));
     // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
     const { importDefault, importAll } = (0, generateImportNames_1.default)(ast);
     // Add "use strict" if the file was parsed as a module, and the directive did
@@ -615,7 +612,7 @@ function getCacheKey(config) {
  * Produces a Babel template that transforms an "import(...)" call into a
  * "require(...)" call to the asyncRequire specified.
  */
-const makeShimAsyncRequireTemplate = template_1.default.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
+const makeShimAsyncRequireTemplate = core_1.template.expression(`require(ASYNC_REQUIRE_MODULE_PATH)`);
 const disabledDependencyTransformer = {
     transformSyncRequire: (path) => { },
     transformImportMaybeSyncCall: () => { },

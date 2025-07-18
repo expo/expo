@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { PluginObj, types as t } from '@babel/core';
-type Types = typeof t;
+type Types = typeof import('@babel/core').types;
 export type Options = Readonly<{
     importDefault: string;
     importAll: string;
