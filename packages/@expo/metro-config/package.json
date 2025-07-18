@@ -34,11 +34,9 @@
     "babel-transformer"
   ],
   "dependencies": {
+    "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@babel/parser": "^7.20.0",
-    "@babel/template": "^7.20.0",
-    "@babel/types": "^7.20.0",
     "@expo/config": "~11.0.10",
     "@expo/env": "~1.0.5",
     "@expo/json-file": "~9.1.4",
@@ -57,7 +55,6 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/code-frame": "^7.20.0",
     "@jridgewell/trace-mapping": "^0.3.20",
     "@types/babel__core": "^7.20.5",
     "dedent": "^1.5.3",
