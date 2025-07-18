@@ -39,7 +39,6 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "@expo/metro": "~0.1.0",
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
