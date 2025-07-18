@@ -38,8 +38,13 @@ function Modal(props) {
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
     (0, react_1.useEffect)(() => {
-        if (!(0, utils_1.areDetentsValid)(detents)) {
-            throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+        if (__DEV__) {
+            if (!(0, utils_1.areDetentsValid)(detents)) {
+                throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+            }
+            if (!(0, utils_1.isDetentIndexValid)(detents, detentIndex)) {
+                throw new Error(`Initial detent index of ${detentIndex} is out of bounds of provided detents array.`);
+            }
         }
     }, [detents, detentIndex]);
     (0, react_1.useEffect)(() => {

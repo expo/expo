@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.areDetentsValid = areDetentsValid;
+exports.isDetentIndexValid = isDetentIndexValid;
 exports.getStackAnimationType = getStackAnimationType;
 exports.getStackPresentationType = getStackPresentationType;
 function areDetentsValid(detents) {
@@ -12,6 +13,11 @@ function areDetentsValid(detents) {
                 detent >= (arr[index - 1] ?? 0)));
     }
     return detents === 'fitToContents' || detents === undefined || detents === null;
+}
+function isDetentIndexValid(detents, detentIndex) {
+    const lastDetentIndex = Array.isArray(detents) ? detents.length - 1 : 0;
+    const resolvedDetentIndex = detentIndex === 'last' ? lastDetentIndex : detentIndex ?? 0;
+    return Number.isInteger(resolvedDetentIndex) && resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
 }
 function getStackAnimationType(config) {
     switch (config.animationType) {
