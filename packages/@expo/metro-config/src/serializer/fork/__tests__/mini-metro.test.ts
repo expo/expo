@@ -59,8 +59,8 @@ it(`can create a micro Metro graph fixture`, async () => {
                   "code": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
-      console.log(foo);
+      var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
+      console.log(_foo.foo);
     });",
                   "expoDomComponentReference": undefined,
                   "functionMap": {
@@ -82,53 +82,40 @@ it(`can create a micro Metro graph fixture`, async () => {
                       4,
                       6,
                       2,
+                      4,
+                      "_foo",
+                    ],
+                    [
+                      4,
+                      10,
+                      2,
+                      4,
+                    ],
+                    [
+                      4,
                       13,
-                      "foo",
-                    ],
-                    [
-                      4,
-                      9,
                       2,
-                      16,
-                    ],
-                    [
                       4,
-                      12,
-                      2,
-                      16,
                       "_$$_REQUIRE",
-                    ],
-                    [
-                      4,
-                      23,
-                      2,
-                      16,
                     ],
                     [
                       4,
                       24,
                       2,
-                      16,
+                      4,
+                    ],
+                    [
+                      4,
+                      25,
+                      2,
+                      4,
                       "_dependencyMap",
                     ],
                     [
                       4,
-                      38,
+                      39,
                       2,
-                      16,
-                    ],
-                    [
                       4,
-                      52,
-                      2,
-                      13,
-                      "foo",
-                    ],
-                    [
-                      4,
-                      55,
-                      2,
-                      16,
                     ],
                     [
                       5,
@@ -160,18 +147,31 @@ it(`can create a micro Metro graph fixture`, async () => {
                       5,
                       14,
                       3,
-                      16,
+                      15,
+                      "_foo",
+                    ],
+                    [
+                      5,
+                      18,
+                      3,
+                      15,
+                    ],
+                    [
+                      5,
+                      19,
+                      3,
+                      15,
                       "foo",
                     ],
                     [
                       5,
-                      17,
+                      22,
                       3,
                       19,
                     ],
                     [
                       5,
-                      18,
+                      23,
                       3,
                       20,
                     ],

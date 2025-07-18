@@ -174,7 +174,13 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         // Ensure the iife "globals" don't have conflicting variables in the module.
         renameTopLevelModuleVariables, 
         //
-        [import_export_plugin_1.importExportPlugin, babelPluginOpts]);
+        [
+            import_export_plugin_1.importExportPlugin,
+            {
+                ...babelPluginOpts,
+                liveBindings: options.customTransformOptions?.liveBindings !== 'false',
+            },
+        ]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
     // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.

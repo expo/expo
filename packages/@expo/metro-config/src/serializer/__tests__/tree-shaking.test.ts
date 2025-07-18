@@ -1368,7 +1368,12 @@ it(`recursively expands export all statements (shallow)`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1485,7 +1490,12 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
         value: true
       });
       exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1556,7 +1566,12 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1564,7 +1579,12 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1616,7 +1636,12 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";

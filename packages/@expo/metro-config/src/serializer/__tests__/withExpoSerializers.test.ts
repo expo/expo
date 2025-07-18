@@ -673,8 +673,8 @@ describe('serializes', () => {
       "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
-        var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
-        console.log(foo);
+        var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
+        console.log(_foo.foo);
       },"/app/index.js",["/app/foo.js"],"index.js");
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
