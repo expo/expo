@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   TouchableOpacityProps,
   View,
@@ -24,7 +25,11 @@ const DEFAULT_IMAGE = Asset.fromModule(require('../../assets/images/example2.jpg
 export default function ImageManipulatorScreen() {
   const [originalImageUri, setOriginalImageUri] = useState(DEFAULT_IMAGE.uri);
   const [image, setImage] = useState<Asset | ImageResult>(DEFAULT_IMAGE);
-  const context = useImageManipulator(originalImageUri);
+  const [remoteImageUrl, setRemoteImageUrl] = useState('');
+  const [headers, setHeaders] = useState<Record<string, string>>({});
+  const [customHeaderKey, setCustomHeaderKey] = useState('');
+  const [customHeaderValue, setCustomHeaderValue] = useState('');
+  const context = useImageManipulator(originalImageUri, headers);
 
   useEffect(() => {
     refreshImage();
@@ -117,6 +122,28 @@ export default function ImageManipulatorScreen() {
     setOriginalImageUri(DEFAULT_IMAGE.uri);
   }
 
+  function loadRemoteImage() {
+    if (!remoteImageUrl) {
+      alert('Please provide a valid image URL.');
+      return;
+    }
+
+    setOriginalImageUri(remoteImageUrl);
+  }
+
+  const addCustomHeader = () => {
+    if (!customHeaderKey || !customHeaderValue) {
+      alert('Please provide both key and value for the custom header.');
+      return;
+    }
+    setHeaders((prevHeaders) => ({
+      ...prevHeaders,
+      [customHeaderKey]: customHeaderValue,
+    }));
+    setCustomHeaderKey('');
+    setCustomHeaderValue('');
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={{ padding: 10 }}>
@@ -162,6 +189,38 @@ export default function ImageManipulatorScreen() {
             Reset photo
           </Button>
         </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter remote image URL"
+          value={remoteImageUrl}
+          onChangeText={setRemoteImageUrl}
+        />
+        <Text style={styles.headerTitle}>Current Headers:</Text>
+        <Text style={styles.headerText}>{JSON.stringify(headers, null, 2)}</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Header Key"
+          value={customHeaderKey}
+          onChangeText={setCustomHeaderKey}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Header Value"
+          value={customHeaderValue}
+          onChangeText={setCustomHeaderValue}
+        />
+        <View style={styles.headerButtons}>
+          <Button style={styles.button} onPress={addCustomHeader}>
+            Add Custom Header
+          </Button>
+          <Button style={styles.button} onPress={() => setHeaders({})}>
+            Reset Header
+          </Button>
+        </View>
+        <Button style={styles.button} onPress={loadRemoteImage}>
+          Load Remote Image
+        </Button>
       </View>
     </ScrollView>
   );
@@ -185,6 +244,18 @@ const styles = StyleSheet.create({
   image: {
     resizeMode: 'contain',
   },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 8,
+    marginBottom: 10,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
   button: {
     padding: 8,
     borderRadius: 3,
@@ -203,5 +274,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 12,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  headerText: {
+    fontSize: 14,
+    marginBottom: 10,
+    color: '#333',
   },
 });
