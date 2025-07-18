@@ -109,10 +109,7 @@ const resolveTemplate = template.expression(`
 /**
  * Enforces the resolution of a path to a fully-qualified one, if set.
  */
-function resolvePath<TNode extends t.Node>(
-  node: TNode,
-  resolve: boolean
-): t.Expression | TNode {
+function resolvePath<TNode extends t.Node>(node: TNode, resolve: boolean): t.Expression | TNode {
   if (!resolve) {
     return node;
   }
@@ -164,10 +161,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ExportDefaultDeclaration(
-        path: NodePath<t.ExportDefaultDeclaration>,
-        state: State
-      ): void {
+      ExportDefaultDeclaration(path: NodePath<t.ExportDefaultDeclaration>, state: State): void {
         const declaration = path.node.declaration;
         const id =
           // @ts-expect-error Property 'id' does not exist on type 'ArrayExpression'

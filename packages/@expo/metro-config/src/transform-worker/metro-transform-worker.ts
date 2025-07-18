@@ -285,10 +285,7 @@ export function applyImportSupport<TFile extends t.File>(
   return { ast };
 }
 
-function performConstantFolding(
-  ast: t.File | ParseResult,
-  { filename }: { filename: string }
-) {
+function performConstantFolding(ast: t.File | ParseResult, { filename }: { filename: string }) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
   // references, and hence the `constantFoldingPlugin` below will remove them.
   // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the

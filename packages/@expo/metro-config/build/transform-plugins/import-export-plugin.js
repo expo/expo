@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importExportPlugin = importExportPlugin;
-const template_1 = __importDefault(require("@babel/template"));
+const core_1 = require("@babel/core");
 const node_assert_1 = __importDefault(require("node:assert"));
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
@@ -25,28 +25,28 @@ function nullthrows(x, message) {
  * "import x from ..." call into a "const x = importAll(...)" call with the
  * corresponding id in it.
  */
-const importTemplate = template_1.default.statement(`
+const importTemplate = core_1.template.statement(`
   var LOCAL = IMPORT(FILE);
 `);
 /**
  * Produces a Babel template that transforms an "import {x as y} from ..." into
  * "const y = require(...).x" call with the corresponding id in it.
  */
-const importNamedTemplate = template_1.default.statement(`
+const importNamedTemplate = core_1.template.statement(`
   var LOCAL = require(FILE).REMOTE;
 `);
 /**
  * Produces a Babel template that transforms an "import ..." into
  * "require(...)", which is considered a side-effect call.
  */
-const importSideEffectTemplate = template_1.default.statement(`
+const importSideEffectTemplate = core_1.template.statement(`
   require(FILE);
 `);
 /**
  * Produces an "export all" template that traverses all exported symbols and
  * re-exposes them.
  */
-const exportAllTemplate = template_1.default.statements(`
+const exportAllTemplate = core_1.template.statements(`
   var REQUIRED = require(FILE);
 
   for (var KEY in REQUIRED) {
@@ -57,20 +57,20 @@ const exportAllTemplate = template_1.default.statements(`
  * Produces a "named export" or "default export" template to export a single
  * symbol.
  */
-const exportTemplate = template_1.default.statement(`
+const exportTemplate = core_1.template.statement(`
   exports.REMOTE = LOCAL;
 `);
 /**
  * Flags the exported module as a transpiled ES module. Needs to be kept in 1:1
  * compatibility with Babel.
  */
-const esModuleExportTemplate = template_1.default.statement(`
+const esModuleExportTemplate = core_1.template.statement(`
   Object.defineProperty(exports, '__esModule', {value: true});
 `);
 /**
  * Resolution template in case it is requested.
  */
-const resolveTemplate = template_1.default.expression(`
+const resolveTemplate = core_1.template.expression(`
   require.resolve(NODE)
 `);
 /**
