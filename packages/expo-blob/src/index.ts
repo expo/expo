@@ -1,0 +1,1 @@
+export { ExpoBlob } from "./BlobModule";
