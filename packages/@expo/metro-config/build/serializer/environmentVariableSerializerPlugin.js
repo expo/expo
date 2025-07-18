@@ -7,8 +7,8 @@ exports.getTransformEnvironment = getTransformEnvironment;
 exports.serverPreludeSerializerPlugin = serverPreludeSerializerPlugin;
 exports.environmentVariableSerializerPlugin = environmentVariableSerializerPlugin;
 exports.getEnvVarDevString = getEnvVarDevString;
-const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const CountingSet_1 = __importDefault(require("@expo/metro/metro/lib/CountingSet"));
+const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
 const debug = require('debug')('expo:metro-config:serializer:env-var');
 function getTransformEnvironment(url) {
     const match = url.match(/[&?]transform\.environment=([^&]+)/);

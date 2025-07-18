@@ -1,4 +1,4 @@
-import { SymbolicatorConfigT } from 'metro-config';
+import type { SymbolicatorConfigT } from '@expo/metro/metro-config';
 type CustomizeFrameFunc = SymbolicatorConfigT['customizeFrame'];
 export declare const INTERNAL_CALLSITES_REGEX: RegExp;
 /**

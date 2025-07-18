@@ -195,7 +195,9 @@ export async function reconcileTransformSerializerPlugin(
     const sideEffectReferences = () =>
       [...value.dependencies.values()]
         .filter((dep) => {
-          const fullDep = isResolvedDependency(dep) ? graph.dependencies.get(dep.absolutePath) : undefined;
+          const fullDep = isResolvedDependency(dep)
+            ? graph.dependencies.get(dep.absolutePath)
+            : undefined;
           return fullDep && hasSideEffectWithDebugTrace(options, graph, fullDep)[0];
         })
         .map((dep) => dep.data.name);
