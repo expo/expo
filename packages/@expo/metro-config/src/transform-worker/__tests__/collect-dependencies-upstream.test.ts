@@ -14,11 +14,11 @@ import generate from '@babel/generator';
 import * as babylon from '@babel/parser';
 import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
-import dedent from 'dedent';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
+} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import dedent from 'dedent';
 import assert from 'node:assert';
 
 import { importExportPlugin } from '../../transform-plugins/import-export-plugin';
@@ -44,10 +44,11 @@ const opts: Options = {
   allowOptionalDependencies: false,
   dependencyMapName: null,
   unstable_allowRequireContext: false,
+  unstable_isESMImportAtSource: null,
 };
 
 // asserts non-null
-function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+function nullthrows<T>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
   return x;
 }
@@ -1496,6 +1497,9 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
 
   const inlineableCalls = [importDefault, importAll];
 
+  const {
+    inlineRequiresPlugin,
+  }: typeof import('@expo/metro/metro-transform-plugins') = require('@expo/metro/metro-transform-plugins');
   const { ast: transformedAst } = transformFromAstSync(ast, code, {
     ast: true,
     plugins: [
@@ -1506,7 +1510,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
           importAll,
         },
       ],
-      [require('metro-transform-plugins').inlineRequiresPlugin, { inlineableCalls }],
+      [inlineRequiresPlugin, { inlineableCalls }],
     ],
     babelrc: false,
     configFile: false,
