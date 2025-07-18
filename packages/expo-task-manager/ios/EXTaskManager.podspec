@@ -13,6 +13,10 @@ Pod::Spec.new do |s|
   s.platforms      = {
     :ios => '15.1'
   }
+  s.module_name = 'EXTaskManager'
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES'
+  }
   s.source         = { git: 'https://github.com/expo/expo-task-manager.git' }
   s.static_framework = true
 
@@ -25,6 +29,6 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "#{s.name}/**/*.{h,m}"
+    s.source_files = "#{s.name}/**/*.{h,m,swift}"
   end
 end
