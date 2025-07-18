@@ -99,8 +99,12 @@ public final class UpdatesConfig: NSObject {
   public let runtimeVersion: String
   public let hasEmbeddedUpdate: Bool
   public let disableAntiBrickingMeasures: Bool
+  public let hasUpdatesOverride: Bool
+
+  private let cachedConfigDictionary: [String: Any]
 
   internal required init(
+    cachedConfigDictionary: [String: Any],
     scopeKey: String,
     updateUrl: URL,
     requestHeaders: [String: String],
@@ -110,8 +114,10 @@ public final class UpdatesConfig: NSObject {
     runtimeVersion: String,
     hasEmbeddedUpdate: Bool,
     enableExpoUpdatesProtocolV0CompatibilityMode: Bool,
-    disableAntiBrickingMeasures: Bool
+    disableAntiBrickingMeasures: Bool,
+    hasUpdatesOverride: Bool
   ) {
+    self.cachedConfigDictionary = cachedConfigDictionary
     self.scopeKey = scopeKey
     self.updateUrl = updateUrl
     self.requestHeaders = requestHeaders
@@ -122,6 +128,7 @@ public final class UpdatesConfig: NSObject {
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
     self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
     self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
+    self.hasUpdatesOverride = hasUpdatesOverride
   }
 
   private static func configDictionaryWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> [String: Any] {
@@ -267,6 +274,7 @@ public final class UpdatesConfig: NSObject {
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
 
     return UpdatesConfig(
+      cachedConfigDictionary: config,
       scopeKey: scopeKey,
       updateUrl: updateUrl,
       requestHeaders: requestHeaders,
@@ -276,8 +284,16 @@ public final class UpdatesConfig: NSObject {
       runtimeVersion: runtimeVersion,
       hasEmbeddedUpdate: hasEmbeddedUpdate,
       enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode,
-      disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config)
+      disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config),
+      hasUpdatesOverride: configOverride != nil
     )
+  }
+
+  internal static func config(
+    fromConfig config: UpdatesConfig,
+    configOverride: UpdatesConfigOverride?
+  ) throws -> UpdatesConfig {
+    return try UpdatesConfig.config(fromDictionary: config.cachedConfigDictionary, configOverride: configOverride)
   }
 
   private static func codeSigningConfigurationForCodeSigningCertificate(

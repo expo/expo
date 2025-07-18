@@ -126,6 +126,9 @@ open class AppLoader: NSObject {
       database.databaseQueue.async {
         do {
           try self.database.addUpdate(updateManifest)
+          if self.config.hasUpdatesOverride {
+            try self.database.markUpdateFromOverride(updateManifest)
+          }
           try self.database.markUpdateFinished(updateManifest)
         } catch {
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
@@ -193,6 +196,9 @@ open class AppLoader: NSObject {
         self.updateResponseContainingManifest = updateResponse
         do {
           try self.database.addUpdate(updateManifest)
+          if self.config.hasUpdatesOverride {
+            try self.database.markUpdateFromOverride(updateManifest)
+          }
         } catch {
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
           return
