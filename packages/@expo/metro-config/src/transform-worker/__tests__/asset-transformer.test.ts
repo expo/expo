@@ -44,7 +44,7 @@ function getMockImageExport() {
 
 jest.mock('fs');
 
-jest.mock('metro/src/Assets', () => ({ getAssetData: jest.fn() }));
+jest.mock('@expo/metro/metro/Assets', () => ({ getAssetData: jest.fn() }));
 
 beforeEach(() => {
   jest.resetModules();
