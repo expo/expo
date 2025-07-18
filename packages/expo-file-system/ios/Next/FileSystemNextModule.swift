@@ -128,7 +128,7 @@ public final class FileSystemNextModule: Module {
       AsyncFunction("text") { file in
         return try file.text()
       }
-      
+
       Function("textSync") { file in
         return try file.text()
       }
