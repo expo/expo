@@ -1409,7 +1409,7 @@
     debug "^3.1.0"
     glob "^10.4.2"
 
-"@expo/metro@./vendor/expo-metro-v0.1.0-3.tgz":
+"@expo/metro@./vendor/expo-metro-v0.1.0-3.tgz", "@expo/metro@~0.1.0":
   version "0.1.0-3"
   resolved "./vendor/expo-metro-v0.1.0-3.tgz#471c2eca2b575bbdef23f685dd7a4a17cc4425d6"
   dependencies:

@@ -40,6 +40,7 @@
     "@babel/types": "^7.20.0",
     "@babel/template": "^7.20.0",
     "@expo/config": "~11.0.10",
+    "@expo/metro": "~0.1.0",
     "@expo/env": "~1.0.5",
     "@expo/json-file": "~9.1.4",
     "@expo/spawn-async": "^1.7.2",
