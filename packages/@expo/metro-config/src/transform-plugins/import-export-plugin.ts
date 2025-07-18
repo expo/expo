@@ -9,27 +9,11 @@
 // and adds support for export-namespace-from
 // https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js
 
-import type { PluginObj } from '@babel/core';
-import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
-import type {
-  ExportNamedDeclaration,
-  ImportDeclaration,
-  Program,
-  Statement,
-  SourceLocation as BabelSourceLocation,
-  Node as BabelNode,
-  Expression as BabelNodeExpression,
-  ExportAllDeclaration as BabelNodeExportAllDeclaration,
-  ExportDefaultDeclaration as BabelNodeExportDefaultDeclaration,
-  Identifier as BabelNodeIdentifier,
-  // eslint-disable-next-line import/no-duplicates
-} from '@babel/types';
-// eslint-disable-next-line import/no-duplicates
-import type * as BabelTypes from '@babel/types';
+import { template } from '@babel/core';
+import type { NodePath, PluginObj, types as t } from '@babel/core';
 import assert from 'node:assert';
 
-type Types = typeof BabelTypes;
+type Types = typeof import('@babel/core').types;
 
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -47,17 +31,17 @@ export type Options = Readonly<{
 }>;
 
 type State = {
-  exportAll: { file: string; loc?: BabelSourceLocation | null; [key: string]: unknown }[];
-  exportDefault: { local: string; loc?: BabelSourceLocation | null; [key: string]: unknown }[];
+  exportAll: { file: string; loc?: t.SourceLocation | null; [key: string]: unknown }[];
+  exportDefault: { local: string; loc?: t.SourceLocation | null; [key: string]: unknown }[];
   exportNamed: {
     local: string;
     remote: string;
-    loc?: BabelSourceLocation | null;
+    loc?: t.SourceLocation | null;
     [key: string]: unknown;
   }[];
-  imports: { node: Statement }[];
-  importDefault: BabelNode;
-  importAll: BabelNode;
+  imports: { node: t.Statement }[];
+  importDefault: t.Node;
+  importAll: t.Node;
   opts: Options;
   [key: string]: unknown;
 };
@@ -125,10 +109,10 @@ const resolveTemplate = template.expression(`
 /**
  * Enforces the resolution of a path to a fully-qualified one, if set.
  */
-function resolvePath<TNode extends BabelNode>(
+function resolvePath<TNode extends t.Node>(
   node: TNode,
   resolve: boolean
-): BabelNodeExpression | TNode {
+): t.Expression | TNode {
   if (!resolve) {
     return node;
   }
@@ -138,20 +122,20 @@ function resolvePath<TNode extends BabelNode>(
   });
 }
 
-function withLocation<TNode extends BabelNode>(
+function withLocation<TNode extends t.Node>(
   node: TNode,
-  loc: BabelSourceLocation | null | undefined
+  loc: t.SourceLocation | null | undefined
 ): TNode;
 
 // eslint-disable-next-line no-redeclare
-function withLocation<TNode extends BabelNode>(
+function withLocation<TNode extends t.Node>(
   node: readonly TNode[],
-  loc: BabelSourceLocation | null | undefined
+  loc: t.SourceLocation | null | undefined
 ): TNode[];
 
-function withLocation<TNode extends BabelNode>(
+function withLocation<TNode extends t.Node>(
   node: TNode | readonly TNode[],
-  loc: BabelSourceLocation | null | undefined
+  loc: t.SourceLocation | null | undefined
 ): TNode | TNode[] {
   if (Array.isArray(node)) {
     return node.map((n) => withLocation(n, loc));
@@ -171,7 +155,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
 
   return {
     visitor: {
-      ExportAllDeclaration(path: NodePath<BabelNodeExportAllDeclaration>, state: State): void {
+      ExportAllDeclaration(path: NodePath<t.ExportAllDeclaration>, state: State): void {
         state.exportAll.push({
           file: path.node.source.value,
           loc: path.node.loc,
@@ -181,7 +165,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
       },
 
       ExportDefaultDeclaration(
-        path: NodePath<BabelNodeExportDefaultDeclaration>,
+        path: NodePath<t.ExportDefaultDeclaration>,
         state: State
       ): void {
         const declaration = path.node.declaration;
@@ -212,7 +196,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ExportNamedDeclaration(path: NodePath<ExportNamedDeclaration>, state: State): void {
+      ExportNamedDeclaration(path: NodePath<t.ExportNamedDeclaration>, state: State): void {
         if (path.node.exportKind && path.node.exportKind !== 'value') {
           return;
         }
@@ -358,7 +342,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ImportDeclaration(path: NodePath<ImportDeclaration>, state: State): void {
+      ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: State): void {
         if (path.node.importKind && path.node.importKind !== 'value') {
           return;
         }
@@ -377,7 +361,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             ),
           });
         } else {
-          let sharedModuleImport: BabelNodeIdentifier;
+          let sharedModuleImport: t.Identifier;
           let sharedModuleVariableDeclaration = null;
           if (
             specifiers.filter(
@@ -482,7 +466,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
       },
 
       Program: {
-        enter(path: NodePath<Program>, state: State): void {
+        enter(path: NodePath<t.Program>, state: State): void {
           state.exportAll = [];
           state.exportDefault = [];
           state.exportNamed = [];
@@ -498,11 +482,11 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           ['module', 'global', 'exports', 'require'].forEach((name) => path.scope.rename(name));
         },
 
-        exit(path: NodePath<Program>, state: State): void {
+        exit(path: NodePath<t.Program>, state: State): void {
           const body = path.node.body;
 
           // state.imports = [node1, node2, node3, ...nodeN]
-          state.imports.reverse().forEach((e: { node: Statement }) => {
+          state.imports.reverse().forEach((e: { node: t.Statement }) => {
             // import nodes are added to the top of the program body
             body.unshift(e.node);
           });
