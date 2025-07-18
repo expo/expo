@@ -9,18 +9,26 @@
 - Add `generateThumbhashAsync` ([#38090](https://github.com/expo/expo/pull/38090) by [@Wenszel](https://github.com/Wenszel))
 - Add support for `ImageRef` source in `generateBlurhashAsync` ([#37901](https://github.com/expo/expo/pull/37901) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Add generateBlurhashAsync ([#37817](https://github.com/expo/expo/pull/37817) by [@Wenszel](https://github.com/Wenszel))
+
+### 🐛 Bug fixes
+
+- [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
+- [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
+
+### 💡 Others
+
+### 📚 3rd party library updates
+
+## 2.4.0 - 2025-07-17
+
+### 🎉 New features
+
 - [iOS] Add a new prop - `enforceEarlyResizing` to reduce the memory usage of the image view. ([#37909](https://github.com/expo/expo/pull/37909) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 - [iOS] Speed up displaying local assets. ([#37795](https://github.com/expo/expo/pull/37795) by [@aleqsio](https://github.com/aleqsio))
-- [Android] Fix animation resuming by casting image to GifDrawable. ([#37363](https://github.com/expo/expo/pull/37363) by [@Wenszel](https://github.com/Wenszel))
-- [Web] Fix `alt` as an alias for `accessibilityLabel` ([#37682](https://github.com/expo/expo/pull/37682) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fix some operation were incorrectly cancelled. ([#37987](https://github.com/expo/expo/pull/37987) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
-
-### 📚 3rd party library updates
 
 ## 2.3.2 - 2025-07-01
 
