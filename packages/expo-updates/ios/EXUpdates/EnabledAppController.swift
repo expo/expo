@@ -10,7 +10,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
   public weak var delegate: AppControllerDelegate?
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
-  internal let config: UpdatesConfig
+  internal var config: UpdatesConfig
   private let database: UpdatesDatabase
 
   public let updatesDirectory: URL? // internal for E2E test
@@ -31,7 +31,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
 
   private let stateMachine: UpdatesStateMachine
 
-  private let selectionPolicy: SelectionPolicy
+  private var selectionPolicy: SelectionPolicy
 
   private let logger = UpdatesLogger()
 
@@ -50,9 +50,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     self.database = database
     self.updatesDirectoryInternal = updatesDirectory
     self.updatesDirectory = updatesDirectory
-    self.selectionPolicy = SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: self.config.runtimeVersion
-    )
+    self.selectionPolicy = Self.createSelectionPolicy(config)
     self.logger.info(message: "AppController sharedInstance created")
     self.eventManager = QueueUpdatesEventManager(logger: logger)
     self.stateMachine = UpdatesStateMachine(logger: self.logger, eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
@@ -66,7 +64,9 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: database, config: config, logger: logger)
+    if !self.config.hasUpdatesOverride {
+      UpdatesBuildData.ensureBuildDataIsConsistentAsync(database: database, config: self.config, logger: logger)
+    }
 
     startupProcedure = StartupProcedure(
       database: self.database,
@@ -256,5 +256,16 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       throw NotAllowedAntiBrickingMeasuresException()
     }
     UpdatesConfigOverride.save(configOverride)
+    self.config = try UpdatesConfig.config(fromConfig: self.config, configOverride: configOverride)
+    self.selectionPolicy = Self.createSelectionPolicy(self.config)
+  }
+
+  private static func createSelectionPolicy(_ config: UpdatesConfig) -> SelectionPolicy {
+    if config.hasUpdatesOverride {
+      return SelectionPolicyFactory.overrideAwarePolicy()
+    }
+    return SelectionPolicyFactory.filterAwarePolicy(
+      withRuntimeVersion: config.runtimeVersion
+    )
   }
 }

@@ -286,6 +286,55 @@ let UpdatesDatabaseV9Schema = """
   CREATE INDEX "index_json_data_scope_key" ON "json_data" ("scope_key");
 """
 
+let UpdatesDatabaseV10Schema = """
+  CREATE TABLE "updates" (
+    "id"  BLOB UNIQUE,
+    "scope_key"  TEXT NOT NULL,
+    "commit_time"  INTEGER NOT NULL,
+    "runtime_version"  TEXT NOT NULL,
+    "launch_asset_id" INTEGER,
+    "manifest"  TEXT NOT NULL,
+    "status"  INTEGER NOT NULL,
+    "keep"  INTEGER NOT NULL,
+    "last_accessed"  INTEGER NOT NULL,
+    "successful_launch_count"  INTEGER NOT NULL DEFAULT 0,
+    "failed_launch_count"  INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY("id"),
+    FOREIGN KEY("launch_asset_id") REFERENCES "assets"("id") ON DELETE CASCADE
+  );
+  CREATE TABLE "assets" (
+    "id"  INTEGER PRIMARY KEY AUTOINCREMENT,
+    "url"  TEXT,
+    "key"  TEXT UNIQUE,
+    "headers"  TEXT,
+    "expected_hash"  TEXT,
+    "extra_request_headers"  TEXT,
+    "type"  TEXT NOT NULL,
+    "metadata"  TEXT,
+    "download_time"  INTEGER NOT NULL,
+    "relative_path"  TEXT NOT NULL,
+    "hash"  BLOB NOT NULL,
+    "hash_type"  INTEGER NOT NULL,
+    "marked_for_deletion"  INTEGER NOT NULL
+  );
+  CREATE TABLE "updates_assets" (
+    "update_id"  BLOB NOT NULL,
+    "asset_id" INTEGER NOT NULL,
+    FOREIGN KEY("update_id") REFERENCES "updates"("id") ON DELETE CASCADE,
+    FOREIGN KEY("asset_id") REFERENCES "assets"("id") ON DELETE CASCADE
+  );
+  CREATE TABLE "json_data" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "key" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "last_updated" INTEGER NOT NULL,
+    "scope_key" TEXT NOT NULL
+  );
+  CREATE UNIQUE INDEX "index_updates_scope_key_commit_time" ON "updates" ("scope_key", "commit_time");
+  CREATE INDEX "index_updates_launch_asset_id" ON "updates" ("launch_asset_id");
+  CREATE INDEX "index_json_data_scope_key" ON "json_data" ("scope_key");
+"""
+
 class UpdatesDatabaseInitializationSpec : ExpoSpec {
   override class func spec() {
     var testDatabaseDir: URL!
@@ -851,6 +900,52 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         // this asset should be deleted by foreign key constraint since its update had a null manifest and was deleted
         let updatesAssetsSql3 = "SELECT * FROM `updates_assets` WHERE `update_id` = X'594100ea066e4804b5c7c907c773f980' AND `asset_id` = 4"
         expect(try! UpdatesDatabaseUtils.execute(sql:updatesAssetsSql3, withArgs:nil, onDatabase:migratedDb).count) == 0
+      }
+
+      it("migrates 10 to 11") {
+        let db = try! UpdatesDatabaseInitialization.initializeDatabase(
+          withSchema: UpdatesDatabaseV10Schema,
+          filename: "expo-v10.db",
+          inDirectory: testDatabaseDir,
+          shouldMigrate: false,
+          migrations: [],
+          logger: UpdatesLogger()
+        )
+
+        // insert test data
+        let insertAssetsSql = """
+          INSERT INTO "assets" ("id","url","key","headers","type","metadata","download_time","relative_path","hash","hash_type","marked_for_deletion") VALUES
+            (2,'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e','b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,'image/png',NULL,1614137309295,'b56cf690e0afa93bd4dc7756d01edd3e.png','c4fdfc2ec388025067a0f755bda7731a0a868a2be79c84509f4de4e40d23161b',0,0),
+            (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871','e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2',0,0),
+            (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950','6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952',0,0);
+        """
+        let insertUpdatesSql = """
+          INSERT INTO "updates" ("id","scope_key","commit_time","runtime_version","launch_asset_id","manifest","status","keep", "last_accessed") VALUES
+            (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\\"metadata\\":{\\"updateGroup\\":\\"34993d39-57e6-46cf-8fa2-eba836f40828\\",\\"branchName\\":\\"rollout\\"}}',1,1,1619647642456),
+            (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,'{}',1,1,1619647642457);
+        """
+        let insertUpdatesAssetsSql = """
+          INSERT INTO "updates_assets" ("update_id","asset_id") VALUES
+            (X'8C263F9DE3FF48888496E3244C788661',2),
+            (X'8C263F9DE3FF48888496E3244C788661',3),
+            (X'594100ea066e4804b5c7c907c773f980',4);
+        """
+        _ = try! UpdatesDatabaseUtils.execute(sql:insertAssetsSql, withArgs:nil, onDatabase:db)
+        _ = try! UpdatesDatabaseUtils.execute(sql:insertUpdatesSql, withArgs:nil, onDatabase:db)
+        _ = try! UpdatesDatabaseUtils.execute(sql:insertUpdatesAssetsSql, withArgs:nil, onDatabase:db)
+
+        sqlite3_close(db)
+
+        // initialize a new database object the normal way and run migrations
+        let migratedDb = try! UpdatesDatabaseInitialization.initializeDatabaseWithLatestSchema(
+          inDirectory: testDatabaseDir,
+          migrations: [UpdatesDatabaseMigration10To11()],
+          logger: UpdatesLogger()
+        )
+
+        // verify data integrity
+        let updatesSql1 = "SELECT * FROM `updates` WHERE `from_override` = 0"
+        expect(try! UpdatesDatabaseUtils.execute(sql:updatesSql1, withArgs:nil, onDatabase:migratedDb).count) == 2
       }
     }
   }

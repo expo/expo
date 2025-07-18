@@ -105,6 +105,7 @@ public class Update: NSObject {
   public var lastAccessed: Date
   public var successfulLaunchCount: Int
   public var failedLaunchCount: Int
+  public var isFromOverride: Bool
 
   private let config: UpdatesConfig
   private let database: UpdatesDatabase?
@@ -136,6 +137,7 @@ public class Update: NSObject {
     self.lastAccessed = Date()
     self.successfulLaunchCount = 0
     self.failedLaunchCount = 0
+    self.isFromOverride = false
     self.isDevelopmentMode = isDevelopmentMode
   }
 

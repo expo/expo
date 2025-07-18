@@ -16,4 +16,12 @@ public final class SelectionPolicyFactory: NSObject {
       reaperSelectionPolicy: ReaperSelectionPolicyFilterAware()
     )
   }
+
+  internal static func overrideAwarePolicy() -> SelectionPolicy {
+    return SelectionPolicy.init(
+      launcherSelectionPolicy: LauncherSelectionPolicyOverrideAware(),
+      loaderSelectionPolicy: LoaderSelectionPolicyOverrideAware(),
+      reaperSelectionPolicy: ReaperSelectionPolicyOverrideAware()
+    )
+  }
 }
