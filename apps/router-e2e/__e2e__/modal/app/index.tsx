@@ -209,6 +209,7 @@ function InitialDetentForm() {
         presentationStyle='formSheet'
         initialDetentIndex={1}
         visible={open}
+        onClose={() => setIsOpen(false)}
         detents={[0.3, 0.5, 1]}
         style={{
           gap: 4,
