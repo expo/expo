@@ -1,6 +1,5 @@
 // Rough estimation of how minifying works by default in Expo / Metro.
 // We'll need to update this if we ever change the default minifier.
-import getDefaultConfig from 'metro-config/src/defaults';
 import metroMinify from 'metro-minify-terser';
 
 export async function minifyLikeMetroAsync({
