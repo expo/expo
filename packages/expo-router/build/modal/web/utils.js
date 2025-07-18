@@ -21,9 +21,12 @@ function getInitialDetentIndex(options) {
     const sheetAllowedDetents = options?.sheetAllowedDetents;
     const sheetInitialDetentIndex = options?.sheetInitialDetentIndex ?? 0;
     if (Array.isArray(sheetAllowedDetents)) {
-        return sheetInitialDetentIndex === 'last'
+        const resolvedDetentIndex = sheetInitialDetentIndex === 'last'
             ? sheetAllowedDetents.length - 1
             : sheetInitialDetentIndex;
+        if (resolvedDetentIndex >= 0 && resolvedDetentIndex <= sheetAllowedDetents.length) {
+            return resolvedDetentIndex;
+        }
     }
     return 0;
 }

@@ -26,7 +26,7 @@ export function isDetentIndexValid(
   const lastDetentIndex = Array.isArray(detents) ? detents.length - 1 : 0;
   const resolvedDetentIndex = initialDetentIndex === 'last' ? lastDetentIndex : initialDetentIndex ?? 0;
 
-  return Number.isInteger(resolvedDetentIndex) && resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
+  return resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
 }
 
 export function getStackAnimationType(config: ModalConfig): StackAnimationTypes | undefined {

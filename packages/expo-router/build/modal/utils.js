@@ -17,7 +17,7 @@ function areDetentsValid(detents) {
 function isDetentIndexValid(detents, initialDetentIndex) {
     const lastDetentIndex = Array.isArray(detents) ? detents.length - 1 : 0;
     const resolvedDetentIndex = initialDetentIndex === 'last' ? lastDetentIndex : initialDetentIndex ?? 0;
-    return Number.isInteger(resolvedDetentIndex) && resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
+    return resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
 }
 function getStackAnimationType(config) {
     switch (config.animationType) {
