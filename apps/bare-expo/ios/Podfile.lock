@@ -422,6 +422,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBattery (9.1.4):
     - ExpoModulesCore
+  - ExpoBlob (0.1.0):
+    - ExpoModulesCore
   - ExpoBlur (14.1.4):
     - ExpoModulesCore
   - ExpoBrightness (13.1.4):
@@ -3668,6 +3670,7 @@ DEPENDENCIES:
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
+  - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
@@ -3901,6 +3904,9 @@ EXTERNAL SOURCES:
   ExpoBattery:
     inhibit_warnings: false
     :path: "../../../packages/expo-battery/ios"
+  ExpoBlob:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-blob/ios"
   ExpoBlur:
     inhibit_warnings: false
     :path: "../../../packages/expo-blur/ios"
@@ -4267,6 +4273,7 @@ SPEC CHECKSUMS:
   ExpoBackgroundFetch: 76c48b3cd9a4ee46e5267614a30fac804de6f33e
   ExpoBackgroundTask: 9296d983f3d612359419e015ded65ebe9de30ba2
   ExpoBattery: 6229d981d12dffb00c9e8e48181162729febb541
+  ExpoBlob: f28a229176d56d7f18a72f4c32218ec0302f68c4
   ExpoBlur: 5d95f7ca771a0f3b9618466525dd68e46dc95f3a
   ExpoBrightness: 05e750736f8886dcf235212b0caf85b0f605fc88
   ExpoCalendar: 660542dc1c5ef98f46bedcc8745aa707df5d501a
