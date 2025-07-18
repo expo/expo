@@ -129,7 +129,11 @@ class FileSystemNextModule : Module() {
         file.text()
       }
 
-      Function("base64") { file: FileSystemFile ->
+      AsyncFunction("base64") { file: FileSystemFile ->
+        file.base64()
+      }
+
+      Function("base64Sync") { file: FileSystemFile ->
         file.base64()
       }
 

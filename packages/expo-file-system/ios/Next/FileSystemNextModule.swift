@@ -133,7 +133,11 @@ public final class FileSystemNextModule: Module {
         return try file.text()
       }
 
-      Function("base64") { file in
+      AsyncFunction("base64") { file in
+        return try file.base64()
+      }
+
+      Function("base64Sync") { file in
         return try file.base64()
       }
 
