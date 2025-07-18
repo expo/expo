@@ -10,6 +10,7 @@ import type {
   ReadOnlyGraph,
   SerializerOptions,
 } from '@expo/metro/metro/DeltaBundler/types.flow';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import fs from 'fs';
 import { minimatch } from 'minimatch';
 import path from 'path';
@@ -37,7 +38,7 @@ export function hasSideEffectWithDebugTrace(
   }
   // Recursively check if any of the dependencies have side effects.
   for (const depReference of value.dependencies.values()) {
-    if (checked.has(depReference.absolutePath)) {
+    if (!isResolvedDependency(depReference) || checked.has(depReference.absolutePath)) {
       continue;
     }
     checked.add(depReference.absolutePath);

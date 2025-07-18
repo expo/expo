@@ -10,6 +10,7 @@
  */
 
 import type { MixedOutput, Module } from '@expo/metro/metro/DeltaBundler';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import { addParamsToDefineCall } from '@expo/metro/metro-transform-plugins';
 import type { JsOutput } from '@expo/metro/metro-transform-worker';
 import assert from 'assert';
@@ -63,6 +64,9 @@ export function getModuleParams(
   let hasPaths = false;
 
   const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
+    if (!isResolvedDependency(dependency)) {
+      return null;
+    }
     let modulePath = dependency.absolutePath;
 
     if (modulePath == null) {

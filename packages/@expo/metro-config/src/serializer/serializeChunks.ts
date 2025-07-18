@@ -13,6 +13,7 @@ import type {
   SerializerOptions,
 } from '@expo/metro/metro/DeltaBundler/types.flow';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import path from 'path';
@@ -300,7 +301,7 @@ export class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType) {
+        if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -679,7 +680,9 @@ function gatherChunks(
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
-      if (
+      if (!isResolvedDependency(dependency)) {
+        continue;
+      } else if (
         dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false
