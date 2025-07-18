@@ -4,7 +4,12 @@ import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
 import type { Reporter } from '@expo/metro/metro';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
-import type { MixedOutput, Module, ReadOnlyGraph, Options as GraphOptions } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  Options as GraphOptions,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import chalk from 'chalk';
@@ -65,19 +70,22 @@ let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
-  const { Graph }: typeof import('@expo/metro/metro/DeltaBundler/Graph') = require('@expo/metro/metro/DeltaBundler/Graph');
+  const {
+    Graph,
+  }: typeof import('@expo/metro/metro/DeltaBundler/Graph') = require('@expo/metro/metro/DeltaBundler/Graph');
 
   interface TraverseDependencies {
     (paths: readonly string[], options: GraphOptions<any>): Promise<GraphResult<any>>;
     __patched?: boolean;
   }
 
-  const original_traverseDependencies = Graph.prototype.traverseDependencies as TraverseDependencies;
+  const original_traverseDependencies = Graph.prototype
+    .traverseDependencies as TraverseDependencies;
 
   if (!original_traverseDependencies.__patched) {
     original_traverseDependencies.__patched = true;
     // eslint-disable-next-line no-inner-declarations
-    function traverseDependencies (this: Graph, paths: string[], options: GraphOptions<any>) {
+    function traverseDependencies(this: Graph, paths: string[], options: GraphOptions<any>) {
       this.dependencies.forEach((dependency: Module | JSModule) => {
         // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
         // `skipCache` is set when a CSS module is found by PostCSS.
@@ -87,7 +95,11 @@ function patchMetroGraphToSupportUncachedModules() {
         ) {
           // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
           // the Graph._processModule method.
-          setOnReadonly(dependency, 'unstable_transformResultKey', dependency.unstable_transformResultKey + '.');
+          setOnReadonly(
+            dependency,
+            'unstable_transformResultKey',
+            dependency.unstable_transformResultKey + '.'
+          );
 
           // Add the path to the list of modified paths so it gets run through the transformer again,
           // this will ensure it is passed to PostCSS -> Tailwind.
