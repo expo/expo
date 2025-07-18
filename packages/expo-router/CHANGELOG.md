@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Unhandled rejections due to missing SplashModule internal functions in Expo Go ([#38045](https://github.com/expo/expo/pull/38045)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
+
+## 5.1.4 — 2025-07-18
+
+### 🐛 Bug fixes
+
+- Unhandled rejections due to missing SplashModule internal functions in Expo Go ([#38045](https://github.com/expo/expo/pull/38045)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 5.1.3 — 2025-07-03
 
