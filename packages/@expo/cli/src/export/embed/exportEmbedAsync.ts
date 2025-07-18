@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import Server from '@expo/metro/metro/Server';
+import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
+import output from '@expo/metro/metro/shared/output/bundle';
+import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 
 import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
@@ -389,6 +389,7 @@ export async function exportEmbedAssetsAsync(
   try {
     const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions({
       ...bundleRequest,
+      // @ts-ignore-error TODO(@kitten): Very unclear why this is here. Remove?
       bundleType: 'todo',
     });
 

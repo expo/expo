@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import type { ResolutionContext, CustomResolutionContext, CustomResolver } from '@expo/metro/metro-resolver';
+import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
-import { ConfigT as MetroConfig } from 'metro-config';
-import type { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
@@ -15,23 +15,22 @@ import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
 
-export type MetroResolver = NonNullable<MetroConfig['resolver']['resolveRequest']>;
+export type { CustomResolver as MetroResolver };
 
 /** Expo Metro Resolvers can return `null` to skip without throwing an error. Metro Resolvers will throw either a `FailedToResolveNameError` or `FailedToResolvePathError`. */
 export type ExpoCustomMetroResolver = (
-  ...args: Parameters<MetroResolver>
-) => ReturnType<MetroResolver> | null;
+  ...args: Parameters<CustomResolver>
+) => ReturnType<CustomResolver> | null;
 
 /** @returns `MetroResolver` utilizing the upstream `resolve` method. */
-export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
+export function getDefaultMetroResolver(projectRoot: string): CustomResolver {
   return (context: ResolutionContext, moduleName: string, platform: string | null) => {
-    return metroResolver.resolve(context, moduleName, platform);
+    return metroResolver(context, moduleName, platform);
   };
 }
 
 function optionsKeyForContext(context: ResolutionContext) {
-  const canonicalize = require('metro-core/src/canonicalize');
-
+  const canonicalize: typeof import('@expo/metro/metro-core/canonicalize').default = require('@expo/metro/metro-core/canonicalize');
   // Compound key for the resolver cache
   return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
 }

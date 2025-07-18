@@ -7,22 +7,21 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
-import chalk from 'chalk';
-import { DeltaResult, TransformInputOptions } from 'metro';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
+import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
   type SourceMapGeneratorOptions,
-} from 'metro/src/DeltaBundler/Serializers/sourceMapGenerator';
-import type MetroHmrServer from 'metro/src/HmrServer';
-import type { Client as MetroHmrClient } from 'metro/src/HmrServer';
-import { GraphRevision } from 'metro/src/IncrementalBundler';
-import bundleToString from 'metro/src/lib/bundleToString';
-import getGraphId from 'metro/src/lib/getGraphId';
-import { TransformProfile } from 'metro-babel-transformer';
-import type { CustomResolverOptions } from 'metro-resolver/src/types';
+} from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
+import type { Module, DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { default as MetroHmrServer, Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
+import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import getGraphId from '@expo/metro/metro/lib/getGraphId';
+import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
+import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import assert from 'assert';
+import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -81,9 +80,7 @@ import { startTypescriptTypeGenerationAsync } from '../type-generation/startType
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('expo-router/build/static/renderStaticContent').getManifest>
 >;
-type MetroOnProgress = NonNullable<
-  import('metro/src/DeltaBundler/types').Options<void>['onProgress']
->;
+
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
   filePath: string,
   specificOptions?: Partial<ExpoMetroOptions>,
@@ -121,7 +118,7 @@ const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroPrivateServer | null = null;
-  private hmrServer: MetroHmrServer | null = null;
+  private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
@@ -1489,7 +1486,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       key: buildNumber,
     });
 
-    const onProgress: MetroOnProgress = (transformedFileCount: number, totalFileCount: number) => {
+    const onProgress = (transformedFileCount: number, totalFileCount: number) => {
       this.metro?._reporter?.update?.({
         buildID: getBuildID(buildNumber),
         type: 'bundle_transform_progressed',
@@ -1797,7 +1794,7 @@ function wrapBundle(str: string) {
 }
 
 async function sourceMapStringAsync(
-  modules: readonly import('metro/src/DeltaBundler/types').Module<any>[],
+  modules: readonly Module[],
   options: SourceMapGeneratorOptions
 ): Promise<string> {
   return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {

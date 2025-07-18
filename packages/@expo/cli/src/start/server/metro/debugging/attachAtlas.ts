@@ -1,5 +1,5 @@
+import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import type { Server as ConnectServer } from 'connect';
-import type { ConfigT as MetroConfig } from 'metro-config';
 
 import { AtlasPrerequisite } from './AtlasPrerequisite';
 import { env } from '../../../../utils/env';
