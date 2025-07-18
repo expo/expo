@@ -1,5 +1,5 @@
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';
-import { ExpoFormDataPart } from '../FormData';
+import { ExpoFormDataValue } from '../FormData';
 
 function encodeFilename(filename: string): string {
   return encodeURIComponent(filename.replace(/\//g, '_'));
@@ -10,7 +10,7 @@ type ExpoFormHeaders = {
   'content-type': string | undefined;
 };
 
-function getFormDataPartHeaders(part: ExpoFormDataPart, name: string) {
+function getFormDataPartHeaders(part: ExpoFormDataValue, name: string) {
   const contentDisposition = 'form-data; name="' + name + '"';
 
   const headers: ExpoFormHeaders = {
@@ -55,10 +55,11 @@ export async function convertFormDataAsync(
     results.push(`\r\n`);
     if (typeof entry === 'string') {
       results.push(entry);
-    } else if (typeof entry === 'object' && 'bytes' in entry) {
-      results.push(await entry.bytes());
-    } else if (entry._data != null) {
+    } else if (entry instanceof Blob) {
       results.push(new Uint8Array(await blobToArrayBufferAsync(entry)));
+    } else if (typeof entry === 'object' && 'bytes' in entry) {
+      // @ts-expect-error: File or ExpoBlob don't extend Blob but implement the interface.
+      results.push(await entry.bytes());
     } else {
       throw new Error('Unsupported FormDataPart implementation');
     }
