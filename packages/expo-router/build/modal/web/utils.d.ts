@@ -6,7 +6,7 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
 /**
- * Heoper to determine the detent index from the given `sheetInitialDetentIndex` option.
+ * Helper to determine the detent index from the given `sheetInitialDetentIndex` option.
  *
  * @param options - The navigation options.
  * @returns The actual detent index.

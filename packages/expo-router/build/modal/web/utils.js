@@ -12,7 +12,7 @@ exports.convertStackStateToNonModalState = convertStackStateToNonModalState;
 exports.findLastNonModalIndex = findLastNonModalIndex;
 const react_1 = __importDefault(require("react"));
 /**
- * Heoper to determine the detent index from the given `sheetInitialDetentIndex` option.
+ * Helper to determine the detent index from the given `sheetInitialDetentIndex` option.
  *
  * @param options - The navigation options.
  * @returns The actual detent index.

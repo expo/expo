@@ -26,7 +26,7 @@ export declare const store: {
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & Readonly<{
+    }>, "routes" | "stale">> & Readonly<{
         stale?: true;
         routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
     }> & {
@@ -38,7 +38,7 @@ export declare const store: {
             routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, "stale" | "routes">> & Readonly<{
+        }>, "routes" | "stale">> & Readonly<{
             stale?: true;
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
@@ -64,7 +64,7 @@ export declare function useStore(context: RequireContext, linkingConfigOptions: 
         routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & Readonly<{
+    }>, "routes" | "stale">> & Readonly<{
         stale?: true;
         routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
     }> & {
@@ -76,7 +76,7 @@ export declare function useStore(context: RequireContext, linkingConfigOptions: 
             routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, "stale" | "routes">> & Readonly<{
+        }>, "routes" | "stale">> & Readonly<{
             stale?: true;
             routes: import("@react-navigation/native").PartialRoute<import("@react-navigation/native").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
