@@ -22,6 +22,7 @@ import type {
   Client as MetroHmrClient,
 } from '@expo/metro/metro/HmrServer';
 import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
+import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
@@ -40,7 +41,6 @@ import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { getErrorOverlayHtmlAsync, IS_METRO_BUNDLE_ERROR_SYMBOL } from './metroErrorInterface';
-import { assertMetroPrivateServer, MetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
@@ -124,7 +124,7 @@ const EXPO_GO_METRO_PORT = 8081;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
-  private metro: MetroPrivateServer | null = null;
+  private metro: MetroServer | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
@@ -1151,7 +1151,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    assertMetroPrivateServer(metro);
     this.metro = metro;
     this.hmrServer = hmrServer;
     return {
