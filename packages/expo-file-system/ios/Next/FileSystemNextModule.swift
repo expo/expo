@@ -125,7 +125,11 @@ public final class FileSystemNextModule: Module {
       }
 
       // maybe asString, readAsString, readAsText, readText, ect.
-      Function("text") { file in
+      AsyncFunction("text") { file in
+        return try file.text()
+      }
+      
+      Function("textSync") { file in
         return try file.text()
       }
 
@@ -133,7 +137,11 @@ public final class FileSystemNextModule: Module {
         return try file.base64()
       }
 
-      Function("bytes") { file in
+      AsyncFunction("bytes") { file in
+        return try file.bytes()
+      }
+
+      Function("bytesSync") { file in
         return try file.bytes()
       }
 
