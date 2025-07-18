@@ -7,7 +7,11 @@
 import type { ExpoConfig, Platform } from '@expo/config';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
-import type { Resolution, ResolutionContext, CustomResolutionContext } from '@expo/metro/metro-resolver';
+import type {
+  Resolution,
+  ResolutionContext,
+  CustomResolutionContext,
+} from '@expo/metro/metro-resolver';
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -847,10 +851,10 @@ export async function withMetroMultiPlatformAsync(
   if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
-    const metroDefaults: Mutable<typeof import('@expo/metro/metro-config/defaults/defaults')> = require('@expo/metro/metro-config/defaults/defaults');
-    metroDefaults.moduleSystem = require.resolve(
-      '@expo/cli/build/metro-require/require'
-    );
+    const metroDefaults: Mutable<
+      typeof import('@expo/metro/metro-config/defaults/defaults')
+    > = require('@expo/metro/metro-config/defaults/defaults');
+    metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
   }
 
   if (!config.projectRoot) {

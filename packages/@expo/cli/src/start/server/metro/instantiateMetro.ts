@@ -314,10 +314,9 @@ export async function instantiateMetroAsync(
   };
 
   if (hmrServer) {
-    let hmrJSBundle: (
+    let hmrJSBundle:
       | typeof import('@expo/metro-config/build/serializer/fork/hmrJSBundle').default
-      | typeof import('@expo/metro/metro/DeltaBundler/Serializers/hmrJSBundle').default
-    );
+      | typeof import('@expo/metro/metro/DeltaBundler/Serializers/hmrJSBundle').default;
 
     try {
       hmrJSBundle = require('@expo/metro-config/build/serializer/fork/hmrJSBundle').default;
@@ -328,7 +327,12 @@ export async function instantiateMetroAsync(
     }
 
     // Patch HMR Server to send more info to the `_createModuleId` function for deterministic module IDs and add support for serializing HMR updates the same as all other bundles.
-    hmrServer._prepareMessage = async function (this: MetroHmrServer<MetroHmrClient>, group, options, changeEvent) {
+    hmrServer._prepareMessage = async function (
+      this: MetroHmrServer<MetroHmrClient>,
+      group,
+      options,
+      changeEvent
+    ) {
       // Fork of https://github.com/facebook/metro/blob/3b3e0aaf725cfa6907bf2c8b5fbc0da352d29efe/packages/metro/src/HmrServer.js#L327-L393
       // with patch for `_createModuleId`.
       const logger = !options.isInitialUpdate ? changeEvent?.logger : null;

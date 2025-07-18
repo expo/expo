@@ -1,7 +1,7 @@
 import { getBareExtensions } from '@expo/config/paths';
+import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
-import type Bundler from '@expo/metro/metro/Bundler';
 import { vol } from 'memfs';
 import assert from 'node:assert';
 

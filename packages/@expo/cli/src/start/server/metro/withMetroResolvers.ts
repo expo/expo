@@ -5,7 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import type { ResolutionContext, CustomResolutionContext, CustomResolver } from '@expo/metro/metro-resolver';
+import type {
+  ResolutionContext,
+  CustomResolutionContext,
+  CustomResolver,
+} from '@expo/metro/metro-resolver';
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
 import path from 'path';
