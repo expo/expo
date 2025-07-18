@@ -1,5 +1,5 @@
-import type { Module } from 'metro';
-import { isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js.js';
+import { isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
 import path from 'path';
 
 import { CSSMetadata } from './jsOutput';
@@ -7,8 +7,6 @@ import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { toPosixPath } from '../utils/filePath';
 import { hashString } from '../utils/hash';
-
-export type ReadOnlyDependencies<T = any> = ReadonlyMap<string, Module<T>>;
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;

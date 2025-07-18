@@ -2,10 +2,11 @@
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
+import type { Reporter } from '@expo/metro/metro';
+import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
+import { stableHash } from '@expo/metro/metro-cache';
+import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import chalk from 'chalk';
-import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
-import { stableHash } from 'metro-cache';
-import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -251,7 +252,7 @@ export function getDefaultConfig(
           // Add default support for `expo-sqlite` file types.
           ['db']
         )
-        .filter((assetExt) => !sourceExts.includes(assetExt)),
+        .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
     },

@@ -4,18 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import assert from 'assert';
-import {
-  AssetData,
-  MetroConfig,
+import type { MetroConfig, AssetData } from '@expo/metro/metro';
+import sourceMapStringMod from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT, SerializerConfigT } from 'metro-config';
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
+import assert from 'assert';
 import path from 'path';
 
 import { stringToUUID } from './debugId';
@@ -34,7 +33,6 @@ import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-
 type SerializerParameters = Parameters<Serializer>;
 
 type ChunkSettings = {

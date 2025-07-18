@@ -6,12 +6,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import countLines from 'metro/src/lib/countLines';
+import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
+import countLines from '@expo/metro/metro/lib/countLines';
 import type {
   JsTransformerConfig,
   JsTransformOptions,
-  TransformResponse,
-} from 'metro-transform-worker';
+  JsOutput,
+} from '@expo/metro/metro-transform-worker';
 import { relative, dirname } from 'node:path';
 
 import { getBrowserslistTargets } from './browserslist';
@@ -28,6 +29,11 @@ import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
+
+interface TransformResponse {
+  readonly dependencies: readonly TransformResultDependency[];
+  readonly output: readonly JsOutput[];
+}
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
