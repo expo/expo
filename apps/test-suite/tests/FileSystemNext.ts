@@ -6,8 +6,6 @@ import * as FS from 'expo-file-system';
 import { File, Directory, Paths } from 'expo-file-system/next';
 import { Platform } from 'react-native';
 
-import ExponentTest from '../ExponentTest';
-
 export const name = 'FileSystem@next';
 
 export async function test({ describe, expect, it, ...t }) {
