@@ -1,4 +1,5 @@
-import { getJsOutput, isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js';
+// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
+import { getJsOutput, isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js';
 import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
 import type IncrementalBundler from '@expo/metro/metro/IncrementalBundler';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
