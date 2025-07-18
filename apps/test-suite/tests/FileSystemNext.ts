@@ -929,7 +929,6 @@ export async function test({ describe, expect, it, ...t }) {
     it('Supports sending a file using blob', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
-      // const blob = src.blob();
 
       const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
