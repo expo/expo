@@ -19,12 +19,13 @@ export function areDetentsValid(detents: ModalProps['detents']): boolean {
   return detents === 'fitToContents' || detents === undefined || detents === null;
 }
 
-export function isDetentIndexValid(
+export function isInitialDetentIndexValid(
   detents: ModalProps['detents'],
   initialDetentIndex: ModalProps['initialDetentIndex']
 ) {
   const lastDetentIndex = Array.isArray(detents) ? detents.length - 1 : 0;
-  const resolvedDetentIndex = initialDetentIndex === 'last' ? lastDetentIndex : initialDetentIndex ?? 0;
+  const resolvedDetentIndex =
+    initialDetentIndex === 'last' ? lastDetentIndex : (initialDetentIndex ?? 0);
 
   return resolvedDetentIndex >= 0 && resolvedDetentIndex <= lastDetentIndex;
 }

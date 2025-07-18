@@ -8,7 +8,7 @@ import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
 import { useNavigation } from '../useNavigation';
-import { areDetentsValid, isDetentIndexValid } from './utils';
+import { areDetentsValid, isInitialDetentIndexValid } from './utils';
 
 export interface ModalProps extends ViewProps {
   /**
@@ -115,16 +115,18 @@ export function Modal(props: ModalProps) {
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
-    if (__DEV__) {
+    if (__DEV__ && visible) {
       if (!areDetentsValid(detents)) {
         throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
       }
 
-      if (!isDetentIndexValid(detents, initialDetentIndex)) {
-        throw new Error(`Initial detent index of ${initialDetentIndex} is out of bounds of provided detents array.`)
+      if (!isInitialDetentIndexValid(detents, initialDetentIndex)) {
+        throw new Error(
+          `Initial detent index of ${initialDetentIndex} is out of bounds of provided detents array.`
+        );
       }
     }
-  }, [detents, initialDetentIndex]);
+  }, [visible, detents, initialDetentIndex]);
 
   useEffect(() => {
     if (visible) {
