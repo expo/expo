@@ -135,7 +135,12 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
         redirectResponse: response
       )
     }
-    completionHandler(request)
+    // The `shouldFollowRedirects` property is setup by `expo/fetch` and allows
+    // `ExpoRequestInterceptorProtocol` to know whether it should follow redirects.
+    let shouldFollowRedirects = URLProtocol.property(forKey: "shouldFollowRedirects", in: request) as? Bool ?? true
+    completionHandler(shouldFollowRedirects ? request : nil)
+
+    client?.urlProtocol(self, wasRedirectedTo: request, redirectResponse: response)
   }
 
   public func urlSession(

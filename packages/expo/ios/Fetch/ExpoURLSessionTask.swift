@@ -21,7 +21,8 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     requestInit: NativeRequestInit,
     requestBody: Data?
   ) {
-    var request = URLRequest(url: url)
+    let request = NSMutableURLRequest(url: url)
+    URLProtocol.setProperty(requestInit.redirect == .follow, forKey: "shouldFollowRedirects", in: request)
     request.httpMethod = requestInit.method
     request.timeoutInterval = 0
     if requestInit.credentials == .include {
@@ -37,7 +38,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     }
     request.httpBody = requestBody
 
-    let task = urlSession.dataTask(with: request)
+    let task = urlSession.dataTask(with: request as URLRequest)
     urlSessionDelegate.addDelegate(task: task, delegate: self)
     self.task = task
     task.resume()
@@ -60,8 +61,12 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     newRequest request: URLRequest,
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
-    let shouldFollowRedirect = self.delegate.urlSession(self, willPerformHTTPRedirection: response)
-    completionHandler(shouldFollowRedirect ? request : nil)
+    self.delegate.urlSession(
+      self,
+      task: task,
+      willPerformHTTPRedirection: response,
+      newRequest: request,
+      completionHandler: completionHandler)
   }
 
   func urlSession(
@@ -87,6 +92,12 @@ internal protocol ExpoURLSessionTaskDelegate: AnyObject {
   func urlSessionDidStart(_ session: ExpoURLSessionTask)
   func urlSession(_ session: ExpoURLSessionTask, didReceive response: URLResponse)
   func urlSession(_ session: ExpoURLSessionTask, didReceive data: Data)
-  func urlSession(_ session: ExpoURLSessionTask, willPerformHTTPRedirection response: URLResponse) -> Bool
+  func urlSession(
+    _ session: ExpoURLSessionTask,
+    task: URLSessionTask,
+    willPerformHTTPRedirection response: HTTPURLResponse,
+    newRequest request: URLRequest,
+    completionHandler: @escaping (URLRequest?) -> Void
+  )
   func urlSession(_ session: ExpoURLSessionTask, task: URLSessionTask, didCompleteWithError error: Error?)
 }
