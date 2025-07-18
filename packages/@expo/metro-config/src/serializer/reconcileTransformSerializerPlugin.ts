@@ -14,6 +14,7 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types.flow';
 import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import type { SerializerConfigT } from '@expo/metro/metro-config';
 import { toSegmentTuple } from '@expo/metro/metro-source-map';
 import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
@@ -194,7 +195,7 @@ export async function reconcileTransformSerializerPlugin(
     const sideEffectReferences = () =>
       [...value.dependencies.values()]
         .filter((dep) => {
-          const fullDep = graph.dependencies.get(dep.absolutePath);
+          const fullDep = isResolvedDependency(dep) ? graph.dependencies.get(dep.absolutePath) : undefined;
           return fullDep && hasSideEffectWithDebugTrace(options, graph, fullDep)[0];
         })
         .map((dep) => dep.data.name);
