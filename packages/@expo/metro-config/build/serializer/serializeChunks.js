@@ -6,15 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chunk = void 0;
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 exports.getSortedModules = getSortedModules;
-/**
- * Copyright © 2023 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+const sourceMapString_1 = __importDefault(require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString"));
+const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
+const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const assert_1 = __importDefault(require("assert"));
-const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
-const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
 const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportHermes_1 = require("./exportHermes");
@@ -219,7 +214,7 @@ class Chunk {
         const computedAsyncModulePaths = {};
         this.deps.forEach((module) => {
             module.dependencies.forEach((dependency) => {
-                if (dependency.data.data.asyncType) {
+                if ((0, isResolvedDependency_1.isResolvedDependency)(dependency) && dependency.data.data.asyncType) {
                     const chunkContainingModule = chunks.find((chunk) => chunk.hasAbsolutePath(dependency.absolutePath));
                     (0, assert_1.default)(chunkContainingModule, 'Chunk containing module not found: ' + dependency.absolutePath);
                     // NOTE(kitten): We shouldn't have any async imports on non-async chunks
@@ -497,7 +492,10 @@ function gatherChunks(runtimePremodules, chunks, settings, preModules, graph, op
     chunks.add(entryChunk);
     function includeModule(entryModule) {
         for (const dependency of entryModule.dependencies.values()) {
-            if (dependency.data.data.asyncType &&
+            if (!(0, isResolvedDependency_1.isResolvedDependency)(dependency)) {
+                continue;
+            }
+            else if (dependency.data.data.asyncType &&
                 // Support disabling multiple chunks.
                 entryChunk.options.serializerOptions?.splitChunks !== false) {
                 const isEntry = dependency.data.data.asyncType === 'worker';

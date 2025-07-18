@@ -259,7 +259,10 @@ export async function treeShakeSerializer(
       // If the dependency was already removed, then we don't need to do anything.
 
       const importInstance = value.dependencies.get(targetHashId);
-      const graphEntryForTargetImport = importInstance && isResolvedDependency(importInstance) && graph.dependencies.get(importInstance.absolutePath);
+      const graphEntryForTargetImport =
+        importInstance &&
+        isResolvedDependency(importInstance) &&
+        graph.dependencies.get(importInstance.absolutePath);
       // Should never happen but we're playing with fire here.
       if (!graphEntryForTargetImport) {
         throw new Error(
@@ -443,7 +446,10 @@ export async function treeShakeSerializer(
     // If the dependency was already removed, then we don't need to do anything.
 
     const importInstance = graphModule.dependencies.get(targetHashId);
-    const graphEntryForTargetImport = importInstance && isResolvedDependency(importInstance) && graph.dependencies.get(importInstance.absolutePath);
+    const graphEntryForTargetImport =
+      importInstance &&
+      isResolvedDependency(importInstance) &&
+      graph.dependencies.get(importInstance.absolutePath);
     // Should never happen but we're playing with fire here.
     if (!graphEntryForTargetImport) {
       throw new Error(
