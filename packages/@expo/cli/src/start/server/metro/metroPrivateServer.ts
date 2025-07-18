@@ -31,7 +31,9 @@ export type MetroPrivateServer = MetroServer & {
     }
   ): Promise<string>;
 
-  _shouldAddModuleToIgnoreList(module: import('@expo/metro/metro/DeltaBundler/types.flow').Module): boolean;
+  _shouldAddModuleToIgnoreList(
+    module: import('@expo/metro/metro/DeltaBundler/types.flow').Module
+  ): boolean;
 };
 
 export function assertMetroPrivateServer(metro: MetroServer): asserts metro is MetroPrivateServer {

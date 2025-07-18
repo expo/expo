@@ -12,8 +12,15 @@ import {
   sourceMapGeneratorNonBlocking,
   type SourceMapGeneratorOptions,
 } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
-import type { Module, DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types.flow';
-import type { default as MetroHmrServer, Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
+import type {
+  Module,
+  DeltaResult,
+  TransformInputOptions,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import type {
+  default as MetroHmrServer,
+  Client as MetroHmrClient,
+} from '@expo/metro/metro/HmrServer';
 import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
