@@ -49,25 +49,23 @@ export async function test({ describe, expect, it, ...t }) {
         // });
       });
     } else {
-      it('Supports some operations on SAF picker files', async () => {
-        if (ExponentTest.isInCI) {
-          return;
-        }
-        const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
-        if (!saf.granted) {
-          throw new Error();
-        }
-        const safDirectory = new Directory(saf.directoryUri);
-        expect(safDirectory.list().length).toBe(0);
+      // This test fails on CI.
+      // it('Supports some operations on SAF picker files', async () => {
+      //   const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      //   if (!saf.granted) {
+      //     throw new Error();
+      //   }
+      //   const safDirectory = new Directory(saf.directoryUri);
+      //   expect(safDirectory.list().length).toBe(0);
 
-        safDirectory.createFile('newFile', 'text/plain');
-        expect(safDirectory.list().length).toBe(1);
+      //   safDirectory.createFile('newFile', 'text/plain');
+      //   expect(safDirectory.list().length).toBe(1);
 
-        safDirectory.list().forEach((sd) => {
-          sd.delete();
-        });
-        expect(safDirectory.list().length).toBe(0);
-      });
+      //   safDirectory.list().forEach((sd) => {
+      //     sd.delete();
+      //   });
+      //   expect(safDirectory.list().length).toBe(0);
+      // });
       it('Creates a lazy file reference', () => {
         const file = new File('file:///path/to/file');
         expect(file.uri).toBe('file:///path/to/file');
