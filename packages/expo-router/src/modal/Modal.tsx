@@ -64,6 +64,13 @@ export interface ModalProps extends ViewProps {
    * while **Android is limited to three**.
    */
   detents?: ModalConfig['detents'];
+  /**
+   * See {@link ScreenProps["sheetLargestUndimmedDetentIndex"]}.
+   *
+   * The largest sheet detent for which a view underneath won't be dimmed.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  largestUndimmedDetentIndex?: ModalConfig['largestUndimmedDetentIndex'];
 }
 
 /**
@@ -101,6 +108,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
+    largestUndimmedDetentIndex,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -123,6 +131,7 @@ export function Modal(props: ModalProps) {
         uniqueId: newId,
         parentNavigationProp: navigation,
         detents,
+        largestUndimmedDetentIndex,
       });
       setCurrentModalId(newId);
       return () => {

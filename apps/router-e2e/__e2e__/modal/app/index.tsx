@@ -149,8 +149,32 @@ export default function Index() {
         </Modal>
       )}
       <FitForm />
+      <UndimmedForm />
     </View>
   );
+}
+
+function UndimmedForm() {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <>
+      <Button title="Open Undimmed" onPress={() => setIsOpen((open) => !open)} />
+        <Modal
+          visible={open}
+          presentationStyle="formSheet"
+          onClose={() => setIsOpen(false)}
+          detents={[0.3, 0.5, 1]}
+          largestUndimmedDetentIndex={0}
+          style={{
+            paddingTop: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Button title="Close" onPress={() => setIsOpen(false)} />
+        </Modal>
+    </>
+  )
 }
 
 function FitForm() {

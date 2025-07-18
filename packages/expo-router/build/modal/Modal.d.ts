@@ -54,6 +54,13 @@ export interface ModalProps extends ViewProps {
      * while **Android is limited to three**.
      */
     detents?: ModalConfig['detents'];
+    /**
+     * See {@link ScreenProps["sheetLargestUndimmedDetentIndex"]}.
+     *
+     * The largest sheet detent for which a view underneath won't be dimmed.
+     * Works only when `presentation` is set to `formSheet`.
+     */
+    largestUndimmedDetentIndex?: ModalConfig['largestUndimmedDetentIndex'];
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.

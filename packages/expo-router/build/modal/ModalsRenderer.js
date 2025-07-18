@@ -24,7 +24,7 @@ const ModalsRenderer = ({ children, modalConfigs, onDismissed, onShow, }) => {
                     backgroundColor: config.transparent ? 'transparent' : 'white',
                 },
                 config.viewProps?.style,
-            ]} sheetAllowedDetents={config.detents} style={[
+            ]} sheetAllowedDetents={config.detents} sheetLargestUndimmedDetentIndex={config.largestUndimmedDetentIndex} style={[
                 react_native_1.StyleSheet.absoluteFill,
                 {
                     backgroundColor: config.transparent ? 'transparent' : 'white',

@@ -9,6 +9,7 @@ export interface ModalConfig {
     transparent?: boolean;
     viewProps?: ViewProps;
     detents?: number[] | 'fitToContents';
+    largestUndimmedDetentIndex?: number | 'none' | 'last';
 }
 export interface ModalsRendererProps {
     children?: React.ReactNode;
