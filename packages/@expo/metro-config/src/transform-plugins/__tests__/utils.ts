@@ -6,7 +6,7 @@
  */
 
 import { codeFrameColumns } from '@babel/code-frame';
-import type { SourceLocation as BabelSourceLocation } from '@babel/types';
+import { types as t } from '@babel/core';
 import type { Dependency } from 'metro/src/ModuleGraph/worker/collectDependencies';
 import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
 
@@ -51,19 +51,19 @@ function formatDependencyLocs(dependencies: readonly Dependency[], code: string)
 }
 
 function adjustPosForCodeFrame(
-  pos: BabelSourceLocation['start'] | BabelSourceLocation['end'] | null | undefined
+  pos: t.SourceLocation['start'] | t.SourceLocation['end'] | null | undefined
 ) {
   return pos ? { ...pos, column: pos.column + 1 } : pos;
 }
 
-function adjustLocForCodeFrame(loc: BabelSourceLocation) {
+function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
     start: adjustPosForCodeFrame(loc.start),
     end: adjustPosForCodeFrame(loc.end),
   };
 }
 
-function formatLoc(loc: BabelSourceLocation, depIndex: number, dep: Dependency, code: string) {
+function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: string) {
   return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
     message: `dep #${depIndex} (${dep.name})`,
     linesAbove: 0,

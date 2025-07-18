@@ -9,11 +9,9 @@
  * This helps establish a baseline of support.
  */
 import { codeFrameColumns } from '@babel/code-frame';
-import { transformFromAstSync } from '@babel/core';
+import { transformFromAstSync, parse, types as t } from '@babel/core';
+import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import * as babylon from '@babel/parser';
-import type { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
 import dedent from 'dedent';
 import {
   importLocationsPlugin,
@@ -1910,7 +1908,7 @@ function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, cod
 }
 
 function astFromCode(code: string) {
-  return babylon.parse(code, {
+  return parse(code, {
     plugins: ['dynamicImport', 'flow'],
     sourceType: 'module',
   });

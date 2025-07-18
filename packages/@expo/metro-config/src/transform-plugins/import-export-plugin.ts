@@ -10,11 +10,11 @@
 // https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js
 
 import { template } from '@babel/core';
-import type { PluginObj, NodePath, types as t } from '@babel/core';
+import type { NodePath, PluginObj, types as t } from '@babel/core';
 import assert from 'node:assert';
 const debug = require('debug')('expo:metro-config:import-export-plugin') as typeof console.log;
 
-type Types = typeof t;
+type Types = typeof import('@babel/core').types;
 
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -161,7 +161,10 @@ const resolveTemplate = template.expression(`
 /**
  * Enforces the resolution of a path to a fully-qualified one, if set.
  */
-function resolvePath<TNode extends t.Node>(node: TNode, resolve: boolean): t.Expression | TNode {
+function resolvePath<TNode extends t.Node>(
+  node: TNode,
+  resolve: boolean
+): t.Expression | TNode {
   if (!resolve) {
     return node;
   }
@@ -210,7 +213,10 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ExportDefaultDeclaration(path: NodePath<t.ExportDefaultDeclaration>, state: State): void {
+      ExportDefaultDeclaration(
+        path: NodePath<t.ExportDefaultDeclaration>,
+        state: State
+      ): void {
         const declaration = path.node.declaration;
         const id =
           ('id' in declaration && declaration.id) || path.scope.generateUidIdentifier('default');
@@ -794,11 +800,10 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           };
           path.traverse<ReferencedIdentifierTravelerState>(
             {
-              // @ts-expect-error ReferencedIdentifier is not in the types
-              ReferencedIdentifier: (
+              ReferencedIdentifier(
                 path: NodePath<t.Identifier | t.JSXIdentifier>,
                 state: ReferencedIdentifierTravelerState
-              ) => {
+              ) {
                 const localName = path.node.name;
                 const { namespace, remote } = state.namespaceForLocal.get(localName) ?? {};
                 // not from a namespace
