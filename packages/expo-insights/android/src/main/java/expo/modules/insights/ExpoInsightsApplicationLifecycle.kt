@@ -11,6 +11,13 @@ import java.io.RandomAccessFile
 
 class ExpoInsightsApplicationLifecycle : ApplicationLifecycleListener {
   override fun onCreate(application: Application?) {
+    Insights.send(event = "PROCESS_START", getProcessStartTime())
+
+    super.onCreate(application)
+    ReactMarker.addListener(markerListener)
+  }
+
+  private fun getProcessStartTime(): Long {
     val statReader = RandomAccessFile("/proc/self/stat", "r")
     val stat = statReader.readLine()
     statReader.close()
@@ -19,12 +26,7 @@ class ExpoInsightsApplicationLifecycle : ApplicationLifecycleListener {
     val ticksPerSecond = Os.sysconf(OsConstants._SC_CLK_TCK)
     val processStartElapsedMs = (startTimeTicks * 1000) / ticksPerSecond
     val nowElapsedMs = SystemClock.elapsedRealtime()
-    val processStartTime = System.currentTimeMillis() - (nowElapsedMs - processStartElapsedMs)
-
-    Insights.send(event = "PROCESS_START", processStartTime)
-
-    super.onCreate(application)
-    ReactMarker.addListener(markerListener)
+    return System.currentTimeMillis() - (nowElapsedMs - processStartElapsedMs)
   }
 
   private val markerListener = ReactMarker.MarkerListener { name, _, _ ->
