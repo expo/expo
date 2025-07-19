@@ -1,0 +1,36 @@
+appId: 'com.expo.routere2e' # iOS
+#appId: 'dev.expo.routere2e' # Android
+---
+- launchApp
+- assertVisible: ^Index$
+
+- tapOn: Open fitToContents
+
+- repeat:
+    times: 2
+    commands:
+      - tapOn: Add
+- repeat:
+    times: 2
+    commands:
+      - tapOn: Remove
+- tapOn:
+    point: 50%,50% # Center of the screen
+
+
+- tapOn: Open fitToContents
+- repeat:
+    times: 2
+    commands:
+      - tapOn: Add
+- tapOn:
+    point: 50%,50% # Center of the screen
+- tapOn: Open fitToContents
+- repeat:
+    times: 2
+    commands:
+      - tapOn: Remove
+- tapOn:
+    point: 50%,50% # Center of the screen
+
+- assertVisible: ^Index$

@@ -1,6 +1,14 @@
 import { Modal } from 'expo-router';
 import { useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { ButtonProps, Text, View } from 'react-native';
+
+const Button = ({ title, onPress }: ButtonProps) => {
+  return (
+    <Pressable style={{ padding: 10, backgroundColor: 'lightblue'}} onPress={onPress}>
+      <Text>{title}</Text>
+    </Pressable>
+  )
+};
 
 export default function ModalScreen() {
   const [isOpen, setIsOpen] = useState(false);

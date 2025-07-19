@@ -1,0 +1,28 @@
+appId: 'com.expo.routere2e' # iOS
+#appId: 'dev.expo.routere2e' # Android
+---
+- launchApp
+- assertVisible: ^Index$
+- tapOn: Open Modal A
+- assertVisible: ^Modal A$
+- tapOn: Close Modal A
+
+- tapOn: Open Modal B
+- assertVisible: ^Modal B$
+- tapOn: Close Modal B
+
+- tapOn: Open Modal C
+- assertVisible: ^Modal C - formSheet$
+- tapOn: Close (unmount) Modal C
+
+- tapOn: Open Modal D
+- assertVisible: ^Modal D$
+- tapOn: Close (unmount) Modal D
+
+- tapOn: Open fitToContents
+- assertVisible: Add
+- assertVisible: Remove
+- tapOn:
+    point: 50%,50% # Center of the screen
+
+- assertVisible: ^Index$

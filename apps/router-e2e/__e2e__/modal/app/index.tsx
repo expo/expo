@@ -1,6 +1,14 @@
-import { Link, Modal, Stack } from 'expo-router';
-import { useState } from 'react';
-import { Button, Pressable, ScrollView, Text, View } from 'react-native';
+import {Link, Modal, Stack} from 'expo-router';
+import {useState} from 'react';
+import {type ButtonProps, Pressable, ScrollView, Text, View} from 'react-native';
+
+const Button = ({ title, onPress }: ButtonProps) => {
+  return (
+    <Pressable style={{ padding: 10, backgroundColor: 'lightblue'}} onPress={onPress}>
+      <Text>{title}</Text>
+    </Pressable>
+  )
+};
 
 export default function Index() {
   const [isOpenA, setIsOpenA] = useState(false);
