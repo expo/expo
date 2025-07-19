@@ -54,6 +54,13 @@ export interface ModalProps extends ViewProps {
      * while **Android is limited to three**.
      */
     detents?: ModalConfig['detents'];
+    /**
+     * See {@link ScreenProps["unstable_sheetFooter"]}.
+     *
+     * Footer component that can be used alongside formSheet stack presentation style.
+     * Works only when `presentation` is set to `formSheet`.
+     */
+    footer?: ModalConfig['footer'];
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.
