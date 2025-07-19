@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Add package exports support. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
 - Restructure Jest polyfills to not import forbidden platform extension directly. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Improve time to retrieve the Expo module. ([#37082](https://github.com/expo/expo/pull/37082) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Reduce the memory footprint of calling function from the native module. ([#37080](https://github.com/expo/expo/pull/37080) by [@lukmccall](https://github.com/lukmccall))
