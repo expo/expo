@@ -32,7 +32,6 @@ const IGNORED_PACKAGES = [
   '@expo/image-utils', // package: sharp, sharp-cli
   '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
   '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
-  'babel-preset-expo', // package: @babel/*, debug, expo, react-native-reanimated, resolve-from
   'expo-asset', // package: @react-native/assets-registry, expo-updates (types only)
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
@@ -48,6 +47,13 @@ const IGNORED_PACKAGES = [
 ];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind>> = {
+  'babel-preset-expo': {
+    '@babel/core': 'types-only',
+    '@expo/metro-config/build/babel-transformer': 'types-only',
+    'react-native-worklets/plugin': 'ignore', // Checked via hasModule before requiring
+    'react-native-reanimated/plugin': 'ignore', // Checked via hasModule before requiring
+    'expo/config': 'ignore', // WARN: May need a reverse peer dependency
+  },
 };
 
 /**
