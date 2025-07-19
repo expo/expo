@@ -143,8 +143,8 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
       completionHandler(request)
     } else {
       completionHandler(nil)
-      
-      // NOTE (kudo): The exact usage of 
+
+      // NOTE (kudo): The exact usage of
       // `urlProtocol(_:wasRedirectedTo:redirectResponse:)` isn’t fully clear.
       // My understanding is that this delegate method informs the client
       // about a redirect when you’re handling it yourself.
