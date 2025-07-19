@@ -33,8 +33,6 @@ type SourceFileImportRef = {
   isTypeOnly?: boolean;
 };
 
-// We are incrementally rolling this out, the imports in this list are expected to be invalid
-const IGNORED_IMPORTS = ['expo-modules-core', 'typescript'];
 // We are incrementally rolling this out, the sdk packages in this list are expected to be invalid
 const IGNORED_PACKAGES = [
   '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
@@ -157,10 +155,7 @@ function createExternalImportValidator(pkg: Package) {
     DependencyKind.Dev,
     DependencyKind.Peer,
   ]);
-
-  IGNORED_IMPORTS.forEach((dependency) => dependencyMap.set(dependency, null));
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
-
   return (ref: SourceFileImportRef) =>
     ref.type !== 'external' ||
     pkg.packageName === ref.packageName ||
