@@ -28,7 +28,6 @@ export function expoInlineEnvVars(api: ConfigAPI & { types: typeof t }): PluginO
       MemberExpression(path, state) {
         const filename = state.filename;
         if (path.get('object').matchesPattern('process.env')) {
-          // @ts-expect-error
           const key = path.toComputedKey();
           if (
             t.isStringLiteral(key) &&

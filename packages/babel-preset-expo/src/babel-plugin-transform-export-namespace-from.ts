@@ -7,7 +7,6 @@
  */
 
 import { PluginObj, types as t } from '@babel/core';
-import type { SourceLocation, Node } from '@babel/types';
 
 // Original: https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-plugin-transform-export-namespace-from/src/index.ts
 
@@ -64,9 +63,9 @@ export default (): PluginObj => ({
 });
 
 // Inspired by https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js#L143
-function withLocation<TNode extends Node>(
+function withLocation<TNode extends t.Node>(
   node: TNode,
-  loc: SourceLocation | null | undefined
+  loc: t.SourceLocation | null | undefined
 ): TNode {
   if (!node.loc) {
     return { ...node, loc };

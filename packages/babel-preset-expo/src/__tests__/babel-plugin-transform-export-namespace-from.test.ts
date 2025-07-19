@@ -1,6 +1,5 @@
 import { codeFrameColumns } from '@babel/code-frame';
-import { transformSync } from '@babel/core';
-import type { SourceLocation, File } from '@babel/types';
+import { transformSync, types as t } from '@babel/core';
 
 import plugin from '../babel-plugin-transform-export-namespace-from';
 
@@ -48,11 +47,10 @@ function transform(code: string) {
     babelrc: false,
     ast: true,
   });
-
-  return result.ast;
+  return result!.ast!;
 }
 
-function formatProgramStatementLocs(ast: File, code: string) {
+function formatProgramStatementLocs(ast: t.File, code: string) {
   if (!ast.program || !ast.program.body) {
     return '\nNo program body found';
   }
@@ -71,19 +69,19 @@ function formatProgramStatementLocs(ast: File, code: string) {
 }
 
 function adjustPosForCodeFrame(
-  pos: SourceLocation['start'] | SourceLocation['end'] | null | undefined
+  pos: t.SourceLocation['start'] | t.SourceLocation['end'] | null | undefined
 ) {
   return pos ? { ...pos, column: pos.column + 1 } : pos;
 }
 
-function adjustLocForCodeFrame(loc: SourceLocation) {
+function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
     start: adjustPosForCodeFrame(loc.start),
     end: adjustPosForCodeFrame(loc.end),
   };
 }
 
-function formatStatementLoc(loc: SourceLocation, statementIndex: number, code: string) {
+function formatStatementLoc(loc: t.SourceLocation, statementIndex: number, code: string) {
   return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
     message: `Statement #${statementIndex}`,
     linesAbove: 0,

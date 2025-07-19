@@ -10,14 +10,13 @@
 
 import {
   ConfigAPI,
-  types,
   template,
+  types as t,
   type NodePath,
   type PluginObj,
   type PluginPass,
 } from '@babel/core';
 import type { Scope as BabelScope } from '@babel/traverse';
-import * as t from '@babel/types';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
@@ -49,9 +48,7 @@ const buildLazyWrapperHelper = () => {
   return (_buildLazyWrapperHelper() as t.ExpressionStatement).expression;
 };
 
-export function reactServerActionsPlugin(
-  api: ConfigAPI & { types: typeof types }
-): PluginObj<PluginPass> {
+export function reactServerActionsPlugin(api: ConfigAPI): PluginObj<PluginPass> {
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   let addReactImport: () => t.Identifier;
   let wrapBoundArgs: (expr: t.Expression) => t.Expression;
@@ -133,7 +130,7 @@ export function reactServerActionsPlugin(
     const isPathFunctionInTopLevel = path.find((p) => p.isProgram()) === path;
 
     const decl = isPathFunctionInTopLevel ? path : findImmediatelyEnclosingDeclaration(path);
-    let inserted: NodePath<types.ExportNamedDeclaration>;
+    let inserted: NodePath<t.ExportNamedDeclaration>;
 
     const canInsertExportNextToPath = (decl: NodePath) => {
       if (!decl) {
@@ -186,10 +183,9 @@ export function reactServerActionsPlugin(
     } else {
       // Fallback to inserting after the last import if no enclosing declaration is found
       const programBody = moduleScope.path.get('body');
-      const lastImportPath = findLast(
-        Array.isArray(programBody) ? programBody : [programBody],
-        (stmt) => stmt.isImportDeclaration()
-      );
+      const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast((statement) => {
+        return statement.isImportDeclaration();
+      });
 
       [inserted] = lastImportPath!.insertAfter(functionDeclaration);
       moduleScope.registerBinding(bindingKind, inserted);
@@ -730,13 +726,6 @@ const isChildScope = ({
     curScope = curScope.parent;
   }
   return false;
-};
-
-const findLast = <T>(arr: T[], predicate: (value: T) => boolean): T | undefined => {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) return arr[i];
-  }
-  return undefined;
 };
 
 function findImmediatelyEnclosingDeclaration(path: FnPath) {

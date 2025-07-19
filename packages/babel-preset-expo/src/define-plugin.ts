@@ -6,8 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
+import { type NodePath, types as t } from '@babel/core';
 
 /**
  * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
@@ -31,7 +30,7 @@ function replaceAndEvaluateNode(nodePath: NodePath, replacement: string) {
  * @param  {babelNode} identifierNodePath The node to check
  * @return {boolean} Indicates if the provided node is an import specifier or references one
  */
-const isImportIdentifier = (identifierNodePath: NodePath<t.Identifier>): boolean => {
+const isImportIdentifier = (identifierNodePath: NodePath<t.Identifier | t.JSXIdentifier>): boolean => {
   if (
     identifierNodePath.container &&
     !Array.isArray(identifierNodePath.container) &&
@@ -95,7 +94,6 @@ const plugin = (_: { types: typeof t }): babel.PluginObj => {
       },
 
       // const x = { version: VERSION };
-      // @ts-expect-error: Virtual type `ReferencedIdentifier` is not on types.
       ReferencedIdentifier(nodePath, state) {
         const binding = nodePath.scope?.getBinding(nodePath.node.name);
 
