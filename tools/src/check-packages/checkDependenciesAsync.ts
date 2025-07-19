@@ -8,6 +8,7 @@ import Logger from '../Logger';
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
 
 type PackageCheckType = ActionOptions['checkPackageType'];
+type IgnoreKind = 'types-only' | 'ignore';
 
 type SourceFile = {
   path: string;
@@ -46,6 +47,9 @@ const IGNORED_PACKAGES = [
   'expo-audio', // package: @react-native/assets-registry
 ];
 
+const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind>> = {
+};
+
 /**
  * Checks whether the package has valid dependency chains for each (external) import.
  *
@@ -66,12 +70,27 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   }
 
   const isValidExternalImport = createExternalImportValidator(pkg);
-  const invalidImports: { file: SourceFile; importRef: SourceFileImportRef }[] = [];
+  let invalidImports: { file: SourceFile; importRef: SourceFileImportRef }[] = [];
 
   for (const source of sources) {
     source.importRefs
       .filter((importRef) => !isValidExternalImport(importRef))
       .forEach((importRef) => invalidImports.push({ file: source.file, importRef }));
+  }
+
+  const config = SPECIAL_DEPENDENCIES[pkg.packageName];
+  if (config) {
+    // Filter out ignored imports per package
+    invalidImports = invalidImports.filter(({ importRef }) => {
+      switch (config[importRef.importValue]) {
+        case 'types-only':
+          return !importRef.isTypeOnly;
+        case 'ignore':
+          return false;
+        default:
+          return true;
+      }
+    });
   }
 
   if (invalidImports.length) {
