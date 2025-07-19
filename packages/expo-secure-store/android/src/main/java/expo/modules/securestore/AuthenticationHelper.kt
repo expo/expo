@@ -40,19 +40,19 @@ class AuthenticationHelper(
 
     isAuthenticating = true
 
-    assertBiometricsSupport()
-    val fragmentActivity = getCurrentActivity() as? FragmentActivity
-      ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
+    try {
+      assertBiometricsSupport()
+      val fragmentActivity = getCurrentActivity() as? FragmentActivity
+        ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
-    val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
+      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title)
 
-    return withContext(Dispatchers.Main.immediate) {
-      try {
+      return withContext(Dispatchers.Main.immediate) {
         return@withContext authenticationPrompt.authenticate(cipher)
           ?: throw AuthenticationException("Couldn't get the authentication result")
-      } finally {
-        isAuthenticating = false
       }
+    } finally {
+      isAuthenticating = false
     }
   }
 
