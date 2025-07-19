@@ -2611,7 +2611,7 @@ sign-out operation.
     </div>
     <br />
     <div
-      class=""
+      class="px-4 [table_&]:!mb-0 [table_&]:px-0"
     >
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
