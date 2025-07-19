@@ -112,7 +112,12 @@ function getDirectoryTree(contextModule, options) {
             for (const rewrite of options.rewrites) {
                 const sourceContextKey = getSourceContextKeyFromRedirectSource(rewrite.source);
                 const sourceName = getNameFromRedirectPath(rewrite.source);
-                const targetDestinationName = getNameFromRedirectPath(rewrite.destination);
+                // We check to see if the context key is already known so that we don't create a rewrite for
+                // a route that already exists on disk
+                const isSourceContextKeyAlreadyKnown = contextKeys.includes(sourceContextKey);
+                const targetDestinationName = isSourceContextKeyAlreadyKnown
+                    ? getNameFromRedirectPath(rewrite.destination)
+                    : getNameWithoutInvisibleSegmentsFromRedirectPath(rewrite.destination);
                 if (ignoreList.some((regex) => regex.test(sourceContextKey))) {
                     continue;
                 }

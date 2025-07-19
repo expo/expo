@@ -18,7 +18,7 @@ const getRoutesCore_1 = require("./getRoutesCore");
  */
 function getRoutes(contextModule, options = {}) {
     return (0, getRoutesCore_1.getRoutes)(contextModule, {
-        getSystemRoute({ route, type, defaults }) {
+        getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
             if (route === '' && type === 'layout') {
                 // Root layout when no layout is defined.
                 return {
@@ -62,15 +62,25 @@ function getRoutes(contextModule, options = {}) {
                     children: [],
                 };
             }
-            else if ((type === 'redirect' || type === 'rewrite') && defaults) {
+            else if (type === 'redirect' && redirectConfig && defaults) {
                 return {
                     ...defaults,
                     loadRoute() {
-                        return require('./getRoutesRedirects').getRedirectModule(route);
+                        return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
                     },
                 };
             }
-            throw new Error(`Unknown system route: ${route} and type: ${type}`);
+            else if (type === 'rewrite' && rewriteConfig && defaults) {
+                return {
+                    ...defaults,
+                    loadRoute() {
+                        return {
+                            default: contextModule(rewriteConfig.destinationContextKey).default,
+                        };
+                    },
+                };
+            }
+            throw new Error(`Unknown system route: ${route} and type: ${type} and redirectConfig: ${redirectConfig} and rewriteConfig: ${rewriteConfig}`);
         },
         ...options,
     });
