@@ -55,7 +55,7 @@ module.exports = {
         },
       },
     ],
-
+    'patch-project',
     [
       'expo-router',
       {

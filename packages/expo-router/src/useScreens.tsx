@@ -56,9 +56,13 @@ export type SingularOptions =
 function getSortedChildren(
   children: RouteNode[],
   order: ScreenProps[] = [],
-  initialRouteName?: string
+  initialRouteName?: string,
+  preserveOnlyUserDefined: boolean = false
 ): { route: RouteNode; props: Partial<ScreenProps> }[] {
   if (!order?.length) {
+    if (preserveOnlyUserDefined) {
+      return [];
+    }
     return children
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((route) => ({ route, props: {} }));
@@ -135,9 +139,13 @@ function getSortedChildren(
   }[];
 
   // Add any remaining children
-  ordered.push(
-    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} }))
-  );
+  if (!preserveOnlyUserDefined) {
+    ordered.push(
+      ...entries
+        .sort(sortRoutesWithInitial(initialRouteName))
+        .map((route) => ({ route, props: {} }))
+    );
+  }
 
   return ordered;
 }
@@ -147,12 +155,13 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  protectedScreens: Set<string>
+  protectedScreens: Set<string>,
+  preserveOnlyUserDefined: boolean = false
 ): React.ReactNode[] {
   const node = useRouteNode();
 
   const sorted = node?.children?.length
-    ? getSortedChildren(node.children, order, node.initialRouteName)
+    ? getSortedChildren(node.children, order, node.initialRouteName, preserveOnlyUserDefined)
     : [];
   return React.useMemo(
     () =>

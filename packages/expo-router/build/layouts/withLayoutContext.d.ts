@@ -44,7 +44,7 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
  * }
  * ```
  */
-export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown>> & {
+export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[], preserveOnlyUserDefined?: boolean): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown>> & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
     Protected: typeof Protected;
 };

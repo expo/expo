@@ -13223,10 +13223,15 @@ react-native-iphone-x-helper@^1.0.3:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
   integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
 
-react-native-is-edge-to-edge@1.1.7, react-native-is-edge-to-edge@^1.1.6, react-native-is-edge-to-edge@^1.1.7:
+react-native-is-edge-to-edge@1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
+
+react-native-is-edge-to-edge@^1.1.6, react-native-is-edge-to-edge@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz#64e10851abd9d176cbf2b40562f751622bde3358"
+  integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
 react-native-keyboard-aware-scroll-view@^0.9.5:
   version "0.9.5"
@@ -13287,13 +13292,13 @@ react-native-safe-area-context@5.4.0:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.4.0.tgz#04b51940408c114f75628a12a93569d30c525454"
   integrity sha512-JaEThVyJcLhA+vU0NU8bZ0a1ih6GiF4faZ+ArZLqpYbL6j7R3caRqj+mE3lEtKCuHgwjLg3bCxLL1GPUJZVqUA==
 
-react-native-screens@4.11.1-nightly-20250611-8b82e081e:
-  version "4.11.1-nightly-20250611-8b82e081e"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.11.1-nightly-20250611-8b82e081e.tgz#fa41372cc3a31b217513758597b6a9f6a95cd43c"
-  integrity sha512-6hF155fY5z3uuBHG6qYNpu0XuqAKn5omNATzVCAwMPlpiIJ2j+iHOWbYVyqBT8bDnVvcczZT/eloGvt6A2OtEQ==
+react-native-screens@4.11.1-nightly-20250611-8b82e081e, react-native-screens@4.13.0:
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-4.13.0.tgz#4e29bf6663fe7245c02071b96456a7ae6df23888"
+  integrity sha512-WB0QeaevdfV+MR+CMh4BgL9ryYDK2Ia20Sk2dpM/3jKVqfN52l6wbk1Zo/wTHrwaR1UjK8zQjc6jRgdZFhW+mw==
   dependencies:
     react-freeze "^1.0.0"
-    react-native-is-edge-to-edge "^1.1.7"
+    react-native-is-edge-to-edge "^1.2.1"
     warn-once "^0.1.0"
 
 react-native-scrollable-mixin@^1.0.0:
