@@ -6,12 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { PluginObj, types as t } from '@babel/core';
+import type { ConfigAPI, PluginObj, types as t } from '@babel/core';
 
 // Original: https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-plugin-transform-export-namespace-from/src/index.ts
 
 // NOTE: Original plugin asserts that Babel version 7 or newer is used. This was removed for simplicity.
-export default (): PluginObj => ({
+export default ({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginObj => ({
   name: 'transform-export-namespace-from',
   manipulateOptions: process.env.BABEL_8_BREAKING
     ? undefined
