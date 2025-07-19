@@ -165,7 +165,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
 
 function isNCCBuilt(pkg: Package): boolean {
   const { build: buildScript } = pkg.packageJson.scripts;
-  return !!pkg.packageJson.bin && buildScript.includes('ncc');
+  return !!pkg.packageJson.bin && !!buildScript?.includes('ncc');
 }
 
 /**
