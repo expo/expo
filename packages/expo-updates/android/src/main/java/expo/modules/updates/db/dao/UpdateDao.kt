@@ -127,6 +127,14 @@ abstract class UpdateDao {
   @Query("UPDATE updates SET failed_launch_count = failed_launch_count + 1 WHERE id = :id;")
   abstract fun incrementFailedLaunchCountInternal(id: UUID)
 
+  fun markUpdateFromOverride(update: UpdateEntity) {
+    update.isFromOverride = true
+    markUpdateFromOverrideInternal(update.id)
+  }
+
+  @Query("UPDATE updates SET from_override = 1 WHERE id = :id;")
+  protected abstract fun markUpdateFromOverrideInternal(id: UUID)
+
   fun markUpdatesWithMissingAssets(missingAssets: List<AssetEntity>) {
     val missingAssetIds = mutableListOf<Long>()
     for (asset in missingAssets) {

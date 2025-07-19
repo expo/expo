@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added reload support to `setUpdateURLAndRequestHeadersOverride`. ([#38167](https://github.com/expo/expo/pull/38167) by [@kudo](https://github.com/kudo))
+- Added reload support to `setUpdateURLAndRequestHeadersOverride`. ([#38167](https://github.com/expo/expo/pull/38167), [#38180](https://github.com/expo/expo/pull/38180) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

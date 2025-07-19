@@ -512,6 +512,42 @@ class UpdatesDatabaseMigrationTest {
     )
   }
 
+  @Test
+  @Throws(IOException::class)
+  fun testMigrate12To13() {
+    var db = helper.createDatabase(TEST_DB, 12)
+
+    // db has schema version 12. insert some data using SQL queries.
+    // cannot use DAO classes because they expect the latest schema.
+    db.execSQL(
+      """INSERT INTO "assets" ("id","url","key","headers","type","metadata","download_time","relative_path","hash","hash_type","marked_for_deletion") VALUES (2,'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e','b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,'image/png',NULL,1614137309295,'b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,0,0),
+ (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871',NULL,0,0),
+ (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0)"""
+    )
+    db.execSQL(
+      """INSERT INTO "updates" ("id","scope_key","commit_time","runtime_version","launch_asset_id","manifest","status","keep","last_accessed") VALUES (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"metadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1,1619647642456),
+ (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,'{}',1,1,1619647642457)"""
+    )
+    db.execSQL(
+      """INSERT INTO "updates_assets" ("update_id","asset_id") VALUES (X'8C263F9DE3FF48888496E3244C788661',2),
+ (X'8C263F9DE3FF48888496E3244C788661',3),
+ (X'594100ea066e4804b5c7c907c773f980',4)"""
+    )
+
+    // Prepare for the next version.
+    db.close()
+
+    // Re-open the database with version 12 and provide
+    // MIGRATION_12_13 as the migration process.
+    db = helper.runMigrationsAndValidate(TEST_DB, 13, true, UpdatesDatabase.MIGRATION_12_13)
+    db.execSQL("PRAGMA foreign_keys=ON")
+
+    // schema changes automatically verified, we just need to verify data integrity
+    val cursorUpdates1 =
+      db.query("SELECT * FROM `updates` WHERE `from_override` = 0")
+    Assert.assertEquals(2, cursorUpdates1.count.toLong())
+  }
+
   private fun execSQLExpectingException(db: SupportSQLiteDatabase, sql: String): Boolean {
     val fails: Boolean = try {
       db.execSQL(sql)

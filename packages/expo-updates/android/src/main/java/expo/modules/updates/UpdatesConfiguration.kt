@@ -38,7 +38,10 @@ data class UpdatesConfiguration(
   val codeSigningIncludeManifestResponseCertificateChain: Boolean,
   private val codeSigningAllowUnsignedManifests: Boolean,
   val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
-  val disableAntiBrickingMeasures: Boolean
+  val disableAntiBrickingMeasures: Boolean,
+  val hasUpdatesOverride: Boolean,
+
+  private val cachedOverrideMap: Map<String, Any>?
 ) {
   enum class CheckAutomaticallyConfiguration {
     NEVER {
@@ -75,6 +78,8 @@ data class UpdatesConfiguration(
     disableAntiBrickingMeasures: Boolean,
     configOverride: UpdatesConfigurationOverride?
   ) : this(
+    cachedOverrideMap = overrideMap,
+
     scopeKey = maybeGetDefaultScopeKey(
       overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SCOPE_KEY_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SCOPE_KEY"),
       updateUrl = getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride)!!
@@ -112,7 +117,8 @@ data class UpdatesConfiguration(
       UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS
     ) ?: context?.getMetadataValue("expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS") ?: false,
     enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
-    disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap)
+    disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
+    hasUpdatesOverride = configOverride != null
   )
 
   val codeSigningConfiguration: CodeSigningConfiguration? by lazy {
@@ -234,6 +240,23 @@ data class UpdatesConfiguration(
       }
 
       return UpdatesConfigurationValidationResult.VALID
+    }
+
+    /**
+     * A [UpdatesConfiguration] factory that can create from existing [config] and allow config overrides
+     */
+    fun create(
+      context: Context,
+      config: UpdatesConfiguration,
+      configOverride: UpdatesConfigurationOverride?
+    ): UpdatesConfiguration {
+      val overrideMap = config.cachedOverrideMap
+      return UpdatesConfiguration(
+        context = context,
+        overrideMap = overrideMap,
+        disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
+        configOverride = configOverride
+      )
     }
   }
 }
