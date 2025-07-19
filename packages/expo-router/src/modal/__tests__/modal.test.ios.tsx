@@ -293,6 +293,33 @@ describe('ScreenStackItem props', () => {
     );
   });
 
+  it('When detents are not defined and presentationStyle is formSheet, detents should default to fitToContents', async () => {
+    const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
+      const [isOpen, setIsOpen] = useState(false);
+      return (
+        <View testID="CustomComponentWithModal">
+          <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
+          <Modal visible={isOpen} onClose={props.onModalClose} presentationStyle="formSheet">
+            <View testID="modal-content" />
+          </Modal>
+        </View>
+      );
+    };
+
+    renderRouter({
+      index: CustomComponentWithModal,
+    });
+
+    const ScreenStackItem = require('react-native-screens').ScreenStackItem;
+    showModal();
+
+    expect(ScreenStackItem.mock.calls[2][0]).toEqual(
+      expect.objectContaining({
+        sheetAllowedDetents: 'fitToContents',
+      })
+    );
+  });
+
   it('when passing invalid detents [-1,0,2,1], expects an error when opening modal', () => {
     const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
       const [isOpen, setIsOpen] = useState(false);
