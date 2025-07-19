@@ -62,6 +62,21 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     typescript: 'ignore-dev', // TODO: Should probably be a peer dep
   },
 
+  'expo-asset': {
+    '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
+  },
+
+  'expo-updates': {
+    debug: 'ignore-dev', // TODO: Add dependency
+    getenv: 'ignore-dev', // TODO: Add dependency
+    '@expo/plist': 'ignore-dev', // TODO: Add dependency
+  },
+
+  '@expo/image-utils': {
+    sharp: 'ignore-dev', // TODO: Mark as optional peer dep, if that's the intention
+    'sharp-cli': 'ignore-dev',
+  },
+
   'babel-preset-expo': {
     '@babel/core': 'types-only',
     '@expo/metro-config/build/babel-transformer': 'types-only',
