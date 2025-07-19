@@ -54,7 +54,7 @@ const IGNORED_PACKAGES = [
   'expo-audio', // package: @react-native/assets-registry
 ];
 
-const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind>> = {
+const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
   'babel-preset-expo': {
     '@babel/core': 'ignore-dev', // TODO: Switch to types-only (#38177)
     '@babel/traverse': 'types-only', // TODO: Remove (#38171)
@@ -64,6 +64,11 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind>> = {
     'react-native-reanimated/plugin': 'ignore-dev', // Checked via hasModule before requiring
     'expo/config': 'ignore-dev', // WARN: May need a reverse peer dependency
   },
+};
+
+// NOTE: These are globally ignored dependencies, and this list shouldn't ever get longer
+const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
+  'expo-modules-core': 'ignore-dev',
 };
 
 /**
@@ -102,23 +107,29 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   }
 
   const config = SPECIAL_DEPENDENCIES[pkg.packageName];
-  if (config) {
-    // Filter out ignored imports per package
-    invalidImports = invalidImports.filter(({ importRef, kind }) => {
-      const importKind =
-        config[importRef.importValue] || config[getPackageName(importRef.importValue)];
-      switch (importKind) {
-        case 'types-only':
-          return !importRef.isTypeOnly;
-        case 'ignore':
-          return kind !== DependencyKind.Dev;
-        case 'ignore-dev':
-          return false;
-        default:
-          return true;
+  // Filter out ignored imports per package
+  invalidImports = invalidImports.filter(({ importRef, kind }) => {
+    let ignoreKind = config?.[importRef.importValue];
+    if (!ignoreKind) {
+      // if we can't find an ignore kind for the import, we try just the package name
+      const packageName = getPackageName(importRef.importValue);
+      ignoreKind = config?.[packageName];
+      if (!ignoreKind) {
+        // if we still don't find an exception, we see if it's a global exception
+        ignoreKind = IGNORED_IMPORTS[packageName];
       }
-    });
-  }
+    }
+    switch (ignoreKind) {
+      case 'types-only':
+        return !importRef.isTypeOnly;
+      case 'ignore':
+        return kind !== DependencyKind.Dev;
+      case 'ignore-dev':
+        return false;
+      default:
+        return true;
+    }
+  });
 
   if (invalidImports.length) {
     const importAreTypesOnly = invalidImports.every(({ importRef }) => importRef.isTypeOnly);
@@ -185,10 +196,10 @@ function getPackageName(name: string): string {
   let idx: number;
   if (name[0] === '@') {
     idx = name.indexOf('/');
-    if (idx < 0) return name;
-    return name.slice(0, name.indexOf('/', idx + 1));
+    return idx > -1 ? name.slice(0, name.indexOf('/', idx + 1)) : name;
   } else {
-    return name.slice(0, name.indexOf('/'));
+    idx = name.indexOf('/');
+    return idx > -1 ? name.slice(0, idx) : name;
   }
 }
 
