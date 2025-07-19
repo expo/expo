@@ -15,6 +15,7 @@ export interface NativeRequestInit {
   credentials?: RequestCredentials; // same-origin is not supported
   headers?: NativeHeadersType;
   method?: string;
+  redirect?: RequestRedirect;
 }
 
 export type NativeResponseEvents = {

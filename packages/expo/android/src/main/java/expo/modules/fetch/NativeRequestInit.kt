@@ -8,5 +8,6 @@ import expo.modules.kotlin.records.Record
 internal data class NativeRequestInit(
   @Field val credentials: NativeRequestCredentials = NativeRequestCredentials.INCLUDE,
   @Field val headers: List<Pair<String, String>> = emptyList(),
-  @Field val method: String = "GET"
+  @Field val method: String = "GET",
+  @Field val redirect: NativeRequestRedirect = NativeRequestRedirect.FOLLOW
 ) : Record

@@ -7,6 +7,7 @@ export interface FetchRequestInit {
     headers?: HeadersInit;
     method?: string;
     signal?: AbortSignal;
+    redirect?: RequestRedirect;
     integrity?: string;
     keepalive?: boolean;
     mode?: RequestMode;

@@ -8,6 +8,7 @@ export interface NativeRequestInit {
     credentials?: RequestCredentials;
     headers?: NativeHeadersType;
     method?: string;
+    redirect?: RequestRedirect;
 }
 export type NativeResponseEvents = {
     didReceiveResponseData(data: Uint8Array): void;

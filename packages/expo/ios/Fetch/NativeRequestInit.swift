@@ -14,4 +14,7 @@ internal struct NativeRequestInit: Record {
 
   @Field
   var method: String = "GET"
+
+  @Field
+  var redirect: NativeRequestRedirect = .follow
 }

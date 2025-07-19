@@ -64,6 +64,83 @@ export function test({ describe, expect, it, ...t }) {
     });
   });
 
+  describe('Redirect handling', () => {
+    setupTestTimeout(t);
+
+    it('should follow redirects by default', async () => {
+      const resp = await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get');
+      expect(resp.status).toBe(200);
+      expect(resp.url).toBe('https://httpbin.io/get');
+      const json = await resp.json();
+      expect(json.url).toMatch(/^http?:\/\/httpbin\.io\/get$/);
+    });
+
+    it('should follow redirects when redirect is set to follow', async () => {
+      const resp = await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
+        redirect: 'follow',
+      });
+      expect(resp.status).toBe(200);
+      expect(resp.url).toBe('https://httpbin.io/get');
+      const json = await resp.json();
+      expect(json.url).toMatch(/^http?:\/\/httpbin\.io\/get$/);
+    });
+
+    it('should throw an error when redirect is set to error and a redirect occurs', async () => {
+      let error: Error | null = null;
+      try {
+        await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
+          redirect: 'error',
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(error?.message).toContain('redirect');
+    });
+
+    it('should not follow redirects when redirect is set to manual', async () => {
+      const resp = await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
+        redirect: 'manual',
+      });
+      // When redirect is manual, the response should be the redirect response itself
+      expect(resp.status).toBeGreaterThanOrEqual(300);
+      expect(resp.status).toBeLessThan(400);
+      expect(resp.headers.get('location')).toBe('https://httpbin.io/get');
+    });
+
+    it('should handle multiple redirects with follow mode', async () => {
+      const resp = await fetch('https://httpbin.io/redirect/3', {
+        redirect: 'follow',
+      });
+      expect(resp.status).toBe(200);
+      expect(resp.url).toBe('https://httpbin.io/get');
+    });
+
+    it('should throw error on multiple redirects with error mode', async () => {
+      let error: Error | null = null;
+      try {
+        await fetch('https://httpbin.io/redirect/3', {
+          redirect: 'error',
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+    });
+
+    it('should not throw error when no redirect occurs with error mode', async () => {
+      const resp = await fetch('https://httpbin.io/get', {
+        redirect: 'error',
+      });
+      expect(resp.status).toBe(200);
+      expect(resp.ok).toBe(true);
+    });
+  });
+
   describe('Request body', () => {
     setupTestTimeout(t);
 
