@@ -8,14 +8,7 @@
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
 
-import {
-  ConfigAPI,
-  template,
-  types as t,
-  type NodePath,
-  type PluginObj,
-  type PluginPass,
-} from '@babel/core';
+import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@babel/core';
 import type { Scope as BabelScope } from '@babel/traverse';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
@@ -33,22 +26,26 @@ type ExtractedActionInfo = { localName?: string; exportedName: string };
 
 const LAZY_WRAPPER_VALUE_KEY = 'value';
 
-// React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
-// so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
-const _buildLazyWrapperHelper = template(`(thunk) => {
-  let cache;
-  return {
-    get ${LAZY_WRAPPER_VALUE_KEY}() {
-      return cache || (cache = thunk());
+export function reactServerActionsPlugin(
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj<PluginPass> {
+  const { types: t } = api;
+
+  // React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
+  // so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
+  const _buildLazyWrapperHelper = api.template(`(thunk) => {
+    let cache;
+    return {
+      get ${LAZY_WRAPPER_VALUE_KEY}() {
+        return cache || (cache = thunk());
+      }
     }
-  }
-}`);
+  }`);
 
-const buildLazyWrapperHelper = () => {
-  return (_buildLazyWrapperHelper() as t.ExpressionStatement).expression;
-};
+  const buildLazyWrapperHelper = () => {
+    return (_buildLazyWrapperHelper() as t.ExpressionStatement).expression;
+  };
 
-export function reactServerActionsPlugin(api: ConfigAPI): PluginObj<PluginPass> {
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   let addReactImport: () => t.Identifier;
   let wrapBoundArgs: (expr: t.Expression) => t.Expression;
@@ -232,6 +229,11 @@ export function reactServerActionsPlugin(api: ConfigAPI): PluginObj<PluginPass> 
       boundArgs,
     ]);
   };
+
+  function hasUseServerDirective(path: FnPath) {
+    const { body } = path.node;
+    return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
+  }
 
   return {
     name: 'expo-server-actions',
@@ -786,9 +788,4 @@ function assertExpoMetadata(metadata: any): asserts metadata is {
   if (!metadata || typeof metadata !== 'object') {
     throw new Error('Expected Babel state.file.metadata to be an object');
   }
-}
-
-function hasUseServerDirective(path: FnPath) {
-  const { body } = path.node;
-  return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
 }
