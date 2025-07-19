@@ -24,29 +24,7 @@ export declare class Paths extends PathUtilities {
      */
     static info(...uris: string[]): PathInfo;
 }
-/**
- * @hidden
- */
-export declare class FileBlob extends Blob {
-    file: File;
-    /**
-     * @internal
-     */
-    key: string;
-    constructor(file: File);
-    get size(): number;
-    /**
-     * @internal
-     */
-    get name(): string;
-    get type(): string;
-    arrayBuffer(): Promise<ArrayBuffer>;
-    text(): Promise<string>;
-    bytes(): Promise<Uint8Array>;
-    stream(): ReadableStream<Uint8Array>;
-    slice(start?: number, end?: number, contentType?: string): Blob;
-}
-export declare class File extends ExpoFileSystem.FileSystemFile {
+export declare class File extends ExpoFileSystem.FileSystemFile implements Blob {
     /**
      * Creates an instance of a file.
      * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
@@ -56,7 +34,6 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * ```
      */
     constructor(...uris: (string | File | Directory)[]);
-    blob(): Blob;
     get parentDirectory(): Directory;
     /**
      * File extension.
@@ -69,6 +46,9 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
     get name(): string;
     readableStream(): ReadableStream<Uint8Array<ArrayBufferLike>>;
     writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
+    arrayBuffer(): Promise<ArrayBuffer>;
+    stream(): ReadableStream<Uint8Array>;
+    slice(start?: number, end?: number, contentType?: string): Blob;
 }
 /**
  * Represents a directory on the filesystem.
