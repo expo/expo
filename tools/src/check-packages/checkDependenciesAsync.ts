@@ -191,9 +191,16 @@ function getSourceFileImports(sourceFile: SourceFile): SourceFileImportRef[] {
 /** Iterate the parsed TypeScript AST and collect all imports or require statements */
 function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: SourceFileImportRef[]) {
   if (ts.isImportDeclaration(node)) {
+    let isTypeOnly = false;
+    if (node.importClause?.namedBindings) {
+      isTypeOnly = node.importClause.isTypeOnly || 
+        (ts.isNamedImports(node.importClause.namedBindings) &&  node.importClause.namedBindings.elements.every((binding) => binding.isTypeOnly));
+    } else {
+      isTypeOnly = !!node.importClause?.isTypeOnly;
+    }
     // Collect `import` statements
     imports.push(
-      createTypescriptImportRef(node.moduleSpecifier.getText(), node.importClause?.isTypeOnly)
+      createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly)
     );
   } else if (
     ts.isCallExpression(node) &&
