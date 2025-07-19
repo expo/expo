@@ -149,8 +149,35 @@ export default function Index() {
         </Modal>
       )}
       <FitForm />
+      <DetentForm />
     </View>
   );
+}
+
+function DetentForm() {
+  const [open, setIsOpen] = useState(false);
+  const [currentDetent, setCurrentDetent] = useState(0)
+
+  return (
+    <>
+      <Button title="Open Detent Change" onPress={() => setIsOpen((open) => !open)} />
+      <Modal
+        visible={open}
+        presentationStyle="formSheet"
+        detents={[0.3, 0.5, 1]}
+        onClose={() => setIsOpen(false)}
+        onDetentChange={(data) => setCurrentDetent(data.index)}
+        style={{
+          padding: 16,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Text style={{ fontSize: 16 }}>Current Detent: {currentDetent}</Text>
+        <Button title="Close" onPress={() => setIsOpen(false)} />
+      </Modal>
+    </>
+  )
 }
 
 function FitForm() {
