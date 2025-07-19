@@ -18,8 +18,6 @@ describe('static-rendering with no sitemap', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
-        E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
         E2E_ROUTER_SITEMAP: 'false',
       },
     });

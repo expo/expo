@@ -20,8 +20,6 @@ const projectRoot = getRouterE2ERoot();
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_SRC: 'server',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
           NODE_OPTIONS: '--no-experimental-fetch',
         },
       })

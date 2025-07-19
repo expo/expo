@@ -30,7 +30,6 @@ describe('exports static with bundle splitting', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: 'production',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );

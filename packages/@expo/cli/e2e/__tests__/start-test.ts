@@ -91,11 +91,7 @@ for (const args of [
 }
 
 describe('server', () => {
-  const expo = createExpoStart({
-    env: {
-      EXPO_USE_FAST_RESOLVER: 'true',
-    },
-  });
+  const expo = createExpoStart();
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank');
@@ -212,8 +208,6 @@ describe('start - webcontainer', () => {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'server',
       E2E_ROUTER_SRC: 'server',
-      E2E_ROUTER_ASYNC: 'development',
-      EXPO_USE_FAST_RESOLVER: 'true',
       // Force webcontainer mode
       CI: 'false',
       EXPO_FORCE_WEBCONTAINER_ENV: 'true',

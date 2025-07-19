@@ -19,8 +19,6 @@ describe('exports with url-polyfill', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'url-polyfill',
-        E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     });
   });
