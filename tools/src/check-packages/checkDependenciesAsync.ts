@@ -105,7 +105,9 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   if (config) {
     // Filter out ignored imports per package
     invalidImports = invalidImports.filter(({ importRef, kind }) => {
-      switch (config[importRef.importValue]) {
+      const importKind =
+        config[importRef.importValue] || config[getPackageName(importRef.importValue)];
+      switch (importKind) {
         case 'types-only':
           return !importRef.isTypeOnly;
         case 'ignore':
@@ -177,6 +179,17 @@ async function getSourceFilesAsync(pkg: Package, type: PackageCheckType): Promis
         ? { path: filePath, type: 'test' }
         : { path: filePath, type: 'source' }
     );
+}
+
+function getPackageName(name: string): string {
+  let idx: number;
+  if (name[0] === '@') {
+    idx = name.indexOf('/');
+    if (idx < 0) return name;
+    return name.slice(0, name.indexOf('/', idx + 1));
+  } else {
+    return name.slice(0, name.indexOf('/'));
+  }
 }
 
 /** Get the path of source files based on the package, and the type of check currently running */
