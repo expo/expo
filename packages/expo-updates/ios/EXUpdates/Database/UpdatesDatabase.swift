@@ -292,6 +292,12 @@ public final class UpdatesDatabase: NSObject {
     _ = try execute(sql: updateSql, withArgs: [update.lastAccessed, update.updateId])
   }
 
+  public func markUpdateFromOverride(_ update: Update) throws {
+    update.isFromOverride = true
+    let updateSql = "UPDATE updates SET from_override = 1 WHERE id =?1;"
+    _ = try execute(sql: updateSql, withArgs: [update.updateId])
+  }
+
   public func incrementSuccessfulLaunchCountForUpdate(_ update: Update) throws {
     update.successfulLaunchCount += 1
     let updateSql = "UPDATE updates SET successful_launch_count = ?1 WHERE id = ?2;"
@@ -631,6 +637,7 @@ public final class UpdatesDatabase: NSObject {
     let status: NSNumber = row.requiredValue(forKey: "status")
     let successfulLaunchCount: NSNumber = row.requiredValue(forKey: "successful_launch_count")
     let failedLaunchCount: NSNumber = row.requiredValue(forKey: "failed_launch_count")
+    let fromOverride: NSNumber = row.requiredValue(forKey: "from_override")
 
     let update = Update(
       manifest: ManifestFactory.manifest(forManifestJSON: manifest),
@@ -648,6 +655,7 @@ public final class UpdatesDatabase: NSObject {
     update.lastAccessed = UpdatesDatabaseUtils.date(fromUnixTimeMilliseconds: row.requiredValue(forKey: "last_accessed"))
     update.successfulLaunchCount = successfulLaunchCount.intValue
     update.failedLaunchCount = failedLaunchCount.intValue
+    update.isFromOverride = fromOverride.intValue != 0
     return update
   }
 
