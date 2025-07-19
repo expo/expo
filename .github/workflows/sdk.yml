@@ -56,7 +56,7 @@ jobs:
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        # Temporary disable the Node engines requirements due to unexpected Node requirement from React Native / Metro
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
         run: yarn install --frozen-lockfile --ignore-engines
       - name: 🧐 Check packages
         run: |
