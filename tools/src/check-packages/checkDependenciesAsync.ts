@@ -74,6 +74,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 // NOTE: These are globally ignored dependencies, and this list shouldn't ever get longer
 const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
   'expo-modules-core': 'ignore-dev',
+
+  // This is force-resolved in the CLI and therefore, for Expo modules, is generally safe
+  // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
+  '@react-native/assets-registry/registry': 'ignore-dev',
 };
 
 /**
@@ -123,7 +127,7 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       ignoreKind = config?.[packageName];
       if (!ignoreKind) {
         // if we still don't find an exception, we see if it's a global exception
-        ignoreKind = IGNORED_IMPORTS[packageName];
+        ignoreKind = IGNORED_IMPORTS[importRef.importValue] ?? IGNORED_IMPORTS[packageName];
       }
     }
     switch (ignoreKind) {
