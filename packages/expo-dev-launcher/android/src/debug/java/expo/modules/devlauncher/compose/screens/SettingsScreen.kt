@@ -9,8 +9,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.SettingsAction
-import expo.modules.devlauncher.compose.SettingsState
+import expo.modules.devlauncher.compose.models.SettingsAction
+import expo.modules.devlauncher.compose.models.SettingsState
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
 import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devmenu.compose.utils.copyToClipboard

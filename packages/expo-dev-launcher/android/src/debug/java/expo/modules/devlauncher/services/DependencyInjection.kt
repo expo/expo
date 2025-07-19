@@ -34,6 +34,9 @@ object DependencyInjection {
   var appService: AppService = AppService()
     private set
 
+  var errorRegistryService: ErrorRegistryService? = null
+    private set
+
   fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
     if (wasInitialized) {
       return
@@ -53,6 +56,8 @@ object DependencyInjection {
       apolloClientService = apolloClientService,
       httpClientService = httpClientService
     )
+
+    errorRegistryService = ErrorRegistryService(context.applicationContext)
   }
 }
 
@@ -66,6 +71,7 @@ internal inline fun <reified T> injectService(): T {
     DevLauncherController::class -> DependencyInjection.devLauncherController
     PackagerService::class -> DependencyInjection.packagerService
     AppService::class -> DependencyInjection.appService
+    ErrorRegistryService::class -> DependencyInjection.errorRegistryService
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
 }

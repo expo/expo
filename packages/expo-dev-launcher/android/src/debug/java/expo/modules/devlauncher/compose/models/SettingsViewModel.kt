@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.compose
+package expo.modules.devlauncher.compose.models
 
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf

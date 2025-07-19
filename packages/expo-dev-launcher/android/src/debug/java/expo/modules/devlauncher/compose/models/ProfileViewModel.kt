@@ -1,7 +1,8 @@
-package expo.modules.devlauncher.compose
+package expo.modules.devlauncher.compose.models
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import expo.modules.devlauncher.compose.Session
 import expo.modules.devlauncher.services.SessionService
 import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject

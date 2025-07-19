@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,8 +29,8 @@ import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.HomeAction
-import expo.modules.devlauncher.compose.HomeState
+import expo.modules.devlauncher.compose.models.HomeAction
+import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devmenu.compose.primitives.pulseEffect
 import expo.modules.devlauncher.compose.ui.AppHeader
@@ -39,6 +41,7 @@ import expo.modules.devlauncher.compose.ui.SectionHeader
 import expo.modules.devlauncher.compose.ui.ServerUrlInput
 import expo.modules.devlauncher.compose.utils.withIsLast
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
+import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -87,6 +90,29 @@ fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
 }
 
 @Composable
+fun CrashReport(
+  crashReport: DevLauncherErrorInstance?,
+  onClick: (report: DevLauncherErrorInstance) -> Unit = {}
+) {
+  if (crashReport == null) {
+    return
+  }
+
+  Spacer(Theme.spacing.large)
+
+  RoundedSurface {
+    Button(onClick = {
+      onClick(crashReport)
+    }) {
+      Text(
+        "The last time you tried to open an app the development build crashed. Tap to get more information.",
+        modifier = Modifier.padding(Theme.spacing.medium)
+      )
+    }
+  }
+}
+
+@Composable
 fun HomeScreen(
   state: HomeState,
   onAction: (HomeAction) -> Unit,
@@ -94,6 +120,7 @@ fun HomeScreen(
 ) {
   val hasPackager = state.runningPackagers.isNotEmpty()
   val dialogState = rememberDialogState(initiallyVisible = false)
+  val scrollState = rememberScrollState()
 
   HowToStartDevelopmentServerDialog(dialogState)
 
@@ -108,8 +135,17 @@ fun HomeScreen(
 
     Column(
       modifier = Modifier
+        .verticalScroll(scrollState)
         .padding(horizontal = Theme.spacing.medium)
     ) {
+      val crashReport = state.crashReport
+      CrashReport(
+        crashReport = crashReport,
+        onClick = {
+          onAction(HomeAction.NavigateToCrashReport(it))
+        }
+      )
+
       Spacer(Theme.spacing.large)
 
       Row {
@@ -227,9 +263,9 @@ fun HomeScreen(
         }
       }
 
-      Spacer(Theme.spacing.large)
-
       if (state.recentlyOpenedApps.isNotEmpty()) {
+        Spacer(Theme.spacing.large)
+
         Row {
           Spacer(Theme.spacing.small)
 
@@ -238,7 +274,7 @@ fun HomeScreen(
             rightIcon = {
               Row {
                 Button(onClick = {
-                  onAction(HomeAction.ResetRecentlyOpendApps)
+                  onAction(HomeAction.ResetRecentlyOpenedApps)
                 }) {
                   Text(
                     "Reset",
@@ -276,6 +312,8 @@ fun HomeScreen(
           }
         }
       }
+
+      Spacer(Theme.spacing.large)
     }
   }
 }

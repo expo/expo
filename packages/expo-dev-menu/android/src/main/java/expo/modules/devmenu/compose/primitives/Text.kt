@@ -58,7 +58,8 @@ fun Mono(
   text: String,
   fontSize: FontSize = Theme.typography.medium,
   color: Color? = null,
-  maxLines: Int = Int.MAX_VALUE
+  maxLines: Int = Int.MAX_VALUE,
+  modifier: Modifier = Modifier
 ) {
   BasicText(
     text,
@@ -66,7 +67,8 @@ fun Mono(
     style = fontSize.font.merge(
       color = color ?: Theme.colors.text.default,
       fontFamily = Theme.typography.mono
-    )
+    ),
+    modifier = modifier
   )
 }
 
