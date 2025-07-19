@@ -1,4 +1,5 @@
 "use strict";
+// TODO(@kitten): is this invalid/redundant with @expo/metro?
 // This package needs to be imported from within the project to
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -10,7 +11,7 @@ const resolve_from_1 = __importDefault(require("resolve-from"));
 function importMetroConfig(projectRoot) {
     const modulePath = resolve_from_1.default.silent(projectRoot, 'metro-config');
     if (!modulePath) {
-        return require('metro-config');
+        return require('@expo/metro/metro-config');
     }
     return require(modulePath);
 }

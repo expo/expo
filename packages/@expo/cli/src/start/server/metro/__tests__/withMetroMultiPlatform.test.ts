@@ -1,7 +1,8 @@
 import { getBareExtensions } from '@expo/config/paths';
+import type Bundler from '@expo/metro/metro/Bundler';
+import type { ConfigT } from '@expo/metro/metro-config';
+import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
 import { vol } from 'memfs';
-import { ConfigT } from 'metro-config';
-import { CustomResolutionContext } from 'metro-resolver/src';
 import assert from 'node:assert';
 
 import { StickyModuleResolverInput } from '../createExpoStickyResolver';
@@ -19,7 +20,7 @@ class FailedToResolveNameError extends Error {
     super('Failed to resolve name');
   }
 }
-jest.mock('metro-resolver', () => {
+jest.mock('@expo/metro/metro-resolver', () => {
   const resolve = jest.fn(() => ({ type: 'empty' }));
   return {
     resolve,
@@ -37,7 +38,7 @@ function getDefaultRequestContext(): CustomResolutionContext {
 }
 
 function getMetroBundlerGetter() {
-  return jest.fn(() => {
+  return jest.fn((): Bundler => {
     const transformFile = jest.fn();
     // @ts-expect-error
     transformFile.__patched = true;
@@ -45,11 +46,11 @@ function getMetroBundlerGetter() {
       hasVirtualModule: jest.fn((path) => false),
       setVirtualModule: jest.fn(),
       transformFile,
-    };
+    } as any;
   });
 }
 
-const expectVirtual = (result: import('metro-resolver').Resolution, name: string) => {
+const expectVirtual = (result: Resolution, name: string) => {
   expect(result.type).toBe('sourceFile');
   assert(result.type === 'sourceFile');
   assert(/^\0/.test(result.filePath), 'Virtual files must start with null byte: \\0');
@@ -93,7 +94,8 @@ function getNodeResolverContext({
 }
 
 function getResolveFunc() {
-  return require('metro-resolver').resolve;
+  const metroResolver: typeof import('@expo/metro/metro-resolver') = require('@expo/metro/metro-resolver');
+  return metroResolver.resolve;
 }
 
 describe(withExtendedResolver, () => {

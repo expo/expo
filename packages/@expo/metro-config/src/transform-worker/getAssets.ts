@@ -5,14 +5,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { AssetData, Module } from 'metro';
-import { getAssetData } from 'metro/src/Assets';
-import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js.js';
+import { getAssetData, type AssetData } from '@expo/metro/metro/Assets';
+// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
+import { getJsOutput, isJsModule } from '@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-
-import { ReadOnlyDependencies } from '../serializer/getCssDeps';
 
 const debug = require('debug')('expo:metro-config:assets') as typeof console.log;
 

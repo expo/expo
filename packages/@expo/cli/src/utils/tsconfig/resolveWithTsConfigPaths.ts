@@ -1,4 +1,4 @@
-import { Resolution } from 'metro-resolver';
+import type { Resolution } from '@expo/metro/metro-resolver';
 import path from 'path';
 
 import { matchTsConfigPathAlias } from './matchTsConfigPathAlias';
