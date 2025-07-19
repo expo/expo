@@ -21,4 +21,5 @@ dependencies {
   api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
   api 'com.squareup.okio:okio:2.9.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
+  api "androidx.documentfile:documentfile:1.1.0"
 }

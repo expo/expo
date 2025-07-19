@@ -45,6 +45,8 @@ export declare class Directory {
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
      */
     create(options?: CreateOptions): void;
+    createFile(name: string, mimeType: string | null): File;
+    createDirectory(name: string): Directory;
     /**
      * Copies a directory.
      */

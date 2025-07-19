@@ -96,5 +96,7 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
      * Directory name.
      */
     get name(): string;
+    createFile(name: string, mimeType: string | null): File;
+    createDirectory(name: string): Directory;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

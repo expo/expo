@@ -4,7 +4,7 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
-class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(RandomAccessFile(file.file, "rw").channel), AutoCloseable {
+class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(RandomAccessFile(file.javaFile, "rw").channel), AutoCloseable {
   private val fileChannel: FileChannel = ref
 
   private fun ensureIsOpen() {

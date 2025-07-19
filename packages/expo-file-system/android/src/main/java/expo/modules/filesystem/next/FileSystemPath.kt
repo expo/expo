@@ -1,6 +1,11 @@
 package expo.modules.filesystem.next
 
+import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
+import expo.modules.filesystem.next.unifiedfile.JavaFile
+import expo.modules.filesystem.next.unifiedfile.SAFDocumentFile
+import expo.modules.filesystem.next.unifiedfile.UnifiedFileInterface
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
@@ -11,29 +16,54 @@ import kotlin.io.path.moveTo
 import kotlin.io.path.readAttributes
 import kotlin.time.Duration.Companion.milliseconds
 
-// We use the `File` class to represent a file or a directory in the file system.
-// The Path class might be better, but `java.nio.file.Path` class is not available in API 23.
-// The URL, URI classes seem like a less suitable choice.
-// https://stackoverflow.com/questions/27845223/whats-the-difference-between-a-resource-uri-url-path-and-file-in-java
-abstract class FileSystemPath(public var file: File) : SharedObject() {
-  fun delete(fileOrDirectory: File = file) {
-    if (!fileOrDirectory.exists()) {
-      throw UnableToDeleteException("path '${fileOrDirectory.path}' does not exist")
+val Uri.isContentUri get(): Boolean {
+  return scheme == "content"
+}
+
+abstract class FileSystemPath(var uri: Uri) : SharedObject() {
+  private var fileAdapter: UnifiedFileInterface? = null
+  val file: UnifiedFileInterface get() {
+    val currentAdapter = fileAdapter
+    if (currentAdapter?.uri == uri) {
+      return currentAdapter
     }
-    if (fileOrDirectory.isDirectory) {
-      fileOrDirectory.listFiles()?.forEach { child ->
-        if (child.isDirectory) {
+    val newAdapter = if (uri.isContentUri) {
+      SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), uri)
+    } else {
+      JavaFile(uri)
+    }
+    fileAdapter = newAdapter
+    return newAdapter
+  }
+  val javaFile: File get() =
+    if (uri.isContentUri) {
+      throw Exception("This method cannot be used with content URIs: $uri")
+    } else {
+      (file as File)
+    }
+
+  fun delete() {
+    if (!file.exists()) {
+      throw UnableToDeleteException("uri '${file.uri}' does not exist")
+    }
+    if (file.isDirectory()) {
+      file.listFilesAsUnified().forEach { child ->
+        if (child.isDirectory()) {
           // Recursively delete subdirectories
-          delete(child)
+          if (uri.isContentUri) {
+            SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), child.uri).delete()
+          } else {
+            JavaFile(child.uri).delete()
+          }
         } else {
           if (!child.delete()) {
-            throw UnableToDeleteException("failed to delete '${child.path}'")
+            throw UnableToDeleteException("failed to delete '${child.uri}'")
           }
         }
       }
     }
-    if (!fileOrDirectory.delete()) {
-      throw UnableToDeleteException("failed to delete '${fileOrDirectory.path}'")
+    if (!file.delete()) {
+      throw UnableToDeleteException("failed to delete '${file.uri}'")
     }
   }
 
@@ -45,26 +75,26 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
         if (!destination.exists) {
           throw DestinationDoesNotExistException()
         }
-        return File(destination.file, file.name)
+        return File(destination.javaFile, javaFile.name)
       }
       // this if FileSystemDirectory
       // we match unix behavior https://askubuntu.com/a/763915
       if (destination.exists) {
-        return File(destination.file, file.name)
+        return File(destination.javaFile, javaFile.name)
       }
-      if (destination.file.parentFile?.exists() != true) {
+      if (destination.javaFile.parentFile?.exists() != true) {
         throw DestinationDoesNotExistException()
       }
-      return destination.file
+      return destination.javaFile
     }
     // destination is FileSystemFile
     if (this !is FileSystemFile) {
       throw CopyOrMoveDirectoryToFileException()
     }
-    if (destination.file.parentFile?.exists() != true) {
+    if (destination.javaFile.parentFile?.exists() != true) {
       throw DestinationDoesNotExistException()
     }
-    return destination.file
+    return destination.javaFile
   }
 
   fun validatePermission(permission: Permission) {
@@ -74,7 +104,11 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
   }
 
   fun checkPermission(permission: Permission): Boolean {
-    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, file.path) ?: EnumSet.noneOf(Permission::class.java)
+    if (uri.isContentUri) {
+      // TODO: Consider adding a check for content URIs (not in legacy FS)
+      return true
+    }
+    val permissions = appContext?.filePermission?.getPathPermissions(appContext?.reactContext, javaFile.path) ?: EnumSet.noneOf(Permission::class.java)
     return permissions.contains(permission)
   }
 
@@ -90,7 +124,7 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
     validatePermission(Permission.READ)
     to.validatePermission(Permission.WRITE)
 
-    file.copyRecursively(getMoveOrCopyPath(to))
+    javaFile.copyRecursively(getMoveOrCopyPath(to))
   }
 
   fun move(to: FileSystemPath) {
@@ -101,24 +135,24 @@ abstract class FileSystemPath(public var file: File) : SharedObject() {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val destination = getMoveOrCopyPath(to)
-      file.toPath().moveTo(destination.toPath())
-      file = destination
+      javaFile.toPath().moveTo(destination.toPath())
+      uri = destination.toUri()
     } else {
-      file.copyTo(getMoveOrCopyPath(to))
-      file.delete()
-      file = getMoveOrCopyPath(to)
+      javaFile.copyTo(getMoveOrCopyPath(to))
+      javaFile.delete()
+      uri = getMoveOrCopyPath(to).toUri()
     }
   }
 
   val modificationTime: Long get() {
     validateType()
-    return file.lastModified()
+    return javaFile.lastModified()
   }
 
   val creationTime: Long? get() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       validateType()
-      val attributes = Path(file.path).readAttributes<BasicFileAttributes>()
+      val attributes = Path(javaFile.path).readAttributes<BasicFileAttributes>()
       return attributes.creationTime().toMillis().milliseconds.inWholeMilliseconds
     } else {
       return null
