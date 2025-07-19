@@ -18,6 +18,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -182,7 +183,7 @@ class DisabledUpdatesController(
   }
 
   override fun shutdown() {
-    // no-op
+    controllerScope.cancel()
   }
 
   companion object {
