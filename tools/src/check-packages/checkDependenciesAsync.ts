@@ -78,7 +78,9 @@ const IGNORED_IMPORTS: Record<string, IgnoreKind | void> = {
  * @param type What part of the package needs to be checked
  */
 export async function checkDependenciesAsync(pkg: Package, type: PackageCheckType = 'package') {
-  if (IGNORED_PACKAGES.includes(pkg.packageName)) {
+  if (isNCCBuilt(pkg)) {
+    return;
+  } else if (IGNORED_PACKAGES.includes(pkg.packageName)) {
     return;
   }
 
@@ -152,6 +154,11 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       throw new Error(`${pkg.packageName} has invalid dependency chains.`);
     }
   }
+}
+
+function isNCCBuilt(pkg: Package): boolean {
+  const { build: buildScript } = pkg.packageJson.scripts;
+  return !!pkg.packageJson.bin && buildScript.includes('ncc');
 }
 
 /**
