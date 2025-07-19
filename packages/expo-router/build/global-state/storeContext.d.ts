@@ -14,7 +14,7 @@ export declare const StoreContext: import("react").Context<{
         routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & Readonly<{
+    }>, "routes" | "stale">> & Readonly<{
         stale?: true;
         routes: import("@react-navigation/routers").PartialRoute<import("@react-navigation/routers").Route<string, object | undefined>>[];
     }> & {
@@ -26,7 +26,7 @@ export declare const StoreContext: import("react").Context<{
             routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, "stale" | "routes">> & Readonly<{
+        }>, "routes" | "stale">> & Readonly<{
             stale?: true;
             routes: import("@react-navigation/routers").PartialRoute<import("@react-navigation/routers").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
@@ -52,7 +52,7 @@ export declare const useExpoRouterStore: () => {
         routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, "stale" | "routes">> & Readonly<{
+    }>, "routes" | "stale">> & Readonly<{
         stale?: true;
         routes: import("@react-navigation/routers").PartialRoute<import("@react-navigation/routers").Route<string, object | undefined>>[];
     }> & {
@@ -64,7 +64,7 @@ export declare const useExpoRouterStore: () => {
             routes: import("@react-navigation/routers").NavigationRoute<import("@react-navigation/routers").ParamListBase, string>[];
             type: string;
             stale: false;
-        }>, "stale" | "routes">> & Readonly<{
+        }>, "routes" | "stale">> & Readonly<{
             stale?: true;
             routes: import("@react-navigation/routers").PartialRoute<import("@react-navigation/routers").Route<string, object | undefined>>[];
         }> & /*elided*/ any;

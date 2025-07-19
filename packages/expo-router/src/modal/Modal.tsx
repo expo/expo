@@ -8,7 +8,7 @@ import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
 import { useNavigation } from '../useNavigation';
-import { areDetentsValid } from './utils';
+import { areDetentsValid, isInitialDetentIndexValid } from './utils';
 
 export interface ModalProps extends ViewProps {
   /**
@@ -64,6 +64,13 @@ export interface ModalProps extends ViewProps {
    * while **Android is limited to three**.
    */
   detents?: ModalConfig['detents'];
+  /**
+   * See {@link ScreenProps["initialDetentIndex"]}.
+   *
+   * The initial detent index when sheet is presented.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  initialDetentIndex?: ModalConfig['initialDetentIndex'];
 }
 
 /**
@@ -101,16 +108,26 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
+    initialDetentIndex,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
-    if (!areDetentsValid(detents)) {
-      throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+    if (__DEV__ && visible) {
+      if (!areDetentsValid(detents)) {
+        throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+      }
+
+      if (!isInitialDetentIndexValid(detents, initialDetentIndex)) {
+        throw new Error(
+          `Initial detent index of ${initialDetentIndex} is out of bounds of provided detents array.`
+        );
+      }
     }
-  }, [detents]);
+  }, [visible, detents, initialDetentIndex]);
+
   useEffect(() => {
     if (visible) {
       const newId = nanoid();
@@ -122,6 +139,7 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
+        initialDetentIndex,
         detents,
       });
       setCurrentModalId(newId);

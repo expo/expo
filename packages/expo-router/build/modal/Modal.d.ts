@@ -54,6 +54,13 @@ export interface ModalProps extends ViewProps {
      * while **Android is limited to three**.
      */
     detents?: ModalConfig['detents'];
+    /**
+     * See {@link ScreenProps["initialDetentIndex"]}.
+     *
+     * The initial detent index when sheet is presented.
+     * Works only when `presentation` is set to `formSheet`.
+     */
+    initialDetentIndex?: ModalConfig['initialDetentIndex'];
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.

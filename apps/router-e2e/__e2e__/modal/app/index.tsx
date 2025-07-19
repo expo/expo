@@ -1,4 +1,4 @@
-import { Link, Modal, Stack } from 'expo-router';
+import { Link, Modal } from 'expo-router';
 import { useState } from 'react';
 import { Button, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -149,6 +149,7 @@ export default function Index() {
         </Modal>
       )}
       <FitForm />
+      <InitialDetentForm />
     </View>
   );
 }
@@ -197,6 +198,28 @@ function FitForm() {
       </Modal>
     </>
   );
+}
+
+function InitialDetentForm() {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <>
+      <Button title="Open Initial Detent" onPress={() => setIsOpen((open) => !open)} />
+      <Modal
+        presentationStyle='formSheet'
+        initialDetentIndex={1}
+        visible={open}
+        onClose={() => setIsOpen(false)}
+        detents={[0.3, 0.5, 1]}
+        style={{
+          gap: 4,
+          paddingTop: 20
+        }}
+      >
+        <Button title='Dismiss' onPress={() => setIsOpen(false)} />
+      </Modal>
+    </>
+  )
 }
 
 function MutateButton({ onPress, children }: { onPress: () => void; children?: React.ReactNode }) {

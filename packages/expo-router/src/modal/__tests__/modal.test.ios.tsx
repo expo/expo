@@ -19,7 +19,7 @@ const ComponentWithModal = (props?: { onModalClose?: () => void }) => {
         }}
       />
       {isMounted && (
-        <Modal visible={isOpen} onClose={props.onModalClose}>
+        <Modal visible={isOpen} onClose={props?.onModalClose}>
           <View testID="modal-content" />
         </Modal>
       )}
@@ -145,13 +145,18 @@ describe('ScreenStackItem props', () => {
 
   it('correct props are passed to ScreenStackItem based on Modal props', async () => {
     const detents = [0.25, 0.5, 0.75, 1];
+    const initialDetentIndex = 1;
 
     const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
       const [isOpen, setIsOpen] = useState(false);
       return (
         <View testID="CustomComponentWithModal">
           <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
-          <Modal visible={isOpen} onClose={props.onModalClose} detents={detents}>
+          <Modal
+            visible={isOpen}
+            onClose={props?.onModalClose}
+            initialDetentIndex={initialDetentIndex}
+            detents={detents}>
             <View testID="modal-content" />
           </Modal>
         </View>
@@ -174,6 +179,7 @@ describe('ScreenStackItem props', () => {
         headerConfig: {
           hidden: true,
         },
+        sheetInitialDetentIndex: initialDetentIndex,
         sheetAllowedDetents: detents,
       })
     );
@@ -194,7 +200,7 @@ describe('ScreenStackItem props', () => {
             <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
             <Modal
               visible={isOpen}
-              onClose={props.onModalClose}
+              onClose={props?.onModalClose}
               presentationStyle={presentationStyle}
               transparent={false}>
               <View testID="modal-content" />
@@ -234,7 +240,7 @@ describe('ScreenStackItem props', () => {
             <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
             <Modal
               visible={isOpen}
-              onClose={props.onModalClose}
+              onClose={props?.onModalClose}
               presentationStyle={presentationStyle}
               transparent>
               <View testID="modal-content" />
@@ -270,7 +276,7 @@ describe('ScreenStackItem props', () => {
           <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
           <Modal
             visible={isOpen}
-            onClose={props.onModalClose}
+            onClose={props?.onModalClose}
             presentationStyle="formSheet"
             detents={detents}>
             <View testID="modal-content" />
@@ -295,13 +301,11 @@ describe('ScreenStackItem props', () => {
 
   it('when passing invalid detents [-1,0,2,1], expects an error when opening modal', () => {
     const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
-      const [isOpen, setIsOpen] = useState(false);
       return (
         <View testID="CustomComponentWithModal">
-          <Button testID="open-modal" title="Open modal" onPress={() => setIsOpen(true)} />
           <Modal
-            visible={isOpen}
-            onClose={props.onModalClose}
+            visible
+            onClose={props?.onModalClose}
             presentationStyle="formSheet"
             detents={[-1, 0, 2, 1]}>
             <View testID="modal-content" />
@@ -315,6 +319,29 @@ describe('ScreenStackItem props', () => {
         index: CustomComponentWithModal,
       })
     ).toThrow('Invalid detents provided to Modal: [-1,0,2,1]');
+  });
+
+  it('when passing invalid initialDetentIndex of 3 with detents [0.3, 0.5, 1], expects an error when opening modal', () => {
+    const CustomComponentWithModal = (props?: { onModalClose: () => void }) => {
+      return (
+        <View testID="CustomComponentWithModal">
+          <Modal
+            visible
+            onClose={props?.onModalClose}
+            presentationStyle="formSheet"
+            detents={[0.3, 0.5, 1]}
+            initialDetentIndex={3}>
+            <View testID="modal-content" />
+          </Modal>
+        </View>
+      );
+    };
+
+    expect(() =>
+      renderRouter({
+        index: CustomComponentWithModal,
+      })
+    ).toThrow('Initial detent index of 3 is out of bounds of provided detents array.');
   });
 });
 

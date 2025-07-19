@@ -33,15 +33,20 @@ const utils_1 = require("./utils");
  * }
  */
 function Modal(props) {
-    const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, ...viewProps } = props;
+    const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, initialDetentIndex, ...viewProps } = props;
     const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
     (0, react_1.useEffect)(() => {
-        if (!(0, utils_1.areDetentsValid)(detents)) {
-            throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+        if (__DEV__ && visible) {
+            if (!(0, utils_1.areDetentsValid)(detents)) {
+                throw new Error(`Invalid detents provided to Modal: ${JSON.stringify(detents)}`);
+            }
+            if (!(0, utils_1.isInitialDetentIndexValid)(detents, initialDetentIndex)) {
+                throw new Error(`Initial detent index of ${initialDetentIndex} is out of bounds of provided detents array.`);
+            }
         }
-    }, [detents]);
+    }, [visible, detents, initialDetentIndex]);
     (0, react_1.useEffect)(() => {
         if (visible) {
             const newId = (0, non_secure_1.nanoid)();
@@ -53,6 +58,7 @@ function Modal(props) {
                 component: children,
                 uniqueId: newId,
                 parentNavigationProp: navigation,
+                initialDetentIndex,
                 detents,
             });
             setCurrentModalId(newId);
