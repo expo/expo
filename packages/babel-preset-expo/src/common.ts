@@ -1,7 +1,7 @@
-import { type NodePath, types as t } from '@babel/core';
+import type { NodePath, types as t } from '@babel/core';
 // @ts-expect-error: missing types
 import { addNamed as addNamedImport } from '@babel/helper-module-imports';
-import { type ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
+import type { ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 import path from 'node:path';
 
 export function hasModule(name: string): boolean {

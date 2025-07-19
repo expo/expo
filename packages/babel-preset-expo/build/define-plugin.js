@@ -7,21 +7,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@babel/core");
-/**
- * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
- * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
- * The evaluation will make a second replacement resulting in `var x = true`
- */
-function replaceAndEvaluateNode(nodePath, replacement) {
-    nodePath.replaceWith(core_1.types.valueToNode(replacement));
-    if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
-        const result = nodePath.parentPath.evaluate();
-        if (result.confident) {
-            nodePath.parentPath.replaceWith(core_1.types.valueToNode(result.value));
-        }
-    }
-}
 /**
  * Checks if the given identifier is an ES module import
  * @param  {babelNode} identifierNodePath The node to check
@@ -44,9 +29,23 @@ const unaryExpressionComparator = (nodePath, value) => {
     }
     return false;
 };
-const isLeftHandSideOfAssignmentExpression = (node, parent) => core_1.types.isAssignmentExpression(parent) && parent.left === node;
 const TYPEOF_PREFIX = 'typeof ';
-const plugin = (_) => {
+function definePlugin({ types: t }) {
+    /**
+     * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
+     * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
+     * The evaluation will make a second replacement resulting in `var x = true`
+     */
+    function replaceAndEvaluateNode(nodePath, replacement) {
+        nodePath.replaceWith(t.valueToNode(replacement));
+        if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
+            const result = nodePath.parentPath.evaluate();
+            if (result.confident) {
+                nodePath.parentPath.replaceWith(t.valueToNode(result.value));
+            }
+        }
+    }
+    const isLeftHandSideOfAssignmentExpression = (node, parent) => t.isAssignmentExpression(parent) && parent.left === node;
     const processNode = (replacements, nodePath, comparator) => {
         const replacementKey = Object.keys(replacements).find((value) => comparator(nodePath, value));
         if (typeof replacementKey === 'string' &&
@@ -108,10 +107,10 @@ const plugin = (_) => {
             },
         },
     };
-};
+}
 function assertOptions(opts) {
     if (opts == null || typeof opts !== 'object') {
         throw new Error('define plugin expects an object as options');
     }
 }
-exports.default = plugin;
+exports.default = definePlugin;
