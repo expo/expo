@@ -12,4 +12,12 @@ object SelectionPolicyFactory {
       ReaperSelectionPolicyFilterAware()
     )
   }
+
+  internal fun createOverrideAwarePolicy(): SelectionPolicy {
+    return SelectionPolicy(
+      LauncherSelectionPolicyOverrideAware(),
+      LoaderSelectionPolicyOverrideAware(),
+      ReaperSelectionPolicyOverrideAware()
+    )
+  }
 }

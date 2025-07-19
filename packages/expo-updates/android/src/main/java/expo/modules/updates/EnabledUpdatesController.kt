@@ -49,7 +49,7 @@ import kotlin.time.toDuration
  */
 class EnabledUpdatesController(
   private val context: Context,
-  private val updatesConfiguration: UpdatesConfiguration,
+  private var updatesConfiguration: UpdatesConfiguration,
   override val updatesDirectory: File
 ) : IUpdatesController {
   /** Keep the activity for [RelaunchProcedure] to relaunch the app. */
@@ -57,9 +57,7 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
-  private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
-    updatesConfiguration.getRuntimeVersion()
-  )
+  private var selectionPolicy = createSelectionPolicy(updatesConfiguration)
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val controllerScope = CoroutineScope(Dispatchers.IO)
   private val fileDownloader by lazy {
@@ -163,7 +161,9 @@ class EnabledUpdatesController(
 
     purgeUpdatesLogsOlderThanOneDay()
 
-    BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    if (!updatesConfiguration.hasUpdatesOverride) {
+      BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseHolder.database)
+    }
 
     stateMachine.queueExecution(startupProcedure)
   }
@@ -287,7 +287,16 @@ class EnabledUpdatesController(
       throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Must set disableAntiBrickingMeasures configuration to use updates overriding", null)
     }
     UpdatesConfigurationOverride.save(context, configOverride)
+    updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
+    selectionPolicy = createSelectionPolicy(updatesConfiguration)
   }
+
+  private fun createSelectionPolicy(config: UpdatesConfiguration) =
+    if (config.hasUpdatesOverride) {
+      SelectionPolicyFactory.createOverrideAwarePolicy()
+    } else {
+      SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion())
+    }
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName

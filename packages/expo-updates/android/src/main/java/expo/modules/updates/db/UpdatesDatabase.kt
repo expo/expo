@@ -46,7 +46,7 @@ import java.util.*
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
   exportSchema = false,
-  version = 12
+  version = 13
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -78,7 +78,8 @@ abstract class UpdatesDatabase : RoomDatabase() {
           MIGRATION_8_9,
           MIGRATION_9_10,
           MIGRATION_10_11,
-          MIGRATION_11_12
+          MIGRATION_11_12,
+          MIGRATION_12_13
         )
           .allowMainThreadQueries()
           .fallbackToDestructiveMigration()
@@ -223,6 +224,17 @@ abstract class UpdatesDatabase : RoomDatabase() {
           execSQL("ALTER TABLE `new_updates` RENAME TO `updates`")
           execSQL("CREATE INDEX `index_updates_launch_asset_id` ON `updates` (`launch_asset_id`)")
           execSQL("CREATE UNIQUE INDEX `index_updates_scope_key_commit_time` ON `updates` (`scope_key`, `commit_time`)")
+        }
+      }
+    }
+
+    /**
+     * Add the `from_override` column to `updates`
+     */
+    val MIGRATION_12_13: Migration = object : Migration(12, 13) {
+      override fun migrate(db: SupportSQLiteDatabase) {
+        db.runInTransaction {
+          execSQL("ALTER TABLE `updates` ADD COLUMN `from_override` INTEGER NOT NULL DEFAULT 0")
         }
       }
     }

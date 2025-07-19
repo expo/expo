@@ -14,7 +14,7 @@ import org.json.JSONObject
  *
  * Chooses only to delete updates whose scope matches that of `launchedUpdate`.
  */
-class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
+open class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
   override fun selectUpdatesToDelete(
     updates: List<UpdateEntity>,
     launchedUpdate: UpdateEntity?,
