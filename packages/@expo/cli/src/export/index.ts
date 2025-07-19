@@ -20,6 +20,7 @@ export const expoExport: Command = async (argv) => {
       '--no-minify': Boolean,
       '--no-bytecode': Boolean,
       '--no-ssg': Boolean,
+      '--unstable-hosted-native': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
