@@ -23,7 +23,6 @@ function expoInlineEnvVars(api) {
             MemberExpression(path, state) {
                 const filename = state.filename;
                 if (path.get('object').matchesPattern('process.env')) {
-                    // @ts-expect-error
                     const key = path.toComputedKey();
                     if (core_1.types.isStringLiteral(key) &&
                         !isFirstInAssign(path) &&
