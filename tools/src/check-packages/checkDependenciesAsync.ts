@@ -55,6 +55,13 @@ const IGNORED_PACKAGES = [
 ];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
+  'expo-dev-menu': {
+    'react-native': 'ignore', // WARN: May need a peer dependency for react-native
+  },
+  'expo-modules-test-core': {
+    typescript: 'ignore-dev', // TODO: Should probably be a peer dep
+  },
+
   'babel-preset-expo': {
     '@babel/core': 'ignore-dev', // TODO: Switch to types-only (#38177)
     '@babel/traverse': 'types-only', // TODO: Remove (#38171)
