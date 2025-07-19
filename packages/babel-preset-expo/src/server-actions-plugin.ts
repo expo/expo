@@ -183,9 +183,11 @@ export function reactServerActionsPlugin(api: ConfigAPI): PluginObj<PluginPass> 
     } else {
       // Fallback to inserting after the last import if no enclosing declaration is found
       const programBody = moduleScope.path.get('body');
-      const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast((statement) => {
-        return statement.isImportDeclaration();
-      });
+      const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast(
+        (statement) => {
+          return statement.isImportDeclaration();
+        }
+      );
 
       [inserted] = lastImportPath!.insertAfter(functionDeclaration);
       moduleScope.registerBinding(bindingKind, inserted);

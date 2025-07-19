@@ -30,7 +30,9 @@ function replaceAndEvaluateNode(nodePath: NodePath, replacement: string) {
  * @param  {babelNode} identifierNodePath The node to check
  * @return {boolean} Indicates if the provided node is an import specifier or references one
  */
-const isImportIdentifier = (identifierNodePath: NodePath<t.Identifier | t.JSXIdentifier>): boolean => {
+const isImportIdentifier = (
+  identifierNodePath: NodePath<t.Identifier | t.JSXIdentifier>
+): boolean => {
   if (
     identifierNodePath.container &&
     !Array.isArray(identifierNodePath.container) &&
