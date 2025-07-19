@@ -6,17 +6,9 @@
 
 import * as __metroDeltaBundlerTypes from '@expo/metro/metro/DeltaBundler/types.flow';
 declare module '@expo/metro/metro/DeltaBundler/types.flow' {
-  interface _TransformResultDependency_data {
+  const enum _AsyncDependencyType {
     /** @privateRemarks Augmentation adds `asyncType: 'worker'` to possible values for worker chunk splitting */
-    readonly asyncType?: __metroDeltaBundlerTypes.AsyncDependencyType | 'worker' | null;
-  }
-}
-
-import * as __metroCollectDependencies from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
-declare module '@expo/metro/metro/ModuleGraph/worker/collectDependencies' {
-  interface DependencyData {
-    /** @privateRemarks Augmentation adds `asyncType: 'worker'` to possible values for worker chunk splitting */
-    readonly asyncType?: __metroDeltaBundlerTypes.AsyncDependencyType | 'worker' | null;
+    worker = 'worker'
   }
 }
 
