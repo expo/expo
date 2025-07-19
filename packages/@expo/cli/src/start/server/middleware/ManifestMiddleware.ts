@@ -5,7 +5,7 @@ import {
   PackageJSONConfig,
   ProjectConfig,
 } from '@expo/config';
-import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
+import { resolveEntryPoint } from '@expo/config/paths';
 import path from 'path';
 import { resolve } from 'url';
 
@@ -45,7 +45,7 @@ export function getEntryWithServerRoot(
     );
   }
   return convertPathToModuleSpecifier(
-    path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props))
+    path.relative(projectRoot, resolveEntryPoint(projectRoot, props))
   );
 }
 
