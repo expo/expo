@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { types as t } from '@babel/core';
 import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
 import { JsTransformerConfig } from 'metro-transform-worker';
 import { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
@@ -20,7 +21,7 @@ export type JsOutput = {
             map: MetroSourceMapSegmentTuple[];
             functionMap: FBSourceFunctionMap | null;
         };
-        ast?: import('@babel/types').File;
+        ast?: t.File;
         hasCjsExports?: boolean;
         readonly reconcile?: ReconcileTransformSettings;
         readonly reactServerReference?: string;

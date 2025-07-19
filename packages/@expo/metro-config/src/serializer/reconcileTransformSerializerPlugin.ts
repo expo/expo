@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { types as t } from '@babel/core';
 import generate from '@babel/generator';
-import * as t from '@babel/types';
 import assert from 'assert';
 import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';

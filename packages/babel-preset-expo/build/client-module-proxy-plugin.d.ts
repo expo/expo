@@ -1,5 +1,5 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI } from '@babel/core';
-export declare function reactClientReferencesPlugin(api: ConfigAPI): babel.PluginObj;
+import type { ConfigAPI, PluginObj } from '@babel/core';
+export declare function reactClientReferencesPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj;

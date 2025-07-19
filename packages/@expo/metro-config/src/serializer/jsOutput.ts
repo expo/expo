@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { types as t } from '@babel/core';
 import { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
 import { JsTransformerConfig } from 'metro-transform-worker';
 
@@ -25,7 +26,7 @@ export type JsOutput = {
       functionMap: FBSourceFunctionMap | null;
     };
 
-    ast?: import('@babel/types').File;
+    ast?: t.File;
 
     hasCjsExports?: boolean;
 

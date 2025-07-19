@@ -1,7 +1,7 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, types } from '@babel/core';
+import type { ConfigAPI, PluginObj } from '@babel/core';
 
 const INVALID_SERVER_REACT_DOM_APIS = [
   'findDOMNode',
@@ -41,8 +41,8 @@ const FORBIDDEN_IMPORTS: Record<string, string[]> = {
 };
 
 export function environmentRestrictedReactAPIsPlugin(
-  api: ConfigAPI & { types: typeof types }
-): babel.PluginObj {
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj {
   const { types: t } = api;
 
   return {

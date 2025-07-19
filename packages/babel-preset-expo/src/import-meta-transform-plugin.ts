@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import { ConfigAPI, types } from '@babel/core';
+import type { ConfigAPI, PluginObj } from '@babel/core';
 
 import { getPlatform } from './common';
 
 export function expoImportMetaTransformPluginFactory(pluginEnabled: boolean) {
-  return (api: ConfigAPI & { types: typeof types }): babel.PluginObj => {
+  return (api: ConfigAPI & typeof import('@babel/core')): PluginObj => {
     const { types: t } = api;
     const platform = api.caller(getPlatform);
 

@@ -1,4 +1,4 @@
-import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {

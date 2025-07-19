@@ -1,7 +1,7 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, NodePath, types } from '@babel/core';
+import type { ConfigAPI, PluginObj, NodePath, types as t } from '@babel/core';
 import nodePath from 'node:path';
 import resolveFrom from 'resolve-from';
 
@@ -27,14 +27,14 @@ function getExpoRouterAppRoot(projectRoot: string, appFolder: string) {
  * EXPO_ROUTER_APP_ROOT
  * EXPO_ROUTER_IMPORT_MODE
  */
-export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) {
+export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   const asyncRoutes = api.caller(getAsyncRoutes);
   const routerAbsoluteRoot = api.caller(getExpoRouterAbsoluteAppRoot);
 
-  function isFirstInAssign(path: NodePath<types.MemberExpression>) {
-    return types.isAssignmentExpression(path.parent) && path.parent.left === path.node;
+  function isFirstInAssign(path: NodePath<t.MemberExpression>) {
+    return t.isAssignmentExpression(path.parent) && path.parent.left === path.node;
   }
 
   return {

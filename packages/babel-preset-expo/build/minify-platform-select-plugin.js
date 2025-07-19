@@ -8,15 +8,53 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = minifyPlatformSelectPlugin;
-const core_1 = require("@babel/core");
 function minifyPlatformSelectPlugin({ types: t, }) {
+    function isPlatformSelect(path) {
+        return (t.isMemberExpression(path.node.callee) &&
+            t.isIdentifier(path.node.callee.object) &&
+            t.isIdentifier(path.node.callee.property) &&
+            path.node.callee.object.name === 'Platform' &&
+            path.node.callee.property.name === 'select' &&
+            t.isObjectExpression(path.node.arguments[0]));
+    }
+    function findProperty(objectExpression, key, fallback) {
+        let value = null;
+        for (const p of objectExpression.properties) {
+            if (!t.isObjectProperty(p) && !t.isObjectMethod(p)) {
+                continue;
+            }
+            if ((t.isIdentifier(p.key) && p.key.name === key) ||
+                (t.isStringLiteral(p.key) && p.key.value === key)) {
+                if (t.isObjectProperty(p)) {
+                    value = p.value;
+                    break;
+                }
+                else if (t.isObjectMethod(p)) {
+                    value = t.toExpression(p);
+                    break;
+                }
+            }
+        }
+        return value ?? fallback();
+    }
+    function hasStaticProperties(objectExpression) {
+        return objectExpression.properties.every((p) => {
+            if (('computed' in p && p.computed) || t.isSpreadElement(p)) {
+                return false;
+            }
+            if (t.isObjectMethod(p) && p.kind !== 'method') {
+                return false;
+            }
+            return t.isIdentifier(p.key) || t.isStringLiteral(p.key);
+        });
+    }
     return {
         visitor: {
             CallExpression(path, state) {
                 const node = path.node;
                 const arg = node.arguments[0];
                 const opts = state.opts;
-                if (isPlatformSelect(path) && core_1.types.isObjectExpression(arg)) {
+                if (isPlatformSelect(path) && t.isObjectExpression(arg)) {
                     if (hasStaticProperties(arg)) {
                         let fallback;
                         if (opts.platform === 'web') {
@@ -31,43 +69,4 @@ function minifyPlatformSelectPlugin({ types: t, }) {
             },
         },
     };
-}
-function isPlatformSelect(path) {
-    return (core_1.types.isMemberExpression(path.node.callee) &&
-        core_1.types.isIdentifier(path.node.callee.object) &&
-        core_1.types.isIdentifier(path.node.callee.property) &&
-        path.node.callee.object.name === 'Platform' &&
-        path.node.callee.property.name === 'select' &&
-        core_1.types.isObjectExpression(path.node.arguments[0]));
-}
-function findProperty(objectExpression, key, fallback) {
-    let value = null;
-    for (const p of objectExpression.properties) {
-        if (!core_1.types.isObjectProperty(p) && !core_1.types.isObjectMethod(p)) {
-            continue;
-        }
-        if ((core_1.types.isIdentifier(p.key) && p.key.name === key) ||
-            (core_1.types.isStringLiteral(p.key) && p.key.value === key)) {
-            if (core_1.types.isObjectProperty(p)) {
-                value = p.value;
-                break;
-            }
-            else if (core_1.types.isObjectMethod(p)) {
-                value = core_1.types.toExpression(p);
-                break;
-            }
-        }
-    }
-    return value ?? fallback();
-}
-function hasStaticProperties(objectExpression) {
-    return objectExpression.properties.every((p) => {
-        if (('computed' in p && p.computed) || core_1.types.isSpreadElement(p)) {
-            return false;
-        }
-        if (core_1.types.isObjectMethod(p) && p.kind !== 'method') {
-            return false;
-        }
-        return core_1.types.isIdentifier(p.key) || core_1.types.isStringLiteral(p.key);
-    });
 }

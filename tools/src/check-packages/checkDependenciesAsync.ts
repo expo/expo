@@ -63,9 +63,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
 
   'babel-preset-expo': {
-    '@babel/core': 'ignore-dev', // TODO: Switch to types-only (#38177)
-    '@babel/traverse': 'types-only', // TODO: Remove (#38171)
-    '@babel/types': 'ignore-dev', // TODO: Remove (#38171)
+    '@babel/core': 'types-only',
     '@expo/metro-config/build/babel-transformer': 'types-only',
     'react-native-worklets/plugin': 'ignore-dev', // Checked via hasModule before requiring
     'react-native-reanimated/plugin': 'ignore-dev', // Checked via hasModule before requiring

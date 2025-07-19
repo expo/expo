@@ -5,13 +5,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { traverse, template, types as t } from '@babel/core';
+import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import template from '@babel/template';
-import traverse from '@babel/traverse';
-import type { NodePath } from '@babel/traverse';
-import { isImport } from '@babel/types';
-import * as t from '@babel/types';
-import type { CallExpression, Identifier, StringLiteral } from '@babel/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
@@ -95,12 +91,12 @@ export type MutableInternalDependency = MutableDependencyData & {
 export type InternalDependency = Readonly<MutableInternalDependency>;
 
 export type State = {
-  asyncRequireModulePathStringLiteral: StringLiteral | null;
+  asyncRequireModulePathStringLiteral: t.StringLiteral | null;
   dependencyCalls: Set<string>;
   dependencyRegistry: DependencyRegistry;
   dependencyTransformer: DependencyTransformer;
   dynamicRequires: DynamicRequiresBehavior;
-  dependencyMapIdentifier: Identifier | null;
+  dependencyMapIdentifier: t.Identifier | null;
   keepRequireNames: boolean;
   allowOptionalDependencies: AllowOptionalDependencies;
   unstable_allowRequireContext: boolean;
@@ -131,7 +127,7 @@ export type CollectedDependencies<TAst extends t.File = t.File> = Readonly<{
 
 export interface DependencyTransformer {
   transformSyncRequire(
-    path: NodePath<CallExpression>,
+    path: NodePath<t.CallExpression>,
     dependency: InternalDependency,
     state: State
   ): void;
@@ -214,7 +210,7 @@ function collectDependencies<TAst extends t.File>(
         const callee = path.node.callee;
         const name = callee.type === 'Identifier' ? callee.name : null;
 
-        if (isImport(callee)) {
+        if (t.isImport(callee)) {
           processImportCall(path, state, {
             asyncType: 'async',
             isESMImport: true,
@@ -356,7 +352,7 @@ function collectDependencies<TAst extends t.File>(
 }
 
 /** Extract args passed to the `require.context` method. */
-function getRequireContextArgs(path: NodePath<CallExpression>): [string, RequireContextParams] {
+function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, RequireContextParams] {
   const args = path.get('arguments');
 
   let directory: string;
@@ -450,7 +446,7 @@ function getContextMode(path: NodePath<any>, mode: string): ContextMode {
   );
 }
 
-function processRequireContextCall(path: NodePath<CallExpression>, state: State): void {
+function processRequireContextCall(path: NodePath<t.CallExpression>, state: State): void {
   const [directory, contextParams] = getRequireContextArgs(path);
   const transformer = state.dependencyTransformer;
   const dep = registerDependency(
@@ -477,7 +473,7 @@ function processRequireContextCall(path: NodePath<CallExpression>, state: State)
   transformer.transformSyncRequire(path, dep, state);
 }
 
-function processResolveWeakCall(path: NodePath<CallExpression>, state: State): void {
+function processResolveWeakCall(path: NodePath<t.CallExpression>, state: State): void {
   const name = getModuleNameFromCallArgs(path);
 
   if (name == null) {
@@ -601,7 +597,7 @@ function collectImports(path: NodePath<any>, state: State): void {
 /**
  * @returns `true` if the import contains the magic comment for opting-out of bundling.
  */
-function hasMagicImportComment(path: NodePath<CallExpression>): boolean {
+function hasMagicImportComment(path: NodePath<t.CallExpression>): boolean {
   // Get first argument of import()
   const [firstArg] = path.node.arguments;
 
@@ -616,7 +612,7 @@ function hasMagicImportComment(path: NodePath<CallExpression>): boolean {
 }
 
 function processImportCall(
-  path: NodePath<CallExpression>,
+  path: NodePath<t.CallExpression>,
   state: State,
   options: ImportDependencyOptions
 ): void {
@@ -669,14 +665,14 @@ function processImportCall(
   }
 }
 
-function warnDynamicRequire({ node }: NodePath<CallExpression>, message = '') {
+function warnDynamicRequire({ node }: NodePath<t.CallExpression>, message = '') {
   const line = node.loc && node.loc.start && node.loc.start.line;
   console.warn(
     `Dynamic import at line ${line || '<unknown>'}: ${generate(node).code}. This module may not work as intended when deployed to a runtime. ${message}`.trim()
   );
 }
 
-function processRequireCall(path: NodePath<CallExpression>, state: State): void {
+function processRequireCall(path: NodePath<t.CallExpression>, state: State): void {
   const name = getModuleNameFromCallArgs(path);
 
   const transformer = state.dependencyTransformer;
@@ -782,7 +778,7 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
   return false;
 }
 
-function getModuleNameFromCallArgs(path: NodePath<CallExpression>): string | null {
+function getModuleNameFromCallArgs(path: NodePath<t.CallExpression>): string | null {
   const args = path.get('arguments');
   if (!Array.isArray(args) || args.length !== 1) {
     throw new InvalidRequireCallError(path);
@@ -860,7 +856,7 @@ const makeResolveWeakTemplate = template.expression(`
 
 const DefaultDependencyTransformer: DependencyTransformer = {
   transformSyncRequire(
-    path: NodePath<CallExpression>,
+    path: NodePath<t.CallExpression>,
     dependency: InternalDependency,
     state: State
   ): void {

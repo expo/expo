@@ -6,55 +6,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-const t = __importStar(require("@babel/types"));
-/**
- * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
- * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
- * The evaluation will make a second replacement resulting in `var x = true`
- */
-function replaceAndEvaluateNode(nodePath, replacement) {
-    nodePath.replaceWith(t.valueToNode(replacement));
-    if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
-        const result = nodePath.parentPath.evaluate();
-        if (result.confident) {
-            nodePath.parentPath.replaceWith(t.valueToNode(result.value));
-        }
-    }
-}
 /**
  * Checks if the given identifier is an ES module import
  * @param  {babelNode} identifierNodePath The node to check
@@ -77,9 +29,23 @@ const unaryExpressionComparator = (nodePath, value) => {
     }
     return false;
 };
-const isLeftHandSideOfAssignmentExpression = (node, parent) => t.isAssignmentExpression(parent) && parent.left === node;
 const TYPEOF_PREFIX = 'typeof ';
-const plugin = (_) => {
+function definePlugin({ types: t }) {
+    /**
+     * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
+     * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
+     * The evaluation will make a second replacement resulting in `var x = true`
+     */
+    function replaceAndEvaluateNode(nodePath, replacement) {
+        nodePath.replaceWith(t.valueToNode(replacement));
+        if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
+            const result = nodePath.parentPath.evaluate();
+            if (result.confident) {
+                nodePath.parentPath.replaceWith(t.valueToNode(result.value));
+            }
+        }
+    }
+    const isLeftHandSideOfAssignmentExpression = (node, parent) => t.isAssignmentExpression(parent) && parent.left === node;
     const processNode = (replacements, nodePath, comparator) => {
         const replacementKey = Object.keys(replacements).find((value) => comparator(nodePath, value));
         if (typeof replacementKey === 'string' &&
@@ -103,7 +69,6 @@ const plugin = (_) => {
                 processNode(replacements, nodePath, memberExpressionComparator);
             },
             // const x = { version: VERSION };
-            // @ts-expect-error: Virtual type `ReferencedIdentifier` is not on types.
             ReferencedIdentifier(nodePath, state) {
                 const binding = nodePath.scope?.getBinding(nodePath.node.name);
                 if (binding ||
@@ -142,10 +107,10 @@ const plugin = (_) => {
             },
         },
     };
-};
+}
 function assertOptions(opts) {
     if (opts == null || typeof opts !== 'object') {
         throw new Error('define plugin expects an object as options');
     }
 }
-exports.default = plugin;
+exports.default = definePlugin;

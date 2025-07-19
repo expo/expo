@@ -1,8 +1,7 @@
-import { type NodePath } from '@babel/core';
+import type { NodePath, types as t } from '@babel/core';
 // @ts-expect-error: missing types
 import { addNamed as addNamedImport } from '@babel/helper-module-imports';
-import * as t from '@babel/types';
-import { type ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
+import type { ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 import path from 'node:path';
 
 export function hasModule(name: string): boolean {
@@ -158,7 +157,7 @@ const getOrCreateInMap = <K, V>(
   return [map.get(key)!, false];
 };
 
-export function createAddNamedImportOnce(t: typeof import('@babel/types')) {
+export function createAddNamedImportOnce(t: typeof import('@babel/core').types) {
   const addedImportsCache = new Map<string, Map<string, t.Identifier>>();
   return function addNamedImportOnce(path: NodePath<t.Node>, name: string, source: string) {
     const [sourceCache] = getOrCreateInMap(

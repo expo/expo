@@ -10,6 +10,7 @@
 
 import {
   transformSync,
+  types as t,
   type Node as BabelNode,
   type PluginOptions as EntryOptions,
   type PluginTarget as EntryTarget,
@@ -17,7 +18,6 @@ import {
   type TransformOptions as BabelCoreOptions,
 } from '@babel/core';
 import generate from '@babel/generator';
-import * as t from '@babel/types';
 import assert from 'node:assert';
 
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {

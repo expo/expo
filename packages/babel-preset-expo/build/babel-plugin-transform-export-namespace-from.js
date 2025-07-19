@@ -7,10 +7,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@babel/core");
 // Original: https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-plugin-transform-export-namespace-from/src/index.ts
 // NOTE: Original plugin asserts that Babel version 7 or newer is used. This was removed for simplicity.
-exports.default = () => ({
+exports.default = ({ types: t }) => ({
     name: 'transform-export-namespace-from',
     manipulateOptions: process.env.BABEL_8_BREAKING
         ? undefined
@@ -19,21 +18,21 @@ exports.default = () => ({
         ExportNamedDeclaration(path) {
             const { node, scope } = path;
             const { specifiers } = node;
-            const index = core_1.types.isExportDefaultSpecifier(specifiers[0]) ? 1 : 0;
-            if (!core_1.types.isExportNamespaceSpecifier(specifiers[index]))
+            const index = t.isExportDefaultSpecifier(specifiers[0]) ? 1 : 0;
+            if (!t.isExportNamespaceSpecifier(specifiers[index]))
                 return;
             const nodes = [];
             if (index === 1) {
-                nodes.push(core_1.types.exportNamedDeclaration(null, [specifiers.shift()], node.source));
+                nodes.push(t.exportNamedDeclaration(null, [specifiers.shift()], node.source));
             }
             const specifier = specifiers.shift();
             const { exported } = specifier;
             const uid = scope.generateUidIdentifier(
             // @ts-expect-error Identifier ?? StringLiteral
             exported.name ?? exported.value);
-            nodes.push(withLocation(core_1.types.importDeclaration([core_1.types.importNamespaceSpecifier(uid)], 
+            nodes.push(withLocation(t.importDeclaration([t.importNamespaceSpecifier(uid)], 
             // @ts-expect-error
-            core_1.types.cloneNode(node.source)), node.loc), withLocation(core_1.types.exportNamedDeclaration(null, [core_1.types.exportSpecifier(core_1.types.cloneNode(uid), exported)]), node.loc));
+            t.cloneNode(node.source)), node.loc), withLocation(t.exportNamedDeclaration(null, [t.exportSpecifier(t.cloneNode(uid), exported)]), node.loc));
             if (node.specifiers.length >= 1) {
                 nodes.push(node);
             }

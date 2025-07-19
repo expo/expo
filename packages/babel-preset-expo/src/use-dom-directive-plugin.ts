@@ -1,7 +1,7 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, template, types } from '@babel/core';
+import type { ConfigAPI, PluginObj } from '@babel/core';
 import crypto from 'node:crypto';
 import { basename } from 'node:path';
 import url from 'node:url';
@@ -9,9 +9,9 @@ import url from 'node:url';
 import { getIsProd, getPossibleProjectRoot } from './common';
 
 export function expoUseDomDirectivePlugin(
-  api: ConfigAPI & { types: typeof types }
-): babel.PluginObj {
-  const { types: t } = api;
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj {
+  const { template, types: t } = api;
 
   const isProduction = api.caller(getIsProd);
   const platform = api.caller((caller) => (caller as any)?.platform);

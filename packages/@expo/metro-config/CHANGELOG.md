@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Fix Babel dependencies by removing reliance on `@babel/parser`, `@babel/types`, and `@babel/template`, and adding missing `@babel/code-frame` dependency ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
+
 ## 0.20.17 - 2025-07-03
 
 _This version does not introduce any user-facing changes._
