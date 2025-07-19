@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `local` flag to allow removing `*.local` env files from load order ([#37216](https://github.com/expo/expo/pull/37216) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
