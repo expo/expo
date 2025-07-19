@@ -1409,9 +1409,9 @@
     debug "^3.1.0"
     glob "^10.4.2"
 
-"@expo/metro@./vendor/expo-metro-v0.1.0-3.tgz", "@expo/metro@~0.1.0":
-  version "0.1.0-3"
-  resolved "./vendor/expo-metro-v0.1.0-3.tgz#471c2eca2b575bbdef23f685dd7a4a17cc4425d6"
+"@expo/metro@./vendor/expo-metro-v0.1.0-8.tgz", "@expo/metro@~0.1.0":
+  version "0.1.0-8"
+  resolved "./vendor/expo-metro-v0.1.0-8.tgz#613295698a4df904cd3170cd108628f209d732ed"
   dependencies:
     metro "0.83.0"
     metro-babel-transformer "0.83.0"

@@ -20,7 +20,7 @@
     ]
   },
   "resolutions": {
-    "@expo/metro": "./vendor/expo-metro-v0.1.0-3.tgz",
+    "@expo/metro": "./vendor/expo-metro-v0.1.0-8.tgz",
     "react-native": "0.80.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -35,7 +35,7 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "@expo/metro": "./vendor/expo-metro-v0.1.0-3.tgz",
+    "@expo/metro": "./vendor/expo-metro-v0.1.0-8.tgz",
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
     "node-gyp": "^10.0.1",
