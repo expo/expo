@@ -37,21 +37,16 @@ type SourceFileImportRef = {
 const IGNORED_PACKAGES = [
   '@expo/cli', // package: @react-native-community/cli-server-api, expo-modules-autolinking, expo-router, express, metro-*, webpack, webpack-dev-server
   '@expo/html-elements', // package: react, react-native, react-native-web
-  '@expo/image-utils', // package: sharp, sharp-cli
   '@expo/metro-config', // package: @babel/*, babel-preset-expo, hermes-parser, metro, metro-*
   '@expo/metro-runtime', // package: anser, expo, expo-constants, metro-runtime, pretty-format, react, react-dom, react-native-web, react-refresh, stacktrace-parser
-  'expo-asset', // package: @react-native/assets-registry, expo-updates (types only)
   'expo-av', // package: expo-asset
   'expo-font', // package: expo-asset
   'expo-gl', // package: react-dom, react-native-reanimated
-  'expo-image', // package: @react-native/assets-registry
   'expo-modules-core', // package: react, react-native
   'expo-router', // package: @react-navigation/core, @react-navigation/routers, debug, escape-string-regexp, expect, expo-font, fast-deep-equal, nanoid, react, react-dom, react-native, react-native-web
   'expo-sqlite', // package: expo-asset
   'expo-store-review', // package: expo-constants
   'expo-updates', // cli: @expo/plist, debug, getenv - utils: @expo/cli, @expo/metro-config, metro
-  'expo-video', // package: @react-native/assets-registry
-  'expo-audio', // package: @react-native/assets-registry
 ];
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | void> = {
