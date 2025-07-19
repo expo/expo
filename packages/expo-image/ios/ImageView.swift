@@ -163,7 +163,7 @@ public final class ImageView: ExpoView {
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing
+    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing || source.isPhotoLibraryAsset
     if shouldEarlyResize {
       context[.imagePreserveAspectRatio] = true
       context[.imageThumbnailPixelSize] = CGSize(
