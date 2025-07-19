@@ -7,4 +7,5 @@ export * from './Slider';
 export * from './Switch';
 export * from './TextInput';
 export * from './Shape';
+export * from './TooltipBox';
 //# sourceMappingURL=index.js.map
