@@ -6,24 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { type NodePath, types as t } from '@babel/core';
-
-/**
- * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
- * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
- * The evaluation will make a second replacement resulting in `var x = true`
- */
-function replaceAndEvaluateNode(nodePath: NodePath, replacement: string) {
-  nodePath.replaceWith(t.valueToNode(replacement));
-
-  if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
-    const result = nodePath.parentPath.evaluate();
-
-    if (result.confident) {
-      nodePath.parentPath.replaceWith(t.valueToNode(result.value));
-    }
-  }
-}
+import type { ConfigAPI, PluginObj, NodePath, types as t } from '@babel/core';
 
 /**
  * Checks if the given identifier is an ES module import
@@ -58,12 +41,29 @@ const unaryExpressionComparator = (nodePath: NodePath, value: string): boolean =
   return false;
 };
 
-const isLeftHandSideOfAssignmentExpression = (node: t.MemberExpression, parent: t.Node) =>
-  t.isAssignmentExpression(parent) && parent.left === node;
-
 const TYPEOF_PREFIX = 'typeof ';
 
-const plugin = (_: { types: typeof t }): babel.PluginObj => {
+function definePlugin({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginObj {
+  /**
+   * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
+   * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
+   * The evaluation will make a second replacement resulting in `var x = true`
+   */
+  function replaceAndEvaluateNode(nodePath: NodePath, replacement: string) {
+    nodePath.replaceWith(t.valueToNode(replacement));
+
+    if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
+      const result = nodePath.parentPath.evaluate();
+
+      if (result.confident) {
+        nodePath.parentPath.replaceWith(t.valueToNode(result.value));
+      }
+    }
+  }
+
+  const isLeftHandSideOfAssignmentExpression = (node: t.MemberExpression, parent: t.Node) =>
+    t.isAssignmentExpression(parent) && parent.left === node;
+
   const processNode = (
     replacements: Record<string, string>,
     nodePath: NodePath,
@@ -142,7 +142,7 @@ const plugin = (_: { types: typeof t }): babel.PluginObj => {
       },
     },
   };
-};
+}
 
 function assertOptions(opts: any): asserts opts is Record<string, string> {
   if (opts == null || typeof opts !== 'object') {
@@ -150,4 +150,4 @@ function assertOptions(opts: any): asserts opts is Record<string, string> {
   }
 }
 
-export default plugin;
+export default definePlugin;
