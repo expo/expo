@@ -1,4 +1,4 @@
-import { type NodePath, types as t } from '@babel/core';
+import type { NodePath, types as t } from '@babel/core';
 export declare function hasModule(name: string): boolean;
 /** Determine which bundler is being used. */
 export declare function getBundler(caller?: any): "metro" | "webpack" | null;
