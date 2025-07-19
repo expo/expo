@@ -163,6 +163,7 @@ function FitForm() {
         visible={open}
         onClose={() => setIsOpen(false)}
         presentationStyle="formSheet"
+        cornerRadius={20}
         detents="fitToContents">
         <ScrollView
           style={{ gap: 8 }}
