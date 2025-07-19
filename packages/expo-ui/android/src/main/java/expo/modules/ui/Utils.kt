@@ -12,6 +12,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Modifier
 
 @Composable
 fun DynamicTheme(content: @Composable (() -> Unit)) {
@@ -59,11 +61,24 @@ val Color?.composeOrNull: androidx.compose.ui.graphics.Color?
 fun getImageVector(icon: String?): ImageVector? {
   if (icon.isNullOrEmpty()) return null
   return try {
-    val (theme, name) = icon.split(".")
-    val clazz = Class.forName("androidx.compose.material.icons.$theme.${name}Kt")
+    val clazz = Class.forName("androidx.compose.material.icons.${icon}Kt")
     clazz.declaredMethods[0].invoke(clazz::class, null) as ImageVector
   } catch (e: Exception) {
     Log.w("ExpoUI", "The icon $icon couldn't be found.")
     return null
+  }
+}
+
+@Composable
+fun MaterialIcon(
+  iconName: String?,
+  modifier: Modifier = Modifier
+) {
+  getImageVector(iconName)?.let {
+    Icon(
+      it,
+      contentDescription = iconName,
+      modifier = modifier
+    )
   }
 }
