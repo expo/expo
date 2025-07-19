@@ -9,16 +9,14 @@
 - Added support for expo modules written using TurboModules ([#36996](https://github.com/expo/expo/pull/36996) by [@acoates-ms](https://github.com/acoates-ms))
 - [Android] Add Array converter and handle nullable values. ([#37220](https://github.com/expo/expo/pull/37220) by [@jakex7](https://github.com/jakex7))
 - [Android] Support object arrays in type converters. ([#37276](https://github.com/expo/expo/pull/37276) by [@jakex7](https://github.com/jakex7))
-- [iOS] Support cast from JavaScriptValue in DynamicArrayType. ([#37891](https://github.com/expo/expo/pull/37891) by [@jakex7](https://github.com/jakex7))
 - [Android] Add `testID` support to `ExpoComposeView`. ([#38005](https://github.com/expo/expo/pull/38005) by [@mateoguzmana](https://github.com/mateoguzmana))
 - [iOS] Return proper dynamic type for AnyEither. ([#38072](https://github.com/expo/expo/pull/38072) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `ExpoRequestInterceptorProtocol` to properly notify client about HTTP redirects. ([#38078](https://github.com/expo/expo/pull/38078) by [@kudo](https://github.com/kudo))
-- [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 - [android] Fix android build without coreFeatures compose ([#38153](https://github.com/expo/expo/pull/38153) by [@Ubax](https://github.com/Ubax))
+- [iOS] Fix `ExpoRequestInterceptorProtocol` to properly notify client about HTTP redirects. ([#38078](https://github.com/expo/expo/pull/38078) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -30,6 +28,16 @@
 - Updated `ExpoComposeView` to support virtual view. ([#36255](https://github.com/expo/expo/pull/36255) by [@kudo](https://github.com/kudo))
 - [iOS] Support throwing errors in shared object constructor. ([#37618](https://github.com/expo/expo/pull/37618) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove boilerplate from function factories. ([#37884](https://github.com/expo/expo/pull/37884) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 2.5.0 - 2025-07-17
+
+### 🎉 New features
+
+- [iOS] Support cast from JavaScriptValue in DynamicArrayType. ([#37891](https://github.com/expo/expo/pull/37891) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [Android] Mark either converters as non-trivial. ([#37836](https://github.com/expo/expo/pull/37836) by [@aleqsio](https://github.com/aleqsio))
 
 ## 2.4.2 - 2025-07-02
 
