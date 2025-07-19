@@ -9,7 +9,6 @@
  */
 
 import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@babel/core';
-import type { Scope as BabelScope } from '@babel/traverse';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
@@ -718,9 +717,9 @@ const isChildScope = ({
   parent,
   child,
 }: {
-  root: BabelScope;
-  parent: BabelScope;
-  child: BabelScope;
+  root: NodePath['scope'];
+  parent: NodePath['scope'];
+  child: NodePath['scope'];
 }) => {
   let curScope = child;
   while (curScope !== root) {
