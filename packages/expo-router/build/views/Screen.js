@@ -10,8 +10,11 @@ const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
 const stack_1 = require("../utils/stack");
 /** Component for setting the current screen's options dynamically. */
 function Screen({ name, options }) {
+    if (name) {
+        throw new Error(`You can set the name prop on the Screen component only when it is used inside a Layout component.`);
+    }
     const route = (0, native_1.useRoute)();
-    const navigation = (0, useNavigation_1.useNavigation)(name);
+    const navigation = (0, useNavigation_1.useNavigation)();
     const isFocused = navigation.isFocused();
     const isPreloaded = (0, stack_1.isRoutePreloadedInStack)(navigation.getState(), route);
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
