@@ -1,4 +1,4 @@
-import findUp from 'find-up';
+import { findUp, findUpMultiple, findUpSync } from 'find-up';
 import fs from 'fs';
 import path from 'path';
 
@@ -19,8 +19,19 @@ export async function getProjectPackageJsonPathAsync(projectRoot: string): Promi
  * Synchronous version of {@link getProjectPackageJsonPathAsync}.
  */
 export function getProjectPackageJsonPathSync(projectRoot: string): string {
-  const result = findUp.sync('package.json', { cwd: projectRoot });
+  const result = findUpSync('package.json', { cwd: projectRoot });
   if (!result) {
+    throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
+  }
+  return result;
+}
+
+/**
+ * Find the paths of `package.json` files in all parent folders
+ */
+export async function getProjectPackageJsonPathsAsync(projectRoot: string): Promise<string[]> {
+  const result = await findUpMultiple('package.json', { cwd: projectRoot });
+  if (result.length === 0) {
     throw new Error(`Couldn't find "package.json" up from path "${projectRoot}"`);
   }
   return result;
@@ -76,7 +87,7 @@ export async function resolveSearchPathsAsync(
  * Looks up for workspace's `node_modules` paths.
  */
 async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
-  const paths = [];
+  const paths: string[] = [];
   let dir = cwd;
   let pkgJsonPath: string | undefined;
 

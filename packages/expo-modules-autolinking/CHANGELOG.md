@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Link dependencies of parent folders (to improve monorepo support). ([#38036](https://github.com/expo/expo/pull/38036) by [@jeppester](https://github.com/jeppester))
+
+
 ### 🐛 Bug fixes
 
 - [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
