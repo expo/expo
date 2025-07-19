@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [web] remove deprecated style 'type' attribute ([#38114](https://github.com/expo/expo/pull/38114) by [@vonovak](https://github.com/vonovak))
+
 ## 13.3.2 - 2025-07-01
 
 _This version does not introduce any user-facing changes._

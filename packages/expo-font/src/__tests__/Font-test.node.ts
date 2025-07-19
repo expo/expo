@@ -6,7 +6,7 @@ afterEach(() => {
 });
 
 it(`returns sync results`, () => {
-  const name = 'foobar';
+  const name = 'foo bar';
   const resource = { uri: 'font.ttf' };
 
   // Always true in Node
@@ -16,7 +16,7 @@ it(`returns sync results`, () => {
 
   expect(Font.isLoaded(name)).toBe(true);
   expect(Server.getServerResources()).toEqual([
-    '<style id="expo-generated-fonts" type="text/css">@font-face{font-family:foobar;src:url(font.ttf);font-display:auto}</style>',
+    '<style id="expo-generated-fonts">@font-face{font-family:"foo bar";src:url("font.ttf");font-display:auto}</style>',
     '<link rel="preload" href="font.ttf" as="font" crossorigin="" />',
   ]);
 
