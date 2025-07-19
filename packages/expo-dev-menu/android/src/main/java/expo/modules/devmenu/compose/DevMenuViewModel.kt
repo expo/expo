@@ -15,7 +15,10 @@ class DevMenuViewModel : ViewModel() {
     get() = _state.value
 
   fun updateAppInfo(appInfo: DevMenuState.AppInfo) {
-    _state.value = _state.value.copy(appInfo = appInfo)
+    _state.value = _state.value.copy(
+      appInfo = appInfo,
+      isOnboardingFinished = DevMenuManager.getSettings()?.isOnboardingFinished ?: true
+    )
   }
 
   private fun closeMenu() {
@@ -41,6 +44,10 @@ class DevMenuViewModel : ViewModel() {
       DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> toggleInspector()
       is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
+      DevMenuAction.FinishOnboarding -> {
+        DevMenuManager.getSettings()?.isOnboardingFinished = true
+        _state.value = _state.value.copy(isOnboardingFinished = true)
+      }
     }
   }
 }
