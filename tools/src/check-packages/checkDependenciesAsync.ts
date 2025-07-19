@@ -88,7 +88,11 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
   }
 
   const getValidExternalImportKind = createExternalImportValidator(pkg);
-  let invalidImports: { file: SourceFile; importRef: SourceFileImportRef; kind: DependencyKind.Dev | undefined }[] = [];
+  let invalidImports: {
+    file: SourceFile;
+    importRef: SourceFileImportRef;
+    kind: DependencyKind.Dev | undefined;
+  }[] = [];
 
   for (const source of sources) {
     source.importRefs.forEach((importRef) => {
@@ -216,15 +220,15 @@ function collectTypescriptImports(node: ts.Node | ts.SourceFile, imports: Source
   if (ts.isImportDeclaration(node)) {
     let isTypeOnly = false;
     if (node.importClause?.namedBindings) {
-      isTypeOnly = node.importClause.isTypeOnly || 
-        (ts.isNamedImports(node.importClause.namedBindings) &&  node.importClause.namedBindings.elements.every((binding) => binding.isTypeOnly));
+      isTypeOnly =
+        node.importClause.isTypeOnly ||
+        (ts.isNamedImports(node.importClause.namedBindings) &&
+          node.importClause.namedBindings.elements.every((binding) => binding.isTypeOnly));
     } else {
       isTypeOnly = !!node.importClause?.isTypeOnly;
     }
     // Collect `import` statements
-    imports.push(
-      createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly)
-    );
+    imports.push(createTypescriptImportRef(node.moduleSpecifier.getText(), isTypeOnly));
   } else if (
     ts.isCallExpression(node) &&
     node.expression.getText() === 'require' &&
