@@ -8,46 +8,12 @@
  *
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const core_1 = require("@babel/core");
-const t = __importStar(require("@babel/types"));
 const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
@@ -81,32 +47,32 @@ function reactServerActionsPlugin(api) {
             // only add a closure object if we're not closing over anything.
             // const [x, y, z] = await _decryptActionBoundArgs(await $$CLOSURE.value);
             const closureParam = path.scope.generateUidIdentifier('$$CLOSURE');
-            const freeVarsPat = t.arrayPattern(freeVariables.map((variable) => t.identifier(variable)));
-            const closureExpr = t.memberExpression(closureParam, t.identifier(LAZY_WRAPPER_VALUE_KEY));
+            const freeVarsPat = core_1.types.arrayPattern(freeVariables.map((variable) => core_1.types.identifier(variable)));
+            const closureExpr = core_1.types.memberExpression(closureParam, core_1.types.identifier(LAZY_WRAPPER_VALUE_KEY));
             extractedFunctionParams = [closureParam, ...path.node.params];
             extractedFunctionBody = [
-                t.variableDeclaration('var', [
-                    t.variableDeclarator(t.assignmentPattern(freeVarsPat, closureExpr)),
+                core_1.types.variableDeclaration('var', [
+                    core_1.types.variableDeclarator(core_1.types.assignmentPattern(freeVarsPat, closureExpr)),
                 ]),
                 ...extractedFunctionBody,
             ];
         }
         const wrapInRegister = (expr, exportedName) => {
             const expoRegisterServerReferenceId = addReactImport();
-            return t.callExpression(expoRegisterServerReferenceId, [
+            return core_1.types.callExpression(expoRegisterServerReferenceId, [
                 expr,
-                t.stringLiteral(actionModuleId),
-                t.stringLiteral(exportedName),
+                core_1.types.stringLiteral(actionModuleId),
+                core_1.types.stringLiteral(exportedName),
             ]);
         };
         const isArrowFn = path.isArrowFunctionExpression();
         const extractedFunctionExpr = wrapInRegister(isArrowFn
-            ? t.arrowFunctionExpression(extractedFunctionParams, t.blockStatement(extractedFunctionBody), true)
-            : t.functionExpression(path.node.id, extractedFunctionParams, t.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name);
+            ? core_1.types.arrowFunctionExpression(extractedFunctionParams, core_1.types.blockStatement(extractedFunctionBody), true)
+            : core_1.types.functionExpression(path.node.id, extractedFunctionParams, core_1.types.blockStatement(extractedFunctionBody), false, true), extractedIdentifier.name);
         // Create a top-level declaration for the extracted function.
         const bindingKind = 'var';
-        const functionDeclaration = t.exportNamedDeclaration(t.variableDeclaration(bindingKind, [
-            t.variableDeclarator(extractedIdentifier, extractedFunctionExpr),
+        const functionDeclaration = core_1.types.exportNamedDeclaration(core_1.types.variableDeclaration(bindingKind, [
+            core_1.types.variableDeclarator(extractedIdentifier, extractedFunctionExpr),
         ]));
         // Insert the declaration as close to the original declaration as possible.
         const isPathFunctionInTopLevel = path.find((p) => p.isProgram()) === path;
@@ -153,7 +119,9 @@ function reactServerActionsPlugin(api) {
         else {
             // Fallback to inserting after the last import if no enclosing declaration is found
             const programBody = moduleScope.path.get('body');
-            const lastImportPath = findLast(Array.isArray(programBody) ? programBody : [programBody], (stmt) => stmt.isImportDeclaration());
+            const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast((statement) => {
+                return statement.isImportDeclaration();
+            });
             [inserted] = lastImportPath.insertAfter(functionDeclaration);
             moduleScope.registerBinding(bindingKind, inserted);
             inserted.addComment('leading', ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'), true);
@@ -171,11 +139,11 @@ function reactServerActionsPlugin(api) {
         if (freeVariables.length === 0) {
             return id;
         }
-        const capturedVarsExpr = t.arrayExpression(freeVariables.map((variable) => t.identifier(variable)));
+        const capturedVarsExpr = core_1.types.arrayExpression(freeVariables.map((variable) => core_1.types.identifier(variable)));
         const boundArgs = wrapBoundArgs(capturedVarsExpr);
         // _ACTION.bind(null, { get value() { return _encryptActionBoundArgs([x, y, z]) } })
-        return t.callExpression(t.memberExpression(id, t.identifier('bind')), [
-            t.nullLiteral(),
+        return core_1.types.callExpression(core_1.types.memberExpression(id, core_1.types.identifier('bind')), [
+            core_1.types.nullLiteral(),
             boundArgs,
         ]);
     };
@@ -190,7 +158,7 @@ function reactServerActionsPlugin(api) {
             assertExpoMetadata(file.metadata);
             file.metadata.extractedActions = [];
             file.metadata.isModuleMarkedWithUseServerDirective = false;
-            const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(t);
+            const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(core_1.types);
             addReactImport = () => {
                 return addNamedImportOnce(file.path, 'registerServerReference', 'react-server-dom-webpack/server');
             };
@@ -208,8 +176,8 @@ function reactServerActionsPlugin(api) {
                 return id;
             });
             wrapBoundArgs = (expr) => {
-                const wrapperFn = t.cloneNode(defineBoundArgsWrapperHelper());
-                return t.callExpression(wrapperFn, [t.arrowFunctionExpression([], expr)]);
+                const wrapperFn = core_1.types.cloneNode(defineBoundArgsWrapperHelper());
+                return core_1.types.callExpression(wrapperFn, [core_1.types.arrowFunctionExpression([], expr)]);
             };
         },
         visitor: {
@@ -224,7 +192,7 @@ function reactServerActionsPlugin(api) {
             // `() => {}`
             ArrowFunctionExpression(path, state) {
                 const { body } = path.node;
-                if (!t.isBlockStatement(body) || !hasUseServerDirective(path)) {
+                if (!core_1.types.isBlockStatement(body) || !hasUseServerDirective(path)) {
                     return;
                 }
                 assertIsAsyncFn(path);
@@ -264,7 +232,7 @@ function reactServerActionsPlugin(api) {
                     // replace the function decl with a (hopefully) equivalent var declaration
                     // `var [name] = $$INLINE_ACTION_{N}`
                     const bindingKind = 'var';
-                    const [inserted] = path.replaceWith(t.variableDeclaration(bindingKind, [t.variableDeclarator(fnId, extractedIdentifier)]));
+                    const [inserted] = path.replaceWith(core_1.types.variableDeclaration(bindingKind, [core_1.types.variableDeclarator(fnId, extractedIdentifier)]));
                     tlb.scope.registerBinding(bindingKind, inserted);
                 }
                 else {
@@ -315,7 +283,7 @@ function reactServerActionsPlugin(api) {
                 }
                 // Convert `export default function foo() {}` to `function foo() {}; export { foo as default }`
                 if (path.node.declaration) {
-                    if (t.isFunctionDeclaration(path.node.declaration)) {
+                    if (core_1.types.isFunctionDeclaration(path.node.declaration)) {
                         let { id } = path.node.declaration;
                         if (id == null) {
                             const moduleScope = path.scope.getProgramParent();
@@ -324,9 +292,9 @@ function reactServerActionsPlugin(api) {
                             // Transform `async function () {}` to `async function $$INLINE_ACTION() {}`
                             path.node.declaration.id = extractedIdentifier;
                         }
-                        const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
+                        const exportedSpecifier = core_1.types.exportSpecifier(id, core_1.types.identifier('default'));
                         path.replaceWith(path.node.declaration);
-                        path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
+                        path.insertAfter(core_1.types.exportNamedDeclaration(null, [exportedSpecifier]));
                     }
                     else {
                         // Convert anonymous function expressions to named function expressions and export them as default.
@@ -335,20 +303,20 @@ function reactServerActionsPlugin(api) {
                         // const foo = async () => {}
                         // (() => _registerServerReference(foo, "file:///unknown", "default"))();
                         // export { foo as default };
-                        if (t.isAssignmentExpression(path.node.declaration) &&
-                            t.isArrowFunctionExpression(path.node.declaration.right)) {
-                            if (!t.isIdentifier(path.node.declaration.left)) {
+                        if (core_1.types.isAssignmentExpression(path.node.declaration) &&
+                            core_1.types.isArrowFunctionExpression(path.node.declaration.right)) {
+                            if (!core_1.types.isIdentifier(path.node.declaration.left)) {
                                 throw path.buildCodeFrameError(`Expected an assignment to an identifier but found ${path.node.declaration.left.type}.`);
                             }
                             const { left, right } = path.node.declaration;
                             const id = left;
-                            const exportedSpecifier = t.exportSpecifier(id, t.identifier('default'));
+                            const exportedSpecifier = core_1.types.exportSpecifier(id, core_1.types.identifier('default'));
                             // Replace `export default foo = async () => {}` with `const foo = async () => {}`
-                            path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(id, right)]));
+                            path.replaceWith(core_1.types.variableDeclaration('var', [core_1.types.variableDeclarator(id, right)]));
                             // Insert `(() => _registerServerReference(foo, "file:///unknown", "default"))();`
-                            path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
+                            path.insertAfter(core_1.types.exportNamedDeclaration(null, [exportedSpecifier]));
                         }
-                        else if (t.isArrowFunctionExpression(path.node.declaration) &&
+                        else if (core_1.types.isArrowFunctionExpression(path.node.declaration) &&
                             path.node.declaration) {
                             // export default async () => {}
                             // Give the function a name
@@ -356,29 +324,29 @@ function reactServerActionsPlugin(api) {
                             const moduleScope = path.scope.getProgramParent();
                             const extractedIdentifier = moduleScope.generateUidIdentifier('$$INLINE_ACTION');
                             // @ts-expect-error: Transform `export default async () => {}` to `const $$INLINE_ACTION = async () => {}`
-                            path.node.declaration = t.variableDeclaration('var', [
-                                t.variableDeclarator(extractedIdentifier, path.node.declaration),
+                            path.node.declaration = core_1.types.variableDeclaration('var', [
+                                core_1.types.variableDeclarator(extractedIdentifier, path.node.declaration),
                             ]);
                             // Strip the `export default`
                             path.replaceWith(path.node.declaration);
                             // export { $$INLINE_ACTION as default }
-                            const exportedSpecifier = t.exportSpecifier(extractedIdentifier, t.identifier('default'));
-                            path.insertAfter(t.exportNamedDeclaration(null, [exportedSpecifier]));
+                            const exportedSpecifier = core_1.types.exportSpecifier(extractedIdentifier, core_1.types.identifier('default'));
+                            path.insertAfter(core_1.types.exportNamedDeclaration(null, [exportedSpecifier]));
                         }
                         else if (
                         // Match `export default foo;`
-                        t.isIdentifier(path.node.declaration)) {
+                        core_1.types.isIdentifier(path.node.declaration)) {
                             // Ensure the `path.node.declaration` is a function or a variable for a function.
                             const binding = path.scope.getBinding(path.node.declaration.name);
-                            const isServerActionType = t.isFunctionDeclaration(binding?.path.node ?? path.node.declaration) ||
-                                t.isArrowFunctionExpression(binding?.path.node ?? path.node.declaration) ||
+                            const isServerActionType = core_1.types.isFunctionDeclaration(binding?.path.node ?? path.node.declaration) ||
+                                core_1.types.isArrowFunctionExpression(binding?.path.node ?? path.node.declaration) ||
                                 // `const foo = async () => {}`
-                                (t.isVariableDeclarator(binding?.path.node) &&
-                                    t.isArrowFunctionExpression(binding?.path.node.init));
+                                (core_1.types.isVariableDeclarator(binding?.path.node) &&
+                                    core_1.types.isArrowFunctionExpression(binding?.path.node.init));
                             if (isServerActionType) {
                                 // Convert `export default foo;` to `export { foo as default };`
-                                const exportedSpecifier = t.exportSpecifier(path.node.declaration, t.identifier('default'));
-                                path.replaceWith(t.exportNamedDeclaration(null, [exportedSpecifier]));
+                                const exportedSpecifier = core_1.types.exportSpecifier(path.node.declaration, core_1.types.identifier('default'));
+                                path.replaceWith(core_1.types.exportNamedDeclaration(null, [exportedSpecifier]));
                             }
                         }
                         else {
@@ -407,27 +375,27 @@ function reactServerActionsPlugin(api) {
                 }
                 const actionModuleId = getActionModuleId();
                 const createRegisterCall = (identifier, exported = identifier) => {
-                    const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-                    const call = t.callExpression(addReactImport(), [
+                    const exportedName = core_1.types.isIdentifier(exported) ? exported.name : exported.value;
+                    const call = core_1.types.callExpression(addReactImport(), [
                         identifier,
-                        t.stringLiteral(actionModuleId),
-                        t.stringLiteral(exportedName),
+                        core_1.types.stringLiteral(actionModuleId),
+                        core_1.types.stringLiteral(exportedName),
                     ]);
                     // Wrap call with `;(() => { ... })();` to avoid issues with ASI
-                    return t.expressionStatement(t.callExpression(t.arrowFunctionExpression([], call), []));
+                    return core_1.types.expressionStatement(core_1.types.callExpression(core_1.types.arrowFunctionExpression([], call), []));
                 };
                 if (path.node.specifiers.length > 0) {
                     for (const specifier of path.node.specifiers) {
                         // `export * as ns from './foo';`
-                        if (t.isExportNamespaceSpecifier(specifier)) {
+                        if (core_1.types.isExportNamespaceSpecifier(specifier)) {
                             throw path.buildCodeFrameError('Namespace exports for server actions are not supported. Re-export named actions instead: export { foo } from "./bar".');
                         }
-                        else if (t.isExportDefaultSpecifier(specifier)) {
+                        else if (core_1.types.isExportDefaultSpecifier(specifier)) {
                             // NOTE: This is handled by ExportDefaultDeclaration
                             // `export default foo;`
                             throw path.buildCodeFrameError('Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)');
                         }
-                        else if (t.isExportSpecifier(specifier)) {
+                        else if (core_1.types.isExportSpecifier(specifier)) {
                             // Skip TypeScript type re-exports (e.g., `export { type Foo }`)
                             if (specifier.exportKind === 'type') {
                                 continue;
@@ -435,7 +403,7 @@ function reactServerActionsPlugin(api) {
                             // `export { foo };`
                             // `export { foo as [bar|default] };`
                             const localName = specifier.local.name;
-                            const exportedName = t.isIdentifier(specifier.exported)
+                            const exportedName = core_1.types.isIdentifier(specifier.exported)
                                 ? specifier.exported.name
                                 : specifier.exported.value;
                             // if we're reexporting an existing action under a new name, we shouldn't register() it again.
@@ -461,7 +429,7 @@ function reactServerActionsPlugin(api) {
                         return innerPath.get('declarations').map((d) => {
                             // TODO: insert `typeof <identifier> === 'function'` check -- it's a variable, so it could be anything
                             const id = d.node.id;
-                            if (!t.isIdentifier(id)) {
+                            if (!core_1.types.isIdentifier(id)) {
                                 // TODO
                                 throw innerPath.buildCodeFrameError('Unimplemented');
                             }
@@ -578,13 +546,6 @@ const isChildScope = ({ root, parent, child, }) => {
     }
     return false;
 };
-const findLast = (arr, predicate) => {
-    for (let i = arr.length - 1; i >= 0; i--) {
-        if (predicate(arr[i]))
-            return arr[i];
-    }
-    return undefined;
-};
 function findImmediatelyEnclosingDeclaration(path) {
     let currentPath = path;
     while (!currentPath.isProgram()) {
@@ -637,5 +598,5 @@ function assertExpoMetadata(metadata) {
 }
 function hasUseServerDirective(path) {
     const { body } = path.node;
-    return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
+    return core_1.types.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
 }
