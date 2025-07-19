@@ -32,4 +32,7 @@ export default {} as {
 
   setVisibilityAsync: (visibility: NavigationBarVisibility) => Promise<void>;
   getVisibilityAsync: () => Promise<NavigationBarVisibility>;
+
+  setHidden: (hidden: boolean) => Promise<void>;
+  setTransparent: (transparent: boolean) => Promise<void>;
 };
