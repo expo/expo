@@ -8,7 +8,17 @@ import Logger from '../Logger';
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
 
 type PackageCheckType = ActionOptions['checkPackageType'];
-type IgnoreKind = 'types-only' | 'ignore';
+
+/** The three levels of of which dangerous dependencies are allowed.
+ * @remarks
+ * We can configure selectively invalid dependencies to be allowed in `SPECIAL_DEPENDENCIES` below.
+ * - `types-only` means we allow any type-only import
+ * - `ignore` means we allow any import, as long as the dependency isn't just a dev dependency
+ * - `ignore-dev` means we allow any import at all times
+ * The `ignore` and `ignore-dev` values are inherently dangerous and may cause broken
+ * dependency chains in user projects!
+ */
+type IgnoreKind = 'types-only' | 'ignore' | 'ignore-dev';
 
 type SourceFile = {
   path: string;
@@ -48,11 +58,13 @@ const IGNORED_PACKAGES = [
 
 const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind>> = {
   'babel-preset-expo': {
-    '@babel/core': 'types-only',
+    '@babel/core': 'ignore-dev', // TODO: Switch to types-only (#38177)
+    '@babel/traverse': 'types-only', // TODO: Remove (#38171)
+    '@babel/types': 'ignore-dev', // TODO: Remove (#38171)
     '@expo/metro-config/build/babel-transformer': 'types-only',
-    'react-native-worklets/plugin': 'ignore', // Checked via hasModule before requiring
-    'react-native-reanimated/plugin': 'ignore', // Checked via hasModule before requiring
-    'expo/config': 'ignore', // WARN: May need a reverse peer dependency
+    'react-native-worklets/plugin': 'ignore-dev', // Checked via hasModule before requiring
+    'react-native-reanimated/plugin': 'ignore-dev', // Checked via hasModule before requiring
+    'expo/config': 'ignore-dev', // WARN: May need a reverse peer dependency
   },
 };
 
@@ -75,23 +87,28 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
     return;
   }
 
-  const isValidExternalImport = createExternalImportValidator(pkg);
-  let invalidImports: { file: SourceFile; importRef: SourceFileImportRef }[] = [];
+  const getValidExternalImportKind = createExternalImportValidator(pkg);
+  let invalidImports: { file: SourceFile; importRef: SourceFileImportRef; kind: DependencyKind.Dev | undefined }[] = [];
 
   for (const source of sources) {
-    source.importRefs
-      .filter((importRef) => !isValidExternalImport(importRef))
-      .forEach((importRef) => invalidImports.push({ file: source.file, importRef }));
+    source.importRefs.forEach((importRef) => {
+      const kind = getValidExternalImportKind(importRef);
+      if (!kind || kind === DependencyKind.Dev) {
+        invalidImports.push({ file: source.file, importRef, kind });
+      }
+    });
   }
 
   const config = SPECIAL_DEPENDENCIES[pkg.packageName];
   if (config) {
     // Filter out ignored imports per package
-    invalidImports = invalidImports.filter(({ importRef }) => {
+    invalidImports = invalidImports.filter(({ importRef, kind }) => {
       switch (config[importRef.importValue]) {
         case 'types-only':
           return !importRef.isTypeOnly;
         case 'ignore':
+          return kind !== DependencyKind.Dev;
+        case 'ignore-dev':
           return false;
         default:
           return true;
@@ -143,7 +160,7 @@ function createExternalImportValidator(pkg: Package) {
   return (ref: SourceFileImportRef) =>
     ref.type !== 'external' ||
     pkg.packageName === ref.packageName ||
-    dependencyMap.has(ref.packageName);
+    dependencyMap.get(ref.packageName)?.kind;
 }
 
 /** Get a list of all source files to validate for dependency chains */
