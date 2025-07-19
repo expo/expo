@@ -11,7 +11,7 @@ export function isRoutePreloadedInStack(
   if (!navigationState || navigationState.type !== 'stack') {
     return false;
   }
-  return (navigationState as StackNavigationState<ParamListBase>).preloadedRoutes.some(
+  return (navigationState as StackNavigationState<ParamListBase>).preloadedRoutes?.some(
     (preloaded) => preloaded.key === route.key
   );
 }

@@ -5,6 +5,6 @@ function isRoutePreloadedInStack(navigationState, route) {
     if (!navigationState || navigationState.type !== 'stack') {
         return false;
     }
-    return navigationState.preloadedRoutes.some((preloaded) => preloaded.key === route.key);
+    return navigationState.preloadedRoutes?.some((preloaded) => preloaded.key === route.key);
 }
 //# sourceMappingURL=stack.js.map
