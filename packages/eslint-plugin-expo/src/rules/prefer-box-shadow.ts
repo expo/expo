@@ -10,7 +10,8 @@ export const preferBoxShadow = createRule({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Prefer box-shadow shadow and elevation',
+      description:
+        'Box shadow is a simpler, more consistent way of defining shadows on components. It is recommended for web builds.',
     },
     schema: [],
     messages: {
