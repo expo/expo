@@ -1,5 +1,5 @@
-import { noDynamicEnvVar } from './noDynamicEnvVar';
-import { noEnvVarDestructuring } from './noEnvVarDestructuring';
+import { noDynamicEnvVar } from './no-dynamic-env-var';
+import { noEnvVarDestructuring } from './no-env-var-destructuring';
 import { preferBoxShadow } from './prefer-box-shadow';
 import { useDomExports } from './use-dom-exports';
 
