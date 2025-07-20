@@ -11,7 +11,6 @@ on:
       - packages/expo-updates/**
       - templates/expo-template-bare-minimum/**
   pull_request:
-    branches: [main]
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-error-recovery.yml
       - packages/expo-asset/**
