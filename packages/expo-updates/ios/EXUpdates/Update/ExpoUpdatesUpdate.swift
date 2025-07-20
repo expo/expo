@@ -78,7 +78,7 @@ public final class ExpoUpdatesUpdate: Update {
       status = UpdateStatus.StatusPending
     }
 
-    return Update(
+    let update = Update(
       manifest: manifest,
       config: config,
       database: database,
@@ -91,5 +91,7 @@ public final class ExpoUpdatesUpdate: Update {
       isDevelopmentMode: isDevelopmentMode,
       assetsFromManifest: processedAssets
     )
+    update.isFromOverride = config.hasUpdatesOverride
+    return update
   }
 }
