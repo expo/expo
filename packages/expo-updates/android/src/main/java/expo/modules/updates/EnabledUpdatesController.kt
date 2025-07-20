@@ -60,9 +60,8 @@ class EnabledUpdatesController(
   private var selectionPolicy = createSelectionPolicy(updatesConfiguration)
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val controllerScope = CoroutineScope(Dispatchers.IO)
-  private val fileDownloader by lazy {
-    FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
-  }
+  private val fileDownloader: FileDownloader
+    get() = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
