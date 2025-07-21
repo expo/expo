@@ -23,6 +23,10 @@
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
 
+## 0.28.17 - 2025-07-08
+
+_This version does not introduce any user-facing changes._
+
 ## 0.28.16 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

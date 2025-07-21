@@ -13,3 +13,9 @@ internal final class FetchRequestCanceledException: Exception {
     "Fetch request has been canceled"
   }
 }
+
+internal final class FetchRedirectException: Exception {
+  override var reason: String {
+    "Redirect is not allowed when redirect mode is 'error'"
+  }
+}

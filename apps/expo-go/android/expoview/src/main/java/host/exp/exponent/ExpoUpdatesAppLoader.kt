@@ -4,6 +4,7 @@ package host.exp.exponent
 import android.content.Context
 import android.util.Log
 import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.easclient.EASClientID
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -36,7 +37,6 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
-import java.util.*
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -164,7 +164,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       return
     }
     val logger = UpdatesLogger(context.filesDir)
-    val fileDownloader = FileDownloader(context, configuration, logger)
+    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), configuration, logger)
     loaderScope.launch {
       startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
     }
@@ -298,7 +298,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
             Log.e(TAG, "Failed to emit event to JS", e)
           }
         }
-      }
+      },
+      CoroutineScope(Dispatchers.IO)
     ).start()
   }
 
