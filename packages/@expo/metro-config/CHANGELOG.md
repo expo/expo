@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 - Add `browserslist` and automatic vendor prefixing support ([#37489](https://github.com/expo/expo/pull/37489) by [@EvanBacon](https://github.com/EvanBacon))
+- Fork Import Export Plugin from `metro` and enhance its syntax support ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+  - `experimentalImportSupport` now supports export namespace from, export destructed named object, live bindings by default and more.
 
 ### 🐛 Bug fixes
 
