@@ -6,6 +6,7 @@ import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
@@ -17,6 +18,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -29,7 +31,6 @@ import java.io.IOException
 @RunWith(RobolectricTestRunner::class)
 internal class GetAssetsTest {
 
-  private lateinit var promise: PromiseMock
   private lateinit var mockContext: MockContext
 
   private val defaultAssets
@@ -46,7 +47,6 @@ internal class GetAssetsTest {
 
   @Before
   fun setUp() {
-    promise = PromiseMock()
     mockContext = MockContext()
 
     mockkStatic(::getQueryFromOptions)
@@ -62,7 +62,7 @@ internal class GetAssetsTest {
   }
 
   @Test
-  fun `getAssets should resolve with correct response`() {
+  fun `getAssets should resolve with correct response`() = runBlocking {
     // arrange
     val context = mockContext with mockContentResolverForResult(
       arrayOf(
@@ -72,12 +72,10 @@ internal class GetAssetsTest {
     )
 
     // act
-    GetAssets(context, defaultAssets, promise).execute()
+    val response = GetAssets(context, defaultAssets).execute()
 
     // assert
-    promiseResolved(promise) {
-      assertEquals(2, it.getInt("totalCount"))
-    }
+    assertEquals(2, response.getInt("totalCount"))
   }
 
   @Test
@@ -85,10 +83,11 @@ internal class GetAssetsTest {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
-    // act
-    // assert
+    // act && assert
     assertThrows(AssetQueryException::class.java) {
-      GetAssets(context, defaultAssets, promise).execute()
+      runBlocking {
+        GetAssets(context, defaultAssets).execute()
+      }
     }
   }
 
@@ -97,11 +96,12 @@ internal class GetAssetsTest {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    // act
-    GetAssets(context, defaultAssets, promise).execute()
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
+    // act && assert
+    assertThrows(UnableToLoadException::class.java) {
+      runBlocking {
+        GetAssets(context, defaultAssets).execute()
+      }
+    }
   }
 
   @Test
@@ -109,10 +109,11 @@ internal class GetAssetsTest {
     // arrange
     val context = mockContext with throwableContentResolver(IOException())
 
-    // act
-    GetAssets(context, defaultAssets, promise).execute()
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
+    // act && assert
+    assertThrows(UnableToLoadException::class.java) {
+      runBlocking {
+        GetAssets(context, defaultAssets).execute()
+      }
+    }
   }
 }
