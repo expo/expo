@@ -59,7 +59,7 @@
     "@vercel/ncc": "^0.38.1",
     "expo-module-scripts": "^4.1.7",
     "express": "^5.1.0",
-    "form-data": "^4.0.0",
+    "form-data": "^4.0.4",
     "js-yaml": "^4.1.0",
     "memfs": "^3.2.0",
     "picomatch": "^4.0.2",
