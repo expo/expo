@@ -50,7 +50,9 @@ export async function convertFormDataAsync(
   for (const [name, entry] of parts) {
     results.push(`--${boundary}\r\n`);
     for (const [headerKey, headerValue] of Object.entries(getFormDataPartHeaders(entry, name))) {
-      results.push(`${headerKey}: ${headerValue}\r\n`);
+      if (headerValue) {
+        results.push(`${headerKey}: ${headerValue}\r\n`);
+      }
     }
     results.push(`\r\n`);
     if (typeof entry === 'string') {
