@@ -228,8 +228,8 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   {
                     const properties = d.id.properties;
                     properties.forEach((p) => {
-                      // @ts-expect-error Property 'key' does not exist on type 'RestElement'
-                      const name = p.key.name;
+                      // @ts-expect-error Property 'value' does not exist on type 'RestElement'
+                      const name = p.value.name;
                       state.exportNamed.push({ local: name, remote: name, loc });
                     });
                   }
@@ -273,8 +273,13 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         if (specifiers) {
           specifiers.forEach((s) => {
             // @ts-expect-error Property 'local' does not exist on type 'ExportDefaultSpecifier'
-            const local = s.local;
+            let local = s.local;
             const remote = s.exported;
+
+            // export * as b from 'a'
+            if (!local && s.type === 'ExportNamespaceSpecifier') {
+              local = s.exported;
+            }
 
             if (remote.type === 'StringLiteral') {
               // https://babeljs.io/docs/en/babel-plugin-syntax-module-string-names
@@ -320,6 +325,25 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                 );
 
                 state.exportDefault.push({ local: temp.name, loc });
+              } else if (s.type === 'ExportNamespaceSpecifier') {
+                path.insertBefore(
+                  withLocation(
+                    importTemplate({
+                      IMPORT: t.cloneNode(state.importAll),
+                      FILE: resolvePath(
+                        t.cloneNode(nullthrows(path.node.source)),
+                        state.opts.resolve
+                      ),
+                      LOCAL: temp,
+                    }),
+                    loc
+                  )
+                );
+                state.exportNamed.push({
+                  local: temp.name,
+                  remote: remote.name,
+                  loc,
+                });
               } else {
                 path.insertBefore(
                   withLocation(

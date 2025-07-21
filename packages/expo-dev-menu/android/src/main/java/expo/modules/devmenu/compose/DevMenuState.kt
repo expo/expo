@@ -6,7 +6,8 @@ import org.json.JSONObject
 data class DevMenuState(
   val appInfo: AppInfo? = null,
   val isOpen: Boolean = false,
-  val devToolsSettings: DevToolsSettings = DevToolsSettings()
+  val devToolsSettings: DevToolsSettings = DevToolsSettings(),
+  val isOnboardingFinished: Boolean = false
 ) {
   data class AppInfo(
     val appName: String,
