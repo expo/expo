@@ -403,6 +403,15 @@ export function withExtendedResolver(
     },
   ];
 
+  // This resolver always resolves module requests that are dependencies or peer dependencies
+  // of expo/expo-router, always from expo/expo-router, meaning, it bypasses normal Node resolution
+  // and pretends the request came from within expo/expo-router
+  const fallbackModuleResolver = createFallbackModuleResolver({
+    projectRoot: config.projectRoot,
+    originModuleNames: ['expo', 'expo-router'],
+    getStrictResolver,
+  });
+
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     function requestDevMockProdReact(
@@ -625,6 +634,17 @@ export function withExtendedResolver(
       getStrictResolver,
     }),
 
+    // These two modules are currently at risk of being duplicated. They're depended on
+    // by various Expo modules, but are mostly included without peer dependencies.
+    // `expo-modules-core` will be replaced by `expo`'s re-exports of it.
+    // `expo-asset` could do the same.
+    // However, neither is present yet
+    // TODO(@kitten): Remove when the above is solved (expo-modules-core and expo-asset are exposed by expo)
+    fallbackModuleResolver.withDependenciesFilter([
+      'expo-asset',
+      'expo-modules-core',
+    ]),
+
     // TODO: Reduce these as much as possible in the future.
     // Complex post-resolution rewrites.
     function requestPostRewrites(
@@ -711,11 +731,7 @@ export function withExtendedResolver(
 
     // If at this point, we haven't resolved a module yet, if it's a module specifier for a known dependency
     // of either `expo` or `expo-router`, attempt to resolve it from these origin modules instead
-    createFallbackModuleResolver({
-      projectRoot: config.projectRoot,
-      originModuleNames: ['expo', 'expo-router'],
-      getStrictResolver,
-    }),
+    fallbackModuleResolver,
   ]);
 
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
