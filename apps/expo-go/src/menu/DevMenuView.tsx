@@ -4,6 +4,7 @@ import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import React, { Fragment, useContext, useEffect, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import { DevMenuCloseButton } from './DevMenuCloseButton';
@@ -12,7 +13,6 @@ import * as DevMenu from './DevMenuModule';
 import { DevMenuOnboarding } from './DevMenuOnboarding';
 import { DevMenuServerInfo } from './DevMenuServerInfo';
 import { DevMenuTaskInfo } from './DevMenuTaskInfo';
-import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
 
 type Props = {
   task: { manifestUrl: string; manifestString: string };
