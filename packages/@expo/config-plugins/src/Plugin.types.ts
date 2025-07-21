@@ -30,6 +30,11 @@ export interface ModProps<T = any> {
   readonly modName: string;
 
   /**
+   * Optional path to a template project root which when defined, should be used to soft-reset the project.
+   */
+  readonly templateProjectRoot?: string;
+
+  /**
    * Name of the platform used in the mods config.
    */
   readonly platform: ModPlatform;
@@ -107,6 +112,8 @@ export type Mod<Props = any> = ((
    * or complex static files that require other files to be generated like Xcode `.pbxproj`.
    */
   isIntrospective?: boolean;
+  /** Root directory to a template that can be used to soft-reset providers. */
+  templateProjectRoot?: boolean;
 };
 
 export interface ModConfig {
