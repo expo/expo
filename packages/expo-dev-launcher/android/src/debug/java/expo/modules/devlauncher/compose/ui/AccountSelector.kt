@@ -8,7 +8,7 @@ import androidx.compose.ui.res.painterResource
 import com.composables.core.Icon
 import com.composeunstyled.Button
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.Account
+import expo.modules.devlauncher.compose.models.Account
 import expo.modules.devlauncher.compose.utils.withIsLast
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.RoundedSurface
