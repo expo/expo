@@ -59,11 +59,11 @@ public final class ScreenCaptureModule: Module {
 
     AsyncFunction("enableAppSwitcherProtection") { (blurIntensity: CGFloat) in
       self.blurIntensity = blurIntensity
-      self.enableAppSwitcherProtection()
+      enableAppSwitcherProtection()
     }.runOnQueue(.main)
 
     AsyncFunction("disableAppSwitcherProtection") {
-      self.disableAppSwitcherProtection()
+      disableAppSwitcherProtection()
     }.runOnQueue(.main)
   }
 
