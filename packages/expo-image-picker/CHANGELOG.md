@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - [android] Introduce customizable cropping UI with light and dark theme support ([#37573](https://github.com/expo/expo/pull/37573) by [@hirbod](https://github.com/hirbod))
+- [android] Add new `shape` option to customize the shape of the crop zone ([#38148](https://github.com/expo/expo/pull/38148)) by [@janicduplessis](https://github.com/janicduplessis)
 
 ### 🐛 Bug fixes
 
