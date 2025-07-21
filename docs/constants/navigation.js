@@ -364,6 +364,7 @@ export const general = [
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
         makePage('guides/using-push-notifications-services.mdx'),
+        makePage('guides/using-feature-flags.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
