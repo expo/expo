@@ -777,7 +777,16 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             }
           });
 
-          // inspired by https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-helper-module-transforms/src/rewrite-live-references.ts#L99
+          // Inspired by https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-helper-module-transforms/src/rewrite-live-references.ts#L99
+          // Live bindings implementation:
+          // 1. Instead of creating direct variable assignments like `var local = require(file).remote`,
+          //    we create namespace variables: `var namespace = require(file)` and keep track of them in
+          //    `state.namespaceForLocal` which maps local names to their namespace and remote names.
+          // 2. When we encounter a reference to an imported name (exists in the namespaceForLocal map),
+          //    we replace it with a dynamic property access: `namespace.remote`
+          //
+          //    We traverse the ReferencedIdentifier on the Program exit to ensure all imported names
+          //    were collected before replacing them with the namespace property access.
           path.traverse(
             {
               // @ts-expect-error ReferencedIdentifier is not in the types
