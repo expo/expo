@@ -9,27 +9,12 @@
 // and adds support for export-namespace-from
 // https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js
 
-import type { PluginObj } from '@babel/core';
-import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
-import type {
-  ExportNamedDeclaration,
-  ImportDeclaration,
-  Program,
-  Statement,
-  SourceLocation as BabelSourceLocation,
-  Node as BabelNode,
-  Expression as BabelNodeExpression,
-  ExportAllDeclaration as BabelNodeExportAllDeclaration,
-  ExportDefaultDeclaration as BabelNodeExportDefaultDeclaration,
-  Identifier as BabelNodeIdentifier,
-  // eslint-disable-next-line import/no-duplicates
-} from '@babel/types';
-// eslint-disable-next-line import/no-duplicates
-import type * as BabelTypes from '@babel/types';
+import { template } from '@babel/core';
+import type { PluginObj, NodePath, types as t } from '@babel/core';
 import assert from 'node:assert';
+const debug = require('debug')('expo:metro-config:import-export-plugin') as typeof console.log;
 
-type Types = typeof BabelTypes;
+type Types = typeof t;
 
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -49,23 +34,23 @@ export type Options = Readonly<{
 }>;
 
 type State = {
-  exportAll: { file: string; loc?: BabelSourceLocation | null; [key: string]: unknown }[];
+  exportAll: { file: string; loc?: t.SourceLocation | null; [key: string]: unknown }[];
   exportDefault: {
     local: string;
-    loc?: BabelSourceLocation | null;
+    loc?: t.SourceLocation | null;
     namespace?: string;
     [key: string]: unknown;
   }[];
   exportNamed: {
     local: string;
     remote: string;
-    loc?: BabelSourceLocation | null;
+    loc?: t.SourceLocation | null;
     namespace?: string;
     [key: string]: unknown;
   }[];
-  imports: { node: Statement }[];
-  importDefault: BabelNode;
-  importAll: BabelNode;
+  imports: { node: t.Statement }[];
+  importDefault: t.Node;
+  importAll: t.Node;
   opts: Options;
   importedIdentifiers: Map<string, { source: string; imported: string }>;
   namespaceForLocal: Map<string, { namespace: string; remote: string }>;
@@ -176,10 +161,7 @@ const resolveTemplate = template.expression(`
 /**
  * Enforces the resolution of a path to a fully-qualified one, if set.
  */
-function resolvePath<TNode extends BabelNode>(
-  node: TNode,
-  resolve: boolean
-): BabelNodeExpression | TNode {
+function resolvePath<TNode extends t.Node>(node: TNode, resolve: boolean): t.Expression | TNode {
   if (!resolve) {
     return node;
   }
@@ -189,32 +171,29 @@ function resolvePath<TNode extends BabelNode>(
   });
 }
 
-function withLocation<TNode extends BabelNode>(
+function withLocation<TNode extends t.Node>(
   node: TNode,
-  loc: BabelSourceLocation | null | undefined
+  loc: t.SourceLocation | null | undefined
 ): TNode;
 
-// eslint-disable-next-line no-redeclare
-function withLocation<TNode extends BabelNode>(
-  node: readonly TNode[],
-  loc: BabelSourceLocation | null | undefined
+function withLocation<TNode extends t.Node>(
+  nodeArray: readonly TNode[],
+  loc: t.SourceLocation | null | undefined
 ): TNode[];
 
-function withLocation<TNode extends BabelNode>(
-  node: TNode | readonly TNode[],
-  loc: BabelSourceLocation | null | undefined
+function withLocation<TNode extends t.Node>(
+  nodeOrArray: TNode | readonly TNode[],
+  loc: t.SourceLocation | null | undefined
 ): TNode | TNode[] {
-  if (Array.isArray(node)) {
-    return node.map((n) => withLocation(n, loc));
+  if (Array.isArray(nodeOrArray)) {
+    return nodeOrArray.map((n) => withLocation(n, loc));
   }
 
-  // TODO: improve types
-
-  if (!(node as TNode).loc) {
-    return { ...node, loc } as TNode;
+  const node = nodeOrArray as TNode;
+  if (!node.loc) {
+    return { ...node, loc };
   }
-
-  return node as TNode;
+  return node;
 }
 
 export function importExportPlugin({ types: t }: { types: Types }): PluginObj<State> {
@@ -222,7 +201,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
 
   return {
     visitor: {
-      ExportAllDeclaration(path: NodePath<BabelNodeExportAllDeclaration>, state: State): void {
+      ExportAllDeclaration(path: NodePath<t.ExportAllDeclaration>, state: State): void {
         state.exportAll.push({
           file: path.node.source.value,
           loc: path.node.loc,
@@ -231,19 +210,11 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ExportDefaultDeclaration(
-        path: NodePath<BabelNodeExportDefaultDeclaration>,
-        state: State
-      ): void {
+      ExportDefaultDeclaration(path: NodePath<t.ExportDefaultDeclaration>, state: State): void {
         const declaration = path.node.declaration;
         const id =
-          // @ts-expect-error Property 'id' does not exist on type 'ArrayExpression'
-          declaration.id ||
-          //
-          path.scope.generateUidIdentifier('default');
-
-        // @ts-expect-error Property 'id' does not exist on type 'ArrayExpression'
-        declaration.id = id;
+          ('id' in declaration && declaration.id) || path.scope.generateUidIdentifier('default');
+        (declaration as { id: t.Identifier }).id = id;
 
         const loc = path.node.loc;
 
@@ -263,7 +234,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ExportNamedDeclaration(path: NodePath<ExportNamedDeclaration>, state: State): void {
+      ExportNamedDeclaration(path: NodePath<t.ExportNamedDeclaration>, state: State): void {
         if (path.node.exportKind && path.node.exportKind !== 'value') {
           return;
         }
@@ -279,9 +250,16 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   {
                     const properties = d.id.properties;
                     properties.forEach((p) => {
-                      // @ts-expect-error Property 'name' does not exist on type 'ArrayExpression'.
-                      const name = 'value' in p ? p.value.name : p.argument.name;
-                      state.exportNamed.push({ local: name, remote: name, loc });
+                      const nameCandidate = p.type === 'ObjectProperty' ? p.value : p.argument;
+                      const name = 'name' in nameCandidate ? nameCandidate.name : undefined;
+                      if (name) {
+                        state.exportNamed.push({ local: name, remote: name, loc });
+                      } else {
+                        debug(
+                          'Unexpected export named declaration with object pattern without name.',
+                          p.toString()
+                        );
+                      }
                     });
                   }
                   break;
@@ -289,32 +267,49 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   {
                     const elements = d.id.elements;
                     elements.forEach((e) => {
-                      // @ts-expect-error Property 'name' does not exist on type 'ArrayExpression'.
-                      const name = 'argument' in e ? e.argument.name : e.name;
-                      state.exportNamed.push({ local: name, remote: name, loc });
+                      if (!e) {
+                        return;
+                      }
+
+                      const nameCandidate = 'argument' in e ? e.argument : e;
+                      const name = 'name' in nameCandidate ? nameCandidate.name : undefined;
+                      if (name) {
+                        state.exportNamed.push({ local: name, remote: name, loc });
+                      } else {
+                        debug(
+                          'Unexpected export named declaration with array pattern without name.',
+                          e?.toString()
+                        );
+                      }
                     });
                   }
                   break;
                 default:
                   {
-                    // @ts-expect-error Property 'name' does not exist on type 'AssignmentPattern'
-                    const name = d.id.name;
-                    state.exportNamed.push({ local: name, remote: name, loc });
+                    const id = d.id;
+                    const name = 'name' in id ? id.name : undefined;
+                    if (name) {
+                      state.exportNamed.push({ local: name, remote: name, loc });
+                    } else {
+                      debug(
+                        'Unexpected export named declaration with identifier without name.',
+                        id.toString()
+                      );
+                    }
                   }
                   break;
               }
             });
           } else {
-            const id =
-              // @ts-expect-error Property 'id' does not exist on type 'DeclareExportAllDeclaration'
-              declaration.id ||
-              //
-              path.scope.generateUidIdentifier();
-            const name = id.name;
+            if ('id' in declaration) {
+              const id = declaration.id || path.scope.generateUidIdentifier();
+              const name = id.type === 'StringLiteral' ? id.value : id.name;
 
-            // @ts-expect-error Property 'id' does not exist on type 'ExportAllDeclaration'.
-            declaration.id = id;
-            state.exportNamed.push({ local: name, remote: name, loc });
+              declaration.id = id;
+              state.exportNamed.push({ local: name, remote: name, loc });
+            } else {
+              debug('Unexpected export named declaration without id.', declaration.toString());
+            }
           }
 
           path.insertBefore(declaration);
@@ -322,7 +317,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
 
         const specifiers = path.node.specifiers;
         if (specifiers && specifiers.length) {
-          let sharedModuleExportFrom: BabelNodeIdentifier | null = null;
+          let sharedModuleExportFrom: t.Identifier | null = null;
 
           if (
             // NOTE(@krystofwoldrich): If liveBindings are disabled we adhere to the original behavior at the moment
@@ -348,13 +343,20 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           }
 
           specifiers.forEach((s) => {
-            // @ts-expect-error Property 'local' does not exist on type 'ExportDefaultSpecifier'
-            let local = s.local;
+            let local = 'local' in s ? s.local : undefined;
             const remote = s.exported;
 
             // export * as b from 'a'
             if (!local && s.type === 'ExportNamespaceSpecifier') {
               local = s.exported;
+            }
+
+            if (!local) {
+              debug(
+                'Unexpected export named declaration specifier without local identifier.',
+                s.toString()
+              );
+              return;
             }
 
             if (remote.type === 'StringLiteral') {
@@ -527,7 +529,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         path.remove();
       },
 
-      ImportDeclaration(path: NodePath<ImportDeclaration>, state: State): void {
+      ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: State): void {
         if (path.node.importKind && path.node.importKind !== 'value') {
           return;
         }
@@ -546,7 +548,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             ),
           });
         } else {
-          let sharedModuleImport: BabelNodeIdentifier;
+          let sharedModuleImport: t.Identifier;
           let sharedModuleVariableDeclaration = null;
           if (
             specifiers.filter(
@@ -574,8 +576,6 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           }
 
           specifiers.forEach((s) => {
-            // @ts-expect-error Property 'imported' does not exist on type 'ImportDefaultSpecifier'
-            const imported = s.imported;
             const local = s.local;
             const getLocalModule = () =>
               sharedModuleImport ??
@@ -608,14 +608,16 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                 });
                 break;
 
-              case 'ImportSpecifier':
-                // eslint-disable-next-line no-case-declarations
+              case 'ImportSpecifier': {
+                const imported = s.imported;
+                const importedName =
+                  imported.type === 'StringLiteral' ? imported.value : imported.name;
                 const localModule = getLocalModule();
                 state.importedIdentifiers.set(local.name, {
                   source: localModule.name,
-                  imported: imported.name,
+                  imported: importedName,
                 });
-                if (imported.name === 'default') {
+                if (importedName === 'default') {
                   state.imports.push({
                     node: withLocation(
                       importAllTemplate({
@@ -630,7 +632,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   if (state.opts.liveBindings) {
                     state.namespaceForLocal.set(local.name, {
                       namespace: localModule.name,
-                      remote: imported.name,
+                      remote: importedName,
                     });
                   } else {
                     sharedModuleVariableDeclaration.declarations.push(
@@ -656,7 +658,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                     });
                     state.namespaceForLocal.set(local.name, {
                       namespace: localModule.name,
-                      remote: imported.name,
+                      remote: importedName,
                     });
                   } else {
                     state.imports.push({
@@ -672,9 +674,8 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   }
                 }
                 break;
-
+              }
               default:
-                // TODO: improve types
                 throw new TypeError('Unknown import type: ' + (s as { type: string }).type);
             }
           });
@@ -684,7 +685,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
       },
 
       Program: {
-        enter(path: NodePath<Program>, state: State): void {
+        enter(path: NodePath<t.Program>, state: State): void {
           state.exportAll = [];
           state.exportDefault = [];
           state.exportNamed = [];
@@ -702,11 +703,11 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           ['module', 'global', 'exports', 'require'].forEach((name) => path.scope.rename(name));
         },
 
-        exit(path: NodePath<Program>, state: State): void {
+        exit(path: NodePath<t.Program>, state: State): void {
           const body = path.node.body;
 
           // state.imports = [node1, node2, node3, ...nodeN]
-          state.imports.reverse().forEach((e: { node: Statement }) => {
+          state.imports.reverse().forEach((e: { node: t.Statement }) => {
             // import nodes are added to the top of the program body
             body.unshift(e.node);
           });
@@ -787,10 +788,17 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           //
           //    We traverse the ReferencedIdentifier on the Program exit to ensure all imported names
           //    were collected before replacing them with the namespace property access.
-          path.traverse(
+          type ReferencedIdentifierTravelerState = {
+            namespaceForLocal: Map<string, { namespace: string; remote: string }>;
+            programScope: typeof path.scope;
+          };
+          path.traverse<ReferencedIdentifierTravelerState>(
             {
               // @ts-expect-error ReferencedIdentifier is not in the types
-              ReferencedIdentifier: (path, state) => {
+              ReferencedIdentifier: (
+                path: NodePath<t.Identifier | t.JSXIdentifier>,
+                state: ReferencedIdentifierTravelerState
+              ) => {
                 const localName = path.node.name;
                 const { namespace, remote } = state.namespaceForLocal.get(localName) ?? {};
                 // not from a namespace
