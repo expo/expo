@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Improve debug logs and types of `import-export-plugin` ([#38203](https://github.com/expo/expo/pull/38203) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ## 0.20.17 - 2025-07-03
 
 _This version does not introduce any user-facing changes._
