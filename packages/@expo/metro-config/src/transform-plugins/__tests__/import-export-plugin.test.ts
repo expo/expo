@@ -400,7 +400,7 @@ it('transforms import default as local with live binding', () => {
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
 });
 
-it('transforms import default as local with live binding', () => {
+it('transforms import default and named as local with live binding', () => {
   const code = `
     import foo, { baz as bax } from 'bar';
     console.log(foo, bax);
