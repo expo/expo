@@ -155,13 +155,6 @@ android {
   sourceSets {
     main {
       java {
-        if (expoModuleExtension.reactNativeVersion.isAtLeast(0, 77, 0)) {
-          srcDirs += 'src/rn77'
-        } else {
-          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
-          srcDirs += 'src/rn74'
-        }
-
         if (shouldIncludeCompose) {
           srcDirs += 'src/compose'
         } else {
