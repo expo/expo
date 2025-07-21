@@ -5,8 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { types as t } from '@babel/core';
-import type { PluginObj } from '@babel/core';
+import type { PluginObj, types as t } from '@babel/core';
+type Types = typeof t;
 export type Options = Readonly<{
     importDefault: string;
     importAll: string;
@@ -53,7 +53,7 @@ type State = {
     }>;
     [key: string]: unknown;
 };
-export declare function importExportPlugin({ types }: {
-    types: typeof t;
+export declare function importExportPlugin({ types: t }: {
+    types: Types;
 }): PluginObj<State>;
 export {};

@@ -133,8 +133,8 @@ function withLocation(nodeOrArray, loc) {
     }
     return node;
 }
-function importExportPlugin({ types }) {
-    const { isDeclaration, isVariableDeclaration } = types;
+function importExportPlugin({ types: t }) {
+    const { isDeclaration, isVariableDeclaration } = t;
     return {
         visitor: {
             ExportAllDeclaration(path, state) {
@@ -157,7 +157,7 @@ function importExportPlugin({ types }) {
                     path.insertBefore(withLocation(declaration, loc));
                 }
                 else {
-                    path.insertBefore(withLocation(core_1.types.variableDeclaration('var', [core_1.types.variableDeclarator(id, declaration)]), loc));
+                    path.insertBefore(withLocation(t.variableDeclaration('var', [t.variableDeclarator(id, declaration)]), loc));
                 }
                 path.remove();
             },
@@ -244,7 +244,7 @@ function importExportPlugin({ types }) {
                             (s.exported.type === 'StringLiteral' || s.local.name !== 'default')).length > 1) {
                         sharedModuleExportFrom = path.scope.generateUidIdentifierBasedOnNode(path.node.source);
                         path.insertBefore(withLocation(importTemplate({
-                            FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                            FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                             LOCAL: sharedModuleExportFrom,
                         }), loc));
                     }
@@ -270,8 +270,8 @@ function importExportPlugin({ types }) {
                                 state.opts.liveBindings ? path.node.source : local);
                             if (local.name === 'default') {
                                 path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: core_1.types.cloneNode(state.importDefault),
-                                    FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                    IMPORT: t.cloneNode(state.importDefault),
+                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                     LOCAL: temp,
                                 }), loc));
                                 state.exportNamed.push({
@@ -285,7 +285,7 @@ function importExportPlugin({ types }) {
                                     if (!sharedModuleExportFrom) {
                                         // Only insert the require statement if not using the shared require
                                         path.insertBefore(withLocation(importTemplate({
-                                            FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                            FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                             LOCAL: temp,
                                         }), loc));
                                     }
@@ -297,7 +297,7 @@ function importExportPlugin({ types }) {
                                 }
                                 else {
                                     path.insertBefore(withLocation(importNamedTemplate({
-                                        FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                         LOCAL: temp,
                                         REMOTE: local,
                                     }), loc));
@@ -306,8 +306,8 @@ function importExportPlugin({ types }) {
                             }
                             else if (s.type === 'ExportNamespaceSpecifier') {
                                 path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: core_1.types.cloneNode(state.importAll),
-                                    FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                    IMPORT: t.cloneNode(state.importAll),
+                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                     LOCAL: temp,
                                 }), loc));
                                 state.exportNamed.push({
@@ -321,7 +321,7 @@ function importExportPlugin({ types }) {
                                     if (!sharedModuleExportFrom) {
                                         // Only insert the require statement if not using the shared require
                                         path.insertBefore(withLocation(importTemplate({
-                                            FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                            FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                             LOCAL: temp,
                                         }), loc));
                                     }
@@ -334,7 +334,7 @@ function importExportPlugin({ types }) {
                                 }
                                 else {
                                     path.insertBefore(withLocation(importNamedTemplate({
-                                        FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                         LOCAL: temp,
                                         REMOTE: local,
                                     }), loc));
@@ -393,7 +393,7 @@ function importExportPlugin({ types }) {
                 if (!specifiers.length) {
                     state.imports.push({
                         node: withLocation(importSideEffectTemplate({
-                            FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                            FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
                         }), loc),
                     });
                 }
@@ -404,9 +404,9 @@ function importExportPlugin({ types }) {
                         (s.imported.type === 'StringLiteral' || s.imported.name !== 'default')).length > 1) {
                         sharedModuleImport = path.scope.generateUidIdentifierBasedOnNode(file);
                         // NOTE(krystofwoldrich): this can't be a template because the declaration type is needed later
-                        sharedModuleVariableDeclaration = withLocation(core_1.types.variableDeclaration('var', [
-                            core_1.types.variableDeclarator(core_1.types.cloneNode(sharedModuleImport), core_1.types.callExpression(core_1.types.identifier('require'), [
-                                resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                        sharedModuleVariableDeclaration = withLocation(t.variableDeclaration('var', [
+                            t.variableDeclarator(t.cloneNode(sharedModuleImport), t.callExpression(t.identifier('require'), [
+                                resolvePath(t.cloneNode(file), state.opts.resolve),
                             ])),
                         ]), loc);
                         state.imports.push({
@@ -421,18 +421,18 @@ function importExportPlugin({ types }) {
                             case 'ImportNamespaceSpecifier':
                                 state.imports.push({
                                     node: withLocation(importAllTemplate({
-                                        IMPORT: core_1.types.cloneNode(state.importAll),
-                                        FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
-                                        LOCAL: core_1.types.cloneNode(local),
+                                        IMPORT: t.cloneNode(state.importAll),
+                                        FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                        LOCAL: t.cloneNode(local),
                                     }), loc),
                                 });
                                 break;
                             case 'ImportDefaultSpecifier':
                                 state.imports.push({
                                     node: withLocation(importAllTemplate({
-                                        IMPORT: core_1.types.cloneNode(state.importDefault),
-                                        FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
-                                        LOCAL: core_1.types.cloneNode(local),
+                                        IMPORT: t.cloneNode(state.importDefault),
+                                        FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                        LOCAL: t.cloneNode(local),
                                     }), loc),
                                 });
                                 break;
@@ -447,9 +447,9 @@ function importExportPlugin({ types }) {
                                 if (importedName === 'default') {
                                     state.imports.push({
                                         node: withLocation(importAllTemplate({
-                                            IMPORT: core_1.types.cloneNode(state.importDefault),
-                                            FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
-                                            LOCAL: core_1.types.cloneNode(local),
+                                            IMPORT: t.cloneNode(state.importDefault),
+                                            FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                            LOCAL: t.cloneNode(local),
                                         }), loc),
                                     });
                                 }
@@ -461,15 +461,15 @@ function importExportPlugin({ types }) {
                                         });
                                     }
                                     else {
-                                        sharedModuleVariableDeclaration.declarations.push(withLocation(core_1.types.variableDeclarator(core_1.types.cloneNode(local), core_1.types.memberExpression(core_1.types.cloneNode(sharedModuleImport), core_1.types.cloneNode(imported))), loc));
+                                        sharedModuleVariableDeclaration.declarations.push(withLocation(t.variableDeclarator(t.cloneNode(local), t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))), loc));
                                     }
                                 }
                                 else {
                                     if (state.opts.liveBindings) {
                                         state.imports.push({
                                             node: withLocation(importTemplate({
-                                                FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
-                                                LOCAL: core_1.types.cloneNode(localModule),
+                                                FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                                LOCAL: t.cloneNode(localModule),
                                             }), loc),
                                         });
                                         state.namespaceForLocal.set(local.name, {
@@ -480,9 +480,9 @@ function importExportPlugin({ types }) {
                                     else {
                                         state.imports.push({
                                             node: withLocation(importNamedTemplate({
-                                                FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
-                                                LOCAL: core_1.types.cloneNode(local),
-                                                REMOTE: core_1.types.cloneNode(imported),
+                                                FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                                LOCAL: t.cloneNode(local),
+                                                REMOTE: t.cloneNode(imported),
                                             }), loc),
                                         });
                                     }
@@ -502,8 +502,8 @@ function importExportPlugin({ types }) {
                     state.exportDefault = [];
                     state.exportNamed = [];
                     state.imports = [];
-                    state.importAll = core_1.types.identifier(state.opts.importAll);
-                    state.importDefault = core_1.types.identifier(state.opts.importDefault);
+                    state.importAll = t.identifier(state.opts.importAll);
+                    state.importDefault = t.identifier(state.opts.importDefault);
                     state.importedIdentifiers = new Map();
                     state.namespaceForLocal = new Map();
                     // Rename declarations at module scope that might otherwise conflict
@@ -522,15 +522,15 @@ function importExportPlugin({ types }) {
                     state.exportDefault.forEach((e) => {
                         if (e.namespace) {
                             body.push(withLocation(liveBindExportTemplate({
-                                REQUIRED: core_1.types.identifier(e.namespace),
-                                LOCAL: core_1.types.identifier(e.local),
+                                REQUIRED: t.identifier(e.namespace),
+                                LOCAL: t.identifier(e.local),
                                 REMOTE: 'default',
                             }), e.loc));
                         }
                         else {
                             body.push(withLocation(exportTemplate({
-                                LOCAL: core_1.types.identifier(e.local),
-                                REMOTE: core_1.types.identifier('default'),
+                                LOCAL: t.identifier(e.local),
+                                REMOTE: t.identifier('default'),
                             }), e.loc));
                         }
                     });
@@ -539,7 +539,7 @@ function importExportPlugin({ types }) {
                             ? liveBindExportAllTemplate
                             : exportAllTemplate;
                         body.push(...withLocation(template({
-                            FILE: resolvePath(core_1.types.stringLiteral(e.file), state.opts.resolve),
+                            FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
                             REQUIRED: path.scope.generateUidIdentifier(e.file),
                             KEY: path.scope.generateUidIdentifier('key'),
                         }), e.loc));
@@ -547,15 +547,15 @@ function importExportPlugin({ types }) {
                     state.exportNamed.forEach((e) => {
                         if (e.namespace) {
                             body.push(withLocation(liveBindExportTemplate({
-                                REQUIRED: core_1.types.identifier(e.namespace),
-                                LOCAL: core_1.types.identifier(e.local),
+                                REQUIRED: t.identifier(e.namespace),
+                                LOCAL: t.identifier(e.local),
                                 REMOTE: e.remote,
                             }), e.loc));
                         }
                         else {
                             body.push(withLocation(exportTemplate({
-                                LOCAL: core_1.types.identifier(e.local),
-                                REMOTE: core_1.types.identifier(e.remote),
+                                LOCAL: t.identifier(e.local),
+                                REMOTE: t.identifier(e.remote),
                             }), e.loc));
                         }
                     });
@@ -573,11 +573,11 @@ function importExportPlugin({ types }) {
                             if (rootBinding !== localBinding)
                                 return;
                             if (path.type === 'JSXIdentifier') {
-                                path.replaceWith(core_1.types.jsxMemberExpression(core_1.types.jsxIdentifier(namespace), core_1.types.jsxIdentifier(remote)));
+                                path.replaceWith(t.jsxMemberExpression(t.jsxIdentifier(namespace), t.jsxIdentifier(remote)));
                             }
                             else {
                                 // Identifier
-                                path.replaceWith(core_1.types.memberExpression(core_1.types.identifier(namespace), core_1.types.identifier(remote)));
+                                path.replaceWith(t.memberExpression(t.identifier(namespace), t.identifier(remote)));
                             }
                         },
                     }, {
