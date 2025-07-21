@@ -1,3 +1,5 @@
+import { env } from 'node:process';
+
 import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
 
 describe(getMetroDirectBundleOptions, () => {
@@ -67,6 +69,22 @@ describe(getMetroDirectBundleOptions, () => {
       minify: false,
       platform: 'ios',
       unstable_transformProfile: 'default',
+    });
+  });
+  describe(`live bindings`, () => {
+    afterEach(() => {
+      delete env.EXPO_UNSTABLE_LIVE_BINDINGS;
+    });
+    it(`enables live bindings by default`, () => {
+      expect(getMetroDirectBundleOptions({}).customTransformOptions?.liveBindings).toBeUndefined();
+    });
+    it(`enables live bindings by default`, () => {
+      env.EXPO_UNSTABLE_LIVE_BINDINGS = 'true';
+      expect(getMetroDirectBundleOptions({}).customTransformOptions?.liveBindings).toBeUndefined();
+    });
+    it(`enables live bindings by default`, () => {
+      env.EXPO_UNSTABLE_LIVE_BINDINGS = '0';
+      expect(getMetroDirectBundleOptions({}).customTransformOptions?.liveBindings).toBe('false');
     });
   });
 });
