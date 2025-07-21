@@ -1269,6 +1269,57 @@ describe(withExtendedResolver, () => {
       );
     });
   });
+
+  describe('with fallback force-resolution', () => {
+    it('should force-resolve `expo-asset` despite duplication', async () => {
+      jest.mocked(getResolveFunc()).mockImplementation((_context, moduleName, _platform) => {
+        if (moduleName === 'expo/package.json') {
+          return { type: 'sourceFile', filePath: `/node_modules/${moduleName}` };
+        } else {
+          return { type: 'empty' };
+        }
+      });
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        tsconfig: {},
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter() as any,
+      });
+
+      modified.resolver.resolveRequest!(
+        getResolverContext({
+          getPackage(name) {
+            if (name.endsWith('expo/package.json')) {
+              return {
+                name: 'expo',
+                dependencies: { 'expo-asset': '*' },
+              };
+            } else {
+              return null;
+            }
+          },
+        }),
+        'expo-asset',
+        'web'
+      );
+
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ originModulePath: '/root/package.json' }),
+        'expo/package.json',
+        'web'
+      );
+      expect(getResolveFunc()).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          originModulePath: '/node_modules/expo',
+          nodeModulesPaths: ['/node_modules/expo'],
+        }),
+        'expo-asset',
+        'web'
+      );
+    });
+  });
 });
 
 describe(getNodejsExtensions, () => {
