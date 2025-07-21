@@ -525,6 +525,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             ).length > 1
           ) {
             sharedModuleImport = path.scope.generateUidIdentifierBasedOnNode(file);
+            // NOTE(krystofwoldrich): this can't be a template because the declaration type is needed later
             sharedModuleVariableDeclaration = withLocation(
               t.variableDeclaration('var', [
                 t.variableDeclarator(
@@ -546,6 +547,7 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             const imported = s.imported;
             const local = s.local;
             const getLocalModule = () =>
+              sharedModuleImport ??
               path.scope.generateUidIdentifier(file.value.replace(/[^a-zA-Z0-9]/g, '_'));
 
             switch (s.type) {
@@ -594,15 +596,22 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                     ),
                   });
                 } else if (sharedModuleVariableDeclaration != null) {
-                  sharedModuleVariableDeclaration.declarations.push(
-                    withLocation(
-                      t.variableDeclarator(
-                        t.cloneNode(local),
-                        t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))
-                      ),
-                      loc
-                    )
-                  );
+                  if (state.opts.liveBindings) {
+                    state.namespaceForLocal.set(local.name, {
+                      namespace: localModule.name,
+                      remote: imported.name,
+                    });
+                  } else {
+                    sharedModuleVariableDeclaration.declarations.push(
+                      withLocation(
+                        t.variableDeclarator(
+                          t.cloneNode(local),
+                          t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))
+                        ),
+                        loc
+                      )
+                    );
+                  }
                 } else {
                   if (state.opts.liveBindings) {
                     state.imports.push({

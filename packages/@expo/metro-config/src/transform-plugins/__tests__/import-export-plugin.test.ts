@@ -193,6 +193,47 @@ it('imports members from another module and export them in separate statement wi
   `);
 });
 
+it('imports multiple members from another module and export them in separate statement with live bindings', () => {
+  const code = `
+    import bar, { foo, baz } from 'bar';
+
+    export { bar, foo, baz };
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {value: true});
+
+    var _bar = require('bar');
+    var bar = _$$_IMPORT_DEFAULT('bar');
+
+    exports.bar = bar;
+    Object.defineProperty(exports, "foo", {
+      enumerable: true,
+      get: function () {
+        return _bar.foo;
+      }
+    });
+
+    Object.defineProperty(exports, "baz", {
+      enumerable: true,
+      get: function () {
+        return _bar.baz;
+      }
+    });
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+
+  expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
+    .toMatchInlineSnapshot(`
+    "
+    > 2 |     import bar, { foo, baz } from 'bar';
+        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)
+    > 2 |     import bar, { foo, baz } from 'bar';
+        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
+  `);
+});
+
 it('transforms and import statements to require live bindings', () => {
   const code = `
     import {x} from 'baz';
