@@ -28,7 +28,10 @@ type VersionsApiResponseType = {
 };
 
 // Show the message if current SDK !== latest SDK AND the latest SDK is yet to be released
-async function shouldShowUpgradeWarningAsync(): Promise<boolean> {
+async function shouldShowUpgradeWarningAsync(): Promise<{
+  shouldShow: boolean;
+  betaSdkVersion?: string;
+}> {
   const result = await fetch('https://api.expo.dev/v2/versions');
 
   try {
@@ -45,22 +48,29 @@ async function shouldShowUpgradeWarningAsync(): Promise<boolean> {
     const currentIsOutdated = Environment.supportedSdksString !== lastVersion.sdk;
     const latestIsBeta = !lastVersion.releaseNoteUrl;
 
-    return Boolean(currentIsOutdated && latestIsBeta);
+    return {
+      shouldShow: Boolean(currentIsOutdated && latestIsBeta),
+      betaSdkVersion: lastVersion.sdk,
+    };
   } catch {}
 
-  return false;
+  return {
+    shouldShow: false,
+  };
 }
 
 export function UpgradeWarning() {
   const [shouldShow, setShouldShow] = useState(false);
+  const [betaSdkVersion, setBetaSdkVersion] = useState<string | undefined>(undefined);
   const theme = useExpoTheme();
   const dismissUpgradeWarning = () => {
     setShouldShow(false);
   };
 
   useEffect(() => {
-    shouldShowUpgradeWarningAsync().then((shouldShow) => {
+    shouldShowUpgradeWarningAsync().then(({ shouldShow, betaSdkVersion }) => {
       setShouldShow(shouldShow);
+      setBetaSdkVersion(betaSdkVersion);
     });
   }, []);
 
@@ -84,7 +94,7 @@ export function UpgradeWarning() {
           <Text size="small" type="InterRegular">
             A new version of Expo Go will be released to the store soon, and it will{' '}
             <Text size="small" type="InterSemiBold">
-              only support SDK 54
+              only support SDK {betaSdkVersion}
             </Text>
             .
           </Text>
