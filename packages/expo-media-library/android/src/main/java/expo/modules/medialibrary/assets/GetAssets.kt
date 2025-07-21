@@ -2,22 +2,21 @@ package expo.modules.medialibrary.assets
 
 import android.content.Context
 import android.os.Bundle
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.ASSET_PROJECTION
 import expo.modules.medialibrary.AssetQueryException
 import expo.modules.medialibrary.AssetsOptions
-import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.MediaLibraryUtils.ensureActiveOrThrow
+import expo.modules.medialibrary.PermissionsException
+import expo.modules.medialibrary.UnableToLoadException
 import java.io.IOException
+import kotlin.coroutines.coroutineContext
 
 internal class GetAssets(
   private val context: Context,
-  private val assetOptions: AssetsOptions,
-  private val promise: Promise
+  private val assetOptions: AssetsOptions
 ) {
-  fun execute() {
+  suspend fun execute(): Bundle {
     val contentResolver = context.contentResolver
     try {
       val (selection, order, limit, offset) = getQueryFromOptions(assetOptions)
@@ -28,10 +27,10 @@ internal class GetAssets(
         null,
         order
       ).use { assetsCursor ->
+        coroutineContext.ensureActiveOrThrow()
         if (assetsCursor == null) {
           throw AssetQueryException()
         }
-
         val assetsInfo = ArrayList<Bundle>()
         putAssetsInfo(
           contentResolver,
@@ -41,27 +40,26 @@ internal class GetAssets(
           offset,
           assetOptions.resolveWithFullInfo ?: false
         )
-        val response = Bundle().apply {
+        return Bundle().apply {
           putParcelableArrayList("assets", assetsInfo)
           putBoolean("hasNextPage", !assetsCursor.isAfterLast)
           putString("endCursor", assetsCursor.position.toString())
           putInt("totalCount", assetsCursor.count)
         }
-        promise.resolve(response)
       }
-    } catch (e: SecurityException) {
-      promise.reject(
-        ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get asset: need READ_EXTERNAL_STORAGE permission.",
-        e
-      )
-    } catch (e: IOException) {
-      promise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file", e)
-    } catch (e: IllegalArgumentException) {
-      promise.reject(ERROR_UNABLE_TO_LOAD, e.message ?: "Invalid MediaType", e)
-    } catch (e: UnsupportedOperationException) {
-      e.printStackTrace()
-      promise.reject(ERROR_NO_PERMISSIONS, e.message, e)
+    } catch (e: Exception) {
+      when (e) {
+        is SecurityException -> throw UnableToLoadException("Could not get asset: need read_external_storage permission")
+        is IOException -> throw UnableToLoadException("Could not read file $e")
+        is IllegalArgumentException -> throw UnableToLoadException(
+          e.message
+            ?: "Invalid MediaType $e"
+        )
+        is UnsupportedOperationException -> {
+          throw PermissionsException(e.message ?: "Permission denied $e")
+        }
+        else -> throw e
+      }
     }
   }
 }

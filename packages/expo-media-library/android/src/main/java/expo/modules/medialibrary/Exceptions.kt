@@ -31,3 +31,9 @@ class ContentEntryException :
 
 class AssetFileException(message: String) :
   CodedException(message)
+
+class UnableToLoadPermissionException(message: String) :
+  CodedException(message)
+
+class UnableToLoadException(message: String) :
+  CodedException(message)
