@@ -67,7 +67,6 @@ type State = {
   importDefault: BabelNode;
   importAll: BabelNode;
   opts: Options;
-  //: TODO: check better name these are live binded exports
   importedIdentifiers: Map<string, { source: string; imported: string }>;
   namespaceForLocal: Map<string, { namespace: string; remote: string }>;
   [key: string]: unknown;
