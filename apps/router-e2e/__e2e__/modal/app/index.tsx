@@ -164,7 +164,7 @@ function FooterForm() {
         onClose={() => setIsOpen(false)}
         presentationStyle="formSheet"
         detents={[0.5]}
-        footer={UnstableFooter}
+        unstable_footer={UnstableFooter}
         style={{
           paddingTop: 20,
           justifyContent: 'center',

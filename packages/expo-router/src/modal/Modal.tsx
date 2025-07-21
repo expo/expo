@@ -69,8 +69,13 @@ export interface ModalProps extends ViewProps {
    *
    * Footer component that can be used alongside formSheet stack presentation style.
    * Works only when `presentation` is set to `formSheet`.
+   *
+   * Please note that this prop is marked as unstable and might be subject of breaking changes,
+   * including removal.
+   *
+   * @platform android
    */
-  footer?: ModalConfig['footer'];
+  unstable_footer?: ModalConfig['unstable_footer'];
 }
 
 /**
@@ -108,7 +113,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
-    footer,
+    unstable_footer,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -131,7 +136,7 @@ export function Modal(props: ModalProps) {
         uniqueId: newId,
         parentNavigationProp: navigation,
         detents,
-        footer,
+        unstable_footer,
       });
       setCurrentModalId(newId);
       return () => {
@@ -145,10 +150,10 @@ export function Modal(props: ModalProps) {
     if (currentModalId && visible) {
       updateModal(currentModalId, {
         component: children,
-        footer,
+        unstable_footer,
       });
     }
-  }, [children, footer]);
+  }, [children, unstable_footer]);
 
   useEffect(() => {
     if (currentModalId) {

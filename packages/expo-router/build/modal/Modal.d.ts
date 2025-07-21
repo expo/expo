@@ -59,8 +59,13 @@ export interface ModalProps extends ViewProps {
      *
      * Footer component that can be used alongside formSheet stack presentation style.
      * Works only when `presentation` is set to `formSheet`.
+     *
+     * Please note that this prop is marked as unstable and might be subject of breaking changes,
+     * including removal.
+     *
+     * @platform android
      */
-    footer?: ModalConfig['footer'];
+    unstable_footer?: ModalConfig['unstable_footer'];
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.
