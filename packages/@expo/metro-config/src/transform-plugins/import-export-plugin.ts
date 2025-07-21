@@ -616,7 +616,6 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                     });
                     state.namespaceForLocal.set(local.name, {
                       namespace: localModule.name,
-                      // local: local.name,
                       remote: imported.name,
                     });
                   } else {

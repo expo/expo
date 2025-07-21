@@ -428,7 +428,6 @@ function importExportPlugin({ types: t }) {
                                         });
                                         state.namespaceForLocal.set(local.name, {
                                             namespace: localModule.name,
-                                            // local: local.name,
                                             remote: imported.name,
                                         });
                                     }
