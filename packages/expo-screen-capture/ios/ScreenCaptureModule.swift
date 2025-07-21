@@ -9,7 +9,7 @@ public final class ScreenCaptureModule: Module {
   private var protectionTextField: UITextField?
   private var originalParent: CALayer?
   private var blurEffectView: AnimatedBlurEffectView?
-  private var blurIntensity: CGFloat = 0.3
+  private var blurIntensity: CGFloat = 0.5
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")

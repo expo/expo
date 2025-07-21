@@ -14,7 +14,7 @@ class AnimatedBlurEffectView: UIVisualEffectView {
 
   required init?(coder: NSCoder) {
     self.blurStyle = .light
-    self.blurIntensity = 0.3
+    self.blurIntensity = 0.5
     super.init(coder: coder)
     self.backgroundColor = .clear
   }

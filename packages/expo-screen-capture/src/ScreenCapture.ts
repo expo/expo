@@ -105,12 +105,12 @@ export function usePreventScreenCapture(key: string = 'default'): void {
  * For Android, app switcher protection is automatically provided by `preventScreenCaptureAsync()`
  * using the FLAG_SECURE window flag, which shows a blank screen in the recent apps preview.
  *
- * @param blurIntensity The intensity of the blur effect, from 0.0 (no blur) to 1.0 (maximum blur). Default is 0.3.
+ * @param blurIntensity The intensity of the blur effect, from 0.0 (no blur) to 1.0 (maximum blur). Default is 0.5.
  *
  * @platform ios
  *
  */
-export async function enableAppSwitcherProtectionAsync(blurIntensity: number = 0.3): Promise<void> {
+export async function enableAppSwitcherProtectionAsync(blurIntensity: number = 0.5): Promise<void> {
   if (!ExpoScreenCapture.enableAppSwitcherProtection) {
     throw new UnavailabilityError('ScreenCapture', 'enableAppSwitcherProtectionAsync');
   }
