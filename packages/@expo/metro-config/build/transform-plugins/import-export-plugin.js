@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.importExportPlugin = importExportPlugin;
-const template_1 = __importDefault(require("@babel/template"));
+const core_1 = require("@babel/core");
 const node_assert_1 = __importDefault(require("node:assert"));
+const debug = require('debug')('expo:metro-config:import-export-plugin');
 function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
     return x;
@@ -25,7 +26,7 @@ function nullthrows(x, message) {
  * "var _a = require(a)" call which needs to be followed by
  * update of the "x" references to "_a.x".
  */
-const importTemplate = template_1.default.statement(`
+const importTemplate = core_1.template.statement(`
   var LOCAL = require(FILE);
 `);
 /**
@@ -33,28 +34,28 @@ const importTemplate = template_1.default.statement(`
  * "import x from ..." call into a "const x = importAll(...)" call with the
  * corresponding id in it.
  */
-const importAllTemplate = template_1.default.statement(`
+const importAllTemplate = core_1.template.statement(`
   var LOCAL = IMPORT(FILE);
 `);
 /**
  * Produces a Babel template that transforms an "import {x as y} from ..." into
  * "const y = require(...).x" call with the corresponding id in it.
  */
-const importNamedTemplate = template_1.default.statement(`
+const importNamedTemplate = core_1.template.statement(`
   var LOCAL = require(FILE).REMOTE;
 `);
 /**
  * Produces a Babel template that transforms an "import ..." into
  * "require(...)", which is considered a side-effect call.
  */
-const importSideEffectTemplate = template_1.default.statement(`
+const importSideEffectTemplate = core_1.template.statement(`
   require(FILE);
 `);
 /**
  * Produces an "export all" template that traverses all exported symbols and
  * re-exposes them.
  */
-const exportAllTemplate = template_1.default.statements(`
+const exportAllTemplate = core_1.template.statements(`
   var REQUIRED = require(FILE);
 
   for (var KEY in REQUIRED) {
@@ -65,7 +66,7 @@ const exportAllTemplate = template_1.default.statements(`
  * Produces a "named export" or "default export" template to export a single
  * symbol.
  */
-const exportTemplate = template_1.default.statement(`
+const exportTemplate = core_1.template.statement(`
   exports.REMOTE = LOCAL;
 `);
 // NOTE(krystofwoldrich): for (var KEY in REQUIRED) { doesn't work here
@@ -73,7 +74,7 @@ const exportTemplate = template_1.default.statement(`
  * Produces an "export all" template that traverses all exported symbols and
  * re-exposes them.
  */
-const liveBindExportAllTemplate = template_1.default.statements(`
+const liveBindExportAllTemplate = core_1.template.statements(`
   var REQUIRED = require(FILE);
 
   Object.keys(REQUIRED).forEach(function (KEY) {
@@ -90,7 +91,7 @@ const liveBindExportAllTemplate = template_1.default.statements(`
 /**
  * Produces a live binding export template that creates a getter.
  */
-const liveBindExportTemplate = template_1.default.statement(`
+const liveBindExportTemplate = core_1.template.statement(`
   Object.defineProperty(exports, "REMOTE", {
     enumerable: true,
     get: function () {
@@ -102,13 +103,13 @@ const liveBindExportTemplate = template_1.default.statement(`
  * Flags the exported module as a transpiled ES module. Needs to be kept in 1:1
  * compatibility with Babel.
  */
-const esModuleExportTemplate = template_1.default.statement(`
+const esModuleExportTemplate = core_1.template.statement(`
   Object.defineProperty(exports, '__esModule', {value: true});
 `);
 /**
  * Resolution template in case it is requested.
  */
-const resolveTemplate = template_1.default.expression(`
+const resolveTemplate = core_1.template.expression(`
   require.resolve(NODE)
 `);
 /**
@@ -122,18 +123,18 @@ function resolvePath(node, resolve) {
         NODE: node,
     });
 }
-function withLocation(node, loc) {
-    if (Array.isArray(node)) {
-        return node.map((n) => withLocation(n, loc));
+function withLocation(nodeOrArray, loc) {
+    if (Array.isArray(nodeOrArray)) {
+        return nodeOrArray.map((n) => withLocation(n, loc));
     }
-    // TODO: improve types
+    const node = nodeOrArray;
     if (!node.loc) {
         return { ...node, loc };
     }
     return node;
 }
-function importExportPlugin({ types: t }) {
-    const { isDeclaration, isVariableDeclaration } = t;
+function importExportPlugin({ types }) {
+    const { isDeclaration, isVariableDeclaration } = types;
     return {
         visitor: {
             ExportAllDeclaration(path, state) {
@@ -145,12 +146,7 @@ function importExportPlugin({ types: t }) {
             },
             ExportDefaultDeclaration(path, state) {
                 const declaration = path.node.declaration;
-                const id = 
-                // @ts-expect-error Property 'id' does not exist on type 'ArrayExpression'
-                declaration.id ||
-                    //
-                    path.scope.generateUidIdentifier('default');
-                // @ts-expect-error Property 'id' does not exist on type 'ArrayExpression'
+                const id = ('id' in declaration && declaration.id) || path.scope.generateUidIdentifier('default');
                 declaration.id = id;
                 const loc = path.node.loc;
                 state.exportDefault.push({
@@ -161,7 +157,7 @@ function importExportPlugin({ types: t }) {
                     path.insertBefore(withLocation(declaration, loc));
                 }
                 else {
-                    path.insertBefore(withLocation(t.variableDeclaration('var', [t.variableDeclarator(id, declaration)]), loc));
+                    path.insertBefore(withLocation(core_1.types.variableDeclaration('var', [core_1.types.variableDeclarator(id, declaration)]), loc));
                 }
                 path.remove();
             },
@@ -179,9 +175,14 @@ function importExportPlugin({ types: t }) {
                                     {
                                         const properties = d.id.properties;
                                         properties.forEach((p) => {
-                                            // @ts-expect-error Property 'name' does not exist on type 'ArrayExpression'.
-                                            const name = 'value' in p ? p.value.name : p.argument.name;
-                                            state.exportNamed.push({ local: name, remote: name, loc });
+                                            const nameCandidate = p.type === 'ObjectProperty' ? p.value : p.argument;
+                                            const name = 'name' in nameCandidate ? nameCandidate.name : undefined;
+                                            if (name) {
+                                                state.exportNamed.push({ local: name, remote: name, loc });
+                                            }
+                                            else {
+                                                debug('Unexpected export named declaration with object pattern without name.', p.toString());
+                                            }
                                         });
                                     }
                                     break;
@@ -189,32 +190,45 @@ function importExportPlugin({ types: t }) {
                                     {
                                         const elements = d.id.elements;
                                         elements.forEach((e) => {
-                                            // @ts-expect-error Property 'name' does not exist on type 'ArrayExpression'.
-                                            const name = 'argument' in e ? e.argument.name : e.name;
-                                            state.exportNamed.push({ local: name, remote: name, loc });
+                                            if (!e) {
+                                                return;
+                                            }
+                                            const nameCandidate = 'argument' in e ? e.argument : e;
+                                            const name = 'name' in nameCandidate ? nameCandidate.name : undefined;
+                                            if (name) {
+                                                state.exportNamed.push({ local: name, remote: name, loc });
+                                            }
+                                            else {
+                                                debug('Unexpected export named declaration with array pattern without name.', e?.toString());
+                                            }
                                         });
                                     }
                                     break;
                                 default:
                                     {
-                                        // @ts-expect-error Property 'name' does not exist on type 'AssignmentPattern'
-                                        const name = d.id.name;
-                                        state.exportNamed.push({ local: name, remote: name, loc });
+                                        const id = d.id;
+                                        const name = 'name' in id ? id.name : undefined;
+                                        if (name) {
+                                            state.exportNamed.push({ local: name, remote: name, loc });
+                                        }
+                                        else {
+                                            debug('Unexpected export named declaration with identifier without name.', id.toString());
+                                        }
                                     }
                                     break;
                             }
                         });
                     }
                     else {
-                        const id = 
-                        // @ts-expect-error Property 'id' does not exist on type 'DeclareExportAllDeclaration'
-                        declaration.id ||
-                            //
-                            path.scope.generateUidIdentifier();
-                        const name = id.name;
-                        // @ts-expect-error Property 'id' does not exist on type 'ExportAllDeclaration'.
-                        declaration.id = id;
-                        state.exportNamed.push({ local: name, remote: name, loc });
+                        if ('id' in declaration) {
+                            const id = declaration.id || path.scope.generateUidIdentifier();
+                            const name = id.type === 'StringLiteral' ? id.value : id.name;
+                            declaration.id = id;
+                            state.exportNamed.push({ local: name, remote: name, loc });
+                        }
+                        else {
+                            debug('Unexpected export named declaration without id.', declaration.toString());
+                        }
                     }
                     path.insertBefore(declaration);
                 }
@@ -230,17 +244,20 @@ function importExportPlugin({ types: t }) {
                             (s.exported.type === 'StringLiteral' || s.local.name !== 'default')).length > 1) {
                         sharedModuleExportFrom = path.scope.generateUidIdentifierBasedOnNode(path.node.source);
                         path.insertBefore(withLocation(importTemplate({
-                            FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                            FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                             LOCAL: sharedModuleExportFrom,
                         }), loc));
                     }
                     specifiers.forEach((s) => {
-                        // @ts-expect-error Property 'local' does not exist on type 'ExportDefaultSpecifier'
-                        let local = s.local;
+                        let local = 'local' in s ? s.local : undefined;
                         const remote = s.exported;
                         // export * as b from 'a'
                         if (!local && s.type === 'ExportNamespaceSpecifier') {
                             local = s.exported;
+                        }
+                        if (!local) {
+                            debug('Unexpected export named declaration specifier without local identifier.', s.toString());
+                            return;
                         }
                         if (remote.type === 'StringLiteral') {
                             // https://babeljs.io/docs/en/babel-plugin-syntax-module-string-names
@@ -253,8 +270,8 @@ function importExportPlugin({ types: t }) {
                                 state.opts.liveBindings ? path.node.source : local);
                             if (local.name === 'default') {
                                 path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importDefault),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                    IMPORT: core_1.types.cloneNode(state.importDefault),
+                                    FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                     LOCAL: temp,
                                 }), loc));
                                 state.exportNamed.push({
@@ -268,7 +285,7 @@ function importExportPlugin({ types: t }) {
                                     if (!sharedModuleExportFrom) {
                                         // Only insert the require statement if not using the shared require
                                         path.insertBefore(withLocation(importTemplate({
-                                            FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                            FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                             LOCAL: temp,
                                         }), loc));
                                     }
@@ -280,7 +297,7 @@ function importExportPlugin({ types: t }) {
                                 }
                                 else {
                                     path.insertBefore(withLocation(importNamedTemplate({
-                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                         LOCAL: temp,
                                         REMOTE: local,
                                     }), loc));
@@ -289,8 +306,8 @@ function importExportPlugin({ types: t }) {
                             }
                             else if (s.type === 'ExportNamespaceSpecifier') {
                                 path.insertBefore(withLocation(importAllTemplate({
-                                    IMPORT: t.cloneNode(state.importAll),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                    IMPORT: core_1.types.cloneNode(state.importAll),
+                                    FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                     LOCAL: temp,
                                 }), loc));
                                 state.exportNamed.push({
@@ -304,7 +321,7 @@ function importExportPlugin({ types: t }) {
                                     if (!sharedModuleExportFrom) {
                                         // Only insert the require statement if not using the shared require
                                         path.insertBefore(withLocation(importTemplate({
-                                            FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                            FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                             LOCAL: temp,
                                         }), loc));
                                     }
@@ -317,7 +334,7 @@ function importExportPlugin({ types: t }) {
                                 }
                                 else {
                                     path.insertBefore(withLocation(importNamedTemplate({
-                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        FILE: resolvePath(core_1.types.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
                                         LOCAL: temp,
                                         REMOTE: local,
                                     }), loc));
@@ -376,7 +393,7 @@ function importExportPlugin({ types: t }) {
                 if (!specifiers.length) {
                     state.imports.push({
                         node: withLocation(importSideEffectTemplate({
-                            FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                            FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
                         }), loc),
                     });
                 }
@@ -387,9 +404,9 @@ function importExportPlugin({ types: t }) {
                         (s.imported.type === 'StringLiteral' || s.imported.name !== 'default')).length > 1) {
                         sharedModuleImport = path.scope.generateUidIdentifierBasedOnNode(file);
                         // NOTE(krystofwoldrich): this can't be a template because the declaration type is needed later
-                        sharedModuleVariableDeclaration = withLocation(t.variableDeclaration('var', [
-                            t.variableDeclarator(t.cloneNode(sharedModuleImport), t.callExpression(t.identifier('require'), [
-                                resolvePath(t.cloneNode(file), state.opts.resolve),
+                        sharedModuleVariableDeclaration = withLocation(core_1.types.variableDeclaration('var', [
+                            core_1.types.variableDeclarator(core_1.types.cloneNode(sharedModuleImport), core_1.types.callExpression(core_1.types.identifier('require'), [
+                                resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
                             ])),
                         ]), loc);
                         state.imports.push({
@@ -397,8 +414,6 @@ function importExportPlugin({ types: t }) {
                         });
                     }
                     specifiers.forEach((s) => {
-                        // @ts-expect-error Property 'imported' does not exist on type 'ImportDefaultSpecifier'
-                        const imported = s.imported;
                         const local = s.local;
                         const getLocalModule = () => sharedModuleImport ??
                             path.scope.generateUidIdentifier(file.value.replace(/[^a-zA-Z0-9]/g, '_'));
@@ -406,34 +421,35 @@ function importExportPlugin({ types: t }) {
                             case 'ImportNamespaceSpecifier':
                                 state.imports.push({
                                     node: withLocation(importAllTemplate({
-                                        IMPORT: t.cloneNode(state.importAll),
-                                        FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
-                                        LOCAL: t.cloneNode(local),
+                                        IMPORT: core_1.types.cloneNode(state.importAll),
+                                        FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                                        LOCAL: core_1.types.cloneNode(local),
                                     }), loc),
                                 });
                                 break;
                             case 'ImportDefaultSpecifier':
                                 state.imports.push({
                                     node: withLocation(importAllTemplate({
-                                        IMPORT: t.cloneNode(state.importDefault),
-                                        FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
-                                        LOCAL: t.cloneNode(local),
+                                        IMPORT: core_1.types.cloneNode(state.importDefault),
+                                        FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                                        LOCAL: core_1.types.cloneNode(local),
                                     }), loc),
                                 });
                                 break;
-                            case 'ImportSpecifier':
-                                // eslint-disable-next-line no-case-declarations
+                            case 'ImportSpecifier': {
+                                const imported = s.imported;
+                                const importedName = imported.type === 'StringLiteral' ? imported.value : imported.name;
                                 const localModule = getLocalModule();
                                 state.importedIdentifiers.set(local.name, {
                                     source: localModule.name,
-                                    imported: imported.name,
+                                    imported: importedName,
                                 });
-                                if (imported.name === 'default') {
+                                if (importedName === 'default') {
                                     state.imports.push({
                                         node: withLocation(importAllTemplate({
-                                            IMPORT: t.cloneNode(state.importDefault),
-                                            FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
-                                            LOCAL: t.cloneNode(local),
+                                            IMPORT: core_1.types.cloneNode(state.importDefault),
+                                            FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                                            LOCAL: core_1.types.cloneNode(local),
                                         }), loc),
                                     });
                                 }
@@ -441,39 +457,39 @@ function importExportPlugin({ types: t }) {
                                     if (state.opts.liveBindings) {
                                         state.namespaceForLocal.set(local.name, {
                                             namespace: localModule.name,
-                                            remote: imported.name,
+                                            remote: importedName,
                                         });
                                     }
                                     else {
-                                        sharedModuleVariableDeclaration.declarations.push(withLocation(t.variableDeclarator(t.cloneNode(local), t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))), loc));
+                                        sharedModuleVariableDeclaration.declarations.push(withLocation(core_1.types.variableDeclarator(core_1.types.cloneNode(local), core_1.types.memberExpression(core_1.types.cloneNode(sharedModuleImport), core_1.types.cloneNode(imported))), loc));
                                     }
                                 }
                                 else {
                                     if (state.opts.liveBindings) {
                                         state.imports.push({
                                             node: withLocation(importTemplate({
-                                                FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
-                                                LOCAL: t.cloneNode(localModule),
+                                                FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                                                LOCAL: core_1.types.cloneNode(localModule),
                                             }), loc),
                                         });
                                         state.namespaceForLocal.set(local.name, {
                                             namespace: localModule.name,
-                                            remote: imported.name,
+                                            remote: importedName,
                                         });
                                     }
                                     else {
                                         state.imports.push({
                                             node: withLocation(importNamedTemplate({
-                                                FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
-                                                LOCAL: t.cloneNode(local),
-                                                REMOTE: t.cloneNode(imported),
+                                                FILE: resolvePath(core_1.types.cloneNode(file), state.opts.resolve),
+                                                LOCAL: core_1.types.cloneNode(local),
+                                                REMOTE: core_1.types.cloneNode(imported),
                                             }), loc),
                                         });
                                     }
                                 }
                                 break;
+                            }
                             default:
-                                // TODO: improve types
                                 throw new TypeError('Unknown import type: ' + s.type);
                         }
                     });
@@ -486,8 +502,8 @@ function importExportPlugin({ types: t }) {
                     state.exportDefault = [];
                     state.exportNamed = [];
                     state.imports = [];
-                    state.importAll = t.identifier(state.opts.importAll);
-                    state.importDefault = t.identifier(state.opts.importDefault);
+                    state.importAll = core_1.types.identifier(state.opts.importAll);
+                    state.importDefault = core_1.types.identifier(state.opts.importDefault);
                     state.importedIdentifiers = new Map();
                     state.namespaceForLocal = new Map();
                     // Rename declarations at module scope that might otherwise conflict
@@ -506,15 +522,15 @@ function importExportPlugin({ types: t }) {
                     state.exportDefault.forEach((e) => {
                         if (e.namespace) {
                             body.push(withLocation(liveBindExportTemplate({
-                                REQUIRED: t.identifier(e.namespace),
-                                LOCAL: t.identifier(e.local),
+                                REQUIRED: core_1.types.identifier(e.namespace),
+                                LOCAL: core_1.types.identifier(e.local),
                                 REMOTE: 'default',
                             }), e.loc));
                         }
                         else {
                             body.push(withLocation(exportTemplate({
-                                LOCAL: t.identifier(e.local),
-                                REMOTE: t.identifier('default'),
+                                LOCAL: core_1.types.identifier(e.local),
+                                REMOTE: core_1.types.identifier('default'),
                             }), e.loc));
                         }
                     });
@@ -523,7 +539,7 @@ function importExportPlugin({ types: t }) {
                             ? liveBindExportAllTemplate
                             : exportAllTemplate;
                         body.push(...withLocation(template({
-                            FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
+                            FILE: resolvePath(core_1.types.stringLiteral(e.file), state.opts.resolve),
                             REQUIRED: path.scope.generateUidIdentifier(e.file),
                             KEY: path.scope.generateUidIdentifier('key'),
                         }), e.loc));
@@ -531,28 +547,18 @@ function importExportPlugin({ types: t }) {
                     state.exportNamed.forEach((e) => {
                         if (e.namespace) {
                             body.push(withLocation(liveBindExportTemplate({
-                                REQUIRED: t.identifier(e.namespace),
-                                LOCAL: t.identifier(e.local),
+                                REQUIRED: core_1.types.identifier(e.namespace),
+                                LOCAL: core_1.types.identifier(e.local),
                                 REMOTE: e.remote,
                             }), e.loc));
                         }
                         else {
                             body.push(withLocation(exportTemplate({
-                                LOCAL: t.identifier(e.local),
-                                REMOTE: t.identifier(e.remote),
+                                LOCAL: core_1.types.identifier(e.local),
+                                REMOTE: core_1.types.identifier(e.remote),
                             }), e.loc));
                         }
                     });
-                    // Inspired by https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-helper-module-transforms/src/rewrite-live-references.ts#L99
-                    // Live bindings implementation:
-                    // 1. Instead of creating direct variable assignments like `var local = require(file).remote`,
-                    //    we create namespace variables: `var namespace = require(file)` and keep track of them in
-                    //    `state.namespaceForLocal` which maps local names to their namespace and remote names.
-                    // 2. When we encounter a reference to an imported name (exists in the namespaceForLocal map),
-                    //    we replace it with a dynamic property access: `namespace.remote`
-                    //
-                    //    We traverse the ReferencedIdentifier on the Program exit to ensure all imported names
-                    //    were collected before replacing them with the namespace property access.
                     path.traverse({
                         // @ts-expect-error ReferencedIdentifier is not in the types
                         ReferencedIdentifier: (path, state) => {
@@ -567,11 +573,11 @@ function importExportPlugin({ types: t }) {
                             if (rootBinding !== localBinding)
                                 return;
                             if (path.type === 'JSXIdentifier') {
-                                path.replaceWith(t.jsxMemberExpression(t.jsxIdentifier(namespace), t.jsxIdentifier(remote)));
+                                path.replaceWith(core_1.types.jsxMemberExpression(core_1.types.jsxIdentifier(namespace), core_1.types.jsxIdentifier(remote)));
                             }
                             else {
                                 // Identifier
-                                path.replaceWith(t.memberExpression(t.identifier(namespace), t.identifier(remote)));
+                                path.replaceWith(core_1.types.memberExpression(core_1.types.identifier(namespace), core_1.types.identifier(remote)));
                             }
                         },
                     }, {
