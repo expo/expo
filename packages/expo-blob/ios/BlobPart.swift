@@ -4,7 +4,6 @@ enum BlobPart {
   case string(String)
   case blob(Blob)
   case data(Data)
-  case typedArray(TypedArray)
 }
 
 extension BlobPart {
@@ -16,8 +15,6 @@ extension BlobPart {
         return String(decoding: data, as: UTF8.self)
       case .blob(let blob):
         return blob.text()
-      case .typedArray(let typedArray):
-        return String(decoding: Data(bytes: typedArray.rawPointer, count: typedArray.byteLength), as: UTF8.self)
     }
   }
   
@@ -29,8 +26,6 @@ extension BlobPart {
       return data.count
     case .blob(let blob):
       return blob.size
-    case .typedArray(let typedArray):
-      return typedArray.byteLength
     }
   }
   
@@ -42,9 +37,6 @@ extension BlobPart {
         return [UInt8](data)
       case .blob(let blob):
         return await blob.bytes()
-      case .typedArray(let typedArray):
-        let data = Data(bytes: typedArray.rawPointer, count: typedArray.byteLength)
-        return [UInt8](data)
     }
   }
 }

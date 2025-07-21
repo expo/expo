@@ -1,1 +1,1 @@
-export { ExpoBlob } from "./BlobModule";
+export { ExpoBlob } from './BlobModule';

@@ -1,2 +1,2 @@
-export { ExpoBlob } from "./BlobModule";
+export { ExpoBlob } from './BlobModule';
 //# sourceMappingURL=index.js.map
