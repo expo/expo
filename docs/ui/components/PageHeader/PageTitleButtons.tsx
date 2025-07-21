@@ -6,7 +6,7 @@ import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
-import { FOOTNOTE, MONOSPACE } from '~/ui/components/Text';
+import { FOOTNOTE } from '~/ui/components/Text';
 
 import { SdkPackageButton } from './SdkPackageButton';
 
@@ -34,48 +34,30 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           </div>
         </Button>
       )}
-      {[
-        ...(sourceCodeUrl
-          ? [
-              {
-                icon: <GithubIcon className="mt-0.5 text-icon-secondary" />,
-                label: 'GitHub',
-                tooltip: (
-                  <>
-                    View source code of <MONOSPACE>{packageName}</MONOSPACE> on GitHub
-                  </>
-                ),
-                href: sourceCodeUrl,
-              },
-            ]
-          : []),
-        ...(sourceCodeUrl?.startsWith('https://github.com/expo/expo')
-          ? [
-              {
-                icon: <Tag03Icon className="mt-0.5 text-icon-secondary" />,
-                label: 'Changelog',
-                tooltip: (
-                  <>
-                    View the changelog of <MONOSPACE>{packageName}</MONOSPACE> on GitHub
-                  </>
-                ),
-                href: `${sourceCodeUrl}/CHANGELOG.md`,
-              },
-            ]
-          : []),
-        ...(packageName
-          ? [
-              {
-                icon: <BuildIcon className="mt-0.5 text-icon-secondary" />,
-                label: 'npm',
-                tooltip: 'View package in npm registry',
-                href: `https://www.npmjs.com/package/${packageName}`,
-              },
-            ]
-          : []),
-      ].map(props => (
-        <SdkPackageButton key={props.label} {...props} />
-      ))}
+      {sourceCodeUrl && (
+        <SdkPackageButton
+          label="GitHub"
+          Icon={GithubIcon}
+          href={sourceCodeUrl}
+          tooltip="View source code on GitHub"
+        />
+      )}
+      {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
+        <SdkPackageButton
+          label="Changelog"
+          Icon={Tag03Icon}
+          href={`${sourceCodeUrl}/CHANGELOG.md`}
+          tooltip="View package changelog on GitHub"
+        />
+      )}
+      {packageName && (
+        <SdkPackageButton
+          label="npm"
+          Icon={BuildIcon}
+          href={`https://www.npmjs.com/package/${packageName}`}
+          tooltip="View package in npm registry"
+        />
+      )}
     </>
   );
 }
