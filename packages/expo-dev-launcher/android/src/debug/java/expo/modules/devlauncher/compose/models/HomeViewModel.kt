@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.compose
+package expo.modules.devlauncher.compose.models
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
+import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
 import expo.modules.devlauncher.services.AppService
+import expo.modules.devlauncher.services.ErrorRegistryService
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
 import expo.modules.devlauncher.services.SessionService
@@ -21,7 +23,8 @@ import kotlinx.coroutines.launch
 sealed interface HomeAction {
   class OpenApp(val url: String) : HomeAction
   object RefetchRunningApps : HomeAction
-  object ResetRecentlyOpendApps : HomeAction
+  object ResetRecentlyOpenedApps : HomeAction
+  class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
 }
 
 data class HomeState(
@@ -29,7 +32,8 @@ data class HomeState(
   val runningPackagers: Set<PackagerInfo> = emptySet(),
   val isFetchingPackagers: Boolean = false,
   val currentAccount: MeQuery.Account? = null,
-  val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList()
+  val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
+  val crashReport: DevLauncherErrorInstance? = null
 )
 
 class HomeViewModel() : ViewModel() {
@@ -37,6 +41,7 @@ class HomeViewModel() : ViewModel() {
   val sessionService = inject<SessionService>()
   val packagerService = inject<PackagerService>()
   val appService = inject<AppService>()
+  val errorRegistryService = inject<ErrorRegistryService>()
 
   private var _state = mutableStateOf(
     HomeState(
@@ -46,7 +51,8 @@ class HomeViewModel() : ViewModel() {
         UserState.Fetching, UserState.LoggedOut -> null
         is UserState.LoggedIn -> userState.selectedAccount
       },
-      recentlyOpenedApps = devLauncherController.getRecentlyOpenedApps()
+      recentlyOpenedApps = devLauncherController.getRecentlyOpenedApps(),
+      crashReport = errorRegistryService.consumeException()
     )
   )
 
@@ -96,10 +102,12 @@ class HomeViewModel() : ViewModel() {
 
       HomeAction.RefetchRunningApps -> viewModelScope.launch { packagerService.refetchedPackager() }
 
-      HomeAction.ResetRecentlyOpendApps -> viewModelScope.launch {
+      HomeAction.ResetRecentlyOpenedApps -> viewModelScope.launch {
         devLauncherController.clearRecentlyOpenedApps()
         _state.value = _state.value.copy(recentlyOpenedApps = emptyList())
       }
+
+      is HomeAction.NavigateToCrashReport -> IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
     }
   }
 }
