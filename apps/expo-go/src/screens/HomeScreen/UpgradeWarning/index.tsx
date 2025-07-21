@@ -1,4 +1,4 @@
-import { iconSize, XIcon, InfoIcon, spacing } from '@expo/styleguide-native';
+import { iconSize, XIcon, WarningIcon, spacing } from '@expo/styleguide-native';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Platform } from 'react-native';
@@ -38,8 +38,8 @@ export function UpgradeWarning({ collapsible = false }: Props) {
           <XIcon size={iconSize.regular} color={theme.icon.default} />
         </Pressable>
         <View padding="medium" style={styles.content}>
-          <Row style={{ gap: spacing[1] }}>
-            <InfoIcon size={iconSize.regular} color={theme.status.warning} />
+          <Row style={{ gap: spacing[2] }}>
+            <WarningIcon size={iconSize.small} color={theme.status.warning} />
             <Text type="InterBold" size="small">
               New Expo Go version coming soon!
             </Text>
