@@ -321,7 +321,32 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
         }
 
         const specifiers = path.node.specifiers;
-        if (specifiers) {
+        if (specifiers && specifiers.length) {
+          let sharedModuleExportFrom: BabelNodeIdentifier | null = null;
+
+          if (
+            // NOTE(@krystofwoldrich): If liveBindings are disabled we adhere to the original behavior at the moment
+            // meaning no shared imports for `export from`
+            this.opts.liveBindings &&
+            path.node.source &&
+            specifiers.filter(
+              (s) =>
+                s.type === 'ExportSpecifier' &&
+                (s.exported.type === 'StringLiteral' || s.local.name !== 'default')
+            ).length > 1
+          ) {
+            sharedModuleExportFrom = path.scope.generateUidIdentifierBasedOnNode(path.node.source);
+            path.insertBefore(
+              withLocation(
+                importTemplate({
+                  FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                  LOCAL: sharedModuleExportFrom,
+                }),
+                loc
+              )
+            );
+          }
+
           specifiers.forEach((s) => {
             // @ts-expect-error Property 'local' does not exist on type 'ExportDefaultSpecifier'
             let local = s.local;
@@ -338,10 +363,12 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
             }
 
             if (path.node.source) {
-              const temp = path.scope.generateUidIdentifierBasedOnNode(
-                // For live bindings, we need to create a require statement for the module namespace
-                state.opts.liveBindings ? path.node.source : local
-              );
+              const temp =
+                sharedModuleExportFrom ??
+                path.scope.generateUidIdentifierBasedOnNode(
+                  // For live bindings, we need to create a require statement for the module namespace
+                  state.opts.liveBindings ? path.node.source : local
+                );
 
               if (local.name === 'default') {
                 path.insertBefore(
@@ -365,18 +392,21 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                 });
               } else if (remote.name === 'default') {
                 if (state.opts.liveBindings) {
-                  path.insertBefore(
-                    withLocation(
-                      importTemplate({
-                        FILE: resolvePath(
-                          t.cloneNode(nullthrows(path.node.source)),
-                          state.opts.resolve
-                        ),
-                        LOCAL: temp,
-                      }),
-                      loc
-                    )
-                  );
+                  if (!sharedModuleExportFrom) {
+                    // Only insert the require statement if not using the shared require
+                    path.insertBefore(
+                      withLocation(
+                        importTemplate({
+                          FILE: resolvePath(
+                            t.cloneNode(nullthrows(path.node.source)),
+                            state.opts.resolve
+                          ),
+                          LOCAL: temp,
+                        }),
+                        loc
+                      )
+                    );
+                  }
                   state.exportDefault.push({
                     namespace: temp.name,
                     local: local.name,
@@ -419,18 +449,21 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                 });
               } else {
                 if (state.opts.liveBindings) {
-                  path.insertBefore(
-                    withLocation(
-                      importTemplate({
-                        FILE: resolvePath(
-                          t.cloneNode(nullthrows(path.node.source)),
-                          state.opts.resolve
-                        ),
-                        LOCAL: temp,
-                      }),
-                      loc
-                    )
-                  );
+                  if (!sharedModuleExportFrom) {
+                    // Only insert the require statement if not using the shared require
+                    path.insertBefore(
+                      withLocation(
+                        importTemplate({
+                          FILE: resolvePath(
+                            t.cloneNode(nullthrows(path.node.source)),
+                            state.opts.resolve
+                          ),
+                          LOCAL: temp,
+                        }),
+                        loc
+                      )
+                    );
+                  }
                   state.exportNamed.push({
                     local: local.name,
                     remote: remote.name,

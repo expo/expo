@@ -132,12 +132,10 @@ it('exports members of another module directly from an import (as bax) with live
     export {foo as bax, baz} from 'bar';
   `;
 
-  // TODO: Improve this to avoid duplicate requires
   const expected = `
     Object.defineProperty(exports, '__esModule', {value: true});
 
     var _bar = require('bar');
-    var _bar2 = require('bar');
     Object.defineProperty(exports, "bax", {
       enumerable: true,
       get: function () {
@@ -147,7 +145,7 @@ it('exports members of another module directly from an import (as bax) with live
     Object.defineProperty(exports, "baz", {
       enumerable: true,
       get: function () {
-        return _bar2.baz;
+        return _bar.baz;
       }
     });
   `;
@@ -157,8 +155,6 @@ it('exports members of another module directly from an import (as bax) with live
   expect(showTransformedDeps(code, [importExportPlugin], { liveBindings: true }))
     .toMatchInlineSnapshot(`
     "
-    > 2 |     export {foo as bax, baz} from 'bar';
-        |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)
     > 2 |     export {foo as bax, baz} from 'bar';
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #0 (bar)"
   `);
@@ -406,6 +402,33 @@ it('transforms export as default as live binding', () => {
       enumerable: true,
       get: function () {
         return _bar.foo;
+      }
+    });
+  `;
+
+  compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
+});
+
+it('transforms export as default as live binding with shared module', () => {
+  const code = `
+    export { foo as default, baz } from 'bar';
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+    var _bar = require('bar');
+    Object.defineProperty(exports, "default", {
+      enumerable: true,
+      get: function () {
+        return _bar.foo;
+      }
+    });
+    Object.defineProperty(exports, "baz", {
+      enumerable: true,
+      get: function () {
+        return _bar.baz;
       }
     });
   `;
