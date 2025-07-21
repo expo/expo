@@ -4171,6 +4171,7 @@ SPEC CHECKSUMS:
   EXManifests: bf76658edfbfa3e3fb67f940ade98d7803490789
   EXNotifications: f0f1c97d04f06c51ea073d7b2396431e5611c1ea
   Expo: 50f261cb88416e897c42707a176dd6bfc02e3ff6
+  ExpoAppIntegrity: 4730a3328b6261297db919772d6f08af72850bee
   ExpoAppleAuthentication: 69a48d4633024124a33fda650dba706c216d6c76
   ExpoAsset: b5bfc6425d1e9a09e8e1368646b98fe5ae7ed074
   ExpoAudio: f6bcc6868e643e6fa74b6e20fd7d20ecc89b4e28
@@ -4246,7 +4247,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: a3ec960e841e867d0c120fb8722d1bad078789e9
+  hermes-engine: ebf353fe47a71a4771e31060913caa6c78418abf
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
