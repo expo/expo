@@ -2,17 +2,12 @@ package expo.modules.medialibrary.assets
 
 import expo.modules.medialibrary.AssetQueryException
 import expo.modules.medialibrary.AssetsOptions
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
-import expo.modules.test.core.legacy.PromiseMock
-import expo.modules.test.core.legacy.assertRejectedWithCode
-import expo.modules.test.core.legacy.promiseResolved
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
