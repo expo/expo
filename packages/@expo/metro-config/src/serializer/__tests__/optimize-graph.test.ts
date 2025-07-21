@@ -381,10 +381,20 @@ it(`recursively expands export all statements with nested statements`, async () 
         value: true
       });
       for (var _key in _$$_REQUIRE(_dependencyMap[0])) {
-        exports[_key] = _$$_REQUIRE(_dependencyMap[0])[_key];
+        Object.defineProperty(exports, _key, {
+          enumerable: true,
+          get: function () {
+            return _$$_REQUIRE(_dependencyMap[0])[_key];
+          }
+        });
       }
       for (var _key2 in _$$_REQUIRE(_dependencyMap[1])) {
-        exports[_key2] = _$$_REQUIRE(_dependencyMap[1])[_key2];
+        Object.defineProperty(exports, _key2, {
+          enumerable: true,
+          get: function () {
+            return _$$_REQUIRE(_dependencyMap[1])[_key2];
+          }
+        });
       }
     },"/app/x0.js",["/app/x1.js","/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -395,7 +405,12 @@ it(`recursively expands export all statements with nested statements`, async () 
       });
       const z1 = 0;
       for (var _key in _$$_REQUIRE(_dependencyMap[0])) {
-        exports[_key] = _$$_REQUIRE(_dependencyMap[0])[_key];
+        Object.defineProperty(exports, _key, {
+          enumerable: true,
+          get: function () {
+            return _$$_REQUIRE(_dependencyMap[0])[_key];
+          }
+        });
       }
       exports.z1 = z1;
     },"/app/x1.js",["/app/x2.js"]);
