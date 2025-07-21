@@ -429,15 +429,38 @@ describe(findModulesAsync, () => {
   });
 
   /**
-   * TODO(@kitten): Documentation implies this should work
    * /app
    *   ├── /app/local-expo-module
    */
-  it.skip('should link local non-node module (FAILURE)', async () => {
+  it('should NOT link local non-node module (No arbitrary modules)', async () => {
     vol.fromNestedJSON(
       {
         ...mockedRoot(),
         'local-expo-module': mockedModule('react-native-third-party'),
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      searchPaths: [path.join(projectRoot, 'node_modules')],
+      platform: 'ios',
+      projectRoot,
+    });
+
+    expect(result).toEqual({});
+  });
+
+  /**
+   * /app
+   *   ├── /app/local-expo-module
+   */
+  it('should link local non-node module in "modules/" sub-directory', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot(),
+        modules: {
+          'local-expo-module': mockedModule('local-expo-module'),
+        },
       },
       projectRoot
     );
