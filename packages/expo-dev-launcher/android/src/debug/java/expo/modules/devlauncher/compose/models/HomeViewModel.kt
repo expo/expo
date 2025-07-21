@@ -18,6 +18,7 @@ import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 sealed interface HomeAction {
@@ -60,15 +61,14 @@ class HomeViewModel() : ViewModel() {
     get() = _state.value
 
   init {
-    viewModelScope.launch {
-      packagerService.refetchedPackager()
-    }
-
-    packagerService.runningPackagers.onEach { newPackagers ->
-      _state.value = _state.value.copy(
-        runningPackagers = newPackagers
-      )
-    }.launchIn(viewModelScope)
+    packagerService
+      .runningPackagers
+      .onEach { newPackagers ->
+        _state.value = _state.value.copy(
+          runningPackagers = newPackagers
+        )
+      }
+      .launchIn(viewModelScope)
 
     sessionService.user.onEach { newUser ->
       when (newUser) {
@@ -100,7 +100,7 @@ class HomeViewModel() : ViewModel() {
           }
         }
 
-      HomeAction.RefetchRunningApps -> viewModelScope.launch { packagerService.refetchedPackager() }
+      HomeAction.RefetchRunningApps -> packagerService.refetchedPackager()
 
       HomeAction.ResetRecentlyOpenedApps -> viewModelScope.launch {
         devLauncherController.clearRecentlyOpenedApps()

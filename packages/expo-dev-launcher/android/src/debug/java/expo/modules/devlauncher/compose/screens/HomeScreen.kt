@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.compose.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -49,6 +53,14 @@ import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
+import kotlinx.coroutines.delay
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
@@ -112,6 +124,7 @@ fun CrashReport(
   }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun HomeScreen(
   state: HomeState,
@@ -202,12 +215,42 @@ fun HomeScreen(
           val infoColor = Theme.colors.status.info
           val defaultColor = Theme.colors.status.default
           val isFetching = state.isFetchingPackagers
+          var isFetchingUIState by remember { mutableStateOf(isFetching) }
+          var fetchStartTime by remember { mutableStateOf<Instant?>(null) }
+
+          LaunchedEffect(isFetching) {
+            Log.e("DevLauncher", "isFetchingPackagers changed: $isFetching")
+            if (isFetching) {
+              isFetchingUIState = true
+              fetchStartTime = Clock.System.now()
+              return@LaunchedEffect
+            }
+
+            if (!isFetchingUIState) {
+              return@LaunchedEffect
+            }
+
+            val startTime = fetchStartTime
+            if (startTime == null) {
+              isFetchingUIState = false
+              return@LaunchedEffect
+            }
+
+            val elapsedTime = startTime - Clock.System.now()
+            val remainingTime = 2.seconds - elapsedTime
+
+            delay(remainingTime)
+
+            if (!state.isFetchingPackagers) {
+              isFetchingUIState = false
+            }
+          }
 
           Button(
             onClick = {
               onAction(HomeAction.RefetchRunningApps)
             },
-            enabled = !isFetching
+            enabled = !isFetchingUIState
           ) {
             RowLayout(
               modifier = Modifier.padding(Theme.spacing.medium),
@@ -222,7 +265,7 @@ fun HomeScreen(
                       )
                     }
                     .then(
-                      if (isFetching) {
+                      if (isFetchingUIState) {
                         Modifier.pulseEffect(
                           initialScale = 0.95f,
                           targetScale = 2f,
@@ -236,7 +279,7 @@ fun HomeScreen(
               }
             ) {
               Text(
-                if (isFetching) {
+                if (isFetchingUIState) {
                   "Searching for development servers..."
                 } else {
                   "Fetch development servers"
