@@ -127,6 +127,7 @@ const exportTemplate = template.statement(`
   exports.REMOTE = LOCAL;
 `);
 
+// NOTE(krystofwoldrich): for (var KEY in REQUIRED) { doesn't work here
 /**
  * Produces an "export all" template that traverses all exported symbols and
  * re-exposes them.
@@ -134,14 +135,16 @@ const exportTemplate = template.statement(`
 const liveBindExportAllTemplate = template.statements(`
   var REQUIRED = require(FILE);
 
-  for (var KEY in REQUIRED) {
+  Object.keys(REQUIRED).forEach(function (KEY) {
+    if (KEY === "default" || KEY === "__esModule") return;
+    if (KEY in exports && exports[KEY] === REQUIRED[KEY]) return;
     Object.defineProperty(exports, KEY, {
       enumerable: true,
       get: function () {
         return REQUIRED[KEY];
       }
     });
-  }
+  });
 `);
 
 /**

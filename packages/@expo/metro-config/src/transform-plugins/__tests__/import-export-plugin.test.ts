@@ -265,14 +265,16 @@ it('transforms export all as live bindings', () => {
       value: true
     });
     var _foo = require("foo");
-    for (var _key in _foo) {
+    Object.keys(_foo).forEach(function (_key) {
+      if (_key === "default" || _key === "__esModule") return;
+      if (_key in exports && exports[_key] === _foo[_key]) return;
       Object.defineProperty(exports, _key, {
         enumerable: true,
         get: function () {
           return _foo[_key];
         }
       });
-    }
+    });
   `;
 
   compare([importExportPlugin], code, expected, { ...opts, liveBindings: true });
