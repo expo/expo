@@ -30,7 +30,6 @@ describe(getMetroDirectBundleOptions, () => {
       customResolverOptions: {},
       customTransformOptions: {
         baseUrl: '/foo/',
-        liveBindings: true,
       },
       serializerOptions: {},
       dev: true,
@@ -56,9 +55,7 @@ describe(getMetroDirectBundleOptions, () => {
       sourceUrl:
         'http://localhost:8081/index.js.bundle?platform=ios&dev=true&hot=false&serializer.map=true',
       customResolverOptions: {},
-      customTransformOptions: {
-        liveBindings: true,
-      },
+      customTransformOptions: {},
       serializerOptions: {
         includeSourceMaps: true,
       },
