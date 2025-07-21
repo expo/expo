@@ -233,10 +233,9 @@ function importExportPlugin({ types: t }) {
                             throw path.buildCodeFrameError('Module string names are not supported');
                         }
                         if (path.node.source) {
-                            const temp = state.opts.liveBindings
-                                ? // For live bindings, we need to create a require statement for the module namespace
-                                    path.scope.generateUidIdentifier(nullthrows(path.node.source).value.replace(/[^a-zA-Z0-9]/g, '_'))
-                                : path.scope.generateUidIdentifier(local.name);
+                            const temp = path.scope.generateUidIdentifierBasedOnNode(
+                            // For live bindings, we need to create a require statement for the module namespace
+                            state.opts.liveBindings ? path.node.source : local);
                             if (local.name === 'default') {
                                 path.insertBefore(withLocation(importAllTemplate({
                                     IMPORT: t.cloneNode(state.importDefault),
