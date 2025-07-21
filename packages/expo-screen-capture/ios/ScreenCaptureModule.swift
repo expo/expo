@@ -8,7 +8,7 @@ public final class ScreenCaptureModule: Module {
   private var blockView = UIView()
   private var protectionTextField: UITextField?
   private var originalParent: CALayer?
-  private var blurEffectViewTag = 999
+  private var blurEffectView: AnimatedBlurEffectView?
   private var blurIntensity: CGFloat = 0.3
 
   public func definition() -> ModuleDefinition {
@@ -197,10 +197,10 @@ public final class ScreenCaptureModule: Module {
       let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
       blurEffectView.frame = rootView.bounds
       blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      blurEffectView.tag = self.blurEffectViewTag
       blurEffectView.alpha = 0
 
       rootView.addSubview(blurEffectView)
+      self.blurEffectView = blurEffectView
 
       blurEffectView.setupBlur()
 
@@ -216,23 +216,20 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func removePrivacyOverlay() {
-    if let keyWindow = UIApplication.shared.keyWindow,
-      let rootView = keyWindow.subviews.first {
-      rootView.subviews.forEach { subview in
-        if subview.tag == self.blurEffectViewTag {
-          UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            options: [.curveEaseIn],
-            animations: {
-              subview.alpha = 0
-            },
-            completion: { _ in
-              subview.removeFromSuperview()
-            }
-          )
-        }
-      }
+    guard let blurEffectView = self.blurEffectView else {
+      return
     }
+    UIView.animate(
+      withDuration: 0.25,
+      delay: 0,
+      options: [.curveEaseIn],
+      animations: {
+        blurEffectView.alpha = 0
+      },
+      completion: { _ in
+        blurEffectView.removeFromSuperview()
+        self.blurEffectView = nil
+      }
+    )
   }
 }
