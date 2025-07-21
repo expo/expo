@@ -12,10 +12,13 @@ import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
 import expo.modules.kotlin.Promise
+import kotlinx.coroutines.isActive
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CancellationException
 
 object MediaLibraryUtils {
   class AssetFile(pathname: String, val assetId: String, val mimeType: String) : File(pathname)
@@ -258,4 +261,8 @@ object MediaLibraryUtils {
    */
   fun hasManifestPermission(context: Context, permission: String): Boolean =
     getManifestPermissions(context).contains(permission)
+
+  fun CoroutineContext.ensureActiveOrThrow(message: String = "Coroutine context is inactive") {
+    if (!this.isActive) throw CancellationException(message)
+  }
 }
