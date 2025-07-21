@@ -48,17 +48,12 @@ internal class GetAssets(
         }
       }
     } catch (e: Exception) {
-      when (e) {
-        is SecurityException -> throw UnableToLoadException("Could not get asset: need read_external_storage permission")
-        is IOException -> throw UnableToLoadException("Could not read file $e")
-        is IllegalArgumentException -> throw UnableToLoadException(
-          e.message
-            ?: "Invalid MediaType $e"
-        )
-        is UnsupportedOperationException -> {
-          throw PermissionsException(e.message ?: "Permission denied $e")
-        }
-        else -> throw e
+      throw when (e) {
+        is SecurityException -> UnableToLoadException("Could not get asset: need read_external_storage permission")
+        is IOException -> UnableToLoadException("Could not read file $e")
+        is IllegalArgumentException -> UnableToLoadException(e.message ?: "Invalid MediaType $e")
+        is UnsupportedOperationException -> PermissionsException(e.message ?: "Permission denied $e")
+        else -> e
       }
     }
   }
