@@ -225,6 +225,7 @@ export function applyImportSupport<TFile extends t.File>(
     inlineableCalls: [importDefault, importAll],
     importDefault,
     importAll,
+    // liveBindings: true,
   };
 
   if (collectLocations) {

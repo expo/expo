@@ -21,6 +21,14 @@ function nullthrows(x, message) {
     return x;
 }
 /**
+ * Produces a Babel template that transforms an "import { x } from a" into
+ * "var _a = require(a)" call which needs to be followed by
+ * update of the "x" references to "_a.x".
+ */
+const requireModuleTemplate = template_1.default.statement(`
+  var LOCAL = require(FILE);
+`);
+/**
  * Produces a Babel template that transforms an "import * as x from ..." or an
  * "import x from ..." call into a "const x = importAll(...)" call with the
  * corresponding id in it.
@@ -59,6 +67,44 @@ const exportAllTemplate = template_1.default.statements(`
  */
 const exportTemplate = template_1.default.statement(`
   exports.REMOTE = LOCAL;
+`);
+/**
+ * Produces an "export all" template that traverses all exported symbols and
+ * re-exposes them.
+ */
+const liveBindExportAllTemplate = template_1.default.statements(`
+  var REQUIRED = require(FILE);
+
+  for (var KEY in REQUIRED) {
+    Object.defineProperty(exports, KEY, {
+      enumerable: true,
+      get: function () {
+        return REQUIRED[KEY];
+      }
+    });
+  }
+`);
+/**
+ * Produces a live binding export template that creates a getter.
+ */
+const liveBindExportTemplate = template_1.default.statement(`
+  Object.defineProperty(exports, "REMOTE", {
+    enumerable: true,
+    get: function () {
+      return REQUIRED.LOCAL;
+    }
+  });
+`);
+/**
+ * Produces a live binding export all template that creates a getter.
+ */
+const liveBindExportNamespaceTemplate = template_1.default.statement(`
+  Object.defineProperty(exports, "REMOTE", {
+    enumerable: true,
+    get: function () {
+      return REQUIRED;
+    }
+  });
 `);
 /**
  * Flags the exported module as a transpiled ES module. Needs to be kept in 1:1
@@ -195,62 +241,109 @@ function importExportPlugin({ types: t }) {
                             throw path.buildCodeFrameError('Module string names are not supported');
                         }
                         if (path.node.source) {
-                            const temp = path.scope.generateUidIdentifier(local.name);
-                            if (local.name === 'default') {
-                                path.insertBefore(withLocation(importTemplate({
-                                    IMPORT: t.cloneNode(state.importDefault),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                }), loc));
-                                state.exportNamed.push({
-                                    local: temp.name,
-                                    remote: remote.name,
-                                    loc,
-                                });
-                            }
-                            else if (remote.name === 'default') {
-                                path.insertBefore(withLocation(importNamedTemplate({
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                    REMOTE: local,
-                                }), loc));
-                                state.exportDefault.push({ local: temp.name, loc });
-                            }
-                            else if (s.type === 'ExportNamespaceSpecifier') {
-                                path.insertBefore(withLocation(importTemplate({
-                                    IMPORT: t.cloneNode(state.importAll),
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                }), loc));
-                                state.exportNamed.push({
-                                    local: temp.name,
-                                    remote: remote.name,
-                                    loc,
-                                });
+                            if (state.opts.liveBindings) {
+                                // For live bindings, we need to create a require statement for the module namespace
+                                const namespace = path.scope.generateUidIdentifier(nullthrows(path.node.source).value.replace(/[^a-zA-Z0-9]/g, '_'));
+                                path.insertBefore(withLocation(t.variableDeclaration('var', [
+                                    t.variableDeclarator(namespace, t.callExpression(t.identifier('require'), [
+                                        resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                    ])),
+                                ]), loc));
+                                if (remote.name === 'default') {
+                                    state.exportDefault.push({
+                                        local: local.name,
+                                        loc,
+                                        namespace: namespace.name,
+                                    });
+                                }
+                                else {
+                                    state.exportNamed.push({
+                                        local: local.name,
+                                        remote: remote.name,
+                                        loc,
+                                        namespace: namespace.name,
+                                    });
+                                }
                             }
                             else {
-                                path.insertBefore(withLocation(importNamedTemplate({
-                                    FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
-                                    LOCAL: temp,
-                                    REMOTE: local,
-                                }), loc));
-                                state.exportNamed.push({
-                                    local: temp.name,
-                                    remote: remote.name,
-                                    loc,
-                                });
+                                const temp = path.scope.generateUidIdentifier(local.name);
+                                if (local.name === 'default') {
+                                    path.insertBefore(withLocation(importTemplate({
+                                        IMPORT: t.cloneNode(state.importDefault),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                    }), loc));
+                                    state.exportNamed.push({
+                                        local: temp.name,
+                                        remote: remote.name,
+                                        loc,
+                                    });
+                                }
+                                else if (remote.name === 'default') {
+                                    path.insertBefore(withLocation(importNamedTemplate({
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                        REMOTE: local,
+                                    }), loc));
+                                    state.exportDefault.push({ local: temp.name, loc });
+                                }
+                                else if (s.type === 'ExportNamespaceSpecifier') {
+                                    path.insertBefore(withLocation(importTemplate({
+                                        IMPORT: t.cloneNode(state.importAll),
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                    }), loc));
+                                    state.exportNamed.push({
+                                        local: temp.name,
+                                        remote: remote.name,
+                                        loc,
+                                    });
+                                }
+                                else {
+                                    path.insertBefore(withLocation(importNamedTemplate({
+                                        FILE: resolvePath(t.cloneNode(nullthrows(path.node.source)), state.opts.resolve),
+                                        LOCAL: temp,
+                                        REMOTE: local,
+                                    }), loc));
+                                    state.exportNamed.push({
+                                        local: temp.name,
+                                        remote: remote.name,
+                                        loc,
+                                    });
+                                }
                             }
                         }
                         else {
-                            if (remote.name === 'default') {
-                                state.exportDefault.push({ local: local.name, loc });
+                            // Check if this identifier was imported and use live bindings if so
+                            const importInfo = state.importedIdentifiers.get(local.name);
+                            if (importInfo && state.opts.liveBindings) {
+                                if (remote.name === 'default') {
+                                    state.exportDefault.push({
+                                        local: importInfo.imported,
+                                        loc,
+                                        namespace: importInfo.source,
+                                    });
+                                }
+                                else {
+                                    state.exportNamed.push({
+                                        local: importInfo.imported,
+                                        remote: remote.name,
+                                        loc,
+                                        namespace: importInfo.source,
+                                    });
+                                }
                             }
                             else {
-                                state.exportNamed.push({
-                                    local: local.name,
-                                    remote: remote.name,
-                                    loc,
-                                });
+                                if (remote.name === 'default') {
+                                    state.exportDefault.push({ local: local.name, loc });
+                                }
+                                else {
+                                    state.exportNamed.push({
+                                        local: local.name,
+                                        remote: remote.name,
+                                        loc,
+                                    });
+                                }
                             }
                         }
                     });
@@ -290,6 +383,7 @@ function importExportPlugin({ types: t }) {
                         // @ts-expect-error Property 'imported' does not exist on type 'ImportDefaultSpecifier'
                         const imported = s.imported;
                         const local = s.local;
+                        const getLocalModule = () => path.scope.generateUidIdentifier(file.value.replace(/[^a-zA-Z0-9]/g, '_'));
                         switch (s.type) {
                             case 'ImportNamespaceSpecifier':
                                 state.imports.push({
@@ -310,7 +404,14 @@ function importExportPlugin({ types: t }) {
                                 });
                                 break;
                             case 'ImportSpecifier':
+                                // eslint-disable-next-line no-case-declarations
+                                const localModule = getLocalModule();
+                                state.importedIdentifiers.set(local.name, {
+                                    source: localModule.name,
+                                    imported: imported.name,
+                                });
                                 if (imported.name === 'default') {
+                                    // if (!state.opts.liveBindings) {
                                     state.imports.push({
                                         node: withLocation(importTemplate({
                                             IMPORT: t.cloneNode(state.importDefault),
@@ -318,18 +419,34 @@ function importExportPlugin({ types: t }) {
                                             LOCAL: t.cloneNode(local),
                                         }), loc),
                                     });
+                                    // }
                                 }
                                 else if (sharedModuleVariableDeclaration != null) {
                                     sharedModuleVariableDeclaration.declarations.push(withLocation(t.variableDeclarator(t.cloneNode(local), t.memberExpression(t.cloneNode(sharedModuleImport), t.cloneNode(imported))), loc));
                                 }
                                 else {
-                                    state.imports.push({
-                                        node: withLocation(importNamedTemplate({
-                                            FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
-                                            LOCAL: t.cloneNode(local),
-                                            REMOTE: t.cloneNode(imported),
-                                        }), loc),
-                                    });
+                                    if (state.opts.liveBindings) {
+                                        state.imports.push({
+                                            node: withLocation(requireModuleTemplate({
+                                                FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                                LOCAL: t.cloneNode(localModule),
+                                            }), loc),
+                                        });
+                                        state.namespaceForLocal.set(local.name, {
+                                            namespace: localModule.name,
+                                            // local: local.name,
+                                            remote: imported.name,
+                                        });
+                                    }
+                                    else {
+                                        state.imports.push({
+                                            node: withLocation(importNamedTemplate({
+                                                FILE: resolvePath(t.cloneNode(file), state.opts.resolve),
+                                                LOCAL: t.cloneNode(local),
+                                                REMOTE: t.cloneNode(imported),
+                                            }), loc),
+                                        });
+                                    }
                                 }
                                 break;
                             default:
@@ -348,6 +465,8 @@ function importExportPlugin({ types: t }) {
                     state.imports = [];
                     state.importAll = t.identifier(state.opts.importAll);
                     state.importDefault = t.identifier(state.opts.importDefault);
+                    state.importedIdentifiers = new Map();
+                    state.namespaceForLocal = new Map();
                     // Rename declarations at module scope that might otherwise conflict
                     // with arguments we inject into the module factory.
                     // Note that it isn't necessary to rename importAll/importDefault
@@ -362,23 +481,70 @@ function importExportPlugin({ types: t }) {
                         body.unshift(e.node);
                     });
                     state.exportDefault.forEach((e) => {
-                        body.push(withLocation(exportTemplate({
-                            LOCAL: t.identifier(e.local),
-                            REMOTE: t.identifier('default'),
-                        }), e.loc));
+                        if (e.namespace) {
+                            body.push(withLocation(liveBindExportTemplate({
+                                REQUIRED: t.identifier(e.namespace),
+                                LOCAL: t.identifier(e.local),
+                                REMOTE: 'default',
+                            }), e.loc));
+                        }
+                        else {
+                            body.push(withLocation(exportTemplate({
+                                LOCAL: t.identifier(e.local),
+                                REMOTE: t.identifier('default'),
+                            }), e.loc));
+                        }
                     });
                     state.exportAll.forEach((e) => {
-                        body.push(...withLocation(exportAllTemplate({
+                        const template = state.opts.liveBindings
+                            ? liveBindExportAllTemplate
+                            : exportAllTemplate;
+                        body.push(...withLocation(template({
                             FILE: resolvePath(t.stringLiteral(e.file), state.opts.resolve),
                             REQUIRED: path.scope.generateUidIdentifier(e.file),
                             KEY: path.scope.generateUidIdentifier('key'),
                         }), e.loc));
                     });
                     state.exportNamed.forEach((e) => {
-                        body.push(withLocation(exportTemplate({
-                            LOCAL: t.identifier(e.local),
-                            REMOTE: t.identifier(e.remote),
-                        }), e.loc));
+                        if (e.namespace) {
+                            body.push(withLocation(liveBindExportTemplate({
+                                REQUIRED: t.identifier(e.namespace),
+                                LOCAL: t.identifier(e.local),
+                                REMOTE: e.remote,
+                            }), e.loc));
+                        }
+                        else {
+                            body.push(withLocation(exportTemplate({
+                                LOCAL: t.identifier(e.local),
+                                REMOTE: t.identifier(e.remote),
+                            }), e.loc));
+                        }
+                    });
+                    // inspired by https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-helper-module-transforms/src/rewrite-live-references.ts#L99
+                    path.traverse({
+                        // @ts-expect-error ReferencedIdentifier is not in the types
+                        ReferencedIdentifier: (path, state) => {
+                            const localName = path.node.name;
+                            const { namespace, remote } = state.namespaceForLocal.get(localName) ?? {};
+                            // not from a namespace
+                            if (!namespace || !remote)
+                                return;
+                            const localBinding = path.scope.getBinding(localName);
+                            const rootBinding = state.programScope.getBinding(localName);
+                            // redeclared in this scope
+                            if (rootBinding !== localBinding)
+                                return;
+                            if (path.type === 'JSXIdentifier') {
+                                path.replaceWith(t.jsxMemberExpression(t.jsxIdentifier(namespace), t.jsxIdentifier(remote)));
+                            }
+                            else {
+                                // Identifier
+                                path.replaceWith(t.memberExpression(t.identifier(namespace), t.identifier(remote)));
+                            }
+                        },
+                    }, {
+                        namespaceForLocal: state.namespaceForLocal,
+                        programScope: path.scope,
                     });
                     if (state.exportDefault.length || state.exportAll.length || state.exportNamed.length) {
                         body.unshift(esModuleExportTemplate());

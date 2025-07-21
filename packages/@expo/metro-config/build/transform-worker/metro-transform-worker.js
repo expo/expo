@@ -161,6 +161,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         inlineableCalls: [importDefault, importAll],
         importDefault,
         importAll,
+        // liveBindings: true,
     };
     if (collectLocations) {
         plugins.push(
