@@ -223,10 +223,7 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
       throwUnlessPermissionsGrantedCoroutines(isWrite = false) {
-        moduleCoroutineScope.async {
-          GetAssets(context, assetOptions)
-            .execute()
-        }.await()
+        GetAssets(context, assetOptions).execute()
       }
     }
 
