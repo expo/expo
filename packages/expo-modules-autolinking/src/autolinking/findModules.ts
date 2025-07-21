@@ -4,7 +4,7 @@ import { glob } from 'glob';
 import { createRequire } from 'module';
 import path from 'path';
 
-import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
+import { getProjectPackageJsonPathsAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
 import { getIsolatedModulesPath } from './utils';
 import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
@@ -252,8 +252,8 @@ async function filterToProjectDependenciesAsync(
   }
 
   // Visit project's package.
-  const projectPackageJsonPath = await getProjectPackageJsonPathAsync(options.projectRoot);
-  visitPackage(projectPackageJsonPath);
+  const projectPackageJsonPaths = await getProjectPackageJsonPathsAsync(options.projectRoot);
+  projectPackageJsonPaths.forEach((path) => visitPackage(path));
 
   return filteredResults;
 }
