@@ -148,18 +148,41 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   remove(): void;
 }
 
-// @docsMissing
+/**
+ * Represents a single audio sample containing waveform data from all audio channels.
+ *
+ * Audio samples are provided in real-time when audio sampling is enabled on an `AudioPlayer`.
+ * Each sample contains the raw PCM audio data for all channels (mono has 1 channel, stereo has 2).
+ * This data can be used for audio visualization, analysis, or processing.
+ */
 export type AudioSample = {
+  /** Array of audio channels, each containing PCM frame data. Stereo audio will have 2 channels (left/right). */
   channels: AudioSampleChannel[];
+  /** Timestamp of this sample relative to the audio track's timeline, in seconds. */
   timestamp: number;
 };
 
-// @docsMissing
-export type AudioSampleChannel = { frames: number[] };
+/**
+ * Represents audio data for a single channel (for example, left or right in stereo audio).
+ *
+ * Contains the raw PCM (Pulse Code Modulation) audio frames for this channel.
+ * Frame values are normalized between -1.0 and 1.0, where 0 represents silence.
+ */
+export type AudioSampleChannel = {
+  /** Array of PCM audio frame values, each between -1.0 and 1.0. */
+  frames: number[];
+};
 
-// @docsMissing
+/**
+ * Event types that an `AudioPlayer` can emit.
+ *
+ * These events allow you to listen for changes in playback state and receive real-time audio data.
+ * Use `player.addListener()` to subscribe to these events.
+ */
 export type AudioEvents = {
+  /** Fired when the player's status changes (play/pause/seek/load and so on.). */
   playbackStatusUpdate(status: AudioStatus): void;
+  /** Fired when audio sampling is enabled and new sample data is available. */
   audioSampleUpdate(data: AudioSample): void;
 };
 
@@ -247,7 +270,13 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   recordForDuration(seconds: number): void;
 }
 
-// @docsMissing
+/**
+ * Event types that an `AudioRecorder` can emit.
+ *
+ * These events are used internally by `expo-audio` hooks to provide real-time status updates.
+ * Use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()` instead of subscribing directly.
+ */
 export type RecordingEvents = {
+  /** Fired when the recorder's status changes (start/stop/pause/error, and so on). */
   recordingStatusUpdate: (status: RecordingStatus) => void;
 };
