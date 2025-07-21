@@ -228,8 +228,8 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
                   {
                     const properties = d.id.properties;
                     properties.forEach((p) => {
-                      // @ts-expect-error Property 'key' does not exist on type 'RestElement'
-                      const name = p.key.name;
+                      // @ts-expect-error Property 'value' does not exist on type 'RestElement'
+                      const name = p.value.name;
                       state.exportNamed.push({ local: name, remote: name, loc });
                     });
                   }

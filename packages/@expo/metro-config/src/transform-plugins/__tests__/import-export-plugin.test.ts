@@ -67,3 +67,32 @@ it('correctly transforms "export * as" combined with other ESM imports and expor
         |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dep #2 (button)"
   `);
 });
+
+it('exports destructured named object renamed member', () => {
+  const code = `
+    export const {foo: bar} = {foo: 'bar'};
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {value: true});
+    const {foo: bar} = {foo: 'bar'};
+    exports.bar = bar;
+  `;
+
+  compare([importExportPlugin], code, expected, opts);
+});
+
+it('exports destructured named object renamed and direct member', () => {
+  const code = `
+    export const {foo: bar, baz} = {foo: 'bar', baz: 'bar'};
+  `;
+
+  const expected = `
+    Object.defineProperty(exports, '__esModule', {value: true});
+    const {foo: bar,baz} = {foo: 'bar', baz: 'bar'};
+    exports.bar = bar;
+    exports.baz = baz;
+  `;
+
+  compare([importExportPlugin], code, expected, opts);
+});
