@@ -80,13 +80,13 @@ export function UpgradeWarning() {
 
   return (
     <>
-      <View bg="default" rounded="large" border="default" overflow="hidden">
+      <View bg="warning" rounded="large" border="warning" overflow="hidden">
         <Pressable onPress={dismissUpgradeWarning} style={styles.dismissButton}>
           <XIcon size={iconSize.regular} color={theme.icon.default} />
         </Pressable>
         <View padding="medium" style={styles.content}>
           <Row style={{ gap: spacing[1] }}>
-            <InfoIcon size={iconSize.regular} color={theme.icon.default} />
+            <InfoIcon size={iconSize.regular} color={theme.status.warning} />
             <Text type="InterBold" size="small">
               New Expo Go version coming soon!
             </Text>
