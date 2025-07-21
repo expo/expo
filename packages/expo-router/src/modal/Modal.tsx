@@ -66,7 +66,7 @@ export interface ModalProps extends ViewProps {
   detents?: ModalConfig['detents'];
   /**
    * See {@link ScreenProps["sheetCornerRadius"]}.
-   * 
+   *
    * The corner radius that the sheet will try to render with.
    * Works only when `presentation` is set to `formSheet`.
    */
