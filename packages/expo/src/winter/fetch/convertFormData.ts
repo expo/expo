@@ -39,15 +39,26 @@ export async function convertFormDataAsync(
   formData: FormData,
   boundary: string = createBoundary()
 ): Promise<{ body: Uint8Array; boundary: string }> {
-  // @ts-expect-error: React Native's FormData is not compatible with the web's FormData
-  if (typeof formData.getParts !== 'function') {
-    throw new Error('Unsupported FormData implementation');
+  if (typeof formData.entries !== 'function') {
+    // @ts-expect-error: React Native's FormData is not 100% compatible with ours
+    if (typeof formData.getParts == 'function') {
+      formData.entries = function () {
+        // @ts-expect-error
+        return formData.getParts().map((part) => {
+          if (part.string) return part.string;
+          if (part.file) return part.file;
+          if (part.blob) return part.blob;
+        });
+      };
+    } else {
+      throw new Error('Unsupported FormData implementation');
+    }
   }
   // @ts-expect-error: React Native's FormData is not 100% compatible with ours
-  const parts: [string, ExpoFormDataValue][] = formData.entries();
+  const entries: [string, ExpoFormDataValue][] = formData.entries();
 
   const results: (Uint8Array | string)[] = [];
-  for (const [name, entry] of parts) {
+  for (const [name, entry] of entries) {
     results.push(`--${boundary}\r\n`);
     for (const [headerKey, headerValue] of Object.entries(getFormDataPartHeaders(entry, name))) {
       if (headerValue) {
