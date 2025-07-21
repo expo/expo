@@ -1,7 +1,7 @@
 import { iconSize, XIcon, InfoIcon, spacing } from '@expo/styleguide-native';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Platform, Linking } from 'react-native';
 import Environment from 'src/utils/Environment';
 
 const SDK_VERSION_REGEXP = new RegExp(/\b(\d*)\.0\.0/);
@@ -64,7 +64,7 @@ export function UpgradeWarning() {
     });
   }, []);
 
-  if (shouldShow) {
+  if (!shouldShow) {
     return null;
   }
 
@@ -88,20 +88,53 @@ export function UpgradeWarning() {
             </Text>
             .
           </Text>
-          <Text size="small" type="InterRegular">
-            In order to ensure that you can upgrade at your own pace, we recommend{' '}
-            <Text size="small" type="InterSemiBold" color="link">
-              migrating to a development build
-            </Text>
-            .
-          </Text>
-          <Text size="small" type="InterRegular">
-            To continue using this version of Expo Go, you can{' '}
-            <Text size="small" type="InterSemiBold">
-              disable automatic app updates
-            </Text>{' '}
-            from the App Store settings before the new version is released.
-          </Text>
+          {Platform.OS === 'ios' ? (
+            <>
+              <Text size="small" type="InterRegular">
+                In order to ensure that you can upgrade at your own pace, we recommend{' '}
+                <Text
+                  size="small"
+                  type="InterSemiBold"
+                  color="link"
+                  onPress={() =>
+                    Linking.openURL(
+                      'https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build'
+                    )
+                  }>
+                  migrating to a development build
+                </Text>
+                .
+              </Text>
+              <Text size="small" type="InterRegular">
+                To continue using this version of Expo Go, you can{' '}
+                <Text size="small" type="InterSemiBold">
+                  disable automatic app updates
+                </Text>{' '}
+                from the App Store settings before the new version is released.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text size="small" type="InterRegular">
+                If you have automatic updates enabled for this app, we recommend{' '}
+                <Text size="small" type="InterSemiBold">
+                  disabling
+                </Text>{' '}
+                it to avoid disruption.
+              </Text>
+              <Text size="small" type="InterRegular">
+                If you ever need to open a project from an earlier SDK version, install the{' '}
+                <Text
+                  size="small"
+                  type="InterSemiBold"
+                  color="link"
+                  onPress={() => Linking.openURL('https://expo.dev/go')}>
+                  compatible version
+                </Text>{' '}
+                of Expo Go.
+              </Text>
+            </>
+          )}
         </View>
       </View>
       <Spacer.Vertical size="medium" />
