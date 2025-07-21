@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- [iOS] Replaced deprecated keyWindow usage. ([#38207](https://github.com/expo/expo/pull/38207) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ## 7.1.5 - 2025-07-01
 
 ### 💡 Others
