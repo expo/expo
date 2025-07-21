@@ -158,6 +158,11 @@ function DetentForm() {
   const [open, setIsOpen] = useState(false);
   const [currentDetent, setCurrentDetent] = useState(0)
 
+  const handleClose = () => {
+    setIsOpen(false);
+    setCurrentDetent(0);
+  }
+
   return (
     <>
       <Button title="Open Detent Change" onPress={() => setIsOpen((open) => !open)} />
@@ -165,7 +170,7 @@ function DetentForm() {
         visible={open}
         presentationStyle="formSheet"
         detents={[0.3, 0.5, 1]}
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
         onDetentChange={(data) => setCurrentDetent(data.index)}
         style={{
           padding: 16,
