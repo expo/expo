@@ -954,6 +954,28 @@ export async function test({ describe, expect, it, ...t }) {
       const body = await response.json();
       expect(body.files.data[0]).toEqual('abcde');
     });
+
+    // You can also use this docker image: twostoryrobot/simple-file-upload to test e2e blob upload.
+    it('Supports sending a named file blob using blob with formdata', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+
+      const formData = new FormData();
+
+      formData.append('data', src, 'FileName.txt');
+
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: formData,
+      });
+      const body = await response.json();
+      // TODO: This is the expected behavior, but following [spec](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#create-an-entry)
+      // would require us to create a new File object when setting filename – we could make it work only if File is available in (global.expo)
+      // expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('FileName.txt');
+
+      // this is invalid
+      expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('file.txt');
+    });
   });
 
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
