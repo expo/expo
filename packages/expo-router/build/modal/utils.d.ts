@@ -4,5 +4,5 @@ import type { ModalConfig } from './types';
 export declare function areDetentsValid(detents: ModalProps['detents']): boolean;
 export declare function isInitialDetentIndexValid(detents: ModalProps['detents'], initialDetentIndex: ModalProps['initialDetentIndex']): boolean;
 export declare function getStackAnimationType(config: ModalConfig): StackAnimationTypes | undefined;
-export declare function getStackPresentationType(config: ModalConfig): "transparentModal" | "fullScreenModal" | "formSheet" | "pageSheet";
+export declare function getStackPresentationType(config: ModalConfig): "transparentModal" | "fullScreenModal" | "pageSheet" | "formSheet";
 //# sourceMappingURL=utils.d.ts.map
