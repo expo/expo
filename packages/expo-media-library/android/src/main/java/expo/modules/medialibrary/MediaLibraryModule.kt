@@ -49,6 +49,7 @@ import expo.modules.medialibrary.assets.GetAssetInfo
 import expo.modules.medialibrary.assets.GetAssets
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
