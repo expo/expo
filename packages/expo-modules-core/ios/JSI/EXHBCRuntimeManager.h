@@ -21,6 +21,18 @@
 + (BOOL)injectHermesBytecode:(nonnull NSData *)bytecode runtime:(nonnull EXRuntime *)runtime;
 
 /**
+ * Injects JavaScript code into the given JSI runtime.
+ * This is used for both HBC files and debug scripts.
+ * 
+ * This is an internal method - use injectHermesBytecode:runtime: instead.
+ *
+ * @param code The JavaScript/HBC data to inject
+ * @param runtime Pointer to the JSI runtime (void* to avoid C++ in header)
+ * @return YES if injection was successful, NO otherwise
+ */
++ (BOOL)injectJavaScriptCode:(nonnull NSData *)code intoRuntime:(void *)runtime;
+
+/**
  * Checks if the current runtime supports Hermes bytecode execution.
  * This returns YES if using Hermes engine, NO if using JSC.
  *

@@ -1,0 +1,3 @@
+// Test HBC content - this should be replaced with actual bytecode
+globalThis.EXPO_TEST_HBC_LOADED = true;
+console.log('✅ Expo HBC test file loaded successfully!');

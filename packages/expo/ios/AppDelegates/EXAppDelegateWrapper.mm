@@ -4,6 +4,7 @@
 
 #import <Expo/RCTAppDelegateUmbrella.h>
 #import <Expo/Swift.h>
+#import "EXHBCRuntimeManager+Singleton.h"
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 #import <ReactCommon/RCTHost.h> // Allows non-umbrella because the header is not inside a clang module
@@ -82,6 +83,8 @@
 
 - (void)hostDidStart:(RCTHost *)host
 {
+  host.runtimeDelegate = [EXHBCRuntimeManagerSingleton createRuntimeDelegateForHost:host];
+
 }
 
 - (void)host:(RCTHost *)host

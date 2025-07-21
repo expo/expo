@@ -15,41 +15,37 @@ namespace jsi = facebook::jsi;
 
 + (BOOL)injectHermesBytecode:(nonnull NSData *)bytecode runtime:(nonnull EXRuntime *)runtime
 {
-#ifdef USE_HERMES
+  jsi::Runtime *jsiRuntime = [runtime get];
+  return [self injectJavaScriptCode:bytecode intoRuntime:(void *)jsiRuntime];
+}
+
++ (BOOL)injectJavaScriptCode:(nonnull NSData *)code intoRuntime:(void *)runtime
+{
   @try {
-    jsi::Runtime *jsiRuntime = [runtime get];
-    
-    if (!jsiRuntime) {
+    if (!runtime) {
       NSLog(@"EXHBCRuntimeManager: JSI Runtime is null");
       return NO;
     }
     
-    // Check if we're actually running on Hermes
-    if (![self isHermesBytecodeSupported:runtime]) {
-      NSLog(@"EXHBCRuntimeManager: Hermes bytecode not supported on this runtime");
-      return NO;
-    }
+    // Cast back to the JSI runtime type
+    jsi::Runtime *jsiRuntime = static_cast<jsi::Runtime *>(runtime);
     
     // Convert NSData to StringBuffer for JavaScript evaluation
-    // Use the same approach as your builtins example
+    // Use the same approach as the builtins example
     auto buffer = std::make_shared<facebook::jsi::StringBuffer>(
-      std::string((const char*)bytecode.bytes, bytecode.length)
+      std::string((const char*)code.bytes, code.length)
     );
     
     // Execute the bytecode using standard JSI runtime
     // This works for both Hermes bytecode and regular JavaScript
-    jsiRuntime->evaluateJavaScript(buffer, "bundle.hbc");
-    NSLog(@"EXHBCRuntimeManager: Successfully executed Hermes bytecode (%lu bytes)", (unsigned long)bytecode.length);
+    jsiRuntime->evaluateJavaScript(buffer, "injected.js");
+    NSLog(@"EXHBCRuntimeManager: Successfully executed JavaScript code (%lu bytes)", (unsigned long)code.length);
     return YES;
   }
   @catch (NSException *exception) {
-    NSLog(@"EXHBCRuntimeManager: Exception during HBC injection: %@", exception.reason);
+    NSLog(@"EXHBCRuntimeManager: Exception during code injection: %@", exception.reason);
     return NO;
   }
-#else
-  NSLog(@"EXHBCRuntimeManager: Hermes not enabled, cannot inject HBC");
-  return NO;
-#endif
 }
 
 + (BOOL)isHermesBytecodeSupported:(nonnull EXRuntime *)runtime

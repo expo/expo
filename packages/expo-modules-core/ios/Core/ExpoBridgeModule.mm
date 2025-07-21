@@ -3,6 +3,7 @@
 #import <ReactCommon/RCTTurboModule.h>
 #import <ExpoModulesCore/ExpoBridgeModule.h>
 #import <ExpoModulesCore/EXHBCRuntimeManager.h>
+#import "EXHBCRuntimeManager+Singleton.h"
 #import <ExpoModulesCore/Swift.h>
 
 // The runtime executor is included as of React Native 0.74 in bridgeless mode.
@@ -10,9 +11,7 @@
 #import <ReactCommon/RCTRuntimeExecutor.h>
 #endif // React Native >=0.74
 
-@implementation ExpoBridgeModule {
-  EXHBCRuntimeDelegate *_hbcDelegate;
-}
+@implementation ExpoBridgeModule
 
 @synthesize bridge = _bridge;
 
@@ -22,7 +21,8 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 {
   if (self = [super init]) {
     _appContext = [[EXAppContext alloc] init];
-    _hbcDelegate = [EXHBCRuntimeDelegate createWithAppContext:_appContext];
+    NSLog(@"🔥 ExpoBridgeModule: Registering app context %p in init", _appContext);
+    [[EXHBCRuntimeManagerSingleton sharedInstance] registerAppContext:_appContext];
   }
   return self;
 }
@@ -31,7 +31,8 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 {
   if (self = [super init]) {
     _appContext = appContext;
-    _hbcDelegate = [EXHBCRuntimeDelegate createWithAppContext:_appContext];
+    NSLog(@"🔥 ExpoBridgeModule: Registering app context %p in initWithAppContext", _appContext);
+    [[EXHBCRuntimeManagerSingleton sharedInstance] registerAppContext:_appContext];
   }
   return self;
 }
@@ -44,6 +45,7 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 
 - (void)setBridge:(RCTBridge *)bridge
 {
+  NSLog(@"🔥 ExpoBridgeModule: setBridge called with bridge %p", bridge);
   // As of React Native 0.74 with the New Architecture enabled,
   // it's actually an instance of `RCTBridgeProxy` that provides backwards compatibility.
   // Also, hold on with initializing the runtime until `setRuntimeExecutor` is called.
@@ -51,9 +53,13 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   _appContext.reactBridge = bridge;
 
 #if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
+  NSLog(@"🔥 ExpoBridgeModule: Setting up runtime for legacy architecture");
   _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
-  // Inject HBC files after runtime is available
-  [_hbcDelegate didInitializeRuntime];
+  // Trigger HBC injection for legacy architecture with a delay to ensure runtime is ready
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSLog(@"🚀 ExpoBridgeModule: Triggering delayed HBC injection for legacy architecture");
+    [EXHBCRuntimeManagerSingleton triggerHBCInjectionForLegacyArchitecture];
+  });
 #endif // React Native <0.74
 }
 
@@ -61,8 +67,10 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 - (void)setRuntimeExecutor:(RCTRuntimeExecutor *)runtimeExecutor
 {
   _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge withExecutor:runtimeExecutor];
-  // Inject HBC files after runtime is available
-  [_hbcDelegate didInitializeRuntime];
+  // Trigger HBC injection for legacy architecture or bridgeless without proper RCTHost setup with a delay
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [EXHBCRuntimeManagerSingleton triggerHBCInjectionForLegacyArchitecture];
+  });
 }
 #endif // React Native >=0.74
 
@@ -90,8 +98,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(installModules)
     // TODO: Keep this condition until we remove the other way of installing modules.
     // See `setBridge` method above.
     _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
-    // Inject HBC files after runtime is available
-    [_hbcDelegate didInitializeRuntime];
+    // Trigger HBC injection for fallback runtime setup with a delay
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [EXHBCRuntimeManagerSingleton triggerHBCInjectionForLegacyArchitecture];
+    });
   }
   return nil;
 }
