@@ -201,7 +201,7 @@ export function getMetroDirectBundleOptions(
     reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
     dom: domRoot,
     useMd5Filename: useMd5Filename || undefined,
-    liveBindings,
+    liveBindings: !liveBindings ? String(liveBindings) : undefined,
   };
 
   // Iterate and delete undefined values

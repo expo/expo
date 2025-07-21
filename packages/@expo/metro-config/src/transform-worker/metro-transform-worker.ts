@@ -248,7 +248,7 @@ export function applyImportSupport<TFile extends t.File>(
         importExportPlugin,
         {
           ...babelPluginOpts,
-          liveBindings: options.customTransformOptions?.liveBindings ?? true,
+          liveBindings: options.customTransformOptions?.liveBindings !== 'false',
         },
       ]
     );

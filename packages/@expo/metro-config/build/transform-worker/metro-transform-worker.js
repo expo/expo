@@ -178,7 +178,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
             import_export_plugin_1.importExportPlugin,
             {
                 ...babelPluginOpts,
-                liveBindings: options.customTransformOptions?.liveBindings ?? true,
+                liveBindings: options.customTransformOptions?.liveBindings !== 'false',
             },
         ]);
     }
