@@ -7,9 +7,14 @@ import { AndroidMessage } from './AndroidMessage';
 import { IosMessage } from './IosMessage';
 import { shouldShowUpgradeWarningAsync } from './utils';
 
-export function UpgradeWarning() {
+type Props = {
+  collapsible?: boolean;
+};
+
+export function UpgradeWarning({ collapsible = false }: Props) {
   const [shouldShow, setShouldShow] = useState(false);
   const [betaSdkVersion, setBetaSdkVersion] = useState<string | undefined>(undefined);
+  const [isCollapsed, setIsCollapsed] = useState(collapsible);
   const theme = useExpoTheme();
   const dismissUpgradeWarning = () => {
     setShouldShow(false);
@@ -46,7 +51,15 @@ export function UpgradeWarning() {
             </Text>
             .
           </Text>
-          {Platform.OS === 'ios' ? <IosMessage /> : <AndroidMessage />}
+          {!isCollapsed && (Platform.OS === 'ios' ? <IosMessage /> : <AndroidMessage />)}
+
+          {collapsible && (
+            <Pressable onPress={() => setIsCollapsed(!isCollapsed)}>
+              <Text size="small" type="InterBold" style={{ textDecorationLine: 'underline' }}>
+                {isCollapsed ? 'Show more' : 'Show less'}
+              </Text>
+            </Pressable>
+          )}
         </View>
       </View>
       <Spacer.Vertical size="medium" />

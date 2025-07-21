@@ -12,6 +12,7 @@ import * as DevMenu from './DevMenuModule';
 import { DevMenuOnboarding } from './DevMenuOnboarding';
 import { DevMenuServerInfo } from './DevMenuServerInfo';
 import { DevMenuTaskInfo } from './DevMenuTaskInfo';
+import { UpgradeWarning } from 'src/screens/HomeScreen/UpgradeWarning';
 
 type Props = {
   task: { manifestUrl: string; manifestString: string };
@@ -159,7 +160,11 @@ export function DevMenuView({ uuid, task }: Props) {
           <View style={{ paddingBottom: insets.bottom }}>
             <DevMenuServerInfo task={task} />
             <Divider />
-            <View padding="medium">
+            <View padding="medium" style={{ paddingBottom: 0 }}>
+              <UpgradeWarning collapsible />
+            </View>
+            <Divider />
+            <View padding="medium" style={{ paddingTop: 0 }}>
               <View bg="default" rounded="large">
                 <DevMenuItem
                   buttonKey="reload"
