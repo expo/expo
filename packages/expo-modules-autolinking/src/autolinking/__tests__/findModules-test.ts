@@ -7,6 +7,10 @@ import { findModulesAsync } from '../findModules';
 const projectRoot = '/fake/project';
 const realpath = jest.spyOn(fs.promises, 'realpath');
 
+const expectAnyModule = (version = expect.any(String)) => {
+  return expect.objectContaining({ version });
+};
+
 function mockedRoot(
   name?: string,
   options?: {
@@ -73,7 +77,7 @@ describe(findModulesAsync, () => {
     });
 
     expect(result).toEqual({
-      'react-native-third-party': expect.objectContaining({}),
+      'react-native-third-party': expectAnyModule(),
     });
   });
 
@@ -101,8 +105,8 @@ describe(findModulesAsync, () => {
     });
 
     expect(result).toEqual({
-      'react-native-third-party': expect.objectContaining({}),
-      '@expo/expo-test': expect.objectContaining({}),
+      'react-native-third-party': expectAnyModule(),
+      '@expo/expo-test': expectAnyModule(),
     });
   });
 
@@ -146,7 +150,7 @@ describe(findModulesAsync, () => {
       expect(result).toEqual({});
     } else {
       expect(result).toEqual({
-        pkg: expect.objectContaining({}),
+        pkg: expectAnyModule(),
       });
     }
   });
@@ -198,12 +202,12 @@ describe(findModulesAsync, () => {
     // TODO(@kitten): Fix the check here
     if (isNegativeTest) {
       expect(result).toEqual({
-        pkg: expect.objectContaining({}),
+        pkg: expectAnyModule(),
       });
     } else {
       expect(result).toEqual({
-        pkg: expect.objectContaining({}),
-        'dep-pkg': expect.objectContaining({}),
+        pkg: expectAnyModule(),
+        'dep-pkg': expectAnyModule(),
       });
     }
   });
@@ -249,9 +253,7 @@ describe(findModulesAsync, () => {
     });
 
     expect(result).toEqual({
-      pkg: expect.objectContaining({
-        version: '1.0.0-local',
-      }),
+      pkg: expectAnyModule('1.0.0-local'),
     });
   });
 
@@ -321,12 +323,8 @@ describe(findModulesAsync, () => {
     });
 
     expect(result).toEqual({
-      'react-native-third-party': expect.objectContaining({
-        version: 'VALID',
-      }),
-      '@expo/test': expect.objectContaining({
-        version: 'VALID',
-      }),
+      'react-native-third-party': expectAnyModule('VALID'),
+      '@expo/test': expectAnyModule('VALID'),
     });
 
     expect(realpath).toHaveBeenCalledTimes(4);
@@ -399,12 +397,8 @@ describe(findModulesAsync, () => {
     });
 
     expect(result).toEqual({
-      'react-native-third-party': expect.objectContaining({
-        version: 'VALID',
-      }),
-      '@expo/test': expect.objectContaining({
-        version: 'VALID',
-      }),
+      'react-native-third-party': expectAnyModule('VALID'),
+      '@expo/test': expectAnyModule('VALID'),
     });
 
     expect(realpath).toHaveBeenCalledTimes(5);
@@ -430,7 +424,69 @@ describe(findModulesAsync, () => {
     });
 
     expect(result).toEqual({
-      '@expo/expo-test': expect.objectContaining({}),
+      '@expo/expo-test': expectAnyModule(),
+    });
+  });
+
+  /**
+   * TODO(@kitten): Documentation implies this should work
+   * /app
+   *   ├── /app/local-expo-module
+   */
+  it.skip('should link local non-node module (FAILURE)', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot(),
+        'local-expo-module': mockedModule('react-native-third-party'),
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      searchPaths: [path.join(projectRoot, 'node_modules')],
+      platform: 'ios',
+      projectRoot,
+    });
+
+    expect(result).toEqual({
+      'local-expo-module': expectAnyModule(),
+    });
+  });
+
+  /**
+   * TODO(@kitten): Fix this behaviour
+   * /app
+   *   ╚══ /node_modules/expo-module-1
+   *       └── /app/node_modules/expo-module-1/node_modules/expo-module-2
+   */
+  it('should link transitive non-hoisted module (FAILURE)', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot(),
+        node_modules: {
+          'expo-module-1': {
+            ...mockedModule('expo-module-1', {
+              pkgDependencies: { 'expo-module-2': '*' },
+            }),
+            node_modules: {
+              'expo-module-2': mockedModule('expo-module-2'),
+            },
+          },
+        },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      searchPaths: [path.join(projectRoot, 'node_modules')],
+      platform: 'ios',
+      projectRoot,
+    });
+
+    expect(result).toEqual({
+      'expo-module-1': expectAnyModule(),
+      // TODO(@kitten): This is expected to succeed, but doesn't
+      //'expo-module-2': expectAnyModule(),
     });
   });
 });
