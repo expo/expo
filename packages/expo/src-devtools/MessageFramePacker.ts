@@ -30,7 +30,7 @@
  *      - The actual payload data, which can vary in type and length depending on the PayloadType.
  */
 
-import { blobToArrayBufferAsync } from '../utils/blobUtils';
+import { blobToArrayBufferAsync } from './blobUtils';
 
 type MessageKeyTypeBase = string | object;
 type PayloadType = Uint8Array | string | number | null | undefined | object | ArrayBuffer | Blob;

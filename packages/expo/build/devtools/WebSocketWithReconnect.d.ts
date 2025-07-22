@@ -1,4 +1,15 @@
 import type { DevToolsPluginClientOptions } from './devtools.types';
+export interface WebSocketCloseEvent extends Event {
+    code?: number;
+    reason?: string;
+    message?: string;
+}
+export interface WebSocketErrorEvent extends Event {
+    message?: string;
+}
+export interface WebSocketMessageEvent extends Event {
+    data: string | ArrayBufferLike | Blob | ArrayBufferView;
+}
 export interface Options {
     /**
      * Reconnect interval in milliseconds.

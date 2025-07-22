@@ -1,5 +1,19 @@
 import type { DevToolsPluginClientOptions } from './devtools.types';
 
+export interface WebSocketCloseEvent extends Event {
+  code?: number;
+  reason?: string;
+  // react-native WebSocket close event has additional message property
+  message?: string;
+}
+export interface WebSocketErrorEvent extends Event {
+  // react-native WebSocket error event has additional message property
+  message?: string;
+}
+export interface WebSocketMessageEvent extends Event {
+  data: string | ArrayBufferLike | Blob | ArrayBufferView;
+}
+
 export interface Options {
   /**
    * Reconnect interval in milliseconds.
@@ -287,6 +301,7 @@ export class WebSocketWithReconnect implements WebSocket {
   }
 
   public ping(): void {
+    // @ts-expect-error react-native WebSocket has the ping method
     return this.ws?.ping();
   }
 
