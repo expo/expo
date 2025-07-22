@@ -14,7 +14,6 @@ on:
       - packages/expo-dev-launcher/**
       - templates/expo-template-bare-minimum/**
   pull_request:
-    branches: [main]
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-dev-client.yml
       - packages/expo-asset/**
