@@ -8,8 +8,7 @@
  * Fork of the upstream transformer, but with modifications made for web production hashing.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
-import template from '@babel/template';
-import * as t from '@babel/types';
+import { type ParseResult, template, types as t } from '@babel/core';
 import { generateAssetCodeFileAst } from 'metro/src/Bundler/util';
 import { BabelTransformerArgs } from 'metro-babel-transformer';
 import path from 'node:path';
@@ -44,7 +43,7 @@ export async function transform(
   assetRegistryPath: string,
   assetDataPlugins: readonly string[]
 ): Promise<{
-  ast: import('@babel/core').ParseResult;
+  ast: ParseResult;
   reactClientReference?: string;
 }> {
   options ??= options || {

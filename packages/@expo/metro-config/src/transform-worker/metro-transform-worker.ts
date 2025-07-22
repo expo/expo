@@ -8,13 +8,9 @@
  * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
-import { transformFromAstSync } from '@babel/core';
-import type { ParseResult, PluginItem } from '@babel/core';
+import { transformFromAstSync, parse, types as t, template } from '@babel/core';
+import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import * as babylon from '@babel/parser';
-import template from '@babel/template';
-import type { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
 import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
 import {
@@ -183,7 +179,7 @@ function renameTopLevelModuleVariables() {
   };
 }
 
-function applyUseStrictDirective(ast: t.File | babylon.ParseResult<t.File>) {
+function applyUseStrictDirective(ast: t.File | ParseResult) {
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
   const { directives } = ast.program;
@@ -298,10 +294,7 @@ export function applyImportSupport<TFile extends t.File>(
   return { ast };
 }
 
-function performConstantFolding(
-  ast: t.File | babylon.ParseResult<t.File>,
-  { filename }: { filename: string }
-) {
+function performConstantFolding(ast: t.File | ParseResult, { filename }: { filename: string }) {
   // NOTE(kitten): Any Babel helpers that have been added (`path.hub.addHelper(...)`) will usually not have any
   // references, and hence the `constantFoldingPlugin` below will remove them.
   // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
@@ -319,7 +312,7 @@ function performConstantFolding(
   // Run the constant folding plugin in its own pass, avoiding race conditions
   // with other plugins that have exit() visitors on Program (e.g. the ESM
   // transform).
-  ast = nullthrows<babylon.ParseResult<t.File>>(
+  ast = nullthrows<ParseResult>(
     // @ts-expect-error
     transformFromAstSync(ast, '', {
       ast: true,
@@ -365,8 +358,8 @@ async function transformJS(
 
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
-  let ast: t.File | babylon.ParseResult<t.File> =
-    file.ast ?? babylon.parse(file.code, { sourceType: 'unambiguous' });
+  let ast: t.File | ParseResult =
+    file.ast ?? nullthrows(parse(file.code, { sourceType: 'unambiguous' }));
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
   const { importDefault, importAll } = generateImportNames(ast);
@@ -844,7 +837,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
 };
 
 export function collectDependenciesForShaking(
-  ast: babylon.ParseResult<t.File>,
+  ast: ParseResult,
   options: CollectDependenciesOptions
 ) {
   const collectDependenciesOptions = {
