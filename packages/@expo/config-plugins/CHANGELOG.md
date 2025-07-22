@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support building activities with aliases.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
