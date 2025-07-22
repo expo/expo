@@ -71,6 +71,7 @@ useExpoModules([
         'expo-network-addons',
         'expo-splash-screen',
         '@expo/ui',
-        'expo-mesh-gradient'
+        'expo-mesh-gradient',
+        '@expo/app-integrity'
     ]
 ])
