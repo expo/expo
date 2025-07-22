@@ -62,13 +62,13 @@ fun DevMenuContent(
       MenuContainer {
         MenuButton(
           "Reload",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_refreshicon),
+          leftIcon = painterResource(R.drawable.refresh_icon),
           onClick = { onAction(DevMenuAction.Reload) }
         )
         Divider()
         MenuButton(
           "Go home",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_homefilledinactiveicon),
+          leftIcon = painterResource(R.drawable.home_icon),
           onClick = { onAction(DevMenuAction.GoHome) }
         )
       }
@@ -78,25 +78,25 @@ fun DevMenuContent(
       MenuContainer {
         MenuButton(
           "Toggle performance monitor",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_performanceicon),
+          leftIcon = painterResource(R.drawable.performance_icon),
           onClick = { onAction(DevMenuAction.TogglePerformanceMonitor) }
         )
         Divider()
         MenuButton(
           "Toggle element inspector",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_inspectelementicon),
+          leftIcon = painterResource(R.drawable.inspect_element_icon),
           onClick = { onAction(DevMenuAction.ToggleElementInspector) }
         )
         Divider()
         MenuButton(
           "Open JS debugger",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_debugicon),
+          leftIcon = painterResource(R.drawable.debug_icon),
           onClick = { onAction(DevMenuAction.OpenJSDebugger) }
         )
         Divider()
         MenuSwitch(
           "Fast Refresh",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_runicon),
+          icon = painterResource(R.drawable.run_icon),
           toggled = devToolsSettings.isHotLoadingEnabled,
           onToggled = { newValue -> onAction(DevMenuAction.ToggleFastRefresh(newValue)) }
         )
@@ -115,7 +115,7 @@ fun DevMenuContent(
         Divider()
         MenuButton(
           "Tap to Copy All",
-          icon = null,
+          leftIcon = null,
           labelTextColor = Theme.colors.text.link,
           onClick = {
             copyToClipboard(
@@ -132,7 +132,7 @@ fun DevMenuContent(
       MenuContainer {
         MenuButton(
           "Open React Native dev menu",
-          icon = null,
+          leftIcon = null,
           onClick = { onAction(DevMenuAction.OpenReactNativeDevMenu) }
         )
       }
