@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
