@@ -14,6 +14,9 @@ exports.PortalContext = (0, react_1.createContext)({
     updateHost: () => {
         throw new Error('PortalContext not initialized. This is likely a bug in Expo Router.');
     },
+    // This will be used as a baseline for calculating the content offset.
+    // Modal can have at most the same height as the host screen.
+    hostScreenHeight: 0,
 });
 const PortalContextProvider = (props) => {
     const [hostConfigs, setHostConfigs] = (0, react_1.useState)(() => new Map());
@@ -28,6 +31,7 @@ const PortalContextProvider = (props) => {
                 hostId,
                 size: { width: 0, height: 0 },
                 contentSize: { width: 0, height: 0 },
+                contentOffset: 0,
                 shouldUseContentHeight: false,
                 isRegistered: false,
             };
@@ -46,13 +50,14 @@ const PortalContextProvider = (props) => {
             getHost,
             updateHost,
             removeHost,
+            hostScreenHeight: props.hostScreenHeight,
         }}>
       {props.children}
     </exports.PortalContext.Provider>);
 };
 exports.PortalContextProvider = PortalContextProvider;
 const ModalPortalHost = (props) => {
-    const { removeHost, updateHost, getHost } = (0, react_1.use)(exports.PortalContext);
+    const { removeHost, updateHost, getHost, hostScreenHeight } = (0, react_1.use)(exports.PortalContext);
     const prevHostId = (0, react_1.useRef)(undefined);
     const prevShouldUseContentHeight = (0, react_1.useRef)(undefined);
     (0, react_1.useEffect)(() => {
@@ -74,13 +79,32 @@ const ModalPortalHost = (props) => {
         }
     }, [props.useContentHeight, updateHost]);
     const hostConfig = getHost(props.hostId);
+    const selectedHeight = props.useContentHeight
+        ? (hostConfig?.contentSize?.height ?? 0)
+        : props.height;
+    (0, react_1.useEffect)(() => {
+        if (process.env.EXPO_OS === 'android') {
+            const contentOffset = hostScreenHeight - selectedHeight;
+            console.log('contentOffset', contentOffset);
+            updateHost(props.hostId, {
+                contentOffset,
+            });
+        }
+    }, [hostScreenHeight, selectedHeight]);
     const style = react_native_1.StyleSheet.flatten([
         props.style,
-        props.useContentHeight ? { height: hostConfig?.contentSize?.height } : {},
+        {
+            height: selectedHeight + (hostConfig?.contentOffset ?? 0),
+            marginTop: -(hostConfig?.contentOffset ?? 0),
+            backgroundColor: 'red',
+        },
     ]);
     return (<native_1.NativeModalPortalHost style={style} hostId={props.hostId} onLayout={(e) => {
             updateHost(props.hostId, {
-                size: e.nativeEvent.layout,
+                size: {
+                    width: e.nativeEvent.layout.width,
+                    height: props.height,
+                },
             });
             props.onLayout?.(e);
         }} onRegistered={({ nativeEvent }) => {
@@ -97,6 +121,7 @@ const ModalPortalHost = (props) => {
 exports.ModalPortalHost = ModalPortalHost;
 exports.PortalContentHeightContext = (0, react_1.createContext)({
     setHeight: () => { },
+    contentOffset: 0,
 });
 const ModalPortalContent = (props) => {
     const { getHost, updateHost } = (0, react_1.use)(exports.PortalContext);
@@ -124,7 +149,7 @@ const ModalPortalContent = (props) => {
             width: hostSize.width || undefined,
             height: hostConfig.shouldUseContentHeight ? undefined : hostSize.height,
         }}>
-        <exports.PortalContentHeightContext value={{ setHeight: setContentHeight }}>
+        <exports.PortalContentHeightContext value={{ setHeight: setContentHeight, contentOffset: hostConfig.contentOffset }}>
           {props.children}
         </exports.PortalContentHeightContext>
       </native_1.NativeModalPortalContent>

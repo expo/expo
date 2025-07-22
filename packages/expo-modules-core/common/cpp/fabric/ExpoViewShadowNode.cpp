@@ -25,7 +25,8 @@ ExpoViewShadowNode::ExpoViewShadowNode(
 
 void ExpoViewShadowNode::initialize() noexcept {
   auto &viewProps = static_cast<const ExpoViewProps &>(*props_);
-
+  // TODO: Set RootKind based on props here
+  traits_.set(facebook::react::ShadowNodeTraits::Trait::RootNodeKind);
   if (viewProps.collapsableChildren) {
     traits_.set(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
   } else {

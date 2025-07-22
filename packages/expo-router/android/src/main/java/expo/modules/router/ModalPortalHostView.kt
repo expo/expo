@@ -4,7 +4,6 @@ import android.content.Context
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import java.lang.ref.WeakReference
-import com.facebook.react.uimanager.PixelUtil
 import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ModalPortalHostView(context: Context, appContext: AppContext) :

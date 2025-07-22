@@ -2,33 +2,26 @@ package expo.modules.router
 
 import android.content.Context
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.views.ExpoView
+import com.facebook.react.views.view.ReactViewGroup
 import java.lang.ref.WeakReference
 
-class ModalPortalContentWrapperView(context: Context, appContext: AppContext) :
-  ExpoView(context, appContext) {
+class ModalPortalContentWrapperView(context: Context) :
+  ReactViewGroup(context) {
   private var host: WeakReference<ModalPortalHostView?> = WeakReference(null)
   private var contentView: WeakReference<ModalPortalContentView?> = WeakReference(null)
 
-  override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
+  fun setContentView(child: ModalPortalContentView){
     if (contentView.get() != null) {
       Log.w(
         "ExpoRouter",
         "Warning: Multiple ModalPortalContentView components found. Only the first one will be used."
       )
     }
-    if (child is ModalPortalContentView) {
-      host.get()?.setContentView(child)
-      contentView = WeakReference(child)
-    } else {
-      Log.w("ExpoRouter", "Mounting: Child component view must be of type ModalPortalContentView")
-    }
+    host.get()?.setContentView(child)
+    contentView = WeakReference(child)
   }
 
-  override fun removeViewAt(index: Int) {
+  fun unsetContentView() {
     val contentView = this.contentView.get()
     if (contentView == null) {
       Log.w(

@@ -128,11 +128,11 @@ function FormsheetDetentsDemo() {
       <Button title="Formsheet Modal (Detents)" onPress={() => setIsOpen(true)} />
       <Modal
         visible={isOpen}
-        detents={[0.25, 0.5, 0.75, 1]}
+        detents={[0.5, 0.75, 1]}
         onClose={() => setIsOpen(false)}
         presentationStyle="formSheet">
         <View style={{ padding: 20 }}>
-          <Text>This is a Formsheet Modal with detents 0.25, 0.5, 0.75, 1</Text>
+          <Text>This is a Formsheet Modal with detents 0.5, 0.75, 1</Text>
           <TextInput
             placeholder="Type something..."
             style={{

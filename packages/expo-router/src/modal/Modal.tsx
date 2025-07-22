@@ -2,7 +2,7 @@
 
 import { nanoid } from 'nanoid/non-secure';
 import { use, useEffect, useState } from 'react';
-import { View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
@@ -174,11 +174,24 @@ export function Modal(props: ModalProps) {
 }
 
 function ModalContent(props: ViewProps) {
-  const { children, ...viewProps } = props;
-  const { setHeight } = use(PortalContentHeightContext);
+  const { children, style, ...viewProps } = props;
+  const { setHeight, contentOffset } = use(PortalContentHeightContext);
+
+  // Adding marginTop here to account for the content offset.
+  // The content offset is the space above the modal.
+  // We are using it, to simulate correct positioning of the modal content for React Native.
+  // If this was not done, touch events would not be correctly handled on Android.
+  const computedStyle = StyleSheet.flatten([
+    style,
+    { marginTop: contentOffset, backgroundColor: 'green' },
+  ]);
+
+  console.log('ModalContentOffset', contentOffset);
+
   return (
     <View
       {...viewProps}
+      style={[computedStyle]}
       onLayout={(e) => {
         const { height } = e.nativeEvent.layout;
         if (height) {

@@ -19,6 +19,10 @@ interface PortalHostConfig {
   hostId: string;
   size: { width: number; height: number };
   contentSize?: { width: number; height: number };
+  // The content offset is the space above the modal.
+  // We are using it, to simulate correct positioning of the modal content for React Native.
+  // If this was not done, touch events would not be correctly handled on Android.
+  contentOffset: number;
   shouldUseContentHeight?: boolean;
   isRegistered?: boolean;
 }
@@ -26,6 +30,7 @@ interface PortalContextType {
   getHost: (hostId: string) => PortalHostConfig | undefined;
   updateHost: (hostId: string, config: Partial<Omit<PortalHostConfig, 'hostId'>>) => void;
   removeHost: (hostId: string) => void;
+  hostScreenHeight: number;
 }
 
 export const PortalContext = createContext<PortalContextType>({
@@ -38,9 +43,12 @@ export const PortalContext = createContext<PortalContextType>({
   updateHost: () => {
     throw new Error('PortalContext not initialized. This is likely a bug in Expo Router.');
   },
+  // This will be used as a baseline for calculating the content offset.
+  // Modal can have at most the same height as the host screen.
+  hostScreenHeight: 0,
 });
 
-export const PortalContextProvider = (props: PropsWithChildren) => {
+export const PortalContextProvider = (props: PropsWithChildren<{ hostScreenHeight: number }>) => {
   const [hostConfigs, setHostConfigs] = useState<Map<string, PortalHostConfig>>(() => new Map());
 
   const getHost = useCallback(
@@ -59,6 +67,7 @@ export const PortalContextProvider = (props: PropsWithChildren) => {
           hostId,
           size: { width: 0, height: 0 },
           contentSize: { width: 0, height: 0 },
+          contentOffset: 0,
           shouldUseContentHeight: false,
           isRegistered: false,
         };
@@ -83,6 +92,7 @@ export const PortalContextProvider = (props: PropsWithChildren) => {
         getHost,
         updateHost,
         removeHost,
+        hostScreenHeight: props.hostScreenHeight,
       }}>
       {props.children}
     </PortalContext.Provider>
@@ -94,12 +104,13 @@ export interface ModalPortalHostProps {
   // When set to true, the portal will use the content height instead of the full height.
   useContentHeight?: boolean;
   style?: ViewProps['style'];
+  height: number;
   onRegistered?: (event: { nativeEvent: { hostId: string } }) => void;
   onLayout?: (event: { nativeEvent: { layout: { width: number; height: number } } }) => void;
 }
 
 export const ModalPortalHost = (props: ModalPortalHostProps) => {
-  const { removeHost, updateHost, getHost } = use(PortalContext);
+  const { removeHost, updateHost, getHost, hostScreenHeight } = use(PortalContext);
   const prevHostId = useRef<string | undefined>(undefined);
   const prevShouldUseContentHeight = useRef<boolean | undefined>(undefined);
 
@@ -126,17 +137,39 @@ export const ModalPortalHost = (props: ModalPortalHostProps) => {
 
   const hostConfig = getHost(props.hostId);
 
+  const selectedHeight = props.useContentHeight
+    ? (hostConfig?.contentSize?.height ?? 0)
+    : props.height;
+
+  useEffect(() => {
+    if (process.env.EXPO_OS === 'android') {
+      const contentOffset = hostScreenHeight - selectedHeight;
+      console.log('contentOffset', contentOffset);
+      updateHost(props.hostId, {
+        contentOffset,
+      });
+    }
+  }, [hostScreenHeight, selectedHeight]);
+
   const style = StyleSheet.flatten([
     props.style,
-    props.useContentHeight ? { height: hostConfig?.contentSize?.height } : {},
+    {
+      height: selectedHeight + (hostConfig?.contentOffset ?? 0),
+      marginTop: -(hostConfig?.contentOffset ?? 0),
+      backgroundColor: 'red',
+    } as ViewProps['style'],
   ]);
+
   return (
     <NativeModalPortalHost
       style={style}
       hostId={props.hostId}
       onLayout={(e) => {
         updateHost(props.hostId, {
-          size: e.nativeEvent.layout,
+          size: {
+            width: e.nativeEvent.layout.width,
+            height: props.height,
+          },
         });
         props.onLayout?.(e);
       }}
@@ -157,8 +190,10 @@ export const ModalPortalHost = (props: ModalPortalHostProps) => {
 
 export const PortalContentHeightContext = createContext<{
   setHeight: (height: number | undefined) => void;
+  contentOffset: number;
 }>({
   setHeight: () => {},
+  contentOffset: 0,
 });
 
 export interface ModalPortalContentProps {
@@ -200,7 +235,8 @@ export const ModalPortalContent = (props: ModalPortalContentProps) => {
           width: hostSize.width || undefined,
           height: hostConfig.shouldUseContentHeight ? undefined : hostSize.height,
         }}>
-        <PortalContentHeightContext value={{ setHeight: setContentHeight }}>
+        <PortalContentHeightContext
+          value={{ setHeight: setContentHeight, contentOffset: hostConfig.contentOffset }}>
           {props.children}
         </PortalContentHeightContext>
       </NativeModalPortalContent>

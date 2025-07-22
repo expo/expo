@@ -1,7 +1,6 @@
 package expo.modules.router
 
 import android.content.Context
-import com.facebook.react.uimanager.PixelUtil
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import java.lang.ref.WeakReference
