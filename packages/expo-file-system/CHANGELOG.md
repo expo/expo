@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Make file implement blob interface directly. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
 - Add directory info function ([#37910](https://github.com/expo/expo/pull/37910) by [@Wenszel](https://github.com/Wenszel))
 - Add total and available sizes, directory sizes. ([#37594](https://github.com/expo/expo/pull/37594) by [@aleqsio](https://github.com/aleqsio))
 - Add info method, modificationTime and creationTime properties to file-system/next. ([#37505](https://github.com/expo/expo/pull/37505) by [@Wenszel](https://github.com/Wenszel))
