@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [android] throw when loading empty font file ([#38229](https://github.com/expo/expo/pull/38229) by [@vonovak](https://github.com/vonovak))
+
 ## 11.1.7 - 2025-07-03
 
 _This version does not introduce any user-facing changes._
