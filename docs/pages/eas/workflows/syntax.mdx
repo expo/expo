@@ -236,6 +236,20 @@ jobs:
     # @end #
 ```
 
+### `jobs.<job_id>.env`
+
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `require-approval`, `doc`, `get-build` and `slack` jobs).
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    env:
+      APP_VARIANT: staging
+      RETRY_COUNT: 3
+    # @end #
+```
+
 ### `jobs.<job_id>.defaults.run.working_directory`
 
 Sets the directory to run commands in for all steps in the job.
