@@ -489,6 +489,38 @@ describe(resolveAppProjectConfigAsync, () => {
       }
     `);
   });
+
+  it('should return app project config with custom sourceDir', async () => {
+    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
+      typeof findGradleAndManifestAsync
+    >;
+    mockFindGradleAndManifestAsync.mockResolvedValueOnce({
+      gradle: 'app/build.gradle',
+      manifest: 'src/main/AndroidManifest.xml',
+    });
+    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
+      typeof parsePackageNameAsync
+    >;
+    mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
+    const configAndroid = await resolveAppProjectConfigAsync('/app', 'android', '/customNative');
+    expect(configAndroid).toMatchInlineSnapshot(`
+      {
+        "android": {
+          "packageName": "com.test",
+          "sourceDir": "/customNative",
+        },
+      }
+    `);
+
+    const configIOS = await resolveAppProjectConfigAsync('/app', 'ios', '/customNative');
+    expect(configIOS).toMatchInlineSnapshot(`
+      {
+        "ios": {
+          "sourceDir": "/customNative",
+        },
+      }
+    `);
+  });
 });
 
 describe(resolveDependencyConfigAsync, () => {

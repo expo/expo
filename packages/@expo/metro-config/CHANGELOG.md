@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `browserslist` and automatic vendor prefixing support ([#37489](https://github.com/expo/expo/pull/37489) by [@EvanBacon](https://github.com/EvanBacon))
+- Fork Import Export Plugin from `metro` and enhance its syntax support (`experimentalImportSupport` now supports export namespace from, export destructed named object, live bindings by default and more) ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 🐛 Bug fixes
 
@@ -14,6 +15,8 @@
 - Fix failing build with tree shaking due to missing import location ([#37916](https://github.com/expo/expo/pull/37916) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
+
+- Improve debug logs and types of `import-export-plugin` ([#38203](https://github.com/expo/expo/pull/38203) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 0.20.17 - 2025-07-03
 

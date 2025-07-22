@@ -10,6 +10,7 @@ sealed class DevMenuAction(val shouldCloseMenu: Boolean = false) {
   object OpenJSDebugger : DevMenuAction(shouldCloseMenu = true)
   data class ToggleFastRefresh(val newValue: Boolean) : DevMenuAction(shouldCloseMenu = true)
   object OpenReactNativeDevMenu : DevMenuAction(shouldCloseMenu = true)
+  object FinishOnboarding : DevMenuAction(shouldCloseMenu = false)
 }
 
 typealias DevMenuActionHandler = (DevMenuAction) -> Unit

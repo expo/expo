@@ -35,7 +35,6 @@ on:
       - packages/expo-ui/ios/**
       - packages/expo-video/ios/**
   pull_request:
-    branches: [main]
     paths:
       - apps/expo-workflow-testing/.eas/workflows/tv-compile.yml
       - packages/expo-updates/e2e/setup/create-eas-project-tv.ts
