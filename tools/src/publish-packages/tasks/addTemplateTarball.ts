@@ -1,4 +1,4 @@
-import { promises } from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -28,9 +28,11 @@ export const addTemplateTarball = new Task<TaskArgs>(
     const templatePath = path.join(TEMPLATES_DIR, 'expo-template-bare-minimum');
     const templateTarball = await packToTarballAsync(templatePath);
 
-    await promises.copyFile(
+    const tarballDestinationPath = path.join(expoPackage.pkg.path, 'template.tgz');
+    await fs.promises.rm(tarballDestinationPath, { force: true });
+    await fs.promises.copyFile(
       path.join(templatePath, templateTarball.filename),
-      path.join(expoPackage.pkg.path, 'template.tgz')
+      tarballDestinationPath
     );
   }
 );
