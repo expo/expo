@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
-exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
+exports.loadExpoModuleConfigAsync = loadExpoModuleConfigAsync;
+const fs_1 = __importDefault(require("fs"));
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
@@ -143,9 +147,10 @@ exports.ExpoModuleConfig = ExpoModuleConfig;
 /**
  * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
  */
-function requireAndResolveExpoModuleConfig(path) {
+async function loadExpoModuleConfigAsync(targetPath) {
     // TODO: Validate the raw config against a schema.
     // TODO: Support for `*.js` files, not only static `*.json`.
-    return new ExpoModuleConfig(require(path));
+    const text = await fs_1.default.promises.readFile(targetPath, 'utf8');
+    return new ExpoModuleConfig(JSON.parse(text));
 }
 //# sourceMappingURL=ExpoModuleConfig.js.map

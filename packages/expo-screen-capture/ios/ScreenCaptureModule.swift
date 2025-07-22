@@ -8,6 +8,8 @@ public final class ScreenCaptureModule: Module {
   private var blockView = UIView()
   private var protectionTextField: UITextField?
   private var originalParent: CALayer?
+  private var blurEffectView: AnimatedBlurEffectView?
+  private var blurIntensity: CGFloat = 0.5
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")
@@ -22,6 +24,7 @@ public final class ScreenCaptureModule: Module {
 
     OnDestroy {
       allowScreenshots()
+      disableAppSwitcherProtection()
     }
 
     OnStartObserving {
@@ -52,6 +55,15 @@ public final class ScreenCaptureModule: Module {
         name: UIScreen.capturedDidChangeNotification,
         object: nil
       )
+    }.runOnQueue(.main)
+
+    AsyncFunction("enableAppSwitcherProtection") { (blurIntensity: CGFloat) in
+      self.blurIntensity = blurIntensity
+      enableAppSwitcherProtection()
+    }.runOnQueue(.main)
+
+    AsyncFunction("disableAppSwitcherProtection") {
+      disableAppSwitcherProtection()
     }.runOnQueue(.main)
   }
 
@@ -135,5 +147,89 @@ public final class ScreenCaptureModule: Module {
 
     protectionTextField = nil
     originalParent = nil
+  }
+
+  private func enableAppSwitcherProtection() {
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(appWillResignActive),
+      name: UIApplication.willResignActiveNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(appDidBecomeActive),
+      name: UIApplication.didBecomeActiveNotification,
+      object: nil
+    )
+  }
+
+  private func disableAppSwitcherProtection() {
+    NotificationCenter.default.removeObserver(
+      self,
+      name: UIApplication.willResignActiveNotification,
+      object: nil
+    )
+
+    NotificationCenter.default.removeObserver(
+      self,
+      name: UIApplication.didBecomeActiveNotification,
+      object: nil
+    )
+
+    removePrivacyOverlay()
+  }
+
+  @objc
+  private func appWillResignActive() {
+    showPrivacyOverlay()
+  }
+
+  @objc
+  private func appDidBecomeActive() {
+    removePrivacyOverlay()
+  }
+
+  private func showPrivacyOverlay() {
+    if let keyWindow = UIApplication.shared.keyWindow,
+      let rootView = keyWindow.subviews.first {
+      let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
+      blurEffectView.frame = rootView.bounds
+      blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+      blurEffectView.alpha = 0
+
+      rootView.addSubview(blurEffectView)
+      self.blurEffectView = blurEffectView
+
+      blurEffectView.setupBlur()
+
+      UIView.animate(
+        withDuration: 0.3,
+        delay: 0,
+        options: [.curveEaseOut],
+        animations: {
+          blurEffectView.alpha = 1.0
+        }
+      )
+    }
+  }
+
+  private func removePrivacyOverlay() {
+    guard let blurEffectView = self.blurEffectView else {
+      return
+    }
+    UIView.animate(
+      withDuration: 0.25,
+      delay: 0,
+      options: [.curveEaseIn],
+      animations: {
+        blurEffectView.alpha = 0
+      },
+      completion: { _ in
+        blurEffectView.removeFromSuperview()
+        self.blurEffectView = nil
+      }
+    )
   }
 }

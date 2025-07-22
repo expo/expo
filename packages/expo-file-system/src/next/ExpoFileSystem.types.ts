@@ -52,6 +52,10 @@ export declare class Directory {
    */
   create(options?: CreateOptions): void;
 
+  createFile(name: string, mimeType: string | null): File;
+
+  createDirectory(name: string): Directory;
+
   /**
    * Copies a directory.
    */

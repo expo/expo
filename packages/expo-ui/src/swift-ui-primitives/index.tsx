@@ -5,6 +5,7 @@ export * from './Text';
 export * from './Image';
 export * from './Spacer';
 export * from './DisclosureGroup';
+export * from './ContentUnavailableView';
 
 export { BottomSheetPrimitive as BottomSheet } from '../swift-ui/BottomSheet';
 export { ButtonPrimitive as Button } from '../swift-ui/Button';
@@ -22,4 +23,5 @@ export {
 } from '../swift-ui/Progress';
 export { SliderPrimitive as Slider } from '../swift-ui/Slider';
 export { SwitchPrimitive as Switch } from '../swift-ui/Switch';
-export { TextInputPrimitive as TextInput } from '../swift-ui/TextInput';
+export { TextFieldPrimitive as TextField } from '../swift-ui/TextField';
+export { SecureFieldPrimitive as SecureField } from '../swift-ui/SecureField';

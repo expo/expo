@@ -14,6 +14,8 @@
 
 ### 📚 3rd party library updates
 
+- Updated SQLite to 3.50.3. ([#38200](https://github.com/expo/expo/pull/38200) by [@kudo](https://github.com/kudo))
+
 ## 15.2.14 - 2025-07-07
 
 ### 🐛 Bug fixes

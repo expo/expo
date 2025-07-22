@@ -1,10 +1,11 @@
-import { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
+import type { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
 
 import { createAddNamedImportOnce, getIsProd } from './common';
 
 const debug = require('debug')('expo:babel:env-vars');
 
-export function expoInlineEnvVars(api: ConfigAPI & { types: typeof t }): PluginObj {
+export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
+  const { types: t } = api;
   const isProduction = api.caller(getIsProd);
 
   function isFirstInAssign(path: NodePath<t.MemberExpression>) {
@@ -28,7 +29,6 @@ export function expoInlineEnvVars(api: ConfigAPI & { types: typeof t }): PluginO
       MemberExpression(path, state) {
         const filename = state.filename;
         if (path.get('object').matchesPattern('process.env')) {
-          // @ts-expect-error
           const key = path.toComputedKey();
           if (
             t.isStringLiteral(key) &&

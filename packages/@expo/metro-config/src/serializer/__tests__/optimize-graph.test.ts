@@ -380,12 +380,26 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      for (var _key in _$$_REQUIRE(_dependencyMap[0])) {
-        exports[_key] = _$$_REQUIRE(_dependencyMap[0])[_key];
-      }
-      for (var _key2 in _$$_REQUIRE(_dependencyMap[1])) {
-        exports[_key2] = _$$_REQUIRE(_dependencyMap[1])[_key2];
-      }
+      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (_key) {
+        if (_key === "default" || _key === "__esModule") return;
+        if (_key in exports && exports[_key] === _$$_REQUIRE(_dependencyMap[0])[_key]) return;
+        Object.defineProperty(exports, _key, {
+          enumerable: true,
+          get: function () {
+            return _$$_REQUIRE(_dependencyMap[0])[_key];
+          }
+        });
+      });
+      Object.keys(_$$_REQUIRE(_dependencyMap[1])).forEach(function (_key2) {
+        if (_key2 === "default" || _key2 === "__esModule") return;
+        if (_key2 in exports && exports[_key2] === _$$_REQUIRE(_dependencyMap[1])[_key2]) return;
+        Object.defineProperty(exports, _key2, {
+          enumerable: true,
+          get: function () {
+            return _$$_REQUIRE(_dependencyMap[1])[_key2];
+          }
+        });
+      });
     },"/app/x0.js",["/app/x1.js","/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -394,9 +408,16 @@ it(`recursively expands export all statements with nested statements`, async () 
         value: true
       });
       const z1 = 0;
-      for (var _key in _$$_REQUIRE(_dependencyMap[0])) {
-        exports[_key] = _$$_REQUIRE(_dependencyMap[0])[_key];
-      }
+      Object.keys(_$$_REQUIRE(_dependencyMap[0])).forEach(function (_key) {
+        if (_key === "default" || _key === "__esModule") return;
+        if (_key in exports && exports[_key] === _$$_REQUIRE(_dependencyMap[0])[_key]) return;
+        Object.defineProperty(exports, _key, {
+          enumerable: true,
+          get: function () {
+            return _$$_REQUIRE(_dependencyMap[0])[_key];
+          }
+        });
+      });
       exports.z1 = z1;
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {

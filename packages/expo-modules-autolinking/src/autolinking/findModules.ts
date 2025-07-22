@@ -5,8 +5,8 @@ import { createRequire } from 'module';
 import path from 'path';
 
 import { getProjectPackageJsonPathAsync, mergeLinkingOptionsAsync } from './mergeLinkingOptions';
-import { getIsolatedModulesPath } from './utils';
-import { requireAndResolveExpoModuleConfig } from '../ExpoModuleConfig';
+import { getIsolatedModulesPath, loadPackageJSONAsync } from './utils';
+import { loadExpoModuleConfigAsync } from '../ExpoModuleConfig';
 import { PackageRevision, SearchOptions, SearchResults } from '../types';
 
 // Names of the config files. From lowest to highest priority.
@@ -38,11 +38,11 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
       const packagePath = await fs.promises.realpath(
         path.join(searchPath, path.dirname(packageConfigPath))
       );
-      const expoModuleConfig = requireAndResolveExpoModuleConfig(
+      const expoModuleConfig = await loadExpoModuleConfigAsync(
         path.join(packagePath, path.basename(packageConfigPath))
       );
 
-      const { name, version } = resolvePackageNameAndVersion(packagePath, {
+      const { name, version } = await resolvePackageNameAndVersion(packagePath, {
         fallbackToDirName: isNativeModulesDir,
       });
 
@@ -163,12 +163,13 @@ async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[
  * if {@link fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
  * @returns object with `name` and `version` properties. `version` falls back to `UNVERSIONED` if cannot be resolved.
  */
-function resolvePackageNameAndVersion(
+async function resolvePackageNameAndVersion(
   packagePath: string,
   { fallbackToDirName }: { fallbackToDirName?: boolean } = {}
-): { name: string; version: string } {
+): Promise<{ name: string; version: string }> {
   try {
-    const { name, version } = require(path.join(packagePath, 'package.json'));
+    const { name, version } = await loadPackageJSONAsync(path.join(packagePath, 'package.json'));
+
     return { name, version: version || 'UNVERSIONED' };
   } catch (e) {
     if (fallbackToDirName) {
@@ -205,8 +206,8 @@ async function filterToProjectDependenciesAsync(
   }
 
   // Helper for traversing the dependency hierarchy.
-  function visitPackage(packageJsonPath: string) {
-    const packageJson = require(packageJsonPath);
+  async function visitPackage(packageJsonPath: string) {
+    const packageJson = await loadPackageJSONAsync(packageJsonPath);
 
     // Prevent getting into the recursive loop.
     if (visitedPackages.has(packageJson.name)) {
@@ -246,14 +247,14 @@ async function filterToProjectDependenciesAsync(
         }
 
         // Visit the dependency package.
-        visitPackage(dependencyPackageJsonPath);
+        await visitPackage(dependencyPackageJsonPath);
       }
     }
   }
 
   // Visit project's package.
   const projectPackageJsonPath = await getProjectPackageJsonPathAsync(options.projectRoot);
-  visitPackage(projectPackageJsonPath);
+  await visitPackage(projectPackageJsonPath);
 
   return filteredResults;
 }

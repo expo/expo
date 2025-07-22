@@ -8,15 +8,11 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint ./app/*",
-    "ts:check": "expo-module tsc --project tsconfig.app.json --noEmit & expo-module tsc --noEmit",
+    "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare && ./scripts/reset-dev-menu-packager-host.sh",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "start": "./scripts/start.sh",
-    "bundle:dev": "NODE_ENV=development ./scripts/write_embedded_bundle.sh",
-    "bundle:prod": "NODE_ENV=production ./scripts/write_embedded_bundle.sh"
+    "expo-module": "expo-module"
   },
   "keywords": [
     "expo",
@@ -36,15 +32,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
-  "jest": {
-    "preset": "react-native",
-    "setupFilesAfterEnv": [
-      "./setupTests.ts"
-    ],
-    "transformIgnorePatterns": [
-      "/node_modules/(?!@?react-native(-reanimated)?)"
-    ]
-  },
   "dependencies": {
     "expo-dev-menu-interface": "1.10.0"
   },

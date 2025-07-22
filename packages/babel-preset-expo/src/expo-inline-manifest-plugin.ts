@@ -1,4 +1,4 @@
-import { ConfigAPI } from '@babel/core';
+import type { ConfigAPI, PluginObj } from '@babel/core';
 import { ExpoConfig, getConfig, getNameFromConfig, ProjectConfig } from 'expo/config';
 
 import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common';
@@ -121,7 +121,7 @@ function getConfigMemo(projectRoot: string) {
 }
 
 // Convert `process.env.APP_MANIFEST` to a modified web-specific variation of the app.json public manifest.
-export function expoInlineManifestPlugin(api: ConfigAPI & { types: any }) {
+export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
 
   const isReactServer = api.caller(getIsReactServer);

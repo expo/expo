@@ -3,7 +3,6 @@ package expo.modules.devmenu
 import android.app.Activity
 import android.content.Context
 import android.hardware.SensorManager
-import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -26,7 +25,6 @@ import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
@@ -34,6 +32,8 @@ import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
+
+const val DEV_MENU_TAG = "ExpoDevMenu"
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   data class KeyCommand(val code: Int, val withShift: Boolean = false)
@@ -397,8 +397,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
-  override fun getMenuHost(): ReactHostWrapper = TODO()
-
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
   }
@@ -409,12 +407,5 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       setUpReactInstance(newReactInstance)
     }
   }
-
-  fun getMenuPreferences(): Bundle {
-    return Bundle().apply {
-      putBoolean("isOnboardingFinished", getSettings()?.isOnboardingFinished ?: false)
-    }
-  }
-
 //endregion
 }
