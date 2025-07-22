@@ -12,6 +12,7 @@ import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
 import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
+import { publishProjectTemplates } from './publishProjectTemplates';
 import { pushCommittedChanges } from './pushCommittedChanges';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
@@ -19,9 +20,11 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
+import { updateProjectTemplates } from './updateProjectTemplates';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import Git from '../../Git';
 import logger from '../../Logger';
+import { Template } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
@@ -45,7 +48,6 @@ const cleanWorkingTree = new Task<TaskArgs>(
           ref: 'HEAD',
           paths: ['packages/**/expo-module.config.json'],
         });
-
         // Remove local repositories.
         await Git.cleanAsync({
           recursive: true,
@@ -79,6 +81,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updatePackageVersions,
       updateBundledNativeModulesFile,
       updateModuleTemplate,
+      updateProjectTemplates,
       updateWorkspaceProjects,
       updateAndroidProjects,
       publishAndroidArtifacts,
@@ -88,16 +91,18 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       commitStagedChanges,
       pushCommittedChanges,
       publishPackages,
+      publishProjectTemplates,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
       cleanWorkingTree,
       // commentOnIssuesTask,
     ],
   },
-  async (parcels: Parcel[], options: CommandOptions) => {
-    const count = parcels.length;
+  async (parcels: Parcel[], options: CommandOptions, templates: Template[]) => {
+    const packagesCount = parcels.length;
+    const templatesCount = templates.length;
     logger.success(
-      `\n✅ Successfully published ${cyan.bold(count + '')} package${count > 1 ? 's' : ''}.\n`
+      `\n✅ Successfully published ${cyan.bold(packagesCount)} package${packagesCount > 1 ? 's' : ''} and ${cyan.bold(templatesCount)} template${templatesCount > 1 ? 's' : ''}.\n`
     );
 
     if (options.tag !== 'latest') {

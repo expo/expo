@@ -3,6 +3,7 @@ import { Changelog, ChangelogChanges } from '../Changelogs';
 import { GitLog, GitFileLog, GitDirectory } from '../Git';
 import { PackageViewType } from '../Npm';
 import { Package } from '../Packages';
+import { Template } from '../ProjectTemplates';
 import { PackagesGraphNode } from '../packages-graph';
 
 /**
@@ -144,7 +145,7 @@ export type Parcel = BaseParcel<PublishState> & {
 /**
  * Array type representing arguments passed to the tasks.
  */
-export type TaskArgs = [Parcel[], CommandOptions];
+export type TaskArgs = [Parcel[], CommandOptions, Template[]];
 
 /**
  * Enum of possible release types. It must be in sync with `semver.ReleaseType` union options.

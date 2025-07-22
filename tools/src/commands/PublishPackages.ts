@@ -202,7 +202,7 @@ async function main(packageNames: string[], options: CommandOptions): Promise<vo
     },
   });
 
-  await taskRunner.runAndExitAsync([], options);
+  await taskRunner.runAndExitAsync([], options, []);
 }
 
 /**

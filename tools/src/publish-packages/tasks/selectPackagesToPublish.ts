@@ -82,7 +82,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
       logger.success('🤷‍♂️ There is nothing to be published.');
       return Task.STOP;
     }
-    return [[...parcelsToPublish], options];
+    return [[...parcelsToPublish], options, []];
   }
 );
 
