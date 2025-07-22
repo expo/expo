@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "reset-project": "node ./src/scripts/reset-project.js"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
