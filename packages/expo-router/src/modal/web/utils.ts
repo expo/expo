@@ -9,7 +9,9 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
  * @internal
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
-export type DetentOptions = Partial<Pick<ExtendedStackNavigationOptions, 'sheetAllowedDetents' | 'sheetInitialDetentIndex'>>;
+export type DetentOptions = Partial<
+  Pick<ExtendedStackNavigationOptions, 'sheetAllowedDetents' | 'sheetInitialDetentIndex'>
+>;
 
 /**
  * Helper to determine the detent index from the given `sheetInitialDetentIndex` option.
