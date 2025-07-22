@@ -174,7 +174,7 @@ function getMetroWorkspaceGlobs(monorepoRoot) {
 function convertEntryPointToRelative(projectRoot, absolutePath) {
   // The project root could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the non-symlinked path to the server or project root.
-  return _path().default.relative(_fs().default.realpathSync(getMetroServerRoot(projectRoot)), _fs().default.realpathSync(absolutePath));
+  return _path().default.relative(_fs().default.realpathSync(projectRoot), _fs().default.realpathSync(absolutePath));
 }
 
 /**

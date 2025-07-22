@@ -19,6 +19,7 @@
 - Update error message for ngrok ([#22469](https://github.com/expo/expo/pull/22469) by [@russorat](https://github.com/russorat))
 - Support SSR imports of internal node builtins such as `_http_agent`. ([#37494](https://github.com/expo/expo/pull/37494) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow anonymous sessions even when `projectId` is set ([#36874](https://github.com/expo/expo/pull/36874) by [@kadikraman](https://github.com/kadikraman))
+- fix wrong entry file leads to error on `eas update` ([#37935](https://github.com/expo/expo/pull/37935) by [@mlecoq](https://github.com/mlecoq))
 
 ### 💡 Others
 
