@@ -1,13 +1,15 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image } from 'react-native';
+import { Platform } from 'react-native';
 
-import bell from '../assets/bell.png';
-import newspaper from '../assets/newspaper.png';
 import { Explore } from './screens/Explore';
 import { Home } from './screens/Home';
 import { NotFound } from './screens/NotFound';
+
+import { HapticTab } from '@/components/HapticTab';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import TabBarBackground from '@/components/ui/TabBarBackground';
 
 const HomeTabs = createBottomTabNavigator({
   screens: {
@@ -15,34 +17,28 @@ const HomeTabs = createBottomTabNavigator({
       screen: Home,
       options: {
         headerShown: false,
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={newspaper}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
-        ),
+        tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
       },
     },
     Explore: {
       screen: Explore,
       options: {
         headerShown: false,
-        tabBarIcon: ({ color, size }) => (
-          <Image
-            source={bell}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
-        ),
+        tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
       },
     },
+  },
+  screenOptions: {
+    headerShown: false,
+    tabBarButton: HapticTab,
+    tabBarBackground: TabBarBackground,
+    tabBarStyle: Platform.select({
+      ios: {
+        // Use a transparent background on iOS to show the blur effect
+        possition: 'absolute',
+      },
+      default: {},
+    }),
   },
 });
 

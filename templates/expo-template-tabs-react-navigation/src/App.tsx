@@ -1,14 +1,12 @@
 import 'react-native-reanimated';
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { Asset } from 'expo-asset';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { useColorScheme } from 'react-native';
-import { useFonts } from 'expo-font';
 
+import { Colors } from './constants/Colors';
 import { Navigation } from './navigation';
-
-Asset.loadAsync([require('./assets/newspaper.png'), require('./assets/bell.png')]);
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +21,16 @@ export function App() {
     return null;
   }
 
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+  const theme =
+    colorScheme === 'dark'
+      ? {
+          ...DarkTheme,
+          colors: { ...DarkTheme.colors, primary: Colors[colorScheme ?? 'light'].tint },
+        }
+      : {
+          ...DefaultTheme,
+          colors: { ...DefaultTheme.colors, primary: Colors[colorScheme ?? 'light'].tint },
+        };
 
   return (
     <Navigation
