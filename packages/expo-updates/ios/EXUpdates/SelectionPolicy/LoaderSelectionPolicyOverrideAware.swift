@@ -34,7 +34,7 @@ internal final class LoaderSelectionPolicyOverrideAware: LoaderSelectionPolicy {
     }
 
     // if the current update doesn't pass the manifest filters
-        // we should roll back to the embedded update no matter the commitTime
+    // we should roll back to the embedded update no matter the commitTime
     if !SelectionPolicies.doesUpdate(launchedUpdate, matchFilters: filters) {
       return true
     }
