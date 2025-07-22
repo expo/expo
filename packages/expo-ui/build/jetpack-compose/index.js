@@ -1,3 +1,4 @@
+export * from './AlertDialog';
 export * from './Button';
 export * from './ContextMenu';
 export * from './DatePicker';
