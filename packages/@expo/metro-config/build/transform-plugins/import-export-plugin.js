@@ -133,7 +133,7 @@ function withLocation(nodeOrArray, loc) {
     }
     return node;
 }
-function importExportPlugin({ types: t }) {
+function importExportPlugin({ types: t, }) {
     const { isDeclaration, isVariableDeclaration } = t;
     return {
         visitor: {
