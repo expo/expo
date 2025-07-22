@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.Icon
 import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.R
-import expo.modules.devlauncher.compose.Account
 import expo.modules.devmenu.compose.primitives.AppIcon
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RowLayout

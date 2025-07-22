@@ -32,6 +32,7 @@ export async function createReactNativeConfigAsync({
   projectRoot,
   searchPaths,
   transitiveLinkingDependencies,
+  sourceDir,
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
   const dependencyRoots = {
@@ -78,7 +79,7 @@ export async function createReactNativeConfigAsync({
       [string, RNConfigDependency]
     >
   );
-  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform);
+  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform, sourceDir);
   return {
     root: projectRoot,
     reactNativePath,
@@ -203,7 +204,8 @@ export function resolveEdgeToEdgeDependencyRoot(projectRoot: string): string | n
 
 export async function resolveAppProjectConfigAsync(
   projectRoot: string,
-  platform: SupportedPlatform
+  platform: SupportedPlatform,
+  sourceDir?: string
 ): Promise<RNConfigReactNativeAppProjectConfig> {
   if (platform === 'android') {
     const androidDir = path.join(projectRoot, 'android');
@@ -216,7 +218,7 @@ export async function resolveAppProjectConfigAsync(
     return {
       android: {
         packageName: packageName ?? '',
-        sourceDir: path.join(projectRoot, 'android'),
+        sourceDir: sourceDir ?? path.join(projectRoot, 'android'),
       },
     };
   }
@@ -224,7 +226,7 @@ export async function resolveAppProjectConfigAsync(
   if (platform === 'ios') {
     return {
       ios: {
-        sourceDir: path.join(projectRoot, 'ios'),
+        sourceDir: sourceDir ?? path.join(projectRoot, 'ios'),
       },
     };
   }

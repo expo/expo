@@ -3,8 +3,10 @@ title: Introduction to Expo Router
 description: Expo Router is an open-source routing library for Universal React Native applications built with Expo.
 hideTOC: true
 sidebar_title: Introduction
+searchRank: 15
 ---
 
+import { DocsLogo } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
@@ -15,6 +17,13 @@ import { Collapsible } from '~/ui/components/Collapsible';
 Expo Router is a file-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move seamlessly between different parts of your app's UI, using the same components on multiple platforms (Android, iOS, and web).
 
 It brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
+
+<BoxLink
+  title="Expo Router reference"
+  Icon={DocsLogo}
+  description="For information on API components, hooks, methods, and more, see the Expo Router reference."
+  href="/versions/latest/sdk/router/"
+/>
 
 ## Features
 
@@ -91,6 +100,12 @@ Basic static rendering (SSG) is supported in Expo Router. Server-side rendering 
   Icon={BookOpen02Icon}
   description="Detailed instructions on how to get started and add Expo Router to your existing app."
   href="/router/installation/#manual-installation"
+/>
+<BoxLink
+  title="Router 101"
+  Icon={BookOpen02Icon}
+  description="For information core concepts, notation patterns, navigation layouts, and common navigation patterns, start with Router 101 section."
+  href="/router/basics/core-concepts/"
 />
 <BoxLink
   title="Example app"

@@ -7,7 +7,6 @@ on:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
       - packages/expo-updates/cli/**
   pull_request:
-    branches: [main]
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-cli.yml
       - packages/expo-updates/cli/**
