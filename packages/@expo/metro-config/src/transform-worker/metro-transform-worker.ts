@@ -210,7 +210,10 @@ export function applyImportSupport<TFile extends t.File>(
 
     options: Pick<
       JsTransformOptions,
-      'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires'
+      | 'experimentalImportSupport'
+      | 'inlineRequires'
+      | 'nonInlinedRequires'
+      | 'customTransformOptions'
     >;
     importDefault: string;
     importAll: string;
@@ -241,7 +244,13 @@ export function applyImportSupport<TFile extends t.File>(
       // Ensure the iife "globals" don't have conflicting variables in the module.
       renameTopLevelModuleVariables,
       //
-      [importExportPlugin, babelPluginOpts]
+      [
+        importExportPlugin,
+        {
+          ...babelPluginOpts,
+          liveBindings: options.customTransformOptions?.liveBindings !== 'false',
+        },
+      ]
     );
   }
 

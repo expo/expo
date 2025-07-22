@@ -49,7 +49,7 @@ export default function SwiftUIPrimitivesScreen() {
               value={sendReadReceipts}
               onValueChange={setSendReadReceipts}
             />
-            <Text weight="regular" size={17}>
+            <Text weight="regular" size={17} testID="test-id-from-expo-ui!">
               plain text
             </Text>
           </Section>

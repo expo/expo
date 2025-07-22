@@ -69,6 +69,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/AppIntegrity/AppIntegrityScreen'));
+    },
+    name: 'AppIntegrity',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
     },
     name: 'AppleAuthentication',

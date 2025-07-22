@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`. ([#37828](https://github.com/expo/expo/pull/37828) by [@huextrat](https://github.com/huextrat))
-
 ### 💡 Others
 
 - Export `CodeMod` from `android` directory for use in package config-plugins. ([#37885](https://github.com/expo/expo/pull/37885) by [@aleqsio](https://github.com/aleqsio))
+
+## 10.1.2 - 2025-07-08
+
+### 🐛 Bug fixes
+
+- [Android] Fix build failures when localized strings contain single quotes by wrapping string values in quotes in `strings.xml`. ([#37828](https://github.com/expo/expo/pull/37828) by [@huextrat](https://github.com/huextrat))
 
 ## 10.1.1 - 2025-07-03
 

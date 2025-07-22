@@ -9,6 +9,8 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
+import expo.modules.imagepicker.CropShape
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
@@ -44,6 +46,11 @@ internal class CropImageContract(
             aspectRatioY = y
             fixAspectRatio = true
             initialCropWindowPaddingRatio = 0f
+          }
+
+          cropShape = when (input.options.shape) {
+            CropShape.RECTANGLE -> CropImageView.CropShape.RECTANGLE
+            CropShape.OVAL -> CropImageView.CropShape.OVAL
           }
         }
       )

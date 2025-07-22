@@ -3,14 +3,21 @@ package expo.modules.devlauncher.services
 import androidx.core.net.toUri
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.helpers.await
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import okhttp3.Request
 
 private val portsToCheck = arrayOf(8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002)
@@ -41,12 +48,21 @@ data class PackagerInfo(
 class PackagerService(
   private val httpClientService: HttpClientService
 ) {
+  private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
   private val packagersToCheck = portsToCheck.map { port -> PackagerInfo("http://$hostToCheck:$port") }
 
   private val _runningPackagers = MutableStateFlow<Set<PackagerInfo>>(emptySet())
   private val _isLoading = MutableStateFlow(false)
 
-  val runningPackagers = _runningPackagers.asStateFlow()
+  val runningPackagers = _runningPackagers
+    .onStart {
+      refetchedPackager()
+    }.stateIn(
+      scope = coroutineScope,
+      started = WhileSubscribed(5_000),
+      initialValue = emptySet()
+    )
   val isLoading = _isLoading.asStateFlow()
 
   private fun addPackager(packager: PackagerInfo) {
@@ -78,6 +94,7 @@ class PackagerService(
 
   private suspend fun fetchedLocalPackagers(): Unit = coroutineScope {
     val jobs = packagersToCheck.map { packager ->
+      ensureActive()
       async {
         val statusPageRequest = packager.createStatusPageRequest()
         val isSuccessful = runCatching { statusPageRequest.await(httpClientService.httpClient) }
@@ -125,15 +142,16 @@ class PackagerService(
     }
   }
 
-  suspend fun refetchedPackager() {
+  fun refetchedPackager() {
     // It's loading already, so we don't need to do anything.
     if (isLoading.value) {
       return
     }
 
     _isLoading.update { true }
-    withContext(context = Dispatchers.Default) {
+    coroutineScope.launch {
       fetchedDevelopmentSession()
+      ensureActive()
       fetchedLocalPackagers()
       _isLoading.update { false }
     }
