@@ -221,9 +221,8 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
-      throwUnlessPermissionsGrantedCoroutines(isWrite = false) {
-        GetAssets(context, assetOptions).execute()
-      }
+      throwUnlessPermissionsGrantedCoroutines(isWrite = false)
+      GetAssets(context, assetOptions).execute()
     }
 
     AsyncFunction("migrateAlbumIfNeededAsync") { albumId: String, promise: Promise ->
@@ -439,7 +438,7 @@ class MediaLibraryModule : Module() {
     block()
   }
 
-  private suspend inline fun <T> throwUnlessPermissionsGrantedCoroutines(isWrite: Boolean = true, crossinline block: suspend () -> T): T {
+  private fun throwUnlessPermissionsGrantedCoroutines(isWrite: Boolean = true) {
     val missingPermissionsCondition =
       if (isWrite) isMissingWritePermission else isMissingPermissions
     if (missingPermissionsCondition) {
@@ -447,7 +446,6 @@ class MediaLibraryModule : Module() {
         if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
       throw PermissionsException(missingPermissionsMessage)
     }
-    return block()
   }
 
   private fun interface Action {
