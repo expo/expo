@@ -5,6 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { PluginObj } from '@babel/core';
-declare const _default: () => PluginObj;
+import type { ConfigAPI, PluginObj } from '@babel/core';
+declare const _default: ({ types: t }: ConfigAPI & typeof import("@babel/core")) => PluginObj;
 export default _default;

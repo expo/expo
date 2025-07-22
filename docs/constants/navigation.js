@@ -468,6 +468,12 @@ export const eas = [
       { expanded: false }
     ),
   ]),
+  makeSection('EAS Submit', [
+    makePage('submit/introduction.mdx'),
+    makePage('submit/android.mdx'),
+    makePage('submit/ios.mdx'),
+    makePage('submit/eas-json.mdx'),
+  ]),
   makeSection('EAS Hosting', [
     makePage('eas/hosting/introduction.mdx'),
     makePage('eas/hosting/get-started.mdx'),
@@ -481,12 +487,6 @@ export const eas = [
       makePage('eas/hosting/reference/responses-and-headers.mdx'),
       makePage('eas/hosting/reference/worker-runtime.mdx'),
     ]),
-  ]),
-  makeSection('EAS Submit', [
-    makePage('submit/introduction.mdx'),
-    makePage('submit/android.mdx'),
-    makePage('submit/ios.mdx'),
-    makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Update', [
     makePage('eas-update/introduction.mdx'),

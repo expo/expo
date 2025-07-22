@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env bunx tsx
 
 import fs from 'fs/promises';
 import path from 'path';
