@@ -10,16 +10,19 @@ import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { ensureProcessExitsAfterDelay } from '../utils/exit';
 
+function isChildDirectory(dir: string, subDir: string): boolean {
+  const relativePath = path.relative(dir, subDir);
+  return !!relativePath && !relativePath.startsWith('..');
+}
+
 export async function exportAsync(projectRoot: string, options: Options) {
   // Ensure the output directory is created
   const outputPath = path.resolve(projectRoot, options.outputDir);
 
   if (outputPath === projectRoot) {
     throw new CommandError('--output-dir cannot be the same as the project directory.');
-  } else if (path.relative(projectRoot, outputPath).startsWith('..')) {
-    throw new CommandError(
-      '--output-dir must be a subdirectory of the project directory. Generating outside of the project directory is not supported.'
-    );
+  } else if (isChildDirectory(outputPath, projectRoot)) {
+    throw new CommandError('--output-dir cannot be the parent of the project directory.');
   }
 
   // Delete the output directory if it exists
