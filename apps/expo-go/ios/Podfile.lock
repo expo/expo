@@ -63,8 +63,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoAppIntegrity (0.0.1):
-    - ExpoModulesCore
   - ExpoAppleAuthentication (7.2.4):
     - ExpoModulesCore
   - ExpoAsset (11.1.5):
@@ -3568,7 +3566,6 @@ DEPENDENCIES:
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
-  - ExpoAppIntegrity (from `../../../packages/expo-app-integrity/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
@@ -3804,8 +3801,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   Expo:
     :path: "../../../packages/expo"
-  ExpoAppIntegrity:
-    :path: "../../../packages/expo-app-integrity/ios"
   ExpoAppleAuthentication:
     :path: "../../../packages/expo-apple-authentication/ios"
   ExpoAsset:
@@ -4179,7 +4174,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 41dc1db6ed9185a3b80a9f917ba3c62dafd22eec
   EXStructuredHeaders: 1c799cb91e8057e0671610635e5b2109fa295114
   EXTaskManager: 0128b9f39a088b0c762d8d1c42017e6d44200b29
-  EXUpdates: a8427b57ecd860a4391ee838c73903e76055f3f7
+  EXUpdates: 5cbd41ca43ec772070b5997ce1f51f2e99055731
   EXUpdatesInterface: d6c802a2d1d11867523d03a95397957f9ba3d1c7
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 09f03e4b6f42f955734b64a118f86509cc719427
@@ -4312,6 +4307,6 @@ SPEC CHECKSUMS:
   Yoga: daa1e4de4b971b977b23bc842aaa3e135324f1f3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 9f104a55d90568cbeff5ed1bb052a935a9042f4f
+PODFILE CHECKSUM: ee6901ca120b93e4938c943d3743febeb70fce16
 
 COCOAPODS: 1.16.2
