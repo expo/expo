@@ -1,4 +1,4 @@
-package expo.modules.devmenu.modules
+package expo.modules.devmenu
 
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
@@ -8,8 +8,6 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
 
@@ -104,21 +102,6 @@ object DevMenuPreferencesHandle : DevMenuPreferencesInterface {
 
     if (settings.hasKey("touchGestureEnabled")) {
       touchGestureEnabled = settings.getBoolean("touchGestureEnabled")
-    }
-  }
-}
-
-class DevMenuPreferences : Module() {
-
-  override fun definition() = ModuleDefinition {
-    Name("DevMenuPreferences")
-
-    AsyncFunction<WritableMap>("getPreferencesAsync") {
-      DevMenuPreferencesHandle.serialize()
-    }
-
-    AsyncFunction("setPreferencesAsync") { settings: ReadableMap ->
-      DevMenuPreferencesHandle.setPreferences(settings)
     }
   }
 }
