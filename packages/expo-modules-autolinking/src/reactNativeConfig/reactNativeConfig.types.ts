@@ -8,6 +8,7 @@ export interface RNConfigCommandOptions {
   projectRoot: string;
   searchPaths: string[];
   transitiveLinkingDependencies: string[];
+  sourceDir?: string;
 }
 
 /**

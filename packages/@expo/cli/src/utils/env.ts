@@ -265,6 +265,11 @@ class Env {
   get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
+
+  /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
+  get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
+    return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
+  }
 }
 
 export const env = new Env();

@@ -2819,30 +2819,30 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
-  EASClient: 81d62c389f7385bee733cd028f3aeb0b700bc900
-  EXConstants: be238322d57d084dc055dbd5d6fe6479510504ce
+  EASClient: cca4fa0bf58b32a99476e9d9f80cbeebcb57df90
+  EXConstants: 72e8e04dc4d7d97c74a618d44753ea4a7437a2b6
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
-  EXManifests: 18dc175e0df41ce726d456dc13489e60e6a742a3
+  EXManifests: bf76658edfbfa3e3fb67f940ade98d7803490789
   Expo: 8eb25cb61c253606de5346a8a896109720c001fc
   expo-dev-client: b32e7e9c0a420a5256e38b12e8eebbf14a7031ed
   expo-dev-launcher: a3f73e45a6154b451ef36067cbf93754c0c9a98a
   expo-dev-menu: 56dbc4f30634486538030dbb1cec11a630e59c2e
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
-  ExpoAppleAuthentication: 7e358fcbcbacb7685cddb0bbeede0acd677e58f6
-  ExpoAsset: 3ea3275cca6a7793b3d36fbf1075c590f803fbcb
+  ExpoAppleAuthentication: 69a48d4633024124a33fda650dba706c216d6c76
+  ExpoAsset: b5bfc6425d1e9a09e8e1368646b98fe5ae7ed074
   ExpoBlur: 5d95f7ca771a0f3b9618466525dd68e46dc95f3a
   ExpoCamera: e88fc30631e63e5504ce19d52c563a6ec49e17d2
-  ExpoFileSystem: 3a98ca2a6f13674ecfd97327d1b44a8ace444cbd
-  ExpoFont: 312c73403bbd4f98e1d6a5330641a56292583cd2
-  ExpoImage: 23fd11d3f2c4b04dc0b5e97fb41e9ead278bd0c8
-  ExpoKeepAwake: e8dedc115d9f6f24b153ccd2d1d8efcdfd68a527
-  ExpoLinearGradient: 42e58f6db5ebc20b6fbbf7d31013264644ab12a4
-  ExpoModulesCore: e39be8db1df3e0b6194d41de40ac9b3bfe9a6eb9
+  ExpoFileSystem: 3ee0f53b719c928eb179fc67467f89ffce4472ed
+  ExpoFont: 370a9897880ac279fbd4e478dede18ec4f723d1a
+  ExpoImage: 736d4bf4e14437d0e0c7dafdd3aa169c17d447a7
+  ExpoKeepAwake: 95037f8576ba678db79cbf558b933400c81997a7
+  ExpoLinearGradient: 110244a240361e3351756225e5fcc4c6c07f5431
+  ExpoModulesCore: 637f40677c4611ddc66c92ec5bc1b36e1576f205
   ExpoSplashScreen: 418ece7a50a404f36b690f0af8ec5c5298dfd659
-  ExpoVideo: 54ce43735b4ceb6b3828e3eec3b750b0fe10314c
+  ExpoVideo: 0e9cd59d0bd301e0f33a8fa7b0e3f1a497f60f81
   EXStructuredHeaders: 1c799cb91e8057e0671610635e5b2109fa295114
-  EXUpdates: 0701c1112685d32ae8bcdedde02f5e6905a34c38
-  EXUpdatesInterface: b941371be742ef272f2fa7d6f46ee9fdf8c73c60
+  EXUpdates: 760ae83ebf1f9fd8c04aa3b0790c4489410cd6b8
+  EXUpdatesInterface: d6c802a2d1d11867523d03a95397957f9ba3d1c7
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 09f03e4b6f42f955734b64a118f86509cc719427
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd

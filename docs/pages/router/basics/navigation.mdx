@@ -1,5 +1,5 @@
 ---
-title: Navigating between pages
+title: Navigating between pages in Expo Router
 description: Learn the different ways to link to and navigate to pages in Expo Router.
 sidebar_title: Navigation
 hasVideoLink: true
@@ -24,7 +24,7 @@ import { Button } from 'react-native';
 export default function Home() {
   const router = useRouter();
 
-  return <Button onPress={() => router.navigate('/about')}>Go to About</Button>;
+  return <Button title="Go to About" onPress={() => router.navigate('/about')} />;
 }
 ```
 

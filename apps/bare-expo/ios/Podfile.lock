@@ -4267,7 +4267,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 4c8515fc532ea0926817c5b4fdc6b9a19b42363e
   expo-dev-menu: 547f393e5fbcd62bb2f8357998af38d697fa1b98
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
-  ExpoAppIntegrity: 2bba1c610a4757ecee7b2f40e38688f79ed2267e
+  ExpoAppIntegrity: 4730a3328b6261297db919772d6f08af72850bee
   ExpoAppleAuthentication: 69a48d4633024124a33fda650dba706c216d6c76
   ExpoAsset: b5bfc6425d1e9a09e8e1368646b98fe5ae7ed074
   ExpoAudio: f6bcc6868e643e6fa74b6e20fd7d20ecc89b4e28
@@ -4327,7 +4327,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 41dc1db6ed9185a3b80a9f917ba3c62dafd22eec
   EXStructuredHeaders: 1c799cb91e8057e0671610635e5b2109fa295114
   EXTaskManager: 0128b9f39a088b0c762d8d1c42017e6d44200b29
-  EXUpdates: 90ae8de78856383eec69dba4b30149e195a9f2bd
+  EXUpdates: 0f13f322ef9c42348dda20bdb19d37d148fcbc83
   EXUpdatesInterface: d6c802a2d1d11867523d03a95397957f9ba3d1c7
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 09f03e4b6f42f955734b64a118f86509cc719427

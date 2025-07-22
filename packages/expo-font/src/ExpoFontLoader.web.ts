@@ -109,7 +109,7 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
       .map((element) => {
         switch (element.$$type) {
           case 'style':
-            return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
+            return `<style id="${element.id}">${element.children}</style>`;
           case 'link':
             return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
           default:
@@ -210,13 +210,12 @@ function getStyleElement(): HTMLStyleElement {
   }
   const styleElement = document.createElement('style');
   styleElement.id = ID;
-  styleElement.type = 'text/css';
 
   return styleElement;
 }
 
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  return `@font-face{font-family:${fontFamily};src:url(${resource.uri});font-display:${
+  return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${
     resource.display || FontDisplay.AUTO
   }}`;
 }

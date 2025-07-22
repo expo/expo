@@ -5,6 +5,7 @@ export * from './Text';
 export * from './Image';
 export * from './Spacer';
 export * from './DisclosureGroup';
+export * from './ContentUnavailableView';
 export { BottomSheetPrimitive as BottomSheet } from '../swift-ui/BottomSheet';
 export { ButtonPrimitive as Button } from '../swift-ui/Button';
 export { ColorPickerPrimitive as ColorPicker } from '../swift-ui/ColorPicker';
@@ -18,5 +19,6 @@ export { PickerPrimitive as Picker } from '../swift-ui/Picker';
 export { CircularProgressPrimitive as CircularProgress, LinearProgressPrimitive as LinearProgress, } from '../swift-ui/Progress';
 export { SliderPrimitive as Slider } from '../swift-ui/Slider';
 export { SwitchPrimitive as Switch } from '../swift-ui/Switch';
-export { TextInputPrimitive as TextInput } from '../swift-ui/TextInput';
+export { TextFieldPrimitive as TextField } from '../swift-ui/TextField';
+export { SecureFieldPrimitive as SecureField } from '../swift-ui/SecureField';
 //# sourceMappingURL=index.d.ts.map
