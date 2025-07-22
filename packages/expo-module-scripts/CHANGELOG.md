@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added TypeScript Project References support. ([#38241](https://github.com/expo/expo/pull/38241) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
