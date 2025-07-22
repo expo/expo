@@ -13,5 +13,6 @@ export * from './Section';
 export * from './ShareLink';
 export * from './Slider';
 export * from './Switch';
-export * from './TextInput';
+export * from './TextField';
+export * from './SecureField';
 //# sourceMappingURL=index.js.map

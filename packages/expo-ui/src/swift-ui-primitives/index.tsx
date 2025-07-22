@@ -22,4 +22,5 @@ export {
 } from '../swift-ui/Progress';
 export { SliderPrimitive as Slider } from '../swift-ui/Slider';
 export { SwitchPrimitive as Switch } from '../swift-ui/Switch';
-export { TextInputPrimitive as TextInput } from '../swift-ui/TextInput';
+export { TextFieldPrimitive as TextField } from '../swift-ui/TextField';
+export { SecureFieldPrimitive as SecureField } from '../swift-ui/SecureField';
