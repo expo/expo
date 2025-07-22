@@ -1,24 +1,165 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+lib/
+├── main.dart
+├── screens/
+│   ├── login_screen.dart
+│   ├── home_screen.dart
+│   ├── test_screen.dart
+│   └── result_screen.dart
+├── models/
+│   └── question_model.dart
+└── services/
+    └── auth_service.dart
+import 'package:flutter/material.dart';
+import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/test_screen.dart';
+import 'screens/result_screen.dart';
 
-import { Terminal } from '~/ui/components/Snippet';
+void main() {
+  runApp(MyApp());
+}
 
-System requirements:
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Mock Test App',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => LoginScreen(),
+        '/home': (context) => HomeScreen(),
+        '/test': (context) => TestScreen(),
+        '/result': (context) => ResultScreen(),
+      },
+    );
+  }
+}import 'package:flutter/material.dart';
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+class LoginScreen extends StatelessWidget {
+  final TextEditingController emailCtrl = TextEditingController();
+  final TextEditingController passCtrl = TextEditingController();
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(controller: emailCtrl, decoration: InputDecoration(labelText: 'Email')),
+            TextField(controller: passCtrl, decoration: InputDecoration(labelText: 'Password'), obscureText: true),
+            SizedBox(height: 20),
+            ElevatedButton(
+              child: Text("Login"),
+              onPressed: () {
+                // Skip auth logic for now
+                Navigator.pushReplacementNamed(context, '/home');
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}import 'package:flutter/material.dart';
 
-To create a new project, run the following command:
+class HomeScreen extends StatelessWidget {
+  final List<String> testTitles = ['Math Test', 'English Test', 'Science Test'];
 
-<Terminal cmd={['$ npx create-expo-app@latest']} />
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Mock Tests")),
+      body: ListView.builder(
+        itemCount: testTitles.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(testTitles[index]),
+            trailing: Icon(Icons.arrow_forward),
+            onTap: () {
+              Navigator.pushNamed(context, '/test');
+            },
+          );
+        },
+      ),
+    );
+  }
+}import 'package:flutter/material.dart';
+import '../models/question_model.dart';
 
-> You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+class TestScreen extends StatefulWidget {
+  @override
+  _TestScreenState createState() => _TestScreenState();
+}
 
-## Next step
+class _TestScreenState extends State<TestScreen> {
+  List<Question> questions = [
+    Question(question: 'Capital of India?', options: ['Delhi', 'Mumbai', 'Chennai', 'Kolkata'], correctIndex: 0),
+    Question(question: '2 + 2 = ?', options: ['3', '4', '5', '6'], correctIndex: 1),
+  ];
 
-You have a project. Now it's time to set up your development environment so that you can start developing.
+  int currentQuestion = 0;
+  int score = 0;
+
+  void answerQuestion(int selectedIndex) {
+    if (selectedIndex == questions[currentQuestion].correctIndex) {
+      score++;
+    }
+    if (currentQuestion < questions.length - 1) {
+      setState(() {
+        currentQuestion++;
+      });
+    } else {
+      Navigator.pushReplacementNamed(context, '/result', arguments: score);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var q = questions[currentQuestion];
+    return Scaffold(
+      appBar: AppBar(title: Text("Test")),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text("Q${currentQuestion + 1}: ${q.question}", style: TextStyle(fontSize: 20)),
+            ...q.options.asMap().entries.map((entry) {
+              return ElevatedButton(
+                onPressed: () => answerQuestion(entry.key),
+                child: Text(entry.value),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}import 'package:flutter/material.dart';
+
+class ResultScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final int score = ModalRoute.of(context)?.settings.arguments as int;
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Result")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Your Score: $score", style: TextStyle(fontSize: 26)),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+              child: Text("Back to Home"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
