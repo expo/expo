@@ -6,9 +6,9 @@ import expo.modules.medialibrary.ASSET_PROJECTION
 import expo.modules.medialibrary.AssetQueryException
 import expo.modules.medialibrary.AssetsOptions
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
-import expo.modules.medialibrary.MediaLibraryUtils.ensureActiveOrThrow
 import expo.modules.medialibrary.PermissionsException
 import expo.modules.medialibrary.UnableToLoadException
+import kotlinx.coroutines.ensureActive
 import java.io.IOException
 import kotlin.coroutines.coroutineContext
 
@@ -27,7 +27,7 @@ internal class GetAssets(
         null,
         order
       ).use { assetsCursor ->
-        coroutineContext.ensureActiveOrThrow()
+        coroutineContext.ensureActive()
         if (assetsCursor == null) {
           throw AssetQueryException()
         }

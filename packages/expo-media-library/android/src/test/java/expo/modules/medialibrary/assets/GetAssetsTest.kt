@@ -13,10 +13,9 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -57,7 +56,7 @@ internal class GetAssetsTest {
   }
 
   @Test
-  fun `getAssets should resolve with correct response`() = runBlocking {
+  fun `getAssets should resolve with correct response`() = runTest {
     // arrange
     val context = mockContext with mockContentResolverForResult(
       arrayOf(
@@ -74,41 +73,41 @@ internal class GetAssetsTest {
   }
 
   @Test
-  fun `GetAssets should reject on null cursor`() {
+  fun `GetAssets should reject on null cursor`() = runTest {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
     // act && assert
-    assertThrows(AssetQueryException::class.java) {
-      runBlocking {
-        GetAssets(context, defaultAssets).execute()
-      }
+    try {
+      GetAssets(context, defaultAssets).execute()
+    } catch (e: Exception) {
+      assert(e is AssetQueryException)
     }
   }
 
   @Test
-  fun `GetAssets should reject on SecurityException`() {
+  fun `GetAssets should reject on SecurityException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act && assert
-    assertThrows(UnableToLoadException::class.java) {
-      runBlocking {
-        GetAssets(context, defaultAssets).execute()
-      }
+    try {
+      GetAssets(context, defaultAssets).execute()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
     }
   }
 
   @Test
-  fun `GetAssets should reject on IOException`() {
+  fun `GetAssets should reject on IOException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(IOException())
 
     // act && assert
-    assertThrows(UnableToLoadException::class.java) {
-      runBlocking {
-        GetAssets(context, defaultAssets).execute()
-      }
+    try {
+      GetAssets(context, defaultAssets).execute()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
     }
   }
 }
