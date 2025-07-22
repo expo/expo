@@ -1,5 +1,5 @@
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';
-import { ExpoFormDataValue } from '../FormData';
+import { type ExpoFormDataValue } from '../FormData';
 
 function encodeFilename(filename: string): string {
   return encodeURIComponent(filename.replace(/\//g, '_'));
