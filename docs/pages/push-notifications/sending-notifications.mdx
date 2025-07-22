@@ -3,6 +3,7 @@ title: Send notifications with the Expo Push Service
 description: Learn how to call Expo Push Service API to send push notifications from your server.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 The [`expo-notifications`](/versions/latest/sdk/notifications) library provides all the client-side functionality for push notifications. Expo also handles sending push notifications off to FCM and APNs which then send them to particular devices. All you need to do is send a request to Expo Push API with the `ExpoPushToken` you obtain with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions).
@@ -347,8 +348,7 @@ Finally, the push notification services from Google and Apple follow their own p
 
 ## Troubleshooting
 
-### Network connectivity issues
-
+<Collapsible summary="Network connectivity issues">
 This section helps you diagnose and resolve common network issues. Your server must have connectivity to Google Cloud Platform services in the United States region, as this is where Expo's push notification service is hosted.
 
 #### DNS resolution
@@ -394,3 +394,5 @@ openssl s_client -connect exp.host:443 -servername exp.host
 ```
 
 We use standard TLS certificates signed by major service providers including Cloudflare, Google, and Let's Encrypt.
+
+</Collapsible>
