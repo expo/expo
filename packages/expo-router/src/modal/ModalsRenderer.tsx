@@ -16,11 +16,20 @@ export const ModalsRenderer = ({
   onShow,
 }: ModalsRendererProps) => {
   const rootId = useRef(nanoid());
+  // This will be used as a baseline for calculating the content offset.
+  // Modal can have at most the same height as the host screen.
+  const [hostScreenHeight, setHostScreenHeight] = useState(0);
 
   return (
-    <PortalContextProvider>
+    <PortalContextProvider hostScreenHeight={hostScreenHeight}>
       <ScreenStack style={styles.stackContainer}>
         <ScreenStackItem
+          onLayout={(e) => {
+            const { height } = e.nativeEvent.layout;
+            if (height) {
+              setHostScreenHeight(height);
+            }
+          }}
           screenId={rootId.current}
           activityState={2}
           style={StyleSheet.absoluteFill}
@@ -52,7 +61,9 @@ function NativeModal({ config, onDismissed, onShow }: NativeModalProps) {
   const stackPresentation = getStackPresentationType(config);
   const stackAnimation = getStackAnimationType(config);
 
-  const shouldUseContentHeight = stackPresentation === 'formSheet';
+  const shouldUseContentHeight =
+    stackPresentation === 'formSheet' &&
+    (process.env.EXPO_OS === 'ios' || config.detents === 'fitToContents');
   const [activityState, setActivityState] = useState<0 | 2>(0);
   const isRegistered = useRef(false);
   const hadLayout = useRef(false);
@@ -76,10 +87,24 @@ function NativeModal({ config, onDismissed, onShow }: NativeModalProps) {
     maybeShowModal();
   }, [maybeShowModal]);
 
+  const [fullScreenHeight, setFullScreenHeight] = useState(0);
+  const [currentDetentIndex, setCurrentDetentIndex] = useState<number | undefined>(undefined);
+
+  const height =
+    Array.isArray(config.detents) && config.detents.length
+      ? fullScreenHeight * config.detents[currentDetentIndex ?? 0]
+      : fullScreenHeight;
+
   return (
     <ScreenStackItem
       key={config.uniqueId}
       {...config.viewProps}
+      onLayout={(e) => {
+        const { height } = e.nativeEvent.layout;
+        if (height) {
+          setFullScreenHeight(height);
+        }
+      }}
       screenId={`__modal-${config.uniqueId}`}
       activityState={activityState}
       stackPresentation={stackPresentation}
@@ -101,6 +126,11 @@ function NativeModal({ config, onDismissed, onShow }: NativeModalProps) {
           backgroundColor: config.transparent ? 'transparent' : 'white',
         },
       ]}
+      onSheetDetentChanged={(event) => {
+        const { nativeEvent } = event;
+        const { index } = nativeEvent;
+        setCurrentDetentIndex(index);
+      }}
       onDismissed={() => {
         onDismissed?.(config.uniqueId);
       }}
@@ -111,8 +141,8 @@ function NativeModal({ config, onDismissed, onShow }: NativeModalProps) {
         hostId={config.uniqueId}
         style={{
           width: '100%',
-          height: '100%',
         }}
+        height={height}
         useContentHeight={shouldUseContentHeight}
         onLayout={() => {
           hadLayout.current = true;

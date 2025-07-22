@@ -214,11 +214,22 @@ export function Modal(props: ModalProps) {
 }
 
 function ModalContent(props: ViewProps) {
-  const { children, ...viewProps } = props;
-  const { setHeight } = use(PortalContentHeightContext);
+  const { children, style, ...viewProps } = props;
+  const { setHeight, contentOffset } = use(PortalContentHeightContext);
+
+  // Adding marginTop here to account for the content offset.
+  // The content offset is the space above the modal.
+  // We are using it, to simulate correct positioning of the modal content for React Native.
+  // If this was not done, touch events would not be correctly handled on Android.
+
   return (
     <View
       {...viewProps}
+      style={{
+        top: contentOffset,
+        width: '100%',
+        position: 'absolute',
+      }}
       onLayout={(e) => {
         const { height } = e.nativeEvent.layout;
         if (height) {
