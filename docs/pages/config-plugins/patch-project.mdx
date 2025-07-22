@@ -15,7 +15,7 @@ This guide explains how to use `patch-project`, when to use it, and its limitati
 
 ## How patch-project works
 
-`patch-project` uses an approach to generate and automatically apply patches that is inspired by Git. Using this command line tool requires the following steps in your project:
+`patch-project` uses an approach to generate and automatically apply patches, which is inspired by Git. Using this command line tool requires the following steps in your project:
 
 ### Installation
 
@@ -64,7 +64,7 @@ ios+eee880ad7b07965271d2323f7057a2b4.patch
 
 ### Apply patches during prebuild
 
-Once you have generated patches, they are automatically applied when subsequently running `npx expo prebuild` command. The `patch-project` config plugin detects the existing patches and applies them to restore your customizations.
+Once you have generated patches, they are automatically applied when subsequently running the `npx expo prebuild` command. The `patch-project` config plugin detects the existing patches and applies them to restore your customizations.
 
 ## When to use patch-project
 
@@ -73,7 +73,7 @@ You can use `patch-project` in the following scenarios:
 - **Migrating existing React Native apps** that are complex because they contain extensive native customizations and re-creating these native customizations as config plugins would be time-consuming.
 - **Preserving manual changes** made to **android** and/or **ios** directories while transitioning to adopt Continuous Native Generation (CNG) in your Expo project.
 - **Quick prototyping** when you need to test native changes before writing config plugins.
-- **Patches are applied automatically** when running `npx expo prebuild` command subsequently. This is an advantage over tools like `patch-package` (commonly used for generating patches for npm libraries), which do not preserve and automatically apply patches during the prebuild process.
+- **Patches are applied automatically** when running the `npx expo prebuild` command subsequently. This is an advantage over tools like `patch-package` (commonly used for generating patches for npm libraries), which do not preserve and automatically apply patches during the prebuild process.
 
 ## Limitations and considerations
 
