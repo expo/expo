@@ -1,5 +1,3 @@
-'use strict';
-
 import { Asset } from 'expo-asset';
 
 export const name = 'Asset';
