@@ -26,7 +26,7 @@ export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
 
     Log.log();
     const answer = await confirmAsync({
-      message: `Continue with uncommited changes?`,
+      message: `Continue with uncommitted changes?`,
     });
 
     if (!answer) {
