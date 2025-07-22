@@ -6,6 +6,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.preference.PreferenceManager
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
+import androidx.core.content.edit
 
 /**
  * Implementation has been copied from reacts internal [DevInternalSettings] class
@@ -19,7 +20,7 @@ abstract class DevMenuSettingsBase(
   override var isFpsDebugEnabled: Boolean
     get() = mPreferences.getBoolean("fps_debug", false)
     set(enabled) {
-      mPreferences.edit().putBoolean("fps_debug", enabled).apply()
+      mPreferences.edit(commit = true) { putBoolean("fps_debug", enabled) }
     }
 
   override var isAnimationFpsDebugEnabled = mPreferences.getBoolean("animations_debug", false)
@@ -27,7 +28,7 @@ abstract class DevMenuSettingsBase(
   override var isJSDevModeEnabled: Boolean
     get() = mPreferences.getBoolean("js_dev_mode_debug", true)
     set(value) {
-      mPreferences.edit().putBoolean("js_dev_mode_debug", value).apply()
+      mPreferences.edit(commit = true) { putBoolean("js_dev_mode_debug", value) }
     }
 
   override var isJSMinifyEnabled: Boolean = mPreferences.getBoolean("js_minify_debug", false)
@@ -41,7 +42,7 @@ abstract class DevMenuSettingsBase(
   override var isElementInspectorEnabled: Boolean
     get() = mPreferences.getBoolean("inspector_debug", false)
     set(enabled) {
-      mPreferences.edit().putBoolean("inspector_debug", enabled).apply()
+      mPreferences.edit(commit = true) { putBoolean("inspector_debug", enabled) }
     }
 
   override var isDeviceDebugEnabled: Boolean = ReactBuildConfig.DEBUG
@@ -51,7 +52,7 @@ abstract class DevMenuSettingsBase(
   override var isRemoteJSDebugEnabled: Boolean
     get() = mPreferences.getBoolean("remote_js_debug", false)
     set(remoteJSDebugEnabled) {
-      mPreferences.edit().putBoolean("remote_js_debug", remoteJSDebugEnabled).apply()
+      mPreferences.edit(commit = true) { putBoolean("remote_js_debug", remoteJSDebugEnabled) }
     }
 
   override var isStartSamplingProfilerOnInit: Boolean =
@@ -63,7 +64,7 @@ abstract class DevMenuSettingsBase(
   override var isHotModuleReplacementEnabled: Boolean
     get() = mPreferences.getBoolean("hot_module_replacement", true)
     set(enabled) {
-      mPreferences.edit().putBoolean("hot_module_replacement", enabled).apply()
+      mPreferences.edit(commit = true) { putBoolean("hot_module_replacement", enabled) }
     }
 
   fun interface Listener {

@@ -21,6 +21,7 @@ internal final class NativeRequest: SharedObject {
     requestInit: NativeRequestInit,
     requestBody: Data?
   ) {
+    self.response.redirectMode = requestInit.redirect
     self.task.start(
       urlSession: urlSession,
       urlSessionDelegate: urlSessionDelegate,

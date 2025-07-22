@@ -28,9 +28,6 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   override val mode: Mode
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  override val devClientHost: ReactHostWrapper
-    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
-
   override val manifest: Manifest
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
