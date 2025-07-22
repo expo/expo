@@ -121,12 +121,10 @@ public final class ImageView: ExpoView {
     if window == nil {
       // Cancel pending requests when the view is unmounted.
       cancelPendingOperation()
-    } else if !bounds.isEmpty {
-      // Reload the image after mounting the view with non-empty bounds.
-      reload()
-    } else {
-      loadPlaceholderIfNecessary()
+      return
     }
+
+    loadPlaceholderIfNecessary()
   }
 
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -165,7 +163,7 @@ public final class ImageView: ExpoView {
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing
+    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing || source.isPhotoLibraryAsset
     if shouldEarlyResize {
       context[.imagePreserveAspectRatio] = true
       context[.imageThumbnailPixelSize] = CGSize(

@@ -113,6 +113,7 @@ function registerReactNativeConfigCommand() {
         'The path to the root of the project'
       ).default(process.cwd(), 'process.cwd()')
     )
+    .option('--source-dir <sourceDir>', 'The path to the native source directory')
     .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths, providedOptions) => {
       if (!['android', 'ios'].includes(providedOptions.platform)) {
@@ -139,6 +140,7 @@ function registerReactNativeConfigCommand() {
         projectRoot,
         searchPaths: linkingOptions.searchPaths,
         transitiveLinkingDependencies,
+        sourceDir: providedOptions.sourceDir,
       };
       const results = await createReactNativeConfigAsync(options);
       if (providedOptions.json) {

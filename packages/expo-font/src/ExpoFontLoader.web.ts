@@ -1,6 +1,7 @@
-import { CodedError, Platform } from 'expo-modules-core';
+import { CodedError, Platform, registerWebModule } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 
+import { ExpoFontLoaderModule } from './ExpoFontLoader';
 import { UnloadFontOptions } from './Font';
 import { FontDisplay, FontResource } from './Font.types';
 
@@ -82,7 +83,7 @@ function getHeadElements(): {
   ];
 }
 
-export default {
+const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
   async unloadAllAsync(): Promise<void> {
     if (!Platform.isDOMAvailable) return;
 
@@ -108,7 +109,7 @@ export default {
       .map((element) => {
         switch (element.$$type) {
           case 'style':
-            return `<style id="${element.id}" type="${element.type}">${element.children}</style>`;
+            return `<style id="${element.id}">${element.children}</style>`;
           case 'link':
             return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
           default:
@@ -139,8 +140,16 @@ export default {
     return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
   },
 
+  // NOTE(vonovak): This is used in RN vector-icons to load fonts dynamically on web. Changing the signature is breaking.
   // NOTE(EvanBacon): No async keyword! This cannot return a promise in Node environments.
   loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {
+    if (__DEV__ && typeof resource !== 'object') {
+      // to help devving on web, where loadAsync interface is different from native
+      throw new CodedError(
+        'ERR_FONT_SOURCE',
+        `Expected font resource of type \`object\` instead got: ${typeof resource}`
+      );
+    }
     if (typeof window === 'undefined') {
       serverContext.add({
         name: fontFamilyName,
@@ -178,6 +187,20 @@ export default {
   },
 };
 
+const isServer = Platform.OS === 'web' && typeof window === 'undefined';
+
+function createExpoFontLoader() {
+  return ExpoFontLoader;
+}
+const toExport = isServer
+  ? ExpoFontLoader
+  : // @ts-expect-error: registerWebModule calls `new` on the module implementation.
+    // Normally that'd be a class but that doesn't work on server, so we use a function instead.
+    // TS doesn't like that but we don't need it to be a class.
+    registerWebModule(createExpoFontLoader, 'ExpoFontLoader');
+
+export default toExport;
+
 const ID = 'expo-generated-fonts';
 
 function getStyleElement(): HTMLStyleElement {
@@ -187,12 +210,12 @@ function getStyleElement(): HTMLStyleElement {
   }
   const styleElement = document.createElement('style');
   styleElement.id = ID;
-  styleElement.type = 'text/css';
+
   return styleElement;
 }
 
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  return `@font-face{font-family:${fontFamily};src:url(${resource.uri});font-display:${
+  return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${
     resource.display || FontDisplay.AUTO
   }}`;
 }

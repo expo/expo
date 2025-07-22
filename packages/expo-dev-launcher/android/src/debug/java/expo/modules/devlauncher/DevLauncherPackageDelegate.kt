@@ -13,7 +13,6 @@ import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.modules.DevLauncherModule
-import expo.modules.devlauncher.modules.DevLauncherAuth
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.modules.DevLauncherDevMenuExtension
 import expo.modules.devlauncher.react.DevLauncherReactNativeHostHandler
@@ -22,8 +21,7 @@ object DevLauncherPackageDelegate {
   fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
     listOf(
       DevLauncherModule(reactContext),
-      DevLauncherDevMenuExtension(reactContext),
-      DevLauncherAuth(reactContext)
+      DevLauncherDevMenuExtension(reactContext)
     )
 
   fun createApplicationLifecycleListeners(context: Context?): List<ApplicationLifecycleListener> =

@@ -8,6 +8,7 @@ import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -99,6 +100,11 @@ export async function getFilesToExportFromServerAsync(
   await Promise.all(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
+        // Rewrite routes should not be statically generated
+        if (route.type === 'rewrite') {
+          return;
+        }
+
         try {
           const targetDomain = exportServer ? 'server' : 'client';
           files.set(filePath, { contents: '', targetDomain });
@@ -140,6 +146,11 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
   modifyRouteNodeInRuntimeManifest(manifest, (route) => {
     if (Array.isArray(route.entryPoints)) {
       route.entryPoints = route.entryPoints.map((entryPoint) => {
+        // TODO(@hassankhan): ENG-16577
+        if (shouldLinkExternally(entryPoint)) {
+          return entryPoint;
+        }
+
         if (entryPoint.startsWith('.')) {
           return path.resolve(appDir, entryPoint);
         } else if (!path.isAbsolute(entryPoint)) {

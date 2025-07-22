@@ -3,7 +3,7 @@
 import { type NavigationProp, type ParamListBase } from '@react-navigation/native';
 import { nanoid } from 'nanoid/non-secure';
 import { useEffect, useState } from 'react';
-import { ViewProps } from 'react-native';
+import { StyleSheet, ViewProps } from 'react-native';
 import { type ScreenProps } from 'react-native-screens';
 
 import { useModalContext, type ModalConfig } from './ModalContext';
@@ -23,7 +23,7 @@ export interface ModalProps extends ViewProps {
   visible: boolean;
   /**
    * Callback that is called after modal is closed.
-   * This is called when the modal is dismissed by the user or programmatically.
+   * This is called when the modal is closed programmatically or when the user dismisses it.
    */
   onClose?: () => void;
   /**
@@ -62,6 +62,8 @@ export interface ModalProps extends ViewProps {
    * Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.
    * You can pass an array of ascending values each defining allowed sheet detent. iOS accepts any number of detents,
    * while **Android is limited to three**.
+   *
+   * @default 'fitToContents'
    */
   detents?: ModalConfig['detents'];
 }
@@ -103,7 +105,7 @@ export function Modal(props: ModalProps) {
     detents,
     ...viewProps
   } = props;
-  const { openModal, closeModal, addEventListener } = useModalContext();
+  const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
   const [currentModalId, setCurrentModalId] = useState<string | undefined>();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   useEffect(() => {
@@ -112,7 +114,21 @@ export function Modal(props: ModalProps) {
     }
   }, [detents]);
   useEffect(() => {
-    if (!currentModalId && visible) {
+    if (
+      __DEV__ &&
+      presentationStyle === 'formSheet' &&
+      detents !== 'fitToContents' &&
+      process.env.EXPO_OS === 'ios' &&
+      StyleSheet.flatten(props.style)?.flex
+    ) {
+      console.warn(
+        // TODO: ENG-16230: Add warning link to documentation
+        'The `formSheet` presentation style does not support flex styles on iOS. Consider using a fixed height view or scroll view with `fitToContents` detent instead. See '
+      );
+    }
+  }, [props.style, presentationStyle, detents]);
+  useEffect(() => {
+    if (visible) {
       const newId = nanoid();
       openModal({
         animationType,
@@ -120,20 +136,25 @@ export function Modal(props: ModalProps) {
         transparent,
         viewProps,
         component: children,
-        detents,
         uniqueId: newId,
         parentNavigationProp: navigation,
+        detents: detents ?? 'fitToContents',
       });
       setCurrentModalId(newId);
       return () => {
         closeModal(newId);
       };
-    } else if (currentModalId && !visible) {
-      closeModal(currentModalId);
-      setCurrentModalId(undefined);
     }
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    if (currentModalId && visible) {
+      updateModal(currentModalId, {
+        component: children,
+      });
+    }
+  }, [children]);
 
   useEffect(() => {
     if (currentModalId) {
@@ -154,6 +175,6 @@ export function Modal(props: ModalProps) {
       };
     }
     return () => {};
-  }, [currentModalId, addEventListener, onClose]);
+  }, [currentModalId, addEventListener, onClose, onShow]);
   return null;
 }

@@ -366,6 +366,62 @@ Before deploying to these providers, it may be good to be familiar with the basi
 - `@expo/server` does **not** inflate environment variables from **.env** files. They are expected to load either by the hosting provider or the user.
 - Metro is not included in the server.
 
+### Bun
+
+<Step label="1">
+
+Export the website for production:
+
+<Terminal cmd={['$ bunx expo export -p web']} />
+
+</Step>
+
+<Step label="2">
+
+Write a server entry file that serves the static files and delegates requests to the server routes:
+
+```ts server.ts
+import { createRequestHandler } from '@expo/server/adapter/bun';
+import dotenv from 'dotenv';
+
+import { websocket } from './websocket';
+dotenv.config();
+
+const CLIENT_BUILD_DIR = `${process.cwd()}/dist/client`;
+const SERVER_BUILD_DIR = `${process.cwd()}/dist/server`;
+const handleRequest = createRequestHandler({ build: SERVER_BUILD_DIR });
+
+const port = process.env.PORT || 3000;
+
+Bun.serve({
+  port: process.env.PORT || 3000,
+  async fetch(req) {
+    const url = new URL(req.url);
+    console.log('Request URL:', url.pathname);
+
+    const staticPath = url.pathname === '/' ? '/index.html' : url.pathname;
+    const file = Bun.file(CLIENT_BUILD_DIR + staticPath);
+
+    if (await file.exists()) return new Response(await file.arrayBuffer());
+
+    return handleRequest(req);
+  },
+  websocket,
+});
+
+console.log(`Bun server running at http://localhost:${port}`);
+```
+
+</Step>
+
+<Step label="4">
+
+Start the server with `bun`:
+
+<Terminal cmd={['$ bun run server.ts']} />
+
+</Step>
+
 ### Express
 
 <Step label="1">

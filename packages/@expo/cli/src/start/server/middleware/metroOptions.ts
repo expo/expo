@@ -47,6 +47,8 @@ export type ExpoMetroOptions = {
 
   /** Should assets be exported for hosting. Always true on web. Always false for embedded builds. Optional for native exports. */
   hosted?: boolean;
+  /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
+  liveBindings?: boolean;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -95,6 +97,7 @@ function withDefaults({
     usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     environment: environment === 'client' ? undefined : environment,
+    liveBindings: env.EXPO_UNSTABLE_LIVE_BINDINGS,
     ...props,
   };
 }
@@ -162,6 +165,7 @@ export function getMetroDirectBundleOptions(
     modulesOnly,
     useMd5Filename,
     hosted,
+    liveBindings,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -202,6 +206,7 @@ export function getMetroDirectBundleOptions(
     dom: domRoot,
     hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,
+    liveBindings: !liveBindings ? String(liveBindings) : undefined,
   };
 
   // Iterate and delete undefined values
@@ -297,6 +302,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     modulesOnly,
     runModule,
     hosted,
+    liveBindings,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -389,6 +395,10 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.set('runModule', String(runModule));
   }
 
+  if (liveBindings === false) {
+    queryParams.append('transform.liveBindings', String(false));
+  }
+
   return queryParams;
 }
 
@@ -437,6 +447,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     engine: assertEngine(getStringParam('transform.engine')),
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
+    liveBindings: isTruthy(getStringParam('transform.liveBindings') ?? 'true'),
   };
 
   return options;

@@ -10,6 +10,7 @@
 import type { RouteNode } from './Route';
 import { getContextKey, matchGroupName } from './matchers';
 import { sortRoutes } from './sortRoutes';
+import { shouldLinkExternally } from './utils/url';
 
 // TODO: Share these types across cli, server, router, etc.
 export type ExpoRouterServerManifestV1Route<TRegex = string> = {
@@ -82,9 +83,12 @@ function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {
   });
 }
 
+// TODO(@hassankhan): ENG-16575
+type FlatNodeTuple = [contextKey: string, absoluteRoute: string, node: RouteNode];
+
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 {
-  function getFlatNodes(route: RouteNode, parentRoute: string = ''): [string, string, RouteNode][] {
+  function getFlatNodes(route: RouteNode, parentRoute: string = ''): FlatNodeTuple[] {
     // Use a recreated route instead of contextKey because we duplicate nodes to support array syntax.
     const absoluteRoute = [parentRoute, route.route].filter(Boolean).join('/');
 
@@ -128,9 +132,15 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
     ([path]) => path
   )
     .map((redirect) => {
-      redirect[1] =
-        flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
-        '/';
+      // TODO(@hassankhan): ENG-16577
+      // For external redirects, use `destinationContextKey` as the destination URL
+      if (shouldLinkExternally(redirect[2].destinationContextKey!)) {
+        redirect[1] = redirect[2].destinationContextKey!;
+      } else {
+        redirect[1] =
+          flat.find(([, , route]) => route.contextKey === redirect[2].destinationContextKey)?.[0] ??
+          '/';
+      }
 
       return redirect;
     })

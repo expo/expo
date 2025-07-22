@@ -1,12 +1,14 @@
-import { Button, mergeClasses } from '@expo/styleguide';
+import { Button } from '@expo/styleguide';
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
+import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import { useRouter } from 'next/compat/router';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
-import { FOOTNOTE, MONOSPACE } from '~/ui/components/Text';
-import * as Tooltip from '~/ui/components/Tooltip';
+import { FOOTNOTE } from '~/ui/components/Text';
+
+import { SdkPackageButton } from './SdkPackageButton';
 
 type Props = {
   packageName?: string;
@@ -33,56 +35,28 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
         </Button>
       )}
       {sourceCodeUrl && (
-        <Tooltip.Root delayDuration={500}>
-          <Tooltip.Trigger asChild>
-            <Button
-              theme="quaternary"
-              className="min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]"
-              openInNewTab
-              href={sourceCodeUrl}>
-              <div
-                className={mergeClasses(
-                  'flex flex-col items-center',
-                  'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
-                )}>
-                <GithubIcon className="mt-0.5 text-icon-secondary" />
-                <FOOTNOTE crawlable={false} theme="secondary">
-                  GitHub
-                </FOOTNOTE>
-              </div>
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content className="max-w-[300px]">
-            <FOOTNOTE>
-              View source code of <MONOSPACE>{packageName}</MONOSPACE> on GitHub
-            </FOOTNOTE>
-          </Tooltip.Content>
-        </Tooltip.Root>
+        <SdkPackageButton
+          label="GitHub"
+          Icon={GithubIcon}
+          href={sourceCodeUrl}
+          tooltip="View source code on GitHub"
+        />
+      )}
+      {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
+        <SdkPackageButton
+          label="Changelog"
+          Icon={Tag03Icon}
+          href={`${sourceCodeUrl}/CHANGELOG.md`}
+          tooltip="View package changelog on GitHub"
+        />
       )}
       {packageName && (
-        <Tooltip.Root delayDuration={500}>
-          <Tooltip.Trigger asChild>
-            <Button
-              theme="quaternary"
-              openInNewTab
-              className="min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]"
-              href={`https://www.npmjs.com/package/${packageName}`}>
-              <div
-                className={mergeClasses(
-                  'flex flex-col items-center',
-                  'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
-                )}>
-                <BuildIcon className="mt-0.5 text-icon-secondary" />
-                <FOOTNOTE crawlable={false} theme="secondary">
-                  npm
-                </FOOTNOTE>
-              </div>
-            </Button>
-          </Tooltip.Trigger>
-          <Tooltip.Content>
-            <FOOTNOTE>View package in npm registry</FOOTNOTE>
-          </Tooltip.Content>
-        </Tooltip.Root>
+        <SdkPackageButton
+          label="npm"
+          Icon={BuildIcon}
+          href={`https://www.npmjs.com/package/${packageName}`}
+          tooltip="View package in npm registry"
+        />
       )}
     </>
   );

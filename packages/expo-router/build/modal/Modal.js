@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Modal = Modal;
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
+const react_native_1 = require("react-native");
 const ModalContext_1 = require("./ModalContext");
 const useNavigation_1 = require("../useNavigation");
 const utils_1 = require("./utils");
@@ -34,7 +35,7 @@ const utils_1 = require("./utils");
  */
 function Modal(props) {
     const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, ...viewProps } = props;
-    const { openModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
+    const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
     (0, react_1.useEffect)(() => {
@@ -43,7 +44,18 @@ function Modal(props) {
         }
     }, [detents]);
     (0, react_1.useEffect)(() => {
-        if (!currentModalId && visible) {
+        if (__DEV__ &&
+            presentationStyle === 'formSheet' &&
+            detents !== 'fitToContents' &&
+            process.env.EXPO_OS === 'ios' &&
+            react_native_1.StyleSheet.flatten(props.style)?.flex) {
+            console.warn(
+            // TODO: ENG-16230: Add warning link to documentation
+            'The `formSheet` presentation style does not support flex styles on iOS. Consider using a fixed height view or scroll view with `fitToContents` detent instead. See ');
+        }
+    }, [props.style, presentationStyle, detents]);
+    (0, react_1.useEffect)(() => {
+        if (visible) {
             const newId = (0, non_secure_1.nanoid)();
             openModal({
                 animationType,
@@ -51,21 +63,24 @@ function Modal(props) {
                 transparent,
                 viewProps,
                 component: children,
-                detents,
                 uniqueId: newId,
                 parentNavigationProp: navigation,
+                detents: detents ?? 'fitToContents',
             });
             setCurrentModalId(newId);
             return () => {
                 closeModal(newId);
             };
         }
-        else if (currentModalId && !visible) {
-            closeModal(currentModalId);
-            setCurrentModalId(undefined);
-        }
         return () => { };
     }, [visible]);
+    (0, react_1.useEffect)(() => {
+        if (currentModalId && visible) {
+            updateModal(currentModalId, {
+                component: children,
+            });
+        }
+    }, [children]);
     (0, react_1.useEffect)(() => {
         if (currentModalId) {
             const unsubscribeShow = addEventListener('show', (id) => {
@@ -85,7 +100,7 @@ function Modal(props) {
             };
         }
         return () => { };
-    }, [currentModalId, addEventListener, onClose]);
+    }, [currentModalId, addEventListener, onClose, onShow]);
     return null;
 }
 //# sourceMappingURL=Modal.js.map

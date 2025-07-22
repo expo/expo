@@ -1,4 +1,4 @@
-import * as babylon from '@babel/parser';
+import { parse } from '@babel/core';
 
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';
@@ -416,13 +416,13 @@ describe(isModuleEmptyFor, () => {
   ].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns true for: ${title}`, () => {
-      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(true);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(true);
     });
   });
   [`export {}`, `const foo = 'bar'`, `3`, `{}`, `true`, `console.log('hey')`].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns false for: ${title}`, () => {
-      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(false);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(false);
     });
   });
 });
@@ -1368,7 +1368,12 @@ it(`recursively expands export all statements (shallow)`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1485,7 +1490,12 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
         value: true
       });
       exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1556,7 +1566,12 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1564,7 +1579,12 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1616,7 +1636,12 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";

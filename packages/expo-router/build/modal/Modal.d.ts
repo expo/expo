@@ -13,7 +13,7 @@ export interface ModalProps extends ViewProps {
     visible: boolean;
     /**
      * Callback that is called after modal is closed.
-     * This is called when the modal is dismissed by the user or programmatically.
+     * This is called when the modal is closed programmatically or when the user dismisses it.
      */
     onClose?: () => void;
     /**
@@ -52,6 +52,8 @@ export interface ModalProps extends ViewProps {
      * Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.
      * You can pass an array of ascending values each defining allowed sheet detent. iOS accepts any number of detents,
      * while **Android is limited to three**.
+     *
+     * @default 'fitToContents'
      */
     detents?: ModalConfig['detents'];
 }

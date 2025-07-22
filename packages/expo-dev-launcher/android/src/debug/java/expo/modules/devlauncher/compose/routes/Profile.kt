@@ -10,8 +10,8 @@ import com.composables.core.SheetDetent.Companion.Hidden
 import expo.modules.devlauncher.compose.AuthActivity
 import expo.modules.devlauncher.compose.AuthRequestType
 import expo.modules.devlauncher.compose.AuthResult
-import expo.modules.devlauncher.compose.ProfileState
-import expo.modules.devlauncher.compose.ProfileViewModel
+import expo.modules.devlauncher.compose.models.ProfileState
+import expo.modules.devlauncher.compose.models.ProfileViewModel
 import expo.modules.devlauncher.compose.ui.AccountSelector
 import expo.modules.devlauncher.compose.ui.BottomSheet
 import expo.modules.devlauncher.compose.ui.ProfileLayout

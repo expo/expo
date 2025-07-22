@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Updated intent actions list. ([#38131](https://github.com/expo/expo/pull/38131) by [@jakex7](https://github.com/jakex7))
+
 ### 🎉 New features
 
 - Added `APP_OPEN_BY_DEFAULT_SETTINGS` action. ([#38054](https://github.com/expo/expo/pull/38054) by [@jakex7](https://github.com/jakex7))
