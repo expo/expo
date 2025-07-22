@@ -44,6 +44,9 @@ export type ExpoMetroOptions = {
 
   modulesOnly?: boolean;
   runModule?: boolean;
+
+  /** Should assets be exported for hosting. Always true on web. Always false for embedded builds. Optional for native exports. */
+  hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
   liveBindings?: boolean;
 };
@@ -161,6 +164,7 @@ export function getMetroDirectBundleOptions(
     runModule,
     modulesOnly,
     useMd5Filename,
+    hosted,
     liveBindings,
   } = withDefaults(options);
 
@@ -200,6 +204,7 @@ export function getMetroDirectBundleOptions(
     bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
     dom: domRoot,
+    hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,
     liveBindings: !liveBindings ? String(liveBindings) : undefined,
   };
@@ -296,6 +301,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     domRoot,
     modulesOnly,
     runModule,
+    hosted,
     liveBindings,
   } = withDefaults(options);
 
@@ -349,6 +355,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   }
   if (domRoot) {
     queryParams.append('transform.dom', domRoot);
+  }
+  if (hosted) {
+    queryParams.append('transform.hosted', '1');
   }
 
   if (environment) {
@@ -425,6 +434,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     minify: isTruthy(getStringParam('minify') ?? 'false'),
     lazy: isTruthy(getStringParam('lazy') ?? 'false'),
     routerRoot: getStringParam('transform.routerRoot') ?? 'app',
+    hosted: isTruthy(getStringParam('transform.hosted')),
     isExporting: isTruthy(getStringParam('resolver.exporting') ?? 'false'),
     environment: assertEnvironment(getStringParam('transform.environment') ?? 'node'),
     platform: url.searchParams.get('platform') ?? 'web',
