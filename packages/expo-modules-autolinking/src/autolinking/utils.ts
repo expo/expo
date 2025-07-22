@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 import { SupportedPlatform } from '../types';
@@ -34,4 +35,9 @@ export function getIsolatedModulesPath(packagePath: string, packageName: string)
   );
   const isIsolatedModulesPath = path.basename(maybeIsolatedModulesPath) === 'node_modules';
   return isIsolatedModulesPath ? maybeIsolatedModulesPath : null;
+}
+
+export async function loadPackageJSONAsync(packageJsonPath: string) {
+  const packageJsonText = await fs.promises.readFile(packageJsonPath, 'utf8');
+  return JSON.parse(packageJsonText);
 }
