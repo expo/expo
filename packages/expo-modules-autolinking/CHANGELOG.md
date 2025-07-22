@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Add support for user script sandboxing ([#38206](https://github.com/expo/expo/pull/38206) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 2.1.14 - 2025-07-07
 
 ### 🐛 Bug fixes
