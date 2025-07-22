@@ -4,7 +4,7 @@
     "slug": "expo-template-tabs-react-navigation",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": ".src/assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "scheme": "helloworld",
@@ -14,13 +14,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": ".src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.satya164.reactnavigationtemplate"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": ".src/assets/images/favicon.png"
     },
     "plugins": [
       "expo-asset",
@@ -28,7 +28,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#ffffff",
-          "image": "./assets/splash-icon.png"
+          "image": ".src/assets/images/splash-icon.png"
         }
       ],
       "react-native-edge-to-edge"

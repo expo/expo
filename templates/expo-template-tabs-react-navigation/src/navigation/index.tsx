@@ -1,14 +1,13 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HeaderButton, Text } from '@react-navigation/elements';
 import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Image } from 'react-native';
 
 import bell from '../assets/bell.png';
 import newspaper from '../assets/newspaper.png';
+import { Explore } from './screens/Explore';
 import { Home } from './screens/Home';
 import { NotFound } from './screens/NotFound';
-import { Explore } from './screens/Explore';
 
 const HomeTabs = createBottomTabNavigator({
   screens: {
