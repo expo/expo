@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import { ViewEvent } from '../../types';
-import { MaterialIcon } from '../Button/types';
+import { MaterialIcon } from '../MaterialIcon/types';
 
 /**
  * @hidden Not used anywhere yet.
