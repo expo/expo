@@ -237,8 +237,6 @@ describe(resolveExtraBuildDependenciesAsync, () => {
   });
 
   it('should return null if Podfile.properties.json not found', async () => {
-    vol.fromJSON({ 'Podfile.properties.json': null }, '/app/ios');
-
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/macos');
     expect(extraBuildDeps).toBe(null);
   });
