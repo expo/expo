@@ -7,7 +7,10 @@ platforms: ['android', 'ios', 'tvos', 'web']
 isNew: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import APISection from '~/components/plugins/APISection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 
 `expo-router/ui` is a submodule of `expo-router` library and exports components and hooks to build custom tab layouts, rather than using the default [React Navigation](https://reactnavigation.org/) navigators provided by `expo-router`.
@@ -16,7 +19,14 @@ import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 
 ## Installation
 
-To use `expo-router/ui` in your project, you need to install `expo-router` in your project. Follow the instructions from the [Install Expo Router](/router/installation/) guide.
+To use `expo-router/ui` in your project, you need to install `expo-router` in your project. Follow the instructions from the Expo Router's installation guide:
+
+<BoxLink
+  title="Install Expo Router"
+  description="Learn how to install Expo Router in your project."
+  href="/router/installation/"
+  Icon={BookOpen02Icon}
+/>
 
 ## Configuration in app config
 
@@ -36,7 +46,9 @@ If you are using the [default](/more/create-expo/#--template) template to create
 
 ## Usage
 
-Find more information about using `expo-router/ui` in [Expo Router UI](/router/advanced/custom-tabs/) guide.
+For information about using `expo-router/ui` in Custom tab layouts guide:
+
+<BoxLink title="Custom tab layouts" Icon={BookOpen02Icon} href="/router/advanced/custom-tabs/" />
 
 ## API
 

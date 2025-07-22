@@ -100,7 +100,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
 
   override fun onFailure(call: Call, e: IOException) {
     // Canceled request should be handled by emitRequestCanceled
-    if (e.message === "Canceled") {
+    if (e.message == "Canceled") {
       return
     }
 

@@ -5,14 +5,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { PluginObj } from '@babel/core';
-import type { Statement, SourceLocation as BabelSourceLocation, Node as BabelNode } from '@babel/types';
-import type * as BabelTypes from '@babel/types';
-type Types = typeof BabelTypes;
+import type { PluginObj, types as t } from '@babel/core';
+type Types = typeof t;
 export type Options = Readonly<{
     importDefault: string;
     importAll: string;
     resolve: boolean;
+    /** Whether to use live bindings for exports and import. Improves circular dependencies resolution. */
+    liveBindings?: boolean;
     out?: {
         isESModule: boolean;
         [key: string]: unknown;
@@ -21,26 +21,36 @@ export type Options = Readonly<{
 type State = {
     exportAll: {
         file: string;
-        loc?: BabelSourceLocation | null;
+        loc?: t.SourceLocation | null;
         [key: string]: unknown;
     }[];
     exportDefault: {
         local: string;
-        loc?: BabelSourceLocation | null;
+        loc?: t.SourceLocation | null;
+        namespace?: string;
         [key: string]: unknown;
     }[];
     exportNamed: {
         local: string;
         remote: string;
-        loc?: BabelSourceLocation | null;
+        loc?: t.SourceLocation | null;
+        namespace?: string;
         [key: string]: unknown;
     }[];
     imports: {
-        node: Statement;
+        node: t.Statement;
     }[];
-    importDefault: BabelNode;
-    importAll: BabelNode;
+    importDefault: t.Node;
+    importAll: t.Node;
     opts: Options;
+    importedIdentifiers: Map<string, {
+        source: string;
+        imported: string;
+    }>;
+    namespaceForLocal: Map<string, {
+        namespace: string;
+        remote: string;
+    }>;
     [key: string]: unknown;
 };
 export declare function importExportPlugin({ types: t }: {

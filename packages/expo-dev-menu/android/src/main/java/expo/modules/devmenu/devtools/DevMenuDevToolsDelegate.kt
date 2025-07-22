@@ -2,9 +2,9 @@ package expo.modules.devmenu.devtools
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import androidx.core.net.toUri
 import com.facebook.react.bridge.UiThreadUtil
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.ReactHostWrapper
@@ -88,7 +88,7 @@ class DevMenuDevToolsDelegate(
    */
   private fun requestOverlaysPermission(context: Context) {
     if (!Settings.canDrawOverlays(context)) {
-      val uri = Uri.parse("package:" + context.applicationContext.packageName)
+      val uri = ("package:" + context.applicationContext.packageName).toUri()
       val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK
       }

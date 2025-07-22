@@ -37,8 +37,7 @@ struct ImageSource: Record {
     return isPhotoLibraryAssetUrl(uri)
   }
 
-  var isCachingAllowed: Bool {
-    // TODO: Don't cache other non-network requests (e.g. data URIs, local files)
+  var cacheOriginalImage: Bool {
     return !isPhotoLibraryAsset
   }
 }
