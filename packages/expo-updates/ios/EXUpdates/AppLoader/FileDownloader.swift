@@ -11,6 +11,7 @@ import EASClient
 
 public typealias SuccessBlock = (_ data: Data?, _ urlResponse: URLResponse) -> Void
 public typealias ErrorBlock = (_ error: UpdatesError) -> Void
+public typealias FileDownloadProgressBlock = (_ fractionCompleted: Double) -> Void
 public typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
 
 internal typealias RemoteUpdateDownloadSuccessBlock = (_ updateResponse: UpdateResponse) -> Void
@@ -69,6 +70,9 @@ public final class FileDownloader {
   private var config: UpdatesConfig!
   private var logger: UpdatesLogger!
 
+  private var progressObservations: [URLSessionTask: NSKeyValueObservation] = [:]
+  private let progressObservationsLock = NSLock()
+
   public convenience init(config: UpdatesConfig, logger: UpdatesLogger) {
     self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default, logger: logger)
   }
@@ -82,6 +86,10 @@ public final class FileDownloader {
 
   deinit {
     self.session.finishTasksAndInvalidate()
+    progressObservationsLock.lock()
+    progressObservations.values.forEach { $0.invalidate() }
+    progressObservations.removeAll()
+    progressObservationsLock.unlock()
   }
 
   public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
@@ -91,12 +99,14 @@ public final class FileDownloader {
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
     extraHeaders: [String: Any],
+    progressBlock: FileDownloadProgressBlock? = nil,
     successBlock: @escaping HashSuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
     downloadData(
       fromURL: url,
-      extraHeaders: extraHeaders
+      extraHeaders: extraHeaders,
+      progressBlock: progressBlock
     ) { data, response in
       guard let data = data else {
         let error = UpdatesError.fileDownloaderAssetDownloadEmptyResponse(url: url)
@@ -137,11 +147,12 @@ public final class FileDownloader {
   func downloadData(
     fromURL url: URL,
     extraHeaders: [String: Any],
+    progressBlock: FileDownloadProgressBlock?,
     successBlock: @escaping SuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
     let request = createGenericRequest(withURL: url, extraHeaders: extraHeaders)
-    downloadData(withRequest: request, successBlock: successBlock, errorBlock: errorBlock)
+    downloadData(withRequest: request, progressBlock: progressBlock, successBlock: successBlock, errorBlock: errorBlock)
   }
 
   func downloadRemoteUpdate(
@@ -153,7 +164,8 @@ public final class FileDownloader {
   ) {
     let request = createManifestRequest(withURL: url, extraHeaders: extraHeaders)
     downloadData(
-      withRequest: request
+      withRequest: request,
+      progressBlock: nil
     ) { data, response in
       guard let response = response as? HTTPURLResponse else {
         let error = UpdatesError.fileDownloaderResponseNotHTTPURLResponse
@@ -805,10 +817,20 @@ public final class FileDownloader {
 
   private func downloadData(
     withRequest request: URLRequest,
+    progressBlock: FileDownloadProgressBlock?,
     successBlock: @escaping SuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
-    let task = session.dataTask(with: request) { data, response, error in
+    var task: URLSessionTask?
+    task = session.dataTask(with: request) { data, response, error in
+      // when the task completes, invalidate and remove its observer
+      if let task = task {
+        self.progressObservationsLock.lock()
+        self.progressObservations[task]?.invalidate()
+        self.progressObservations.removeValue(forKey: task)
+        self.progressObservationsLock.unlock()
+      }
+      
       guard let response = response else {
         // error is non-nil when data and response are both nil
         // swiftlint:disable:next force_unwrapping
@@ -832,7 +854,16 @@ public final class FileDownloader {
 
       successBlock(data, response)
     }
-    task.resume()
+
+    if let progressBlock = progressBlock, let task = task {
+      progressObservationsLock.lock()
+      progressObservations[task] = task.progress.observe(\.fractionCompleted) { progress, _ in
+        progressBlock(progress.fractionCompleted);
+      }
+      progressObservationsLock.unlock()
+    }
+
+    task?.resume()
   }
 
   private static func encoding(fromResponse response: URLResponse) -> String.Encoding {

@@ -105,7 +105,11 @@ public final class RemoteAppLoader: AppLoader {
           fromURL: assetUrl,
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
-          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current }
+          extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current },
+          progressBlock: { [weak self] fractionCompleted in
+            guard let self = self else { return }
+            self.assetLoadProgressListener(asset: asset, progress: fractionCompleted)
+          }
         ) { data, response, _ in
           DispatchQueue.global().async {
             self.handleAssetDownload(withData: data, response: response, asset: asset)

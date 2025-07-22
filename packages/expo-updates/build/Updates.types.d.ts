@@ -264,6 +264,7 @@ export type UpdatesNativeStateMachineContext = {
     downloadError?: Error;
     lastCheckForUpdateTime?: Date;
     sequenceNumber: number;
+    downloadProgress: number;
 };
 /**
  * @hidden

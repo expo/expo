@@ -194,5 +194,6 @@ export type UseUpdatesReturnType = {
      * app reloads or restarts.
      */
     lastCheckForUpdateTimeSinceRestart?: Date;
+    downloadProgress: number;
 };
 //# sourceMappingURL=UseUpdates.types.d.ts.map
