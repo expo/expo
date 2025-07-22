@@ -15,7 +15,7 @@
 - [web] Add transparent modal support and allow modal stacking ([#37856](https://github.com/expo/expo/pull/37856) by [@hirbod](https://github.com/hirbod))
 - [web] Use web modal in `Modal` ([#37732](https://github.com/expo/expo/pull/37732) by [@Ubax](https://github.com/Ubax))
 - Support external URLs with static redirects ([#38041](https://github.com/expo/expo/pull/38041) by [@hassankhan](https://github.com/hassankhan))
-- Add `Modal` `detentIndex` prop to support `sheetInitialDetentIndex` option ([#38124](https://github.com/expo/expo/pull/38124) by [@lodev09](https://github.com/lodev09))
+- Add `Modal` `initialDetentIndex` prop to support `sheetInitialDetentIndex` option ([#38124](https://github.com/expo/expo/pull/38124) by [@lodev09](https://github.com/lodev09))
 
 ### 🐛 Bug fixes
 
