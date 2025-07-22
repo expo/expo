@@ -162,6 +162,12 @@ export async function exportAssetsAsync(
     });
   }
 
+  if (hostedNative) {
+    // Add google services file if it exists
+    await resolveGoogleServicesFile(projectRoot, exp);
+    return { exp, assets: [], embeddedHashSet: new Set(), files };
+  }
+
   const assets: BundleAssetWithFileHashes[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
