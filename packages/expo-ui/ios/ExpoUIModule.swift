@@ -36,5 +36,6 @@ public final class ExpoUIModule: Module {
     View(SpacerView.self)
     View(GroupView.self)
     View(DisclosureGroupView.self)
+    View(ExpoUI.ContentUnavailableView.self)
   }
 }

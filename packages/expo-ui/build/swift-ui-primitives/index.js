@@ -5,6 +5,7 @@ export * from './Text';
 export * from './Image';
 export * from './Spacer';
 export * from './DisclosureGroup';
+export * from './ContentUnavailableView';
 export { BottomSheetPrimitive as BottomSheet } from '../swift-ui/BottomSheet';
 export { ButtonPrimitive as Button } from '../swift-ui/Button';
 export { ColorPickerPrimitive as ColorPicker } from '../swift-ui/ColorPicker';
