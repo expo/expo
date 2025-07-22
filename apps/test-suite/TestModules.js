@@ -76,6 +76,7 @@ export function getTestModules() {
 
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/FileSystemNext'));
+    modules.push(require('./tests/Blob'));
   }
 
   if (Platform.OS === 'android') {

@@ -24,7 +24,7 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
   }
 
   slice(start?: number, end?: number, contentType?: string): ExpoBlob {
-    const normalizedType = contentType ?? normalizedContentType(contentType);
+    const normalizedType = normalizedContentType(contentType);
     const slicedBlob = super.slice(start, end, normalizedType);
     Object.setPrototypeOf(slicedBlob, ExpoBlob.prototype);
     return slicedBlob;
@@ -48,6 +48,10 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
   }
 
   async arrayBuffer(): Promise<ArrayBufferLike> {
-    return super.bytes().then((bytes: Uint8Array) => bytes.buffer);
+    return super
+      .bytes()
+      .then((bytes: Uint8Array) =>
+        bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+      );
   }
 }

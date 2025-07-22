@@ -2,16 +2,18 @@ package expo.modules.blob
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlin.math.max
+import kotlin.math.min
 
 class BlobModule : Module() {
     override fun definition() = ModuleDefinition {
         Name("ExpoBlob")
 
         Class(Blob::class) {
-            Constructor() { blobParts: List<BlobPart>, options: BlobOptionsBag? ->
+            Constructor() { blobParts: List<BlobPart>?, options: BlobOptionsBag? ->
                 val type = options?.type ?: DEFAULT_TYPE
                 val endings = options?.endings ?: EndingType.TRANSPARENT
-                Blob(blobParts.internal(endings == EndingType.NATIVE), type)
+                Blob((blobParts ?: listOf()).internal(endings == EndingType.NATIVE), type)
             }
 
             Property("size") { blob: Blob ->
@@ -24,12 +26,16 @@ class BlobModule : Module() {
 
             Function("slice") { blob: Blob, start: Int?, end: Int?, contentType: String? ->
                 var sliceStart: Int = start ?: 0
-                var sliceEnd: Int = end ?: 0
+                var sliceEnd: Int = end ?: blob.size
                 if (sliceStart < 0) {
-                    sliceStart = blob.size + sliceStart
+                    sliceStart = max(blob.size + sliceStart, 0)
+                } else {
+                  sliceStart = min(sliceStart, blob.size)
                 }
                 if (sliceEnd < 0) {
-                    sliceEnd = blob.size + sliceEnd
+                    sliceEnd = max(blob.size + sliceEnd, 0)
+                } else {
+                  sliceEnd = min(sliceEnd, blob.size)
                 }
                 blob.slice(sliceStart, sliceEnd, contentType ?: "")
             }
