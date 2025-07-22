@@ -226,7 +226,7 @@ Sets the [EAS environment variable](/eas/environment-variables/) environment for
 - `preview`
 - `development`
 
-The `environment` key is available on all jobs except for the pre-packaged `build`, `submit`, and `get-build` jobs.
+The `environment` key is available on all jobs.
 
 ```yaml
 jobs:
@@ -546,10 +546,6 @@ jobs:
     # @info #
     type: fingerprint
     # @end #
-    params:
-      environment: production | preview | development # optional, defaults to production
-      env: # optional
-        APP_VARIANT: staging # just an example
 ```
 
 This job outputs the following properties:
