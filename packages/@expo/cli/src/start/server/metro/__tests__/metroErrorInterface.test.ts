@@ -91,8 +91,6 @@ describe('attachImportStackToRootMessage', () => {
         | import "not-existing-module-2"`;
     attachImportStackToRootMessage(actual);
 
-    console.log('test', actual.message);
-
     expect(actual.message).toEqual(`Test error
 
 
