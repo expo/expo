@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
@@ -68,7 +67,11 @@ describe(findModulesAsync, () => {
   it('should link top level package', async () => {
     vol.fromNestedJSON(
       {
-        ...mockedRoot(),
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'react-native-third-party': '*',
+          },
+        }),
         node_modules: {
           'react-native-third-party': mockedModule('react-native-third-party'),
         },
@@ -77,7 +80,6 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
       platform: 'ios',
       projectRoot,
     });
@@ -89,13 +91,42 @@ describe(findModulesAsync, () => {
 
   /**
    * /app
+   *   └── /app/node_modules/react-native-third-party
+   */
+  it('should not link top-level package without dependency', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('app'),
+        node_modules: {
+          // NOTE: Not mentioned in dependencies above
+          'react-native-third-party': mockedModule('react-native-third-party'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      platform: 'ios',
+      projectRoot,
+    });
+
+    expect(result).toEqual({});
+  });
+
+  /**
+   * /app
    *   ├── /app/node_modules/react-native-third-party
    *   └── /app/node_modules/@expo/expo-test
    */
   it('should link scoped level package', async () => {
     vol.fromNestedJSON(
       {
-        ...mockedRoot(),
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'react-native-third-party': '*',
+            '@expo/expo-test': '*',
+          },
+        }),
         node_modules: {
           'react-native-third-party': mockedModule('react-native-third-party'),
           '@expo/expo-test': mockedModule('@expo/expo-test'),
@@ -105,7 +136,6 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
       platform: 'ios',
       projectRoot,
     });
@@ -145,10 +175,6 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [
-        path.join(projectRoot, 'packages/app/node_modules'),
-        path.join(projectRoot, 'node_modules'),
-      ],
       platform: 'ios',
       projectRoot: path.join(projectRoot, 'packages/app'),
     });
@@ -198,10 +224,6 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [
-        path.join(projectRoot, 'packages/app/node_modules'),
-        path.join(projectRoot, 'node_modules'),
-      ],
       platform: 'ios',
       projectRoot: path.join(projectRoot, 'packages/app'),
     });
@@ -221,11 +243,47 @@ describe(findModulesAsync, () => {
   /**
    * /workspace
    *   │ ╚══ /workspace/packages/app
+   *   │
+   *   ├── /workspace/node_modules/dep-pkg
+   *   └── /workspace/node_modules/pkg
+   */
+  it('should link all packages which are in app search paths', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot(),
+        'packages/app': {
+          ...mockedRoot('app', {
+            pkgDependencies: { pkg: '*' },
+          }),
+        },
+        node_modules: {
+          pkg: mockedModule('pkg'),
+          // NOTE: There's no dependency on this:
+          'dep-pkg': mockedModule('dep-pkg'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      searchPaths: [path.join(projectRoot, 'node_modules')],
+      platform: 'ios',
+      projectRoot: path.join(projectRoot, 'packages/app'),
+    });
+    expect(result).toEqual({
+      pkg: expectAnyModule(),
+      'dep-pkg': expectAnyModule(),
+    });
+  });
+
+  /**
+   * /workspace
+   *   │ ╚══ /workspace/packages/app
    *   │       └── /workspace/packages/app/node_modules/pkg@1.0.0
    *   │
    *   └── /workspace/node_modules/pkg@0.0.0
    */
-  it('should link non-hoisted package first if there are multiple versions', async () => {
+  it('should link non-hoisted package first if there are multiple versions (search paths)', async () => {
     vol.fromNestedJSON(
       {
         ...mockedRoot(),
@@ -254,6 +312,47 @@ describe(findModulesAsync, () => {
         path.join(projectRoot, 'packages/app/node_modules'),
         path.join(projectRoot, 'node_modules'),
       ],
+      platform: 'ios',
+      projectRoot: path.join(projectRoot, 'packages/app'),
+    });
+
+    expect(result).toEqual({
+      pkg: expectAnyModule('1.0.0-local'),
+    });
+  });
+
+  /**
+   * /workspace
+   *   │ ╚══ /workspace/packages/app
+   *   │       └── /workspace/packages/app/node_modules/pkg@1.0.0
+   *   │
+   *   └── /workspace/node_modules/pkg@0.0.0
+   */
+  it('should link non-hoisted package first if there are multiple versions (no search paths)', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot(),
+        'packages/app': {
+          ...mockedRoot('app', {
+            pkgDependencies: { pkg: '*' },
+          }),
+          node_modules: {
+            pkg: mockedModule('pkg', {
+              pkgVersion: '1.0.0-local',
+            }),
+          },
+        },
+        // Hoisted
+        node_modules: {
+          pkg: mockedModule('pkg', {
+            pkgVersion: '0.0.0-hoisted',
+          }),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
       platform: 'ios',
       projectRoot: path.join(projectRoot, 'packages/app'),
     });
@@ -311,9 +410,8 @@ describe(findModulesAsync, () => {
     });
 
     const result = await findModulesAsync({
-      searchPaths: [],
       platform: 'ios',
-      projectRoot,
+      projectRoot: path.join(projectRoot, 'packages/app'),
     });
 
     expect(result).toEqual({
@@ -336,7 +434,12 @@ describe(findModulesAsync, () => {
   it('should prefer project dependencies over nested isolated dependencies', async () => {
     vol.fromNestedJSON(
       {
-        ...mockedRoot(),
+        ...mockedRoot('root', {
+          pkgDependencies: {
+            '@expo/test': '*',
+            'react-native-third-party': '*',
+          },
+        }),
         node_modules: {
           // Isolated store
           '.pnpm/react-native-third-party@x/node_modules': {
@@ -380,10 +483,15 @@ describe(findModulesAsync, () => {
     });
   });
 
-  it('should not link modules excluded by `options.exclude`', async () => {
+  it('should not link modules excluded by `options.exclude` (search paths)', async () => {
     vol.fromNestedJSON(
       {
-        ...mockedRoot(),
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'react-native-third-party': '*',
+            '@expo/expo-test': '*',
+          },
+        }),
         node_modules: {
           'react-native-third-party': mockedModule('react-native-third-party'),
           '@expo/expo-test': mockedModule('@expo/expo-test'),
@@ -394,6 +502,34 @@ describe(findModulesAsync, () => {
 
     const result = await findModulesAsync({
       searchPaths: [path.join(projectRoot, 'node_modules')],
+      platform: 'ios',
+      projectRoot,
+      exclude: ['react-native-third-party'],
+    });
+
+    expect(result).toEqual({
+      '@expo/expo-test': expectAnyModule(),
+    });
+  });
+
+  it('should not link modules excluded by `options.exclude` (no search paths)', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'react-native-third-party': '*',
+            '@expo/expo-test': '*',
+          },
+        }),
+        node_modules: {
+          'react-native-third-party': mockedModule('react-native-third-party'),
+          '@expo/expo-test': mockedModule('@expo/expo-test'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
       platform: 'ios',
       projectRoot,
       exclude: ['react-native-third-party'],
@@ -453,7 +589,6 @@ describe(findModulesAsync, () => {
   });
 
   /**
-   * TODO(@kitten): Fix this behaviour
    * /app
    *   ╚══ /node_modules/expo-module-1
    *       └── /app/node_modules/expo-module-1/node_modules/expo-module-2
@@ -461,7 +596,11 @@ describe(findModulesAsync, () => {
   it('should link transitive non-hoisted module (FAILURE)', async () => {
     vol.fromNestedJSON(
       {
-        ...mockedRoot(),
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'expo-module-1': '*',
+          },
+        }),
         node_modules: {
           'expo-module-1': {
             ...mockedModule('expo-module-1', {
@@ -477,15 +616,13 @@ describe(findModulesAsync, () => {
     );
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
       platform: 'ios',
       projectRoot,
     });
 
     expect(result).toEqual({
       'expo-module-1': expectAnyModule(),
-      // TODO(@kitten): This is expected to succeed, but doesn't
-      //'expo-module-2': expectAnyModule(),
+      'expo-module-2': expectAnyModule(),
     });
   });
 });
