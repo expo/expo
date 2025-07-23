@@ -18,16 +18,13 @@ declare module 'node:module' {
 // We don't expect native modules to be excessively nested in the dependency tree
 const MAX_DEPTH = 8;
 
-const createNodeModulePathsCreator = (rootPath: string) => {
+const createNodeModulePathsCreator = () => {
   const _nodeModulePathCache = new Map<string, string>();
   return async function getNodeModulePaths(packagePath: string) {
     const outputPaths: string[] = [];
     const nodeModulePaths = Module._nodeModulePaths(packagePath);
     for (let idx = 0; idx < nodeModulePaths.length; idx++) {
       const nodeModulePath = nodeModulePaths[idx];
-      if (idx !== 0 && !nodeModulePath.startsWith(rootPath)) {
-        break;
-      }
       const target =
         _nodeModulePathCache.get(nodeModulePath) || (await maybeRealpath(nodeModulePath));
       if (target != null) {
@@ -124,7 +121,7 @@ export async function scanDependenciesRecursively(
   ];
 
   const _visitedPackagePaths = new Set();
-  const getNodeModulePaths = createNodeModulePathsCreator(rootPath || rawPath);
+  const getNodeModulePaths = createNodeModulePathsCreator();
   const searchResults: ResolutionResult = Object.create(null);
   for (let depth = 0; modulePathsQueue.length > 0 && depth < MAX_DEPTH; depth++) {
     const resolutions = await Promise.all(
