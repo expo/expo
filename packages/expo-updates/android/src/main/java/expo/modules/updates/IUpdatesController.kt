@@ -8,6 +8,7 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.manifest.Update
+import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
 import java.util.Date
@@ -33,6 +34,8 @@ interface IUpdatesController {
    * this.
    */
   val bundleAssetName: String?
+
+  val reloadScreenManager: ReloadScreenManager?
 
   /**
    * Public for E2E tests.
