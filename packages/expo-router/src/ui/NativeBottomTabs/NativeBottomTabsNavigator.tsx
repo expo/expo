@@ -7,15 +7,12 @@ import {
   useNavigationBuilder,
 } from '@react-navigation/native';
 import React, { ComponentProps, PropsWithChildren } from 'react';
-import { enableFreeze } from 'react-native-screens';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabOptions, NativeTabsView, type NativeTabsViewProps } from './NativeTabsView';
 import { withLayoutContext } from '../..';
 import { BottomTabAccessoryProvider } from './NativeTabsViewContext';
 import { Tab } from './TabOptions';
-
-enableFreeze(true);
 
 function NativeTabsNavigator({
   children,

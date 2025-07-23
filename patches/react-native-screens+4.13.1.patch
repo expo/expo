@@ -1,0 +1,28 @@
+diff --git a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.h b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.h
+index cc45537..9fe86db 100644
+--- a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.h
++++ b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.h
+@@ -60,6 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
+ 
+ - (BOOL)emitOnNativeFocusChangeRequestSelectedTabScreen:(nonnull RNSBottomTabsScreenComponentView *)tabScreen;
+ 
++- (UITabBarController*) getController;
++
+ #if !RCT_NEW_ARCH_ENABLED
+ #pragma mark - LEGACY Event blocks
+ 
+diff --git a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm
+index c148fb7..09a2962 100644
+--- a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm
++++ b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm
+@@ -44,6 +44,10 @@ @implementation RNSBottomTabsHostComponentView {
+   BOOL _needsTabBarAppearanceUpdate;
+ }
+ 
++- (UITabBarController*) getController {
++    return _controller;
++}
++
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+   if (self = [super initWithFrame:frame]) {

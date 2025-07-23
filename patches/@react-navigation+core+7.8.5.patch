@@ -1,0 +1,16 @@
+diff --git a/node_modules/@react-navigation/core/.DS_Store b/node_modules/@react-navigation/core/.DS_Store
+new file mode 100644
+index 0000000..a3e9d7c
+Binary files /dev/null and b/node_modules/@react-navigation/core/.DS_Store differ
+diff --git a/node_modules/@react-navigation/core/lib/module/useNavigationBuilder.js b/node_modules/@react-navigation/core/lib/module/useNavigationBuilder.js
+index de45f4e..2e8d05d 100644
+--- a/node_modules/@react-navigation/core/lib/module/useNavigationBuilder.js
++++ b/node_modules/@react-navigation/core/lib/module/useNavigationBuilder.js
+@@ -286,6 +286,7 @@ export function useNavigationBuilder(createRouter, options) {
+         name: route.params.screen,
+         params: route.params.params,
+         path: route.params.path,
++        previewKey: route.params.__internal__expoRouterPreviewKey,
+         pop: route.params.pop
+       });
+     }

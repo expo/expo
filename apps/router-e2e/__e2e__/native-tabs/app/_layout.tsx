@@ -33,13 +33,13 @@ export default function Layout() {
           <IOSIcon name="lock.open.applewatch" useAsSelected />
           <Title>Face Gallery</Title>
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="four">
+        <NativeTabs.Trigger name="explore">
           <Icon src={require('../../../assets/explore_gray.png')} />
           <Icon src={require('../../../assets/explore_orange.png')} useAsSelected />
           <IOSIcon name="safari.fill" />
           <IOSIcon name="safari.fill" useAsSelected />
           <Badge>9+</Badge>
-          <Title>Discover</Title>
+          <Title>Explore</Title>
         </NativeTabs.Trigger>
       </NativeTabs>
     </ThemeProvider>

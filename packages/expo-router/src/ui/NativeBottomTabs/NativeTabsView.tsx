@@ -8,7 +8,7 @@ import {
 import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { type ColorValue, type TextStyle } from 'react-native';
-import { BottomTabs, featureFlags } from 'react-native-screens';
+import { BottomTabs, enableFreeze, featureFlags } from 'react-native-screens';
 import type { BottomTabsScreenProps } from 'react-native-screens/lib/typescript/components/BottomTabsScreen';
 import BottomTabsScreen from 'react-native-screens/src/components/BottomTabsScreen';
 
@@ -53,6 +53,8 @@ export interface NativeTabsViewProps {
     >
   >;
 }
+
+enableFreeze(false);
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { builder, style } = props;
