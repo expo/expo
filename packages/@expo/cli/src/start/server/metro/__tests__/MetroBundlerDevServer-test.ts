@@ -3,7 +3,7 @@ import { vol } from 'memfs';
 
 import { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
-import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
+import { attachImportStackToRootMessage, MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { warnInvalidWebOutput } from '../router';
 import { FileChangeEvent, observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
@@ -188,5 +188,95 @@ describe('API Route output warning', () => {
       },
     ]);
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
+  });
+});
+
+describe('attachImportStackToRootMessage', () => {
+  type ErrorWithImportStack = Error & {
+    _expoImportStack?: string;
+    cause?: ErrorWithImportStack;
+  };
+
+  it('no change to error', () => {
+    const actual = new Error('Test error');
+    attachImportStackToRootMessage(actual);
+
+    expect(actual).toEqual(new Error('Test error'));
+  });
+
+  it('import from root', () => {
+    const actual: ErrorWithImportStack = new Error('Test error');
+    actual._expoImportStack = `
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`;
+    attachImportStackToRootMessage(actual);
+
+    expect(actual.message).toEqual(`Test error
+
+
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`);
+  });
+
+  it('import from direct cause', () => {
+    const actual: ErrorWithImportStack = new Error('Test error');
+    actual.cause = new Error('Direct cause');
+    actual.cause._expoImportStack = `
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`;
+    attachImportStackToRootMessage(actual);
+
+    expect(actual.message).toEqual(`Test error
+
+
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`);
+  });
+
+  it('import from cause chain', () => {
+    const actual: ErrorWithImportStack = new Error('Test error');
+    actual.cause = new Error('Direct cause');
+    actual.cause.cause = new Error('Indirect cause');
+    actual.cause.cause._expoImportStack = `
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`;
+    attachImportStackToRootMessage(actual);
+
+    expect(actual.message).toEqual(`Test error
+
+
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`);
+  });
+
+  it('import from nearest cause in chain', () => {
+    const actual: ErrorWithImportStack = new Error('Test error');
+    actual.cause = new Error('Direct cause');
+    actual.cause.cause = new Error('Indirect cause');
+    actual.cause.cause.cause = new Error('Another indirect cause');
+    actual.cause.cause._expoImportStack = `
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`;
+    actual.cause.cause.cause._expoImportStack = `
+      Import stack:
+        hooks/hooks/useApples.ts
+        | import "not-existing-module-2"`;
+    attachImportStackToRootMessage(actual);
+
+    console.log('test', actual.message);
+
+    expect(actual.message).toEqual(`Test error
+
+
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`);
   });
 });

@@ -1570,23 +1570,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           revision = props.revision;
         }
       } catch (error) {
-        const attachImportStackToRootMessage = (err: unknown, root: unknown = err) => {
-          if (!(err instanceof Error) || !(root instanceof Error)) return;
-
-          if ('_expoImportStack' in err) {
-            // Space out build failures.
-            root.message += '\n\n' + err._expoImportStack;
-            if (!isDebug) {
-              // When not debugging remove the stack to avoid cluttering the output and confusing users,
-              // the import stack is the guide to fixing the error.
-              delete root.stack;
-            }
-          } else {
-            attachImportStackToRootMessage(err.cause, root);
-          }
-        };
         attachImportStackToRootMessage(error);
-
         throw error;
       }
 
@@ -1819,3 +1803,19 @@ async function sourceMapStringAsync(
 function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
+
+export const attachImportStackToRootMessage = (err: unknown, root: unknown = err) => {
+  if (!(err instanceof Error) || !(root instanceof Error)) return;
+
+  if ('_expoImportStack' in err) {
+    // Space out build failures.
+    root.message += '\n\n' + err._expoImportStack;
+    if (!isDebug) {
+      // When not debugging remove the stack to avoid cluttering the output and confusing users,
+      // the import stack is the guide to fixing the error.
+      delete root.stack;
+    }
+  } else {
+    attachImportStackToRootMessage(err.cause, root);
+  }
+};
