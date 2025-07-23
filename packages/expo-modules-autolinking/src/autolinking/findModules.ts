@@ -12,8 +12,8 @@ import {
 } from '../dependencies';
 import { PackageRevision, SearchOptions, SearchResults, SupportedPlatform } from '../types';
 
-// Names of the config files. From lowest to highest priority.
-const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
+/** Names of Expo Module config files (highest to lowest priority) */
+const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
 
 async function resolveExpoModule(
   resolution: DependencyResolution,
@@ -24,14 +24,14 @@ async function resolveExpoModule(
     return null;
   }
   let expoModuleConfig: ExpoModuleConfig | null = null;
-  for (let idx = EXPO_MODULE_CONFIG_FILENAMES.length - 1; idx >= 0; idx--) {
+  for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
     try {
       expoModuleConfig = await loadExpoModuleConfigAsync(
         path.join(resolution.path, EXPO_MODULE_CONFIG_FILENAMES[idx])
       );
       break;
     } catch {
-      continue;
+      // try the next file
     }
   }
   if (expoModuleConfig && expoModuleConfig.supportsPlatform(platform)) {
