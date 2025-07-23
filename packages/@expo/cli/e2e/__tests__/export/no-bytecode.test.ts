@@ -25,8 +25,6 @@ describe('exports for hermes with no bytecode', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );
@@ -83,8 +81,6 @@ describe('exports for hermes with no bytecode and no minification', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_ROUTER_SRC: 'url-polyfill',
-          E2E_ROUTER_ASYNC: 'development',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );
