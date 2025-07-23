@@ -11,6 +11,18 @@ describe('attachImportStackToRootMessage', () => {
     attachImportStackToRootMessage(actual);
 
     expect(actual).toEqual(new Error('Test error'));
+    expect(actual.stack).toBeDefined();
+  });
+
+  it('import from root', () => {
+    const actual: ErrorWithImportStack = new Error('Test error');
+    actual._expoImportStack = `
+      Import stack:
+        hooks/hooks/useBananas.ts
+        | import "not-existing-module"`;
+    attachImportStackToRootMessage(actual);
+
+    expect(actual.stack).toBeUndefined();
   });
 
   it('import from root', () => {
@@ -89,6 +101,7 @@ describe('attachImportStackToRootMessage', () => {
         | import "not-existing-module"`);
   });
 });
+
 describe('nearestImportStack', () => {
   it('returns undefined for non-error', () => {
     expect(nearestImportStack('not an error')).toBeUndefined();

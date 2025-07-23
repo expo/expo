@@ -401,6 +401,7 @@ function canParse(url: string): boolean {
 
 /**
  * Walks thru the error cause chain and attaches the import stack to the root error message.
+ * Removes the error stack for import and syntax errors.
  */
 export const attachImportStackToRootMessage = (err: unknown) => {
   if (!(err instanceof Error)) return;
@@ -409,12 +410,12 @@ export const attachImportStackToRootMessage = (err: unknown) => {
   const nearestImportStackValue = nearestImportStack(err);
   if (nearestImportStackValue) {
     err.message += '\n\n' + nearestImportStackValue;
-  }
 
-  if (!isDebug) {
-    // When not debugging remove the stack to avoid cluttering the output and confusing users,
-    // the import stack is the guide to fixing the error.
-    delete err.stack;
+    if (!isDebug) {
+      // When not debugging remove the stack to avoid cluttering the output and confusing users,
+      // the import stack is the guide to fixing the error.
+      delete err.stack;
+    }
   }
 };
 
