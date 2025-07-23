@@ -14,6 +14,7 @@ import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeF
 import { env } from './env';
 import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
+import { getOutOfTreePlatforms } from './getOutOfTreePlatforms';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { JSModule } from './serializer/getCssDeps';
@@ -203,6 +204,7 @@ export function getDefaultConfig(
   const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   const nodeModulesPaths = getModulesPaths(projectRoot);
+  const outOfTreePlatforms = getOutOfTreePlatforms(projectRoot);
   if (env.EXPO_DEBUG) {
     console.log();
     console.log(`Expo Metro config:`);
@@ -254,6 +256,18 @@ export function getDefaultConfig(
         .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+      resolveRequest: (context, moduleName, platform) => {
+        const outOfTreePlatform = outOfTreePlatforms.find(({ name }) => name === platform);
+        if (
+          !outOfTreePlatform ||
+          (moduleName !== 'react-native' && !moduleName.startsWith('react-native/'))
+        ) {
+          return context.resolveRequest(context, moduleName, platform);
+        }
+
+        const newModuleName = moduleName.replace('react-native', outOfTreePlatform.package);
+        return context.resolveRequest(context, newModuleName, platform);
+      },
     },
     cacheStores: [cacheStore],
     watcher: {
@@ -282,6 +296,18 @@ export function getDefaultConfig(
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
         ];
+
+        // Add InitializeCore for OOT platforms
+        if (outOfTreePlatforms.length > 0) {
+          for (const outOfTreePlatform of outOfTreePlatforms) {
+            const reactNativePath = path.dirname(
+              resolveFrom(projectRoot, `${outOfTreePlatform.package}/package.json`)
+            );
+            preModules.push(
+              require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore'))
+            );
+          }
+        }
 
         const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
         if (stdRuntime) {
