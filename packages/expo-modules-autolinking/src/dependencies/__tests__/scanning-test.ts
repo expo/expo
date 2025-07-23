@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
-import { join } from 'path';
+import path from 'path';
 
 import { scanDependenciesInSearchPath } from '../scanning';
 
@@ -20,7 +20,15 @@ function mockedNodeModule(
   };
 }
 
+const symlinkMany = (symlinks: Record<string, string>) => {
+  for (const from in symlinks) {
+    vol.mkdirSync(path.dirname(path.join(projectRoot, from)), { recursive: true });
+    vol.symlinkSync(path.join(projectRoot, symlinks[from]), path.join(projectRoot, from));
+  }
+};
+
 const projectRoot = '/fake/project';
+const projectRootNodeModules = '/fake/project/node_modules';
 
 describe(scanDependenciesInSearchPath, () => {
   afterEach(() => {
@@ -38,7 +46,7 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'));
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -73,12 +81,11 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    vol.symlinkSync(
-      join(projectRoot, 'react-native-third-party'),
-      join(projectRoot, 'node_modules/react-native-third-party')
-    );
+    symlinkMany({
+      'node_modules/react-native-third-party': 'react-native-third-party',
+    });
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'));
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -111,15 +118,12 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    vol.symlinkSync(
-      join(
-        projectRoot,
-        'node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party'
-      ),
-      join(projectRoot, 'node_modules/react-native-third-party')
-    );
+    symlinkMany({
+      'node_modules/react-native-third-party':
+        'node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party',
+    });
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'));
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -146,7 +150,7 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'));
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -175,7 +179,7 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'));
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -210,7 +214,7 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'));
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules);
     expect(result).toEqual({});
   });
 
@@ -225,7 +229,7 @@ describe(scanDependenciesInSearchPath, () => {
       projectRoot
     );
 
-    const result = await scanDependenciesInSearchPath(join(projectRoot, 'node_modules'), {
+    const result = await scanDependenciesInSearchPath(projectRootNodeModules, {
       shouldIncludeDependency: (dependencyName) => dependencyName !== 'ignored',
     });
 
