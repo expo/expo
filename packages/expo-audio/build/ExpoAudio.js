@@ -196,7 +196,19 @@ export function useAudioRecorderState(recorder, interval = 500) {
     const [state, setState] = useState(recorder.getStatus());
     useEffect(() => {
         const int = setInterval(() => {
-            setState(recorder.getStatus());
+            const newState = recorder.getStatus();
+            setState((prevState) => {
+                if (prevState.canRecord !== newState.canRecord ||
+                    prevState.isRecording !== newState.isRecording ||
+                    prevState.mediaServicesDidReset !== newState.mediaServicesDidReset ||
+                    prevState.url !== newState.url ||
+                    Math.abs(prevState.durationMillis - newState.durationMillis) > 50 ||
+                    Math.abs((prevState.metering ?? 0) - (newState.metering ?? 0)) > 0.1 ||
+                    prevState.metering !== newState.metering) {
+                    return newState;
+                }
+                return prevState;
+            });
         }, interval);
         return () => clearInterval(int);
     }, [recorder.id]);
