@@ -55,7 +55,6 @@ import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant

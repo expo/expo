@@ -18,7 +18,6 @@ import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 sealed interface HomeAction {
