@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -86,7 +86,12 @@ export async function createReactNativeConfigAsync(
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(
     options.projectRoot
   );
-  const searchPaths = options.searchPaths ?? [];
+
+  // custom native modules should be resolved first so that they can override other modules
+  const searchPaths =
+    options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
+      ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
+      : (options.searchPaths ?? []);
 
   const resolutions = mergeResolutionResults(
     await Promise.all([
