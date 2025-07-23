@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
-import { join } from 'path';
+import path from 'path';
 
 import { scanDependenciesRecursively } from '../resolution';
 
@@ -19,6 +19,13 @@ function mockedNodeModule(
     }),
   };
 }
+
+const symlinkMany = (symlinks: Record<string, string>) => {
+  for (const from in symlinks) {
+    vol.mkdirSync(path.dirname(path.join(projectRoot, from)), { recursive: true });
+    vol.symlinkSync(path.join(projectRoot, symlinks[from]), path.join(projectRoot, from));
+  }
+};
 
 const projectRoot = '/fake/project';
 
@@ -164,23 +171,12 @@ describe(scanDependenciesRecursively, () => {
       projectRoot
     );
 
-    vol.symlinkSync(
-      join(
-        projectRoot,
-        'node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party'
-      ),
-      join(projectRoot, 'node_modules/react-native-third-party')
-    );
-    vol.symlinkSync(
-      join(
-        projectRoot,
-        'node_modules/.pnpm/react-native-dependency@x.x.x/node_modules/react-native-dependency'
-      ),
-      join(
-        projectRoot,
-        'node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-dependency'
-      )
-    );
+    symlinkMany({
+      'node_modules/react-native-third-party':
+        'node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party',
+      'node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-dependency':
+        'node_modules/.pnpm/react-native-dependency@x.x.x/node_modules/react-native-dependency',
+    });
 
     const result = await scanDependenciesRecursively(projectRoot);
 
