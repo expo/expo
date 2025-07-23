@@ -30,7 +30,7 @@ export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
 
 export interface SearchOptions {
   // Available in the CLI
-  searchPaths: string[];
+  searchPaths?: string[];
   ignorePaths?: string[] | null;
   exclude?: string[] | null;
   platform: SupportedPlatform;
@@ -69,6 +69,7 @@ export interface GenerateModulesProviderOptions extends ResolveOptions {
 }
 
 export type PackageRevision = {
+  name: string;
   path: string;
   version: string;
   config?: ExpoModuleConfig;
