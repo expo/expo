@@ -1,7 +1,7 @@
 import { getBareExtensions } from '@expo/config/paths';
+import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
 import assert from 'assert';
 import fs from 'fs';
-import type { SourceFileResolution } from 'metro-resolver/src/types';
 import path from 'path';
 
 import { createFastResolver, FailedToResolvePathError } from '../createExpoMetroResolver';
