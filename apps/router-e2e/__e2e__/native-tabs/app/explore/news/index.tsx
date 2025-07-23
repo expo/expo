@@ -1,6 +1,6 @@
 import { ScrollView } from 'react-native';
 
-import { Faces } from '../../components/faces';
+import { Post } from '../../../components/Post';
 
 export default function Index() {
   return (
@@ -8,10 +8,12 @@ export default function Index() {
       contentInsetAdjustmentBehavior="automatic"
       style={{ flex: 1, backgroundColor: '#000' }}
       contentContainerStyle={{
-        alignItems: 'center',
         padding: 32,
+        gap: 16,
+        width: '100%',
       }}>
-      <Faces numberOfFaces={60} />
+      <Post title="New watches in August" href="/explore/news/new-watches-august" />
+      <Post title="We are featured in a movie" href="/explore/news/we-are-featured-in-a-movie" />
     </ScrollView>
   );
 }
