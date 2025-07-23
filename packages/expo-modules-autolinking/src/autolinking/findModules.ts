@@ -61,8 +61,8 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   // custom native modules should be resolved first so that they can override other modules
   const searchPaths =
     options.nativeModulesDir && fs.existsSync(options.nativeModulesDir)
-      ? [options.nativeModulesDir, ...options.searchPaths]
-      : options.searchPaths;
+      ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
+      : (options.searchPaths ?? []);
 
   return filterMapResolutionResult(
     mergeResolutionResults(
