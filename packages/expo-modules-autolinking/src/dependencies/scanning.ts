@@ -3,10 +3,6 @@ import fs from 'fs';
 import type { ResolutionResult, DependencyResolution } from './types';
 import { defaultShouldIncludeDependency, loadPackageJson, maybeRealpath, fastJoin } from './utils';
 
-declare module 'node:module' {
-  export function _nodeModulePaths(base: string): readonly string[];
-}
-
 async function resolveDependency(
   basePath: string,
   dependencyName: string,
