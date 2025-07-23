@@ -1,6 +1,41 @@
 ---
 title: Reference
-hideTOC: true
+hideTOC: trueimport React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Text, View } from 'react-native';
+
+function RecordScreen() {
+  return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>🎙️ Grabar</Text></View>;
+}
+function BeatsScreen() {
+  return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>🎶 Beats</Text></View>;
+}
+function FeedScreen() {
+  return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>📰 Feed</Text></View>;
+}
+function LiveScreen() {
+  return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>📡 Directo</Text></View>;
+}
+function MasterScreen() {
+  return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>🎛️ Master</Text></View>;
+}
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Grabar" component={RecordScreen} />
+        <Tab.Screen name="Beats" component={BeatsScreen} />
+        <Tab.Screen name="Feed" component={FeedScreen} />
+        <Tab.Screen name="Directo" component={LiveScreen} />
+        <Tab.Screen name="Master" component={MasterScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+}
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
