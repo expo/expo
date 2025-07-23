@@ -21,6 +21,7 @@ async function resolveDependency(
   if (packageJson) {
     return {
       name: packageJson.name,
+      version: packageJson.version || '',
       path: realPath || originPath,
       originPath,
       duplicates: null,
@@ -29,6 +30,7 @@ async function resolveDependency(
   } else if (realPath) {
     return {
       name: dependencyName.toLowerCase(),
+      version: '',
       path: realPath,
       originPath,
       duplicates: null,

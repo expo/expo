@@ -50,6 +50,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -87,6 +88,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/react-native-third-party/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/react-native-third-party/node_modules/react-native-dependency",
+          "version": "0.0.1",
         },
         "react-native-third-party": {
           "depth": 0,
@@ -94,6 +96,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -125,6 +128,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/react-native-dependency",
+          "version": "0.0.1",
         },
         "react-native-third-party": {
           "depth": 0,
@@ -132,6 +136,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -187,6 +192,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/.pnpm/react-native-dependency@x.x.x/node_modules/react-native-dependency",
+          "version": "0.0.1",
         },
         "react-native-third-party": {
           "depth": 0,
@@ -194,6 +200,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -223,6 +230,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -254,6 +262,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "included",
           "originPath": "/fake/project/node_modules/included",
           "path": "/fake/project/node_modules/included",
+          "version": "0.0.1",
         },
       }
     `);
@@ -297,6 +306,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "parent-a",
           "originPath": "/fake/project/node_modules/parent-a",
           "path": "/fake/project/node_modules/parent-a",
+          "version": "0.0.1",
         },
         "parent-b": {
           "depth": 0,
@@ -304,6 +314,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "parent-b",
           "originPath": "/fake/project/node_modules/parent-b",
           "path": "/fake/project/node_modules/parent-b",
+          "version": "0.0.1",
         },
         "react-native-dependency": {
           "depth": 1,
@@ -313,6 +324,7 @@ describe(scanDependenciesRecursively, () => {
           "name": "react-native-dependency",
           "originPath": "/fake/project/node_modules/parent-a/node_modules/react-native-dependency",
           "path": "/fake/project/node_modules/parent-a/node_modules/react-native-dependency",
+          "version": "0.0.1",
         },
       }
     `);
