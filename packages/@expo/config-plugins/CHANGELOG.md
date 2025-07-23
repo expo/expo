@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Also look for `activity-aliases` to start Android app. ([#33817](https://github.com/expo/expo/pull/33817) by [@xseignard](https://github.com/xseignard))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
