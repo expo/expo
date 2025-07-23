@@ -20,6 +20,8 @@ import { env } from '../../../utils/env';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
 
+const isDebug = require('debug').enabled('expo:start:server:metro');
+
 function fill(width: number): string {
   return Array(width).join(' ');
 }
@@ -182,7 +184,7 @@ export function getStackAsFormattedLog(
       const displayStack = stackLines.length ? stackLines : backupStackLines;
       logs.push(displayStack.join('\n'));
     }
-  } else if (error) {
+  } else if (error && error.stack) {
     logs.push(chalk.gray(`  ${error.stack}`));
   }
   return logs.join('\n');
@@ -396,3 +398,37 @@ function canParse(url: string): boolean {
     return false;
   }
 }
+
+/**
+ * Walks thru the error cause chain and attaches the import stack to the root error message.
+ */
+export const attachImportStackToRootMessage = (err: unknown) => {
+  if (!(err instanceof Error)) return;
+
+  // Space out build failures.
+  const nearestImportStackValue = nearestImportStack(err);
+  if (nearestImportStackValue) {
+    err.message += '\n\n' + nearestImportStackValue;
+  }
+
+  if (!isDebug) {
+    // When not debugging remove the stack to avoid cluttering the output and confusing users,
+    // the import stack is the guide to fixing the error.
+    delete err.stack;
+  }
+};
+
+/**
+ * Walks thru the error cause chain and returns the nearest import stack.
+ * If the import stack is not found, it returns `undefined`.
+ */
+export const nearestImportStack = (err: unknown, root: unknown = err): string | undefined => {
+  if (!(err instanceof Error) || !(root instanceof Error)) return undefined;
+
+  if ('_expoImportStack' in err && typeof err._expoImportStack === 'string') {
+    // Space out build failures.
+    return err._expoImportStack;
+  } else {
+    return nearestImportStack(err.cause, root);
+  }
+};

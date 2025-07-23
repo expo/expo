@@ -33,7 +33,11 @@ import {
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync, IS_METRO_BUNDLE_ERROR_SYMBOL } from './metroErrorInterface';
+import {
+  attachImportStackToRootMessage,
+  getErrorOverlayHtmlAsync,
+  IS_METRO_BUNDLE_ERROR_SYMBOL,
+} from './metroErrorInterface';
 import { assertMetroPrivateServer, MetroPrivateServer } from './metroPrivateServer';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
@@ -111,9 +115,7 @@ interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
   map: string;
 }
 
-const debugNamespace = 'expo:start:server:metro';
-const isDebug = require('debug').enabled(debugNamespace);
-const debug = require('debug')(debugNamespace) as typeof console.log;
+const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
@@ -1803,19 +1805,3 @@ async function sourceMapStringAsync(
 function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
 }
-
-export const attachImportStackToRootMessage = (err: unknown, root: unknown = err) => {
-  if (!(err instanceof Error) || !(root instanceof Error)) return;
-
-  if ('_expoImportStack' in err) {
-    // Space out build failures.
-    root.message += '\n\n' + err._expoImportStack;
-    if (!isDebug) {
-      // When not debugging remove the stack to avoid cluttering the output and confusing users,
-      // the import stack is the guide to fixing the error.
-      delete root.stack;
-    }
-  } else {
-    attachImportStackToRootMessage(err.cause, root);
-  }
-};
