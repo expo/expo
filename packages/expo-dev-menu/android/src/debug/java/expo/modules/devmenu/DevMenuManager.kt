@@ -365,7 +365,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
-  fun toggleShowFab() {
+  fun toggleFab() {
     preferences?.showFab?.let {
       preferences?.showFab = !it
     }

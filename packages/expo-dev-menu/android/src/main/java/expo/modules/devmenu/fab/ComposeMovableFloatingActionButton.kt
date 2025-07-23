@@ -31,8 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.AwaitPointerEventScope
-import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
@@ -126,35 +124,45 @@ fun ComposeMovableFloatingActionButton(
           .pointerInput(bounds.x, bounds.y) {
             coroutineScope {
               while (true) {
-                // Wait for a touch down event.
-                val pointerId = awaitPointerEventScope { awaitFirstDown().id }
+                awaitPointerEventScope {
+                  // React to the first touch down event
+                  val pointerId = awaitFirstDown().id
 
-                launch {
-                  animatedOffset.stop()
-                }
+                  launch {
+                    animatedOffset.stop()
+                  }
 
-                // React to drag
-                val dragDistance = awaitPointerEventScope {
-                  handleDrag(
-                    pointerId,
-                    animatedOffset,
-                    velocityTracker,
-                    bounds,
-                    this@coroutineScope
-                  )
-                }
+                  // React to drag
+                  var dragDistance = 0f
+                  var dragOffset = animatedOffset.value
 
-                // React to release
-                if (dragDistance < ClickDragTolerance) {
-                  DevMenuManager.openMenu(context as Activity)
-                  velocityTracker.clear()
-                } else {
-                  handleRelease(
-                    animatedOffset,
-                    velocityTracker,
-                    totalFabSizePx,
-                    bounds
-                  )
+                  drag(pointerId) { change ->
+                    dragOffset = (dragOffset + change.positionChange())
+                      .coerceIn(maxX = bounds.x, maxY = bounds.y)
+                    dragDistance += change.positionChange().getDistance()
+                    velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
+                    change.consume()
+
+                    // Only start moving after sufficient drag
+                    if (dragDistance > ClickDragTolerance) {
+                      launch {
+                        animatedOffset.animateTo(dragOffset)
+                      }
+                    }
+                  }
+
+                  // React to touch release
+                  if (dragDistance < ClickDragTolerance) {
+                    DevMenuManager.openMenu(context as Activity)
+                    velocityTracker.clear()
+                  } else {
+                    handleRelease(
+                      animatedOffset,
+                      velocityTracker,
+                      totalFabSizePx,
+                      bounds
+                    )
+                  }
                 }
               }
             }
@@ -169,37 +177,6 @@ fun ComposeMovableFloatingActionButton(
       }
     }
   }
-}
-
-/**
- * Handles the drag gesture, updating the FAB's offset and tracking velocity.
- * @return The total distance dragged.
- */
-private suspend fun AwaitPointerEventScope.handleDrag(
-  pointerId: PointerId,
-  animatedOffset: AnimatableOffset,
-  velocityTracker: ExpoVelocityTracker,
-  bounds: Offset,
-  coroutineScope: CoroutineScope
-): Float {
-  var totalDragDistance = 0f
-  var newOffset = animatedOffset.value
-
-  drag(pointerId) { change ->
-    newOffset = (newOffset + change.positionChange())
-      .coerceIn(maxX = bounds.x, maxY = bounds.y)
-    totalDragDistance += change.positionChange().getDistance()
-
-    velocityTracker.registerPosition(newOffset.x, newOffset.y)
-    change.consume()
-    // Only start moving after sufficient drag
-    if (totalDragDistance > ClickDragTolerance) {
-      coroutineScope.launch {
-        animatedOffset.animateTo(newOffset)
-      }
-    }
-  }
-  return totalDragDistance
 }
 
 /**

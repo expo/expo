@@ -107,7 +107,7 @@ fun DevMenuContent(
           // TODO: @behenate Find a correct icon for this action
           icon = painterResource(R.drawable._expodevclientcomponents_assets_showmenuatlaunchicon),
           toggled = DevMenuPreferencesHandle.showFab,
-          onToggled = { newValue -> onAction(DevMenuAction.ToggleShowFab) }
+          onToggled = { newValue -> onAction(DevMenuAction.ToggleFab) }
         )
       }
 
