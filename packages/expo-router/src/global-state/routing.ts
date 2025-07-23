@@ -277,7 +277,11 @@ function getNavigateAction(
    * Other parameters such as search params and hash are not evaluated.
    */
 
-  const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState);
+  const { actionStateRoute, navigationState } = findDivergentState(
+    _actionState,
+    _navigationState,
+    type
+  );
 
   /*
    * We found the target navigator, but the payload is in the incorrect format
@@ -357,13 +361,26 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
 /*
  * Traverse the state tree comparing the current state and the action state until we find where they diverge
  */
-export function findDivergentState(_actionState: ResultState, _navigationState: NavigationState) {
+export function findDivergentState(
+  _actionState: ResultState,
+  _navigationState: NavigationState,
+  type: string
+) {
   let actionState: PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
   let actionStateRoute: PartialRoute<any> | undefined;
+  const navigationRoutes = [];
   while (actionState && navigationState) {
     actionStateRoute = actionState.routes[actionState.routes.length - 1];
-    const stateRoute = navigationState.routes[navigationState.index ?? 0];
+    const stateRoute = (() => {
+      if (navigationState.type === 'tab' && type === 'PRELOAD') {
+        return (
+          navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
+          navigationState.routes[navigationState.index ?? 0]
+        );
+      }
+      return navigationState.routes[navigationState.index ?? 0];
+    })();
 
     const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
@@ -382,6 +399,8 @@ export function findDivergentState(_actionState: ResultState, _navigationState: 
       break;
     }
 
+    navigationRoutes.push(stateRoute);
+
     actionState = childState;
     navigationState = nextNavigationState as NavigationState;
   }
@@ -390,5 +409,6 @@ export function findDivergentState(_actionState: ResultState, _navigationState: 
     actionState,
     navigationState,
     actionStateRoute,
+    navigationRoutes,
   };
 }

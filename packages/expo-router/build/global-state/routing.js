@@ -225,7 +225,7 @@ function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', wi
      *
      * Other parameters such as search params and hash are not evaluated.
      */
-    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState);
+    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState, type);
     /*
      * We found the target navigator, but the payload is in the incorrect format
      * We need to convert the action state to a payload that can be dispatched
@@ -297,13 +297,20 @@ function getPayloadFromStateRoute(_actionStateRoute) {
 /*
  * Traverse the state tree comparing the current state and the action state until we find where they diverge
  */
-function findDivergentState(_actionState, _navigationState) {
+function findDivergentState(_actionState, _navigationState, type) {
     let actionState = _actionState;
     let navigationState = _navigationState;
     let actionStateRoute;
+    const navigationRoutes = [];
     while (actionState && navigationState) {
         actionStateRoute = actionState.routes[actionState.routes.length - 1];
-        const stateRoute = navigationState.routes[navigationState.index ?? 0];
+        const stateRoute = (() => {
+            if (navigationState.type === 'tab' && type === 'PRELOAD') {
+                return (navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
+                    navigationState.routes[navigationState.index ?? 0]);
+            }
+            return navigationState.routes[navigationState.index ?? 0];
+        })();
         const childState = actionStateRoute.state;
         const nextNavigationState = stateRoute.state;
         const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
@@ -316,6 +323,7 @@ function findDivergentState(_actionState, _navigationState) {
         if (didActionAndCurrentStateDiverge) {
             break;
         }
+        navigationRoutes.push(stateRoute);
         actionState = childState;
         navigationState = nextNavigationState;
     }
@@ -323,6 +331,7 @@ function findDivergentState(_actionState, _navigationState) {
         actionState,
         navigationState,
         actionStateRoute,
+        navigationRoutes,
     };
 }
 //# sourceMappingURL=routing.js.map

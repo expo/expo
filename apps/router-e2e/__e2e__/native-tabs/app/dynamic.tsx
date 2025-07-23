@@ -10,7 +10,7 @@ const iconNames =
       ? ['ic_search', 'sym_action_email', 'sym_action_chat', 'sym_call_missed']
       : [];
 
-export default function Two() {
+export default function Dynamic() {
   const [badgeValue, setBadgeValue] = useState('9+');
   const [labelValue, setLabelValue] = useState('Tab 2');
   const [iconName, setIconName] = useState(iconNames[0] ?? '');
