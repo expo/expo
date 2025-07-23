@@ -16,8 +16,11 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
       - packages/create-expo/**
+      - packages/eslint-config-expo/**
+      - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - yarn.lock
+      - '!**.md'
   pull_request:
     paths:
       - .github/workflows/cli.yml
@@ -32,8 +35,11 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/server/src/**
       - packages/create-expo/**
+      - packages/eslint-config-expo/**
+      - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - yarn.lock
+      - '!**.md'
   schedule:
     - cron: 0 14 * * *
 

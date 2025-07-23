@@ -13,7 +13,7 @@ export interface ModalProps extends ViewProps {
     visible: boolean;
     /**
      * Callback that is called after modal is closed.
-     * This is called when the modal is dismissed by the user or programmatically.
+     * This is called when the modal is closed programmatically or when the user dismisses it.
      */
     onClose?: () => void;
     /**
@@ -52,8 +52,19 @@ export interface ModalProps extends ViewProps {
      * Heights should be described as fraction (a number from `[0, 1]` interval) of screen height / maximum detent height.
      * You can pass an array of ascending values each defining allowed sheet detent. iOS accepts any number of detents,
      * while **Android is limited to three**.
+     *
+     * @default 'fitToContents'
      */
     detents?: ModalConfig['detents'];
+    /**
+     * Determines whether the modal should close when navigating away from the screen that opened it.
+     *
+     * If set to `true`, the modal will close when the user navigates to a different screen.
+     *
+     * If set to `false`, the modal will remain open when pushing a new screen.
+     * However, it will still close when navigating back or replacing the current screen.
+     */
+    closeOnNavigation?: boolean;
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.

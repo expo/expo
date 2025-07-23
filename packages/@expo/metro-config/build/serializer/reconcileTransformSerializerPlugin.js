@@ -39,12 +39,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sortDependencies = sortDependencies;
 exports.isEnvBoolean = isEnvBoolean;
 exports.reconcileTransformSerializerPlugin = reconcileTransformSerializerPlugin;
-/**
- * Copyright © 2024 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 const generator_1 = __importDefault(require("@babel/generator"));
 const assert_1 = __importDefault(require("assert"));
 const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));

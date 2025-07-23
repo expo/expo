@@ -32,6 +32,7 @@ value class FontSize(val font: TextStyle) {
 }
 
 object Typography {
+  val size10 = FontSize.create(10, 17)
   val size12 = FontSize.create(12, 19)
   val size13 = FontSize.create(13, 21, -0.003f)
   val size14 = FontSize.create(14, 22, -0.006f)

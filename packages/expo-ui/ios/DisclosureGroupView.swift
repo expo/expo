@@ -9,6 +9,7 @@ internal final class DisclosureGroupViewProps: ExpoSwiftUI.ViewProps, CommonView
   @Field var padding: PaddingOptions?
   @Field var label: String
   @Field var isExpanded: Bool = true
+  @Field var testID: String?
   var onStateChange = EventDispatcher()
 }
 

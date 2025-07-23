@@ -1,37 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -46,7 +13,6 @@ exports.treeShakeSerializer = treeShakeSerializer;
  */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
-const types = __importStar(require("@babel/types"));
 const assert_1 = __importDefault(require("assert"));
 const jsOutput_1 = require("./jsOutput");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
@@ -94,17 +60,17 @@ function getExportsThatAreNotUsedInModule(ast) {
             if (declaration) {
                 if ('declarations' in declaration && declaration.declarations) {
                     declaration.declarations.forEach((decl) => {
-                        if (types.isIdentifier(decl.id)) {
+                        if (core_1.types.isIdentifier(decl.id)) {
                             exportedIdentifiers.add(decl.id.name);
                         }
                     });
                 }
-                else if ('id' in declaration && types.isIdentifier(declaration.id)) {
+                else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
                     exportedIdentifiers.add(declaration.id.name);
                 }
             }
             specifiers.forEach((spec) => {
-                if (types.isIdentifier(spec.exported)) {
+                if (core_1.types.isIdentifier(spec.exported)) {
                     exportedIdentifiers.add(spec.exported.name);
                 }
             });
@@ -112,7 +78,7 @@ function getExportsThatAreNotUsedInModule(ast) {
         ExportDefaultDeclaration(path) {
             // Default exports need to be handled separately
             // Assuming the default export is a function or class declaration:
-            if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
+            if ('id' in path.node.declaration && core_1.types.isIdentifier(path.node.declaration.id)) {
                 exportedIdentifiers.add(path.node.declaration.id.name);
             }
         },
@@ -270,7 +236,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
                             path.replaceWithMultiple([
                                 // @ts-expect-error: missing type
-                                types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => types.exportSpecifier(types.identifier(exportName), types.identifier(exportName))), types.stringLiteral(path.node.source.value)),
+                                core_1.types.ExportNamedDeclaration(null, exportResults.exportNames.map((exportName) => core_1.types.exportSpecifier(core_1.types.identifier(exportName), core_1.types.identifier(exportName))), core_1.types.stringLiteral(path.node.source.value)),
                             ]);
                             // TODO: Update deps
                             populateModuleWithImportUsage(value);
@@ -291,17 +257,17 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     if (declaration) {
                         if ('declarations' in declaration && declaration.declarations) {
                             declaration.declarations.forEach((decl) => {
-                                if (types.isIdentifier(decl.id)) {
+                                if (core_1.types.isIdentifier(decl.id)) {
                                     exportNames.push(decl.id.name);
                                 }
                             });
                         }
-                        else if ('id' in declaration && types.isIdentifier(declaration.id)) {
+                        else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
                             exportNames.push(declaration.id.name);
                         }
                     }
                     specifiers.forEach((spec) => {
-                        if (types.isIdentifier(spec.exported)) {
+                        if (core_1.types.isIdentifier(spec.exported)) {
                             exportNames.push(spec.exported.name);
                         }
                     });
@@ -309,7 +275,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 ExportDefaultDeclaration(path) {
                     // Default exports need to be handled separately
                     // Assuming the default export is a function or class declaration
-                    if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
+                    if ('id' in path.node.declaration && core_1.types.isIdentifier(path.node.declaration.id)) {
                         exportNames.push(path.node.declaration.id.name);
                     }
                     // If it's an expression, then it's a static export.
@@ -511,12 +477,12 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 ExportNamedDeclaration(path) {
                     const importModuleId = path.node.source?.value;
                     // Remove specifiers, e.g. `export { Foo, Bar as Bax }`
-                    if (types.isExportNamedDeclaration(path.node)) {
+                    if (core_1.types.isExportNamedDeclaration(path.node)) {
                         for (let i = 0; i < path.node.specifiers.length; i++) {
                             const specifier = path.node.specifiers[i];
-                            if (types.isExportSpecifier(specifier) &&
-                                types.isIdentifier(specifier.local) &&
-                                types.isIdentifier(specifier.exported) &&
+                            if (core_1.types.isExportSpecifier(specifier) &&
+                                core_1.types.isIdentifier(specifier.local) &&
+                                core_1.types.isIdentifier(specifier.exported) &&
                                 possibleUnusedExports.includes(specifier.exported.name) &&
                                 !isExportUsed(specifier.exported.name)) {
                                 // Remove specifier
@@ -528,7 +494,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     }
                     // Remove the entire node if the export has been completely removed.
                     const declaration = path.node.declaration;
-                    if (types.isVariableDeclaration(declaration)) {
+                    if (core_1.types.isVariableDeclaration(declaration)) {
                         declaration.declarations = declaration.declarations.filter((decl) => {
                             if (decl.id.type === 'Identifier') {
                                 if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
@@ -546,7 +512,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                             markUnused(path);
                         }
                     }
-                    else if (declaration && 'id' in declaration && types.isIdentifier(declaration.id)) {
+                    else if (declaration && 'id' in declaration && core_1.types.isIdentifier(declaration.id)) {
                         // function, class, etc.
                         if (possibleUnusedExports.includes(declaration.id.name) &&
                             !isExportUsed(declaration.id.name)) {
@@ -611,7 +577,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 }
                 else if (
                 // Support `import { foo } from './foo'`
-                types.isIdentifier(path.node.imported) &&
+                core_1.types.isIdentifier(path.node.imported) &&
                     path.node.imported.name != null) {
                     importedIdentifiers.add(path.node.imported.name);
                 }
@@ -636,7 +602,6 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 // This is used to determine if the import was side-effecty.
                 // NOTE: This could be a problem if the AST is re-parsed.
                 // TODO: This doesn't account for `import {} from './foo'`
-                // @ts-expect-error: custom property
                 path.opts.originalSpecifiers ??= path.node.specifiers.length;
                 importDecs.push(path);
             },
@@ -650,14 +615,13 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         // Remove the unused imports from the AST
         importDecs.forEach((path) => {
             const originalSize = path.node.specifiers.length;
-            // @ts-expect-error: custom property
             const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
             path.node.specifiers = path.node.specifiers.filter((specifier) => {
                 if (specifier.type === 'ImportDefaultSpecifier' ||
                     specifier.type === 'ImportNamespaceSpecifier') {
                     return !unusedImports.includes(specifier.local.name);
                 }
-                else if (types.isIdentifier(specifier.imported)) {
+                else if (core_1.types.isIdentifier(specifier.imported)) {
                     return !unusedImports.includes(specifier.imported.name);
                 }
                 return false;

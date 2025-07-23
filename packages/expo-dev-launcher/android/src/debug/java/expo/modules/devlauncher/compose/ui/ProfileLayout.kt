@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.composables.core.Icon
 import com.composeunstyled.Button
 import expo.modules.devlauncher.R
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.theme.Theme
@@ -30,10 +29,9 @@ fun ProfileLayout(
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
       Heading("Account", fontSize = Theme.typography.size25)
       Button(onClick = onClose) {
-        Icon(
-          painterResource(R.drawable._expodevclientcomponents_assets_xicon),
-          contentDescription = "Close",
-          tint = Theme.colors.icon.default
+        DayNighIcon(
+          id = R.drawable.x_icon,
+          contentDescription = "Close"
         )
       }
     }

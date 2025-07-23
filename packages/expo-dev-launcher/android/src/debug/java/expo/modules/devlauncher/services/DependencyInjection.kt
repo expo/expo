@@ -13,7 +13,7 @@ object DependencyInjection {
   var wasInitialized: Boolean = false
     private set
 
-  var httpClientService: HttpClientService? = null
+  var httpClientService: HttpClientService = HttpClientService()
     private set
 
   var imageLoaderService: ImageLoaderService? = null
@@ -22,13 +22,19 @@ object DependencyInjection {
   var sessionService: SessionService? = null
     private set
 
-  var apolloClientService: ApolloClientService? = null
+  var apolloClientService: ApolloClientService = ApolloClientService(httpClientService)
     private set
 
   var devLauncherController: DevLauncherController? = null
     private set
 
-  var packagerService: PackagerService? = null
+  var packagerService: PackagerService = PackagerService(httpClientService)
+    private set
+
+  var appService: AppService = AppService()
+    private set
+
+  var errorRegistryService: ErrorRegistryService? = null
     private set
 
   fun init(context: Context, devLauncherController: DevLauncherController) = synchronized(this) {
@@ -40,26 +46,18 @@ object DependencyInjection {
 
     this.devLauncherController = devLauncherController
 
-    val httpClient = HttpClientService()
-
-    httpClientService = httpClient
-
     imageLoaderService = ImageLoaderService(
       context = context.applicationContext,
-      httpClientService = httpClient
+      httpClientService = httpClientService
     )
-
-    val apolloClient = ApolloClientService(httpClient)
-
-    apolloClientService = apolloClient
 
     sessionService = SessionService(
       sessionStore = context.applicationContext.getSharedPreferences("expo.modules.devlauncher.session", Context.MODE_PRIVATE),
-      apolloClientService = apolloClient,
-      httpClientService = httpClient
+      apolloClientService = apolloClientService,
+      httpClientService = httpClientService
     )
 
-    packagerService = PackagerService(httpClient)
+    errorRegistryService = ErrorRegistryService(context.applicationContext)
   }
 }
 
@@ -72,6 +70,8 @@ internal inline fun <reified T> injectService(): T {
     HttpClientService::class -> DependencyInjection.httpClientService
     DevLauncherController::class -> DependencyInjection.devLauncherController
     PackagerService::class -> DependencyInjection.packagerService
+    AppService::class -> DependencyInjection.appService
+    ErrorRegistryService::class -> DependencyInjection.errorRegistryService
     else -> throw IllegalArgumentException("Unknown service type: ${T::class}")
   } as T
 }

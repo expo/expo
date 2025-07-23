@@ -28,11 +28,6 @@ function _createMockAsset({
   return mockAsset as unknown as Asset;
 }
 
-beforeEach(() => {
-  ExpoFontLoader.loadAsync.mockImplementation(async () => {});
-  ExpoFontLoader.getLoadedFonts.mockImplementation(() => []);
-});
-
 afterEach(async () => {
   clearMemory();
   jest.resetModules();
@@ -58,6 +53,7 @@ xdescribe('within Expo Go', () => {
 
       expect(mockAsset.downloaded).toBe(true);
       expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
+      // @ts-expect-error: loadAsync not considered a mock function
       expect(ExpoFontLoader.loadAsync.mock.calls[0]).toMatchSnapshot();
       expect(Font.isLoaded('test-font')).toBe(true);
       expect(Font.isLoading('test-font')).toBe(false);
@@ -77,7 +73,7 @@ xdescribe('within Expo Go', () => {
     });
 
     it(`throws if loading a downloaded font fails`, async () => {
-      ExpoFontLoader.loadAsync.mockImplementation(async () => {
+      jest.spyOn(ExpoFontLoader, 'loadAsync').mockImplementation(async () => {
         throw new Error('Intentional error from FontLoader mock');
       });
 

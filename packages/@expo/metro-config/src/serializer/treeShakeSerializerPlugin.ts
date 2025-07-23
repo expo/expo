@@ -4,9 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { NodePath, traverse } from '@babel/core';
+import { type NodePath, traverse, types } from '@babel/core';
 import generate from '@babel/generator';
-import * as types from '@babel/types';
 import assert from 'assert';
 import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
 import { SerializerConfigT } from 'metro-config';
@@ -746,7 +745,7 @@ export async function treeShakeSerializer(
 
   function removeUnusedImportsFromModule(
     value: Module<MixedOutput>,
-    ast: Parameters<typeof traverse>[0]
+    ast: types.Node | undefined
   ): string[] {
     // json, asset, script, etc.
     if (!ast) {
@@ -797,7 +796,6 @@ export async function treeShakeSerializer(
 
         // NOTE: This could be a problem if the AST is re-parsed.
         // TODO: This doesn't account for `import {} from './foo'`
-        // @ts-expect-error: custom property
         path.opts.originalSpecifiers ??= path.node.specifiers.length;
         importDecs.push(path);
       },
@@ -816,8 +814,6 @@ export async function treeShakeSerializer(
     // Remove the unused imports from the AST
     importDecs.forEach((path) => {
       const originalSize = path.node.specifiers.length;
-
-      // @ts-expect-error: custom property
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
 
       path.node.specifiers = path.node.specifiers.filter((specifier) => {

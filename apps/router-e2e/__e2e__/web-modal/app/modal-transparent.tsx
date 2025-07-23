@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 
 export default function Page() {
   return (
-    <View style={{ height: '100%', padding: 60, backgroundColor: 'rgba(255, 0, 0, 0.3)' }}>
+    <View style={{ flex: 1, padding: 60, backgroundColor: 'rgba(255, 0, 0, 0.3)' }}>
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>Transparent Modal</Text>
       <Text>
         This is a transparent modal to demonstrate default behaviour. You need to navigate or use

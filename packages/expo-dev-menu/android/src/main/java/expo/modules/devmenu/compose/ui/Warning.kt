@@ -39,7 +39,7 @@ fun Warning(
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-          painterResource(R.drawable._expodevclientcomponents_assets_warningtriangleicon),
+          painterResource(R.drawable.warning_triangle_icon),
           contentDescription = "Warning Icon",
           tint = Theme.colors.text.warning,
           modifier = Modifier
