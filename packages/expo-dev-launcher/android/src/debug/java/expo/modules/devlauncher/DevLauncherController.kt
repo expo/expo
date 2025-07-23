@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
@@ -414,6 +415,17 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     internal fun initialize(context: Context, reactHost: ReactHostWrapper) {
+      try {
+        val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
+        val splashScreenManager = splashScreenManagerClass
+          .kotlin
+          .objectInstance
+        splashScreenManagerClass.getMethod("hide")
+          .invoke(splashScreenManager)
+      } catch (e: Throwable) {
+        Log.e("DevLauncherController", "Failed to hide splash screen", e)
+      }
+
       val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
