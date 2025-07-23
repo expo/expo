@@ -145,7 +145,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
       "mediaServicesDidReset": false,
-      "url": ref.url
+      "url": ref.url.absoluteString
     ]
 
     if ref.isMeteringEnabled {
@@ -162,7 +162,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "isFinished": true,
       "hasError": false,
       "error": nil,
-      "url": recorder.url
+      "url": recorder.url.absoluteString
     ])
   }
 
