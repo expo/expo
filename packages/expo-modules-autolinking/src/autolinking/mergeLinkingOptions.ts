@@ -50,7 +50,7 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
 
   // Makes provided paths absolute or falls back to default paths if none was provided.
   finalOptions.searchPaths = await resolveSearchPathsAsync(
-    finalOptions.searchPaths,
+    finalOptions.searchPaths || [],
     providedOptions.projectRoot
   );
 
