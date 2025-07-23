@@ -133,16 +133,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
 }
 
-- (BOOL)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
-{
-  if (!appRecord.appManager.reactHost) {
-    return NO;
-  }
-  RCTEventDispatcher *dispatcher = [[appRecord.appManager.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
-  [dispatcher sendAppEventWithName:eventName body:eventBody ? @[eventName, eventBody] : @[eventName]];
-  return YES;
-}
-
 #pragma mark - App props
 
 - (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions

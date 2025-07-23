@@ -4,7 +4,7 @@ import AVFoundation
 import ExpoModulesCore
 import VisionKit
 
-let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged"]
+let cameraEvents = ["onCameraReady", "onMountError", "onPictureSaved", "onBarcodeScanned", "onResponsiveOrientationChanged", "onAvailableLensesChanged"]
 
 struct ScannerContext {
   var controller: Any?
@@ -95,6 +95,16 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
         if flashMode == nil && view.flashMode != .auto {
           view.flashMode = .auto
+        }
+      }
+
+      Prop("selectedLens") { (view, selectedLens: String?) in
+        if let selectedLens, view.selectedLens != selectedLens {
+          view.selectedLens = selectedLens
+        }
+
+        if selectedLens == nil && view.selectedLens != nil {
+          view.selectedLens = nil
         }
       }
 
@@ -229,18 +239,35 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         view.pausePreview()
       }
 
-      AsyncFunction("getAvailablePictureSizes") { (_: String?) in
+      AsyncFunction("getAvailablePictureSizes") {
         return PictureSize.allCases.map {
           $0.rawValue
         }
       }
 
+      AsyncFunction("getAvailableLenses") { view in
+        view.getAvailableLenses()
+      }
+
+      AsyncFunction("takePictureRef") { (view, options: TakePictureOptions) -> PictureRef in
+        #if targetEnvironment(simulator)
+        return try takePictureRefForSimulator(self.appContext, view, options)
+        #else
+        return try await view.takePictureRef(options: options)
+        #endif
+      }
+
       AsyncFunction("takePicture") { (view, options: TakePictureOptions, promise: Promise) in
         #if targetEnvironment(simulator) // simulator
         try takePictureForSimulator(self.appContext, view, options, promise)
-        #else // not simulator
+        #else
         Task {
-          await view.takePicture(options: options, promise: promise)
+          do {
+            let result = try await view.takePicturePromise(options: options)
+            promise.resolve(result)
+          } catch {
+            promise.reject(error)
+          }
         }
         #endif
       }
@@ -352,7 +379,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
   @available(iOS 16.0, *)
   @MainActor
   private func launchScanner(with options: VisionScannerOptions?) {
-    let symbologies = options?.toSymbology() ?? [.qr]
+    let symbologies = options?.toSymbology() ?? []
     let controller = DataScannerViewController(
       recognizedDataTypes: [.barcode(symbologies: symbologies)],
       isPinchToZoomEnabled: options?.isPinchToZoomEnabled ?? true,

@@ -1,5 +1,5 @@
-'use client';
 "use strict";
+'use client';
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -16,22 +16,39 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoRoot = void 0;
+exports.ExpoRoot = ExpoRoot;
+const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+const constants_1 = require("./constants");
+const useDomComponentNavigation_1 = require("./domComponents/useDomComponentNavigation");
 const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
-const useDomComponentNavigation_1 = require("./link/useDomComponentNavigation");
+const storeContext_1 = require("./global-state/storeContext");
+const imperative_api_1 = require("./imperative-api");
+const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
+const ModalContext_1 = require("./modal/ModalContext");
+const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
 const SplashScreen = __importStar(require("./views/Splash"));
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -41,6 +58,9 @@ const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
         insets: { top: 0, left: 0, right: 0, bottom: 0 },
     }
     : undefined;
+const documentTitle = {
+    enabled: false,
+};
 /**
  * @hidden
  */
@@ -52,18 +72,19 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      */
     const wrapper = ({ children }) => {
         return (<ParentWrapper>
-        <react_native_safe_area_context_1.SafeAreaProvider 
+        <LinkPreviewContext_1.LinkPreviewContextProvider>
+          <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-          {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-          {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
-          {children}
-        </react_native_safe_area_context_1.SafeAreaProvider>
+            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+            {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+            {children}
+          </react_native_safe_area_context_1.SafeAreaProvider>
+        </LinkPreviewContext_1.LinkPreviewContextProvider>
       </ParentWrapper>);
     };
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
-exports.ExpoRoot = ExpoRoot;
 function AutoStatusBar() {
     return <react_native_1.StatusBar barStyle={(0, react_native_1.useColorScheme)() === 'light' ? 'dark-content' : 'light-content'}/>;
 }
@@ -103,11 +124,8 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     const serverUrl = serverContext.location
         ? `${serverContext.location.pathname}${serverContext.location.search}`
         : undefined;
-    const store = (0, router_store_1.useInitializeExpoRouter)(context, {
-        ...linking,
-        serverUrl,
-    });
-    (0, useDomComponentNavigation_1.useDomComponentNavigation)(store);
+    const store = (0, router_store_1.useStore)(context, linking, serverUrl);
+    (0, useDomComponentNavigation_1.useDomComponentNavigation)();
     if (store.shouldShowTutorial()) {
         SplashScreen.hideAsync();
         if (process.env.NODE_ENV === 'development') {
@@ -121,16 +139,25 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
             return null;
         }
     }
-    const Component = store.rootComponent;
-    return (<NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.initialState} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={{
-            enabled: false,
-        }}>
-      <serverLocationContext_1.ServerContext.Provider value={serverContext}>
-        <WrapperComponent>
-          <Component />
-        </WrapperComponent>
-      </serverLocationContext_1.ServerContext.Provider>
-    </NavigationContainer_1.NavigationContainer>);
+    return (<storeContext_1.StoreContext.Provider value={store}>
+      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
+        <serverLocationContext_1.ServerContext.Provider value={serverContext}>
+          <WrapperComponent>
+            <ModalContext_1.ModalContextProvider>
+              <imperative_api_1.ImperativeApiEmitter />
+              <Content />
+            </ModalContext_1.ModalContextProvider>
+          </WrapperComponent>
+        </serverLocationContext_1.ServerContext.Provider>
+      </NavigationContainer_1.NavigationContainer>
+    </storeContext_1.StoreContext.Provider>);
+}
+function Content() {
+    const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
+        children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
+        id: constants_1.INTERNAL_SLOT_NAME,
+    });
+    return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

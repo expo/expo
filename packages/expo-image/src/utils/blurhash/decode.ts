@@ -27,7 +27,7 @@ const validateBlurhash = (blurhash: string) => {
 export const isBlurhashValid = (blurhash: string): { result: boolean; errorReason?: string } => {
   try {
     validateBlurhash(blurhash);
-  } catch (error) {
+  } catch (error: any) {
     return { result: false, errorReason: error.message };
   }
 

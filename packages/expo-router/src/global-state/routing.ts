@@ -1,24 +1,25 @@
-import { StackActions, type NavigationState, PartialRoute } from '@react-navigation/native';
+import { NavigationAction, type NavigationState, PartialRoute } from '@react-navigation/native';
 import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
-import { nanoid } from 'nanoid/non-secure';
 import { Platform } from 'react-native';
 
-import { type RouterStore } from './router-store';
-import { ResultState } from '../fork/getStateFromPath';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { store } from './router-store';
 import {
   emitDomDismiss,
   emitDomDismissAll,
   emitDomGoBack,
   emitDomLinkEvent,
   emitDomSetParams,
-} from '../link/useDomComponentNavigation';
+} from '../domComponents/emitDomEvent';
+import { ResultState } from '../fork/getStateFromPath';
+import { applyRedirects } from '../getRoutesRedirects';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
+import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 
-function assertIsReady(store: RouterStore) {
+function assertIsReady() {
   if (!store.navigationRef.isReady()) {
     throw new Error(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
@@ -26,52 +27,93 @@ function assertIsReady(store: RouterStore) {
   }
 }
 
+export const routingQueue = {
+  queue: [] as NavigationAction[],
+  subscribers: new Set<() => void>(),
+  subscribe(callback: () => void) {
+    routingQueue.subscribers.add(callback);
+    return () => {
+      routingQueue.subscribers.delete(callback);
+    };
+  },
+  snapshot() {
+    return routingQueue.queue;
+  },
+  add(action: NavigationAction) {
+    // Reset the identity of the queue.
+    if (routingQueue.queue.length === 0) {
+      routingQueue.queue = [];
+    }
+
+    routingQueue.queue.push(action);
+    for (const callback of routingQueue.subscribers) {
+      callback();
+    }
+  },
+  run() {
+    const queue = routingQueue.queue;
+    if (queue.length === 0 || !store.navigationRef) {
+      return;
+    }
+
+    routingQueue.queue = [];
+    for (const action of queue) {
+      store.navigationRef.dispatch(action);
+    }
+  },
+};
+
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;
 
-export function navigate(this: RouterStore, url: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
+export function navigate(url: Href, options?: NavigationOptions) {
+  return linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
 
-export function reload(this: RouterStore) {
+export function reload() {
   // TODO(EvanBacon): add `reload` support.
   throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 
-export function push(this: RouterStore, url: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(url), { ...options, event: 'PUSH' });
+export function prefetch(href: Href, options?: NavigationOptions) {
+  return linkTo(resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 
-export function dismiss(this: RouterStore, count?: number) {
+export function push(url: Href, options?: NavigationOptions) {
+  return linkTo(resolveHref(url), { ...options, event: 'PUSH' });
+}
+
+export function dismiss(count: number = 1) {
   if (emitDomDismiss(count)) {
     return;
   }
-  this.navigationRef?.dispatch(StackActions.pop(count));
+
+  routingQueue.add({ type: 'POP', payload: { count } });
 }
 
-export function dismissTo(this: RouterStore, href: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
+export function dismissTo(href: Href, options?: NavigationOptions) {
+  return linkTo(resolveHref(href), { ...options, event: 'POP_TO' });
 }
 
-export function replace(this: RouterStore, url: Href, options?: NavigationOptions) {
-  return this.linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
+export function replace(url: Href, options?: NavigationOptions) {
+  return linkTo(resolveHref(url), { ...options, event: 'REPLACE' });
 }
 
-export function dismissAll(this: RouterStore) {
+export function dismissAll() {
   if (emitDomDismissAll()) {
     return;
   }
-  this.navigationRef?.dispatch(StackActions.popToTop());
+  routingQueue.add({ type: 'POP_TO_TOP' });
 }
 
-export function goBack(this: RouterStore) {
+export function goBack() {
   if (emitDomGoBack()) {
     return;
   }
-  assertIsReady(this);
-  this.navigationRef?.current?.goBack();
+  assertIsReady();
+  routingQueue.add({ type: 'GO_BACK' });
 }
 
-export function canGoBack(this: RouterStore): boolean {
+export function canGoBack(): boolean {
   if (IS_DOM) {
     throw new Error(
       'canGoBack imperative method is not supported. Pass the property to the DOM component instead.'
@@ -82,19 +124,19 @@ export function canGoBack(this: RouterStore): boolean {
   // before mounting a navigator. This behavior exists due to React Navigation being dynamically
   // constructed at runtime. We can get rid of this in the future if we use
   // the static configuration internally.
-  if (!this.navigationRef.isReady()) {
+  if (!store.navigationRef.isReady()) {
     return false;
   }
-  return this.navigationRef?.current?.canGoBack() ?? false;
+  return store.navigationRef?.current?.canGoBack() ?? false;
 }
 
-export function canDismiss(this: RouterStore): boolean {
+export function canDismiss(): boolean {
   if (IS_DOM) {
     throw new Error(
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  let state = this.rootState;
+  let state = store.state;
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
@@ -110,14 +152,13 @@ export function canDismiss(this: RouterStore): boolean {
 }
 
 export function setParams(
-  this: RouterStore,
-  params: Record<string, string | number | (string | number)[]> = {}
+  params: Record<string, undefined | string | number | (string | number)[]> = {}
 ) {
   if (emitDomSetParams(params)) {
     return;
   }
-  assertIsReady(this);
-  return (this.navigationRef?.current?.setParams as any)(params);
+  assertIsReady();
+  return (store.navigationRef?.current?.setParams as any)(params);
 }
 
 export type LinkToOptions = {
@@ -133,9 +174,21 @@ export type LinkToOptions = {
    * Include the anchor when navigating to a new navigator
    */
   withAnchor?: boolean;
+
+  /**
+   * When navigating in a Stack, remove all screen from the history that match the singular condition
+   *
+   * If used with `push`, the history will be filtered even if no navigation occurs.
+   */
+  dangerouslySingular?: SingularOptions;
+
+  __internal__PreviewKey?: string;
 };
 
-export function linkTo(this: RouterStore, href: string, options: LinkToOptions = {}) {
+export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
+  originalHref = typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
+  let href: string | undefined | null = originalHref;
+
   if (emitDomLinkEvent(href, options)) {
     return;
   }
@@ -149,8 +202,8 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
     return;
   }
 
-  assertIsReady(this);
-  const navigationRef = this.navigationRef.current;
+  assertIsReady();
+  const navigationRef = store.navigationRef.current;
 
   if (navigationRef == null) {
     throw new Error(
@@ -158,7 +211,7 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
     );
   }
 
-  if (!this.linking) {
+  if (!store.linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
 
@@ -169,17 +222,30 @@ export function linkTo(this: RouterStore, href: string, options: LinkToOptions =
 
   const rootState = navigationRef.getRootState();
 
-  href = resolveHrefStringWithSegments(href, this.routeInfo, options);
+  href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+  href = applyRedirects(href, store.redirects);
 
-  const state = this.linking.getStateFromPath!(href, this.linking.config);
+  // If the href is undefined, it means that the redirect has already been handled the navigation
+  if (!href) {
+    return;
+  }
+
+  const state = store.linking.getStateFromPath!(href, store.linking.config);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);
     return;
   }
 
-  return navigationRef.dispatch(
-    getNavigateAction(state, rootState, options.event, options.withAnchor)
+  routingQueue.add(
+    getNavigateAction(
+      state,
+      rootState,
+      options.event,
+      options.withAnchor,
+      options.dangerouslySingular,
+      options.__internal__PreviewKey
+    )
   );
 }
 
@@ -187,7 +253,9 @@ function getNavigateAction(
   actionState: ResultState,
   navigationState: NavigationState,
   type = 'NAVIGATE',
-  withAnchor?: boolean
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  previewKey?: string
 ) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
@@ -220,7 +288,9 @@ function getNavigateAction(
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
-      (dynamicName && actionStateRoute.params?.[dynamicName] !== stateRoute.params?.[dynamicName]);
+      (dynamicName &&
+        // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
+        actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
 
     if (didActionAndCurrentStateDiverge) {
       break;
@@ -257,35 +327,11 @@ function getNavigateAction(
     actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
   }
 
-  // Expo Router uses only three actions, but these don't directly translate to all navigator actions
-  if (type === 'PUSH') {
-    // Only stack navigators have a push action, and even then we want to use NAVIGATE (see below)
+  if (type === 'PUSH' && navigationState.type !== 'stack') {
     type = 'NAVIGATE';
-
-    /*
-     * The StackAction.PUSH does not work correctly with Expo Router.
-     *
-     * Expo Router provides a getId() function for every route, altering how React Navigation handles stack routing.
-     * Ordinarily, PUSH always adds a new screen to the stack. However, with getId() present, it navigates to the screen with the matching ID instead (by moving the screen to the top of the stack)
-     * When you try and push to a screen with the same ID, no navigation will occur
-     * Refer to: https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L279-L290
-     *
-     * Expo Router needs to retain the default behavior of PUSH, consistently adding new screens to the stack, even if their IDs are identical.
-     *
-     * To resolve this issue, we switch to using a NAVIGATE action with a new key. In the navigate action, screens are matched by either key or getId() function.
-     * By generating a unique new key, we ensure that the screen is always pushed onto the stack.
-     *
-     */
-    if (navigationState.type === 'stack') {
-      rootPayload.params.__EXPO_ROUTER_key = `${rootPayload.name}-${nanoid()}`; // @see https://github.com/react-navigation/react-navigation/blob/13d4aa270b301faf07960b4cd861ffc91e9b2c46/packages/routers/src/StackRouter.tsx#L406-L407
-    }
-  }
-
-  if (navigationState.type === 'expo-tab') {
+  } else if (navigationState.type === 'expo-tab') {
     type = 'JUMP_TO';
-  }
-
-  if (type === 'REPLACE' && (navigationState.type === 'tab' || navigationState.type === 'drawer')) {
+  } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
     type = 'JUMP_TO';
   }
 
@@ -314,6 +360,8 @@ function getNavigateAction(
       // key: rootPayload.key,
       name: rootPayload.screen,
       params: rootPayload.params,
+      singular,
+      previewKey,
     },
   };
 }

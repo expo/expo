@@ -1,5 +1,9 @@
 /// Here we implement factories for the definitions exclusive for native views.
 
+// Function names should start with a lowercase character, but in this one case
+// we want it to be uppercase for Expo Modules DSL
+// swiftlint:disable identifier_name
+
 /**
  Creates a view definition describing the native view exported to React.
  */
@@ -13,13 +17,13 @@ public func View<ViewType: UIView>(
 /**
  Creates a view definition describing the native SwiftUI view exported to React.
  */
-public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>(
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View>(
   _ viewType: ViewType.Type
 ) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
   return ExpoSwiftUI.ViewDefinition(ViewType.self)
 }
 
-public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>(
+public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View>(
   _ viewType: ViewType.Type,
   @ExpoSwiftUI.ViewDefinitionBuilder<ViewType> _ elements: @escaping () -> [AnyViewDefinitionElement]
 ) -> ExpoSwiftUI.ViewDefinition<Props, ViewType> {
@@ -42,6 +46,22 @@ public func Prop<ViewType: UIView, PropType: AnyArgument>(
   )
 }
 
+/**
+ Creates a view prop that defines its name, default value and setter.
+ */
+public func Prop<ViewType: UIView, PropType: AnyArgument>(
+  _ name: String,
+  _ defaultValue: PropType,
+  @_implicitSelfCapture _ setter: @escaping (ViewType, PropType) -> Void
+) -> ConcreteViewProp<ViewType, PropType> {
+  return ConcreteViewProp(
+    name: name,
+    propType: ~PropType.self,
+    defaultValue: defaultValue,
+    setter: setter
+  )
+}
+
 // MARK: - View lifecycle
 
 /**
@@ -59,3 +79,5 @@ public func OnViewDidUpdateProps<ViewType: UIView>(
 public func ViewName(_ name: String) -> ViewNameDefinition {
   return ViewNameDefinition(name: name)
 }
+
+// swiftlint:enable identifier_name

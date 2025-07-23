@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platforms      = {
     :ios => '15.1'
   }
-  s.swift_version  = '5.4'
+  s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
@@ -29,6 +29,6 @@ Pod::Spec.new do |s|
     s.source_files = "**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "**/*.{h,m,swift}"
+    s.source_files = "**/*.{h,m,swift,mm,cpp}"
   end
 end

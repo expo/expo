@@ -1,3 +1,6 @@
+import { getNavigationConfig } from 'expo-router/build/getLinkingConfig';
+import { getRoutes } from 'expo-router/build/getRoutes';
+import { inMemoryContext } from 'expo-router/build/testing-library/context-stubs';
 import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
 
 import {
@@ -397,5 +400,38 @@ describe(getFilesToExportFromServerAsync, () => {
     });
 
     expect([...files.keys()]).toEqual(['(a)/index.html', '(b)/index.html']);
+  });
+
+  it(`should skip rewrite routes when exporting`, async () => {
+    const renderAsync = jest.fn(async () => '<html>test</html>');
+
+    // Create routes with rewrites option
+    const routes = getRoutes(
+      inMemoryContext({
+        './index.tsx': Route,
+        './about.tsx': Route,
+        './styled.tsx': Route,
+      }),
+      {
+        rewrites: [{ source: '/rewrite', destination: '/styled' }],
+        internal_stripLoadRoute: true,
+        skipGenerated: true,
+        preserveRedirectAndRewrites: true,
+      }
+    );
+
+    // Convert to navigation config
+    const mockManifest = getNavigationConfig(routes!, false);
+
+    const files = await getFilesToExportFromServerAsync('/', {
+      exportServer: true,
+      manifest: mockManifest,
+      renderAsync,
+    });
+
+    expect([...files.keys()].sort()).toEqual(['about.html', 'index.html', 'styled.html']);
+
+    // Verify rewrite.html was not created
+    expect(files.has('rewrite.html')).toBe(false);
   });
 });

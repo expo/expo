@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '16.0.7'
+version = '16.1.6'
 
 android {
   namespace "expo.modules.camera"
   defaultConfig {
     versionCode 32
-    versionName "16.0.7"
+    versionName "16.1.6"
   }
 }
 
@@ -28,6 +28,6 @@ dependencies {
 
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.camera:camera-extensions:${camerax_version}"
-  implementation "com.google.mlkit:barcode-scanning:17.2.0"
+  implementation "com.google.mlkit:barcode-scanning:17.3.0"
   implementation "androidx.camera:camera-mlkit-vision:${camerax_version}"
 }

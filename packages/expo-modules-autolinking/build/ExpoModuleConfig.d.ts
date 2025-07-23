@@ -5,11 +5,12 @@ export declare class ExpoAndroidProjectConfig {
     modules?: string[] | undefined;
     publication?: AndroidPublication | undefined;
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[] | undefined;
+    shouldUsePublicationScriptPath?: string | undefined;
     /**
      * Whether this project is the root one.
      */
     isDefault: boolean;
-    constructor(name: string, path: string, modules?: string[] | undefined, publication?: AndroidPublication | undefined, gradleAarProjects?: AndroidGradleAarProjectDescriptor[] | undefined, 
+    constructor(name: string, path: string, modules?: string[] | undefined, publication?: AndroidPublication | undefined, gradleAarProjects?: AndroidGradleAarProjectDescriptor[] | undefined, shouldUsePublicationScriptPath?: string | undefined, 
     /**
      * Whether this project is the root one.
      */
@@ -81,4 +82,4 @@ export declare class ExpoModuleConfig {
 /**
  * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
  */
-export declare function requireAndResolveExpoModuleConfig(path: string): ExpoModuleConfig;
+export declare function loadExpoModuleConfigAsync(targetPath: string): Promise<ExpoModuleConfig>;

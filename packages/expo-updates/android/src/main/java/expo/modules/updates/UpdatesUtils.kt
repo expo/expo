@@ -19,7 +19,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.experimental.and
 
 /**
  * Miscellaneous helper functions that are used by multiple classes in the library.
@@ -145,11 +144,11 @@ object UpdatesUtils {
     }
   }
 
+  /**
+   * Create an asset filename in file system (files are saved in the `.expo-internal` directory)
+   */
   fun createFilenameForAsset(asset: AssetEntity): String {
-    var fileExtension: String? = ""
-    if (asset.type != null) {
-      fileExtension = if (asset.type!!.startsWith(".")) asset.type else "." + asset.type
-    }
+    val fileExtension = asset.getFileExtension()
     return if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
       "asset-" + Date().time + "-" + Random().nextInt() + fileExtension

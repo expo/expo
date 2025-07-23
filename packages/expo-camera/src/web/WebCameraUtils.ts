@@ -63,15 +63,15 @@ export function hasValidConstraints(
 }
 
 function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPictureOptions {
-  const captureOptions = {
+  const captureOptions: CameraPictureOptions = {
     scale: 1,
     imageType: 'png' as ImageType,
     isImageMirror: false,
   };
-
   for (const key in config) {
-    if (key in config && config[key] !== undefined && key in captureOptions) {
-      captureOptions[key] = config[key];
+    const prop = key as keyof CameraPictureOptions;
+    if (prop in config && config[prop] !== undefined && prop in captureOptions) {
+      captureOptions[prop] = config[prop] as any;
     }
   }
   return captureOptions;
@@ -254,6 +254,7 @@ export function capture(
     base64,
     width: 0,
     height: 0,
+    format: config.imageType ?? 'jpg',
   };
 
   if (settings) {
@@ -307,7 +308,7 @@ async function onCapabilitiesReady(
     'sharpness',
     'focusDistance',
     'zoom',
-  ];
+  ] as const;
 
   for (const property of clampedValues) {
     if (capabilities[property]) {
@@ -316,8 +317,8 @@ async function onCapabilitiesReady(
   }
 
   function validatedInternalConstrainedValue<IConvertedType>(
-    constraintKey: string,
-    settingsKey: string,
+    constraintKey: keyof MediaTrackCapabilities,
+    settingsKey: keyof WebCameraSettings,
     converter: (settingValue: any) => IConvertedType
   ) {
     const convertedSetting = converter(settings[settingsKey]);
@@ -398,12 +399,15 @@ export function setVideoSource(
   }
 }
 
-export function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolean {
+export function isCapabilityAvailable(
+  video: HTMLVideoElement,
+  keyName: keyof MediaTrackCapabilities
+): boolean {
   const stream = video.srcObject;
 
   if (stream instanceof MediaStream) {
     const videoTrack = stream.getVideoTracks()[0];
-    return videoTrack.getCapabilities?.()?.[keyName];
+    return !!videoTrack.getCapabilities?.()?.[keyName];
   }
 
   return false;
@@ -428,8 +432,8 @@ function convertRange(value: number, r2: number[], r1: number[] = [0, 1]): numbe
 }
 
 function validatedConstrainedValue<T>(props: {
-  constraintKey: string;
-  settingsKey: string;
+  constraintKey: keyof MediaTrackCapabilities;
+  settingsKey: keyof WebCameraSettings;
   convertedSetting: T;
   capabilities: MediaTrackCapabilities;
   settings: WebCameraSettings;

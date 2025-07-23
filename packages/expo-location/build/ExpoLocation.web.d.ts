@@ -6,12 +6,12 @@ declare const _default: {
     }>;
     getLastKnownPositionAsync(options?: LocationLastKnownOptions): Promise<LocationObject | null>;
     getCurrentPositionAsync(options: LocationOptions): Promise<LocationObject>;
-    removeWatchAsync(watchId: any): Promise<void>;
-    watchDeviceHeading(headingId: any): Promise<void>;
+    removeWatchAsync(watchId: number): Promise<void>;
+    watchDeviceHeading(_headingId: number): Promise<void>;
     hasServicesEnabledAsync(): Promise<boolean>;
     geocodeAsync(): Promise<any[]>;
     reverseGeocodeAsync(): Promise<any[]>;
-    watchPositionImplAsync(watchId: string, options: LocationOptions): Promise<string>;
+    watchPositionImplAsync(watchId: number, options: PositionOptions): Promise<number>;
     requestForegroundPermissionsAsync(): Promise<PermissionResponse>;
     requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
     getForegroundPermissionsAsync(): Promise<PermissionResponse>;

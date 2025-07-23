@@ -3,12 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeOptionsAsync = exports.DEFAULT_SOURCE_SKIPS = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.DEFAULT_SOURCE_SKIPS = exports.DEFAULT_IGNORE_PATHS = exports.FINGERPRINT_IGNORE_FILENAME = void 0;
+exports.normalizeOptionsAsync = normalizeOptionsAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const Config_1 = require("./Config");
 const ExpoResolver_1 = require("./ExpoResolver");
+const ProjectWorkflow_1 = require("./ProjectWorkflow");
 const SourceSkips_1 = require("./sourcer/SourceSkips");
 const Path_1 = require("./utils/Path");
 exports.FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -48,11 +50,22 @@ exports.DEFAULT_IGNORE_PATHS = [
     'app.json',
     // Ignore nested node_modules
     '**/node_modules/**/node_modules/**',
+    // Ignore node binaries that might be platform dependent
+    '**/node_modules/**/*.node',
+    '**/node_modules/@img/sharp-*/**/*',
+    '**/node_modules/sharp/{build,vendor}/**/*',
 ];
 exports.DEFAULT_SOURCE_SKIPS = SourceSkips_1.SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
 async function normalizeOptionsAsync(projectRoot, options) {
     const config = await (0, Config_1.loadConfigAsync)(projectRoot, options?.silent ?? false);
     const ignorePathMatchObjects = await collectIgnorePathsAsync(projectRoot, config?.ignorePaths, options);
+    const useCNGForPlatforms = await resolveUseCNGAsync(projectRoot, options, ignorePathMatchObjects);
+    if (useCNGForPlatforms.android) {
+        (0, Path_1.appendIgnorePath)(ignorePathMatchObjects, 'android/**/*');
+    }
+    if (useCNGForPlatforms.ios) {
+        (0, Path_1.appendIgnorePath)(ignorePathMatchObjects, 'ios/**/*');
+    }
     return {
         // Defaults
         platforms: ['android', 'ios'],
@@ -70,9 +83,9 @@ async function normalizeOptionsAsync(projectRoot, options) {
             false,
         ignorePathMatchObjects,
         ignoreDirMatchObjects: (0, Path_1.buildDirMatchObjects)(ignorePathMatchObjects),
+        useCNGForPlatforms,
     };
 }
-exports.normalizeOptionsAsync = normalizeOptionsAsync;
 async function collectIgnorePathsAsync(projectRoot, pathsFromConfig, options) {
     const ignorePaths = [
         ...exports.DEFAULT_IGNORE_PATHS,
@@ -93,5 +106,17 @@ async function collectIgnorePathsAsync(projectRoot, pathsFromConfig, options) {
     }
     catch { }
     return (0, Path_1.buildPathMatchObjects)(ignorePaths);
+}
+async function resolveUseCNGAsync(projectRoot, options, ignorePathMatchObjects) {
+    const results = {
+        android: false,
+        ios: false,
+    };
+    const platforms = options?.platforms ?? ['android', 'ios'];
+    for (const platform of platforms) {
+        const projectWorkflow = await (0, ProjectWorkflow_1.resolveProjectWorkflowAsync)(projectRoot, platform, ignorePathMatchObjects);
+        results[platform] = projectWorkflow === 'managed';
+    }
+    return results;
 }
 //# sourceMappingURL=Options.js.map

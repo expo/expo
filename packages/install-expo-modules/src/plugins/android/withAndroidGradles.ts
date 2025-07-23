@@ -1,4 +1,5 @@
 import { ConfigPlugin, withProjectBuildGradle } from '@expo/config-plugins';
+import { findGradlePluginCodeBlock } from '@expo/config-plugins/build/android/codeMod';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
@@ -53,6 +54,44 @@ export const withAndroidGradlePluginVersion: ConfigPlugin<{ androidAgpVersion: s
     return config;
   });
 };
+
+export const withAndroidModulesProjectBuildGradle: ConfigPlugin = (config) => {
+  return withProjectBuildGradle(config, (config) => {
+    config.modResults.contents = updateAndroidProjectBuildGradle({
+      contents: config.modResults.contents,
+      isGroovy: config.modResults.language === 'groovy',
+      sdkVersion: config.sdkVersion,
+    });
+    return config;
+  });
+};
+
+export function updateAndroidProjectBuildGradle({
+  contents,
+  isGroovy,
+  sdkVersion,
+}: {
+  contents: string;
+  isGroovy: boolean;
+  sdkVersion: string | undefined;
+}) {
+  if (sdkVersion && semver.lt(sdkVersion, '53.0.0')) {
+    return contents;
+  }
+
+  if (!contents.match(/"expo-root-project"/)) {
+    if (isGroovy) {
+      contents += `apply plugin: "expo-root-project"\n`;
+    } else {
+      contents = contents.replace(
+        /^(plugins\s+?\{[\s\S]+?)(\})/m,
+        `$1  id("expo-root-project")\n$2`
+      );
+    }
+  }
+
+  return contents;
+}
 
 function toSemVer(version: string): semver.SemVer {
   return semver.coerce(version) ?? new semver.SemVer('0.0.0');

@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   docs-pr:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
@@ -54,6 +54,7 @@ jobs:
       - name: 💬 Lint Docs website content
         uses: errata-ai/vale-action@reviewdog
         with:
+          version: 3.11.2
           reporter: github-pr-check
           files: 'docs/pages'
           vale_flags: '--config=./docs/.vale.ini'

@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assertStaticParams = exports.evalStaticParamsAsync = exports.loadStaticParamsAsync = void 0;
+exports.loadStaticParamsAsync = loadStaticParamsAsync;
+exports.evalStaticParamsAsync = evalStaticParamsAsync;
+exports.assertStaticParams = assertStaticParams;
 async function loadStaticParamsAsync(route) {
     const expandedChildren = await Promise.all(route.children.map((route) => loadStaticParamsRecursive(route, { parentParams: {} })));
     route.children = expandedChildren.flat();
     return route;
 }
-exports.loadStaticParamsAsync = loadStaticParamsAsync;
 async function evalStaticParamsAsync(route, props, generateStaticParams) {
     if (!route.dynamic && generateStaticParams) {
         throw new Error('Cannot use generateStaticParams in a route without dynamic segments: ' + route.contextKey);
@@ -22,7 +23,6 @@ async function evalStaticParamsAsync(route, props, generateStaticParams) {
     }
     return null;
 }
-exports.evalStaticParamsAsync = evalStaticParamsAsync;
 async function loadStaticParamsRecursive(route, props) {
     if (!route?.dynamic && !route?.children?.length) {
         return [route];
@@ -160,5 +160,4 @@ function assertStaticParams(route, params) {
         }
     }
 }
-exports.assertStaticParams = assertStaticParams;
 //# sourceMappingURL=loadStaticParamsAsync.js.map

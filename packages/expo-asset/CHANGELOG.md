@@ -4,11 +4,60 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Add resource name validation for Android. ([#37322](https://github.com/expo/expo/pull/37322) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [Android] fix file scheme handling in `downloadAsync` ([#38227](https://github.com/expo/expo/pull/38227) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [android] throw when loading empty font file ([#38229](https://github.com/expo/expo/pull/38229) by [@vonovak](https://github.com/vonovak))
+
+## 11.1.7 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.6 - 2025-07-01
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 11.1.5 — 2025-05-03
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.4 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.2 — 2025-04-14
+
+### 💡 Others
+
+- Added `file:///android_res/` format support. ([#36058](https://github.com/expo/expo/pull/36058) by [@kudo](https://github.com/kudo))
+
+## 11.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features
 
 - Add RSC support. ([#34213](https://github.com/expo/expo/pull/34213) by [@EvanBacon](https://github.com/EvanBacon))
+- Add .riv to accepted media types ([#35758](https://github.com/expo/expo/pull/35758) by [@alextoudic](https://github.com/alextoudic))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +69,10 @@
 - [Android] Started using expo modules gradle plugin. ([#34176](https://github.com/expo/expo/pull/34176) by [@lukmccall](https://github.com/lukmccall))
 - Drop `invariant` and `md5-file` dependencies. ([#35328](https://github.com/expo/expo/pull/35328) by [@kitten](https://github.com/kitten))
 - [iOS] Fix warnings which will become errors in Swift 6. ([#35288](https://github.com/expo/expo/pull/35288) by [@behenate](https://github.com/behenate))
+
+## 11.0.5 - 2025-03-20
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.4 - 2025-02-19
 

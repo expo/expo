@@ -1,6 +1,6 @@
 {
   "name": "@expo/server",
-  "version": "0.5.0",
+  "version": "0.6.2",
   "description": "Server API for Expo Router projects",
   "main": "build/index.js",
   "sideEffects": [
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",
-    "@types/express": "^4.17.17"
+    "@types/express": "^5.0.3"
   },
   "publishConfig": {
     "access": "public"

@@ -10,6 +10,7 @@ import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
 import * as Font from 'expo-font/build/server';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server.node';
+// @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 import { AppRegistry } from 'react-native-web';
 
 import { getRootComponent } from './getRootComponent';
@@ -45,7 +46,7 @@ export async function getStaticContent(location: URL): Promise<string> {
     initialProps: {
       location,
       context: ctx,
-      wrapper: ({ children }) => (
+      wrapper: ({ children }: React.ComponentProps<any>) => (
         <Root>
           <div id="root">{children}</div>
         </Root>

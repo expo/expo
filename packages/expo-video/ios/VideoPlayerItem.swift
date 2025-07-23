@@ -1,8 +1,10 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import AVKit
 
-class VideoPlayerItem: CachingPlayerItem {
+class VideoPlayerItem: AVPlayerItem {
+  let urlAsset: VideoAsset
   let videoSource: VideoSource
   let isHls: Bool
   var videoTracks: [VideoTrack] {
@@ -13,18 +15,41 @@ class VideoPlayerItem: CachingPlayerItem {
 
   private var tracksLoadingTask: Task<[VideoTrack], Never>?
 
-  init(url: URL, videoSource: VideoSource, avUrlAssetOptions: [String: Any]? = nil) {
-    self.videoSource = videoSource
-    self.isHls = videoSource.uri?.pathExtension == "m3u8"
-    let canCache = Self.canCache(videoSource: videoSource)
-    let shouldCache = videoSource.useCaching && canCache
-
-    if !canCache && videoSource.useCaching {
-      log.warn("Provided source with uri: \(videoSource.uri?.absoluteString ?? "null") cannot be cached. Caching will be disabled")
+  init?(videoSource: VideoSource) {
+    guard let url = videoSource.uri else {
+      return nil
     }
-    super.init(url: url, useCaching: shouldCache, avUrlAssetOptions: avUrlAssetOptions)
+    self.videoSource = videoSource
+    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
 
-    // Preload info about HLS tracks if exists
+    let asset = VideoAsset(url: url, videoSource: videoSource)
+    self.urlAsset = asset
+    super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
+    self.createTracksLoadingTask()
+  }
+
+  init?(videoSource: VideoSource) async throws {
+    guard let url = videoSource.uri else {
+      return nil
+    }
+    self.videoSource = videoSource
+    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
+
+    let asset = VideoAsset(url: url, videoSource: videoSource)
+    self.urlAsset = asset
+    // We can ignore any exceptions thrown during the load. The asset will be assigned to the `VideoPlayer` anyways
+    // and cause it to go into .error state trigerring the `onStatusChange` event.
+    do {
+      _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
+    } catch {
+        // Catch block is intentionally left empty
+    }
+
+    super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
+    self.createTracksLoadingTask()
+  }
+
+  func createTracksLoadingTask() {
     tracksLoadingTask = Task { [weak self] in
       var tracks: [VideoTrack] = []
       guard let self else {
@@ -72,12 +97,5 @@ class VideoPlayerItem: CachingPlayerItem {
     return zip(lines, lines.dropFirst()).compactMap { line, nextLine in
       VideoTrack.from(hlsHeaderLine: line, idLine: nextLine)
     }
-  }
-
-  static func canCache(videoSource: VideoSource) -> Bool {
-    guard videoSource.uri?.scheme?.starts(with: "http") == true else {
-      return false
-    }
-    return videoSource.drm == nil
   }
 }

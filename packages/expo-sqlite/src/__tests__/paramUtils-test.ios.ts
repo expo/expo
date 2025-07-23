@@ -134,7 +134,6 @@ describe(composeRows, () => {
 
   it('should return empty array when column values list is empty', () => {
     const columnNames = ['id', 'value', 'intValue'];
-    const columnValuesList = [];
-    expect(composeRows(columnNames, columnValuesList)).toEqual([]);
+    expect(composeRows(columnNames, [])).toEqual([]);
   });
 });

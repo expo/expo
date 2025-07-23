@@ -1,4 +1,4 @@
-import type { SharedRef } from 'expo/types';
+import type { SharedRefType } from 'expo';
 import { Asset } from 'expo-asset';
 import { Image } from 'expo-image';
 import { FlipType, useImageManipulator } from 'expo-image-manipulator';
@@ -11,7 +11,7 @@ import HeadingText from '../../components/HeadingText';
 const DEFAULT_IMAGE = Asset.fromModule(require('../../../assets/images/example2.jpg'));
 
 export default function ImageSharedRefFromManipulator() {
-  const [image, setImage] = useState<SharedRef<'image'> | null>(null);
+  const [image, setImage] = useState<SharedRefType<'image'> | null>(null);
   const context = useImageManipulator(DEFAULT_IMAGE.uri);
 
   const transformImage = useCallback(async () => {

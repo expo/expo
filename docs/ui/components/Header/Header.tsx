@@ -1,5 +1,6 @@
 import { Button, mergeClasses } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { Star01DuotoneIcon } from '@expo/styleguide-icons/duotone/Star01DuotoneIcon';
 import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
 import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
@@ -49,8 +50,13 @@ export const Header = ({
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('px-2 text-secondary', 'max-lg-gutters:hidden')}
-            leftSlot={<Star01Icon className="icon-sm" />}
+            className={mergeClasses('group px-2 text-secondary', 'max-lg-gutters:hidden')}
+            leftSlot={
+              <>
+                <Star01Icon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
+                <Star01DuotoneIcon className="icon-sm hidden text-icon-warning group-hover:flex group-focus-visible:flex" />
+              </>
+            }
             href="https://github.com/expo/expo">
             Star Us on GitHub
           </Button>

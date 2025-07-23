@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
+import type { NavigationBarBehavior, NavigationBarButtonStyle, NavigationBarPosition, NavigationBarStyle, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 /**
  * Observe changes to the system navigation bar.
  * Due to platform constraints, this callback will also be triggered when the status bar visibility changes.
@@ -15,6 +15,8 @@ export declare function addVisibilityListener(listener: (event: NavigationBarVis
 /**
  * Changes the navigation bar's background color.
  *
+ * > This method is supported only when edge-to-edge is disabled.
+ *
  * @example
  * ```ts
  * NavigationBar.setBackgroundColorAsync("white");
@@ -25,15 +27,20 @@ export declare function setBackgroundColorAsync(color: string): Promise<void>;
 /**
  * Gets the navigation bar's background color.
  *
+ * > This method is supported only when edge-to-edge is disabled.
+ *
  * @example
  * ```ts
  * const color = await NavigationBar.getBackgroundColorAsync();
  * ```
  * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
+ *
  */
 export declare function getBackgroundColorAsync(): Promise<string>;
 /**
  * Changes the navigation bar's border color.
+ *
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -44,6 +51,8 @@ export declare function getBackgroundColorAsync(): Promise<string>;
 export declare function setBorderColorAsync(color: string): Promise<void>;
 /**
  * Gets the navigation bar's top border color, also known as the "divider color".
+ *
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -60,10 +69,12 @@ export declare function getBorderColorAsync(): Promise<string>;
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
  * @param visibility Based on CSS visibility property.
+ * @platform android
  */
 export declare function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void>;
 /**
  * Get the navigation bar's visibility.
+ *
  *
  * @example
  * ```ts
@@ -85,6 +96,8 @@ export declare function setButtonStyleAsync(style: NavigationBarButtonStyle): Pr
 /**
  * Gets the navigation bar's button color styles.
  *
+ * > This method is supported only when edge-to-edge is disabled.
+ *
  * @example
  * ```ts
  * const style = await NavigationBar.getButtonStyleAsync();
@@ -98,6 +111,8 @@ export declare function getButtonStyleAsync(): Promise<NavigationBarButtonStyle>
  * whereas position `relative` will shrink the screen to inline the navigation bar.
  *
  * When drawing behind the status and navigation bars, ensure the safe area insets are adjusted accordingly.
+ *
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -116,6 +131,8 @@ export declare function setPositionAsync(position: NavigationBarPosition): Promi
  * This method is unstable because the position can be set via another native module and get out of sync.
  * Alternatively, you can get the position by measuring the insets returned by `react-native-safe-area-context`.
  *
+ * > This method is supported only when edge-to-edge is disabled.
+ *
  * @example
  * ```ts
  * await NavigationBar.unstable_getPositionAsync()
@@ -133,6 +150,8 @@ export declare function unstable_getPositionAsync(): Promise<NavigationBarPositi
  * - `'inset-swipe'`: Reveals the System UI after a swipe gesture (bottom or top) and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  * - `'inset-touch'`: Reveals the System UI after a touch anywhere on the screen and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  *
+ * > This method is supported only when edge-to-edge is disabled.
+ *
  * @example
  * ```ts
  * await NavigationBar.setBehaviorAsync('overlay-swipe')
@@ -143,6 +162,8 @@ export declare function setBehaviorAsync(behavior: NavigationBarBehavior): Promi
 /**
  * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
  *
+ * > This method is supported only when edge-to-edge is disabled.
+ *
  * @example
  * ```ts
  * await NavigationBar.getBehaviorAsync()
@@ -150,6 +171,18 @@ export declare function setBehaviorAsync(behavior: NavigationBarBehavior): Promi
  * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
  */
 export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
+/**
+ * Sets the style of the navigation bar.
+ * > This will have an effect when the following conditions are met:
+ * > - Edge-to-edge is enabled
+ * > - The `enforceNavigationBarContrast` option of the `react-native-edge-to-edge` plugin is set to `false`.
+ * > - The device is using the three-button navigation bar.
+ *
+ * > Due to a bug in the Android 15 emulator this function may have no effect. Try a physical device or an emulator with a different version of Android.
+ *
+ * @platform android
+ */
+export declare function setStyle(style: NavigationBarStyle): void;
 /**
  * React hook that statefully updates with the visibility of the system navigation bar.
  *
@@ -163,5 +196,4 @@ export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
  * @returns Visibility of the navigation bar, `null` during async initialization.
  */
 export declare function useVisibility(): NavigationBarVisibility | null;
-export * from './NavigationBar.types';
 //# sourceMappingURL=NavigationBar.d.ts.map

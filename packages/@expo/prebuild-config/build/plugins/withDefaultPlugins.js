@@ -120,6 +120,13 @@ function _expoUpdates() {
   };
   return data;
 }
+function _withEdgeToEdge() {
+  const data = _interopRequireDefault(require("./unversioned/react-native-edge-to-edge/withEdgeToEdge"));
+  _withEdgeToEdge = function () {
+    return data;
+  };
+  return data;
+}
 function _reactNativeMaps() {
   const data = _interopRequireDefault(require("./unversioned/react-native-maps"));
   _reactNativeMaps = function () {
@@ -179,11 +186,11 @@ const withAndroidExpoPlugins = (config, props) => {
   // plugin or withScheme will override the output of withAndroidIntentFilters.
   _configPlugins().AndroidConfig.IntentFilters.withAndroidIntentFilters, _configPlugins().AndroidConfig.Scheme.withScheme, _configPlugins().AndroidConfig.Orientation.withOrientation, _configPlugins().AndroidConfig.Permissions.withInternalBlockedPermissions, _configPlugins().AndroidConfig.Permissions.withPermissions,
   // strings.xml
-  _configPlugins().AndroidConfig.Name.withName,
+  _configPlugins().AndroidConfig.Name.withName, _configPlugins().AndroidConfig.Locales.withLocales,
   // Dangerous -- these plugins run in reverse order.
   _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid, _ReactNative78CompatPlugin().withSdk52ReactNative78CompatAndroid,
   // Modify colors.xml and styles.xml
-  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withAndroidIcons().withAndroidIcons,
+  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, config => (0, _withEdgeToEdge().default)(config, props), _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
   // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
   _configPlugins().AndroidConfig.Package.withPackageRefactor]);

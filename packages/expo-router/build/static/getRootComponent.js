@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRootComponent = void 0;
+exports.getRootComponent = getRootComponent;
 /**
  * Copyright © 2023 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-const _ctx_html_1 = require("../../_ctx-html");
+const _ctx_html_1 = require("expo-router/_ctx-html");
 function getRootComponent() {
     const keys = _ctx_html_1.ctx.keys();
     if (!keys.length) {
@@ -22,5 +22,4 @@ function getRootComponent() {
     }
     return exp.default;
 }
-exports.getRootComponent = getRootComponent;
 //# sourceMappingURL=getRootComponent.js.map

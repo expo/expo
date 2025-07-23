@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRequestHandler = exports.getRoutesManifest = void 0;
+exports.getRoutesManifest = getRoutesManifest;
+exports.createRequestHandler = createRequestHandler;
 require("./install");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -16,22 +17,19 @@ function getProcessedManifest(path) {
     const parsed = {
         ...routesManifest,
         notFoundRoutes: routesManifest.notFoundRoutes.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
         apiRoutes: routesManifest.apiRoutes.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
         htmlRoutes: routesManifest.htmlRoutes.map((value) => {
-            return {
-                ...value,
-                namedRegex: new RegExp(value.namedRegex),
-            };
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
+        }),
+        redirects: routesManifest.redirects?.map((value) => {
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
+        }),
+        rewrites: routesManifest.rewrites?.map((value) => {
+            return { ...value, namedRegex: new RegExp(value.namedRegex) };
         }),
     };
     return parsed;
@@ -39,7 +37,6 @@ function getProcessedManifest(path) {
 function getRoutesManifest(distFolder) {
     return getProcessedManifest(node_path_1.default.join(distFolder, '_expo/routes.json'));
 }
-exports.getRoutesManifest = getRoutesManifest;
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutesManifest, getHtml = async (_request, route) => {
     // Serve a static file by exact route name
@@ -73,31 +70,15 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
     if ('statusCode' in error && typeof error.statusCode === 'number') {
         return new Response(error.message, {
             status: error.statusCode,
-            headers: {
-                'Content-Type': 'text/plain',
-            },
+            headers: { 'Content-Type': 'text/plain' },
         });
     }
     return new Response('Internal server error', {
         status: 500,
-        headers: {
-            'Content-Type': 'text/plain',
-        },
+        headers: { 'Content-Type': 'text/plain' },
     });
 }, } = {}) {
     let routesManifest;
-    function updateRequestWithConfig(request, config) {
-        const params = {};
-        const url = new URL(request.url);
-        const match = config.namedRegex.exec(url.pathname);
-        if (match?.groups) {
-            for (const [key, value] of Object.entries(match.groups)) {
-                const namedKey = config.routeKeys[key];
-                params[namedKey] = value;
-            }
-        }
-        return params;
-    }
     return async function handler(request) {
         if (getInternalRoutesManifest) {
             const manifest = await getInternalRoutesManifest(distFolder);
@@ -108,9 +89,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 // Development error when Expo Router is not setup.
                 return new Response('No routes manifest found', {
                     status: 404,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                 });
             }
         }
@@ -118,8 +97,37 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             routesManifest = getRoutesManifest(distFolder);
         }
         const url = new URL(request.url, 'http://expo.dev');
-        const sanitizedPathname = url.pathname;
+        let sanitizedPathname = url.pathname;
         debug('Request', sanitizedPathname);
+        if (routesManifest.redirects) {
+            for (const route of routesManifest.redirects) {
+                if (!route.namedRegex.test(sanitizedPathname)) {
+                    continue;
+                }
+                if (route.methods && !route.methods.includes(request.method)) {
+                    continue;
+                }
+                const Location = getRedirectRewriteLocation(request, route);
+                if (Location) {
+                    debug('Redirecting', Location);
+                    // Get the params
+                    return new Response(null, { status: route.permanent ? 308 : 307, headers: { Location } });
+                }
+            }
+        }
+        if (routesManifest.rewrites) {
+            for (const route of routesManifest.rewrites) {
+                if (!route.namedRegex.test(sanitizedPathname)) {
+                    continue;
+                }
+                if (route.methods && !route.methods.includes(request.method)) {
+                    continue;
+                }
+                const url = getRedirectRewriteLocation(request, route);
+                request = new Request(new URL(url, new URL(request.url).origin), request);
+                sanitizedPathname = new URL(request.url, 'http://expo.dev').pathname;
+            }
+        }
         if (request.method === 'GET' || request.method === 'HEAD') {
             // First test static routes
             for (const route of routesManifest.htmlRoutes) {
@@ -134,20 +142,13 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
                 if (!contents) {
                     return new Response('Not found', {
                         status: 404,
-                        headers: {
-                            'Content-Type': 'text/plain',
-                        },
+                        headers: { 'Content-Type': 'text/plain' },
                     });
                 }
                 else if (contents instanceof Response) {
                     return contents;
                 }
-                return new Response(contents, {
-                    status: 200,
-                    headers: {
-                        'Content-Type': 'text/html',
-                    },
-                });
+                return new Response(contents, { status: 200, headers: { 'Content-Type': 'text/html' } });
             }
         }
         // Next, test API routes
@@ -163,9 +164,7 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             if (!routeHandler) {
                 return new Response('Method not allowed', {
                     status: 405,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                 });
             }
             // Mutate to add the expoUrl object.
@@ -194,30 +193,67 @@ function createRequestHandler(distFolder, { getRoutesManifest: getInternalRoutes
             if (!contents) {
                 return new Response('Not found', {
                     status: 404,
-                    headers: {
-                        'Content-Type': 'text/plain',
-                    },
+                    headers: { 'Content-Type': 'text/plain' },
                 });
             }
             else if (contents instanceof Response) {
                 return contents;
             }
-            return new Response(contents, {
-                status: 404,
-                headers: {
-                    'Content-Type': 'text/html',
-                },
-            });
+            return new Response(contents, { status: 404, headers: { 'Content-Type': 'text/html' } });
         }
         // 404
         const response = new Response('Not found', {
             status: 404,
-            headers: {
-                'Content-Type': 'text/plain',
-            },
+            headers: { 'Content-Type': 'text/plain' },
         });
         return response;
     };
 }
-exports.createRequestHandler = createRequestHandler;
+function updateRequestWithConfig(request, config) {
+    const params = {};
+    const url = new URL(request.url);
+    const match = config.namedRegex.exec(url.pathname);
+    if (match?.groups) {
+        for (const [key, value] of Object.entries(match.groups)) {
+            const namedKey = config.routeKeys[key];
+            params[namedKey] = value;
+        }
+    }
+    return params;
+}
+/** Match `[page]` -> `page` or `[...group]` -> `...group` */
+const dynamicNameRe = /^\[([^[\]]+?)\]$/;
+function getRedirectRewriteLocation(request, route) {
+    const params = updateRequestWithConfig(request, route);
+    const urlSearchParams = new URL(request.url).searchParams;
+    let location = route.page
+        .split('/')
+        .map((segment) => {
+        let paramName = segment.match(dynamicNameRe)?.[1];
+        if (!paramName) {
+            return segment;
+        }
+        else if (paramName.startsWith('...')) {
+            paramName = paramName.slice(3);
+            const value = params[paramName];
+            delete params[paramName];
+            return value;
+        }
+        else {
+            const value = params[paramName];
+            delete params[paramName];
+            return value?.split('/')[0];
+        }
+    })
+        .join('/');
+    if (Object.keys(params).length > 0 || urlSearchParams.size > 0) {
+        location +=
+            '?' +
+                new URLSearchParams({
+                    ...params,
+                    ...Object.fromEntries(urlSearchParams.entries()),
+                }).toString();
+    }
+    return location;
+}
 //# sourceMappingURL=index.js.map

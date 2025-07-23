@@ -2,6 +2,7 @@
 title: Create and run a cloud build for Android
 sidebar_title: Android development build
 description: Learn how to configure a development build for Android devices and emulators using EAS Build.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -40,10 +41,10 @@ This command prompts us with the following questions:
 - **What would you like your Android application id to be?** Press <kbd>return</kbd> to select the default value provided for this prompt. This will add [`android.package`](/versions/latest/config/app/#package) in **app.json**.
 - **Generate a new Android Keystore**? Press <kbd>Y</kbd>.
 
-After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the Expo dashboard:
+After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the EAS dashboard:
 
 <ContentSpotlight
-  alt="Android development build details and progress in Expo dashboard"
+  alt="Android development build details and progress in EAS dashboard"
   src="/static/images/tutorial/eas/android-build-details.png"
   className="max-w-[800px]"
 />
@@ -91,7 +92,7 @@ This section provides the methods available for running the development build on
   className="max-w-[300px]"
 />
 
-- On the Expo dashboard, under **Build artifact**, click the **Open with Orbit**.
+- On the EAS dashboard, under **Build artifact**, click the **Open with Orbit**.
 
 After the build is installed, the Orbit app launches the development build on the device.
 
@@ -148,7 +149,7 @@ In the terminal, once the build finishes, EAS CLI prompts us by asking whether w
 
 <Collapsible summary="Alternate: Use Expo Orbit">
 
-Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **Build artifact** on the Expo dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
+Alternatively, [Expo Orbit](/build/orbit/) can be used for installation. From **Build artifact** on the EAS dashboard, click **Open with Expo Orbit** to install the development build on the Android Emulator.
 
 </Collapsible>
 

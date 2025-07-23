@@ -10,6 +10,6 @@ it(`renders to RSC`, async () => {
     />
   );
 
-  await expect(jsx).toMatchFlight(`1:I["src/LinearGradient.tsx",[],"LinearGradient"]
+  await expect(jsx).toMatchFlight(`1:I["src/LinearGradient.tsx",[],"LinearGradient",1]
 0:["$","$L1",null,{"colors":["cyan","#ff00ff","rgba(0,0,0,0)","rgba(0,255,255,0.5)"],"testID":"gradient"},null]`);
 });

@@ -12,11 +12,12 @@ import ExpoModulesCore
  *   of data and cache it. If a chunk of data is already available we will return it from cache.
  */
 final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
-  private weak var owner: CachingPlayerItem?
   private let url: URL
   private let saveFilePath: String
   private let fileExtension: String
   private let cachedResource: CachedResource
+  private let urlRequestHeaders: [String: String]?
+  internal var onError: ((Error) -> Void)?
 
   private var cachableRequests: SynchronizedHashTable<CachableRequest> = SynchronizedHashTable()
   private var session: URLSession?
@@ -35,11 +36,11 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     return self.saveFilePath
   }
 
-  init(url: URL, saveFilePath: String, fileExtension: String, owner: CachingPlayerItem?) {
+  init(url: URL, saveFilePath: String, fileExtension: String, urlRequestHeaders: [String: String]?) {
     self.url = url
     self.saveFilePath = saveFilePath
-    self.owner = owner
     self.fileExtension = fileExtension
+    self.urlRequestHeaders = urlRequestHeaders
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
     self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
@@ -180,7 +181,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     } else {
       // We can't control the AVPlayer.error property that will be set after the player fails to load the resource
       // We have an additional field that can be used to return a more specific error
-      owner?.cachingError = VideoCacheUnsupportedFormatException(response.mimeType ?? "")
+      onError?(VideoCacheUnsupportedFormatException(response.mimeType ?? ""))
     }
   }
 
@@ -255,7 +256,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy)
     request.timeoutInterval = Self.requestTimeoutInterval
 
-    owner?.urlRequestHeaders?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+    self.urlRequestHeaders?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
     return request
   }
 

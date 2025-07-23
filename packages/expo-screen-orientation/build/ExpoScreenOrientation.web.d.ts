@@ -1,5 +1,14 @@
 import { NativeModule } from 'expo-modules-core';
 import { Orientation, OrientationLock, WebOrientationLock, ExpoOrientationEvents } from './ScreenOrientation.types';
+declare global {
+    interface Screen {
+        msOrientation?: Screen['orientation']['type'];
+        mozOrientation?: Screen['orientation'];
+        mozUnlockOrientation?(): boolean | undefined;
+        msUnlockOrientation?(): boolean | undefined;
+        unlockOrientation?(): boolean | undefined;
+    }
+}
 declare class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
     orientation: ScreenOrientation | null;
     emitOrientationEvent(): Promise<void>;

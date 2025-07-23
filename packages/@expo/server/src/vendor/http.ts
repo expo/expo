@@ -88,13 +88,6 @@ export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Header
   return headers;
 }
 
-declare module 'http' {
-  interface ServerResponse {
-    /** @since v19.6.0, v18.15.0 */
-    setHeaders?(headers: Headers | Map<string, number | string | readonly string[]>): this;
-  }
-}
-
 export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
   res.statusCode = expoRes.status;

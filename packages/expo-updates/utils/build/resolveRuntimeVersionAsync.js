@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveRuntimeVersionAsync = void 0;
-const config_1 = require("@expo/config");
-const config_plugins_1 = require("@expo/config-plugins");
+exports.resolveRuntimeVersionAsync = resolveRuntimeVersionAsync;
+const config_1 = require("expo/config");
+const config_plugins_1 = require("expo/config-plugins");
 const createFingerprintAsync_1 = require("./createFingerprintAsync");
 const workflow_1 = require("./workflow");
 async function resolveRuntimeVersionAsync(projectRoot, platform, fingerprintOptions, otherOptions) {
@@ -32,4 +32,3 @@ async function resolveRuntimeVersionAsync(projectRoot, platform, fingerprintOpti
         workflow,
     };
 }
-exports.resolveRuntimeVersionAsync = resolveRuntimeVersionAsync;

@@ -1,3 +1,5 @@
+"use strict";
+
 import AsyncStorage from "./AsyncStorage";
 export function useAsyncStorage(key) {
   return {

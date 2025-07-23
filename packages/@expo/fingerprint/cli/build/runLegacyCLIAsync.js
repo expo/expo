@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runLegacyCLIAsync = void 0;
+exports.runLegacyCLIAsync = runLegacyCLIAsync;
 const readFingerprintFileAsync_js_1 = __importDefault(require("./utils/readFingerprintFileAsync.js"));
 const index_js_1 = require("../../build/index.js");
 async function runLegacyCLIAsync(args) {
@@ -43,4 +43,3 @@ async function runLegacyCLIAsync(args) {
         process.exit(1);
     }
 }
-exports.runLegacyCLIAsync = runLegacyCLIAsync;

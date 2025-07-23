@@ -143,5 +143,42 @@ export function test(t) {
         t.expect(result).toBe(longValue);
       });
     });
+    t.describe('Stores with access group', () => {
+      t.it('Set long value', async () => {
+        const result = await SecureStore.setItemAsync(key, longValue, {
+          accessGroup: 'group.dev.expo.Payments',
+        });
+        t.expect(result).toBe(undefined);
+      });
+      t.it('Fetch long value', async () => {
+        const result = await SecureStore.getItemAsync(key, {
+          accessGroup: 'group.dev.expo.Payments',
+        });
+        t.expect(result).toBe(longValue);
+      });
+      t.it('Delete long value', async () => {
+        const result = await SecureStore.deleteItemAsync(key, {
+          accessGroup: 'group.dev.expo.Payments',
+        });
+        t.expect(result).toBe(undefined);
+      });
+      t.it('Set in non access group and validate get in access group is empty', async () => {
+        await SecureStore.setItemAsync(key, longValue, {});
+        const result = await SecureStore.getItemAsync(key, {
+          accessGroup: 'group.dev.expo.Payments',
+        });
+        t.expect(result).toBe(null);
+      });
+      t.it('Set for access group without entitlements, expect error', async () => {
+        try {
+          const result = await SecureStore.setItemAsync(key, emptyValue, {
+            accessGroup: 'group.no.entitlement',
+          });
+          t.fail(result);
+        } catch (e) {
+          t.expect(e).toBeTruthy();
+        }
+      });
+    });
   });
 }

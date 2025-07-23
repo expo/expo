@@ -1,3 +1,5 @@
+"use strict";
+
 export function checkValidArgs(keyValuePairs, callback) {
   if (!Array.isArray(keyValuePairs) || keyValuePairs.length === 0 || !Array.isArray(keyValuePairs[0])) {
     throw new Error("[AsyncStorage] Expected array of key-value pairs as first argument to multiSet");

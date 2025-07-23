@@ -5,6 +5,7 @@ import androidx.room.*
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateAssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import java.util.*
 
 /**
@@ -88,12 +89,17 @@ abstract class AssetDao {
   }
 
   fun loadAssetWithKey(key: String?): AssetEntity? {
-    val assets = loadAssetWithKeyInternal(key)
-    return if (assets.isNotEmpty()) {
-      assets[0]
-    } else {
-      null
+    val asset = loadAssetWithKeyInternal(key).firstOrNull() ?: return null
+
+    // Load some properties not stored in database but can be computed from other fields
+    asset.relativePath?.let {
+      val (embeddedAssetFilename, resourceFolder, resourceFilename) =
+        AndroidResourceAssetUtils.parseAndroidResponseAssetFromPath(it)
+      asset.embeddedAssetFilename = embeddedAssetFilename
+      asset.resourcesFolder = resourceFolder
+      asset.resourcesFilename = resourceFilename
     }
+    return asset
   }
 
   fun mergeAndUpdateAsset(existingEntity: AssetEntity, newEntity: AssetEntity) {
@@ -119,11 +125,11 @@ abstract class AssetDao {
     // we need to keep track of whether the calling class expects this asset to be the launch asset
     existingEntity.isLaunchAsset = newEntity.isLaunchAsset
     // some fields on the asset entity are not stored in the database but might still be used by application code
-    existingEntity.embeddedAssetFilename = newEntity.embeddedAssetFilename
-    existingEntity.resourcesFilename = newEntity.resourcesFilename
-    existingEntity.resourcesFolder = newEntity.resourcesFolder
-    existingEntity.scale = newEntity.scale
-    existingEntity.scales = newEntity.scales
+    newEntity.embeddedAssetFilename?.let { existingEntity.embeddedAssetFilename = it }
+    newEntity.resourcesFilename?.let { existingEntity.resourcesFilename = it }
+    newEntity.resourcesFolder?.let { existingEntity.resourcesFolder = it }
+    newEntity.scale?.let { existingEntity.scale = it }
+    newEntity.scales?.let { existingEntity.scales = it }
   }
 
   @Transaction

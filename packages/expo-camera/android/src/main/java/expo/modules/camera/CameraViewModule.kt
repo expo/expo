@@ -43,7 +43,8 @@ val cameraEvents = arrayOf(
   "onBarcodeScanned",
   "onFacesDetected",
   "onFaceDetectionError",
-  "onPictureSaved"
+  "onPictureSaved",
+  "onAvailableLensesChanged"
 )
 
 class CameraViewModule : Module() {
@@ -124,12 +125,15 @@ class CameraViewModule : Module() {
     AsyncFunction("launchScanner") { settings: BarcodeSettings ->
       val reactContext = appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
-      val options = GmsBarcodeScannerOptions.Builder()
-        .setBarcodeFormats(
-          settings.barcodeTypes.first().mapToBarcode(),
-          *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
-        )
-        .build()
+
+      val options = GmsBarcodeScannerOptions.Builder().apply {
+        if (settings.barcodeTypes.isNotEmpty()) {
+          setBarcodeFormats(
+            settings.barcodeTypes.first().mapToBarcode(),
+            *settings.barcodeTypes.drop(1).map { it.mapToBarcode() }.toIntArray()
+          )
+        }
+      }.build()
 
       val scanner = GmsBarcodeScanning.getClient(reactContext, options)
       scanner.startScan()
@@ -140,6 +144,10 @@ class CameraViewModule : Module() {
         .addOnFailureListener {
           throw CameraExceptions.BarcodeScanningFailedException()
         }
+    }
+
+    AsyncFunction("dismissScanner") {
+      // Aligned with iOS, this function is a no-op on Android since the scanner is dismissed automatically
     }
 
     OnDestroy {
@@ -350,7 +358,9 @@ class CameraViewModule : Module() {
       }
 
       OnViewDidUpdateProps { view ->
-        view.createCamera()
+        moduleScope.launch {
+          view.createCamera()
+        }
       }
 
       AsyncFunction("takePicture") { view: ExpoCameraView, options: PictureOptions, promise: Promise ->

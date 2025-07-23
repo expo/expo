@@ -9,7 +9,7 @@ import expo.modules.kotlin.Promise;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
-import expo.modules.notifications.notifications.model.NotificationBehavior;
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord;
 import expo.modules.notifications.service.NotificationsService;
 
 /**
@@ -87,7 +87,7 @@ public class SingleNotificationHandlerTask {
    * @param behavior Behavior requested by the app
    * @param promise  Promise to fulfill once the behavior is applied to the notification.
    */
-  /* package */ void processNotificationWithBehavior(final NotificationBehavior behavior, final Promise promise) {
+  /* package */ void processNotificationWithBehavior(final NotificationBehaviorRecord behavior, final Promise promise) {
     mHandler.post(new Runnable() {
       @Override
       public void run() {

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findMatchingBracketPosition = exports.appendContentsInsideDeclarationBlock = exports.addImports = void 0;
+exports.addImports = addImports;
+exports.appendContentsInsideDeclarationBlock = appendContentsInsideDeclarationBlock;
+exports.findMatchingBracketPosition = findMatchingBracketPosition;
 function addImports(source, imports, isJava) {
     const lines = source.split('\n');
     const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;?$/));
@@ -12,7 +14,6 @@ function addImports(source, imports, isJava) {
     }
     return lines.join('\n');
 }
-exports.addImports = addImports;
 function appendContentsInsideDeclarationBlock(srcContents, declaration, insertion) {
     const start = srcContents.search(new RegExp(`\\s*${declaration}.*?[\\(\\{]`));
     if (start < 0) {
@@ -21,7 +22,6 @@ function appendContentsInsideDeclarationBlock(srcContents, declaration, insertio
     const end = findMatchingBracketPosition(srcContents, '{', start);
     return insertContentsAtOffset(srcContents, insertion, end);
 }
-exports.appendContentsInsideDeclarationBlock = appendContentsInsideDeclarationBlock;
 function insertContentsAtOffset(srcContents, insertion, offset) {
     const srcContentsLength = srcContents.length;
     if (offset < 0 || offset > srcContentsLength) {
@@ -78,7 +78,6 @@ function findMatchingBracketPosition(contents, bracket, offset = 0) {
     }
     return -1;
 }
-exports.findMatchingBracketPosition = findMatchingBracketPosition;
 function isLeftBracket(bracket) {
     const leftBracketList = ['(', '{'];
     return leftBracketList.includes(bracket);

@@ -394,6 +394,11 @@ export type ImagePickerCancelledResult = ImagePickerCanceledResult;
  */
 export type ImagePickerMultipleResult = ImagePickerResult;
 
+/**
+ * The shape of the crop area.
+ */
+export type CropShape = 'rectangle' | 'oval';
+
 // @needsAudit
 export type ImagePickerOptions = {
   /**
@@ -415,6 +420,14 @@ export type ImagePickerOptions = {
    * Android, since on iOS the crop rectangle is always a square.
    */
   aspect?: [number, number];
+  /**
+   * Specify the shape of the crop area if the user is allowed to edit the image
+   * (by passing `allowsEditing: true`). This option is only applicable on Android.
+   *
+   * @default rectangle
+   * @platform android
+   */
+  shape?: CropShape;
   /**
    * Specify the quality of compression, from `0` to `1`. `0` means compress for small size,
    * `1` means compress for maximum quality.
@@ -517,9 +530,8 @@ export type ImagePickerOptions = {
    * Selects the camera-facing type. The `CameraType` enum provides two options:
    * `front` for the front-facing camera and `back` for the back-facing camera.
    * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
+   * - **On Web**, if this option is not provided, use "camera" as the default value of internal input element for backwards compatibility.
    * @default CameraType.back
-   * @platform android
-   * @platform ios
    */
   cameraType?: CameraType;
   /**
@@ -537,7 +549,10 @@ export type ImagePickerOptions = {
   legacy?: boolean;
 };
 
-// @needsAudit
+/**
+ * @hidden
+ * @deprecated Only used internally.
+ */
 export type OpenFileBrowserOptions = {
   /**
    * Choose what type of media to pick.
@@ -545,7 +560,7 @@ export type OpenFileBrowserOptions = {
    */
   mediaTypes: MediaType | MediaType[] | MediaTypeOptions;
   // @docsMissing
-  capture?: boolean;
+  capture?: boolean | CameraType;
   /**
    * Whether or not to allow selecting multiple media files at once.
    * @platform web
@@ -562,8 +577,4 @@ export type OpenFileBrowserOptions = {
  * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
  */
 export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> =
-  T extends {
-    allowsMultipleSelection: true;
-  }
-    ? ImagePickerResult
-    : ImagePickerResult;
+  T extends { allowsMultipleSelection: true } ? ImagePickerResult : ImagePickerResult;

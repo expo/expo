@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.addImports = addImports;
 exports.appendContentsInsideDeclarationBlock = appendContentsInsideDeclarationBlock;
+exports.appendContentsInsideGradlePluginBlock = appendContentsInsideGradlePluginBlock;
+exports.findGradlePluginCodeBlock = findGradlePluginCodeBlock;
 exports.findNewInstanceCodeBlock = findNewInstanceCodeBlock;
 function _commonCodeMod() {
   const data = require("../utils/commonCodeMod");
@@ -89,5 +91,42 @@ function addImports(source, imports, isJava) {
     }
   }
   return lines.join('\n');
+}
+
+/**
+ * Find code block of Gradle plugin block, will return only {} part
+ *
+ * @param contents source contents
+ * @param plugin plugin declaration name, e.g. `plugins` or `pluginManagement`
+ * @returns found CodeBlock, or null if not found.
+ */
+function findGradlePluginCodeBlock(contents, plugin) {
+  const pluginStart = contents.search(new RegExp(`${plugin}\\s*\\{`, 'm'));
+  if (pluginStart < 0) {
+    return null;
+  }
+  const codeBlockStart = contents.indexOf('{', pluginStart);
+  const codeBlockEnd = (0, _matchBrackets().findMatchingBracketPosition)(contents, '{', codeBlockStart);
+  const codeBlock = contents.substring(codeBlockStart, codeBlockEnd + 1);
+  return {
+    start: codeBlockStart,
+    end: codeBlockEnd,
+    code: codeBlock
+  };
+}
+
+/**
+ * Append contents to the end of Gradle plugin block
+ * @param srcContents source contents
+ * @param plugin plugin declaration name, e.g. `plugins` or `pluginManagement`
+ * @param insertion code to append
+ * @returns updated contents
+ */
+function appendContentsInsideGradlePluginBlock(srcContents, plugin, insertion) {
+  const codeBlock = findGradlePluginCodeBlock(srcContents, plugin);
+  if (!codeBlock) {
+    throw new Error(`Unable to find Gradle plugin block - plugin[${plugin}]`);
+  }
+  return (0, _commonCodeMod().insertContentsAtOffset)(srcContents, insertion, codeBlock.end);
 }
 //# sourceMappingURL=codeMod.js.map

@@ -82,6 +82,7 @@ exports[`Notifications exports 1`] = `
     "UNKNOWN": 0,
   },
   "DEFAULT_ACTION_IDENTIFIER": "expo.modules.notifications.actions.DEFAULT",
+  "EventSubscription": undefined,
   "IosAlertStyle": {
     "0": "NONE",
     "1": "BANNER",
@@ -111,6 +112,8 @@ exports[`Notifications exports 1`] = `
     "PROVISIONAL": 3,
   },
   "NotificationTimeoutError": [Function],
+  "PermissionExpiration": undefined,
+  "PermissionResponse": undefined,
   "PermissionStatus": {
     "DENIED": "denied",
     "GRANTED": "granted",
@@ -132,6 +135,7 @@ exports[`Notifications exports 1`] = `
   "addPushTokenListener": [Function],
   "cancelAllScheduledNotificationsAsync": [Function],
   "cancelScheduledNotificationAsync": [Function],
+  "clearLastNotificationResponse": [Function],
   "clearLastNotificationResponseAsync": [Function],
   "deleteNotificationCategoryAsync": [Function],
   "deleteNotificationChannelAsync": [Function],
@@ -142,6 +146,7 @@ exports[`Notifications exports 1`] = `
   "getBadgeCountAsync": [Function],
   "getDevicePushTokenAsync": [Function],
   "getExpoPushTokenAsync": [Function],
+  "getLastNotificationResponse": [Function],
   "getLastNotificationResponseAsync": [Function],
   "getNextTriggerDateAsync": [Function],
   "getNotificationCategoriesAsync": [Function],

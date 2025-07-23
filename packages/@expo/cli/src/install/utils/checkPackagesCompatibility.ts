@@ -16,7 +16,8 @@ const ERROR_MESSAGE =
 export async function checkPackagesCompatibility(packages: string[]) {
   try {
     const packagesToCheck = packages.filter(
-      (packageName) => !packageName.startsWith('@expo-google-fonts/')
+      (packageName) =>
+        !packageName.startsWith('@expo/') && !packageName.startsWith('@expo-google-fonts/')
     );
 
     if (!packagesToCheck.length) {

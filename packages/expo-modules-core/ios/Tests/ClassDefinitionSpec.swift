@@ -189,6 +189,65 @@ class ClassDefinitionSpec: ExpoSpec {
         expect(value.getObject().getProperty("currentValue").getInt()) == initialValue
       }
     }
+
+    describe("constructor error handling") {
+      let appContext = AppContext.create()
+      let runtime = try! appContext.runtime
+
+      beforeSuite {
+        class ErrorTestModule: Module {
+          func definition() -> ModuleDefinition {
+            Name("ErrorTest")
+
+            Class("FailingClass") {
+              Constructor { (shouldFail: Bool) in
+                if shouldFail {
+                  throw TestCodedException()
+                }
+                return Counter(initialValue: 0)
+              }
+
+              Function("test") {
+                return "success"
+              }
+            }
+          }
+        }
+        appContext.moduleRegistry.register(moduleType: ErrorTestModule.self)
+      }
+
+      it("exceptions are in the correct format") {
+        expect {
+          try runtime.eval("new expo.modules.ErrorTest.FailingClass(true)")
+        }.to(throwError { (error: JavaScriptEvalException) in
+          let reason = error.param.userInfo["message"] as? String ?? ""
+          expect(reason).to(contain("Calling the 'constructor' function has failed"))
+          expect(reason).to(contain("→ Caused by:"))
+          expect(reason).to(contain("This is a test Exception with a code"))
+        })
+      }
+
+      it("check error codes from coded exceptions") {
+        let errorCode = try runtime.eval([
+          "try { new expo.modules.ErrorTest.FailingClass(true) } catch (error) { error.code }"
+        ]).getString()
+        expect(errorCode) == "E_TEST_CODE"
+      }
+
+      it("succeeds when constructor does not throw") {
+        let result = try runtime.eval("new expo.modules.ErrorTest.FailingClass(false)")
+        expect(result.kind) == .object
+        expect(result.getObject().hasProperty("test")) == true
+      }
+
+      it("can call methods on successfully constructed objects") {
+        let result = try runtime.eval([
+          "obj = new expo.modules.ErrorTest.FailingClass(false)",
+          "obj.test()"
+        ])
+        expect(result.getString()) == "success"
+      }
+    }
   }
 }
 

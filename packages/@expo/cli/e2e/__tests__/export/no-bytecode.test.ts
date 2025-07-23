@@ -41,7 +41,9 @@ describe('exports for hermes with no bytecode', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
+          bundle: expect.stringMatching(
+            /_expo\/static\/js\/ios\/entry-(?<md5>[0-9a-fA-F]{32})\.js/
+          ),
         },
       },
       version: 0,
@@ -62,7 +64,7 @@ describe('exports for hermes with no bytecode', () => {
 
     const bundle = await fs.promises.readFile(bundlePath, 'utf8');
     // Minified mark
-    expect(bundle).toMatch('__d((function(g,r,');
+    expect(bundle).toMatch('__d(function(g,r,');
   });
 });
 
@@ -97,7 +99,9 @@ describe('exports for hermes with no bytecode and no minification', () => {
       fileMetadata: {
         ios: {
           assets: expect.anything(),
-          bundle: expect.stringMatching(/_expo\/static\/js\/ios\/entry-.*\.js/),
+          bundle: expect.stringMatching(
+            /_expo\/static\/js\/ios\/entry-(?<md5>[0-9a-fA-F]{32})\.js/
+          ),
         },
       },
       version: 0,

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shouldMinify = void 0;
+exports.shouldMinify = shouldMinify;
 function isHermesEngine(options) {
     // NOTE: This has multiple inputs since we also use the `customTransformOptions.engine` option to indicate the Hermes engine.
     return (options.unstable_transformProfile === 'hermes-canary' ||
@@ -16,5 +16,4 @@ function shouldMinify(options) {
     }
     return options.minify;
 }
-exports.shouldMinify = shouldMinify;
 //# sourceMappingURL=resolveOptions.js.map

@@ -15,6 +15,8 @@ export interface MetroInspectorProxyApp {
   /** Information about the underlying CDP implementation, e.g. "React Native Bridgeless [C++ connection]" */
   title: string;
   /** The application ID that is currently running on the device, e.g. "dev.expo.bareexpo" */
+  appId: string;
+  /** The description of the runtime, e.g. "React Native Bridgeless [C++ connection]" */
   description: string;
   /** The CDP debugger type, which should always be "node" */
   type: 'node';
@@ -50,8 +52,6 @@ export async function openJsInspector(metroBaseUrl: string, app: MetroInspectorP
   }
 
   const url = new URL('/open-debugger', metroBaseUrl);
-  url.searchParams.set('appId', app.description);
-  url.searchParams.set('device', app.reactNative.logicalDeviceId);
   url.searchParams.set('target', app.id);
 
   // Request to open the React Native DevTools, but limit it to 1s
@@ -82,7 +82,7 @@ export async function queryInspectorAppAsync(
   appId: string
 ): Promise<MetroInspectorProxyApp | null> {
   const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-  return apps.find((app) => app.description === appId) ?? null;
+  return apps.find((app) => app.appId === appId) ?? null;
 }
 
 export async function queryAllInspectorAppsAsync(
@@ -91,7 +91,7 @@ export async function queryAllInspectorAppsAsync(
   const resp = await fetch(`${metroServerOrigin}/json/list`);
   // The newest runtime will be at the end of the list,
   // reversing the result would save time from try-error.
-  const apps: MetroInspectorProxyApp[] = transformApps(await resp.json()).reverse();
+  const apps: MetroInspectorProxyApp[] = (await resp.json()).reverse();
   const results: MetroInspectorProxyApp[] = [];
   for (const app of apps) {
     // Only use targets with better reloading support
@@ -138,28 +138,6 @@ export async function promptInspectorAppAsync(apps: MetroInspectorProxyApp[]) {
   const value = await selectAsync(chalk`Debug target {dim (Hermes only)}`, choices);
 
   return choices.find((item) => item.value === value)?.app;
-}
-
-// The description of `React Native Experimental (Improved Chrome Reloads)` target is `don't use` from metro.
-// This function tries to transform the unmeaningful description to appId
-function transformApps(apps: MetroInspectorProxyApp[]): MetroInspectorProxyApp[] {
-  const deviceIdToAppId: Record<string, string> = {};
-
-  for (const app of apps) {
-    if (app.description !== "don't use") {
-      const deviceId = app.reactNative?.logicalDeviceId ?? app.id.split('-')[0];
-      const appId = app.description;
-      deviceIdToAppId[deviceId] = appId;
-    }
-  }
-
-  return apps.map((app) => {
-    if (app.description === "don't use") {
-      const deviceId = app.reactNative?.logicalDeviceId ?? app.id.split('-')[0];
-      app.description = deviceIdToAppId[deviceId] ?? app.description;
-    }
-    return app;
-  });
 }
 
 const HIDE_FROM_INSPECTOR_ENV = 'globalThis.__expo_hide_from_inspector__';

@@ -1,5 +1,5 @@
-import { ReadableStream, WritableStream } from 'web-streams-polyfill';
 import ExpoFileSystem from './ExpoFileSystem';
+import type { PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -11,12 +11,33 @@ export declare class Paths extends PathUtilities {
      */
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
+    /**
+     * A property that represents the total space on device's internal storage, represented in bytes.
+     */
+    static get totalDiskSpace(): number;
+    /**
+     * A property that represents the available space on device's internal storage, represented in bytes.
+     */
+    static get availableDiskSpace(): number;
+    /**
+     * Returns an object that indicates if the specified path represents a directory.
+     */
+    static info(...uris: string[]): PathInfo;
 }
+/**
+ * @hidden
+ */
 export declare class FileBlob extends Blob {
     file: File;
+    /**
+     * @internal
+     */
     key: string;
     constructor(file: File);
     get size(): number;
+    /**
+     * @internal
+     */
     get name(): string;
     get type(): string;
     arrayBuffer(): Promise<ArrayBuffer>;
@@ -28,7 +49,7 @@ export declare class FileBlob extends Blob {
 export declare class File extends ExpoFileSystem.FileSystemFile {
     /**
      * Creates an instance of a file.
-     * @param uris -  An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
+     * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
      * @example
      * ```ts
      * const file = new File("file:///path/to/file.txt");
@@ -46,8 +67,8 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * File name. Includes the extension.
      */
     get name(): string;
-    readableStream(): ReadableStream<Uint8Array>;
-    writableStream(): WritableStream<Uint8Array>;
+    readableStream(): ReadableStream<Uint8Array<ArrayBufferLike>>;
+    writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
 }
 /**
  * Represents a directory on the filesystem.
@@ -75,5 +96,7 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
      * Directory name.
      */
     get name(): string;
+    createFile(name: string, mimeType: string | null): File;
+    createDirectory(name: string): Directory;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

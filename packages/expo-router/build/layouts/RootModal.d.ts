@@ -1,6 +1,5 @@
-/// <reference types="react" />
 type RootModalContextValue = {
-    root: true;
+    root: boolean;
     routes: never[];
     addModal: (name: string) => void;
     removeModal: (name: string) => void;

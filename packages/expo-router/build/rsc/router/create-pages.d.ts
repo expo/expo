@@ -74,9 +74,7 @@ export declare function createPages(fn: (fns: {
 }) => Promise<void>): {
     renderEntries: import("../server.js").RenderEntries;
     getBuildConfig: import("../server.js").GetBuildConfig | undefined;
-    getSsrConfig: import("../server.js").GetSsrConfig | undefined; /**
-     * This is a helper type to check if a path is valid in a slug path.
-     */
+    getSsrConfig: import("../server.js").GetSsrConfig | undefined;
 };
 export {};
 //# sourceMappingURL=create-pages.d.ts.map

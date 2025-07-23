@@ -50,6 +50,4 @@ class AsyncStoragePackage : TurboReactPackage() {
             throw RuntimeException("No ReactModuleInfoProvider for AsyncStoragePackage$\$ReactModuleInfoProvider", e)
         }
     }
-
-    override fun getViewManagers(reactContext: ReactApplicationContext?): MutableList<ModuleSpec>? = null
 }

@@ -1,4 +1,4 @@
-import * as babylon from '@babel/parser';
+import { parse } from '@babel/core';
 
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';
@@ -416,13 +416,13 @@ describe(isModuleEmptyFor, () => {
   ].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns true for: ${title}`, () => {
-      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(true);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(true);
     });
   });
   [`export {}`, `const foo = 'bar'`, `3`, `{}`, `true`, `console.log('hey')`].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns false for: ${title}`, () => {
-      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(false);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(false);
     });
   });
 });
@@ -1368,7 +1368,12 @@ it(`recursively expands export all statements (shallow)`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1381,6 +1386,148 @@ it(`recursively expands export all statements (shallow)`, async () => {
     },"/app/x1.js",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);
+});
+
+it(`recursively expands unused with overlapping exports`, async () => {
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import m from './x0';
+        console.log(m.z1, DDD);
+        `,
+    'x0.js': `
+        export * from './x1';
+        import X from './x1';
+        export default X;
+        `,
+    'x1.js': `
+        export default {};
+        `,
+  });
+
+  expect(artifact.source).toMatch('z1');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_IMPORT_DEFAULT(_dependencyMap[0]).z1, DDD);
+    },"/app/index.js",["/app/x0.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
+    },"/app/x0.js",["/app/x1.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      var _default = {};
+      exports.default = _default;
+    },"/app/x1.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});
+
+it(`removes all overlapping exports (export-all and default)`, async () => {
+  // Because we have a special condition to leave the default export in place when extracting export-all, we should test that export all is removed correctly.
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import m from './x0';
+        
+        `,
+    'x0.js': `
+        export * from './x1';
+        import X from './x1';
+        export default X;
+        `,
+    'x1.js': `
+        export default {};
+        `,
+  });
+
+  expect(artifact.source).not.toMatch('z1');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+    },"/app/index.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});
+
+it(`TODO: removes default export with overlapping exports (export-all and default)`, async () => {
+  // We should be able to expand the unused default from the overlapping export-all and remove it.
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import { z1 } from './x0';
+        consol.log(z1);
+        `,
+    'x0.js': `
+        export * from './x1';
+        import X from './x1';
+        export default X;
+        `,
+    'x1.js': `
+        export const z1 = 0;
+        export default {};
+        `,
+  });
+
+  expect(artifact.source).toMatch('z1');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      consol.log(_$$_REQUIRE(_dependencyMap[0]).z1);
+    },"/app/index.js",["/app/x0.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.default = _$$_IMPORT_DEFAULT(_dependencyMap[0]);
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
+    },"/app/x0.js",["/app/x1.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      const z1 = 0;
+      var _default = {};
+      exports.default = _default;
+      exports.z1 = z1;
+    },"/app/x1.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});
+
+it(`recursively expands export all statements with require cycles`, async () => {
+  await expect(() =>
+    serializeShakingAsync({
+      'index.js': `
+        import { z1, DDD } from './x0';
+        console.log(z1, DDD);
+        `,
+      'x0.js': `
+        export * from './x1';
+        `,
+      'x1.js': `
+        export const z1 = 0;
+        export * from './x0';
+        `,
+    })
+  ).rejects.toThrow('Circular dependency detected while tree-shaking: /app/x0.js');
 });
 
 it(`recursively expands export all statements`, async () => {
@@ -1419,7 +1566,12 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1427,7 +1579,12 @@ it(`recursively expands export all statements`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
@@ -1479,7 +1636,12 @@ it(`recursively expands export all statements with nested statements`, async () 
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      exports.z1 = _$$_REQUIRE(_dependencyMap[0]).z1;
+      Object.defineProperty(exports, "z1", {
+        enumerable: true,
+        get: function () {
+          return _$$_REQUIRE(_dependencyMap[0]).z1;
+        }
+      });
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";

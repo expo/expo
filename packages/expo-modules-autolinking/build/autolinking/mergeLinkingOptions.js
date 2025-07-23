@@ -3,10 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveSearchPathsAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathSync = exports.getProjectPackageJsonPathAsync = void 0;
+exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
+exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
+exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
+exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("./utils");
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
  */
@@ -17,7 +21,6 @@ async function getProjectPackageJsonPathAsync(projectRoot) {
     }
     return result;
 }
-exports.getProjectPackageJsonPathAsync = getProjectPackageJsonPathAsync;
 /**
  * Synchronous version of {@link getProjectPackageJsonPathAsync}.
  */
@@ -28,7 +31,6 @@ function getProjectPackageJsonPathSync(projectRoot) {
     }
     return result;
 }
-exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
 /**
  * Merges autolinking options from different sources (the later the higher priority)
  * - options defined in package.json's `expo.autolinking` field
@@ -36,7 +38,8 @@ exports.getProjectPackageJsonPathSync = getProjectPackageJsonPathSync;
  * - options provided to the CLI command
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
-    const packageJson = require(await getProjectPackageJsonPathAsync(providedOptions.projectRoot));
+    const packageJsonPath = await getProjectPackageJsonPathAsync(providedOptions.projectRoot);
+    const packageJson = await (0, utils_1.loadPackageJSONAsync)(packageJsonPath);
     const baseOptions = packageJson.expo?.autolinking;
     const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
     const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
@@ -45,7 +48,6 @@ async function mergeLinkingOptionsAsync(providedOptions) {
     finalOptions.nativeModulesDir = await resolveNativeModulesDirAsync(finalOptions.nativeModulesDir, providedOptions.projectRoot);
     return finalOptions;
 }
-exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
 /**
  * Resolves autolinking search paths. If none is provided, it accumulates all node_modules when
  * going up through the path components. This makes workspaces work out-of-the-box without any configs.
@@ -55,7 +57,6 @@ async function resolveSearchPathsAsync(searchPaths, cwd) {
         ? searchPaths.map((searchPath) => path_1.default.resolve(cwd, searchPath))
         : await findDefaultPathsAsync(cwd);
 }
-exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 /**
  * Looks up for workspace's `node_modules` paths.
  */

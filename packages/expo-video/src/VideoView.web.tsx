@@ -33,6 +33,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   const mediaNodeRef = useRef<null | MediaElementAudioSourceNode>(null);
   const hasToSetupAudioContext = useRef(false);
   const fullscreenChangeListener = useRef<null | (() => void)>(null);
+  const isWaitingForFirstFrame = useRef(false);
 
   /**
    * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -76,12 +77,25 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     const onLeave = () => {
       props.onPictureInPictureStop?.();
     };
+    const onLoadStart = () => {
+      isWaitingForFirstFrame.current = true;
+    };
+    const onCanPlay = () => {
+      if (isWaitingForFirstFrame.current) {
+        props.onFirstFrameRender?.();
+      }
+      isWaitingForFirstFrame.current = false;
+    };
     videoRef.current?.addEventListener('enterpictureinpicture', onEnter);
     videoRef.current?.addEventListener('leavepictureinpicture', onLeave);
+    videoRef.current?.addEventListener('loadstart', onLoadStart);
+    videoRef.current?.addEventListener('loadeddata', onCanPlay);
 
     return () => {
       videoRef.current?.removeEventListener('enterpictureinpicture', onEnter);
       videoRef.current?.removeEventListener('leavepictureinpicture', onLeave);
+      videoRef.current?.removeEventListener('loadstart', onLoadStart);
+      videoRef.current?.removeEventListener('loadeddata', onCanPlay);
     };
   }, [videoRef, props.onPictureInPictureStop, props.onPictureInPictureStart]);
 
@@ -169,7 +183,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     <video
       controls={props.nativeControls ?? true}
       controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'}
-      crossOrigin="anonymous"
+      crossOrigin={props.crossOrigin}
       style={{
         ...mapStyles(props.style),
         objectFit: props.contentFit,
@@ -191,6 +205,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
         }
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
+      playsInline={props.playsInline}
       src={getSourceUri(props.player?.src) ?? ''}
     />
   );

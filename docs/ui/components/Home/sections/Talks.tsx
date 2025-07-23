@@ -6,19 +6,18 @@ import { Users02Icon } from '@expo/styleguide-icons/outline/Users02Icon';
 import { type PropsWithChildren } from 'react';
 
 import { TALKS, Talk } from '~/public/static/talks';
-import { HeaderDescription } from '~/ui/components/Home';
-import { RawH3, CALLOUT, LABEL, A } from '~/ui/components/Text';
+import { Header } from '~/ui/components/Home/components';
+import { CALLOUT, LABEL, A } from '~/ui/components/Text';
 
 export function Talks() {
   return (
     <>
-      <div className="flex items-center gap-2">
-        <div>
-          <RawH3>Watch our latest talks</RawH3>
-          <HeaderDescription>
-            Explore our team's presentations. Stay informed and gain expertise.
-          </HeaderDescription>
-        </div>
+      <div className="mt-3 flex items-center gap-2">
+        <Header
+          title="Watch our latest talks"
+          description="Explore our team's presentations. Stay informed and gain expertise."
+          className="mt-0"
+        />
         <Button
           theme="secondary"
           className="ml-auto"

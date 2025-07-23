@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.relativizeJsonPaths = exports.stringifyJsonSorted = exports.getFileBasedHashSourceAsync = void 0;
+exports.getFileBasedHashSourceAsync = getFileBasedHashSourceAsync;
+exports.stringifyJsonSorted = stringifyJsonSorted;
+exports.relativizeJsonPaths = relativizeJsonPaths;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const Path_1 = require("../utils/Path");
@@ -22,14 +24,12 @@ async function getFileBasedHashSourceAsync(projectRoot, filePath, reason) {
     }
     return result;
 }
-exports.getFileBasedHashSourceAsync = getFileBasedHashSourceAsync;
 /**
  * A version of `JSON.stringify` that keeps the keys sorted
  */
 function stringifyJsonSorted(target, space) {
     return JSON.stringify(target, (_, value) => sortJson(value), space);
 }
-exports.stringifyJsonSorted = stringifyJsonSorted;
 /**
  * Transform absolute paths in JSON to relative paths based on the project root.
  */
@@ -45,7 +45,6 @@ function relativizeJsonPaths(value, projectRoot) {
     }
     return value;
 }
-exports.relativizeJsonPaths = relativizeJsonPaths;
 function sortJson(json) {
     if (Array.isArray(json)) {
         return json.sort((a, b) => {

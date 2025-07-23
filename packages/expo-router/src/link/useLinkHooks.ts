@@ -1,9 +1,11 @@
+'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import { useMemo, MouseEvent } from 'react';
-import { TextProps, GestureResponderEvent, Platform } from 'react-native';
+import { useMemo, MouseEvent, type Ref } from 'react';
+import { TextProps, GestureResponderEvent, Platform, type Text } from 'react-native';
 
 import { Href } from '../types';
+import { SingularOptions } from '../useScreens';
 
 // docsMissing
 /**
@@ -171,8 +173,8 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    */
   push?: boolean;
   /**
-   * While in a stack, this will dismiss screens until the provided href is reached. If the href is not found,
-   * it will instead replace the current screen with the provided href.
+   * While in a stack, this will dismiss screens until the provided `href` is reached. If the href is not found,
+   * it will instead replace the current screen with the provided `href`.
    *
    * @example
    *```tsx
@@ -196,7 +198,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    */
   className?: string;
 
-  onPress?: (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
+  onPress?: (event: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
 
   /**
    * Relative URL references are either relative to the directory or the document.
@@ -210,6 +212,21 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    * Replaces the initial screen with the current route.
    */
   withAnchor?: boolean;
+
+  /**
+   * When navigating in a Stack, if the target is valid then screens in the history that matches
+   * the uniqueness constraint will be removed.
+   *
+   * If used with `push`, the history will be filtered even if no navigation occurs.
+   */
+  dangerouslySingular?: SingularOptions;
+
+  /**
+   * Prefetches the route when the component is rendered on a focused screen.
+   */
+  prefetch?: boolean;
+
+  ref?: Ref<Text>;
 }
 
 // Mutate the style prop to add the className on web.

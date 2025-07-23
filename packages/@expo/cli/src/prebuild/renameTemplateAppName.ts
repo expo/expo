@@ -104,6 +104,9 @@ export async function getTemplateFilesToRenameAsync({
     // Prevent climbing out of the template directory in case a template
     // includes a symlink to an external directory.
     follow: false,
+    // Do not match on directories, only files
+    // Without this patterns like `android/**/*.gradle` actually match the folder `android/.gradle`
+    nodir: true,
   });
 }
 

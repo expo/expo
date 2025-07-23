@@ -1,20 +1,17 @@
+import { ExpoGlobal } from 'expo-modules-core';
+
 import {
   extractExpoPathFromURL,
   parsePathAndParamsFromExpoGoLink,
   parsePathFromExpoGoLink,
 } from '../extractPathFromURL';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var expo: any;
-}
-
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
     if (typeof expo === 'undefined') {
       globalThis.expo = {
         modules: {},
-      };
+      } as ExpoGlobal;
     }
     delete expo.modules.ExpoGo;
   });

@@ -21,11 +21,25 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Animation resuming',
+    route: 'image/animation-resuming',
+    getComponent() {
+      return optionalRequire(() => require('./ImageAnimationResuming'));
+    },
+  },
+  {
     name: 'List with thousands images',
     route: 'image/flashlist',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageFlashListScreen'));
+    },
+  },
+  {
+    name: 'Generate Placeholders',
+    route: 'image/generate-placeholders',
+    getComponent() {
+      return optionalRequire(() => require('./ImageGeneratePlaceholders'));
     },
   },
   {
@@ -138,6 +152,13 @@ export const ImageScreens = [
     route: 'image/media-library',
     getComponent() {
       return optionalRequire(() => require('./ImageMediaLibraryScreen'));
+    },
+  },
+  {
+    name: 'Imperative API',
+    route: 'image/imperative-api',
+    getComponent() {
+      return optionalRequire(() => require('./ImageImperativeApiScreen'));
     },
   },
 ];

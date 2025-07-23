@@ -20,6 +20,11 @@ import { fileURLToFilePath } from './path';
 import { decodeActionId } from './router/utils';
 import { runWithRenderStore, type EntriesDev, type EntriesPrd } from './server';
 
+declare namespace globalThis {
+  function __webpack_chunk_load__(id: string): Promise<unknown>;
+  function __webpack_require__(id: string): any;
+}
+
 export interface RenderContext<T = unknown> {
   rerender: (input: string, searchParams?: URLSearchParams) => void;
   context: T;
@@ -92,7 +97,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     return { id: resolved.id, chunks: resolved.chunks, name, async: true };
   }
 
-  const bundlerConfig = new Proxy(
+  const bundlerConfig: Record<string, ReturnType<typeof resolveRequest>> = new Proxy(
     {},
     {
       get(_target, encodedId: string) {
@@ -101,7 +106,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     }
   );
 
-  const serverConfig = new Proxy(
+  const serverConfig: Record<string, ReturnType<typeof resolveRequest>> = new Proxy(
     {},
     {
       get(_target, encodedId: string) {

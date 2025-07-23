@@ -2,7 +2,8 @@ import findUp from 'find-up';
 import fs from 'fs';
 import path from 'path';
 
-import { AutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';
+import type { PlatformAutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';
+import { loadPackageJSONAsync } from './utils';
 
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
@@ -35,8 +36,10 @@ export function getProjectPackageJsonPathSync(projectRoot: string): string {
 export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(
   providedOptions: OptionsType
 ): Promise<OptionsType> {
-  const packageJson = require(await getProjectPackageJsonPathAsync(providedOptions.projectRoot));
-  const baseOptions = packageJson.expo?.autolinking as AutolinkingOptions;
+  const packageJsonPath = await getProjectPackageJsonPathAsync(providedOptions.projectRoot);
+  const packageJson = await loadPackageJSONAsync(packageJsonPath);
+
+  const baseOptions = packageJson.expo?.autolinking as PlatformAutolinkingOptions;
   const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
   const finalOptions = Object.assign(
     {},
@@ -118,8 +121,8 @@ async function resolveNativeModulesDirAsync(
  */
 function getPlatformOptions(
   platform: SupportedPlatform,
-  options?: AutolinkingOptions
-): AutolinkingOptions {
+  options?: PlatformAutolinkingOptions
+): PlatformAutolinkingOptions {
   if (platform === 'apple') {
     return options?.apple ?? options?.ios ?? {};
   }

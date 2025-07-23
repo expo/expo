@@ -1,0 +1,57 @@
+---
+title: Publish preview updates with EAS Workflows
+sidebar_title: Publish preview updates
+description: Learn how to publish preview updates with EAS Workflows.
+hideTOC: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+Once you've made changes to your project, you can share a preview of your changes with your team by publishing a [preview update](/review/share-previews-with-your-team/). This is useful when you want to review changes with your team without pulling the latest changes and running them locally.
+
+You can access preview updates in the development build UI and through scannable QR codes on the EAS dashboard. When publishing a preview on every commit, your team can review changes without pulling the latest changes and running them locally.
+
+<ContentSpotlight
+  alt="Graph showing the preview updates workflow."
+  src="/static/images/eas-workflows/publish-preview-update.png"
+/>
+
+<VideoBoxLink
+  className="mb-4"
+  videoId="v_rzRcVSQYQ"
+  title="Expo Golden Workflow: Share preview updates with your team"
+/>
+
+## Get started
+
+<Prerequisites summary="Prerequisites" numberOfRequirements={2}>
+  <Requirement number={1} title="Set up EAS Update">
+    Your project needs to have [EAS Update](/eas-update/introduction/) setup to publish preview updates. You can set up your project with:
+
+    <Terminal cmd={['$ eas update:configure']} />
+
+  </Requirement>
+  <Requirement number={2} title="Create new development builds">
+    After you've configured your project, create new [development builds](/develop/development-builds/create-a-build/) for each platform.
+  </Requirement>
+</Prerequisites>
+
+The following workflow publishes a preview update for every commit on every branch.
+
+```yaml .eas/workflows/publish-preview-update.yml
+name: Publish preview update
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  publish_preview_update:
+    name: Publish preview update
+    type: update
+    params:
+      branch: ${{ github.ref_name || 'test' }}
+```

@@ -1,4 +1,4 @@
 import React from 'react';
 import { ViewProps } from '../primitives/View';
-export declare const HR: React.ComponentType<ViewProps>;
+export declare function HR(props: ViewProps): React.JSX.Element;
 //# sourceMappingURL=Rules.d.ts.map

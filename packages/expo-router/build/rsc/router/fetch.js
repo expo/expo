@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetch = void 0;
+exports.fetch = fetch;
 const fetch_1 = require("expo/fetch");
 const errors_1 = require("./errors");
 async function fetch(input, init) {
@@ -16,5 +16,4 @@ async function fetch(input, init) {
         throw error;
     }
 }
-exports.fetch = fetch;
 //# sourceMappingURL=fetch.js.map

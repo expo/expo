@@ -1,10 +1,12 @@
 const resolveFrom = require(require.resolve('resolve-from'));
 
 const silent = jest.fn((fromDirectory: string, request: string) => {
-  const fs = require('fs');
+  const fs = require('memfs').fs;
   const path = require('path');
+  const stats = fs.statSync(fromDirectory);
   try {
-    fromDirectory = fs.realpathSync(fromDirectory);
+    const resolvedPath = fs.realpathSync(fromDirectory);
+    fromDirectory = stats.isFile() ? path.dirname(resolvedPath) : resolvedPath;
   } catch (error: any) {
     if (error.code === 'ENOENT') {
       fromDirectory = path.resolve(fromDirectory);

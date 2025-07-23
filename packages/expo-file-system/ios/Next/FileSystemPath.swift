@@ -13,6 +13,13 @@ internal class FileSystemPath: SharedObject {
     try ensurePathPermission(appContext, path: url.path, flag: flag)
   }
 
+  func checkPermission(_ flag: EXFileSystemPermissionFlags) -> Bool {
+    guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+      return false
+    }
+    return permissionsManager.getPathPermissions(url.path).contains(flag)
+  }
+
   func validateCanCreate(_ options: CreateOptions) throws {
     if try !options.overwrite && exists {
       throw FileAlreadyExistsException("File already exists")
@@ -68,5 +75,32 @@ internal class FileSystemPath: SharedObject {
     let destinationUrl = try getMoveOrCopyPath(to: destination)
     try FileManager.default.moveItem(at: url, to: destinationUrl)
     url = destinationUrl
+  }
+
+  var modificationTime: Int64 {
+    get throws {
+      let modificationDate: Date = try getAttribute(.modificationDate, atPath: url.path)
+      return Int64(modificationDate.timeIntervalSince1970 * 1000)
+    }
+  }
+
+  var creationTime: Int64 {
+    get throws {
+      let creationDate: Date = try getAttribute(.creationDate, atPath: url.path)
+      return Int64(creationDate.timeIntervalSince1970 * 1000)
+    }
+  }
+
+  internal func getAttribute<T>(_ key: FileAttributeKey, atPath path: String) throws -> T {
+    try validatePermission(.read)
+    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+
+    guard let attribute = attributes[key] else {
+      throw UnableToGetFileAttribute("attributes do not contain \(key)")
+    }
+    guard let attributeCasted = attribute as? T else {
+      throw UnableToGetFileAttribute("\(key) is not of expected type")
+    }
+    return attributeCasted
   }
 }

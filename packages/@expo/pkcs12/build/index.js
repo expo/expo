@@ -3,7 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCertificateFingerprint = exports.getAsn1Hash = exports.parsePKCS12 = exports.getX509Asn1ByFriendlyName = exports.getX509CertificateByFriendlyName = exports.getX509Certificate = exports.getFormattedSerialNumber = void 0;
+exports.getFormattedSerialNumber = getFormattedSerialNumber;
+exports.getX509Certificate = getX509Certificate;
+exports.getX509CertificateByFriendlyName = getX509CertificateByFriendlyName;
+exports.getX509Asn1ByFriendlyName = getX509Asn1ByFriendlyName;
+exports.parsePKCS12 = parsePKCS12;
+exports.getAsn1Hash = getAsn1Hash;
+exports.getCertificateFingerprint = getCertificateFingerprint;
 const crypto_1 = __importDefault(require("crypto"));
 const node_forge_1 = __importDefault(require("node-forge"));
 /**
@@ -13,7 +19,6 @@ function getFormattedSerialNumber(certificate) {
     const { serialNumber } = certificate;
     return serialNumber ? serialNumber.replace(/^0+/, '').toUpperCase() : null;
 }
-exports.getFormattedSerialNumber = getFormattedSerialNumber;
 /**
  * Extracts a certificate from PKCS#12
  * This is assumed to be a conventional PKCS#12 where there is exactly one certificate and one key
@@ -26,7 +31,6 @@ function getX509Certificate(p12) {
     }
     return getX509CertificateFromBag(bags[0]);
 }
-exports.getX509Certificate = getX509Certificate;
 /**
  * Extracts a certificate from PKCS#12
  * This is assumed to be a PKCS#12 containing a keystore where the friendlyName (alias) contains a PrivateKeyEntry
@@ -45,7 +49,6 @@ function getX509CertificateByFriendlyName(p12, friendlyName) {
     }
     return getX509CertificateFromBag(bags[0]);
 }
-exports.getX509CertificateByFriendlyName = getX509CertificateByFriendlyName;
 function getX509CertificateFromBag(bag) {
     const { cert, asn1 } = bag;
     if (!cert && asn1) {
@@ -76,7 +79,6 @@ function getX509Asn1ByFriendlyName(p12, friendlyName) {
     // github.com/digitalbazaar/forge/blob/1887cfce43a8f5ca9cb5c256168cf12ce1715ecf/lib/pkcs12.js#L703
     return asn1 ?? null;
 }
-exports.getX509Asn1ByFriendlyName = getX509Asn1ByFriendlyName;
 function parsePKCS12(p12BufferOrBase64String, maybePassword) {
     const base64EncodedP12 = Buffer.isBuffer(p12BufferOrBase64String)
         ? p12BufferOrBase64String.toString('base64')
@@ -86,7 +88,6 @@ function parsePKCS12(p12BufferOrBase64String, maybePassword) {
     const p12Asn1 = node_forge_1.default.asn1.fromDer(p12Der);
     return node_forge_1.default.pkcs12.pkcs12FromAsn1(p12Asn1, password);
 }
-exports.parsePKCS12 = parsePKCS12;
 function getHash(data, { hashAlgorithm, hashEncoding, inputEncoding, }) {
     const hash = crypto_1.default.createHash(hashAlgorithm ?? 'sha1');
     if (inputEncoding) {
@@ -105,12 +106,10 @@ function getAsn1Hash(asn1, { hashAlgorithm, }) {
         inputEncoding: 'latin1', // latin1 is an alias for binary
     });
 }
-exports.getAsn1Hash = getAsn1Hash;
 function getCertificateFingerprint(certificate, { hashAlgorithm, }) {
     const certAsn1 = node_forge_1.default.pki.certificateToAsn1(certificate);
     return getAsn1Hash(certAsn1, {
         hashAlgorithm,
     });
 }
-exports.getCertificateFingerprint = getCertificateFingerprint;
 //# sourceMappingURL=index.js.map

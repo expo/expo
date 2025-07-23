@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { glob } from 'glob';
+import { vol } from 'memfs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
@@ -11,12 +12,10 @@ import {
   resolveModuleAsync,
 } from '../android';
 
-jest.mock('fs');
 jest.mock('glob');
 
-const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
-
 afterEach(() => {
+  vol.reset();
   jest.resetAllMocks();
 });
 
@@ -198,21 +197,27 @@ describe(convertPackageWithGradleToProjectName, () => {
 
 describe(resolveExtraBuildDependenciesAsync, () => {
   it('should resolve extra build dependencies from gradle.properties', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`
-# gradle.properties
-android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]
-`);
+    vol.fromJSON(
+      {
+        'gradle.properties':
+          'android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]',
+      },
+      '/app/android'
+    );
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual([{ url: 'https://customers.pspdfkit.com/maven/' }]);
   });
 
   it('should resolve extra build dependencies from the first matched property', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`
-# gradle.properties
-android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]
-# the next property is ignored because we only match the first one
-android.extraMavenRepos=[{"url":"https://www.example.com/maven/"}]
-`);
+    vol.fromJSON(
+      {
+        // the second extraMavenRepos property is ignored because we only match the first one
+        'gradle.properties':
+          'android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]\n' +
+          'android.extraMavenRepos=[{"url":"https://www.example.com/maven/"}]',
+      },
+      '/app/android'
+    );
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual([{ url: 'https://customers.pspdfkit.com/maven/' }]);
   });
@@ -229,9 +234,11 @@ android.extraMavenRepos=[{"url":"https://www.example.com/maven/"}]
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
@@ -248,9 +255,11 @@ android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
@@ -267,9 +276,11 @@ android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
@@ -286,30 +297,31 @@ android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
 
   it('should return null for invalid JSON', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`{
-# gradle.properties
-android.extraMavenRepos=[{ name }]
-}`);
+    vol.fromJSON({ 'gradle.properties': 'android.extraMavenRepos=[{ name }]' }, '/app/android');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toBe(null);
   });
 
-  it('should return null if no speicifed any properties', async () => {
-    mockFsReadFile.mockResolvedValueOnce(``);
+  it('should return null if it does not contain any known properties', async () => {
+    vol.fromJSON({ 'gradle.properties': '' }, '/app/android');
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toBe(null);
   });
 
   it('should return null if gradle.properties not found', async () => {
-    mockFsReadFile.mockRejectedValueOnce(new Error('File not found'));
+    vol.fromJSON({ 'gradle.properties': null }, '/app/android');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toBe(null);
   });

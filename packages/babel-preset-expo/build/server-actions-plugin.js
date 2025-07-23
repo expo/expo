@@ -8,54 +8,31 @@
  *
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reactServerActionsPlugin = void 0;
-const core_1 = require("@babel/core");
-// @ts-expect-error: missing types
-const helper_module_imports_1 = require("@babel/helper-module-imports");
-const t = __importStar(require("@babel/types"));
+exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const node_path_1 = require("node:path");
-const node_url_1 = __importStar(require("node:url"));
+const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
-// React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
-// so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
-const _buildLazyWrapperHelper = (0, core_1.template)(`(thunk) => {
-  let cache;
-  return {
-    get ${LAZY_WRAPPER_VALUE_KEY}() {
-      return cache || (cache = thunk());
-    }
-  }
-}`);
-const buildLazyWrapperHelper = () => {
-    return _buildLazyWrapperHelper().expression;
-};
 function reactServerActionsPlugin(api) {
+    const { types: t } = api;
+    // React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
+    // so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
+    const _buildLazyWrapperHelper = api.template(`(thunk) => {
+    let cache;
+    return {
+      get ${LAZY_WRAPPER_VALUE_KEY}() {
+        return cache || (cache = thunk());
+      }
+    }
+  }`);
+    const buildLazyWrapperHelper = () => {
+        return _buildLazyWrapperHelper().expression;
+    };
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     let addReactImport;
     let wrapBoundArgs;
@@ -142,7 +119,9 @@ function reactServerActionsPlugin(api) {
         else {
             // Fallback to inserting after the last import if no enclosing declaration is found
             const programBody = moduleScope.path.get('body');
-            const lastImportPath = findLast(Array.isArray(programBody) ? programBody : [programBody], (stmt) => stmt.isImportDeclaration());
+            const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast((statement) => {
+                return statement.isImportDeclaration();
+            });
             [inserted] = lastImportPath.insertAfter(functionDeclaration);
             moduleScope.registerBinding(bindingKind, inserted);
             inserted.addComment('leading', ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'), true);
@@ -168,6 +147,10 @@ function reactServerActionsPlugin(api) {
             boundArgs,
         ]);
     };
+    function hasUseServerDirective(path) {
+        const { body } = path.node;
+        return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
+    }
     return {
         name: 'expo-server-actions',
         pre(file) {
@@ -179,13 +162,13 @@ function reactServerActionsPlugin(api) {
             assertExpoMetadata(file.metadata);
             file.metadata.extractedActions = [];
             file.metadata.isModuleMarkedWithUseServerDirective = false;
-            const addNamedImportOnce = createAddNamedImportOnce(t);
+            const addNamedImportOnce = (0, common_1.createAddNamedImportOnce)(t);
             addReactImport = () => {
                 return addNamedImportOnce(file.path, 'registerServerReference', 'react-server-dom-webpack/server');
             };
             getActionModuleId = once(() => {
                 // Create relative file path hash.
-                return (0, node_url_1.pathToFileURL)((0, node_path_1.relative)(projectRoot, file.opts.filename)).href;
+                return './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, file.opts.filename));
             });
             const defineBoundArgsWrapperHelper = once(() => {
                 const id = this.file.path.scope.generateUidIdentifier('wrapBoundArgs');
@@ -386,15 +369,18 @@ function reactServerActionsPlugin(api) {
                 if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
                     return;
                 }
+                // Skip type-only exports (`export type { Foo } from '...'` or `export { type Foo }`)
+                if (path.node.exportKind === 'type') {
+                    return;
+                }
                 // This can happen with `export {};` and TypeScript types.
                 if (!path.node.declaration && !path.node.specifiers.length) {
                     return;
                 }
-                const registerServerReferenceId = addReactImport();
                 const actionModuleId = getActionModuleId();
                 const createRegisterCall = (identifier, exported = identifier) => {
                     const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-                    const call = t.callExpression(registerServerReferenceId, [
+                    const call = t.callExpression(addReactImport(), [
                         identifier,
                         t.stringLiteral(actionModuleId),
                         t.stringLiteral(exportedName),
@@ -414,6 +400,10 @@ function reactServerActionsPlugin(api) {
                             throw path.buildCodeFrameError('Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)');
                         }
                         else if (t.isExportSpecifier(specifier)) {
+                            // Skip TypeScript type re-exports (e.g., `export { type Foo }`)
+                            if (specifier.exportKind === 'type') {
+                                continue;
+                            }
                             // `export { foo };`
                             // `export { foo as [bar|default] };`
                             const localName = specifier.local.name;
@@ -501,7 +491,6 @@ function reactServerActionsPlugin(api) {
         },
     };
 }
-exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const getFreeVariables = (path) => {
     const freeVariablesSet = new Set();
     const programScope = path.scope.getProgramParent();
@@ -561,13 +550,6 @@ const isChildScope = ({ root, parent, child, }) => {
     }
     return false;
 };
-const findLast = (arr, predicate) => {
-    for (let i = arr.length - 1; i >= 0; i--) {
-        if (predicate(arr[i]))
-            return arr[i];
-    }
-    return undefined;
-};
 function findImmediatelyEnclosingDeclaration(path) {
     let currentPath = path;
     while (!currentPath.isProgram()) {
@@ -618,26 +600,3 @@ function assertExpoMetadata(metadata) {
         throw new Error('Expected Babel state.file.metadata to be an object');
     }
 }
-const getOrCreateInMap = (map, key, create) => {
-    if (!map.has(key)) {
-        const result = create();
-        map.set(key, result);
-        return [result, true];
-    }
-    return [map.get(key), false];
-};
-function hasUseServerDirective(path) {
-    const { body } = path.node;
-    return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
-}
-const createAddNamedImportOnce = (t) => {
-    const addedImportsCache = new Map();
-    return function addNamedImportOnce(path, name, source) {
-        const [sourceCache] = getOrCreateInMap(addedImportsCache, source, () => new Map());
-        const [identifier, didCreate] = getOrCreateInMap(sourceCache, name, () => (0, helper_module_imports_1.addNamed)(path, name, source));
-        // for cached imports, we need to clone the resulting identifier, because otherwise
-        // '@babel/plugin-transform-modules-commonjs' won't replace the references to the import for some reason.
-        // this is a helper for that.
-        return didCreate ? identifier : t.cloneNode(identifier);
-    };
-};

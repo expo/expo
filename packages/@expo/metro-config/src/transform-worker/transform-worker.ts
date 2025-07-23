@@ -5,13 +5,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 import countLines from 'metro/src/lib/countLines';
 import type {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
 } from 'metro-transform-worker';
+import { relative, dirname } from 'node:path';
 
+import { getBrowserslistTargets } from './browserslist';
 import { wrapDevelopmentCSS } from './css';
 import {
   collectCssImports,
@@ -19,6 +22,7 @@ import {
   printCssWarnings,
   transformCssModuleWeb,
 } from './css-modules';
+import { parseEnvFile } from './dot-env-development';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
@@ -49,7 +53,6 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const reactServer = options.customTransformOptions?.environment === 'react-server';
   const posixFilename = toPosixPath(filename);
   if (
     typeof options.customTransformOptions?.dom === 'string' &&
@@ -61,7 +64,7 @@ export async function transform(
     const src = `require('expo/dom/internal').registerDOMComponent(require(${relativeDomComponentEntry}).default);`;
     return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
   }
-  if (posixFilename.match(/@expo\/metro-runtime\/rsc\/virtual\.js/)) {
+  if (posixFilename.match(/(^|\/)expo\/virtual\/rsc\.js/)) {
     const environment = options.customTransformOptions?.environment;
     const isServer = environment === 'node' || environment === 'react-server';
 
@@ -93,47 +96,118 @@ export async function transform(
     }
   }
 
-  const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
-  // If the file is not CSS, then use the default behavior.
-  if (!isCss) {
-    const environment = options.customTransformOptions?.environment;
-    const isClientEnvironment = environment !== 'node' && environment !== 'react-server';
-    if (
-      isClientEnvironment &&
-      // TODO: Ensure this works with windows.
-      (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
-        // Strip +api files.
-        filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
-    ) {
-      // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
-      return worker.transform(
-        config,
-        projectRoot,
-        filename,
-        !options.minify
-          ? Buffer.from(
-              // Use a string so this notice is visible in the bundle if the user is
-              // looking for it.
-              '"> The server-only file was removed from the client JS bundle by Expo CLI."'
-            )
-          : Buffer.from(''),
-        options
-      );
-    }
-
-    if (
-      isClientEnvironment &&
-      !filename.match(/\/node_modules\//) &&
-      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)
-    ) {
-      // Clear the contents of +api files when bundling for the client.
-      // This ensures that the client doesn't accidentally use the server-only +api files.
-      return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
-    }
-
-    return worker.transform(config, projectRoot, filename, data, options);
+  if (options.type !== 'asset' && /\.(s?css|sass)$/.test(filename)) {
+    return transformCss(config, projectRoot, filename, data, options);
   }
 
+  // If the file is not CSS, then use the default behavior.
+  const environment = options.customTransformOptions?.environment;
+  const isClientEnvironment = environment !== 'node' && environment !== 'react-server';
+  if (
+    isClientEnvironment &&
+    // TODO: Ensure this works with windows.
+    (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
+      // Strip +api files.
+      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
+  ) {
+    // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
+    return worker.transform(
+      config,
+      projectRoot,
+      filename,
+      !options.minify
+        ? Buffer.from(
+            // Use a string so this notice is visible in the bundle if the user is
+            // looking for it.
+            '"> The server-only file was removed from the client JS bundle by Expo CLI."'
+          )
+        : Buffer.from(''),
+      options
+    );
+  }
+
+  if (
+    isClientEnvironment &&
+    !filename.match(/\/node_modules\//) &&
+    filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/)
+  ) {
+    // Clear the contents of +api files when bundling for the client.
+    // This ensures that the client doesn't accidentally use the server-only +api files.
+    return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+  }
+
+  // Add support for parsing env files to JavaScript objects. Stripping the non-public variables in client environments.
+  if (filename.match(/(^|\/)\.env(\.(local|(development|production)(\.local)?))?$/)) {
+    const envFileParsed = parseEnvFile(data.toString('utf-8'), isClientEnvironment);
+    return worker.transform(
+      config,
+      projectRoot,
+      filename,
+      Buffer.from(`export default ${JSON.stringify(envFileParsed)};`),
+      options
+    );
+  }
+
+  if (
+    // Noop the streams polyfill in the server environment.
+    !isClientEnvironment &&
+    filename.match(/\/expo\/virtual\/streams\.js$/)
+  ) {
+    return worker.transform(config, projectRoot, filename, Buffer.from(''), options);
+  }
+  if (
+    // Parsing the virtual env is client-only, on the server we use `process.env` directly.
+    isClientEnvironment &&
+    // Finally match the virtual env file.
+    filename.match(/\/expo\/virtual\/env\.js$/)
+  ) {
+    if (
+      // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
+      options.dev
+    ) {
+      const relativePath = relative(dirname(filename), projectRoot);
+      const posixPath = toPosixPath(relativePath);
+
+      // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
+      // We then merge them in the expected order.
+      // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
+      // defined in the script or bash, essentially all places where HMR is not possible.
+      // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
+      // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
+      const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
+    
+    export const env = !dotEnvModules.keys().length ? process.env : { ...process.env, ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
+      return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
+    }, {}) };`;
+      return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+    } else {
+      // Add a fallback in production for sanity and better errors if something goes wrong or the user manually imports the virtual module somehow.
+
+      // Create a proxy module where a helpful error is thrown whenever a key from `process.env` is accessed.
+      const contents = `
+        export const env = new Proxy({}, {
+          get(target, key) {
+            throw new Error(\`Attempting to access internal environment variable "\${key}" is not supported in production bundles. Environment variables should be inlined in production by Babel.\`);
+          },
+       });`;
+      return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
+    }
+  }
+
+  return worker.transform(config, projectRoot, filename, data, options);
+}
+
+function isReactServerEnvironment(options: JsTransformOptions): boolean {
+  return options.customTransformOptions?.environment === 'react-server';
+}
+
+async function transformCss(
+  config: JsTransformerConfig,
+  projectRoot: string,
+  filename: string,
+  data: Buffer,
+  options: JsTransformOptions
+): Promise<TransformResponse> {
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
     const code = matchCssModule(filename) ? 'module.exports={ unstable_styles: {} };' : '';
@@ -171,10 +245,10 @@ export async function transform(
     const results = await transformCssModuleWeb({
       // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
       // This affects the content hashes, which should be stable across platforms.
-      filename: posixFilename,
+      filename: toPosixPath(filename),
       src: code,
       options: {
-        reactServer,
+        reactServer: isReactServerEnvironment(options),
         projectRoot,
         dev: options.dev,
         minify: options.minify,
@@ -233,8 +307,12 @@ export async function transform(
     projectRoot,
     minify: options.minify,
     analyzeDependencies: true,
+    targets: await getBrowserslistTargets(projectRoot),
+    // targets: pkg?.browserslist,
     // @ts-expect-error: Added for testing against virtual file system.
     resolver: options._test_resolveCss,
+    // https://lightningcss.dev/transpilation.html
+    include: 1, // Nesting
   });
 
   printCssWarnings(filename, code, cssResults.warnings);
@@ -253,6 +331,8 @@ export async function transform(
     skipCache: postcssResults.hasPostcss,
     externalImports: cssImports.externalImports,
   };
+
+  const reactServer = isReactServerEnvironment(options);
 
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.

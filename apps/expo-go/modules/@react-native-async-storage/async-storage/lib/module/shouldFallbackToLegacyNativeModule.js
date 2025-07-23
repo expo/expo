@@ -1,7 +1,8 @@
+"use strict";
+
 import { NativeModules } from "react-native";
 export function shouldFallbackToLegacyNativeModule() {
-  var _NativeModules$Native;
-  const expoConstants = (_NativeModules$Native = NativeModules["NativeUnimoduleProxy"]) === null || _NativeModules$Native === void 0 || (_NativeModules$Native = _NativeModules$Native.modulesConstants) === null || _NativeModules$Native === void 0 ? void 0 : _NativeModules$Native.ExponentConstants;
+  const expoConstants = NativeModules["NativeUnimoduleProxy"]?.modulesConstants?.ExponentConstants;
   if (expoConstants) {
     /**
      * In SDK <= 39, appOwnership is defined in managed apps but executionEnvironment is not.

@@ -17,7 +17,10 @@ export default {
     }
     return await isSensorEnabledAsync(eventName);
   },
-  _handleMotion({ alpha, beta, gamma, timeStamp }) {
+  _handleMotion({ alpha, beta, gamma, timeStamp }: DeviceOrientationEvent) {
+    // Abort if data is missing from the event
+    if (alpha === null || beta === null || gamma === null) return;
+
     DeviceEventEmitter.emit('accelerometerDidUpdate', {
       x: gamma * scalar,
       y: beta * scalar,

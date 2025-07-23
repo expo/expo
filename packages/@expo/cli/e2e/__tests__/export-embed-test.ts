@@ -123,6 +123,7 @@ it('runs `npx expo export:embed`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
@@ -193,6 +194,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'assets/__e2e__/static-rendering/sweet.ttf',
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
@@ -254,6 +256,7 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
+    'assets/__packages/expo-router/assets/arrow_down.png',
     'assets/__packages/expo-router/assets/error.png',
     'assets/__packages/expo-router/assets/file.png',
     'assets/__packages/expo-router/assets/forward.png',
@@ -271,7 +274,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   await fs.promises.mkdir(path.join(projectRoot, output));
 
   // `npx expo export:embed`
-  const { stderr } = await executeExpoAsync(
+  const { stdout } = await executeExpoAsync(
     projectRoot,
     // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
     // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
@@ -304,7 +307,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   );
 
   // Ensure the experimental module resolution warning is logged
-  expect(stderr).toBe('Experimental module resolution is enabled.');
+  expect(stdout).toMatch('Fast resolver is enabled.');
 
   const outputDir = path.join(projectRoot, output);
 
@@ -318,6 +321,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
+    'drawable-mdpi/__packages_exporouter_assets_arrow_down.png',
     'drawable-mdpi/__packages_exporouter_assets_error.png',
     'drawable-mdpi/__packages_exporouter_assets_file.png',
     'drawable-mdpi/__packages_exporouter_assets_forward.png',
@@ -328,6 +332,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     'output.js',
     'output.js.map',
     'raw/__e2e___staticrendering_sweet.ttf',
+    'raw/keep.xml',
   ]);
 });
 

@@ -9,9 +9,9 @@ describe(resolveBundlerPropsAsync, () => {
   afterEach(() => vol.reset());
 
   it(`asserts bad args`, async () => {
-    await expect(
-      resolveBundlerPropsAsync('/', { bundler: false, port: 3000 })
-    ).rejects.toThrowError(/mutually exclusive arguments/);
+    await expect(resolveBundlerPropsAsync('/', { bundler: false, port: 3000 })).rejects.toThrow(
+      /mutually exclusive arguments/
+    );
   });
   it(`skips bundling if the port is busy`, async () => {
     jest.mocked(resolvePortAsync).mockResolvedValueOnce(null);

@@ -2,6 +2,7 @@
 title: Trigger builds from a GitHub repository
 sidebar_title: Builds from GitHub
 description: Learn about the process of triggering builds from a GitHub repository.
+hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -23,13 +24,13 @@ In this chapter, we'll configure this functionality. We already have a GitHub re
 
 To use this functionality, we need to connect our GitHub account:
 
-- In the Expo dashboard, go to [expo.dev/settings](https://expo.dev/settings#connections), and under **Connections** > **GitHub**, click **Connect**. This opens the **Connect GitHub** accounts page.
+- In the EAS dashboard, go to [expo.dev/settings](https://expo.dev/settings#connections), and under **Connections** > **GitHub**, click **Connect**. This opens the **Connect GitHub** accounts page.
 - Click the **Get started** button which opens a popup to authorize the Expo GitHub app. Click **Install and Authorize**.
 - Once the app is installed on our GitHub account, we need to link it to our Expo account. In the next popup, click **Link installation**.
 - Once the account is linked, it will show under **GitHub**.
 
 <ContentSpotlight
-  alt="Linked GitHub account shows in Expo dashboard"
+  alt="Linked GitHub account shows in EAS dashboard"
   src="/static/images/tutorial/eas/github-01.png"
   className="max-w-[800px]"
 />
@@ -40,14 +41,14 @@ To use this functionality, we need to connect our GitHub account:
 
 ## Connect the GitHub repository
 
-To enable triggering builds from a GitHub repository, we need to connect it to our project in the Expo dashboard:
+To enable triggering builds from a GitHub repository, we need to connect it to our project in the EAS dashboard:
 
-- In Expo dashboard, go to **Project** > **Configuration** > **GitHub**.
+- In EAS dashboard, go to **Projects** > Select your project > **Project settings** > **GitHub**.
 - Under **Connect a GitHub repository**, we'll see a list of our GitHub repos. We need to connect the right one. In the example, we're searching for our repo **sticker-smash.**
 - Click **Connect** for the project repository.
 
 <ContentSpotlight
-  alt="List of GitHub repositories to connect to the project in Expo dashboard"
+  alt="List of GitHub repositories to connect to the project in EAS dashboard"
   src="/static/images/tutorial/eas/github-02.png"
   className="max-w-[800px]"
 />
@@ -58,7 +59,7 @@ To enable triggering builds from a GitHub repository, we need to connect it to o
 
 ## Use default repository settings
 
-The Expo GitHub app needs to know where to find the source code of our project. By default, it selects the root directory using `/`. In our example project, the source code is also available in the root repository. We can leave this to default in the Expo dashboard.
+The Expo GitHub app needs to know where to find the source code of our project. By default, it selects the root directory using `/`. In our example project, the source code is also available in the root repository. We can leave this to default in the EAS dashboard.
 
 </Step>
 
@@ -106,10 +107,10 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 
 - Click **Create pull request** button to create the PR. The Expo GitHub app will start the process of creating a development build.
 
-- In the Expo dashboard, on the **Builds** page, we can verify that the builds for both Android and iOS are triggered.
+- In the EAS dashboard, on the **Builds** page, we can verify that the builds for both Android and iOS are triggered.
 
 <ContentSpotlight
-  alt="Builds triggered in the Expo dashboard for Android and iOS platforms"
+  alt="Builds triggered in the EAS dashboard for Android and iOS platforms"
   src="/static/images/tutorial/eas/github-06.png"
   className="max-w-[800px]"
 />
@@ -117,7 +118,7 @@ To automatically trigger a build using a GitHub PR label, we're going to utilize
 - If we check the details of an individual build, we can see under **Created by** that the build is created by the GitHub app.
 
 <ContentSpotlight
-  alt="Individual build details in the Expo dashboard"
+  alt="Individual build details in the EAS dashboard"
   src="/static/images/tutorial/eas/github-07.png"
   className="max-w-[760px]"
 />

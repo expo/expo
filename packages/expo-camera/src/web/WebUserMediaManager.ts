@@ -8,21 +8,23 @@ export const userMediaRequested: boolean = false;
 
 export const mountedInstances: any[] = [];
 
-async function requestLegacyUserMediaAsync(props): Promise<any[]> {
-  const optionalSource = (id) => ({ optional: [{ sourceId: id }] });
+async function requestLegacyUserMediaAsync(
+  // TODO(@kitten): Type this properly
+  props: { audioConstraints?: any; videoConstraints?: any }
+): Promise<any[]> {
+  // TODO(@kitten): This is never type checked against DOM types
+  const optionalSource = (id: string | string[] | null) => ({ optional: [{ sourceId: id }] });
 
-  const constraintToSourceId = (constraint) => {
+  const constraintToSourceId = (constraint: MediaTrackConstraintSet) => {
     const { deviceId } = constraint;
 
     if (typeof deviceId === 'string') {
       return deviceId;
     }
 
-    if (Array.isArray(deviceId) && deviceId.length > 0) {
-      return deviceId[0];
-    }
-
-    if (typeof deviceId === 'object' && deviceId.ideal) {
+    if (Array.isArray(deviceId)) {
+      return deviceId[0] ?? null;
+    } else if (typeof deviceId === 'object' && deviceId.ideal) {
       return deviceId.ideal;
     }
 
@@ -45,11 +47,15 @@ async function requestLegacyUserMediaAsync(props): Promise<any[]> {
     }
   });
 
+  // NOTE(@kitten): This doesn't seem right. The types that should be used here don't contain `audioConstraints`
+  // If this is legacy, the type shouldn't have been dropped but marked as `@deprecated`. Alternatively, remove this code path
   const audioSourceId = constraintToSourceId(props.audioConstraints);
   if (audioSourceId) {
     audioSource = audioSourceId;
   }
 
+  // NOTE(@kitten): This doesn't seem right. The types that should be used here don't contain `videoConstraints`
+  // If this is legacy, the type shouldn't have been dropped but marked as `@deprecated`. Alternatively, remove this code path
   const videoSourceId = constraintToSourceId(props.videoConstraints);
   if (videoSourceId) {
     videoSource = videoSourceId;
@@ -75,13 +81,16 @@ async function sourceSelectedAsync(
 }
 
 export async function requestUserMediaAsync(
+  // TODO(@kitten): Type this properly
   props: { audio?: any; video?: any },
   isMuted: boolean = true
 ): Promise<MediaStream> {
   if (canGetUserMedia()) {
     return await sourceSelectedAsync(isMuted, props.audio, props.video);
   }
-  const [audio, video] = await requestLegacyUserMediaAsync(props);
+  // NOTE(@kitten): This doesn't seem right. The types that should be used here don't contain `videoConstraints`
+  // If this is legacy, the type shouldn't have been dropped but marked as `@deprecated`. Alternatively, remove this code path
+  const [audio, video] = await requestLegacyUserMediaAsync(props as any);
   return await sourceSelectedAsync(isMuted, audio, video);
 }
 
@@ -94,8 +103,12 @@ export async function getAnyUserMediaAsync(
       ...constraints,
       video: ignoreConstraints || constraints.video,
     });
-  } catch (error) {
-    if (!ignoreConstraints && error.name === 'ConstraintNotSatisfiedError') {
+  } catch (error: any) {
+    if (
+      !ignoreConstraints &&
+      typeof error === 'object' &&
+      error?.name === 'ConstraintNotSatisfiedError'
+    ) {
       return await getAnyUserMediaAsync(constraints, true);
     }
     throw error;
@@ -108,13 +121,17 @@ export async function getUserMediaAsync(constraints: MediaStreamConstraints): Pr
   }
 
   const _getUserMedia =
-    navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'] || navigator['msGetUserMedia'];
+    navigator['mozGetUserMedia'] ||
+    navigator['webkitGetUserMedia'] ||
+    // @ts-expect-error: TODO(@kitten): Remove / Drop IE support
+    navigator['msGetUserMedia'];
   return new Promise((resolve, reject) =>
     _getUserMedia.call(navigator, constraints, resolve, reject)
   );
 }
 
 export function canGetUserMedia(): boolean {
+  // TODO(@kitten): This is misaligned with the implementations in `expo-audio/src/AudioModule.web.ts` and `expo-av`
   return (
     // SSR
     Platform.isDOMAvailable &&
@@ -123,6 +140,7 @@ export function canGetUserMedia(): boolean {
       (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
       navigator['mozGetUserMedia'] ||
       navigator['webkitGetUserMedia'] ||
+      // @ts-expect-error: TODO(@kitten): Remove / Drop IE support
       navigator['msGetUserMedia']
     )
   );

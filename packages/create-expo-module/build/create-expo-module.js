@@ -51,7 +51,7 @@ async function getCorrectLocalDirectory(targetOrSlug) {
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
- * @param command An object from `commander`.
+ * @param options An options object for `commander`.
  */
 async function main(target, options) {
     if (options.local) {
@@ -76,7 +76,7 @@ async function main(target, options) {
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir, options.local);
-    (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
+    await (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
     await (0, ora_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
@@ -123,8 +123,8 @@ async function main(target, options) {
                     step.warn('Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true');
                 }
             }
-            catch (e) {
-                step.fail(e.toString());
+            catch (error) {
+                step.fail(error.toString());
             }
         });
     }
@@ -205,20 +205,22 @@ async function getTemplateVersion(isLocal) {
 async function downloadPackageAsync(targetDir, isLocal = false) {
     return await (0, ora_1.newStep)('Downloading module template from npm', async (step) => {
         const templateVersion = await getTemplateVersion(isLocal);
-        let tarballUrl = null;
+        const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
         try {
-            tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', templateVersion);
+            await (0, download_tarball_1.default)({
+                url: await getNpmTarballUrl(packageName, templateVersion),
+                dir: targetDir,
+            });
         }
         catch {
             console.log();
             console.warn(chalk_1.default.yellow("Couldn't download the versioned template from npm, falling back to the latest version."));
-            tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', 'latest');
+            await (0, download_tarball_1.default)({
+                url: await getNpmTarballUrl(packageName, 'latest'),
+                dir: targetDir,
+            });
         }
-        await (0, download_tarball_1.default)({
-            url: tarballUrl,
-            dir: targetDir,
-        });
-        step.succeed('Downloaded module template from npm');
+        step.succeed('Downloaded module template from npm registry.');
         return path_1.default.join(targetDir, 'package');
     });
 }
@@ -257,7 +259,7 @@ async function createGitRepositoryAsync(targetDir) {
             stdio: 'ignore',
             cwd: targetDir,
         });
-        debug(chalk_1.default.dim('New project is already inside of a Git repo, skipping git init.'));
+        debug(chalk_1.default.dim('New project is already inside of a Git repository, skipping `git init`.'));
         return null;
     }
     catch (e) {
@@ -356,7 +358,7 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
             (0, resolvePackageManager_1.formatRunCommand)(packageManager, 'open:android'),
         ];
         console.log();
-        console.log('To start developing your module, navigate to the directory and open iOS and Android projects of the example app');
+        console.log('To start developing your module, navigate to the directory and open Android and iOS projects of the example app');
         commands.forEach((command) => console.log(chalk_1.default.gray('>'), chalk_1.default.bold(command)));
         console.log();
     }
@@ -365,8 +367,8 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
 function printFurtherLocalInstructions(slug, name) {
     console.log();
     console.log(`You can now import this module inside your application.`);
-    console.log(`For example, you can add this line to your App.js or App.tsx file:`);
-    console.log(`${chalk_1.default.gray.italic(`import ${name} './modules/${slug}';`)}`);
+    console.log(`For example, you can add this line to your App.tsx or App.js file:`);
+    console.log(`${chalk_1.default.gray.italic(`import ${name} from './modules/${slug}';`)}`);
     console.log();
     console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
     console.log(chalk_1.default.yellow(`Remember to re-build your native app (for example, with ${chalk_1.default.bold('npx expo run')}) when you make changes to the module. Native code changes are not reloaded with Fast Refresh.`));

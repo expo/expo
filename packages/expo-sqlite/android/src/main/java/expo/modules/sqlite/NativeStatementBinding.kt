@@ -9,7 +9,7 @@ import java.io.Closeable
 internal typealias SQLiteColumnNames = ArrayList<String>
 internal typealias SQLiteColumnValues = ArrayList<Any>
 
-@Suppress("KotlinJniMissingFunction")
+@Suppress("KotlinJniMissingFunction", "FunctionName")
 @DoNotStrip
 internal class NativeStatementBinding : Closeable {
   @DoNotStrip
@@ -33,7 +33,7 @@ internal class NativeStatementBinding : Closeable {
   external fun sqlite3_reset(): Int
   external fun sqlite3_step(): Int
 
-  external fun bindStatementParam(index: Int, param: Any): Int
+  external fun bindStatementParam(index: Int, param: Any?): Int
   external fun getColumnNames(): SQLiteColumnNames
   external fun getColumnValues(): SQLiteColumnValues
 

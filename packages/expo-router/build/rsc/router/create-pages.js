@@ -10,7 +10,7 @@
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/create-pages.ts#L1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPages = void 0;
+exports.createPages = createPages;
 const react_1 = require("react");
 const defineRouter_1 = require("./defineRouter");
 const path_1 = require("../path");
@@ -229,5 +229,4 @@ function createPages(fn) {
         return null; // not found
     });
 }
-exports.createPages = createPages;
 //# sourceMappingURL=create-pages.js.map

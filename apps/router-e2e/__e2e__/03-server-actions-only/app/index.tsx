@@ -6,6 +6,7 @@ import { renderPage } from '../components/server-actions';
 
 export default function ServerActionTest() {
   // Test hooks to ensure they don't break the export.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setLoading] = React.useState(true);
 
   const memo = React.useMemo(() => renderPage({ title: 'Hello!' }), []);

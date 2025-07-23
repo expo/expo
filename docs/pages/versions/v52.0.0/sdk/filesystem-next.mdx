@@ -13,9 +13,9 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 > **info** The `next` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the previous API, and offers a simplified, object oriented way of performing filesystem operations.
 
-`expo-file-system/next` provides access to the file system stored locally on the device. It can also download files from the network.
+> **important** To provide quicker updates, `expo-file-system/next` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/create-a-build/).
 
-> **info** To provide quicker updates, `expo-file-system/next` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/create-a-build/).
+`expo-file-system/next` provides access to the file system stored locally on the device. It can also download files from the network.
 
 ## Installation
 
@@ -41,7 +41,7 @@ try {
 ### Downloading files
 
 ```ts example.ts
-import { File, Paths } from 'expo-file-system/next';
+import { Directory, File, Paths } from 'expo-file-system/next';
 
 const url = 'https://pdfobject.com/pdf/sample.pdf';
 const destination = new Directory(Paths.cache, 'pdfs');
@@ -58,7 +58,7 @@ try {
 ### Moving and copying files
 
 ```ts example.ts
-import { File, Paths } from 'expo-file-system/next';
+import { Directory, File, Paths } from 'expo-file-system/next';
 
 try {
   const file = new File(Paths.document, 'example.txt');

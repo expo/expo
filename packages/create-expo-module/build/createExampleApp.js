@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createExampleApp = void 0;
+exports.createExampleApp = createExampleApp;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_1 = __importDefault(require("fs"));
 const getenv_1 = __importDefault(require("getenv"));
@@ -71,7 +71,6 @@ async function createExampleApp(data, targetDir, packageManager) {
         }
     });
 }
-exports.createExampleApp = createExampleApp;
 function createCommand(packageManager, exampleProjectSlug, template) {
     const command = ['create', 'expo-app'];
     if (packageManager === 'npm') {

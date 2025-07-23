@@ -51,6 +51,7 @@ it('runs `npx expo install --help`', async () => {
         --bun       Use bun to install dependencies. Default when bun.lock or bun.lockb exists
         --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
+        --json      Output dependency information in JSON format with --check flag
 
       Additional options can be passed to the underlying install command by using --
         $ npx expo install react -- --verbose
@@ -267,7 +268,7 @@ describe('expo-router integration', () => {
 
     // Ensure `@react-navigation/native` was updated
     expect(pkg.read().dependencies).toMatchObject({
-      '@react-navigation/native': '^7.0.14',
+      '@react-navigation/native': '^7.1.6',
     });
   });
 });

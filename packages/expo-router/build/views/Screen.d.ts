@@ -1,3 +1,4 @@
+import { ReactElement, ReactNode } from 'react';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
     /**
      * Name is required when used inside a Layout component.
@@ -12,4 +13,7 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
 };
 /** Component for setting the current screen's options dynamically. */
 export declare function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>): null;
+export declare function isScreen(child: ReactNode, contextKey?: string): child is ReactElement<ScreenProps & {
+    name: string;
+}>;
 //# sourceMappingURL=Screen.d.ts.map

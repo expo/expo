@@ -138,7 +138,7 @@ describe('API Route output warning', () => {
         metadata: { type: 'f' },
       },
     ]);
-    expect(warnInvalidWebOutput).toBeCalled();
+    expect(warnInvalidWebOutput).toHaveBeenCalled();
   });
 
   it(`does not warn about invalid output when API route is being deleted`, async () => {
@@ -151,7 +151,7 @@ describe('API Route output warning', () => {
         metadata: { type: 'd' },
       },
     ]);
-    expect(warnInvalidWebOutput).not.toBeCalled();
+    expect(warnInvalidWebOutput).not.toHaveBeenCalled();
 
     // Sanity to ensure test works.
     callback([
@@ -161,7 +161,7 @@ describe('API Route output warning', () => {
         metadata: { type: 'l' },
       },
     ]);
-    expect(warnInvalidWebOutput).toBeCalled();
+    expect(warnInvalidWebOutput).toHaveBeenCalled();
   });
 
   it(`does not warn about invalid output when file is not a valid API route`, async () => {
@@ -174,7 +174,7 @@ describe('API Route output warning', () => {
         metadata: { type: 'l' },
       },
     ]);
-    expect(warnInvalidWebOutput).not.toBeCalled();
+    expect(warnInvalidWebOutput).not.toHaveBeenCalled();
   });
 
   it(`does not warn about invalid output when file is outside of routes directory`, async () => {
@@ -187,6 +187,6 @@ describe('API Route output warning', () => {
         metadata: { type: 'l' },
       },
     ]);
-    expect(warnInvalidWebOutput).not.toBeCalled();
+    expect(warnInvalidWebOutput).not.toHaveBeenCalled();
   });
 });

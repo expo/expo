@@ -2,9 +2,12 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
+import { getXcodeVersionAsync } from '../../utils/getXcodeVersionAsync';
 import { NativeToolingVersionCheck } from '../NativeToolingVersionCheck';
-
 jest.mock('fs');
+jest.mock('../../utils/getXcodeVersionAsync', () => ({
+  getXcodeVersionAsync: jest.fn().mockResolvedValue({ xcodeVersion: '15.0' }),
+}));
 
 const projectRoot = '/tmp/project';
 
@@ -130,5 +133,55 @@ describe('runAsync', () => {
     const check = new NativeToolingVersionCheck();
     const result = check.runAsync(additionalProjectProps);
     expect(result).resolves.toMatchObject({ isSuccessful: true });
+  });
+
+  test('returns error if sdk version < 52.0.0 and xcode version > 16.2', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '16.3.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '51.0.0',
+      },
+    });
+    expect(result.isSuccessful).toBeFalsy();
+  });
+
+  test('returns success if sdk version >= 52.0.0 and xcode version > 16.2', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '16.3.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '52.0.0',
+      },
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  test('returns success if sdk version < 52.0.0 and xcode version <= 16.2', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '16.2.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '51.0.0',
+      },
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
+  test('returns success if xcode is not installed', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: null });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync(additionalProjectProps);
+    expect(result.isSuccessful).toBeTruthy();
   });
 });

@@ -1,9 +1,10 @@
-jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () =>
-  jest.fn().mockReturnValue({ url: 'http://localhost:8081' })
-);
+jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue({ url: 'http://localhost:8081' }),
+}));
 
 describe('getBaseURL', () => {
-  let getBaseURL;
+  let getBaseURL: typeof import('../base').getBaseURL;
 
   const originalProcessEnv = process.env;
   const originalExpo = globalThis.expo;

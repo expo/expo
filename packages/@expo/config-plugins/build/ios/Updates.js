@@ -6,10 +6,24 @@ Object.defineProperty(exports, "__esModule", {
 exports.Config = void 0;
 exports.setUpdatesConfigAsync = setUpdatesConfigAsync;
 exports.setVersionsConfigAsync = setVersionsConfigAsync;
-exports.withUpdates = void 0;
+exports.withUpdatesNativeDebugPodfileProps = exports.withUpdates = void 0;
+function _BuildProperties() {
+  const data = require("./BuildProperties");
+  _BuildProperties = function () {
+    return data;
+  };
+  return data;
+}
 function _iosPlugins() {
   const data = require("../plugins/ios-plugins");
   _iosPlugins = function () {
+    return data;
+  };
+  return data;
+}
+function _withPlugins() {
+  const data = require("../plugins/withPlugins");
+  _withPlugins = function () {
     return data;
   };
   return data;
@@ -43,6 +57,18 @@ let Config = exports.Config = /*#__PURE__*/function (Config) {
 }({}); // when making changes to this config plugin, ensure the same changes are also made in eas-cli and build-tools
 // Also ensure the docs are up-to-date: https://docs.expo.dev/bare/installing-updates/
 const withUpdates = config => {
+  return (0, _withPlugins().withPlugins)(config, [withUpdatesPlist, withUpdatesNativeDebugPodfileProps]);
+};
+
+/**
+ * A config-plugin to update `ios/Podfile.properties.json` from the `updates.useNativeDebug` in expo config
+ */
+exports.withUpdates = withUpdates;
+const withUpdatesNativeDebugPodfileProps = exports.withUpdatesNativeDebugPodfileProps = (0, _BuildProperties().createBuildPodfilePropsConfigPlugin)([{
+  propName: 'updatesNativeDebug',
+  propValueGetter: config => config?.updates?.useNativeDebug === true ? 'true' : undefined
+}], 'withUpdatesNativeDebugPodfileProps');
+const withUpdatesPlist = config => {
   return (0, _iosPlugins().withExpoPlist)(config, async config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
@@ -50,7 +76,6 @@ const withUpdates = config => {
     return config;
   });
 };
-exports.withUpdates = withUpdates;
 async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdatesPackageVersion) {
   const checkOnLaunch = (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion);
   const timeout = (0, _Updates().getUpdatesTimeout)(config);
@@ -114,7 +139,7 @@ async function setVersionsConfigAsync(projectRoot, config, expoPlist) {
   };
   const runtimeVersion = await (0, _Updates().getRuntimeVersionNullableAsync)(projectRoot, config, 'ios');
   if (!runtimeVersion && expoPlist[Config.RUNTIME_VERSION]) {
-    throw new Error('A runtime version is set in your Expo.plist, but is missing from your app.json/app.config.js. Please either set runtimeVersion in your app.json/app.config.js or remove EXUpdatesRuntimeVersion from your Expo.plist.');
+    throw new Error('A runtime version is set in your Expo.plist, but is missing from your Expo app config (app.json/app.config.js). Set runtimeVersion in your Expo app config or remove EXUpdatesRuntimeVersion from your Expo.plist.');
   }
   if (runtimeVersion) {
     delete newExpoPlist['EXUpdatesSDKVersion'];

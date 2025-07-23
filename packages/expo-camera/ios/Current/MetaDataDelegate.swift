@@ -1,7 +1,7 @@
 import ZXingObjC
 
 protocol BarcodeScanningResponseHandler {
-  func onScanningResult(_ result: [String: Any]) async
+  func onScanningResult(_ result: [String: Any])
 }
 
 class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -44,9 +44,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
 
         if let codeMetadata {
           if codeMetadata.stringValue != nil && codeMetadata.type == barcodeType {
-            Task {
-              await responseHandler.onScanningResult(BarcodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
-            }
+            self.responseHandler.onScanningResult(BarcodeScannerUtils.avMetadataCodeObjectToDictionary(codeMetadata))
           }
         }
       }
@@ -72,9 +70,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),
       let videoFrameImage = ZXCGImageLuminanceSource.createImage(from: videoFrame) {
         self.scanBarcodes(from: videoFrameImage) { barcodeScannerResult in
-          Task {
-            await self.responseHandler.onScanningResult(BarcodeScannerUtils.zxResultToDictionary(barcodeScannerResult))
-          }
+          self.responseHandler.onScanningResult(BarcodeScannerUtils.zxResultToDictionary(barcodeScannerResult))
         }
       }
     }

@@ -3,8 +3,8 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct MeshGradientView: ExpoSwiftUI.View {
-  @EnvironmentObject var props: MeshGradientProps
+struct MeshGradientView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
+  @ObservedObject var props: MeshGradientProps
 
   var body: some View {
     ZStack(alignment: .topLeading) {

@@ -14,7 +14,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useTabsWithTriggers = exports.useTabsWithChildren = exports.Tabs = void 0;
+exports.Tabs = Tabs;
+exports.useTabsWithChildren = useTabsWithChildren;
+exports.useTabsWithTriggers = useTabsWithTriggers;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -66,7 +68,6 @@ function Tabs(props) {
       <NavigationContent>{children}</NavigationContent>
     </Comp>);
 }
-exports.Tabs = Tabs;
 /**
  * Hook version of `Tabs`. The returned NavigationContent component
  * should be rendered. Using the hook requires using the `<TabList />`
@@ -88,7 +89,6 @@ function useTabsWithChildren(options) {
     const { children, ...rest } = options;
     return useTabsWithTriggers({ triggers: parseTriggersFromChildren(children), ...rest });
 }
-exports.useTabsWithChildren = useTabsWithChildren;
 /**
  * Alternative hook version of `Tabs` that uses explicit triggers
  * instead of `children`.
@@ -106,10 +106,10 @@ exports.useTabsWithChildren = useTabsWithChildren;
 function useTabsWithTriggers(options) {
     const { triggers, ...rest } = options;
     // Ensure we extend the parent triggers, so we can trigger them as well
-    const parentTriggerMap = (0, react_1.useContext)(TabContext_1.TabTriggerMapContext);
+    const parentTriggerMap = (0, react_1.use)(TabContext_1.TabTriggerMapContext);
     const routeNode = (0, Route_1.useRouteNode)();
     const contextKey = (0, Route_1.useContextKey)();
-    const linking = (0, react_1.useContext)(native_1.LinkingContext).options;
+    const linking = (0, react_1.use)(native_1.LinkingContext).options;
     const routeInfo = (0, hooks_1.useRouteInfo)();
     if (!routeNode || !linking) {
         throw new Error('No RouteNode. This is likely a bug in expo-router.');
@@ -136,7 +136,6 @@ function useTabsWithTriggers(options) {
     </TabContext_1.TabTriggerMapContext.Provider>));
     return { state, descriptors, navigation, NavigationContent, describe };
 }
-exports.useTabsWithTriggers = useTabsWithTriggers;
 function parseTriggersFromChildren(children, screenTriggers = [], isInTabList = false) {
     react_1.Children.forEach(children, (child) => {
         if (!child || !(0, react_1.isValidElement)(child) || (0, TabSlot_1.isTabSlot)(child)) {

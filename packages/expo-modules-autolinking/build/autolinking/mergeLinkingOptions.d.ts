@@ -1,4 +1,4 @@
-import { SearchOptions } from '../types';
+import type { SearchOptions } from '../types';
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
  */

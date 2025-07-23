@@ -58,7 +58,7 @@ export function FeedbackFormScreen() {
         body,
       });
       setSubmitted(true);
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
     } finally {
       setSubmitting(false);

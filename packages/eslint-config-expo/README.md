@@ -23,11 +23,12 @@ Import this config into your [configuration file](https://eslint.org/docs/latest
 ```js
 // eslint.config.js
 const expoConfig = require("eslint-config-expo/flat");
+const { defineConfig } = require("eslint/config");
 
-module.exports = [
-  ...expoConfig,
+module.exports = defineConfig([
+  expoConfig,
   // your other config
-];
+]);
 ```
 
 ### With legacy config

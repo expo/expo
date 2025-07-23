@@ -2,6 +2,7 @@
 title: Local-first architecture with Expo
 sidebar_title: Local-first
 description: An introduction to the emerging local-first software movement, including links to relevant learning resources and tools.
+hasVideoLink: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -89,11 +90,29 @@ TinyBase works seamlessly with Expo Go, allowing you to develop quickly. On Andr
 
 ### LiveStore
 
-[LiveStore](https://livestore.dev/getting-started/expo/) is a client-centric local-first data layer for high-performance applications. It provides first-class support for Expo, and it's a great choice for building local-first apps. See the blog post on [LiveStore: SQLite-based data layer for local-first apps](https://expo.dev/blog/local-first-application-development-with-livestore).
+[LiveStore](https://docs.livestore.dev/getting-started/expo/) is a client-centric local-first data layer for high-performance applications. It provides first-class support for Expo, and it's a great choice for building local-first apps. See the blog post on [LiveStore: SQLite-based data layer for local-first apps](https://expo.dev/blog/local-first-application-development-with-livestore).
 
 <VideoBoxLink
   videoId="zQIhJqYU1Qw"
   title="Watch: How to build local-first native apps with LiveStore and Expo"
+/>
+
+### Turso
+
+[Turso](https://turso.tech) is a modern database service built on SQLite. It now supports [Offline Sync](https://turso.tech/blog/turso-offline-sync-public-beta), which enables true local-first experiences. You can sync databases between local and remote sources with bidirectional sync and built-in conflict detection. While automatic conflict resolution isn't available yet, this feature is still a major step forward. You can use Turso today with [expo-sqlite](/versions/latest/sdk/sqlite). To learn more, read the [Turso: Offline Sync Public Beta](https://turso.tech/blog/turso-offline-sync-public-beta) blog post. For an example integration, check out the [Notes App](https://github.com/betomoedano/notes-app).
+
+<VideoBoxLink
+  videoId="SBv32tmyb3k"
+  title="Watch: How to build a local-first Notes App with Turso and Expo"
+/>
+
+### Instant
+
+[Instant](https://www.instantdb.com/) is a modern alternative to Firebase. It gives you a real-time database so you can focus on building your app's frontend. To get started, check out the [Getting Started Guide](https://www.instantdb.com/docs/start-rn). You can also explore the [Sketch App](https://github.com/betomoedano/sketch-app) featured in the video below.
+
+<VideoBoxLink
+  videoId="DEJIcaGN3vY"
+  title="Watch: Build a Local-First Sketch App with Expo, Instant & Reanimated"
 />
 
 ### Other tools
@@ -102,7 +121,6 @@ The following list, far from being comprehensive, provides other tools that have
 
 - [Automerge](https://automerge.org/)
 - [ElectricSQL](https://electric-sql.com/)
-- [Instant](https://www.instantdb.com/)
 - [PowerSync](https://www.powersync.com/)
 
 ## Additional resources

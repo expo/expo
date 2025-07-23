@@ -42,11 +42,20 @@ describe(resolveOptionsAsync, () => {
   afterEach(() => vol.reset());
 
   it(`runs android`, async () => {
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runAndroidAsync('/', {});
 
-    expect(assembleAsync).toBeCalledWith('/android', {
+    expect(assembleAsync).toHaveBeenCalledWith('/android', {
       appName: 'app',
       buildCache: false,
       port: 8081,
@@ -54,7 +63,7 @@ describe(resolveOptionsAsync, () => {
       architectures: '',
     });
 
-    expect(installAsync).toBeCalledWith('/android', {
+    expect(installAsync).toHaveBeenCalledWith('/android', {
       appName: 'app',
       port: 8081,
       variant: 'debug',

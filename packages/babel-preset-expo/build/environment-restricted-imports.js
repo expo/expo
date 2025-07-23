@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.environmentRestrictedImportsPlugin = void 0;
+exports.environmentRestrictedImportsPlugin = environmentRestrictedImportsPlugin;
 const common_1 = require("./common");
 const FORBIDDEN_CLIENT_IMPORTS = ['server-only'];
 const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];
@@ -58,4 +58,3 @@ function environmentRestrictedImportsPlugin(api) {
         },
     };
 }
-exports.environmentRestrictedImportsPlugin = environmentRestrictedImportsPlugin;

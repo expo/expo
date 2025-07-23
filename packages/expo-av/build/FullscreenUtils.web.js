@@ -40,7 +40,7 @@ const supportsEvent = (elementName, eventName) => {
     // attribute as "function". See: https://stackoverflow.com/a/4562426/2747759
     const element = document.createElement(elementName);
     element.setAttribute('on' + eventName, 'return;');
-    return typeof element['on' + eventName] === 'function';
+    return typeof element[('on' + eventName)] === 'function';
 };
 /**
  * Switches a video element into fullscreen.

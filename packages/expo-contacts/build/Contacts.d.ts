@@ -1,5 +1,14 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { type ShareOptions } from 'react-native';
+export type ContactsPermissionResponse = PermissionResponse & {
+    /**
+     * Indicates if your app has access to the whole or only part of the contact library. Possible values are:
+     * - `'all'` if the user granted your app access to the whole contact library
+     * - `'limited'` if the user granted your app access only to selected contacts (only available on iOS 18+)
+     * - `'none'`
+     */
+    accessPrivileges?: 'all' | 'limited' | 'none';
+};
 export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
 export type ContainerType = ContainerTypes | `${ContainerTypes}`;
 export type ContactType = ContactTypes | `${ContactTypes}`;
@@ -265,7 +274,7 @@ export type Contact = {
      */
     namePrefix?: string;
     /**
-     * Jr., Sr., an so on.
+     * Jr., Sr., and so on.
      */
     nameSuffix?: string;
     /**
@@ -588,7 +597,7 @@ export declare function getContactByIdAsync(id: string, fields?: FieldType[]): P
 export declare function addContactAsync(contact: Contact, containerId?: string): Promise<string>;
 /**
  * Mutate the information of an existing contact. Due to an iOS bug, `nonGregorianBirthday` field cannot be modified.
- * @param contact A contact object including the wanted changes.
+ * @param contact A contact object including the wanted changes. Contact `id` is required.
  * @return A promise that fulfills with ID of the updated system contact if mutation was successful.
  * @example
  * ```js
@@ -600,7 +609,9 @@ export declare function addContactAsync(contact: Contact, containerId?: string):
  * await Contacts.updateContactAsync(contact);
  * ```
  */
-export declare function updateContactAsync(contact: Contact): Promise<string>;
+export declare function updateContactAsync(contact: {
+    id: string;
+} & Partial<Omit<Contact, 'id'>>): Promise<string>;
 /**
  * Delete a contact from the system.
  * @param contactId ID of the contact you want to delete.
@@ -754,14 +765,14 @@ export declare function getDefaultContainerIdAsync(): Promise<string>;
 export declare function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>;
 /**
  * Checks user's permissions for accessing contacts data.
- * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
-export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getPermissionsAsync(): Promise<ContactsPermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing contacts data.
- * @return A promise that resolves to a [PermissionResponse](#permissionresponse) object.
+ * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
-export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
 /**
  * Presents a modal which allows the user to select which contacts the app has access to.
  * Using this function is reasonable only when the app has "limited" permissions.

@@ -9,15 +9,6 @@
 
 class ExpoGoReactNativeFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
-  bool useModernRuntimeScheduler() {
-    return true;
-  }
-  bool enableMicrotasks() {
-    return true;
-  }
-  bool batchRenderingUpdatesInEventLoop() {
-    return true;
-  }
   bool fuseboxEnabledRelease() override {
     return true;
   }

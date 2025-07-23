@@ -10,7 +10,69 @@
 
 ### 💡 Others
 
+## 0.2.11 - 2025-07-15
+
+### 🐛 Bug fixes
+
+- Fixed patches applying error when there were changed spaces. ([#38060](https://github.com/expo/expo/pull/38060) by [@kudo](https://github.com/kudo))
+
+## 0.2.10 - 2025-07-15
+
+### 🐛 Bug fixes
+
+- Fixed running error on SDK 53. ([#37923](https://github.com/expo/expo/pull/37923) by [@kudo](https://github.com/kudo))
+
+## 0.2.9 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.8 - 2025-07-01
+
+### 🐛 Bug fixes
+
+- Update to `getenv@2.0.0` to support upper case boolean environment variables ([#36688](https://github.com/expo/expo/pull/36688) by [@stephenlacy](https://github.com/stephenlacy))
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.2.7 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.6 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.4 — 2025-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.0 — 2025-04-04
+
+### 💡 Others
+
 - Drop `fs-extra` in favor of `fs`. ([#35036](https://github.com/expo/expo/pull/35036) by [@kitten](https://github.com/kitten))
+
+## 0.1.27 - 2025-03-31
+
+_This version does not introduce any user-facing changes._
 
 ## 0.1.26 - 2025-02-14
 

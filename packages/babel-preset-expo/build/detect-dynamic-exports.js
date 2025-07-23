@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.detectDynamicExports = void 0;
+exports.detectDynamicExports = detectDynamicExports;
 const debug = require('debug')('expo:babel:exports');
 // A babel pass to detect the usage of `module.exports` or `exports` in a module for use in
 // export all expansion passes during tree shaking.
@@ -79,7 +79,6 @@ function detectDynamicExports(api) {
         },
     };
 }
-exports.detectDynamicExports = detectDynamicExports;
 function assertExpoMetadata(metadata) {
     if (metadata && typeof metadata === 'object') {
         return;

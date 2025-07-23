@@ -6,5 +6,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
+declare module 'whatwg-url-without-unicode' {
+    type BlobLike = Blob & {
+        data?: {
+            blobId: string;
+            offset: number;
+        };
+    };
+    interface URLConstructor {
+        createObjectURL(blob: BlobLike): string;
+        revokeObjectURL(url: URL): void;
+        canParse(url: string, base?: string): boolean;
+    }
+}
 export { URL, URLSearchParams };
 //# sourceMappingURL=url.d.ts.map

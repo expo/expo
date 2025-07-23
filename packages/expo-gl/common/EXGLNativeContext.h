@@ -128,7 +128,7 @@ class EXGLContext {
   std::atomic_uint nextObjectId = 1;
 
   bool supportsWebGL2 = false;
-  std::set<const std::string> supportedExtensions;
+  std::set<std::string> supportedExtensions;
 
   // function that calls flush on GL thread - on Android it is passed by JNI
   std::function<void(void)> flushOnGLThread = [&] {};

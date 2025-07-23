@@ -14,14 +14,15 @@ Pod::Spec.new do |s|
     :ios => '15.1',
     :tvos => '15.1'
   }
-  s.swift_version  = '5.4'
+  s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'SDWebImage', '~> 5.19.1'
+  s.dependency 'SDWebImage', '~> 5.21.0'
   s.dependency 'SDWebImageAVIFCoder', '~> 0.11.0'
   s.dependency 'SDWebImageSVGCoder', '~> 1.7.0'
+  s.dependency 'SDWebImageWebPCoder', '~> 0.14.6'
   s.dependency 'libavif/libdav1d'
 
   # Swift/Objective-C compatibility

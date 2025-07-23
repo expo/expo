@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findModulesAsync = void 0;
+exports.findModulesAsync = findModulesAsync;
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = require("glob");
@@ -31,17 +31,15 @@ async function findModulesAsync(providedOptions) {
         const packageConfigPaths = await findPackagesConfigPathsAsync(searchPath);
         for (const packageConfigPath of packageConfigPaths) {
             const packagePath = await fs_1.default.promises.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
-            const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
-            const { name, version } = resolvePackageNameAndVersion(packagePath, {
+            const expoModuleConfig = await (0, ExpoModuleConfig_1.loadExpoModuleConfigAsync)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
+            const { name, version } = await resolvePackageNameAndVersion(packagePath, {
                 fallbackToDirName: isNativeModulesDir,
             });
             const maybeIsolatedModulesPath = (0, utils_1.getIsolatedModulesPath)(packagePath, name);
             if (maybeIsolatedModulesPath) {
                 searchPaths.add(maybeIsolatedModulesPath);
             }
-            // we ignore the `exclude` option for custom native modules
-            if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
-                !expoModuleConfig.supportsPlatform(options.platform)) {
+            if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
             // add the current revision to the results
@@ -72,7 +70,6 @@ async function findModulesAsync(providedOptions) {
         alwaysIncludedPackagesNames: nativeModuleNames,
     });
 }
-exports.findModulesAsync = findModulesAsync;
 /**
  * Returns the priority of the config at given path. Higher number means higher priority.
  */
@@ -133,9 +130,9 @@ async function findPackagesConfigPathsAsync(searchPath) {
  * if {@link fallbackToDirName} is true, it returns the dir name when `package.json` doesn't exist.
  * @returns object with `name` and `version` properties. `version` falls back to `UNVERSIONED` if cannot be resolved.
  */
-function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
+async function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
     try {
-        const { name, version } = require(path_1.default.join(packagePath, 'package.json'));
+        const { name, version } = await (0, utils_1.loadPackageJSONAsync)(path_1.default.join(packagePath, 'package.json'));
         return { name, version: version || 'UNVERSIONED' };
     }
     catch (e) {
@@ -166,8 +163,8 @@ async function filterToProjectDependenciesAsync(results, options) {
         }
     }
     // Helper for traversing the dependency hierarchy.
-    function visitPackage(packageJsonPath) {
-        const packageJson = require(packageJsonPath);
+    async function visitPackage(packageJsonPath) {
+        const packageJson = await (0, utils_1.loadPackageJSONAsync)(packageJsonPath);
         // Prevent getting into the recursive loop.
         if (visitedPackages.has(packageJson.name)) {
             return;
@@ -202,13 +199,13 @@ async function filterToProjectDependenciesAsync(results, options) {
                     }
                 }
                 // Visit the dependency package.
-                visitPackage(dependencyPackageJsonPath);
+                await visitPackage(dependencyPackageJsonPath);
             }
         }
     }
     // Visit project's package.
     const projectPackageJsonPath = await (0, mergeLinkingOptions_1.getProjectPackageJsonPathAsync)(options.projectRoot);
-    visitPackage(projectPackageJsonPath);
+    await visitPackage(projectPackageJsonPath);
     return filteredResults;
 }
 //# sourceMappingURL=findModules.js.map

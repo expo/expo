@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from 'react';
 
-import { MaybeNotificationResponse } from './Notifications.types';
+import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
 import {
   addNotificationResponseReceivedListener,
   addNotificationResponseClearedListener,
@@ -49,42 +49,27 @@ export default function useLastNotificationResponse() {
   const [lastNotificationResponse, setLastNotificationResponse] =
     useState<MaybeNotificationResponse>(undefined);
 
-  // Pure function that returns the new response if it is different from the previous,
-  // otherwise return the previous response
-  const newResponseIfNeeded = (
-    prevResponse: MaybeNotificationResponse,
-    newResponse: MaybeNotificationResponse
-  ) => {
-    // If the new response is undefined or null, no need for update
-    if (!newResponse) {
-      return prevResponse;
-    }
-    // If the previous response is undefined or null and the new response is not, we should update
-    if (!prevResponse) {
-      return newResponse;
-    }
-    return prevResponse.notification.request.identifier !==
-      newResponse.notification.request.identifier
-      ? newResponse
-      : prevResponse;
-  };
-
   // useLayoutEffect ensures the listener is registered as soon as possible
   useLayoutEffect(() => {
+    let isMounted = true;
     // Get the last response first, in case it was set earlier (even in native code on startup)
-    // before this renders
-    getLastNotificationResponseAsync?.().then((response) =>
-      setLastNotificationResponse((prevResponse) => newResponseIfNeeded(prevResponse, response))
-    );
+    getLastNotificationResponseAsync().then((response) => {
+      if (isMounted) {
+        setLastNotificationResponse((prevResponse) =>
+          determineNextResponse(prevResponse, response)
+        );
+      }
+    });
 
     // Set up listener for responses that come in, and set the last response if needed
     const subscription = addNotificationResponseReceivedListener((response) =>
-      setLastNotificationResponse((prevResponse) => newResponseIfNeeded(prevResponse, response))
+      setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response))
     );
     const clearResponseSubscription = addNotificationResponseClearedListener(() => {
-      setLastNotificationResponse(undefined);
+      setLastNotificationResponse(null);
     });
     return () => {
+      isMounted = false;
       subscription.remove();
       clearResponseSubscription.remove();
     };
@@ -92,3 +77,22 @@ export default function useLastNotificationResponse() {
 
   return lastNotificationResponse;
 }
+
+// returns the new response if it is different from the previous,
+// also has to return undefined until we're sure of what to return (null or a response)
+// the transition from response to null is invalid
+export const determineNextResponse = (
+  prevResponse: MaybeNotificationResponse,
+  newResponse: NotificationResponse | null
+) => {
+  if (!newResponse) {
+    return null;
+  }
+  if (!prevResponse) {
+    return newResponse;
+  }
+  return prevResponse.notification.request.identifier !==
+    newResponse.notification.request.identifier
+    ? newResponse
+    : prevResponse;
+};

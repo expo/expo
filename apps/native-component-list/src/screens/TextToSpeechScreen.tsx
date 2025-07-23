@@ -1,3 +1,4 @@
+import { Picker as ExPicker } from '@expo/ui/swift-ui';
 import { Picker } from '@react-native-picker/picker';
 import * as Speech from 'expo-speech';
 import * as React from 'react';
@@ -42,10 +43,17 @@ const AmountControlButton: React.FunctionComponent<
   </TouchableOpacity>
 );
 
+const audioSessionOptions = [
+  { label: 'unspecified', value: undefined },
+  { label: 'false', value: false },
+  { label: 'true', value: true },
+];
+
 interface State {
   selectedExample: { language: string; text: string };
   inProgress: boolean;
   paused: boolean;
+  useApplicationAudioSession: boolean | undefined;
   pitch: number;
   rate: number;
   voiceList?: { name: string; identifier: string }[];
@@ -61,19 +69,18 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
     selectedExample: EXAMPLES[0],
     inProgress: false,
     paused: false,
+    useApplicationAudioSession: undefined,
     pitch: 1,
     rate: 0.75,
   };
 
   async componentDidMount() {
-    if (Platform.OS === 'ios') {
-      await this._loadAllVoices();
-    }
+    await this._loadAllVoices();
   }
 
   render() {
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
         <HeadingText>Select a phrase</HeadingText>
 
         <View style={styles.examplesContainer}>{EXAMPLES.map(this._renderExample)}</View>
@@ -97,16 +104,14 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
           </View>
         )}
 
-        {Platform.OS === 'ios' && this.state.voiceList && (
-          <View>
-            <Picker
-              selectedValue={this.state.voice}
-              onValueChange={(voice) => this.setState({ voice })}>
-              {this.state.voiceList.map((voice) => (
-                <Picker.Item key={voice.identifier} label={voice.name} value={voice.identifier} />
-              ))}
-            </Picker>
-          </View>
+        {this.state.voiceList && (
+          <Picker
+            selectedValue={this.state.voice}
+            onValueChange={(voice) => this.setState({ voice })}>
+            {this.state.voiceList.map((voice) => (
+              <Picker.Item key={voice.identifier} label={voice.name} value={voice.identifier} />
+            ))}
+          </Picker>
         )}
 
         <Text style={styles.controlText}>Pitch: {this.state.pitch.toFixed(2)}</Text>
@@ -116,8 +121,6 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
             title="Increase"
             disabled={this.state.inProgress}
           />
-
-          <Text>/</Text>
 
           <AmountControlButton
             onPress={this._decreasePitch}
@@ -141,6 +144,26 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
             disabled={this.state.inProgress}
           />
         </View>
+        {Platform.OS === 'ios' && (
+          <>
+            <Text>useApplicationAudioSession</Text>
+            <View style={styles.controlRow}>
+              <ExPicker
+                variant="segmented"
+                options={audioSessionOptions.map((option) => option.label)}
+                selectedIndex={audioSessionOptions.findIndex(
+                  (option) => option.value === this.state.useApplicationAudioSession
+                )}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                  const useApplicationAudioSession = audioSessionOptions[index].value;
+                  this.setState({
+                    useApplicationAudioSession,
+                  });
+                }}
+              />
+            </View>
+          </>
+        )}
       </ScrollView>
     );
   }
@@ -158,6 +181,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,
+      useApplicationAudioSession: this.state.useApplicationAudioSession,
       onStart: start,
       onDone: complete,
       onStopped: complete,
@@ -240,7 +264,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    paddingBottom: 24,
   },
   separator: {
     height: 1,

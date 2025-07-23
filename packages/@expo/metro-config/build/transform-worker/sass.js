@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compileSass = exports.matchSass = void 0;
+exports.matchSass = matchSass;
+exports.compileSass = compileSass;
 const resolve_from_1 = __importDefault(require("resolve-from"));
 let sassInstance = null;
 function getSassInstance(projectRoot) {
@@ -25,7 +26,6 @@ function matchSass(filename) {
     }
     return null;
 }
-exports.matchSass = matchSass;
 function compileSass(projectRoot, { filename, src }, 
 // TODO: Expose to users somehow...
 options) {
@@ -37,5 +37,4 @@ options) {
         map: result.sourceMap,
     };
 }
-exports.compileSass = compileSass;
 //# sourceMappingURL=sass.js.map

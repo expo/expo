@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildHermesBundleAsync = void 0;
+exports.buildHermesBundleAsync = buildHermesBundleAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
@@ -14,21 +14,22 @@ const process_1 = __importDefault(require("process"));
 const debug = require('debug')('expo:metro:hermes');
 function importHermesCommandFromProject() {
     const platformExecutable = getHermesCommandPlatform();
-    const hermescLocations = [
+    const reactNativeRoot = path_1.default.dirname(require.resolve('react-native/package.json'));
+    const hermescPaths = [
         // Override hermesc dir by environment variables
         process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
             ? `${process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
             : '',
         // Building hermes from source
-        'react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
+        `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
         // Prebuilt hermesc in official react-native 0.69+
-        `react-native/sdks/hermesc/${platformExecutable}`,
-        // Legacy hermes-engine package
-        `hermes-engine/${platformExecutable}`,
+        `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
     ];
-    for (const location of hermescLocations) {
+    for (const hermescPath of hermescPaths) {
         try {
-            return require.resolve(location);
+            if (fs_1.default.existsSync(hermescPath)) {
+                return hermescPath;
+            }
         }
         catch { }
     }
@@ -56,7 +57,6 @@ async function buildHermesBundleAsync(options) {
     currentHermesBuild = directlyBuildHermesBundleAsync(options);
     return await currentHermesBuild;
 }
-exports.buildHermesBundleAsync = buildHermesBundleAsync;
 async function directlyBuildHermesBundleAsync({ code, map, minify = false, filename, }) {
     const tempDir = path_1.default.join(os_1.default.tmpdir(), `expo-bundler-${Math.random()}-${Date.now()}`);
     await fs_1.default.promises.mkdir(tempDir, { recursive: true });

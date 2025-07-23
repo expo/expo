@@ -72,6 +72,12 @@ export type SecureStoreOptions = {
      * @platform ios
      */
     keychainAccessible?: KeychainAccessibilityConstant;
+    /**
+     * Specifies the access group the stored entry belongs to.
+     * @see Apple's documentation on [Sharing access to keychain items among a collection of apps](https://developer.apple.com/documentation/security/sharing-access-to-keychain-items-among-a-collection-of-apps).
+     * @platform ios
+     */
+    accessGroup?: string;
 };
 /**
  * Returns whether the SecureStore API is enabled on the current device. This does not check the app

@@ -5,6 +5,7 @@ import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
+import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
@@ -13,7 +14,7 @@ import kotlin.reflect.KType
 class MapTypeConverter(
   converterProvider: TypeConverterProvider,
   private val mapType: KType
-) : DynamicAwareTypeConverters<Map<*, *>>(mapType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<Map<*, *>>() {
   init {
     require(mapType.arguments.first().type?.classifier == String::class) {
       "The map key type should be String, but received ${mapType.arguments.first()}."
@@ -26,13 +27,13 @@ class MapTypeConverter(
     }
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?): Map<*, *> {
-    val jsMap = value.asMap()
-    return convertFromReadableMap(jsMap, context)
+  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Map<*, *> {
+    val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
+    return convertFromReadableMap(jsMap, context, forceConversion)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?): Map<*, *> {
-    return if (valueConverter.isTrivial()) {
+  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Map<*, *> {
+    return if (valueConverter.isTrivial() && !forceConversion) {
       value as Map<*, *>
     } else {
       (value as Map<*, *>).mapValues { (_, v) ->
@@ -44,13 +45,13 @@ class MapTypeConverter(
             cause
           )
         }) {
-          valueConverter.convert(v, context)
+          valueConverter.convert(v, context, forceConversion)
         }
       }
     }
   }
 
-  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?): Map<*, *> {
+  private fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): Map<*, *> {
     val result = mutableMapOf<String, Any?>()
 
     jsMap.entryIterator.forEach { (key, value) ->
@@ -58,7 +59,7 @@ class MapTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(mapType, mapType.arguments[1].type!!, type, cause)
         }) {
-          result[key] = valueConverter.convert(this, context)
+          result[key] = valueConverter.convert(this, context, forceConversion)
         }
       }
     }

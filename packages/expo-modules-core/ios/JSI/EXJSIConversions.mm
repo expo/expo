@@ -7,6 +7,7 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
 
 namespace expo {
 
@@ -77,6 +78,9 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   }
   if ([value isKindOfClass:[EXJavaScriptWeakObject class]]) {
     return jsi::Value(runtime, *[[(EXJavaScriptWeakObject *)value lock] get]);
+  }
+  if ([value isKindOfClass:[EXJavaScriptSharedObjectBinding class]]) {
+    return jsi::Value(runtime, *[[(EXJavaScriptSharedObjectBinding *)value get] get]);
   }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);

@@ -21,7 +21,7 @@ export async function resolvePackageVersionAsync(
   if (!packageJsonPath) {
     throw new CommandError(
       'PACKAGE_NOT_FOUND',
-      `"${packageName}" is added as a dependency in your project's package.json but it doesn't seem to be installed. Please run "yarn" or "npm install" to fix this issue.`
+      `"${packageName}" is added as a dependency in your project's package.json but it doesn't seem to be installed. Run "npm install", or the equivalent for your package manager, and try again.`
     );
   }
   const packageJson = await JsonFile.readAsync<{ version: string }>(packageJsonPath);

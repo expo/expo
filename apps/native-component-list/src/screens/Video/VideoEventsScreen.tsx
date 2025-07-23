@@ -27,21 +27,25 @@ export default function VideoEventsScreen() {
   const { muted } = useEvent(player, 'mutedChange', { muted: false });
   const loadedMetadata = useEvent(player, 'sourceLoad');
   const { videoTrack } = useEvent(player, 'videoTrackChange', { videoTrack: null });
+  const { isExternalPlaybackActive } = useEvent(player, 'isExternalPlaybackActiveChange', {
+    isExternalPlaybackActive: false,
+    oldIsExternalPlaybackActive: false,
+  });
 
   const sourceObject = typeof source === 'object' ? source : null;
 
   const toggleSource = useCallback(() => {
     if (currentSource === bigBuckBunnySource) {
-      player.replace(hlsSource);
+      player.replaceAsync(hlsSource);
       setCurrentSource(hlsSource);
     } else {
-      player.replace(bigBuckBunnySource);
+      player.replaceAsync(bigBuckBunnySource);
       setCurrentSource(bigBuckBunnySource);
     }
   }, [player, currentSource]);
 
   const triggerError = useCallback(() => {
-    player.replace('https://example.com/invalid.mp4');
+    player.replaceAsync('https://example.com/invalid.mp4');
   }, [player]);
 
   const toggleMute = useCallback(() => {
@@ -76,6 +80,7 @@ export default function VideoEventsScreen() {
           Is Muted: {muted ? 'true' : 'false'} {'\n'}
           Status: {JSON.stringify(status)} {'\n'}
           Playback rate: {playbackRate} {'\n'}
+          Is external playback active: {isExternalPlaybackActive ? 'true' : 'false'} {'\n'}
           {error && 'Error: ' + error.message} {'\n'}
           Current Video track: {'{\n'}
           {`\tid: "${videoTrack?.id}",\n`}

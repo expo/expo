@@ -1,9 +1,8 @@
-import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import { ExpoVersionMappings } from '../../../utils/expoVersionMappings';
+import { getSdkVersion } from '../../../utils/expoVersionMappings';
 import { setModulesMainApplication } from '../withAndroidModulesMainApplication';
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
@@ -93,11 +92,3 @@ describe(setModulesMainApplication, () => {
     expect(nextContents).toEqual(expectContents);
   });
 });
-
-function getSdkVersion(reactNativeVersion: string): string {
-  const versionInfo = ExpoVersionMappings.find((info) =>
-    semver.satisfies(reactNativeVersion, info.reactNativeVersionRange)
-  );
-  assert(versionInfo, `Unsupported react-native version: ${reactNativeVersion}`);
-  return versionInfo?.expoSdkVersion;
-}

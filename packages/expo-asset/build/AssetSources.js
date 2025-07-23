@@ -47,7 +47,7 @@ export function selectAssetSource(meta) {
         };
     }
     // Temporary fallback for loading assets in Expo Go home
-    if (NativeModules.ExponentKernel) {
+    if (NativeModules['ExponentKernel']) {
         return { uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`, hash };
     }
     // In correctly configured apps, we arrive here if the asset is locally available on disk due to

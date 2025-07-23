@@ -75,6 +75,12 @@ export type ExpoModuleConfig = {
   };
   android?: {
     subdirectory?: string;
+    name?: string;
+    publication?: any;
+    projects?: {
+      name?: string;
+      publication?: any;
+    }[];
   };
 };
 
@@ -84,13 +90,13 @@ export type ExpoModuleConfig = {
 export class Package {
   path: string;
   packageJson: PackageJson;
-  expoModuleConfig: ExpoModuleConfig;
+  expoModuleConfig?: ExpoModuleConfig;
   packageView?: Npm.PackageViewType | null;
 
   constructor(rootPath: string, packageJson?: PackageJson) {
     this.path = rootPath;
     this.packageJson = packageJson || require(path.join(rootPath, 'package.json'));
-    this.expoModuleConfig = readExpoModuleConfigJson(rootPath);
+    this.expoModuleConfig = readExpoModuleConfigJson(this.expoModulesConfigPath);
   }
 
   get hasPlugin(): boolean {
@@ -190,6 +196,10 @@ export class Package {
 
   get changelogPath(): string {
     return path.join(this.path, 'CHANGELOG.md');
+  }
+
+  get expoModulesConfigPath(): string {
+    return path.join(this.path, 'expo-module.config.json');
   }
 
   isExpoModule() {
@@ -389,12 +399,9 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   return cachedPackages;
 }
 
-function readExpoModuleConfigJson(dir: string) {
-  const expoModuleConfigJsonPath = path.join(dir, 'expo-module.config.json');
-  const expoModuleConfigJsonExists = fs.existsSync(expoModuleConfigJsonPath);
-  const unimoduleJsonPath = path.join(dir, 'unimodule.json');
+function readExpoModuleConfigJson(expoModuleConfigJsonPath: string) {
   try {
-    return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
+    return require(expoModuleConfigJsonPath);
   } catch {
     return null;
   }

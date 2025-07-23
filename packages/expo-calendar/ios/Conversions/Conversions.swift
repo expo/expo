@@ -147,7 +147,7 @@ func serializeCalendar(item: EKCalendarItem, with formatter: DateFormatter) -> [
     if let daysOfTheWeek = rule.daysOfTheWeek {
       recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
         [
-          "dayOfTheWeek": day.dayOfTheWeek,
+          "dayOfTheWeek": day.dayOfTheWeek.rawValue,
           "weekNumber": day.weekNumber
         ]
       })

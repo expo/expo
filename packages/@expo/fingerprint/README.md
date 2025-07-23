@@ -1,4 +1,11 @@
-# @expo/fingerprint
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/fingerprint/">
+    <img
+      src="../../../.github/resources/expo-fingerprint.svg"
+      alt="@expo/fingerprint"
+      height="64" />
+  </a>
+</p>
 
 A library to generate a fingerprint from a React Native project
 

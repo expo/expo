@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadConfigAsync = void 0;
+exports.loadConfigAsync = loadConfigAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const require_from_string_1 = __importDefault(require("require-from-string"));
@@ -45,7 +45,6 @@ async function loadConfigAsync(packageRoot) {
     }
     return null;
 }
-exports.loadConfigAsync = loadConfigAsync;
 /**
  * Temporarily, we need to mock the community CLI, because
  * some packages are checking the version of the CLI in the `react-native.config.js` file.

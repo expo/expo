@@ -39,7 +39,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
     gl.texImage2D = (...props: any[]): any => {
       const nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
-      return gl['_expo_texImage2D'](...nextProps);
+      return gl['_expo_texImage2D']!(...nextProps);
     };
   }
 
@@ -48,7 +48,7 @@ function asExpoContext(gl: ExpoWebGLRenderingContext): WebGLRenderingContext {
     gl.texSubImage2D = (...props: any[]): any => {
       const nextProps = [...props];
       nextProps.push(getImageForAsset(nextProps.pop()));
-      return gl['_expo_texSubImage2D'](...nextProps);
+      return gl['_expo_texSubImage2D']!(...nextProps);
     };
   }
 
@@ -82,7 +82,7 @@ export type GLViewWebProps = GLViewProps & {
   onContextLost?: () => void;
   webglContextAttributes?: WebGLContextAttributes;
   // type overwrite
-  nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | HTMLCanvasElement | null);
+  nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | HTMLCanvasElement | null): unknown;
 };
 
 async function getBlobFromWebGLRenderingContext(
@@ -182,7 +182,7 @@ export class GLView extends React.Component<GLViewWebProps> {
     return <Canvas {...domProps} canvasRef={this.setCanvasRef} />;
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: GLViewWebProps) {
     const { webglContextAttributes } = this.props;
     if (this.canvas && webglContextAttributes !== prevProps.webglContextAttributes) {
       this.onContextLost(null);

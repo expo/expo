@@ -40,6 +40,9 @@ function getUserMedia(constraints) {
             throw error;
         };
     return new Promise((resolve, reject) => {
+        // TODO(@kitten): The types indicates that this is incorrect.
+        // Please check whether this is correct!
+        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
@@ -57,7 +60,7 @@ function getStatusFromMedia(media) {
     const status = {
         isLoaded: true,
         uri: media.src,
-        progressUpdateIntervalMillis: 100,
+        progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
         durationMillis: media.duration * 1000,
         positionMillis: media.currentTime * 1000,
         // playableDurationMillis: media.buffered * 1000,
@@ -65,7 +68,7 @@ function getStatusFromMedia(media) {
         // seekMillisToleranceAfter?: number
         shouldPlay: media.autoplay,
         isPlaying,
-        isBuffering: false,
+        isBuffering: false, //media.waiting,
         rate: media.playbackRate,
         // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
         shouldCorrectPitch: false,
@@ -118,7 +121,7 @@ async function setStatusForMedia(media, status) {
     }
     return getStatusFromMedia(media);
 }
-let mediaRecorder /*MediaRecorder*/ = null;
+let mediaRecorder = null;
 let mediaRecorderUptimeOfLastStartResume = 0;
 let mediaRecorderDurationAlreadyRecorded = 0;
 let mediaRecorderIsRecording = false;
@@ -192,6 +195,7 @@ export default {
             uri: null,
         };
     },
+    // TODO(@kitten): Needs to be typed
     async prepareAudioRecorder(options) {
         if (typeof navigator !== 'undefined' && !navigator.mediaDevices) {
             throw new Error('No media devices available');
@@ -243,14 +247,15 @@ export default {
         return this.getAudioRecordingStatus();
     },
     async stopAudioRecording() {
-        if (mediaRecorder === null) {
+        const _mediaRecorder = mediaRecorder;
+        if (_mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
-        if (mediaRecorder.state === 'inactive') {
+        if (_mediaRecorder.state === 'inactive') {
             return this.getAudioRecordingStatus();
         }
-        const dataPromise = new Promise((resolve) => mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data)));
-        mediaRecorder.stop();
+        const dataPromise = new Promise((resolve) => _mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data)));
+        _mediaRecorder.stop();
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
         return {

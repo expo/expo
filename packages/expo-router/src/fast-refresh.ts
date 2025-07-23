@@ -32,6 +32,7 @@ if (process.env.NODE_ENV === 'development') {
     global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh']
   ) {
     // source: https://github.com/facebook/metro/blob/main/packages/metro-runtime/src/polyfills/require.js
+    // TODO(@kitten): Add type for this and use `globalThis` over `global`
     const Refresh = global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'];
     // Keep a reference to the original
     const isLikelyComponentType = Refresh.isLikelyComponentType;
@@ -44,7 +45,7 @@ if (process.env.NODE_ENV === 'development') {
        *   1. Initially with a modules export object
        *   2. With each individual export of a module
        */
-      isLikelyComponentType(value) {
+      isLikelyComponentType(value: any) {
         try {
           if (typeof value === 'object') {
             if ('unstable_settings' in value) {

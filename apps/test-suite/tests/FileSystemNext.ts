@@ -3,8 +3,7 @@ import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import * as FS from 'expo-file-system';
-import { File, Directory } from 'expo-file-system/next';
-import { Paths } from 'expo-file-system/src/next';
+import { File, Directory, Paths } from 'expo-file-system/next';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
@@ -48,6 +47,23 @@ export async function test({ describe, expect, it, ...t }) {
         // });
       });
     } else {
+      // This test fails on CI.
+      // it('Supports some operations on SAF picker files', async () => {
+      //   const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      //   if (!saf.granted) {
+      //     throw new Error();
+      //   }
+      //   const safDirectory = new Directory(saf.directoryUri);
+      //   expect(safDirectory.list().length).toBe(0);
+
+      //   safDirectory.createFile('newFile', 'text/plain');
+      //   expect(safDirectory.list().length).toBe(1);
+
+      //   safDirectory.list().forEach((sd) => {
+      //     sd.delete();
+      //   });
+      //   expect(safDirectory.list().length).toBe(0);
+      // });
       it('Creates a lazy file reference', () => {
         const file = new File('file:///path/to/file');
         expect(file.uri).toBe('file:///path/to/file');
@@ -55,9 +71,11 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('Supports different slash combinations', async () => {
         expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+
         // This URL is confusing, as path is actually a hostname.
-        // We throw a descriptive error in this case.
-        expect(() => new File('file://path/to/file').uri).toThrow();
+        // We can no longer throw a descriptive error in this case, since this URL scheme is also used for SAF URIs.
+        // TODO: Consider bringing back the scheme validation check.
+        // expect(() => new File('file://path/to/file').uri).toThrow();
 
         expect(new File('file://localhost/path/to/file').uri).toBe('file:///path/to/file');
         expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
@@ -106,6 +124,73 @@ export async function test({ describe, expect, it, ...t }) {
           const directory = new Directory(testDirectory, 'test');
           expect(file.exists).toBe(true);
           expect(directory.exists).toBe(false);
+        });
+      });
+
+      describe('Works with %, # and space characters in names', () => {
+        it('Works with spaces as filename', () => {
+          const outputFile = new File(testDirectory, 'my new file.txt');
+          expect(outputFile.exists).toBe(false);
+          outputFile.write('Hello world');
+          expect(outputFile.exists).toBe(true);
+          expect(outputFile.name).toBe('my new file.txt');
+        });
+
+        it('Works with spaces as directory name', () => {
+          const dir = new Directory(testDirectory, 'my new folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my new folder');
+        });
+
+        it('Works with # as directory name', () => {
+          const dir = new Directory(testDirectory, 'my#folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my#folder');
+        });
+
+        it('Ignores # passed in as uri path', () => {
+          // note the + sign here – the first argument is first decoded if it is a file url, so the # is stripped
+          const dir = new Directory(testDirectory + '/TestFolder#query');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('TestFolder');
+        });
+
+        it('Works with # as directory name', () => {
+          const dir = new Directory(testDirectory, 'my#folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my#folder');
+        });
+
+        it('Works with % as directory name', () => {
+          const dir = new Directory(testDirectory, 'my%folder');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my%folder');
+        });
+
+        it('Works with % as file name', () => {
+          const dir = new Directory(testDirectory, 'my%file.txt');
+          expect(dir.exists).toBe(false);
+          dir.create();
+          expect(dir.exists).toBe(true);
+          expect(dir.name).toBe('my%file.txt');
+        });
+
+        it('(disabled) Throws error on invalid uris passed in as argument', () => {
+          // We no longer throw on url with hash passed as first argument to constructor, instead clearing the hash segment of the URL during joining paths.
+          // expect(() => {
+          //   // eslint-disable-next-line no-new
+          //   new Directory(testDirectory + '/TestFolder%query');
+          // }).toThrow();
         });
       });
 
@@ -423,6 +508,23 @@ export async function test({ describe, expect, it, ...t }) {
           }
           expect(error.message.includes('Destination already exists')).toBe(true);
         });
+
+        it('downloads file when headers are set', async () => {
+          const url = 'https://picsum.photos/id/237/200/300';
+          const file = new File(testDirectory, 'image.jpeg');
+          const output = await File.downloadFileAsync(url, file, { headers: { Token: '1234' } });
+          expect(file.exists).toBe(true);
+          expect(output.uri).toBe(file.uri);
+        });
+
+        it('Supports downloading a file using bytes', async () => {
+          const url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+          const md5 = '2942bfabb3d05332b66eb128e0842cff';
+          const response = await fetch(url);
+          const src = new File(testDirectory, 'file.pdf');
+          src.write(await response.bytes());
+          expect(src.md5).toEqual(md5);
+        });
       });
 
       describe('Computes file properties', () => {
@@ -430,6 +532,17 @@ export async function test({ describe, expect, it, ...t }) {
           const file = new File(testDirectory, 'file.txt');
           file.write('Hello world');
           expect(file.size).toBe(11);
+        });
+
+        it('creationTime is earlier than modificationTime or equal', async () => {
+          const file = new File(
+            testDirectory,
+            'creationTime_is_earlier_than_modificationTime_or_equal.txt'
+          );
+          file.write('Hello world');
+          expect(file.creationTime).not.toBeNull();
+          expect(file.modificationTime).not.toBeNull();
+          expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
         });
 
         it('computes md5', async () => {
@@ -443,11 +556,15 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.size).toBe(null);
           expect(file.md5).toBe(null);
         });
+      });
 
-        it('computes md5', async () => {
-          const file = new File(testDirectory, 'file.txt');
+      describe('Computes directory properties', () => {
+        it('computes size', async () => {
+          const dir = new Directory(testDirectory, 'directory');
+          const file = new File(testDirectory, 'directory', 'file.txt');
+          file.create({ intermediates: true });
           file.write('Hello world');
-          expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+          expect(dir.size).toBe(11);
         });
       });
 
@@ -466,6 +583,36 @@ export async function test({ describe, expect, it, ...t }) {
           expect(src.bytes()).toEqual(
             new Uint8Array([72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100])
           );
+        });
+      });
+
+      describe('Returns path info', () => {
+        it('correctly if exists and is a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_a_directory';
+          const src = new Directory(uri);
+          src.create();
+          expect(Paths.info(uri)).toEqual({
+            exists: true,
+            isDirectory: true,
+          });
+        });
+
+        it('correctly if exists and is not a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_not_a_directory.txt';
+          const src = new File(uri);
+          src.create();
+          expect(Paths.info(uri)).toEqual({
+            exists: true,
+            isDirectory: false,
+          });
+        });
+
+        it('correctly if does not exist', () => {
+          const uri = testDirectory + 'correctly_if_does_not_exist.txt';
+          expect(Paths.info(uri)).toEqual({
+            exists: false,
+            isDirectory: null,
+          });
         });
       });
 
@@ -527,8 +674,93 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
+      describe('When getting file info', () => {
+        it('executes correctly', () => {
+          const url = `${testDirectory}execute_correctly.txt`;
+          const src = new File(url);
+          src.create();
+          src.write('Hello World');
+          const result = src.info({ md5: true });
+          expect(result.exists).toBe(true);
+          if (result.exists) {
+            const { uri, size, modificationTime, creationTime, md5 } = result;
+            expect(modificationTime).not.toBeNull();
+            expect(creationTime).not.toBeNull();
+            expect(md5).not.toBeNull();
+            expect(uri).toBe(url);
+            expect(size).toBe(11);
+          }
+        });
+        it('executes correctly when options are undefined', () => {
+          const url = `${testDirectory}executes_correctly_when_options_are_undefined.txt`;
+          const src = new File(url);
+          src.write('Hello World');
+          const result = src.info();
+          if (result.exists) {
+            expect(result.md5).toBeNull();
+          }
+        });
+        it('returns exists false if file does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_file_does_not_exist.txt`;
+          const src = new File(url);
+          src.write('Hello world');
+          src.delete();
+          const result = src.info();
+          expect(result.exists).toBe(false);
+        });
+      });
+      describe('When getting directory info', () => {
+        it('executes correctly on an empty directory', () => {
+          const url = `${testDirectory}executes_correctly_on_an_empty_directory/`;
+          const src = new Directory(url);
+          src.create();
+
+          const result = src.info();
+
+          expect(result.exists).toBe(true);
+          expect(result.modificationTime).not.toBeNull();
+          expect(result.creationTime).not.toBeNull();
+          expect(result.uri).toBe(url);
+          expect(result.size).toBe(0);
+        });
+        it('executes correctly on a non empty directory', () => {
+          const url = `${testDirectory}executes_correctly_on_a_non_empty_directory/`;
+          const src = new Directory(url);
+          src.create();
+          const file = new File(`${url}1.txt`);
+          file.write('Hello world');
+
+          const result = src.info();
+
+          expect(result.exists).toBe(true);
+          expect(result.modificationTime).not.toBeNull();
+          expect(result.creationTime).not.toBeNull();
+          expect(result.files).toContain('1.txt');
+          expect(result.uri).toBe(url);
+          expect(result.size).toBe(11);
+        });
+        it('returns exists false if a directory does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_a_file_does_not_exist`;
+          const src = new Directory(url);
+          src.create();
+          src.delete();
+
+          const result = src.info();
+
+          expect(result.exists).toBe(false);
+        });
+      });
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
+  });
+
+  describe('Exposes total filesystem sizes', () => {
+    it('Returns total filesystem space', () => {
+      expect(Paths.totalDiskSpace > 100000).toBe(true);
+    });
+    it('Returns available filesystem space', () => {
+      expect(Paths.availableDiskSpace > 100000).toBe(true);
+    });
   });
 
   describe('Exposes file handles', () => {
@@ -703,7 +935,7 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
       const blob = src.blob();
 
-      const response = await fetch('https://httpbin.test.k6.io/anything', {
+      const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
         body: blob,
       });
@@ -721,12 +953,12 @@ export async function test({ describe, expect, it, ...t }) {
 
       formData.append('data', blob);
 
-      const response = await fetch('https://httpbin.test.k6.io/anything', {
+      const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
         body: formData,
       });
       const body = await response.json();
-      expect(body.files.data).toEqual('abcde');
+      expect(body.files.data[0]).toEqual('abcde');
     });
   });
 

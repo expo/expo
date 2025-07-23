@@ -1,26 +1,26 @@
-import { RouterLogo, mergeClasses } from '@expo/styleguide';
-import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
+import { mergeClasses } from '@expo/styleguide';
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
+import { Cloud01DuotoneIcon } from '@expo/styleguide-icons/duotone/Cloud01DuotoneIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 
-import { GridContainer, GridCell, HeaderDescription, HomeButton } from '~/ui/components/Home';
+import { GridContainer, GridCell, HomeButton } from '~/ui/components/Home/components';
 import { QuickStartIcon, DevicesImage } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
-import { H1, RawH2, CALLOUT, A } from '~/ui/components/Text';
+import { H1, CALLOUT, A, P } from '~/ui/components/Text';
 
 export function QuickStart() {
   return (
     <>
-      <H1 className="mt-2 border-0 pb-0 !font-extrabold">
+      <H1 className="mt-1 border-0 pb-0 !font-extrabold">
         Create amazing apps that run everywhere
       </H1>
-      <HeaderDescription>
+      <P className="mb-2 text-secondary">
         Build one JavaScript/TypeScript project that runs natively on all your users' devices.
-      </HeaderDescription>
+      </P>
       <GridContainer>
         <GridCell
           className={mergeClasses(
-            'min-h-[250px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply',
-            'max-md-gutters:min-h-[200px]'
+            'min-h-[192px] bg-element !bg-cell-quickstart-pattern bg-blend-multiply'
           )}>
           <div
             className={mergeClasses(
@@ -29,11 +29,14 @@ export function QuickStart() {
             )}
           />
           <div className="relative z-10 flex flex-col gap-4">
-            <RawH2 className="!font-bold">
+            <h2 className="font-bold heading-xl">
               <QuickStartIcon /> Quick Start
-            </RawH2>
+            </h2>
             <div>
-              <Terminal cmd={['$ npx create-expo-app@latest']} />
+              <Terminal
+                cmd={['$ npx create-expo-app@latest']}
+                className="asset-shadow rounded-md"
+              />
               <CALLOUT theme="secondary">
                 Then continue{' '}
                 <A href="/get-started/set-up-your-environment">setting up your environment</A>.
@@ -43,9 +46,8 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[250px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
-            'dark:bg-palette-blue3',
-            'max-md-gutters:min-h-[200px]'
+            'relative z-0 min-h-[192px] border-palette-blue6 bg-palette-blue4 !bg-cell-tutorial-pattern bg-blend-multiply',
+            'dark:bg-palette-blue3 dark:bg-blend-color-burn'
           )}>
           <div
             className={mergeClasses(
@@ -54,9 +56,9 @@ export function QuickStart() {
             )}
           />
           <DevicesImage />
-          <RawH2 className="relative z-10 !font-bold !text-palette-blue12">
+          <h2 className="relative z-10 max-w-[24ch] font-bold text-palette-blue12 heading-xl">
             Create a universal Android, iOS, and web app
-          </RawH2>
+          </h2>
           <HomeButton
             className="hocus:bg-button-primary"
             href="/tutorial/introduction/"
@@ -66,61 +68,41 @@ export function QuickStart() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[164px] border-palette-pink6 bg-palette-pink3 dark:bg-palette-pink3',
-            'selection:bg-palette-pink5',
-            'max-md-gutters:min-h-[200px]'
+            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-purple3',
+            'selection:bg-palette-purple5'
           )}>
-          <RouterLogo
-            className={mergeClasses(
-              'absolute -bottom-20 -left-24 size-[340px] rotate-[20deg] opacity-[0.12]',
-              'stroke-palette-pink7 stroke-[0.01rem] text-palette-pink7'
-            )}
-          />
-          <RouterLogo
-            className={mergeClasses(
-              'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-3',
-              'border-palette-pink5 bg-palette-pink4 stroke-palette-pink8 stroke-[0.01rem] text-palette-pink8'
-            )}
-          />
-          <RawH2 className="relative z-10 !text-lg !text-palette-pink11">
-            Discover the benefits of file-based routing with Expo Router
-          </RawH2>
-          <HomeButton
-            className="border-palette-pink10 bg-palette-pink10 hocus:bg-palette-pink9 dark:text-palette-pink2"
-            href="/router/introduction/"
-            size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-pink2" />}>
-            Learn more
-          </HomeButton>
+          <AppleAppStoreIcon className="absolute -bottom-16 -right-10 size-72 text-palette-purple10 opacity-10" />
+          <div className="relative z-10 flex flex-col gap-4">
+            <h2 className="flex items-center gap-2 !font-bold !text-palette-purple10 heading-lg">
+              <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
+            </h2>
+            <div>
+              <Terminal cmd={['$ npx testflight']} className="asset-shadow rounded-md" />
+              <CALLOUT theme="secondary">
+                This is an iOS-only command that will upload your app to TestFlight.
+              </CALLOUT>
+            </div>
+          </div>
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'relative z-0 min-h-[172px] border-palette-purple6 bg-palette-purple3',
-            'selection:bg-palette-purple5',
-            'max-md-gutters:min-h-[200px]'
+            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-green3',
+            'selection:bg-palette-green4'
           )}>
-          <PlanEnterpriseIcon
-            className={mergeClasses(
-              'absolute -bottom-12 -left-20 size-[350px] rotate-[40deg] opacity-[0.12]',
-              'text-palette-purple7'
-            )}
-          />
-          <PlanEnterpriseIcon
-            className={mergeClasses(
-              'absolute bottom-6 right-6 size-[72px] rounded-xl border-[6px] p-2',
-              'border-palette-purple5 bg-palette-purple4 text-palette-purple8'
-            )}
-          />
-          <RawH2 className="relative z-10 !text-lg !text-palette-purple11">
-            Speed up your development with Expo Application Services
-          </RawH2>
-          <HomeButton
-            className="border-palette-purple10 bg-palette-purple10 hocus:bg-palette-purple9 dark:text-palette-purple2"
-            href="/tutorial/eas/introduction/"
-            size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-purple2" />}>
-            <span className="max-sm-gutters:hidden">Start&nbsp;</span>EAS Tutorial
-          </HomeButton>
+          <Cloud01DuotoneIcon className="absolute -bottom-20 -right-8 size-80 text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
+          <div className="relative z-10 flex flex-col gap-4">
+            <h2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] heading-lg dark:!text-[#4eca8c]">
+              <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
+              your web app
+            </h2>
+            <div>
+              <Terminal cmd={['$ npx eas-cli deploy']} className="asset-shadow rounded-md" />
+              <CALLOUT theme="secondary">
+                For prerequisites and complete instructions, see{' '}
+                <A href="/deploy/web/#export-your-web-project/">our guide</A>.
+              </CALLOUT>
+            </div>
+          </div>
         </GridCell>
       </GridContainer>
     </>

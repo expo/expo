@@ -33,9 +33,7 @@ Pod::Spec.new do |s|
 
   s.resource_bundles = {
     'EXDevLauncher' => [
-      'ios/assets',
-      'ios/main.jsbundle',
-      'ios/Views/EXDevLauncherErrorView.storyboard'
+      'ios/Assets.xcassets',
     ]
   }
 
@@ -70,6 +68,22 @@ Pod::Spec.new do |s|
     '"$(PODS_CONFIGURATION_BUILD_DIR)/EXManifests/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/EXUpdatesInterface/Swift Compatibility Header"',
   ]
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      # [begin] transitive dependencies of React-RCTAppDelegate that are not defined modules
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-Mapbuffer/React_Mapbuffer.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeApple/React_RuntimeApple.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-RuntimeCore/React_RuntimeCore.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectorcdp/jsinspector_moderncdp.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-nativeconfig/React_nativeconfig.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
+      # [end] transitive dependencies of React-RCTAppDelegate that are not defined modules
+    ])
+  end
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
@@ -92,7 +106,7 @@ Pod::Spec.new do |s|
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
-  s.dependency "ReactCodegen"
+  s.dependency "ReactAppDependencyProvider"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
   unless defined?(install_modules_dependencies)

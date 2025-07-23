@@ -1,15 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLinkingConfig = exports.getNavigationConfig = void 0;
+exports.getNavigationConfig = getNavigationConfig;
+exports.getLinkingConfig = getLinkingConfig;
 const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
+const constants_1 = require("./constants");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
+const getRoutesRedirects_1 = require("./getRoutesRedirects");
 const linking_1 = require("./link/linking");
 function getNavigationConfig(routes, metaOnly = true) {
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
+    return {
+        screens: {
+            [constants_1.INTERNAL_SLOT_NAME]: {
+                path: '',
+                ...(0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly),
+            },
+        },
+    };
 }
-exports.getNavigationConfig = getNavigationConfig;
-function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl } = {}) {
+function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serverUrl, redirects } = {}) {
     // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
     let hasCachedInitialUrl = false;
     let initialUrl;
@@ -19,9 +28,10 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
     const nativeLinking = nativeLinkingKey
         ? context(nativeLinkingKey)
         : undefined;
+    const config = getNavigationConfig(routes, metaOnly);
     return {
         prefixes: [],
-        config: getNavigationConfig(routes, metaOnly),
+        config,
         // A custom getInitialURL is used on native to ensure the app always starts at
         // the root path if it's launched from something other than a deep link.
         // This helps keep the native functionality working like the web functionality.
@@ -37,12 +47,14 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
                 else {
                     initialUrl = serverUrl ?? (0, linking_1.getInitialURL)();
                     if (typeof initialUrl === 'string') {
-                        if (typeof nativeLinking?.redirectSystemPath === 'function') {
+                        initialUrl = (0, getRoutesRedirects_1.applyRedirects)(initialUrl, redirects);
+                        if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
                             initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
                         }
                     }
                     else if (initialUrl) {
                         initialUrl = initialUrl.then((url) => {
+                            url = (0, getRoutesRedirects_1.applyRedirects)(url, redirects);
                             if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
                                 return nativeLinking.redirectSystemPath({ path: url, initial: true });
                             }
@@ -54,13 +66,15 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
             }
             return initialUrl;
         },
-        subscribe: (0, linking_1.addEventListener)(nativeLinking),
-        getStateFromPath: linking_1.getStateFromPath.bind(store),
+        subscribe: (0, linking_1.subscribe)(nativeLinking, redirects),
+        getStateFromPath: (path, options) => {
+            return (0, linking_1.getStateFromPath)(path, options, getRouteInfo().segments);
+        },
         getPathFromState(state, options) {
             return ((0, linking_1.getPathFromState)(state, {
-                screens: {},
-                ...this.config,
+                ...config,
                 ...options,
+                screens: config.screens ?? options?.screens ?? {},
             }) ?? '/');
         },
         // Add all functions to ensure the types never need to fallback.
@@ -68,5 +82,4 @@ function getLinkingConfig(store, routes, context, { metaOnly = true, serverUrl }
         getActionFromState: native_1.getActionFromState,
     };
 }
-exports.getLinkingConfig = getLinkingConfig;
 //# sourceMappingURL=getLinkingConfig.js.map

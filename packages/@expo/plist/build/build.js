@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.build = void 0;
+exports.build = build;
 const base64_js_1 = __importDefault(require("base64-js"));
 const xmlbuilder_1 = __importDefault(require("xmlbuilder"));
 /**
@@ -95,7 +95,6 @@ function build(obj, opts) {
     opts.pretty = opts.pretty !== false;
     return doc.end(opts);
 }
-exports.build = build;
 /**
  * depth first, recursive traversal of a javascript object. when complete,
  * next_child contains a reference to the build XML object.

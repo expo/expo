@@ -81,6 +81,7 @@ describe(persistMetroAssetsAsync, () => {
         '/input/a.png',
         '/input/a@2x.png',
         '/input/a@3x.png',
+        '/output', // output assets directory should always be created
       ]);
     });
 

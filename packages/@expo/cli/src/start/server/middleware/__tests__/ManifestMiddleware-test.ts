@@ -108,11 +108,11 @@ describe('checkBrowserRequestAsync', () => {
         // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
         // provide the `platform=web` query parameter in order for the multi-platform dev server
         // to return the correct bundle.
-        '/index.bundle?platform=web&dev=true&hot=false&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        '/index.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
       ],
     });
-    expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
-    expect(res.end).toBeCalledWith('<html />');
+    expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html');
+    expect(res.end).toHaveBeenCalledWith('<html />');
   });
 
   it('skips handling browser requests when the web bundler is "webpack"', async () => {
@@ -161,7 +161,9 @@ describe('_getBundleUrl', () => {
         mainModuleName: 'index',
         platform: 'android',
       })
-    ).toEqual('http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false');
+    ).toEqual(
+      'http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false&lazy=true'
+    );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: 'evanbacon.dev', scheme: 'http' });
   });
@@ -178,7 +180,7 @@ describe('_getBundleUrl', () => {
         platform: 'ios',
       })
     ).toEqual(
-      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&minify=true'
+      'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
     );
 
     expect(constructUrl).toHaveBeenCalledWith({ hostname: undefined, scheme: 'http' });
@@ -229,7 +231,6 @@ describe('_resolveProjectSettingsAsync', () => {
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       expoGoConfig: {
-        __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
         mainModuleName: 'index',
@@ -260,7 +261,6 @@ describe('_resolveProjectSettingsAsync', () => {
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       expoGoConfig: {
-        __flipperHack: 'React Native packager is running',
         debuggerHost: 'http://fake.mock',
         developer: { projectRoot: '/', tool: 'expo-cli' },
         mainModuleName: 'index',
@@ -311,16 +311,16 @@ describe('getHandler', () => {
     );
 
     // Ensure that devices are stored successfully.
-    expect(ProjectDevices.saveDevicesAsync).toBeCalledWith('/', 'client-id');
+    expect(ProjectDevices.saveDevicesAsync).toHaveBeenCalledWith('/', 'client-id');
 
     // Internals are invoked.
-    expect(middleware._getManifestResponseAsync).toBeCalled();
+    expect(middleware._getManifestResponseAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(200);
-    expect(next).not.toBeCalled();
-    expect(res.end).toBeCalledWith('body');
-    expect(res.setHeader).toBeCalledWith('header', 'value');
+    expect(next).not.toHaveBeenCalled();
+    expect(res.end).toHaveBeenCalledWith('body');
+    expect(res.setHeader).toHaveBeenCalledWith('header', 'value');
   });
 
   it(`returns error info in the response`, async () => {
@@ -356,18 +356,18 @@ describe('getHandler', () => {
     );
 
     // Ensure that devices are stored successfully.
-    expect(ProjectDevices.saveDevicesAsync).toBeCalledWith('/', 'client-id');
+    expect(ProjectDevices.saveDevicesAsync).toHaveBeenCalledWith('/', 'client-id');
 
     // Internals are invoked.
-    expect(middleware._getManifestResponseAsync).toBeCalled();
+    expect(middleware._getManifestResponseAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
     expect(res.statusCode).toEqual(500);
 
-    expect(next).not.toBeCalled();
+    expect(next).not.toHaveBeenCalled();
     // Returns error info.
-    expect(res.end).toBeCalledWith(JSON.stringify({ error: 'Error: demo' }));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
-    expect(Log.exception).toBeCalled();
+    expect(Log.exception).toHaveBeenCalled();
   });
 });

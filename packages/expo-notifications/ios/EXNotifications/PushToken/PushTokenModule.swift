@@ -24,7 +24,7 @@ public class PushTokenModule: Module, NotificationDelegate {
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
       if promiseNotYetResolved != nil {
-        promise.reject("E_AWAIT_PROMISE", "Another async call to this method is in progress. Await the first Promise.")
+        promise.reject("E_AWAIT_PROMISE", "Another async call to getDevicePushTokenAsync() is in progress. Await the first Promise.")
         return
       }
       promiseNotYetResolved = promise

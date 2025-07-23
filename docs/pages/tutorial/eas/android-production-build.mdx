@@ -41,7 +41,7 @@ To create an Android production build using the default `production` profile, op
 
 <Terminal cmd={['$ eas build --platform android']} />
 
-The above command will queue the build. Notice in the Expo dashboard that the **Version Code** is auto-incremented.
+The above command will queue the build. Notice in the EAS dashboard that the **Version Code** is auto-incremented.
 
 </Step>
 
@@ -278,7 +278,7 @@ To release the app for production:
 
 - We can also use the same EAS Build we did for the internal testing release. Run the `eas submit` command to release to the Play Store:
 
-<Terminal cmd={['$ eas submit -platform android']} />
+<Terminal cmd={['$ eas submit --platform android']} />
 
 - To create a track and submit our app to the Google Play Store's review process, we need to **Release** > **Production** and under **Releases**, select the build we want to send for review.
 

@@ -1,9 +1,9 @@
 {
   "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["FontLoaderModule"]
+    "modules": ["FontLoaderModule", "FontUtilsModule"]
   },
   "android": {
-    "modules": ["expo.modules.font.FontLoaderModule"]
+    "modules": ["expo.modules.font.FontLoaderModule", "expo.modules.font.FontUtilsModule"]
   }
 }

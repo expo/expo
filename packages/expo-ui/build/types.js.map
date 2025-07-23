@@ -1,0 +1,1 @@
+{"version":3,"file":"types.js","sourceRoot":"","sources":["../src/types.ts"],"names":[],"mappings":"","sourcesContent":["/**\n * @hidden\n */\nexport type ViewEvent<Name extends string, Data> = Record<\n  Name,\n  Data extends object\n    ? ((event: { nativeEvent: Data }) => void) | undefined\n    : (() => void) | undefined\n>;\n"]}

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useComponent = void 0;
+exports.useComponent = useComponent;
 const react_1 = require("react");
 const NavigationContent = ({ render, children }) => {
     return render(children);
@@ -22,5 +22,4 @@ function useComponent(render) {
         return <NavigationContent render={render}>{children}</NavigationContent>;
     })).current;
 }
-exports.useComponent = useComponent;
 //# sourceMappingURL=useComponent.js.map

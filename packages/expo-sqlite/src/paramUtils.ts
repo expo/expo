@@ -53,7 +53,8 @@ export function normalizeParams(
  * @hidden
  */
 export function composeRow<T>(columnNames: SQLiteColumnNames, columnValues: SQLiteColumnValues): T {
-  const row = {};
+  // TODO(cedric): make these types more generic and tighten the returned object type based on provided column names/values
+  const row: { [key in SQLiteColumnNames[number]]: SQLiteColumnValues[number] } = {};
   if (columnNames.length !== columnValues.length) {
     throw new Error(
       `Column names and values count mismatch. Names: ${columnNames.length}, Values: ${columnValues.length}`
@@ -84,7 +85,8 @@ export function composeRows<T>(
   }
   const results: T[] = [];
   for (const columnValues of columnValuesList) {
-    const row = {};
+    // TODO(cedric): make these types more generic and tighten the returned object type based on provided column names/values
+    const row: { [key in SQLiteColumnNames[number]]: SQLiteColumnValues[number] } = {};
     for (let i = 0; i < columnNames.length; i++) {
       row[columnNames[i]] = columnValues[i];
     }

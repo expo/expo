@@ -17,7 +17,7 @@ internal enum GaugeStyle: String, Enumerable {
   case linearCapacity
 }
 
-class GaugeProps: ExpoSwiftUI.ViewProps {
+final class GaugeProps: ExpoSwiftUI.ViewProps {
   @Field var label: String?
   @Field var labelColor: Color?
   @Field var current: ValueOptions

@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _mergeOptions = _interopRequireDefault(require("merge-options"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Copyright (c) Nicolas Gallagher.
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -37,21 +37,21 @@ function createPromise(getValue, callback) {
   return new Promise((resolve, reject) => {
     try {
       const value = getValue();
-      callback === null || callback === void 0 ? void 0 : callback(null, value);
+      callback?.(null, value);
       resolve(value);
     } catch (err) {
-      callback === null || callback === void 0 ? void 0 : callback(err);
+      callback?.(err);
       reject(err);
     }
   });
 }
 function createPromiseAll(promises, callback, processResult) {
   return Promise.all(promises).then(result => {
-    const value = (processResult === null || processResult === void 0 ? void 0 : processResult(result)) ?? null;
-    callback === null || callback === void 0 ? void 0 : callback(null, value);
+    const value = processResult?.(result) ?? null;
+    callback?.(null, value);
     return Promise.resolve(value);
   }, errors => {
-    callback === null || callback === void 0 ? void 0 : callback(errors);
+    callback?.(errors);
     return Promise.reject(errors);
   });
 }
@@ -141,6 +141,5 @@ const AsyncStorage = {
     return createPromiseAll(promises, callback);
   }
 };
-var _default = AsyncStorage;
-exports.default = _default;
+var _default = exports.default = AsyncStorage;
 //# sourceMappingURL=AsyncStorage.js.map

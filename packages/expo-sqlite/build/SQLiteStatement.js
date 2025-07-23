@@ -35,7 +35,9 @@ export class SQLiteStatement {
      * Finalize the prepared statement. This will call the [`sqlite3_finalize()`](https://www.sqlite.org/c3ref/finalize.html) C function under the hood.
      *
      * Attempting to access a finalized statement will result in an error.
-     * > **Note:** While expo-sqlite will automatically finalize any orphaned prepared statements upon closing the database, it is considered best practice to manually finalize prepared statements as soon as they are no longer needed. This helps to prevent resource leaks. You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
+     * > **Note:** While `expo-sqlite` will automatically finalize any orphaned prepared statements upon closing the database, it is considered best practice
+     * > to manually finalize prepared statements as soon as they are no longer needed. This helps to prevent resource leaks.
+     * > You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
      */
     async finalizeAsync() {
         await this.nativeStatement.finalizeAsync(this.nativeDatabase);
@@ -66,7 +68,10 @@ export class SQLiteStatement {
      * Finalize the prepared statement. This will call the [`sqlite3_finalize()`](https://www.sqlite.org/c3ref/finalize.html) C function under the hood.
      *
      * Attempting to access a finalized statement will result in an error.
-     * > **Note:** While expo-sqlite will automatically finalize any orphaned prepared statements upon closing the database, it is considered best practice to manually finalize prepared statements as soon as they are no longer needed. This helps to prevent resource leaks. You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
+     *
+     * > **Note:** While `expo-sqlite` will automatically finalize any orphaned prepared statements upon closing the database, it is considered best practice
+     * > to manually finalize prepared statements as soon as they are no longer needed. This helps to prevent resource leaks.
+     * > You can use the `try...finally` statement to ensure that prepared statements are finalized even if an error occurs.
      */
     finalizeSync() {
         this.nativeStatement.finalizeSync(this.nativeDatabase);

@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.platformSanityCheckAsync = exports.generateNativeProjectsAsync = void 0;
+exports.generateNativeProjectsAsync = generateNativeProjectsAsync;
+exports.platformSanityCheckAsync = platformSanityCheckAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -39,7 +40,6 @@ async function generateNativeProjectsAsync(projectRoot, exp, options) {
     }
     return templateChecksum;
 }
-exports.generateNativeProjectsAsync = generateNativeProjectsAsync;
 /**
  * Sanity check for the native project before attempting to run patch-project.
  */
@@ -55,10 +55,10 @@ async function platformSanityCheckAsync({ exp, projectRoot, platform, }) {
     }
     // Check package and bundle identifier are defined.
     if (platform === 'android' && !exp.android?.package) {
-        throw new Error(`android.package is not defined in your app config. Please define it before running this command.`);
+        throw new Error(`android.package is not defined in your app config. Define it before running this command.`);
     }
     if (platform === 'ios' && !exp.ios?.bundleIdentifier) {
-        throw new Error(`ios.bundleIdentifier is not defined in your app config. Please define it before running this command.`);
+        throw new Error(`ios.bundleIdentifier is not defined in your app config. Define it before running this command.`);
     }
     // Check if git is installed.
     try {
@@ -71,5 +71,4 @@ async function platformSanityCheckAsync({ exp, projectRoot, platform, }) {
         throw e;
     }
 }
-exports.platformSanityCheckAsync = platformSanityCheckAsync;
 //# sourceMappingURL=generateNativeProjects.js.map

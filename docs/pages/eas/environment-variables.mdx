@@ -2,6 +2,7 @@
 title: Environment variables in EAS
 sidebar_title: Environment variables
 description: Learn how to use and manage environment variables in EAS with examples.
+searchRank: 8
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -138,7 +139,7 @@ export default {
 };
 ```
 
-The `GOOGLE_SERVICES_JSON` is a secret file variable in that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to the build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository).
+The `GOOGLE_SERVICES_JSON` is a secret file variable that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to the build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository).
 
 ```js app.config.js
 export default {
@@ -176,7 +177,7 @@ In above example, the `SENTRY_AUTH_TOKEN` can be treated as a sensitive environm
 
 ### Pull environment variables for your local development
 
-The easiest way to use the EAS environment variables for local development is to pull them into a **.env** file using the `eas env:pull --environment environment` command. You can also use the Export option on the [Expo website](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to download the file and store it inside your project.
+The easiest way to use the EAS environment variables for local development is to pull them into a **.env** file using the `eas env:pull --environment environment` command. You can also use the Export option on the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to download the file and store it inside your project.
 
 Run the following command to create a **.env** file in the root of your project:
 
@@ -345,9 +346,9 @@ After creating an environment variable, you can read it on subsequent EAS Build 
 
 ## Managing environment variables
 
-<Collapsible summary="Managing environment variables using Expo dashboard">
+<Collapsible summary="Managing environment variables using EAS dashboard">
 
-The easiest way to create, read, update, export and delete environment variables is to use the Expo website. Navigate to the [Environment Variables page on your project](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) or [Environment Variables page on your account](https://expo.dev/accounts/[account]/settings/environment-variables) to manage your environment variables.
+The easiest way to create, read, update, export and delete environment variables is to use the Expo website. Navigate to the [**Environment variables** page on your project](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) or [**Environment variables** page on your account](https://expo.dev/accounts/[account]/settings/environment-variables) to manage your environment variables.
 
 </Collapsible>
 
@@ -429,9 +430,9 @@ export default {
 
 <Collapsible summary="Differences between handling environment variables in EAS CLI and Expo CLI">
 
-One of the differences between using environment variables with the Expo framework and EAS is that EAS CLI itself does not support loading **.env** files to set environment variables when resolving the expo config. Instead, it's recommended to use the EAS environment variables management system with EAS CLI commands to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
+One of the differences between using environment variables with the Expo framework and EAS is that EAS CLI itself does not support loading **.env** files to set environment variables when resolving the app config. Instead, it's recommended to use the EAS environment variables management system with EAS CLI commands to set environment variables for your build jobs and updates to avoid confusion, and ensure that exactly the same environment variables are used both for:
 
-- Local app config resolution, done by EAS CLI when preparing the expo config
+- Local app config resolution, done by EAS CLI when preparing the app config
 - Remote jobs happening on EAS servers, which often don't have access to your local **.env** files that are git ignored
 
 Using `eas update` is the one exception to this rule. By default, for backward compatibility reasons, it uses **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood).

@@ -72,7 +72,8 @@ function getPrebuildConfig(projectRoot, {
 
     // Add all built-in plugins
     config = (0, _withDefaultPlugins().withAndroidExpoPlugins)(config, {
-      package: config.android.package
+      package: config.android.package,
+      projectRoot
     });
   }
   return {

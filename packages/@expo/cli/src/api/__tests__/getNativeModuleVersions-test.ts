@@ -27,7 +27,7 @@ describe(getNativeModuleVersionsAsync, () => {
     const scope = nock(getExpoApiBaseUrl())
       .get('/v2/sdks/44.0.0/native-modules')
       .reply(500, 'something went wrong');
-    await expect(getNativeModuleVersionsAsync('44.0.0')).rejects.toThrowError(/Expo server/);
+    await expect(getNativeModuleVersionsAsync('44.0.0')).rejects.toThrow(/Expo server/);
     expect(scope.isDone()).toBe(true);
   });
 });

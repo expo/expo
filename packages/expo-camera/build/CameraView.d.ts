@@ -1,10 +1,10 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec, AvailableLenses } from './Camera.types';
 import { PictureRef } from './PictureRef';
 export default class CameraView extends Component<CameraViewProps> {
     /**
-     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
      */
     static isModernBarcodeScannerAvailable: boolean;
     /**
@@ -27,6 +27,13 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     getAvailablePictureSizesAsync(): Promise<string[]>;
     /**
+     * Returns the available lenses for the currently selected camera.
+     *
+     * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+     * @platform ios
+     */
+    getAvailableLensesAsync(): Promise<string[]>;
+    /**
      * Returns an object with the supported features of the camera on the current device.
      */
     getSupportedFeatures(): {
@@ -42,8 +49,9 @@ export default class CameraView extends Component<CameraViewProps> {
      */
     pausePreview(): Promise<void>;
     static ConversionTables: {
-        type: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
-        flash: Record<number | typeof Symbol.iterator | "toString" | "charAt" | "charCodeAt" | "concat" | "indexOf" | "lastIndexOf" | "localeCompare" | "match" | "replace" | "search" | "slice" | "split" | "substring" | "toLowerCase" | "toLocaleLowerCase" | "toUpperCase" | "toLocaleUpperCase" | "trim" | "length" | "substr" | "valueOf" | "codePointAt" | "includes" | "endsWith" | "normalize" | "repeat" | "startsWith" | "anchor" | "big" | "blink" | "bold" | "fixed" | "fontcolor" | "fontsize" | "italics" | "link" | "small" | "strike" | "sub" | "sup" | "padStart" | "padEnd" | "trimEnd" | "trimStart" | "trimLeft" | "trimRight" | "matchAll" | "replaceAll" | "at", string | undefined>;
+        [prop: string]: unknown;
+        type: Record<keyof import("./Camera.types").CameraType, import("./Camera.types").CameraNativeProps["facing"]>;
+        flash: Record<keyof import("./Camera.types").FlashMode, import("./Camera.types").CameraNativeProps["flashMode"]>;
     };
     static defaultProps: CameraViewProps;
     _cameraHandle?: number | null;
@@ -55,9 +63,25 @@ export default class CameraView extends Component<CameraViewProps> {
         [eventName: string]: Date;
     };
     /**
+     * Takes a picture and returns an object that references the native image instance.
+     * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
+     *
+     * @param optionsWithRef An object in form of `CameraPictureOptions` type and `pictureRef` key set to `true`.
+     * @return Returns a Promise that resolves to `PictureRef` class which contains basic image data, and a reference to native image instance which can be passed
+     * to other Expo packages supporting handling such an instance.
+     */
+    takePictureAsync(optionsWithRef: CameraPictureOptions & {
+        pictureRef: true;
+    }): Promise<PictureRef>;
+    /**
      * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
      * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
      * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
+     *
      * @param options An object in form of `CameraPictureOptions` type.
      * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
      * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
@@ -72,12 +96,7 @@ export default class CameraView extends Component<CameraViewProps> {
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
-     *
-     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
-    takePictureAsync(options: CameraPictureOptions & {
-        pictureRef: true;
-    }): Promise<PictureRef>;
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
     /**
      * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).
@@ -131,9 +150,14 @@ export default class CameraView extends Component<CameraViewProps> {
     toggleRecordingAsync(): Promise<void | undefined>;
     /**
      * Stops recording if any is in progress.
+     * @platform android
+     * @platform ios
      */
     stopRecording(): void;
     _onCameraReady: () => void;
+    _onAvailableLensesChanged: ({ nativeEvent }: {
+        nativeEvent: AvailableLenses;
+    }) => void;
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {
             message: string;

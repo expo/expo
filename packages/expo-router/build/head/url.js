@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStaticUrlFromExpoRouter = exports.getOriginFromConstants = void 0;
+exports.getOriginFromConstants = getOriginFromConstants;
+exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const protocolWarningString = `{ plugins: [["expo-router", { origin: "...<URL>..." }]] }`;
 /** `lodash.memoize` */
@@ -65,7 +66,6 @@ function getOriginFromConstants() {
     // Return the development URL last so the user gets all production warnings first.
     return memoSanitizeUrl(origin);
 }
-exports.getOriginFromConstants = getOriginFromConstants;
 function throwOrAlert(msg) {
     // Production apps fatally crash which is often not helpful.
     if (
@@ -83,5 +83,4 @@ function getStaticUrlFromExpoRouter(pathname) {
     // Append the URL we'd find in context
     return getHeadOriginFromConstants() + pathname;
 }
-exports.getStaticUrlFromExpoRouter = getStaticUrlFromExpoRouter;
 //# sourceMappingURL=url.js.map

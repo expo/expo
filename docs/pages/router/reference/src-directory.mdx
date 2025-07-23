@@ -25,7 +25,7 @@ Simply move your **app** directory to **src/app** and restart the development se
 
 **Notes**:
 
-- The config files (**app.config.tsx**, **app.json**, **package.json**, **metro.config.js**, **tsconfig.json**) should remain in the root directory.
+- The config files (**app.config.ts**, **app.json**, **package.json**, **metro.config.js**, **tsconfig.json**) should remain in the root directory.
 - The **src/app** directory takes higher precedence than the root **app** directory. Only the **src/app** directory will be used if you have both.
 - The **public** directory should remain in the root directory.
 - Static rendering will automatically use the **src/app** directory if it exists.
@@ -50,4 +50,4 @@ You can dangerously customize the root directory using the Expo Router Config Pl
 }
 ```
 
-This may lead to unexpected behavior. Many tools assume the root directory to be either **./app** or **./src/app**. Only tools in the exact version of Expo CLI will respect the config plugin.
+This may lead to unexpected behavior. Many tools assume the root directory to be either **app** or **src/app**. Only tools in the exact version of Expo CLI will respect the config plugin.

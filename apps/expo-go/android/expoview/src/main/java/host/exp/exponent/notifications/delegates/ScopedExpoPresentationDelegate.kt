@@ -5,7 +5,7 @@ import android.os.Parcel
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationBehavior
+import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.NotificationRequest
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
@@ -16,7 +16,7 @@ import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import java.util.*
 
 class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegate(context) {
-  override suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehavior?): android.app.Notification =
+  override suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehaviorRecord?): android.app.Notification =
     ScopedCategoryAwareNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).also {
       it.setAllowedBehavior(notificationBehavior)
     }.build()

@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isVirtualModule = exports._createSideEffectMatcher = exports.hasSideEffectWithDebugTrace = void 0;
+exports.hasSideEffectWithDebugTrace = hasSideEffectWithDebugTrace;
+exports._createSideEffectMatcher = _createSideEffectMatcher;
+exports.isVirtualModule = isVirtualModule;
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -39,7 +41,6 @@ function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value
     }
     return [currentModuleHasSideEffect, []];
 }
-exports.hasSideEffectWithDebugTrace = hasSideEffectWithDebugTrace;
 const pkgJsonCache = new Map();
 const getPackageJsonMatcher = (options, dir) => {
     let packageJson;
@@ -88,7 +89,6 @@ function _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath = '') {
         return null;
     };
 }
-exports._createSideEffectMatcher = _createSideEffectMatcher;
 function getShallowSideEffect(options, value) {
     if (value?.sideEffects !== undefined) {
         return value.sideEffects;
@@ -117,5 +117,4 @@ function detectHasSideEffectInPackageJson(options, value) {
 function isVirtualModule(path) {
     return path.startsWith('\0');
 }
-exports.isVirtualModule = isVirtualModule;
 //# sourceMappingURL=sideEffects.js.map

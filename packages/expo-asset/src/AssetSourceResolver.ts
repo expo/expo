@@ -2,6 +2,8 @@ import type { PackagerAsset } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
 import { PixelRatio } from 'react-native';
 
+import type { AssetMetadata } from './AssetSources';
+
 export type ResolvedAssetSource = {
   __packager_asset: boolean;
   width?: number;
@@ -11,7 +13,7 @@ export type ResolvedAssetSource = {
 };
 
 // Returns the Metro dev server-specific asset location.
-function getScaledAssetPath(asset): string {
+function getScaledAssetPath(asset: PackagerAsset | AssetMetadata): string {
   const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const type = !asset.type ? '' : `.${asset.type}`;
@@ -26,9 +28,10 @@ export default class AssetSourceResolver {
   private readonly serverUrl: string;
   // where the jsbundle is being run from
   // NOTE(EvanBacon): Never defined on web.
+  // @ts-expect-error: Never read locally
   private readonly jsbundleUrl: string | undefined | null;
   // the asset to resolve
-  public readonly asset: PackagerAsset;
+  public readonly asset: PackagerAsset | AssetMetadata;
 
   constructor(
     serverUrl: string | undefined | null,

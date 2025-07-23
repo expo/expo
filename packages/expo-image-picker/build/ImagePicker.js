@@ -85,20 +85,20 @@ export const useCameraPermissions = createPermissionHook({
 // @needsAudit
 /**
  * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes. When this
- * happens, we lost the data selected from the `ImagePicker`. However, you can retrieve the lost
+ * happens, we lose the data selected using the `ImagePicker`. However, you can retrieve the lost
  * data by calling `getPendingResultAsync`. You can test this functionality by turning on
  * `Don't keep activities` in the developer options.
  * @return
- * - **On Android:** a promise that resolves to an array of objects of exactly same type as in
+ * - **On Android:** a promise that resolves to an object of exactly same type as in
  * `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker`
- * finished successfully. Otherwise, to the array of [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
- * - **On other platforms:** an empty array.
+ * finished successfully. Otherwise, an object of type [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
+ * - **On other platforms:** `null`
  */
 export async function getPendingResultAsync() {
     if (ExponentImagePicker.getPendingResultAsync) {
         return ExponentImagePicker.getPendingResultAsync();
     }
-    return [];
+    return null;
 }
 // @needsAudit
 /**

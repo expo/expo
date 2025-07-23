@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = getVCSClientAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const promises_1 = __importDefault(require("fs/promises"));
 const glob_1 = require("glob");
@@ -16,7 +17,6 @@ async function getVCSClientAsync(projectDir) {
         return new NoVCSClient(projectDir);
     }
 }
-exports.default = getVCSClientAsync;
 class GitClient {
     async getRootPathAsync() {
         return (await (0, spawn_async_1.default)('git', ['rev-parse', '--show-toplevel'])).stdout.trim();

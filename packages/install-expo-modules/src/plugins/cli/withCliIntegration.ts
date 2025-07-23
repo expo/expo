@@ -72,7 +72,7 @@ const withCliBabelConfig: ConfigPlugin = (config) => {
         await fs.promises.writeFile(babelConfigPath, contents);
       } catch {
         console.warn(
-          '⚠️ Could not find Babel config file in the project root. Please manually update the Babel config to use `babel-preset-expo`.'
+          '⚠️ Could not find Babel config file in the project root. Manually update the Babel config to use `babel-preset-expo`.'
         );
       }
 
@@ -159,7 +159,7 @@ export function updateMetroConfig(contents: string): string {
     /^const \{\s*getDefaultConfig, mergeConfig\s*\} = require\('@react-native\/metro-config'\);$/m;
   if (!contents.match(searchPattern)) {
     console.warn(
-      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Please manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'
+      '⚠️  Unrecognized `metro.config.js` content, will skip the process to update `metro.config.js`. Manually update the contents to use the `getDefaultConfig()` from `expo/metro-config`.'
     );
     return contents;
   }
@@ -176,9 +176,18 @@ export function updateVirtualMetroEntryAndroid(contents: string): string {
 }
 
 export function updateVirtualMetroEntryIos(contents: string): string {
-  return contents.replace(
-    /^(\s*return.*RCTBundleURLProvider.*jsBundleURLForBundleRoot:@")(index)(".*;)$/m,
-    `$1.expo/.virtual-metro-entry$3`
+  return (
+    contents
+      // Update the `AppDelegate.mm`
+      .replace(
+        /^(\s*return.*RCTBundleURLProvider.*jsBundleURLForBundleRoot:@")(index)(".*;)$/m,
+        `$1.expo/.virtual-metro-entry$3`
+      )
+      // Update the `AppDelegate.swift`
+      .replace(
+        /^(\s*RCTBundleURLProvider\.sharedSettings\(\)\.jsBundleURL\(forBundleRoot:\s*")(index)("\)\s*)$/m,
+        `$1.expo/.virtual-metro-entry$3`
+      )
   );
 }
 

@@ -4,6 +4,59 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- expose `ExpoFontLoader` on web ([#37991](https://github.com/expo/expo/pull/37991) by [@vonovak](https://github.com/vonovak))
+- Add local package mocks. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [web] remove deprecated style 'type' attribute ([#38114](https://github.com/expo/expo/pull/38114) by [@vonovak](https://github.com/vonovak))
+
+## 13.3.2 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 13.3.1 — 2025-05-02
+
+### 🐛 Bug fixes
+
+- Bail out early when `getLoadedFonts` returns an empty array. ([#36586](https://github.com/expo/expo/pull/36586) by [@brentvatne](https://github.com/brentvatne))
+
+## 13.3.0 — 2025-04-30
+
+### 🎉 New features
+
+- [Android] Added support for font weight styles (through XML font definitions) to config plugin. ([#26082](https://github.com/expo/expo/pull/26082) by [@jongbelegen](https://github.com/jongbelegen))
+
+## 13.2.2 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.1 — 2025-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2025-04-21
+
+### 🎉 New features
+
+- Render to image ([#36185](https://github.com/expo/expo/pull/36185) by [@jakex7](https://github.com/jakex7))
+
+## 13.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - Bump minimum macOS version to 11.0. ([#34980](https://github.com/expo/expo/pull/34980) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features

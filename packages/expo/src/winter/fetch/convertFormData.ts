@@ -35,7 +35,7 @@ export async function convertFormDataAsync(
       // We should find the original Blob instance from the `FormData._parts` internal properties.
       // @ts-expect-error: react-native's proprietary Blob type
       const formDatum = formData._parts?.find(
-        ([name, value]) => value.data?.blobId === entry._data.blobId
+        ([_name, value]: [name: string, value: any]) => value.data?.blobId === entry._data.blobId
       );
       if (formDatum == null) {
         throw new Error('Cannot find the original Blob instance from FormData');

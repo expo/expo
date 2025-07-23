@@ -39,6 +39,13 @@ public:
                           jni::alias_ref<jni::JArrayByte> serializedData);
   void sqlite3_update_hook(bool enabled);
 
+  static int sqlite3_backup(
+      jni::alias_ref<jni::JClass> clazz,
+      jni::alias_ref<NativeDatabaseBinding::jhybridobject> destDatabase,
+      const std::string &destDatabaseName,
+      jni::alias_ref<NativeDatabaseBinding::jhybridobject> sourceDatabase,
+      const std::string &sourceDatabaseName);
+
   int libsql_open_remote(const std::string &url, const std::string &authToken);
   int libsql_open(const std::string &dbPath, const std::string &url,
                   const std::string &authToken);
@@ -51,6 +58,8 @@ private:
   explicit NativeDatabaseBinding(
       jni::alias_ref<NativeDatabaseBinding::jhybridobject> jThis)
       : javaPart_(jni::make_global(jThis)) {}
+
+  std::string convertSqlLiteErrorToSTLString();
 
 private:
   static jni::local_ref<jhybriddata>

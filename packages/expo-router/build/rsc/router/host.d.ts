@@ -29,10 +29,10 @@ export declare const callServerRSC: (actionId: string, args?: unknown[], fetchCa
 export declare const fetchRSC: (input: string, params?: unknown, fetchCache?: FetchCache) => Elements;
 export declare const prefetchRSC: (input: string, params?: unknown) => void;
 export declare const Root: ({ initialInput, initialParams, fetchCache, unstable_onFetchData, children, }: {
-    initialInput?: string | undefined;
+    initialInput?: string;
     initialParams?: unknown;
-    fetchCache?: FetchCache | undefined;
-    unstable_onFetchData?: ((data: unknown) => void) | undefined;
+    fetchCache?: FetchCache;
+    unstable_onFetchData?: (data: unknown) => void;
     children: ReactNode;
 }) => import("react").FunctionComponentElement<import("react").ProviderProps<(input: string, searchParams?: URLSearchParams | string) => void>>;
 export declare const useRefetch: () => (input: string, searchParams?: URLSearchParams | string) => void;

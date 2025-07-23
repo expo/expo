@@ -2,38 +2,6 @@ import ExpoModulesCore
 import Photos
 import CoreServices
 
-func stringify(mediaType: PHAssetMediaType) -> String {
-  switch mediaType {
-  case .audio:
-    return "audio"
-  case .image:
-    return "photo"
-  case .video:
-    return "video"
-  default:
-    return "unknown"
-  }
-}
-
-func stringifyMedia(mediaSubtypes: PHAssetMediaSubtype) -> [String] {
-  let subtypesDict: [String: PHAssetMediaSubtype] = [
-    "hdr": .photoHDR,
-    "panorama": .photoPanorama,
-    "stream": .videoStreamed,
-    "timelapse": .videoTimelapse,
-    "screenshot": .photoScreenshot,
-    "highFrameRate": .videoHighFrameRate,
-    "livePhoto": .photoLive,
-    "depthEffect": .photoDepthEffect
-  ]
-
-  var subtypes = [String]()
-  for (subtype, value) in subtypesDict where mediaSubtypes.contains(value) {
-    subtypes.append(subtype)
-  }
-  return subtypes
-}
-
 func exportDate(_ date: Date?) -> Double? {
   if let date = date {
     let interval = date.timeIntervalSince1970
@@ -56,27 +24,22 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
   }
 }
 
-func exportAssetInfo(asset: PHAsset) -> [String: Any?]? {
-  if var assetDict = exportAsset(asset: asset) {
-    assetDict["location"] = exportLocation(location: asset.location)
-    assetDict["isFavorite"] = asset.isFavorite
-    assetDict["isHidden"] = asset.isHidden
-    return assetDict
-  }
-  return nil
+func exportAssetInfo(asset: PHAsset) -> [String: Any?] {
+  var assetDict = exportAsset(asset: asset)
+  assetDict["location"] = exportLocation(location: asset.location)
+  assetDict["isFavorite"] = asset.isFavorite
+  assetDict["isHidden"] = asset.isHidden
+  return assetDict
 }
 
-func exportAsset(asset: PHAsset?) -> [String: Any?]? {
-  guard let asset else {
-    return nil
-  }
+func exportAsset(asset: PHAsset) -> [String: Any?] {
   let fileName = asset.value(forKey: "filename")
   return [
     "id": asset.localIdentifier,
     "filename": fileName,
     "uri": assetUriForLocalId(localId: asset.localIdentifier),
-    "mediaType": stringify(mediaType: asset.mediaType),
-    "mediaSubtypes": stringifyMedia(mediaSubtypes: asset.mediaSubtypes),
+    "mediaType": MediaType(fromPHAssetMediaType: asset.mediaType).rawValue,
+    "mediaSubtypes": MediaSubtype.stringify(asset.mediaSubtypes),
     "width": asset.pixelWidth,
     "height": asset.pixelHeight,
     // Uses required reason API based on the following reason: 0A2A.1
@@ -264,6 +227,41 @@ func createAlbum(with title: String, completion: @escaping (PHAssetCollection?, 
   }
 }
 
+func createAsset(uri: URL, appContext: AppContext?, completion: @escaping (PHAsset?, Error?) -> Void) {
+  let assetType = assetType(for: uri)
+
+  if uri.pathExtension.isEmpty {
+    completion(nil, EmptyFileExtensionException())
+    return
+  }
+
+  if assetType == .unknown || assetType == .audio {
+    completion(nil, UnsupportedAssetTypeException(uri.absoluteString))
+    return
+  }
+
+  if !FileSystemUtilities.permissions(appContext, for: uri).contains(.read) {
+    completion(nil, UnreadableAssetException(uri.absoluteString))
+    return
+  }
+
+  var assetPlaceholder: PHObjectPlaceholder?
+  PHPhotoLibrary.shared().performChanges {
+    let changeRequest = assetType == .video
+    ? PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: uri)
+    : PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: uri)
+
+    assetPlaceholder = changeRequest?.placeholderForCreatedAsset
+  } completionHandler: { success, error in
+    if success {
+      let asset = getAssetBy(id: assetPlaceholder?.localIdentifier)
+      completion(asset, nil)
+    } else {
+      completion(nil, SaveAssetException(error))
+    }
+  }
+}
+
 func assetType(for localUri: URL) -> PHAssetMediaType {
   guard let type = UTType(filenameExtension: localUri.pathExtension) else {
     return assetTypeExtension(for: localUri.pathExtension)
@@ -360,6 +358,18 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
     }
   }
 
+  if !options.mediaSubtypes.isEmpty {
+    // include assets that match at least one of the requested subtypes
+    let mask = options.mediaSubtypes
+      .map { $0.toPHAssetMediaSubtype().rawValue }
+      .reduce(0, |)
+
+    let subtypesPredicate = NSPredicate(
+      format: "(mediaSubtypes & %d) != 0", mask
+    )
+    predicates.append(subtypesPredicate)
+  }
+
   if !options.sortBy.isEmpty {
     do {
       fetchOptions.sortDescriptors = try prepareSortDescriptors(sortBy: options.sortBy)
@@ -392,18 +402,14 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
   fetchOptions.includeAllBurstAssets = false
   fetchOptions.includeHiddenAssets = false
 
-  var fetchResult: PHFetchResult<PHAsset>
-  if let collection {
-    fetchResult = PHAsset.fetchAssets(in: collection, options: fetchOptions)
+  let fetchResult: PHFetchResult<PHAsset> = if let collection {
+    PHAsset.fetchAssets(in: collection, options: fetchOptions)
   } else {
-    fetchResult = PHAsset.fetchAssets(with: fetchOptions)
+    PHAsset.fetchAssets(with: fetchOptions)
   }
 
-  var cursorIndex: Int {
-    if let cursor {
-      return fetchResult.index(of: cursor)
-    }
-    return NSNotFound
+  let cursorIndex = if let cursor { fetchResult.index(of: cursor) } else {
+    NSNotFound
   }
 
   let resultingAssets = getAssets(
@@ -447,9 +453,8 @@ func getAssets(
 
     for i in stride(from: upperIndex, to: lowerIndex, by: -1) {
       let asset = fetchResult.object(at: i)
-      if let exportedAsset = exportAsset(asset: asset) {
-        assets.append(exportedAsset)
-      }
+      let exportedAsset = exportAsset(asset: asset)
+      assets.append(exportedAsset)
     }
 
     hasNextPage = lowerIndex >= 0
@@ -459,9 +464,8 @@ func getAssets(
 
     for index in startIndex..<endIndex {
       let asset = fetchResult.object(at: index)
-      if let exportedAsset = exportAsset(asset: asset) {
-        assets.append(exportedAsset)
-      }
+      let exportedAsset = exportAsset(asset: asset)
+      assets.append(exportedAsset)
     }
 
     hasNextPage = endIndex < totalCount

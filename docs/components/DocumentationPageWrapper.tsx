@@ -39,7 +39,9 @@ export function DocumentationPageWrapper(props: DocumentationElementsProps) {
               packageName={props.meta.packageName}
               iconUrl={props.meta.iconUrl}
               modificationDate={props.meta.modificationDate}
-              platforms={props.meta.platforms}>
+              platforms={props.meta.platforms}
+              searchRank={props.meta.searchRank}
+              searchPosition={props.meta.searchPosition}>
               {props.children}
             </DocumentationPage>
           </PageApiVersionProvider>

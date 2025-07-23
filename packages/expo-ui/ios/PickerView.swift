@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-class PickerProps: ExpoSwiftUI.ViewProps {
+final class PickerProps: ExpoSwiftUI.ViewProps {
   @Field var options: [String] = []
   @Field var selectedIndex: Int?
   @Field var variant: String?
@@ -13,9 +13,13 @@ class PickerProps: ExpoSwiftUI.ViewProps {
 }
 
 struct PickerView: ExpoSwiftUI.View {
-  @State var selection: Int?
+  @State var selection: Int = 0
   @State var prevSelectedIndex: Int?
-  @EnvironmentObject var props: PickerProps
+  @ObservedObject var props: PickerProps
+
+  init(props: PickerProps) {
+    self.props = props
+  }
 
   var body: some View {
     if #available(iOS 17.0, tvOS 17.0, *) {
@@ -25,18 +29,20 @@ struct PickerView: ExpoSwiftUI.View {
         }
       }
       .tint(props.color)
-      #if !os(tvOS)
+#if !os(tvOS)
       .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
-      #endif
+      .if(props.variant == "palette", { $0.pickerStyle(.palette) })
+#endif
       .if(props.variant == "segmented", { $0.pickerStyle(.segmented) })
+      .if(props.variant == "inline", { $0.pickerStyle(.inline) })
       .if(props.variant == "menu", { $0.pickerStyle(.menu) })
       .onChange(of: selection, perform: { newValue in
         if props.selectedIndex == newValue {
           return
         }
         let payload = [
-          "index": newValue ?? 0,
-          "label": props.options[newValue ?? 0]
+          "index": newValue,
+          "label": props.options[newValue]
         ]
         props.onOptionSelected(payload)
       })

@@ -4,6 +4,7 @@ import {
   VideoPlayerStatus,
   VideoSource,
   VideoTrack,
+  AudioTrack,
 } from './VideoPlayer.types';
 
 /**
@@ -61,6 +62,16 @@ export type VideoPlayerEvents = {
   subtitleTrackChange(payload: SubtitleTrackChangeEventPayload): void;
 
   /**
+   * Handler for an event emitted when the available audio tracks change.
+   */
+  availableAudioTracksChange(payload: AvailableAudioTracksChangeEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the current audio track changes.
+   */
+  audioTrackChange(payload: AudioTrackChangeEventPayload): void;
+
+  /**
    * Handler for an event emitted when the current video track changes.
    */
   videoTrackChange(payload: VideoTrackChangeEventPayload): void;
@@ -70,6 +81,13 @@ export type VideoPlayerEvents = {
    * This event is emitted when the player has finished metadata for a [`VideoSource`](#videosource), but it doesn't mean that there is enough data buffered to start the playback.
    */
   sourceLoad(payload: SourceLoadEventPayload): void;
+
+  /**
+   * Handler for an event emitted when the video player starts or stops sharing the video via AirPlay.
+   *
+   * @platform ios
+   */
+  isExternalPlaybackActiveChange(payload: IsExternalPlaybackActiveChangeEventPayload): void;
 };
 
 /**
@@ -248,7 +266,7 @@ export type AvailableSubtitleTracksChangeEventPayload = {
 /**
  * Data delivered with the [`sourceLoad`](#videoplayerevents) event, contains information about the video source that has finished loading.
  */
-type SourceLoadEventPayload = {
+export type SourceLoadEventPayload = {
   /**
    * The video source that has been loaded.
    */
@@ -261,6 +279,8 @@ type SourceLoadEventPayload = {
 
   /**
    * Video tracks available for the loaded video source.
+   *
+   * > On iOS, when using a HLS source, make sure that the uri contains `.m3u8` extension or that the [`contentType`](#contenttype) property of the [`VideoSource`](#videosource) has been set to `'hls'`. Otherwise, the video tracks will not be available.
    */
   availableVideoTracks: VideoTrack[];
 
@@ -268,4 +288,45 @@ type SourceLoadEventPayload = {
    * Subtitle tracks available for the loaded video source.
    */
   availableSubtitleTracks: SubtitleTrack[];
+
+  /**
+   * Audio tracks available for the loaded video source.
+   */
+  availableAudioTracks: AudioTrack[];
+};
+
+type AudioTrackChangeEventPayload = {
+  /**
+   * New audio track of the player.
+   */
+  audioTrack: AudioTrack | null;
+
+  /**
+   * Previous audio track of the player.
+   */
+  oldAudioTrack?: AudioTrack | null;
+};
+
+type AvailableAudioTracksChangeEventPayload = {
+  /**
+   * Array of available audio tracks.
+   */
+  availableAudioTracks: AudioTrack[];
+
+  /**
+   * Previous array of available audio tracks.
+   */
+  oldAvailableAudioTracks?: AudioTrack[];
+};
+
+export type IsExternalPlaybackActiveChangeEventPayload = {
+  /**
+   * The current external playback status.
+   */
+  isExternalPlaybackActive: boolean;
+
+  /**
+   * The previous external playback status.
+   */
+  oldIsExternalPlaybackActive?: boolean;
 };

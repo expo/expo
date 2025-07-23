@@ -157,6 +157,33 @@ describe(withBuildProperties, () => {
     }).rejects.toThrow();
   });
 
+  it('should not overwrite existing properties by undefined properties', async () => {
+    // Run withPodfileProperties twice
+    // The first run to pass `ccacheEnabled: true`, and the second run to pass empty props.
+    // Ultimately, ccacheEnabled should be true
+    const { modResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { ccacheEnabled: true } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: {},
+        mod: withPodfileProperties,
+        modResults,
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'apple.ccacheEnabled': 'true',
+    });
+  });
+
   it('generates the apple.ccacheEnabled property', async () => {
     const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
       {},
@@ -184,6 +211,69 @@ describe(withBuildProperties, () => {
     );
     expect(iosModResultsEnabled).toMatchObject({
       'apple.privacyManifestAggregationEnabled': 'true',
+    });
+  });
+
+  it('generates the ios.buildFromSource property', async () => {
+    const { modResults: iosModResultsEnabled } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { ios: { buildFromSource: true } },
+        mod: withPodfileProperties,
+        modResults: {},
+      }
+    );
+    expect(iosModResultsEnabled).toMatchObject({
+      'ios.buildFromSource': 'true',
+    });
+  });
+
+  it('generates the android.buildArchs property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { buildArchs: ['armeabi-v7a', 'arm64-v8a'] },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'reactNativeArchitectures',
+      value: 'armeabi-v7a,arm64-v8a',
+    });
+  });
+
+  it('generates the android.exclusiveMavenMirror property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { exclusiveMavenMirror: 'https://my.internal.proxy.net/' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'exclusiveEnterpriseRepository',
+      value: 'https://my.internal.proxy.net/',
     });
   });
 });

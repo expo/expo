@@ -1,7 +1,7 @@
 package com.facebook.react.devsupport
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.PackagerConnectionSettings
@@ -33,24 +33,24 @@ class DevLauncherDevServerHelper(
       .build()
   }
 
-  override fun getDevServerBundleURL(jsModulePath: String?): String {
+  override fun getDevServerBundleURL(jsModulePath: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getDevServerBundleURL(jsModulePath)
   }
 
-  override fun getDevServerSplitBundleURL(jsModulePath: String?): String {
+  override fun getDevServerSplitBundleURL(jsModulePath: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getDevServerSplitBundleURL(jsModulePath)
   }
 
-  override fun getSourceUrl(mainModuleName: String?): String {
+  override fun getSourceUrl(mainModuleName: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getSourceUrl(mainModuleName)
   }
 
-  override fun getSourceMapUrl(mainModuleName: String?): String {
+  override fun getSourceMapUrl(mainModuleName: String): String {
     val defaultValue = super.getSourceMapUrl(mainModuleName)
     val bundleURL = controller?.manifest?.getBundleURL()
       ?: return defaultValue
 
-    val parsedURL = Uri.parse(bundleURL)
+    val parsedURL = bundleURL.toUri()
     val customOptions = parsedURL.queryParameterNames.mapNotNull { key ->
       if (key.startsWith("transform")) {
         key to requireNotNull(parsedURL.getQueryParameter(key))
@@ -73,7 +73,7 @@ class DevLauncherDevServerHelper(
    */
   override fun isPackagerRunning(callback: PackagerStatusCallback) {
     val bundleURL = controller?.manifest?.getBundleURL() ?: return super.isPackagerRunning(callback)
-    val bundleUri = Uri.parse(bundleURL)
+    val bundleUri = bundleURL.toUri()
     val statusUrl = bundleUri.buildUpon()
       .path(PACKAGER_STATUS_ENDPOINT)
       .clearQuery()

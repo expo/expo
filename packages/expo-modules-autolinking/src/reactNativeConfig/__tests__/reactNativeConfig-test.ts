@@ -1,7 +1,12 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
+import { resolveGradlePropertyAsync } from '../../platforms/android';
+import {
+  findGradleAndManifestAsync,
+  parsePackageNameAsync,
+  resolveDependencyConfigImplAndroidAsync,
+} from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 import {
@@ -9,6 +14,7 @@ import {
   findDependencyRootsAsync,
   resolveAppProjectConfigAsync,
   resolveDependencyConfigAsync,
+  resolveEdgeToEdgeDependencyRoot,
 } from '../reactNativeConfig';
 import type {
   RNConfigReactNativeLibraryConfig,
@@ -17,6 +23,7 @@ import type {
 
 jest.mock('fs/promises');
 jest.mock('resolve-from');
+jest.mock('../../platforms/android');
 jest.mock('../androidResolver');
 jest.mock('../iosResolver');
 jest.mock('../config');
@@ -66,6 +73,7 @@ describe(createReactNativeConfigAsync, () => {
       platform: 'ios',
       projectRoot: '/app',
       searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: [],
     });
     expect(result).toMatchInlineSnapshot(`
       {
@@ -134,6 +142,7 @@ describe(createReactNativeConfigAsync, () => {
       platform: 'ios',
       projectRoot: '/app',
       searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: [],
     });
     expect(result.dependencies['react-native-test']).toBeDefined();
     expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
@@ -161,8 +170,143 @@ describe(createReactNativeConfigAsync, () => {
       platform: 'ios',
       projectRoot: '/app',
       searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: [],
     });
     expect(result).toBeDefined();
+  });
+});
+
+describe('createReactNativeConfigAsync with react-native-edge-to-edge', () => {
+  const mockPlatformResolverAndroid =
+    resolveDependencyConfigImplAndroidAsync as jest.MockedFunction<
+      typeof resolveDependencyConfigImplAndroidAsync
+    >;
+  const mockPlatformResolverIos = resolveDependencyConfigImplIosAsync as jest.MockedFunction<
+    typeof resolveDependencyConfigImplIosAsync
+  >;
+
+  const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
+    typeof findGradleAndManifestAsync
+  >;
+  mockFindGradleAndManifestAsync.mockResolvedValue({
+    gradle: 'app/build.gradle',
+    manifest: 'src/main/AndroidManifest.xml',
+  });
+  const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
+    typeof parsePackageNameAsync
+  >;
+  mockParsePackageNameAsync.mockResolvedValue('com.test');
+
+  const mockResolveGradlePropertyAsync = resolveGradlePropertyAsync as jest.MockedFunction<
+    typeof resolveGradlePropertyAsync
+  >;
+
+  afterEach(() => {
+    vol.reset();
+    mockPlatformResolverAndroid.mockReset();
+    mockPlatformResolverIos.mockReset();
+  });
+
+  it('should resolve react-native-edge-to-edge when gradle property `expo.edgeToEdgeEnabled` is true', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        expo: '*',
+      },
+    };
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native-edge-to-edge/package.json': '',
+    });
+    mockResolveGradlePropertyAsync.mockImplementationOnce(async (_, propertyKey) => {
+      if (propertyKey === 'expo.edgeToEdgeEnabled') {
+        return 'true';
+      }
+      return null;
+    });
+    await createReactNativeConfigAsync({
+      platform: 'android',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: [],
+    });
+    expect(mockPlatformResolverAndroid).toHaveBeenCalledWith(
+      '/app/node_modules/react-native-edge-to-edge',
+      undefined
+    );
+  });
+
+  it('should resolve react-native-edge-to-edge when transitiveLinkingDependencies includes react-native-edge-to-edge', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        expo: '*',
+      },
+    };
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native-edge-to-edge/package.json': '',
+    });
+    await createReactNativeConfigAsync({
+      platform: 'android',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: ['react-native-edge-to-edge'],
+    });
+    expect(mockPlatformResolverAndroid).toHaveBeenCalledWith(
+      '/app/node_modules/react-native-edge-to-edge',
+      undefined
+    );
+  });
+
+  it('should not resolve react-native-edge-to-edge when gradle property `expo.edgeToEdgeEnabled` is not true', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        expo: '*',
+      },
+    };
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native-edge-to-edge/package.json': '',
+    });
+    await createReactNativeConfigAsync({
+      platform: 'android',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: [],
+    });
+    expect(mockPlatformResolverAndroid).not.toHaveBeenCalled();
+  });
+
+  it('should not resolve react-native-edge-to-edge when platform is ios', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        expo: '*',
+      },
+    };
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native-edge-to-edge/package.json': '',
+    });
+    mockResolveGradlePropertyAsync.mockImplementationOnce(async (_, propertyKey) => {
+      if (propertyKey === 'expo.edgeToEdgeEnabled') {
+        return 'true';
+      }
+      return null;
+    });
+    await createReactNativeConfigAsync({
+      platform: 'ios',
+      projectRoot: '/app',
+      searchPaths: ['/app/node_modules'],
+      transitiveLinkingDependencies: [],
+    });
+    expect(mockPlatformResolverIos).not.toHaveBeenCalled();
   });
 });
 
@@ -233,6 +377,68 @@ describe(findDependencyRootsAsync, () => {
   });
 });
 
+describe(resolveEdgeToEdgeDependencyRoot, () => {
+  beforeEach(() => {
+    vol.reset();
+  });
+  it('should find edge-to-edge from expo package root', async () => {
+    const packageJson = {
+      dependencies: {
+        expo: '53.0.0',
+        'react-native-edge-to-edge': '^1.0.0',
+      },
+    };
+
+    const expoPackageJson = {
+      name: 'expo',
+      version: '53.0.0',
+    };
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/expo/package.json': JSON.stringify(expoPackageJson),
+      '/app/node_modules/react-native-edge-to-edge/package.json': '', // Added just to make sure it doesn't resolve from this location
+      '/app/node_modules/expo/node_modules/react-native-edge-to-edge/package.json': '{}',
+    });
+
+    const results = await resolveEdgeToEdgeDependencyRoot('/app');
+    expect(results).toMatch('/app/node_modules/expo/node_modules/react-native-edge-to-edge');
+  });
+
+  it('should find edge-to-edge from project root if expo package not found', async () => {
+    const packageJson = {
+      dependencies: {
+        expo: '53.0.0',
+        'react-native-edge-to-edge': '^1.0.0',
+      },
+    };
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native-edge-to-edge/package.json': '',
+    });
+
+    const results = await resolveEdgeToEdgeDependencyRoot('/app');
+    expect(results).toMatch('/app/node_modules/react-native-edge-to-edge');
+  });
+
+  it('should return an empty object if failed to resolve', async () => {
+    const packageJson = {
+      dependencies: {
+        expo: '53.0.0',
+        'react-native-edge-to-edge': '^1.0.0',
+      },
+    };
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+    });
+
+    const results = await resolveEdgeToEdgeDependencyRoot('/app');
+    expect(results).toBe(null);
+  });
+});
+
 describe(resolveAppProjectConfigAsync, () => {
   it('should return app project config for android', async () => {
     const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
@@ -279,6 +485,38 @@ describe(resolveAppProjectConfigAsync, () => {
       {
         "ios": {
           "sourceDir": "/app/ios",
+        },
+      }
+    `);
+  });
+
+  it('should return app project config with custom sourceDir', async () => {
+    const mockFindGradleAndManifestAsync = findGradleAndManifestAsync as jest.MockedFunction<
+      typeof findGradleAndManifestAsync
+    >;
+    mockFindGradleAndManifestAsync.mockResolvedValueOnce({
+      gradle: 'app/build.gradle',
+      manifest: 'src/main/AndroidManifest.xml',
+    });
+    const mockParsePackageNameAsync = parsePackageNameAsync as jest.MockedFunction<
+      typeof parsePackageNameAsync
+    >;
+    mockParsePackageNameAsync.mockResolvedValueOnce('com.test');
+    const configAndroid = await resolveAppProjectConfigAsync('/app', 'android', '/customNative');
+    expect(configAndroid).toMatchInlineSnapshot(`
+      {
+        "android": {
+          "packageName": "com.test",
+          "sourceDir": "/customNative",
+        },
+      }
+    `);
+
+    const configIOS = await resolveAppProjectConfigAsync('/app', 'ios', '/customNative');
+    expect(configIOS).toMatchInlineSnapshot(`
+      {
+        "ios": {
+          "sourceDir": "/customNative",
         },
       }
     `);

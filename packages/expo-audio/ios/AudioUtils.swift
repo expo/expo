@@ -74,7 +74,9 @@ struct AudioUtils {
     if let directory {
       let fileUrl = createRecordingUrl(from: directory, with: options)
       do {
-        return try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+        let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+        recorder.isMeteringEnabled = options.isMeteringEnabled
+        return recorder
       } catch {
         return AVAudioRecorder()
       }
@@ -85,7 +87,18 @@ struct AudioUtils {
 
   static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
     if let source, let url = source.uri {
-      let asset = AVURLAsset(url: url, options: source.headers)
+      let finalUrl = if url.isBase64Audio {
+        handleBase64Asset(base64String: url.absoluteString) ?? url
+      } else {
+        url
+      }
+
+      var options: [String: Any]?
+      if let headers = source.headers {
+        options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+      }
+
+      let asset = AVURLAsset(url: finalUrl, options: options)
       let item = AVPlayerItem(asset: asset)
       return AVPlayer(playerItem: item)
     }
@@ -96,7 +109,18 @@ struct AudioUtils {
     guard let source, let url = source.uri else {
       return nil
     }
-    let asset = AVURLAsset(url: url, options: source.headers)
+    let finalUrl = if url.isBase64Audio {
+      handleBase64Asset(base64String: url.absoluteString) ?? url
+    } else {
+      url
+    }
+
+    var options: [String: Any]?
+    if let headers = source.headers {
+      options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+    }
+
+    let asset = AVURLAsset(url: finalUrl, options: options)
     return AVPlayerItem(asset: asset)
   }
 
@@ -133,6 +157,38 @@ struct AudioUtils {
     return settings
   }
 
+  private static func handleBase64Asset(base64String: String) -> URL? {
+    let components = base64String.components(separatedBy: ",")
+    guard components.count == 2 else {
+      return nil
+    }
+    let mimeType = components[0].components(separatedBy: ";")[0].components(separatedBy: ":")[1]
+    let base64Data = components[1]
+
+    guard let data = Data(base64Encoded: base64Data, options: .ignoreUnknownCharacters) else {
+      return nil
+    }
+
+    let fileExtension = getFileExtension(for: mimeType)
+    let tempDirectory = FileManager.default.temporaryDirectory
+    let fileName = UUID().uuidString + "." + fileExtension
+    let fileURL = tempDirectory.appendingPathComponent(fileName)
+
+    do {
+      try data.write(to: fileURL)
+      return fileURL
+    } catch {
+      return nil
+    }
+  }
+
+  static func getFileExtension(for mimeType: String) -> String {
+    if let utType = UTType(mimeType: mimeType) {
+      return utType.preferredFilenameExtension ?? "dat"
+    }
+    return "dat"
+  }
+
   private static func createRecordingUrl(from dir: URL, with options: RecordingOptions) -> URL {
     let directoryPath = dir.appendingPathComponent("ExpoAudio")
     FileSystemUtilities.ensureDirExists(at: directoryPath)
@@ -158,5 +214,11 @@ struct AudioUtils {
     if !mode.playsInSilentMode && mode.shouldPlayInBackground {
       throw InvalidAudioModeException("playsInSilentMode == false and staysActiveInBackground == true cannot be set on iOS.")
     }
+  }
+}
+
+private extension URL {
+  var isBase64Audio: Bool {
+    return absoluteString.hasPrefix("data:audio/")
   }
 }

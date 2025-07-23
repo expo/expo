@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { XMLToStringOptions } from 'xmlbuilder';
 import { build } from './build';
 import { parse } from './parse';

@@ -45,7 +45,7 @@ RCT_EXPORT_METHOD(releaseCapture:(nonnull NSString *)uri)
   }
 }
 
-RCT_EXPORT_METHOD(captureRef:(NSNumber *)target
+RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
                   withOptions:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)

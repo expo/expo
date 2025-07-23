@@ -5,7 +5,7 @@ description: Learn how to define shared routes or use arrays to use the same rou
 
 import { FileTree } from '~/ui/components/FileTree';
 
-To match the same URL with different layouts, use [**groups**](/router/layouts#groups) with overlapping child routes. This pattern is very common in native apps. For example, in the X app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
+To match the same URL with different layouts, use [**groups**](/router/basics/notation/#parentheses) with overlapping child routes. This pattern is very common in native apps. For example, in the X app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
 
 In the example below, **app/\_layout.tsx** is the tab bar and each route has its own header. The **app/(profile)/[user].tsx** route is shared between each tab.
 

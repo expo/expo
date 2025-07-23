@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.get = exports.pathToSegments = exports.fieldPathToSchema = exports.schemaPointerToFieldPath = exports.fieldPathToSchemaPath = void 0;
+exports.fieldPathToSchema = exports.schemaPointerToFieldPath = exports.fieldPathToSchemaPath = void 0;
+exports.pathToSegments = pathToSegments;
+exports.get = get;
 const fieldPathToSchemaPath = (fieldPath) => {
     return pathToSegments(fieldPath)
         .map((segment) => `properties.${segment}`)
@@ -23,7 +25,6 @@ exports.fieldPathToSchema = fieldPathToSchema;
 function pathToSegments(path) {
     return Array.isArray(path) ? path : path.split('.');
 }
-exports.pathToSegments = pathToSegments;
 function get(object, path) {
     const segments = pathToSegments(path);
     const length = segments.length;
@@ -33,5 +34,4 @@ function get(object, path) {
     }
     return index && index === length ? object : undefined;
 }
-exports.get = get;
 //# sourceMappingURL=Util.js.map

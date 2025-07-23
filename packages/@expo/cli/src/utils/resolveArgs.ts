@@ -177,3 +177,9 @@ export function assertDuplicateArgs(args: string[], argNameAliasTuple: [string, 
     }
   }
 }
+
+export function assertNonBooleanArg(argName: string, arg: any): asserts arg is string | string[] {
+  if (arg == null || typeof arg === 'boolean') {
+    throw new CommandError('BAD_ARGS', `Expected input for arg ${argName}`);
+  }
+}

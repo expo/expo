@@ -6,9 +6,47 @@
 
 ### 🎉 New features
 
+- Add `supportedLocales` option to set app language from settings ([#37232](https://github.com/expo/expo/pull/37232) by [@alextoudic](https://github.com/alextoudic))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.1.6 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.5 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.4 — 2025-04-30
+
+### 🐛 Bug fixes
+
+- [iOS] Fix issue where `useLocales` and `useCalendars` hooks would not re-render when the timezone changed. ([#36382](https://github.com/expo/expo/pull/36382) by [@ouwargui](https://github.com/ouwargui))
+
+## 16.1.3 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.2 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 — 2025-04-04
+
+### 🎉 New features
+
 - Add languageScriptCode ([#34984](https://github.com/expo/expo/pull/34984) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
+
+- Fix expo-localization typo ([#35543](https://github.com/expo/expo/pull/35543) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

@@ -55,7 +55,7 @@ const withJsEngineGradleProps = exports.withJsEngineGradleProps = createBuildGra
  */
 const withNewArchEnabledGradleProps = exports.withNewArchEnabledGradleProps = createBuildGradlePropsConfigPlugin([{
   propName: 'newArchEnabled',
-  propValueGetter: config => (config.android?.newArchEnabled ?? config.newArchEnabled ?? false).toString()
+  propValueGetter: config => (config.android?.newArchEnabled ?? config.newArchEnabled)?.toString()
 }], 'withNewArchEnabledGradleProps');
 function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {

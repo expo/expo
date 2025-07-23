@@ -7,11 +7,11 @@
 #import <React_RCTAppDelegate/RCTReactNativeFactory.h>
 #endif
 
-
-@interface RCTReactNativeFactory (GetModuleClass)
-
-- (Class)getModuleClassFromName:(const char *)name;
-
+@interface RCTReactNativeFactory () <
+    RCTComponentViewFactoryComponentProvider,
+    RCTHostDelegate,
+    RCTJSRuntimeConfiguratorProtocol,
+    RCTTurboModuleManagerDelegate>
 @end
 
 @interface EXDevLauncherReactNativeFactory : RCTReactNativeFactory

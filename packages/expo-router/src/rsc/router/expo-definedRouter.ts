@@ -1,6 +1,6 @@
 import { ctx } from 'expo-router/_ctx';
 
-import { createPages } from './create-pages';
+import { createExpoPages } from './create-expo-pages';
 import type { RouteNode } from '../../Route';
 import { getRoutes } from '../../getRoutesSSR';
 import { evalStaticParamsAsync } from '../../loadStaticParamsAsync';
@@ -17,8 +17,9 @@ const UNIMPLEMENTED_PARAMS = new Proxy(
   }
 );
 
-export default createPages(async ({ createPage, createLayout, unstable_setBuildData }) => {
+export default createExpoPages(async ({ createPage, createLayout }, { getRouteOptions }) => {
   const routes = getRoutes(ctx, {
+    ...getRouteOptions,
     platform: process.env.EXPO_OS,
     skipGenerated: true,
     importMode: 'lazy',

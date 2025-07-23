@@ -135,11 +135,11 @@ export class CocoaPodsPackageManager {
         !silent &&
           console.warn(
             chalk.yellow(
-              `\u203A Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`
+              `\u203A Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`
             )
           );
         throw new CocoaPodsError(
-          `Failed to install CocoaPods with Homebrew. Please install CocoaPods CLI manually and try again.`,
+          `Failed to install CocoaPods with Homebrew. Install CocoaPods CLI and try again: https://cocoapods.org/`,
           'NO_CLI',
           error
         );

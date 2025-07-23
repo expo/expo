@@ -43,7 +43,7 @@ async function checkNpmVersionAsync(): Promise<string | null> {
 }
 
 export class PackageManagerVersionCheck implements DoctorCheck {
-  description = 'Check npm/ yarn versions';
+  description = 'Check npm/yarn versions';
 
   sdkVersionRange = '*';
 
@@ -61,7 +61,7 @@ export class PackageManagerVersionCheck implements DoctorCheck {
     return {
       isSuccessful: issues.length === 0,
       issues,
-      // advice currently tightly coupled with issues in code copied from doctor
+      advice: issues.length ? [`Update your package manager to a supported version.`] : [],
     };
   }
 }

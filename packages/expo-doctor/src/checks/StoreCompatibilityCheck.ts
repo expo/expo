@@ -65,10 +65,12 @@ export class StoreCompatibilityCheck implements DoctorCheck {
       isSuccessful: !issue,
       issues: issue ? [issue] : [],
       advice: issue
-        ? `Upgrade to Expo SDK ${PLAY_STORE_MINIMUM_REQS.ExpoSdkVersion} or later, which by default supports Android API level ${PLAY_STORE_MINIMUM_REQS.AndroidSdkVersion} ${learnMore(
-            'https://support.google.com/googleplay/android-developer/answer/11926878?hl=en'
-          )}`
-        : undefined,
+        ? [
+            `Upgrade to Expo SDK ${PLAY_STORE_MINIMUM_REQS.ExpoSdkVersion} or later, which by default supports Android API level ${PLAY_STORE_MINIMUM_REQS.AndroidSdkVersion} ${learnMore(
+              'https://support.google.com/googleplay/android-developer/answer/11926878?hl=en'
+            )}`,
+          ]
+        : [],
     };
   }
 }

@@ -9,7 +9,8 @@
  * https://github.com/dai-shi/waku/blob/f9111ed7d96c95d7e128b37e8f7ae2d80122218e/packages/waku/src/lib/middleware/rsc.ts#L1
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRscMiddleware = exports.decodeInput = void 0;
+exports.decodeInput = void 0;
+exports.getRscMiddleware = getRscMiddleware;
 const decodeInput = (encodedInput) => {
     if (encodedInput === 'index.txt') {
         return '';
@@ -113,7 +114,6 @@ function getRscMiddleware(options) {
         POST: getOrPostAsync,
     };
 }
-exports.getRscMiddleware = getRscMiddleware;
 function headersToRecord(headers) {
     const record = {};
     for (const [key, value] of headers.entries()) {

@@ -1,5 +1,5 @@
 // Prevent pulling in all of expo-modules-core on web
-import { LegacyEventEmitter } from 'expo-modules-core/src/LegacyEventEmitter';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
@@ -14,7 +14,7 @@ export default function DevLoadingView() {
   const emitter = useMemo<LegacyEventEmitter>(() => {
     try {
       return new LegacyEventEmitter(DevLoadingViewNativeModule);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
           error.message

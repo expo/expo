@@ -1,18 +1,10 @@
 import { codeFrameColumns } from '@babel/code-frame';
 import JSON5 from 'json5';
-import type { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import path from 'node:path';
-import { promisify } from 'node:util';
-import writeFileAtomic from 'write-file-atomic';
 
 import JsonFileError, { EmptyJsonFileError } from './JsonFileError';
-
-const writeFileAtomicAsync: (
-  filename: string,
-  data: string | Buffer,
-  options: writeFileAtomic.Options
-) => void = promisify(writeFileAtomic);
+import { writeFileAtomicSync, writeFileAtomic } from './writeAtomic';
 
 export type JSONValue = boolean | number | string | null | JSONArray | JSONObject;
 export interface JSONArray extends Array<JSONValue> {}
@@ -288,7 +280,7 @@ function write<TJSONObject extends JSONObject>(
     throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
   }
   const data = addNewLineAtEOF ? `${json}\n` : json;
-  writeFileAtomic.sync(file, data, {});
+  writeFileAtomicSync(file, data);
   return object;
 }
 
@@ -314,7 +306,7 @@ async function writeAsync<TJSONObject extends JSONObject>(
     throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
   }
   const data = addNewLineAtEOF ? `${json}\n` : json;
-  await writeFileAtomicAsync(file, data, {});
+  await writeFileAtomic(file, data);
   return object;
 }
 

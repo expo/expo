@@ -43,5 +43,5 @@ class ExpoNetworkModule extends NativeModule {
         }
     }
 }
-export default registerWebModule(ExpoNetworkModule);
+export default registerWebModule(ExpoNetworkModule, 'ExpoNetwork');
 //# sourceMappingURL=ExpoNetwork.web.js.map

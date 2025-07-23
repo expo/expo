@@ -86,7 +86,7 @@ const renderInterfaceComment = (
 const renderInterfacePropertyRow = (
   { name, flags, type, comment, signatures, defaultValue }: PropData,
   sdkVersion: string
-): JSX.Element => {
+) => {
   const defaultTag = getTagData('default', comment);
   const initValue = parseCommentContent(
     defaultValue ?? (defaultTag ? getCommentContent(defaultTag.content) : '')
@@ -98,7 +98,11 @@ const renderInterfacePropertyRow = (
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        {type ? (
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        ) : (
+          <CODE>undefined</CODE>
+        )}
       </Cell>
       <Cell>{renderInterfaceComment(sdkVersion, comment, signatures, initValue)}</Cell>
     </Row>
@@ -108,10 +112,10 @@ const renderInterfacePropertyRow = (
 const renderInterface = (
   { name, children, comment, extendedTypes }: InterfaceDefinitionData,
   sdkVersion: string
-): JSX.Element | null => {
+) => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
-  if (!interfaceChildren.length) {
+  if (interfaceChildren.length === 0) {
     return null;
   }
 

@@ -32,6 +32,25 @@ export function addObjcImports(source: string, imports: string[]): string {
 }
 
 /**
+ * Add Swift import
+ * @param source source contents
+ * @param imports array of imports, e.g. ['Expo']
+ * @returns updated contents
+ */
+export function addSwiftImports(source: string, imports: string[]): string {
+  const lines = source.split('\n');
+  // Try to insert statements after first import where would probably not in #if block
+  const lineIndexWithFirstImport = lines.findIndex((line) => line.match(/^import .*$/));
+  for (const importElement of imports) {
+    if (!source.includes(importElement)) {
+      const importStatement = `import ${importElement}`;
+      lines.splice(lineIndexWithFirstImport + 1, 0, importStatement);
+    }
+  }
+  return lines.join('\n');
+}
+
+/**
  * Find code block of Objective-C interface or implementation
  *
  * @param contents source contents

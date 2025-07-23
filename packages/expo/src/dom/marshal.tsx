@@ -110,8 +110,7 @@ export function getActionsObject(): Record<string, (...args: any[]) => void | Pr
 function errorFromJson(errorJson: any) {
   const error = new Error(errorJson.message);
   for (const key of Object.keys(errorJson)) {
-    error[key] = errorJson[key];
+    (error as any)[key] = errorJson[key];
   }
-
   return error;
 }

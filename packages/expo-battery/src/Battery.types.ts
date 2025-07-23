@@ -62,7 +62,7 @@ export type PowerModeEvent = {
  * @hidden
  */
 export type BatteryEvents = {
-  'Expo.batteryLevelDidChange'(event: BatteryLevelEvent);
-  'Expo.batteryStateDidChange'(event: BatteryStateEvent);
-  'Expo.powerModeDidChange'(event: PowerModeEvent);
+  'Expo.batteryLevelDidChange'(event: BatteryLevelEvent): void;
+  'Expo.batteryStateDidChange'(event: BatteryStateEvent): void;
+  'Expo.powerModeDidChange'(event: PowerModeEvent): void;
 };

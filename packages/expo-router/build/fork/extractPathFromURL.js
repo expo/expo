@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.extractExpoPathFromURL = exports.parsePathFromExpoGoLink = exports.parsePathAndParamsFromExpoGoLink = void 0;
+exports.parsePathAndParamsFromExpoGoLink = parsePathAndParamsFromExpoGoLink;
+exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
+exports.extractExpoPathFromURL = extractExpoPathFromURL;
 function parsePathAndParamsFromExpoGoLink(url) {
     // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
     // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
@@ -11,13 +13,11 @@ function parsePathAndParamsFromExpoGoLink(url) {
         queryString: results?.[2] ?? '',
     };
 }
-exports.parsePathAndParamsFromExpoGoLink = parsePathAndParamsFromExpoGoLink;
 function parsePathFromExpoGoLink(url) {
     // If the URL is defined (default in Expo Go dev apps) and the URL has no path:
     // `exp://192.168.87.39:19000/` then use the default `exp://192.168.87.39:19000/--/`
     return url.match(/exps?:\/\/.*?\/--\/(.*)/)?.[1] ?? '';
 }
-exports.parsePathFromExpoGoLink = parsePathFromExpoGoLink;
 // This is only run on native.
 function extractExactPathFromURL(url) {
     if (
@@ -103,5 +103,4 @@ function extractExpoPathFromURL(_prefixes, url = '') {
         // TODO: We should get rid of this, dropping specificities is not good
         .replace(/^\//, ''));
 }
-exports.extractExpoPathFromURL = extractExpoPathFromURL;
 //# sourceMappingURL=extractPathFromURL.js.map

@@ -37,19 +37,16 @@ describe('loadSingleFontAsync', () => {
 
 describe('getAssetForSource', () => {
   beforeAll(() => {
-    type AssetRegistryEntry = {
-      name: string;
-      httpServerLocation: string;
-      hash: string;
-      type: string;
-      scales: number[];
-    };
-    const entry: AssetRegistryEntry = {
+    const entry = {
+      __packager_asset: true,
       name: 'comic',
+      fileSystemLocation: '<mockpath>',
       httpServerLocation: '/assets/?unstable_path=.%2F..%2Ftest-suite%2Fassets',
       hash: '69d77ab',
       type: 'ttf',
       scales: [1],
+      width: undefined,
+      height: undefined,
     };
     jest.spyOn(AssetRegistry, 'getAssetByID').mockImplementation(() => entry);
   });

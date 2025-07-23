@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { getIsolatedModulesPath } from '../autolinking/utils';
 import { fileExistsAsync } from '../fileUtils';
@@ -19,6 +20,9 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
+import { resolveGradlePropertyAsync } from '../platforms/android';
+
+const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
 
 /**
  * Create config for react-native core autolinking.
@@ -27,12 +31,32 @@ export async function createReactNativeConfigAsync({
   platform,
   projectRoot,
   searchPaths,
+  transitiveLinkingDependencies,
+  sourceDir,
 }: RNConfigCommandOptions): Promise<RNConfigResult> {
   const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
   const dependencyRoots = {
     ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
     ...findProjectLocalDependencyRoots(projectConfig),
   };
+
+  // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
+  // has also included it as a project dependency, we have to autolink it manually (transitive non-expo module dependencies are not autolinked).
+  // There are two reasons why we don't want to autolink `edge-to-edge` when `edgeToEdge` property is set to `false`:
+  // 1. `react-native-is-edge-to-edge` tries to check if the `edge-to-edge` turbomodule is present to determine whether edge-to-edge is enabled.
+  // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
+  const shouldAutolinkEdgeToEdge =
+    platform === 'android' &&
+    !('react-native-edge-to-edge' in dependencyRoots) &&
+    ((await resolveGradleEdgeToEdgeEnabled(projectRoot)) ||
+      transitiveLinkingDependencies.includes('react-native-edge-to-edge'));
+
+  if (shouldAutolinkEdgeToEdge) {
+    const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
+    if (edgeToEdgeRoot) {
+      dependencyRoots['react-native-edge-to-edge'] = edgeToEdgeRoot;
+    }
+  }
 
   // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
   // the Cocoapods resolution will detect path mismatches and generate nonsensical
@@ -55,7 +79,7 @@ export async function createReactNativeConfigAsync({
       [string, RNConfigDependency]
     >
   );
-  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform);
+  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform, sourceDir);
   return {
     root: projectRoot,
     reactNativePath,
@@ -166,9 +190,22 @@ export async function resolveDependencyConfigAsync(
   };
 }
 
+export function resolveEdgeToEdgeDependencyRoot(projectRoot: string): string | null {
+  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
+  const edgeToEdgePath = resolveFrom.silent(
+    expoPackageRoot ?? projectRoot,
+    'react-native-edge-to-edge/package.json'
+  );
+  if (edgeToEdgePath) {
+    return path.dirname(edgeToEdgePath);
+  }
+  return null;
+}
+
 export async function resolveAppProjectConfigAsync(
   projectRoot: string,
-  platform: SupportedPlatform
+  platform: SupportedPlatform,
+  sourceDir?: string
 ): Promise<RNConfigReactNativeAppProjectConfig> {
   if (platform === 'android') {
     const androidDir = path.join(projectRoot, 'android');
@@ -181,7 +218,7 @@ export async function resolveAppProjectConfigAsync(
     return {
       android: {
         packageName: packageName ?? '',
-        sourceDir: path.join(projectRoot, 'android'),
+        sourceDir: sourceDir ?? path.join(projectRoot, 'android'),
       },
     };
   }
@@ -189,10 +226,22 @@ export async function resolveAppProjectConfigAsync(
   if (platform === 'ios') {
     return {
       ios: {
-        sourceDir: path.join(projectRoot, 'ios'),
+        sourceDir: sourceDir ?? path.join(projectRoot, 'ios'),
       },
     };
   }
 
   return {};
+}
+
+/**
+ * Resolve the `expo.edgeToEdgeEnabled` property from the `gradle.properties` file.
+ */
+async function resolveGradleEdgeToEdgeEnabled(projectRoot: string): Promise<boolean> {
+  return (
+    (await resolveGradlePropertyAsync(
+      path.join(projectRoot, 'android'),
+      EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY
+    )) === 'true'
+  );
 }

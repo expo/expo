@@ -58,7 +58,12 @@ You can configure `DeviceMotion` from `expo-sensor` using its built-in [config p
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-sensors` repository](https://github.com/expo/expo/tree/main/packages/expo-sensors#installation-in-bare-react-native-projects).
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **ios** project manually, then you need to configure `NSMotionUsageDescription` key in your native project to access `DeviceMotion` stats:
+
+```xml ios/[app]/Info.plist
+<key>NSMotionUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your device motion</string>
+```
 
 </ConfigReactNative>
 

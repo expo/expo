@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { findNodeHandle, Image, NativeMethods, StyleSheet, View } from 'react-native';
+import { findNodeHandle, Image, NativeMethods, StyleSheet, View, Platform } from 'react-native';
 
 import {
   assertStatusValuesInBounds,
@@ -103,8 +103,18 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
       throw new Error(`Cannot complete operation because the Video component has not yet loaded`);
     }
 
-    const handle = findNodeHandle(this._nativeRef.current)!;
-    const status: AVPlaybackStatus = await operation(handle);
+    let handle = null;
+    if (Platform.OS === 'web' && 'getVideoElement' in this._nativeRef.current!) {
+      handle = (this._nativeRef.current as any).getVideoElement() as HTMLMediaElement;
+    }
+    if (Platform.OS !== 'web') {
+      handle = findNodeHandle(this._nativeRef.current)!;
+    }
+    if (!handle) {
+      throw new Error('failed to find node handle');
+    }
+
+    const status: AVPlaybackStatus = await operation(handle! as number);
     this._handleNewStatus(status);
     return status;
   };
@@ -322,18 +332,20 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
 
     // Set status via individual props
     const status: AVPlaybackStatusToSet = { ...this.props.status };
-    [
-      'progressUpdateIntervalMillis',
-      'positionMillis',
-      'shouldPlay',
-      'rate',
-      'shouldCorrectPitch',
-      'volume',
-      'isMuted',
-      'isLooping',
-    ].forEach((prop) => {
+    (
+      [
+        'progressUpdateIntervalMillis',
+        'positionMillis',
+        'shouldPlay',
+        'rate',
+        'shouldCorrectPitch',
+        'volume',
+        'isMuted',
+        'isLooping',
+      ] as const
+    ).forEach((prop) => {
       if (prop in this.props) {
-        status[prop] = this.props[prop];
+        status[prop] = this.props[prop] as any;
       }
     });
 

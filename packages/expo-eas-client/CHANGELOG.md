@@ -6,7 +6,29 @@
 
 ### 🎉 New features
 
+- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.14.4 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.3 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.1 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2025-04-04
 
 ### 💡 Others
 

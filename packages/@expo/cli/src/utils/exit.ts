@@ -86,7 +86,6 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     process.stdin.isTTY ? 'TTYWrap' : 'PipeWrap',
   ];
   // Check active resources, besides the TTYWrap/PipeWrap (process.stdin, process.stdout, process.stderr)
-  // @ts-expect-error Added in v17.3.0, v16.14.0 but unavailable in v18 typings
   const activeResources = process.getActiveResourcesInfo() as string[];
   // Filter the active resource list by subtracting the expected resources, in undeterministic order
   const unexpectedActiveResources = activeResources.filter((activeResource) => {

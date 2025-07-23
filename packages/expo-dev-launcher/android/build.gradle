@@ -1,48 +1,37 @@
-import expo.modules.plugin.gradle.ExpoModuleExtension
-
-plugins {
-  id 'com.android.library'
-  id 'expo-module-gradle-plugin'
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+    classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
+    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.3.1")
+  }
 }
 
-def getRNVersion = {
-  return project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
+apply plugin: 'com.apollographql.apollo'
+
+expoModule {
+  canBePublished false
 }
+
+group = "host.exp.exponent"
+version = "5.1.11"
 
 android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "5.0.17"
+    versionName "5.1.11"
   }
 
   buildTypes {
     buildTypes.each {
       it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
-    }
-  }
-
-  sourceSets {
-    def rnVersion = getRNVersion()
-    main {
-      java {
-        if (rnVersion.isAtLeast(0, 77, 0)) {
-          srcDirs += "src/rn77/main"
-        } else if (rnVersion.isAtLeast(0, 74, 0)) {
-          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
-          srcDirs += "src/rn74/main"
-        }
-      }
-    }
-    debug {
-      java {
-        if (rnVersion.isAtLeast(0, 77, 0)) {
-          srcDirs += "src/rn77/debug"
-        } else if (rnVersion.isAtLeast(0, 74, 0)) {
-          // TODO(kudo,20241112): Remove this when we drop react-native 0.76 support
-          srcDirs += "src/rn74/debug"
-        }
-      }
     }
   }
 
@@ -52,6 +41,15 @@ android {
   }
 }
 
+apollo {
+  service("service") {
+    packageName.set("expo.modules.devlauncher")
+    introspection {
+      endpointUrl.set("https://api.expo.dev/graphql")
+      schemaFile.set(file("src/main/graphql/schema.graphqls"))
+    }
+  }
+}
 repositories {
   // ref: https://www.baeldung.com/maven-local-repository
   mavenLocal()
@@ -92,6 +90,17 @@ dependencies {
 
   api project.dependencies.platform("io.insert-koin:koin-bom:3.5.6")
   api "io.insert-koin:koin-core"
+
+  def composeVersion = "1.8.2"
+
+  implementation "androidx.compose.foundation:foundation-android:$composeVersion"
+  implementation "androidx.compose.ui:ui:$composeVersion"
+  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+  implementation "androidx.navigation:navigation-compose:2.9.0"
+
+  implementation("com.apollographql.apollo:apollo-runtime:4.3.1")
+
+  implementation("com.composables:core:1.37.0")
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'androidx.test:core-ktx:1.4.0'

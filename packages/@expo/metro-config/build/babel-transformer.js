@@ -66,6 +66,9 @@ function getBabelCaller({ filename, options, }) {
         projectRoot: options.projectRoot,
         isNodeModule,
         isHMREnabled: options.hot,
+        // Pass on the input type. Scripts shall be transformed to avoid dependencies (imports/requires),
+        // for example by polyfills or Babel runtime
+        metroSourceType: options.type,
         // Set the standard Babel flag to disable ESM transformations.
         supportsStaticESM: isCustomTruthy(options.customTransformOptions?.optimize) || options.experimentalImportSupport,
         // Enable React compiler support in Babel.

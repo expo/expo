@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * Copyright © 2022 650 Industries.
  *

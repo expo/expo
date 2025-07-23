@@ -8,6 +8,18 @@ import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
+import { optionalRequire } from '../navigation/routeBuilder';
+
+export const CalendarsScreens = [
+  {
+    name: 'Events',
+    route: 'events',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./EventsScreen'));
+    },
+  },
+];
 
 type StackNavigation = StackNavigationProp<{
   Reminders: { calendar: any };

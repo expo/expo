@@ -67,7 +67,7 @@ it('runs `npx expo start --help`', async () => {
         --localhost                     Same as --host localhost
         
         --offline                       Skip network requests and use anonymous manifest signatures
-        --https                         Start the dev server with https protocol
+        --https                         Start the dev server with https protocol. Deprecated in favor of --tunnel
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
@@ -121,10 +121,11 @@ describe('server', () => {
     // URLs
     expect(manifest.launchAsset.url).toBe(
       new URL(
-        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
         expo.url
       ).href
     );
+
     expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
     expect(manifest.extra.expoGo?.mainModuleName).toMatchPath('node_modules/expo/AppEntry');
     expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
@@ -134,9 +135,6 @@ describe('server', () => {
     expect(manifest.extra.expoClient?.sdkVersion).toBe('52.0.0');
     expect(manifest.extra.expoClient?.slug).toBe('basic-start');
     expect(manifest.extra.expoClient?.name).toBe('basic-start');
-
-    // Custom
-    expect(manifest.extra.expoGo?.__flipperHack).toBe('React Native packager is running');
 
     const bundleResponse = await expo.fetchBundleAsync(manifest.launchAsset.url);
     const bundleContent = await bundleResponse.text();
@@ -171,8 +169,10 @@ describe('start - dev clients', () => {
     },
   });
 
+  let projectRoot: string;
+
   beforeAll(async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank');
+    projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank');
     expo.options.cwd = projectRoot;
 
     // Add a `.env` file with `TEST_SCHEME`
@@ -193,6 +193,9 @@ describe('start - dev clients', () => {
   });
   afterAll(async () => {
     await expo.stopAsync();
+    // Remove app.config.js and .env files
+    await fs.promises.unlink(path.join(projectRoot, 'app.config.js'));
+    await fs.promises.unlink(path.join(projectRoot, '.env'));
   });
 
   it('runs `npx expo start` in dev client mode, using environment variable from .env', async () => {

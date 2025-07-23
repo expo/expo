@@ -1,4 +1,4 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React from 'react';
 import { StyleSheet, Platform } from 'react-native';
 
 import { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
@@ -6,45 +6,45 @@ import { em } from '../css/units';
 import Text, { TextProps } from '../primitives/Text';
 import View, { ViewProps } from '../primitives/View';
 
-export const P = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.p, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function P({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.p, style]} />;
+}
 
-export const B = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.b, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function B({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.b, style]} />;
+}
 
-export const S = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.s, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function S({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.s, style]} />;
+}
 
-export const I = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.i, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function I({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.i, style]} />;
+}
 
-export const Q = forwardRef(({ children, cite, style, ...props }: QuoteProps, ref) => {
+export function Q({ children, cite, style, ...props }: QuoteProps) {
   return (
-    <Text {...props} style={[styles.q, style]} ref={ref}>
+    <Text {...props} style={[styles.q, style]}>
       "{children}"
     </Text>
   );
-}) as ComponentType<QuoteProps>;
+}
 
-export const BlockQuote = forwardRef(({ style, cite, ...props }: BlockQuoteProps, ref) => {
-  return <View {...props} style={[styles.blockQuote, style]} ref={ref} />;
-}) as ComponentType<BlockQuoteProps>;
+export function BlockQuote({ style, cite, ...props }: BlockQuoteProps) {
+  return <View {...props} style={[styles.blockQuote, style]} />;
+}
 
-export const BR = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.br, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function BR({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.br, style]} />;
+}
 
-export const Mark = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.mark, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function Mark({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.mark, style]} />;
+}
 
-export const Code = forwardRef(({ style, ...props }: TextProps, ref) => {
-  return <Text {...props} style={[styles.code, style]} ref={ref} />;
-}) as ComponentType<TextProps>;
+export function Code({ style, ...props }: TextProps) {
+  return <Text {...props} style={[styles.code, style]} />;
+}
 
 function isTextProps(props: any): props is TextProps {
   return typeof props.children === 'string';
@@ -52,17 +52,17 @@ function isTextProps(props: any): props is TextProps {
 
 type PreProps = TextProps | ViewProps;
 
-export const Pre = forwardRef((props: PreProps, ref: any) => {
+export function Pre(props: PreProps) {
   if (isTextProps(props)) {
-    return <Text {...props} style={[styles.code, styles.pre, props.style]} ref={ref} />;
+    return <Text {...props} style={[styles.code, styles.pre, props.style]} />;
   }
-  return <View {...props} style={[styles.pre, props.style]} ref={ref} />;
-}) as ComponentType<PreProps>;
+  return <View {...props} style={[styles.pre, props.style]} />;
+}
 
 // Extract dateTime to prevent passing it to the native Text element
-export const Time = forwardRef(({ dateTime, ...props }: TimeProps, ref) => {
-  return <Text {...props} ref={ref} />;
-}) as ComponentType<TimeProps>;
+export function Time({ dateTime, ...props }: TimeProps) {
+  return <Text {...props} />;
+}
 
 export const Strong = B;
 export const Del = S;
@@ -81,7 +81,11 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   code: {
-    fontFamily: Platform.select({ default: 'Courier', ios: 'Courier New', android: 'monospace' }),
+    fontFamily: Platform.select({
+      default: `SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`,
+      ios: 'ui-monospace',
+      android: 'monospace',
+    }),
     fontWeight: '500',
   },
   pre: {

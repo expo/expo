@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.normalizeSourceSkips = exports.loadConfigAsync = void 0;
+exports.loadConfigAsync = loadConfigAsync;
+exports.normalizeSourceSkips = normalizeSourceSkips;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
 const SourceSkips_1 = require("./sourcer/SourceSkips");
@@ -58,7 +59,6 @@ async function loadConfigAsync(projectRoot, silent = false) {
     }
     return config;
 }
-exports.loadConfigAsync = loadConfigAsync;
 /**
  * Normalize the sourceSkips from enum number or string array to a valid enum number.
  */
@@ -84,7 +84,6 @@ function normalizeSourceSkips(sourceSkips) {
     }
     throw new Error(`Invalid sourceSkips type: ${sourceSkips}`);
 }
-exports.normalizeSourceSkips = normalizeSourceSkips;
 /**
  * Resolve the config file path from the project root.
  */

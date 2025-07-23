@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMemoryHistory = void 0;
+exports.createMemoryHistory = createMemoryHistory;
 const non_secure_1 = require("nanoid/non-secure");
 function createMemoryHistory() {
     let index = 0;
@@ -177,5 +177,4 @@ function createMemoryHistory() {
     };
     return history;
 }
-exports.createMemoryHistory = createMemoryHistory;
 //# sourceMappingURL=createMemoryHistory.js.map

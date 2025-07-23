@@ -7,13 +7,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unstable_headers = exports.getContext = exports.rerender = exports.runWithRenderStore = exports.defineEntries = exports.REQUEST_HEADERS = void 0;
+exports.runWithRenderStore = exports.REQUEST_HEADERS = void 0;
+exports.defineEntries = defineEntries;
+exports.rerender = rerender;
+exports.getContext = getContext;
+exports.unstable_headers = unstable_headers;
 const async_hooks_1 = require("async_hooks");
 exports.REQUEST_HEADERS = '__expo_requestHeaders';
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
     return { renderEntries, getBuildConfig, getSsrConfig };
 }
-exports.defineEntries = defineEntries;
 // TODO(EvanBacon): This can leak between platforms and runs.
 // We need to share this module between the server action module and the renderer module, per platform, and invalidate on refreshes.
 function getGlobalCacheForPlatform() {
@@ -59,7 +62,6 @@ async function rerender(input, params) {
     }
     renderStore.rerender(input, params);
 }
-exports.rerender = rerender;
 function getContext() {
     const renderStorage = getGlobalCacheForPlatform();
     const renderStore = renderStorage.getStore() ?? currentRenderStore;
@@ -68,13 +70,11 @@ function getContext() {
     }
     return renderStore.context;
 }
-exports.getContext = getContext;
 /** Get the request headers used to make the server component or action request. */
 async function unstable_headers() {
     const headers = (getContext()[exports.REQUEST_HEADERS] || {});
     return new ReadonlyHeaders(headers);
 }
-exports.unstable_headers = unstable_headers;
 class ReadonlyHeaders extends Headers {
     set() {
         throw new Error('Server component Headers are read-only');

@@ -19,5 +19,6 @@
 #endif
 
 @protocol UIApplicationDelegate <NSApplicationDelegate> @end
+@protocol UISceneDelegate <NSWindowDelegate> @end
 
 #endif // TARGET_OS_OSX

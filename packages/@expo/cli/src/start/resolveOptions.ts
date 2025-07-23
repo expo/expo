@@ -37,6 +37,10 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
     tunnel: args['--tunnel'],
   });
 
+  if (args['--https']) {
+    Log.warn(chalk`{bold --https} option is deprecated in favor of {bold --tunnel}`);
+  }
+
   // User can force the default target by passing either `--dev-client` or `--go`. They can also
   // swap between them during development by pressing `s`.
   const isUserDefinedDevClient =

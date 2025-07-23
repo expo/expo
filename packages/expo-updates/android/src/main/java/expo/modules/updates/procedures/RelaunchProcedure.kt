@@ -2,8 +2,6 @@ package expo.modules.updates.procedures
 
 import android.app.Activity
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.JSBundleLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
@@ -18,6 +16,11 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updates.reloadscreen.ReloadScreenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -33,7 +36,8 @@ class RelaunchProcedure(
   private val getCurrentLauncher: () -> Launcher,
   private val setCurrentLauncher: (launcher: Launcher) -> Unit,
   private val shouldRunReaper: Boolean,
-  private val callback: Launcher.LauncherCallback
+  private val callback: Launcher.LauncherCallback,
+  private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-relaunch"
 
@@ -53,51 +57,61 @@ class RelaunchProcedure(
       updatesDirectory,
       fileDownloader,
       selectionPolicy,
-      logger
+      logger,
+      procedureScope
     )
-    newLauncher.launch(
-      databaseHolder.database,
-      object : Launcher.LauncherCallback {
-        override fun onFailure(e: Exception) {
-          callback.onFailure(e)
-          procedureContext.onComplete()
-        }
+    try {
+      launchWith(newLauncher)
+    } catch (e: Exception) {
+      logger.error("Error launching new launcher", e, UpdatesErrorCode.Unknown)
+      callback.onFailure(e)
+      procedureContext.onComplete()
+      return
+    }
 
-        override fun onSuccess() {
-          setCurrentLauncher(newLauncher)
-          databaseHolder.releaseDatabase()
-
-          val newLaunchAssetFile = getCurrentLauncher().launchAssetFile
-          if (newLaunchAssetFile != null && newLaunchAssetFile != oldLaunchAssetFile) {
-            try {
-              replaceLaunchAssetFileIfNeeded(reactApplication, newLaunchAssetFile)
-            } catch (e: Exception) {
-              logger.error("Could not reset launchAssetFile for the ReactApplication", e, UpdatesErrorCode.Unknown)
-            }
-          }
-          callback.onSuccess()
-          Handler(Looper.getMainLooper()).post {
-            reactApplication.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
-          }
-          if (shouldRunReaper) {
-            runReaper()
-          }
-          procedureContext.resetStateAfterRestart()
-          procedureContext.onComplete()
-        }
+    setCurrentLauncher(newLauncher)
+    val newLaunchAssetFile = getCurrentLauncher().launchAssetFile
+    if (newLaunchAssetFile != null && newLaunchAssetFile != oldLaunchAssetFile) {
+      try {
+        replaceLaunchAssetFileIfNeeded(reactApplication, newLaunchAssetFile)
+      } catch (e: Exception) {
+        logger.error("Could not reset launchAssetFile for the ReactApplication", e, UpdatesErrorCode.Unknown)
       }
-    )
+    }
+    callback.onSuccess()
+
+    procedureScope.launch {
+      withContext(Dispatchers.Main) {
+        ReloadScreenManager.show(weakActivity?.get())
+        reactApplication.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
+      }
+    }
+
+    if (shouldRunReaper) {
+      runReaper()
+    }
+    procedureContext.resetStateAfterRestart()
+    procedureContext.onComplete()
   }
 
   private fun runReaper() {
-    Reaper.reapUnusedUpdates(
-      updatesConfiguration,
-      databaseHolder.database,
-      updatesDirectory,
-      getCurrentLauncher().launchedUpdate,
-      selectionPolicy
-    )
-    databaseHolder.releaseDatabase()
+    procedureScope.launch {
+      try {
+        Reaper.reapUnusedUpdates(
+          updatesConfiguration,
+          databaseHolder.database,
+          updatesDirectory,
+          getCurrentLauncher().launchedUpdate,
+          selectionPolicy
+        )
+      } catch (e: Exception) {
+        logger.error("Could not run Reaper.", e, UpdatesErrorCode.Unknown)
+      }
+    }
+  }
+
+  private suspend fun launchWith(newLauncher: DatabaseLauncher) {
+    newLauncher.launch(databaseHolder.database)
   }
 
   /**

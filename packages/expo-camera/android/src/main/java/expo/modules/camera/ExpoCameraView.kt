@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
+import kotlin.math.roundToInt
 import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
@@ -39,6 +40,7 @@ import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.video.FallbackStrategy
 import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.QualitySelector
@@ -64,12 +66,12 @@ import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
 import expo.modules.camera.tasks.ResolveTakenPicture
+import expo.modules.camera.utils.BarCodeScannerResult
+import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
 import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.camera.utils.BarCodeScannerResult
-import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
@@ -84,7 +86,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.Float.max
 import java.lang.Float.min
-import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
 const val ANIMATION_FAST_MILLIS = 50L
@@ -99,7 +100,7 @@ class ExpoCameraView(
   private val currentActivity
     get() = appContext.throwingActivity as AppCompatActivity
 
-  val orientationEventListener by lazy {
+  private val orientationEventListener by lazy {
     object : OrientationEventListener(appContext.throwingActivity) {
       override fun onOrientationChanged(orientation: Int) {
         if (orientation == ORIENTATION_UNKNOWN) {
@@ -123,7 +124,6 @@ class ExpoCameraView(
   private var activeRecording: Recording? = null
 
   private var cameraProvider: ProcessCameraProvider? = null
-  private val providerFuture = ProcessCameraProvider.getInstance(context)
   private var imageCaptureUseCase: ImageCapture? = null
   private var imageAnalysisUseCase: ImageAnalysis? = null
   private var recorder: Recorder? = null
@@ -364,7 +364,8 @@ class ExpoCameraView(
               when (event.error) {
                 VideoRecordEvent.Finalize.ERROR_FILE_SIZE_LIMIT_REACHED,
                 VideoRecordEvent.Finalize.ERROR_DURATION_LIMIT_REACHED,
-                VideoRecordEvent.Finalize.ERROR_NONE -> {
+                VideoRecordEvent.Finalize.ERROR_NONE,
+                VideoRecordEvent.Finalize.ERROR_SOURCE_INACTIVE -> {
                   promise.resolve(
                     Bundle().apply {
                       putString("uri", event.outputResults.outputUri.toString())
@@ -406,85 +407,80 @@ class ExpoCameraView(
   }
 
   @SuppressLint("UnsafeOptInUsageError")
-  fun createCamera() {
+  suspend fun createCamera() {
     if (!shouldCreateCamera || previewPaused) {
       return
     }
     shouldCreateCamera = false
-    providerFuture.addListener(
-      {
-        val cameraProvider: ProcessCameraProvider = providerFuture.get()
+    val cameraProvider = ProcessCameraProvider.awaitInstance(context)
 
-        ratio?.let {
-          previewView.scaleType =
-            if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
-              PreviewView.ScaleType.FIT_CENTER
-            } else {
-              PreviewView.ScaleType.FILL_CENTER
-            }
+    ratio?.let {
+      previewView.scaleType =
+        if (ratio == CameraRatio.FOUR_THREE || ratio == CameraRatio.SIXTEEN_NINE) {
+          PreviewView.ScaleType.FIT_CENTER
+        } else {
+          PreviewView.ScaleType.FILL_CENTER
         }
+    }
 
-        val resolutionSelector = buildResolutionSelector()
-        val preview = Preview.Builder()
-          .setResolutionSelector(resolutionSelector)
-          .build()
-          .also {
-            it.surfaceProvider = previewView.surfaceProvider
-          }
+    val resolutionSelector = buildResolutionSelector()
+    val preview = Preview.Builder()
+      .setResolutionSelector(resolutionSelector)
+      .build()
+      .also {
+        it.surfaceProvider = previewView.surfaceProvider
+      }
 
-        glSurfaceTexture?.let {
-          it.setDefaultBufferSize(previewView.width, previewView.height)
-          preview.setSurfaceProvider { request ->
-            val surface = Surface(it)
-            request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
-              surface.release()
-            }
-          }
+    glSurfaceTexture?.let {
+      it.setDefaultBufferSize(previewView.width, previewView.height)
+      preview.setSurfaceProvider { request ->
+        val surface = Surface(it)
+        request.provideSurface(surface, ContextCompat.getMainExecutor(context)) {
+          surface.release()
         }
+      }
+    }
 
-        val cameraSelector = CameraSelector.Builder()
-          .requireLensFacing(lensFacing.mapToCharacteristic())
-          .build()
+    val cameraSelector = CameraSelector.Builder()
+      .requireLensFacing(lensFacing.mapToCharacteristic())
+      .build()
 
-        imageCaptureUseCase = ImageCapture.Builder()
-          .setResolutionSelector(resolutionSelector)
-          .setFlashMode(flashMode.mapToLens())
-          .build()
+    imageCaptureUseCase = ImageCapture.Builder()
+      .setResolutionSelector(resolutionSelector)
+      .setFlashMode(flashMode.mapToLens())
+      .build()
 
-        val videoCapture = createVideoCapture()
-        imageAnalysisUseCase = createImageAnalyzer()
+    val videoCapture = createVideoCapture()
+    imageAnalysisUseCase = createImageAnalyzer()
 
-        val useCases = UseCaseGroup.Builder().apply {
-          addUseCase(preview)
-          if (cameraMode == CameraMode.PICTURE) {
-            imageCaptureUseCase?.let {
-              addUseCase(it)
-            }
-            imageAnalysisUseCase?.let {
-              addUseCase(it)
-            }
-          } else {
-            addUseCase(videoCapture)
-          }
-        }.build()
-
-        try {
-          cameraProvider.unbindAll()
-          camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
-          camera?.let {
-            observeCameraState(it.cameraInfo)
-          }
-          // Set the previous zoom level after recreating the camera
-          setCameraZoom(zoom)
-          this.cameraProvider = cameraProvider
-        } catch (_: Exception) {
-          onMountError(
-            CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
-          )
+    val useCases = UseCaseGroup.Builder().apply {
+      addUseCase(preview)
+      if (cameraMode == CameraMode.PICTURE) {
+        imageCaptureUseCase?.let {
+          addUseCase(it)
         }
-      },
-      ContextCompat.getMainExecutor(context)
-    )
+        imageAnalysisUseCase?.let {
+          addUseCase(it)
+        }
+      } else {
+        addUseCase(videoCapture)
+      }
+    }.build()
+
+    try {
+      cameraProvider.unbindAll()
+      camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
+      camera?.let {
+        observeCameraState(it.cameraInfo)
+      }
+      // Set the previous zoom level after recreating the camera
+      setCameraZoom(zoom)
+      this.cameraProvider = cameraProvider
+    } catch (_: Exception) {
+      onMountError(
+        CameraMountErrorEvent("Camera component could not be rendered - is there any other instance running?")
+      )
+    }
   }
 
   private fun createImageAnalyzer(): ImageAnalysis =
@@ -619,7 +615,9 @@ class ExpoCameraView(
   fun resumePreview() {
     shouldCreateCamera = true
     previewPaused = false
-    createCamera()
+    scope.launch {
+      createCamera()
+    }
   }
 
   fun pausePreview() {
@@ -637,39 +635,72 @@ class ExpoCameraView(
   }
 
   private fun getDeviceOrientation() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-    appContext.throwingActivity.display?.rotation ?: 0
+    context.display.rotation
   } else {
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
   }
 
   private fun transformBarcodeScannerResultToViewCoordinates(barcode: BarCodeScannerResult) {
     val cornerPoints = barcode.cornerPoints
-    val previewWidth = previewView.width
-    val previewHeight = previewView.height
+    val previewWidth = previewView.width.toFloat()
+    val previewHeight = previewView.height.toFloat()
+    val imageWidth = barcode.width.toFloat()
+    val imageHeight = barcode.height.toFloat()
 
-    val facingFront = lensFacing == CameraType.FRONT
-    val portrait = getDeviceOrientation() % 2 == 0
-    val landscape = getDeviceOrientation() % 2 != 0
-
-    if (facingFront && portrait) {
-      cornerPoints.mapY { barcode.height - cornerPoints[it] }
-    }
-    if (facingFront && landscape) {
-      cornerPoints.mapX { barcode.width - cornerPoints[it] }
+    if (previewWidth <= 0 || previewHeight <= 0 || imageWidth <= 0 || imageHeight <= 0) {
+      return
     }
 
-    cornerPoints.mapX {
-      (cornerPoints[it] * previewWidth / barcode.width.toFloat())
-        .roundToInt()
+    val scaleX: Float
+    val scaleY: Float
+
+    when (previewView.scaleType) {
+      PreviewView.ScaleType.FIT_CENTER -> {
+        val previewAspectRatio = previewWidth / previewHeight
+        val imageAspectRatio = imageWidth / imageHeight
+
+        if (previewAspectRatio > imageAspectRatio) {
+          scaleY = previewHeight / imageHeight
+          scaleX = scaleY
+        } else {
+          // Preview is taller - letterbox on top/bottom
+          scaleX = previewWidth / imageWidth
+          scaleY = scaleX
+        }
+      }
+      PreviewView.ScaleType.FILL_CENTER -> {
+        val previewAspectRatio = previewWidth / previewHeight
+        val imageAspectRatio = imageWidth / imageHeight
+
+        if (previewAspectRatio > imageAspectRatio) {
+          // Preview is wider - scale to fill width, crop top/bottom
+          scaleX = previewWidth / imageWidth
+          scaleY = scaleX
+        } else {
+          // Preview is taller - scale to fill height, crop left/right
+          scaleY = previewHeight / imageHeight
+          scaleX = scaleY
+        }
+      }
+      else -> {
+        scaleX = previewWidth / imageWidth
+        scaleY = previewHeight / imageHeight
+      }
     }
-    cornerPoints.mapY {
-      (cornerPoints[it] * previewHeight / barcode.height.toFloat())
-        .roundToInt()
+
+    cornerPoints.mapX { index ->
+      val originalX = cornerPoints[index]
+      (originalX * scaleX).roundToInt()
+    }
+
+    cornerPoints.mapY { index ->
+      val originalY = cornerPoints[index]
+      (originalY * scaleY).roundToInt()
     }
 
     barcode.cornerPoints = cornerPoints
-    barcode.height = height
-    barcode.width = width
+    barcode.height = previewHeight.toInt()
+    barcode.width = previewWidth.toInt()
   }
 
   private fun getCornerPointsAndBoundingBox(
@@ -731,7 +762,9 @@ class ExpoCameraView(
   override fun setPreviewTexture(surfaceTexture: SurfaceTexture?) {
     glSurfaceTexture = surfaceTexture
     shouldCreateCamera = true
-    createCamera()
+    scope.launch {
+      createCamera()
+    }
   }
 
   override fun getPreviewSizeAsArray() = intArrayOf(previewView.width, previewView.height)

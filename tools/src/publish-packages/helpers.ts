@@ -8,7 +8,7 @@ import { BACKUPABLE_OPTIONS_FIELDS, RELEASE_TYPES_ASC_ORDER } from './constants'
 import { BackupableOptions, CommandOptions, PackageGitLogs, Parcel, ReleaseType } from './types';
 import * as Changelogs from '../Changelogs';
 import * as Formatter from '../Formatter';
-import { GitDirectory, GitFileStatus } from '../Git';
+import Git, { GitDirectory, GitFileStatus } from '../Git';
 import logger from '../Logger';
 
 const { green, cyan, magenta, gray, red } = chalk;
@@ -219,9 +219,10 @@ export function resolveSuggestedVersion(
   ) as string;
 }
 
-export function resolveReleaseTypeAndVersion(parcel: Parcel, options: CommandOptions) {
+export async function resolveReleaseTypeAndVersion(parcel: Parcel, options: CommandOptions) {
   const prerelease = options.prerelease === true ? 'rc' : options.prerelease || undefined;
   const { pkg, pkgView, state } = parcel;
+  let explainer: string | null = null;
 
   // Find the highest release type among parcel's dependencies.
   const accumulatedTypes = recursivelyAccumulateReleaseTypes(parcel);
@@ -230,6 +231,7 @@ export function resolveReleaseTypeAndVersion(parcel: Parcel, options: CommandOpt
     ReleaseType.PATCH
   );
   const allVersions = pkgView?.versions ?? [];
+  const sdkBranch = await Git.getSDKVersionFromBranchNameAsync();
 
   if (prerelease) {
     // Make it a prerelease version if `--prerelease` was passed and assign to the state.
@@ -237,6 +239,13 @@ export function resolveReleaseTypeAndVersion(parcel: Parcel, options: CommandOpt
   } else if (getPrereleaseIdentifier(pkg.packageVersion)) {
     // If the current version is a prerelease, just increment its number.
     state.releaseType = ReleaseType.PRERELEASE;
+  } else if (sdkBranch != null) {
+    state.releaseType = ReleaseType.PATCH;
+    if (highestReleaseType !== ReleaseType.PATCH) {
+      explainer = chalk.dim(
+        `Based on changes made in this package, it should normally be released as ${chalk.blue(highestReleaseType)}, but when releasing from an SDK branch (currently ${chalk.blue(sdkBranch)}) a ${chalk.blue('patch')} bump is recommended instead.`
+      );
+    }
   } else {
     // Set the release type depending on changes made in the package.
     state.releaseType = highestReleaseType;
@@ -255,7 +264,10 @@ export function resolveReleaseTypeAndVersion(parcel: Parcel, options: CommandOpt
   } else {
     state.releaseVersion = pkg.packageVersion;
   }
-  return state.releaseVersion;
+  return {
+    releaseVersion: state.releaseVersion,
+    explainer,
+  };
 }
 
 /**

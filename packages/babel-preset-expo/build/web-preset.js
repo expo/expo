@@ -17,9 +17,11 @@ const defaultPlugins = [
     [require('babel-plugin-syntax-hermes-parser'), { parseLangTypes: 'flow' }],
     //
     [require('babel-plugin-transform-flow-enums')],
+    [require('@babel/plugin-transform-class-static-block'), { loose }],
     [require('@babel/plugin-transform-private-methods'), { loose }],
     [require('@babel/plugin-transform-private-property-in-object'), { loose }],
     [require('@babel/plugin-syntax-export-default-from')],
+    [require('./babel-plugin-transform-export-namespace-from')],
 ];
 module.exports = function (babel, options) {
     const extraPlugins = [];
@@ -29,7 +31,7 @@ module.exports = function (babel, options) {
             require('@babel/plugin-transform-modules-commonjs'),
             {
                 strict: false,
-                strictMode: false,
+                strictMode: false, // prevent "use strict" injections
                 lazy: options.lazyImportExportTransform,
                 allowTopLevelThis: true, // dont rewrite global `this` -> `undefined`
             },

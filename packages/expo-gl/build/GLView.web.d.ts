@@ -6,7 +6,7 @@ export type GLViewWebProps = GLViewProps & {
     onContextRestored?: (gl?: WebGLRenderingContext) => void;
     onContextLost?: () => void;
     webglContextAttributes?: WebGLContextAttributes;
-    nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | HTMLCanvasElement | null): any;
+    nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | HTMLCanvasElement | null): unknown;
 };
 export declare class GLView extends React.Component<GLViewWebProps> {
     canvas?: HTMLCanvasElement;
@@ -16,7 +16,7 @@ export declare class GLView extends React.Component<GLViewWebProps> {
     static takeSnapshotAsync(gl: WebGLRenderingContext, options?: SnapshotOptions): Promise<GLSnapshot>;
     componentWillUnmount(): void;
     render(): React.JSX.Element;
-    componentDidUpdate(prevProps: any): void;
+    componentDidUpdate(prevProps: GLViewWebProps): void;
     private getGLContextOrReject;
     private onContextLost;
     private onContextRestored;

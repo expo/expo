@@ -30,18 +30,21 @@ export type ExpoFormDataPart =
 
 export declare class ExpoFormData {
   constructor();
+
+  // React Native proprietary local file
+  append(name: string, value: { uri: string; name?: string; type?: string }): void;
   append(name: string, value: string): void;
   append(name: string, value: Blob, filename?: string): void;
+
   delete(name: string): void;
   get(name: string): FormDataEntryValue | null;
   getAll(name: string): FormDataEntryValue[];
   has(name: string): boolean;
-  set(name: string, value: string): void;
-  set(name: string, value: Blob, filename?: string): void;
 
   // React Native proprietary local file
-  append(name: string, value: { uri: string; name?: string; type?: string }): void;
   set(name: string, value: { uri: string; name?: string; type?: string }): void;
+  set(name: string, value: string): void;
+  set(name: string, value: Blob, filename?: string): void;
 
   // iterable
   forEach(

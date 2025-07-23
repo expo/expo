@@ -32,8 +32,10 @@ describe('exports with tailwind and postcss', () => {
     expect(files).toEqual([
       '+not-found.html',
       expect.stringMatching(/_expo\/static\/css\/global-.*\.css/),
+      expect.stringMatching(/_expo\/static\/css\/modal\.module-.*\.css/),
       expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/),
       '_sitemap.html',
+      'assets/__packages/expo-router/assets/arrow_down.017bc6ba3fc25503e5eb5e53826d48a8.png',
       'assets/__packages/expo-router/assets/error.d1ea1496f9057eb392d5bbf3732a61b7.png',
       'assets/__packages/expo-router/assets/file.19eeb73b9593a38f8e9f418337fc7d10.png',
       'assets/__packages/expo-router/assets/forward.d8b800c443b8972542883e0b9de2bdc6.png',
@@ -51,7 +53,7 @@ describe('exports with tailwind and postcss', () => {
   it('has tailwind CSS', async () => {
     const files = findProjectFiles(outputDir).filter((file) => file.endsWith('.css'));
 
-    expect(files.length).toBe(1);
+    expect(files.length).toBe(2);
 
     const contents = fs.readFileSync(path.join(outputDir, files[0]!), 'utf8');
 

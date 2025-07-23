@@ -1,4 +1,4 @@
-import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 
 import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {
@@ -12,11 +12,13 @@ import {
   getIsReactServer,
   getIsServer,
   getReactCompiler,
+  getMetroSourceType,
   hasModule,
 } from './common';
 import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
 import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
 import { expoRouterBabelPlugin } from './expo-router-plugin';
+import { expoImportMetaTransformPluginFactory } from './import-meta-transform-plugin';
 import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
@@ -28,6 +30,10 @@ type BabelPresetExpoPlatformOptions = {
   decorators?: false | { legacy?: boolean; version?: number };
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
   reanimated?: boolean;
+  /** Enable or disable adding the Worklets plugin by default. Only applies when
+   * using `react-native-worklets` or Reanimated 4. @default `true`
+   */
+  worklets?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -38,6 +44,8 @@ type BabelPresetExpoPlatformOptions = {
   lazyImports?: boolean;
 
   disableImportExportTransform?: boolean;
+
+  disableDeepImportWarnings?: boolean;
 
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
@@ -99,6 +107,15 @@ type BabelPresetExpoPlatformOptions = {
 
   /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
   minifyTypeofWindow?: boolean;
+
+  /**
+   * Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`.
+   *
+   * > **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+   *
+   * @default `false` on client and `true` on server.
+   */
+  unstable_transformImportMeta?: boolean;
 };
 
 export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
@@ -131,6 +148,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
+  const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
     (caller) => (caller as any)?.supportsStaticESM
@@ -152,6 +170,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isModernEngine = platform === 'web' || isServerEnv;
 
   const platformOptions = getOptions(options, platform);
+
+  // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
+  // adds extra dependencies (requires/imports) we need to disable it
+  if (metroSourceType === 'script') {
+    platformOptions.enableBabelRuntime = false;
+  }
 
   if (platformOptions.useTransformReactJSXExperimental != null) {
     throw new Error(
@@ -198,8 +222,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
-        // TODO: Update when we bump React to 19.
-        target: '18',
+        target: '19',
         environment: {
           enableResetCacheOnSourceFileChanges: !isProduction,
           ...(platformOptions['react-compiler']?.environment ?? {}),
@@ -223,7 +246,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    extraPlugins.push(
+      require('@babel/plugin-transform-parameters'),
+
+      // Add support for class static blocks.
+      [require('@babel/plugin-transform-class-static-block'), { loose: true }]
+    );
   }
 
   const inlines: Record<string, null | boolean | string> = {
@@ -233,9 +261,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   };
 
   // `typeof window` is left in place for native + client environments.
-  const minifyTypeofWindow =
-    (platformOptions.minifyTypeofWindow ?? isServerEnv) || platform === 'web';
-
+  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
+  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
+  const minifyTypeofWindow = platformOptions.minifyTypeofWindow ?? isServerEnv;
   if (minifyTypeofWindow !== false) {
     // This nets out slightly faster in development when considering the cost of bundling server dependencies.
     inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
@@ -320,15 +348,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     extraPlugins.push([require('./detect-dynamic-exports').detectDynamicExports]);
   }
 
+  const polyfillImportMeta = platformOptions.unstable_transformImportMeta ?? isServerEnv;
+
+  extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
+
   return {
     presets: [
-      [
-        // We use `require` here instead of directly using the package name because we want to
-        // specifically use the `@react-native/babel-preset` installed by this package (ex:
-        // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
-        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-        isModernEngine ? require('./web-preset') : require('@react-native/babel-preset'),
-        {
+      (() => {
+        const presetOpts = {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
@@ -341,13 +368,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
           //
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
-          // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
+          // Both __source and __self are automatically set when using the automatic jsxRuntime. Remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
           // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
           // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
           withDevTools: false,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
+          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           lazyImportExportTransform:
             lazyImportsOption === true
               ? (importModuleSpecifier: string) => {
@@ -360,8 +388,33 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
               : // Pass the option directly to `@react-native/babel-preset`, which in turn
                 // passes it to `babel-plugin-transform-modules-commonjs`
                 lazyImportsOption,
-        },
-      ],
+
+          dev: isDev,
+        };
+
+        if (isModernEngine) {
+          return [require('./web-preset'), presetOpts];
+        }
+        // We use `require` here instead of directly using the package name because we want to
+        // specifically use the `@react-native/babel-preset` installed by this package (ex:
+        // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
+        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
+        const { getPreset } = require('@react-native/babel-preset');
+
+        // We need to customize the `@react-native/babel-preset` to ensure that the `@babel/plugin-transform-export-namespace-from`
+        // plugin is run after the TypeScript plugins. This is normally handled by the combination of standard `@babel/preset-env` and `@babel/preset-typescript` but React Native
+        // doesn't do that and we can't rely on Hermes spec compliance enough to use standard presets.
+        const babelPresetReactNativeEnv = getPreset(null, presetOpts);
+
+        // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
+        // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
+        // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
+        babelPresetReactNativeEnv.overrides.push({
+          plugins: [require('./babel-plugin-transform-export-namespace-from')],
+        });
+
+        return babelPresetReactNativeEnv;
+      })(),
 
       // React support with similar options to Metro.
       // We override this logic outside of the metro preset so we can add support for
@@ -399,11 +452,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         require('@babel/plugin-proposal-decorators'),
         platformOptions.decorators ?? { legacy: true },
       ],
-      require('@babel/plugin-transform-export-namespace-from'),
+
       // Automatically add `react-native-reanimated/plugin` when the package is installed.
       // TODO: Move to be a customTransformOption.
-      hasModule('react-native-reanimated') &&
-        platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
+      hasModule('react-native-worklets') &&
+      platformOptions.worklets !== false &&
+      platformOptions.reanimated !== false
+        ? [require('react-native-worklets/plugin')]
+        : hasModule('react-native-reanimated') &&
+          platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
     ].filter(Boolean) as PluginItem[],
   };
 }

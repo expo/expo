@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ExpoConfig } from '@expo/config-types';
-import xcode, { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
+import xcode, { PBXFile, PBXGroup, PBXNativeTarget, PBXProject, UUID, XCBuildConfiguration, XCConfigurationList, XcodeProject } from 'xcode';
 export type ProjectSectionEntry = [string, PBXProject];
 export type NativeTargetSection = Record<string, PBXNativeTarget>;
 export type NativeTargetSectionEntry = [string, PBXNativeTarget];
@@ -54,8 +54,8 @@ export declare function getApplicationNativeTarget({ project, projectName, }: {
     project: XcodeProject;
     projectName: string;
 }): {
-    uuid: string;
-    target: xcode.PBXNativeTarget;
+    uuid: UUID;
+    target: PBXNativeTarget;
 };
 /**
  * Add a framework to the default app native target.

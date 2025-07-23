@@ -41,7 +41,7 @@ export async function getPermissionsAsync() {
  * import * as Notifications from 'expo-notifications';
  *
  * export function requestPermissionsAsync() {
- *   return await Notifications.requestPermissionsAsync({
+ *   return Notifications.requestPermissionsAsync({
  *     ios: {
  *       allowAlert: true,
  *       allowBadge: true,
@@ -64,6 +64,8 @@ export async function requestPermissionsAsync(permissions?: NotificationPermissi
       allowSound: true,
     },
   };
-  const requestedPlatformPermissions = requestedPermissions[Platform.OS];
-  return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions);
+  const requestedPlatformPermissions =
+    requestedPermissions[Platform.OS as keyof typeof requestedPermissions];
+  // TODO(@kitten): This never checks whether the configuration object is undefined
+  return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions!);
 }

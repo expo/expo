@@ -6,11 +6,61 @@
 
 ### 🎉 New features
 
-- Add `android.useDayNightTheme` to enable overriding the templates use of a light theme. ([#33989](https://github.com/expo/expo/pull/33989) by [@alanjhughes](https://github.com/alanjhughes))
+- Added support for prebuilt React Native iOS dependencies via `ios.buildFromSource: false` in the iOS build properties. When `buildFromSource` is disabled, it sets `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies, as described in the [React Native 0.80 release blog post](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt). ([#37678](https://github.com/expo/expo/pull/37678) by [@huextrat](https://github.com/huextrat))
+- Add `android.buildArchs` option to override the default `reactNativeArchitectures` value in gradle.properties ([#37831](https://github.com/expo/expo/pull/37831) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for setting Android's exclusiveMavenMirror gradle property ([#37864](https://github.com/expo/expo/pull/37864) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.14.8 - 2025-07-01
+
+### 💡 Others
+
+- Added `System.getenv()` syntax support to the tsdoc for `AndroidMavenRepositoryCredentials`. ([#37344](https://github.com/expo/expo/pull/37344) by [@kudo](https://github.com/kudo))
+
+## 0.14.7 - 2025-06-30
+
+### 🎉 New features
+
+- Add `android.buildFromSource` option ([#37745](https://github.com/expo/expo/pull/37745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.14.6 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.5 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.3 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2025-04-11
+
+### 🎉 New features
+
+- Add `android.enableBundleCompression` option ([#36071](https://github.com/expo/expo/pull/36071) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.14.1 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2025-04-04
+
+### 🎉 New features
+
+- Add `android.useDayNightTheme` to enable overriding the templates use of a light theme. ([#33989](https://github.com/expo/expo/pull/33989) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed generating falsy properties to overwrite existing props. ([#35771](https://github.com/expo/expo/pull/35771) by [@kudo](https://github.com/kudo))
 
 ## 0.13.2 - 2025-01-10
 

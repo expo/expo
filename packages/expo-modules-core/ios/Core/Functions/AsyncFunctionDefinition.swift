@@ -9,6 +9,7 @@ internal protocol AnyAsyncFunctionDefinition: AnyFunctionDefinition {
   /**
    Specifies on which queue the function should run.
    */
+  @discardableResult
   func runOnQueue(_ queue: DispatchQueue?) -> Self
 }
 
@@ -64,7 +65,7 @@ public final class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyA
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
     let promise = Promise(appContext: appContext) { value in
-      callback(.success(Conversions.convertFunctionResult(value, appContext: appContext)))
+      callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))
     } rejecter: { exception in
       callback(.failure(exception))
     }

@@ -8,10 +8,12 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import expo.modules.notifications.notifications.NotificationManager
+import expo.modules.notifications.notifications.NotificationSerializer
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.NotificationForwarderActivity
 import expo.modules.notifications.service.NotificationsService
+import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.runTaskManagerTasks
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import java.lang.ref.WeakReference
 import java.util.*
@@ -107,7 +109,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
   override fun handleNotification(notification: Notification) {
     /**
-     * The app is in background, only data-only notifications reach this point.
+     * When the app is in background, only data-only notifications reach this point.
      * We do not inform JS about those. If JS wants to respond to data-only notifications,
      * it needs to happen via expo-task-manager: https://docs.expo.dev/versions/latest/sdk/notifications/#background-notifications
      * */
@@ -120,8 +122,10 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
         it.onNotificationReceived(notification)
       }
     } else if (notification.shouldPresent()) {
-      // TODO vonovak remove this - this branch doesn't seem to execute at all
-      // because only data-only notifications reach this point and they are not presented
+      // only data-only notifications reach this point and we present them if they fall into the documented exception:
+      // https://docs.expo.dev/push-notifications/what-you-need-to-know/#headless-background-notifications
+      // this call can not be triggered by expo push service, only when using FCM directly.
+      // We keep this because we used to document this as a valid use case.
       NotificationsService.present(context, notification)
     }
   }
@@ -136,9 +140,17 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
+    if (!isAppInForeground()) {
+      // do not run in foreground for better alignment with iOS
+      // iOS doesn't run background tasks for notification responses at all
+      runTaskManagerTasks(context.applicationContext, NotificationSerializer.toBundle(notificationResponse))
+    }
     if (notificationResponse.action.opensAppToForeground()) {
       openAppToForeground(context, notificationResponse)
     }
+    // NOTE the listeners are not set up when the app is killed
+    // and is launched in response to tapping a notification button
+    // this code is a noop in that case
     val listeners = getListeners()
     if (listeners.isEmpty()) {
       sPendingNotificationResponses.add(notificationResponse)

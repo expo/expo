@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ensureAsync = exports.createWorkingDirectoriesAsync = void 0;
+exports.createWorkingDirectoriesAsync = createWorkingDirectoriesAsync;
+exports.ensureAsync = ensureAsync;
 const assert_1 = __importDefault(require("assert"));
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
@@ -24,11 +25,9 @@ async function createWorkingDirectoriesAsync(projectRoot, platform) {
         tmpDir: await ensureAsync(path_1.default.join(rootDir, 'tmp')),
     };
 }
-exports.createWorkingDirectoriesAsync = createWorkingDirectoriesAsync;
 async function ensureAsync(path) {
     const result = await (0, dir_1.ensureDirectoryAsync)(path);
     (0, assert_1.default)(result, 'The return value should be string when recursive is true');
     return result;
 }
-exports.ensureAsync = ensureAsync;
 //# sourceMappingURL=workingDirectories.js.map

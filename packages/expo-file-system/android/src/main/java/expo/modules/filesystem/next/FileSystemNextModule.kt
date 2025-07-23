@@ -3,6 +3,7 @@ package expo.modules.filesystem.next
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
+import expo.modules.filesystem.InfoOptions
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
@@ -17,6 +18,7 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
+import java.util.EnumSet
 
 class FileSystemNextModule : Module() {
   private val context: Context
@@ -32,9 +34,23 @@ class FileSystemNextModule : Module() {
       "bundleDirectory" to "asset:///"
     )
 
-    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath ->
+    Property("totalDiskSpace") {
+      File(context.filesDir.path).totalSpace
+    }
+
+    Property("availableDiskSpace") {
+      File(context.filesDir.path).freeSpace
+    }
+
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptionsNext? ->
       to.validatePermission(Permission.WRITE)
-      val request = Request.Builder().url(url.toURL()).build()
+      val requestBuilder = Request.Builder().url(url.toURL())
+
+      options?.headers?.forEach { (key, value) ->
+        requestBuilder.addHeader(key, value)
+      }
+
+      val request = requestBuilder.build()
       val client = OkHttpClient()
       val response = request.await(client)
 
@@ -47,9 +63,9 @@ class FileSystemNextModule : Module() {
       val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
 
       val destination = if (to is FileSystemDirectory) {
-        File(to.file, fileName)
+        File(to.javaFile, fileName)
       } else {
-        to.file
+        to.javaFile
       }
 
       if (destination.exists()) {
@@ -62,12 +78,23 @@ class FileSystemNextModule : Module() {
           input.copyTo(output)
         }
       }
-      return@Coroutine destination.path
+      return@Coroutine destination.toURI()
+    }
+
+    Function("info") { url: URI ->
+      val file = File(url)
+      val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
+        ?: EnumSet.noneOf(Permission::class.java)
+      if (permissions.contains(Permission.READ) && file.exists()) {
+        PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
+      } else {
+        PathInfo(exists = false, isDirectory = null)
+      }
     }
 
     Class(FileSystemFile::class) {
-      Constructor { uri: URI ->
-        FileSystemFile(File(uri.path))
+      Constructor { uri: Uri ->
+        FileSystemFile(uri)
       }
 
       Function("delete") { file: FileSystemFile ->
@@ -106,8 +133,20 @@ class FileSystemNextModule : Module() {
         file.bytes()
       }
 
+      Function("info") { file: FileSystemFile, options: InfoOptions? ->
+        file.info(options)
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
+      }
+
+      Property("modificationTime") { file: FileSystemFile ->
+        file.modificationTime
+      }
+
+      Property("creationTime") { file: FileSystemFile ->
+        file.creationTime
       }
 
       Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
@@ -171,8 +210,12 @@ class FileSystemNextModule : Module() {
     }
 
     Class(FileSystemDirectory::class) {
-      Constructor { uri: URI ->
-        FileSystemDirectory(File(uri.path))
+      Constructor { uri: Uri ->
+        FileSystemDirectory(uri)
+      }
+
+      Function("info") { directory: FileSystemDirectory ->
+        directory.info()
       }
 
       Function("delete") { directory: FileSystemDirectory ->
@@ -181,6 +224,14 @@ class FileSystemNextModule : Module() {
 
       Function("create") { directory: FileSystemDirectory, options: CreateOptions? ->
         directory.create(options ?: CreateOptions())
+      }
+
+      Function("createDirectory") { file: FileSystemDirectory, name: String ->
+        return@Function file.createDirectory(name)
+      }
+
+      Function("createFile") { file: FileSystemDirectory, name: String, mimeType: String? ->
+        return@Function file.createFile(mimeType, name)
       }
 
       Property("exists") { directory: FileSystemDirectory ->
@@ -201,6 +252,10 @@ class FileSystemNextModule : Module() {
 
       Property("uri") { directory ->
         directory.asString()
+      }
+
+      Property("size") { directory ->
+        directory.size
       }
 
       // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)

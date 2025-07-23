@@ -129,14 +129,14 @@ When used with the CLI, you can pass the search paths as command arguments like 
 
 A list of package names to exclude from autolinking. These packages will not be autolinked even if they are found in the search paths.
 For example, you may want not to link some packages that you don't use on the specific platform to reduce the binary size.
-The following config in **package.json** will exclude `expo-random` from autolinking on Android:
+The following config in **package.json** will exclude `expo-random` and `third-party-expo-module` from autolinking on Android:
 
 ```json package.json
 {
   "expo": {
     "autolinking": {
       "android": {
-        "exclude": ["expo-random"]
+        "exclude": ["expo-random", "third-party-expo-module"]
       }
     }
   }

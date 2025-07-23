@@ -2,6 +2,7 @@
 title: Install Expo Router
 description: Learn how to quickly get started by creating a new project with Expo Router or adding the library to an existing project.
 sidebar_title: Installation
+searchRank: 6
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -60,7 +61,7 @@ The above command will install versions of these libraries that are compatible w
 
 ### Setup entry point
 
-For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.tsx**](/router/advanced/root-layout).
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.tsx**](/router/basics/layout/#root-layout).
 
 ```json package.json
 {
@@ -145,8 +146,6 @@ module.exports = function (api) {
   };
 };
 ```
-
-If you're upgrading from a version of Expo Router that is older than v3, remove the `plugins: ['expo-router/babel']`. `expo-router/babel` was merged in `babel-preset-expo` in SDK 50 (Expo Router v3).
 
 </Step>
 

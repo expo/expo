@@ -281,7 +281,7 @@ function getTypesToMock(module: OutputModuleDefinition | OutputNestedClassDefini
   const foundTypes: string[] = [];
 
   Object.values(module)
-    .flatMap((t) => (Array.isArray(t) ? t?.map((t2) => (t2 as Closure)?.types) : [] ?? []))
+    .flatMap((t) => (Array.isArray(t) ? t.map((t2) => (t2 as Closure)?.types) : []))
     .forEach((types: ClosureTypes | null) => {
       types?.parameters.forEach(({ typename }) => {
         getAllTypeReferences(mapSwiftTypeToTsType(typename), foundTypes);

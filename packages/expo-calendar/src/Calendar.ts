@@ -623,7 +623,7 @@ export type DialogEventResult = {
   /**
    * The ID of the event that was created or edited. On Android, this is always `null`.
    *
-   * On iOS, this is a string when user confirms the creation or editing of an event. Otherwise, it's `null`.
+   * On iOS, this is a string when permissions are granted and user confirms the creation or editing of an event. Otherwise, it's `null`.
    * */
   id: string | null;
 };
@@ -1641,11 +1641,15 @@ export enum ReminderStatus {
   INCOMPLETE = 'incomplete',
 }
 
-function stringifyIfDate(date: any): any {
+function stringifyIfDate<T extends Date>(date: Date | T): string | T {
   return date instanceof Date ? date.toISOString() : date;
 }
 
-function stringifyDateValues(obj: object): object {
+type StringifyDates<T extends Record<string, any>> = {
+  [K in keyof T]: T[K] extends Date ? string : T[K];
+};
+
+function stringifyDateValues<T extends Record<string, any>>(obj: T): StringifyDates<T> {
   if (typeof obj !== 'object' || obj === null) return obj;
   return Object.keys(obj).reduce((acc, key) => {
     const value = obj[key];
@@ -1655,7 +1659,7 @@ function stringifyDateValues(obj: object): object {
       }
       return { ...acc, [key]: stringifyDateValues(value) };
     }
-    acc[key] = stringifyIfDate(value);
+    acc[key as keyof T] = stringifyIfDate(value);
     return acc;
-  }, {});
+  }, {} as StringifyDates<T>);
 }

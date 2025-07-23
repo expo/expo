@@ -33,7 +33,7 @@ jobs:
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 16.0
-        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
@@ -69,7 +69,7 @@ jobs:
         run: pod install
         working-directory: apps/bare-expo/ios
       - name: 🏗️ Build iOS project
-        run: ./scripts/start-ios-e2e-test.ts --build
+        run: ./scripts/start-ios-e2e-test.js --build
         working-directory: apps/bare-expo
         timeout-minutes: 55
         env:
@@ -122,7 +122,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧪 Run tests
-        run: ./scripts/start-ios-e2e-test.ts --test
+        run: ./scripts/start-ios-e2e-test.js --test
         working-directory: apps/bare-expo
         timeout-minutes: 30
       - name: 📸 Store testing artifacts
@@ -147,7 +147,7 @@ jobs:
           author_name: Test Suite (iOS)
 
   android-build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -183,10 +183,11 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
-      - name: 🛠️ Generate dynamic macros
-        run: expotools android-generate-dynamic-macros --configuration release --bare
+      - name: 🏗️ Gradle prebuild for Android project (workaround to fix build error)
+        run: ./gradlew preBuild
+        working-directory: apps/bare-expo/android
       - name: 🏗️ Build Android project
-        run: ./scripts/start-android-e2e-test.ts --build
+        run: ./scripts/start-android-e2e-test.js --build
         working-directory: apps/bare-expo
         timeout-minutes: 35
         env:
@@ -212,7 +213,7 @@ jobs:
 
   android-test:
     needs: android-build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         api-level: [34]
@@ -241,7 +242,7 @@ jobs:
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: ./scripts/start-android-e2e-test.ts --test
+          script: ./scripts/start-android-e2e-test.js --test
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()

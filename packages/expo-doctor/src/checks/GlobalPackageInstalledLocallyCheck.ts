@@ -21,7 +21,7 @@ export class GlobalPackageInstalledLocallyCheck implements DoctorCheck {
     return {
       isSuccessful: !issues.length,
       issues,
-      advice: issues.length ? `Remove expo-cli from your project dependencies.` : undefined,
+      advice: issues.length ? [`Remove expo-cli from your project dependencies.`] : [],
     };
   }
 }

@@ -38,6 +38,28 @@ EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
+
++ (BOOL)isExpoHostedUrl:(NSURL *)url
+{
+  return [[self class] isExpoHostedUrlComponents:[NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES]];
+}
+
++ (BOOL)isExpoHostedUrlComponents:(NSURLComponents *)components
+{
+  if (components.host) {
+    return [components.host isEqualToString:@"exp.host"] ||
+      [components.host isEqualToString:@"expo.io"] ||
+      [components.host isEqualToString:@"exp.direct"] ||
+      [components.host isEqualToString:@"expo.test"] ||
+      [components.host hasSuffix:@".exp.host"] ||
+      [components.host hasSuffix:@".exp.direct"] ||
+      [components.host hasSuffix:@".expo.test"] ||
+      [components.host hasSuffix:@".expo.dev"];
+  }
+  return NO;
+}
+
+
 + (void)performSynchronouslyOnMainThread:(void (^)(void))block
 {
   if ([NSThread isMainThread]) {

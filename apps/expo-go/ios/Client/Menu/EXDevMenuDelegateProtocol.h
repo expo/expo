@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTBridge.h>
-#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#import <Expo/RCTAppDelegateUmbrella.h>
 
 @class EXDevMenuManager;
 

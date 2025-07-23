@@ -64,7 +64,7 @@ export const withNewArchEnabledPodfileProps = createBuildPodfilePropsConfigPlugi
     {
       propName: 'newArchEnabled',
       propValueGetter: (config) =>
-        (config.ios?.newArchEnabled ?? config.newArchEnabled ?? false).toString(),
+        (config.ios?.newArchEnabled ?? config.newArchEnabled)?.toString(),
     },
   ],
   'withNewArchEnabledPodfileProps'

@@ -4,12 +4,11 @@
 #import <ExpoModulesCore/EXUtilities.h>
 
 #import <objc/message.h>
-#import <CoreLocation/CLLocationManagerDelegate.h>
 
 @interface EXBaseLocationRequester () <CLLocationManagerDelegate>
 
 @property (nonatomic, assign) bool locationManagerWasCalled;
-
+@property (nonatomic, assign) CLAuthorizationStatus beginStatus;
 
 @end
 
@@ -73,25 +72,47 @@
     //    make Expo developers receive this kind of messages nor add our own default usage description,
     //    we try to fool the static analyzer and construct the selector in runtime.
     //    This way behavior of this requester is governed by provided NSLocationUsageDescriptions.
+    
+    // 2. Location permission request types
     //
-    // 2. Why there's no way to call specifically whenInUse or always authorization?
+    //    Foreground
+    //    - "Allow once"
+    //    - "Allow while using App"
+    //    - "Don't allow"
     //
-    //    The requester sets itself as the delegate of the CLLocationManager, so when the user responds
-    //    to a permission requesting dialog, manager calls `locationManager:didChangeAuthorizationStatus:` method.
-    //    To be precise, manager calls this method in two circumstances:
-    //      - right when `request*Authorization` method is called,
-    //      - when `authorizationStatus` changes.
-    //    With this behavior we aren't able to support the following use case:
-    //      - app requests `whenInUse` authorization
-    //      - user allows `whenInUse` authorization
-    //      - `authorizationStatus` changes from `undetermined` to `whenInUse`, callback is called, promise is resolved
-    //      - app wants to escalate authorization to `always`
-    //      - user selects `whenInUse` authorization (iOS 11+)
-    //      - `authorizationStatus` doesn't change, so callback is not called and requester can't know whether
-    //        user responded to the dialog selecting `whenInUse` or is still deciding
-    //    To support this use case we will have to change the way location authorization is requested
-    //    from promise-based to listener-based.
-
+    //    Background
+    //    - "Keep only while using"
+    //    - "Change to always allow"
+    //
+    // Requesting background permissions directly without first asking for foreground permissions is the
+    // same as asking for foreground permissions and then asking for background permissions.
+    //
+    // "Allow once" is a temporary permission (limited to the current app session). It is not possible to get
+    // info from the API about wether or not the current permission is temporary. You cannot request background
+    // permissions with a temporary token - a background request will then return denied.
+    //
+    // Requesting background permissions directly and "Allow while using the App" gives you a provisional
+    // background permission that can later be elevated to a full "Always allow" permission.
+    // You will be asked at a later point if you want to convert to "Always allow". The system waits until
+    // you have started using the newly aquired permission before showing the permission dialog.
+    //
+    // Test the following scenarios in BareExpo -> APIs -> Location
+    // ------------------------------------------------------------
+    // (before tests, make sure to clear any location permissions and restart the app)
+    //
+    //   rfp = requestForegroundPermissionsAsync, fp: Actual foreground permission given
+    //   rbp = requestBackgroundPermissionsAsync, bg: Actual background permission given
+    //
+    // - rfp -> "Allow once", then rbp -> no dialog                             = (fp: granted (temporary), bg: denied after 1.5 seconds)
+    // - rfp -> "Allow while using App", then rbp -> "Keep only while using"    = (fp: granted, bg: denied)
+    // - rfp -> "Allow while using App", then rbp -> "Change to always allow"   = (fp: granted, bg: granted)
+    // - rfp -> "Don't allow", then rbp -> no dialog                            = (fp: denied, bg: denied)
+    // - rbp -> "Allow once", no more dalogs                                    = (fp: granted (temporary), bg: denied)
+    // - rbp -> "Allow while using App", no more dialogs                        = (fp: granted, bg: granted (provisional))
+    // - rbp -> "Don't allow"                                                   = (fp: denied, bg: denied)
+    
+    // Save start statue and call requestLocationPermissions
+    _beginStatus = [self.locationManager authorizationStatus];
     [self requestLocationPermissions];
   }
 }
@@ -107,38 +128,15 @@
   }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager
 {
-  // TODO: Permissions.LOCATION issue (search by this phrase)
-  // if Permissions.LOCATION is being called for the first time on iOS devide and prompts for user action it might not call this callback at all
-  // it happens if user requests more that one permission at the same time via Permissions.askAsync(...) and LOCATION dialog is not being called first
-  // to reproduce this find NCL code testing that
-  if (status == kCLAuthorizationStatusNotDetermined || !_locationManagerWasCalled) {
+  CLAuthorizationStatus nextState = [manager authorizationStatus];
+  if (_beginStatus == nextState && !_locationManagerWasCalled) {
     // CLLocationManager calls this delegate method once on start with kCLAuthorizationNotDetermined even before the user responds
     // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:
     // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
     _locationManagerWasCalled = true;
     return;
-  }
-
-  if (_resolve) {
-    _resolve([self getPermissions]);
-    _resolve = nil;
-    _reject = nil;
-  }
-}
-
-- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager
-{
-  CLAuthorizationStatus status = [manager authorizationStatus];
-  if (status == kCLAuthorizationStatusNotDetermined || !_locationManagerWasCalled) {
-    // CLLocationManager calls this delegate method once on start with kCLAuthorizationNotDetermined even before the user responds
-    // to the "Don't Allow" / "Allow" dialog box. This isn't the event we care about so we skip it. See:
-    // http://stackoverflow.com/questions/30106341/swift-locationmanager-didchangeauthorizationstatus-always-called/30107511#30107511
-    _locationManagerWasCalled = true;
-    if (status != kCLAuthorizationStatusAuthorizedWhenInUse) {
-      return;
-    }
   }
 
   if (_resolve) {

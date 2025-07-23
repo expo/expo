@@ -33,15 +33,7 @@ export function setScheme(
   config: Pick<ExpoConfig, 'scheme' | 'android'>,
   androidManifest: AndroidManifest
 ) {
-  const schemes = [
-    ...getScheme(config),
-    // @ts-ignore: TODO: android.scheme is an unreleased -- harder to add to turtle v1.
-    ...getScheme(config.android ?? {}),
-  ];
-  // Add the package name to the list of schemes for easier Google auth and parity with Turtle v1.
-  if (config.android?.package) {
-    schemes.push(config.android.package);
-  }
+  const schemes = [...getScheme(config), ...getScheme(config.android ?? {})];
   if (schemes.length === 0) {
     return androidManifest;
   }
@@ -174,6 +166,15 @@ export function hasScheme(scheme: string, androidManifest: AndroidManifest): boo
 
 export function appendScheme(scheme: string, androidManifest: AndroidManifest): AndroidManifest {
   if (!Array.isArray(androidManifest.manifest.application)) {
+    return androidManifest;
+  }
+
+  if (!ensureManifestHasValidIntentFilter(androidManifest)) {
+    addWarningAndroid(
+      'scheme',
+      `Cannot add schemes because the provided manifest does not have a valid Activity with \`android:launchMode="singleTask"\``,
+      'https://expo.fyi/setup-android-uri-scheme'
+    );
     return androidManifest;
   }
 

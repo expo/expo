@@ -161,6 +161,11 @@ class Env {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
   }
 
+  /** Enable the experimental sticky resolver for Metro. */
+  get EXPO_USE_STICKY_RESOLVER() {
+    return boolish('EXPO_USE_STICKY_RESOLVER', false);
+  }
+
   /** Enable the unstable fast resolver for Metro. */
   get EXPO_USE_FAST_RESOLVER() {
     return boolish('EXPO_USE_FAST_RESOLVER', false);
@@ -259,6 +264,11 @@ class Env {
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
+  }
+
+  /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
+  get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
+    return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
   }
 }
 

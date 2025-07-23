@@ -35,34 +35,10 @@
   }
 }
 
-- (BOOL)newArchEnabled
-{
-  if ([self.delegate respondsToSelector:@selector(newArchEnabled)]) {
-    return self.delegate.newArchEnabled;
-  }
-  
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
-}
-
-- (BOOL)bridgelessEnabled
-{
-  if ([self.delegate respondsToSelector:@selector(bridgelessEnabled)]) {
-    return self.delegate.bridgelessEnabled;
-  }
-  
-  return [self newArchEnabled];
-}
-
 -(void)_setUpFeatureFlags {
   static dispatch_once_t setupFeatureFlagsToken;
   dispatch_once(&setupFeatureFlagsToken, ^{
-    if ([self bridgelessEnabled]) {
-      [EXGoReactNativeFeatureFlags setup];
-    }
+    [EXGoReactNativeFeatureFlags setup];
   });
 }
 

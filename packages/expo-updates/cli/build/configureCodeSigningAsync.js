@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.configureCodeSigningAsync = void 0;
+exports.configureCodeSigningAsync = configureCodeSigningAsync;
 const code_signing_certificates_1 = require("@expo/code-signing-certificates");
-const config_1 = require("@expo/config");
+const config_1 = require("expo/config");
 const fs_1 = require("fs");
 const path_1 = __importDefault(require("path"));
 const log_1 = require("./utils/log");
@@ -41,4 +41,3 @@ async function configureCodeSigningAsync(projectRoot, { certificateInput, keyInp
     });
     (0, log_1.log)(`Code signing configuration written to app configuration.`);
 }
-exports.configureCodeSigningAsync = configureCodeSigningAsync;

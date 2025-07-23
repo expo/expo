@@ -21,7 +21,7 @@ import {
   prebuildAppAsync,
 } from './Project.js';
 import { checkRequiredToolsAsync } from './SanityChecks.js';
-import packageJSON from '../package.json' assert { type: 'json' };
+import packageJSON from '../package.json';
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)

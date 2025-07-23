@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAbsolutePath = exports.createEntryFileAsync = void 0;
+exports.createEntryFileAsync = createEntryFileAsync;
+exports.getAbsolutePath = getAbsolutePath;
 const getDevServer_1 = require("../getDevServer");
 /** Middleware for creating an entry file in the project. */
 function createEntryFileAsync() {
@@ -21,11 +22,9 @@ function createEntryFileAsync() {
         }),
     });
 }
-exports.createEntryFileAsync = createEntryFileAsync;
 function getAbsolutePath() {
     return process.env.EXPO_ROUTER_ABS_APP_ROOT + '/index.js';
 }
-exports.getAbsolutePath = getAbsolutePath;
 const TEMPLATE = `import { StyleSheet, Text, View } from "react-native";
 
 export default function Page() {

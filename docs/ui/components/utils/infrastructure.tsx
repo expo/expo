@@ -1,8 +1,10 @@
+import { ReactElement } from 'react';
+
 import { markdownComponents } from '~/ui/components/Markdown';
 
 export const ResourceClasses = { android: ['medium', 'large'], ios: ['medium', 'large'] } as const;
 
-const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number], JSX.Element> = {
+const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number], ReactElement> = {
   medium: (
     <>
       4 vCPUs, 16 GB RAM (
@@ -33,18 +35,9 @@ const AndroidResourceClassToSpec: Record<(typeof ResourceClasses.android)[number
   ),
 };
 
-const IosResourceClassToSpec: Record<(typeof ResourceClasses.ios)[number], JSX.Element> = {
-  medium: <>3 vCPUs, 8 GB RAM</>,
-  large: (
-    <>
-      <markdownComponents.ul>
-        <markdownComponents.li>6 vCPUs, 22 GB RAM if running on an M2 Mac</markdownComponents.li>
-        <markdownComponents.li>
-          5 vCPUs, 12 GB RAM if running on an M2 Pro Mac
-        </markdownComponents.li>
-      </markdownComponents.ul>
-    </>
-  ),
+const IosResourceClassToSpec: Record<(typeof ResourceClasses.ios)[number], ReactElement> = {
+  medium: <>5 performance cores, 20 GiB RAM, 110 GB SSD</>,
+  large: <>10 performance cores, 40 GiB RAM, 110 GB SSD</>,
 };
 
 function ResourceClassSpecLink({

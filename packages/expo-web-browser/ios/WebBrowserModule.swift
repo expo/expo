@@ -23,7 +23,8 @@ final public class WebBrowserModule: Module {
       }
 
       guard self.currentWebBrowserSession == nil else {
-        throw WebBrowserAlreadyOpenException()
+        promise.resolve(["type": "locked"])
+        return
       }
 
       guard self.isValid(url: url) else {

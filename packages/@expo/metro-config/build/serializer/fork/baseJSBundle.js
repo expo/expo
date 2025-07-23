@@ -13,7 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.baseJSBundleWithDependencies = exports.baseJSBundle = exports.getBaseUrlOption = exports.getPlatformOption = void 0;
+exports.getPlatformOption = getPlatformOption;
+exports.getBaseUrlOption = getBaseUrlOption;
+exports.baseJSBundle = baseJSBundle;
+exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
 const jsc_safe_url_1 = require("jsc-safe-url");
 const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
 const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
@@ -32,7 +35,6 @@ function getPlatformOption(graph, options) {
     const url = new URL(sourceUrl, 'https://expo.dev');
     return url.searchParams.get('platform') ?? null;
 }
-exports.getPlatformOption = getPlatformOption;
 function getBaseUrlOption(graph, options) {
     const baseUrl = graph.transformOptions?.customTransformOptions?.baseUrl;
     if (typeof baseUrl === 'string') {
@@ -43,7 +45,6 @@ function getBaseUrlOption(graph, options) {
     }
     return '/';
 }
-exports.getBaseUrlOption = getBaseUrlOption;
 function baseJSBundle(entryPoint, preModules, graph, options) {
     const platform = getPlatformOption(graph, options);
     if (platform == null) {
@@ -58,7 +59,6 @@ function baseJSBundle(entryPoint, preModules, graph, options) {
         computedAsyncModulePaths: null,
     });
 }
-exports.baseJSBundle = baseJSBundle;
 function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, options) {
     for (const module of dependencies) {
         options.createModuleId(module.path);
@@ -139,5 +139,4 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         paths: Object.fromEntries(mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length).map(([id, code]) => [id, code.paths])),
     };
 }
-exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
 //# sourceMappingURL=baseJSBundle.js.map

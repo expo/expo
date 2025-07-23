@@ -191,14 +191,13 @@ export function useAuthRequest(
   AuthSessionResult | null,
   (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>,
 ] {
-  const clientId = useMemo((): string => {
+  const clientId = useMemo(() => {
     const propertyName = Platform.select({
       ios: 'iosClientId',
       android: 'androidClientId',
       default: 'webClientId',
-    });
-
-    const clientId = config[propertyName as any] ?? config.clientId;
+    } as const);
+    const clientId = config[propertyName] ?? config.clientId;
     invariantClientId(propertyName, clientId, 'Google');
     return clientId;
   }, [config.iosClientId, config.androidClientId, config.webClientId, config.clientId]);

@@ -38,7 +38,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.76. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.79. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -52,7 +52,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 <DiffBlock source="/static/diffs/expo-ios.diff" />
 
-Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/sdk-52/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L33-L60).
+Optionally, you can also add additional delegate methods to your **AppDelegate.swift**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.swift](https://github.com/expo/expo/blob/sdk-53/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift#L24-L42).
 
 Save all of your changes and update your iOS Deployment Target in Xcode to `iOS 15.1`:
 
@@ -124,16 +124,15 @@ fi
 `"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
 ```
 
-And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.mm**:
+And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.swift**:
 
-```diff AppDelegate.mm
- - (NSURL *)getBundleURL
- {
+```diff AppDelegate.swift
+   override func bundleURL() -> URL? {
  #if DEBUG
--  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
+-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
++    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
  #else
-   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
  #endif
 ```
 

@@ -8,6 +8,7 @@ import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
 import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
@@ -28,11 +29,24 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   const props = await resolveOptionsAsync(projectRoot, options);
 
+  if (!options.binary && props.buildCacheProvider) {
+    const localPath = await resolveBuildCache({
+      projectRoot,
+      platform: 'android',
+      provider: props.buildCacheProvider,
+      runOptions: options,
+    });
+    if (localPath) {
+      options.binary = localPath;
+    }
+  }
+
   debug('Package name: ' + props.packageName);
   Log.log('› Building app...');
 
   const androidProjectRoot = path.join(projectRoot, 'android');
 
+  let shouldUpdateBuildCache = false;
   if (!options.binary) {
     let eagerBundleOptions: string | undefined;
 
@@ -53,6 +67,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
       architectures: props.architectures,
       eagerBundleOptions,
     });
+    shouldUpdateBuildCache = true;
 
     // Ensure the port hasn't become busy during the build.
     if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {
@@ -66,6 +81,15 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     headless: !props.shouldStartBundler,
   });
+
+  if (!options.binary) {
+    // Find the APK file path
+    const apkFile = await resolveInstallApkNameAsync(props.device.device, props);
+    if (apkFile) {
+      // Attempt to install the APK from the file path
+      options.binary = path.join(props.apkVariantDirectory, apkFile);
+    }
+  }
 
   if (options.binary) {
     // Attempt to install the APK from the file path
@@ -95,25 +119,25 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   } else {
     await manager.stopAsync();
   }
+
+  if (options.binary && shouldUpdateBuildCache && props.buildCacheProvider) {
+    await uploadBuildCache({
+      projectRoot,
+      platform: 'android',
+      provider: props.buildCacheProvider,
+      buildPath: options.binary,
+      runOptions: options,
+    });
+  }
 }
 
 async function installAppAsync(androidProjectRoot: string, props: ResolvedOptions) {
-  // Find the APK file path
-  const apkFile = await resolveInstallApkNameAsync(props.device.device, props);
-
-  if (apkFile) {
-    // Attempt to install the APK from the file path
-    const binaryPath = path.join(props.apkVariantDirectory, apkFile);
-    Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
-    await props.device.installAppAsync(binaryPath);
-  } else {
-    // If we cannot resolve the APK file path then we can attempt to install using Gradle.
-    // This offers more advanced resolution that we may not have first class support for.
-    Log.log('› Failed to locate binary file, installing with Gradle...');
-    await installAsync(androidProjectRoot, {
-      variant: props.variant ?? 'debug',
-      appName: props.appName ?? 'app',
-      port: props.port,
-    });
-  }
+  // If we cannot resolve the APK file path then we can attempt to install using Gradle.
+  // This offers more advanced resolution that we may not have first class support for.
+  Log.log('› Failed to locate binary file, installing with Gradle...');
+  await installAsync(androidProjectRoot, {
+    variant: props.variant ?? 'debug',
+    appName: props.appName ?? 'app',
+    port: props.port,
+  });
 }

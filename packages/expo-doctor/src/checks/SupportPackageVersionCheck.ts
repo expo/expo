@@ -69,14 +69,16 @@ export class SupportPackageVersionCheck implements DoctorCheck {
       isSuccessful: issues.length === 0,
       issues,
       advice: issues.length
-        ? 'Upgrade dependencies that are using the invalid package versions' +
-          (supportPackagesPinnedByResolution.length
-            ? ` and remove resolutions from package.json that are pinning ${joinWithCommasAnd(
-                supportPackagesPinnedByResolution
-              )} to an invalid version`
-            : '') +
-          '.'
-        : undefined,
+        ? [
+            'Upgrade dependencies that are using the invalid package versions' +
+              (supportPackagesPinnedByResolution.length
+                ? ` and remove resolutions from package.json that are pinning ${joinWithCommasAnd(
+                    supportPackagesPinnedByResolution
+                  )} to an invalid version`
+                : '') +
+              '.',
+          ]
+        : [],
     };
   }
 }

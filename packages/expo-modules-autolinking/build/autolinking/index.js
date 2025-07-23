@@ -17,7 +17,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findProjectRootSync = exports.queryAutolinkingModulesFromProjectAsync = exports.verifySearchResults = exports.generatePackageListAsync = exports.generateModulesProviderAsync = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
+exports.verifySearchResults = exports.generatePackageListAsync = exports.generateModulesProviderAsync = exports.getConfiguration = exports.resolveSearchPathsAsync = exports.resolveModulesAsync = exports.resolveExtraBuildDependenciesAsync = exports.mergeLinkingOptionsAsync = exports.getProjectPackageJsonPathAsync = exports.findModulesAsync = void 0;
+exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
+exports.findProjectRootSync = findProjectRootSync;
 const path_1 = __importDefault(require("path"));
 const findModules_1 = require("./findModules");
 Object.defineProperty(exports, "findModulesAsync", { enumerable: true, get: function () { return findModules_1.findModulesAsync; } });
@@ -28,6 +30,8 @@ Object.defineProperty(exports, "resolveSearchPathsAsync", { enumerable: true, ge
 const resolveModules_1 = require("./resolveModules");
 Object.defineProperty(exports, "resolveExtraBuildDependenciesAsync", { enumerable: true, get: function () { return resolveModules_1.resolveExtraBuildDependenciesAsync; } });
 Object.defineProperty(exports, "resolveModulesAsync", { enumerable: true, get: function () { return resolveModules_1.resolveModulesAsync; } });
+const getConfiguration_1 = require("./getConfiguration");
+Object.defineProperty(exports, "getConfiguration", { enumerable: true, get: function () { return getConfiguration_1.getConfiguration; } });
 var generatePackageList_1 = require("./generatePackageList");
 Object.defineProperty(exports, "generateModulesProviderAsync", { enumerable: true, get: function () { return generatePackageList_1.generateModulesProviderAsync; } });
 Object.defineProperty(exports, "generatePackageListAsync", { enumerable: true, get: function () { return generatePackageList_1.generatePackageListAsync; } });
@@ -43,12 +47,10 @@ async function queryAutolinkingModulesFromProjectAsync(projectRoot, options) {
     const searchResults = await (0, findModules_1.findModulesAsync)(linkOptions);
     return await (0, resolveModules_1.resolveModulesAsync)(searchResults, linkOptions);
 }
-exports.queryAutolinkingModulesFromProjectAsync = queryAutolinkingModulesFromProjectAsync;
 /**
  * Get the project root directory from the current working directory.
  */
 function findProjectRootSync(cwd = process.cwd()) {
     return path_1.default.dirname((0, mergeLinkingOptions_1.getProjectPackageJsonPathSync)(cwd));
 }
-exports.findProjectRootSync = findProjectRootSync;
 //# sourceMappingURL=index.js.map

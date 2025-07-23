@@ -1,4 +1,4 @@
-import type { ColorValue, ViewProps } from 'react-native';
+import type { ColorValue, ProcessedColorValue, ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 export type SymbolViewProps = {
@@ -40,7 +40,7 @@ export type SymbolViewProps = {
   tintColor?: ColorValue;
   /**
    * Determines how the image should be resized to fit its container.
-   * @default 'scaleToAspectFit'
+   * @default 'scaleAspectFit'
    */
   resizeMode?: ContentMode;
   /**
@@ -59,8 +59,8 @@ export interface NativeSymbolViewProps extends ViewProps {
   scale?: SymbolScale;
   weight?: SymbolWeight;
   animated: boolean;
-  colors?: ColorValue | ColorValue[];
-  tint?: ColorValue;
+  colors: (ProcessedColorValue | null | undefined)[];
+  tint: ProcessedColorValue | null | undefined;
   resizeMode?: ContentMode;
   animationSpec?: AnimationSpec;
 }

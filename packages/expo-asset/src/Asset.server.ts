@@ -4,8 +4,8 @@ import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 
 export class Asset {
-  private static byHash = {};
-  private static byUri = {};
+  private static byHash: Record<string, Asset | undefined> = {};
+  private static byUri: Record<string, Asset | undefined> = {};
 
   public name: string;
   public readonly type: string;
@@ -78,8 +78,9 @@ export class Asset {
 
   static fromMetadata(meta: AssetMetadata): Asset {
     const metaHash = meta.hash;
-    if (Asset.byHash[metaHash]) {
-      return Asset.byHash[metaHash];
+    const maybeHash = Asset.byHash[metaHash];
+    if (maybeHash) {
+      return maybeHash;
     }
 
     const { uri, hash } = selectAssetSource(meta);

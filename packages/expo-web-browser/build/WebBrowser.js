@@ -118,14 +118,7 @@ export async function openBrowserAsync(url, browserParams = {}) {
     if (!ExponentWebBrowser.openBrowserAsync) {
         throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
     }
-    let result;
-    try {
-        result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
-    }
-    catch {
-        return { type: WebBrowserResultType.LOCKED };
-    }
-    return result;
+    return await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
 }
 // @needsAudit
 /**
@@ -192,7 +185,7 @@ export async function openAuthSessionAsync(url, redirectUrl, options = {}) {
         if (!ExponentWebBrowser.openAuthSessionAsync) {
             throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
         }
-        if (['ios', 'web'].includes(Platform.OS)) {
+        if (['ios', 'macos', 'web'].includes(Platform.OS)) {
             return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, _processOptions(options));
         }
         return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);

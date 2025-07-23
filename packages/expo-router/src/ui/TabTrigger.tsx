@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { TabNavigationState } from '@react-navigation/native';
-import { ReactNode, useContext, ReactElement, ComponentProps, useCallback } from 'react';
+import { ReactNode, use, ReactElement, ComponentProps, useCallback } from 'react';
 import { View, StyleSheet, Pressable, PressableProps } from 'react-native';
 
 import { TabTriggerMapContext } from './TabContext';
@@ -141,7 +141,7 @@ export type TriggerProps = {
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { state, navigation } = useNavigatorContext();
   const { name, reset, onPress, onLongPress } = options;
-  const triggerMap = useContext(TabTriggerMapContext);
+  const triggerMap = use(TabTriggerMapContext);
 
   const getTrigger = useCallback(
     (name: string) => {

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stateToAction = exports.triggersToScreens = exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
+exports.SafeAreaViewSlot = exports.ViewSlot = void 0;
+exports.triggersToScreens = triggersToScreens;
+exports.stateToAction = stateToAction;
 const href_1 = require("../link/href");
 const sortRoutes_1 = require("../sortRoutes");
 const useScreens_1 = require("../useScreens");
@@ -43,17 +45,15 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
             continue;
         }
         let routeState = state;
+        const targetStateName = layoutRouteNode.route || '__root';
         // The state object is the current state from the rootNavigator
         // We need to work out the state for just this trigger
-        if (layoutRouteNode.route) {
-            while (state?.state) {
-                const previousState = state;
-                if (previousState.name === layoutRouteNode.route)
-                    break;
-                state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
-            }
-            routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
+        while (state?.state) {
+            if (state.name === targetStateName)
+                break;
+            state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
         }
+        routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
         const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
         if (!routeNode) {
             console.warn(`Unable to find routeNode for trigger ${JSON.stringify(trigger)}. This might be a bug with Expo Router`);
@@ -110,11 +110,11 @@ function triggersToScreens(triggers, layoutRouteNode, linking, initialRouteName,
         triggerMap,
     };
 }
-exports.triggersToScreens = triggersToScreens;
 function stateToAction(state, startAtRoute) {
     const rootPayload = {};
     let payload = rootPayload;
-    let foundStartingPoint = !startAtRoute || !state?.state;
+    startAtRoute = startAtRoute === '' ? '__root' : startAtRoute;
+    let foundStartingPoint = startAtRoute === undefined || !state?.state;
     while (state) {
         if (foundStartingPoint) {
             if (payload === rootPayload) {
@@ -145,5 +145,4 @@ function stateToAction(state, startAtRoute) {
         payload: rootPayload,
     };
 }
-exports.stateToAction = stateToAction;
 //# sourceMappingURL=common.js.map

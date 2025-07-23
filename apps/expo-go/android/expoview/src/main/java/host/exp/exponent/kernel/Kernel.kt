@@ -39,6 +39,7 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
+import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
@@ -68,6 +69,7 @@ import host.exp.expoview.Exponent.BundleListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.ref.WeakReference
@@ -903,6 +905,17 @@ class Kernel : KernelInterface() {
       ExceptionUtils.exceptionToErrorHeader(exception),
       ExceptionUtils.exceptionToCanRetry(exception)
     )
+    if (exception is ManifestException) {
+      kernelScope.launch {
+        withContext(Dispatchers.IO) {
+          ExponentPackageLogger.send(
+            exception.manifestUrl,
+            ExceptionUtils.exceptionToPlainText(exception),
+            ExponentPackageLogger.LogLevel.ERROR
+          )
+        }
+      }
+    }
   }
 
   // TODO: probably need to call this from other places.

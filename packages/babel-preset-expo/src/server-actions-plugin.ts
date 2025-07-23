@@ -8,22 +8,11 @@
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
 
-import {
-  ConfigAPI,
-  types,
-  template,
-  type NodePath,
-  type PluginObj,
-  type PluginPass,
-} from '@babel/core';
-// @ts-expect-error: missing types
-import { addNamed as addNamedImport } from '@babel/helper-module-imports';
-import type { Scope as BabelScope } from '@babel/traverse';
-import * as t from '@babel/types';
+import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@babel/core';
 import { relative as getRelativePath } from 'node:path';
-import url, { pathToFileURL } from 'node:url';
+import url from 'node:url';
 
-import { getPossibleProjectRoot } from './common';
+import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
 
 const debug = require('debug')('expo:babel:server-actions');
 
@@ -36,24 +25,26 @@ type ExtractedActionInfo = { localName?: string; exportedName: string };
 
 const LAZY_WRAPPER_VALUE_KEY = 'value';
 
-// React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
-// so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
-const _buildLazyWrapperHelper = template(`(thunk) => {
-  let cache;
-  return {
-    get ${LAZY_WRAPPER_VALUE_KEY}() {
-      return cache || (cache = thunk());
-    }
-  }
-}`);
-
-const buildLazyWrapperHelper = () => {
-  return (_buildLazyWrapperHelper() as t.ExpressionStatement).expression;
-};
-
 export function reactServerActionsPlugin(
-  api: ConfigAPI & { types: typeof types }
+  api: ConfigAPI & typeof import('@babel/core')
 ): PluginObj<PluginPass> {
+  const { types: t } = api;
+
+  // React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
+  // so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
+  const _buildLazyWrapperHelper = api.template(`(thunk) => {
+    let cache;
+    return {
+      get ${LAZY_WRAPPER_VALUE_KEY}() {
+        return cache || (cache = thunk());
+      }
+    }
+  }`);
+
+  const buildLazyWrapperHelper = () => {
+    return (_buildLazyWrapperHelper() as t.ExpressionStatement).expression;
+  };
+
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   let addReactImport: () => t.Identifier;
   let wrapBoundArgs: (expr: t.Expression) => t.Expression;
@@ -135,7 +126,7 @@ export function reactServerActionsPlugin(
     const isPathFunctionInTopLevel = path.find((p) => p.isProgram()) === path;
 
     const decl = isPathFunctionInTopLevel ? path : findImmediatelyEnclosingDeclaration(path);
-    let inserted: NodePath<types.ExportNamedDeclaration>;
+    let inserted: NodePath<t.ExportNamedDeclaration>;
 
     const canInsertExportNextToPath = (decl: NodePath) => {
       if (!decl) {
@@ -188,9 +179,10 @@ export function reactServerActionsPlugin(
     } else {
       // Fallback to inserting after the last import if no enclosing declaration is found
       const programBody = moduleScope.path.get('body');
-      const lastImportPath = findLast(
-        Array.isArray(programBody) ? programBody : [programBody],
-        (stmt) => stmt.isImportDeclaration()
+      const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast(
+        (statement) => {
+          return statement.isImportDeclaration();
+        }
       );
 
       [inserted] = lastImportPath!.insertAfter(functionDeclaration);
@@ -237,6 +229,11 @@ export function reactServerActionsPlugin(
     ]);
   };
 
+  function hasUseServerDirective(path: FnPath) {
+    const { body } = path.node;
+    return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
+  }
+
   return {
     name: 'expo-server-actions',
     pre(file) {
@@ -263,7 +260,7 @@ export function reactServerActionsPlugin(
 
       getActionModuleId = once(() => {
         // Create relative file path hash.
-        return pathToFileURL(getRelativePath(projectRoot, file.opts.filename!)).href;
+        return './' + toPosixPath(getRelativePath(projectRoot, file.opts.filename!));
       });
 
       const defineBoundArgsWrapperHelper = once(() => {
@@ -509,13 +506,16 @@ export function reactServerActionsPlugin(
         if (!state.file.metadata.isModuleMarkedWithUseServerDirective) {
           return;
         }
+        // Skip type-only exports (`export type { Foo } from '...'` or `export { type Foo }`)
+        if (path.node.exportKind === 'type') {
+          return;
+        }
 
         // This can happen with `export {};` and TypeScript types.
         if (!path.node.declaration && !path.node.specifiers.length) {
           return;
         }
 
-        const registerServerReferenceId = addReactImport();
         const actionModuleId = getActionModuleId();
 
         const createRegisterCall = (
@@ -523,7 +523,7 @@ export function reactServerActionsPlugin(
           exported: t.Identifier | t.StringLiteral = identifier
         ) => {
           const exportedName = t.isIdentifier(exported) ? exported.name : exported.value;
-          const call = t.callExpression(registerServerReferenceId, [
+          const call = t.callExpression(addReactImport(), [
             identifier,
             t.stringLiteral(actionModuleId),
             t.stringLiteral(exportedName),
@@ -547,6 +547,11 @@ export function reactServerActionsPlugin(
                 'Internal error while extracting server actions. Expected `export default variable;` to be extracted. (ExportDefaultSpecifier in ExportNamedDeclaration)'
               );
             } else if (t.isExportSpecifier(specifier)) {
+              // Skip TypeScript type re-exports (e.g., `export { type Foo }`)
+              if (specifier.exportKind === 'type') {
+                continue;
+              }
+
               // `export { foo };`
               // `export { foo as [bar|default] };`
               const localName = specifier.local.name;
@@ -712,9 +717,9 @@ const isChildScope = ({
   parent,
   child,
 }: {
-  root: BabelScope;
-  parent: BabelScope;
-  child: BabelScope;
+  root: NodePath['scope'];
+  parent: NodePath['scope'];
+  child: NodePath['scope'];
 }) => {
   let curScope = child;
   while (curScope !== root) {
@@ -724,13 +729,6 @@ const isChildScope = ({
     curScope = curScope.parent;
   }
   return false;
-};
-
-const findLast = <T>(arr: T[], predicate: (value: T) => boolean): T | undefined => {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i])) return arr[i];
-  }
-  return undefined;
 };
 
 function findImmediatelyEnclosingDeclaration(path: FnPath) {
@@ -790,39 +788,3 @@ function assertExpoMetadata(metadata: any): asserts metadata is {
     throw new Error('Expected Babel state.file.metadata to be an object');
   }
 }
-
-const getOrCreateInMap = <K, V>(
-  map: Map<K, V>,
-  key: K,
-  create: () => V
-): [value: V, didCreate: boolean] => {
-  if (!map.has(key)) {
-    const result = create();
-    map.set(key, result);
-    return [result, true];
-  }
-  return [map.get(key)!, false];
-};
-
-function hasUseServerDirective(path: FnPath) {
-  const { body } = path.node;
-  return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
-}
-
-const createAddNamedImportOnce = (t: typeof import('@babel/types')) => {
-  const addedImportsCache = new Map<string, Map<string, t.Identifier>>();
-  return function addNamedImportOnce(path: NodePath<t.Node>, name: string, source: string) {
-    const [sourceCache] = getOrCreateInMap(
-      addedImportsCache,
-      source,
-      () => new Map<string, t.Identifier>()
-    );
-    const [identifier, didCreate] = getOrCreateInMap(sourceCache, name, () =>
-      addNamedImport(path, name, source)
-    );
-    // for cached imports, we need to clone the resulting identifier, because otherwise
-    // '@babel/plugin-transform-modules-commonjs' won't replace the references to the import for some reason.
-    // this is a helper for that.
-    return didCreate ? identifier : t.cloneNode(identifier);
-  };
-};

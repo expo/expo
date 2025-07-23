@@ -9,7 +9,7 @@
   </a>
 </p>
 
-Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.
+Provides a Map component that uses Google Maps on Android and Apple Maps on iOS. Requires a minimum deployment target of iOS 18.0.
 
 # API documentation
 
@@ -17,10 +17,8 @@ Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.
 
 # Installation
 
-> 🚨 Not recommended in the current development stage.
-
 ```shell
-npx expo install expo-mesh-gradient
+npx expo install expo-maps
 ```
 
 # Contributing

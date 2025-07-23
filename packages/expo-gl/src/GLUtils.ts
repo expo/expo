@@ -21,11 +21,13 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
       return;
     }
 
+    const __gl = gl as Record<keyof typeof gl | string, any>;
+
     // Turn off logging.
     if (option === GLLoggingOption.DISABLED || !option) {
-      Object.entries(gl).forEach(([key, value]) => {
+      Object.entries(__gl).forEach(([key, value]) => {
         if (typeof value === 'function' && value.__logWrapper) {
-          delete gl[key];
+          delete __gl[key];
         }
       });
       loggingOption = option;
@@ -33,20 +35,20 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
     }
 
     // Turn on logging.
-    Object.entries(Object.getPrototypeOf(gl)).forEach(([key, originalValue]) => {
+    Object.entries(Object.getPrototypeOf(__gl)).forEach(([key, originalValue]) => {
       if (typeof originalValue !== 'function' || key === '__expoSetLogging') {
         return;
       }
 
-      gl[key] = (...args) => {
+      __gl[key] = (...args: any[]) => {
         if (loggingOption & GLLoggingOption.METHOD_CALLS) {
           const params = args.map((arg) => {
             // If the type is `number`, then try to find name of the constant that has such value,
             // so it's easier to read these logs. In some cases it might be misleading
             // if the parameter is for example a width or height, so the number is still logged.
             if (loggingOption & GLLoggingOption.RESOLVE_CONSTANTS && typeof arg === 'number') {
-              for (const prop in gl) {
-                if (gl[prop] === arg) {
+              for (const prop in __gl) {
+                if (__gl[prop] === arg) {
                   return `${arg} (${prop})`;
                 }
               }
@@ -67,7 +69,7 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
           console.log(`ExpoGL: ${key}(${params.join(', ')})`);
         }
 
-        const result = originalValue.apply(gl, args);
+        const result = originalValue.apply(__gl, args);
 
         if (loggingOption & GLLoggingOption.METHOD_CALLS) {
           console.log(`ExpoGL:   = ${result}`);
@@ -75,14 +77,14 @@ export function configureLogging(gl: ExpoWebGLRenderingContext): void {
         if (loggingOption & GLLoggingOption.GET_ERRORS && key !== 'getError') {
           // @ts-ignore We need to call into the original `getError`.
           // eslint-disable-next-line no-proto
-          const error = gl.__proto__.getError.call(gl);
+          const error = __gl.__proto__.getError.call(__gl);
 
-          if (error && error !== gl.NO_ERROR) {
+          if (error && error !== __gl.NO_ERROR) {
             // `console.error` would cause a red screen, so let's just log with red color.
-            console.log(`\x1b[31mExpoGL: Error ${GLErrors[error]}\x1b[0m`);
+            console.log(`\x1b[31mExpoGL: Error ${GLErrors[error as keyof typeof GLErrors]}\x1b[0m`);
           }
         }
-        gl[key].__logWrapper = true;
+        __gl[key].__logWrapper = true;
         return result;
       };
     });

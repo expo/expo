@@ -150,7 +150,7 @@ export class XcodePrerequisite extends Prerequisite {
 
       // Almost certainly Xcode isn't installed.
       await promptToOpenAppStoreAsync(
-        `Xcode must be fully installed before you can continue. Continue to the App Store?`
+        `Xcode must be fully installed before you can continue. If this message is still occurring after installing Xcode, you may need to finish the installation of the developer tools by running: \`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer\`. Continue to the App Store?`
       );
       throw new AbortCommandError();
     }

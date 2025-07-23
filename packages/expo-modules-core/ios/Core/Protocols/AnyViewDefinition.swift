@@ -17,7 +17,7 @@ public protocol AnyViewDefinition {
   /**
    Creates an instance of the native view.
    */
-  func createView(appContext: AppContext) -> UIView?
+  func createView(appContext: AppContext) -> AppleView?
 
   /**
    Returns props definitions as a dictionary where the keys are the prop names.
@@ -37,7 +37,7 @@ public protocol AnyViewDefinition {
   /**
    Calls defined lifecycle methods with the given type.
    */
-  func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: UIView)
+  func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: AppleView)
 
   /**
    Creates a JavaScript object that may be used as a React component prototype.

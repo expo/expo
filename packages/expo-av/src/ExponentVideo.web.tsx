@@ -48,6 +48,10 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this._removeFullscreenListener?.();
   }
 
+  getVideoElement = () => {
+    return this._video;
+  };
+
   onFullscreenChange = (isFullscreen: boolean) => {
     if (!this.props.onFullscreenUpdate) return;
     if (isFullscreen) {
@@ -77,7 +81,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onLoadedData = (event) => {
+  onLoadedData = (event: { nativeEvent: AVPlaybackStatus }) => {
     if (!this.props.onLoad) {
       return;
     }
@@ -85,7 +89,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onError = (event) => {
+  onError = (event: { nativeEvent: { error: string } }) => {
     if (!this.props.onError) {
       return;
     }
@@ -109,7 +113,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onCanPlay = (event) => {
+  onCanPlay = (event: { nativeEvent: VideoReadyForDisplayEvent }) => {
     if (!this.props.onReadyForDisplay) {
       return;
     }

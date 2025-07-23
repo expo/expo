@@ -227,12 +227,12 @@ function generateRandom(size) {
     return bufferToString(array);
 }
 function bufferToString(buffer) {
-    const state = [];
+    let state = '';
     for (let i = 0; i < buffer.byteLength; i += 1) {
         const index = buffer[i] % CHARSET.length;
-        state.push(CHARSET[index]);
+        state += CHARSET[index];
     }
-    return state.join('');
+    return state;
 }
 // Window Features
 // Ensure feature string is an object

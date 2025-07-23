@@ -3,14 +3,23 @@ import { GoogleMaps } from 'expo-maps';
 import { useState } from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 
-const cameraCoordinates = [
+const cameraCoordinates: GoogleMaps.StreetViewProps['position'][] = [
   {
-    latitude: 40.9971,
-    longitude: 29.1007,
+    coordinates: { latitude: 50.0620543, longitude: 19.9388222 },
+    zoom: 0,
+    tilt: 5,
+    bearing: 240,
   },
   {
-    latitude: 37.78825,
-    longitude: -122.4324,
+    coordinates: { latitude: 37.78825, longitude: -122.4324 },
+    tilt: 10,
+    bearing: 70,
+  },
+  {
+    coordinates: { latitude: 50.0494075, longitude: 19.9655114 },
+    zoom: 1,
+    tilt: 10,
+    bearing: 190,
   },
 ];
 

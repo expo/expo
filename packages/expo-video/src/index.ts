@@ -7,12 +7,13 @@ export {
 export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
 
-export { VideoContentFit, VideoViewProps } from './VideoView.types';
-export { VideoThumbnail } from './VideoThumbnail';
+export type { VideoContentFit, VideoViewProps, SurfaceType } from './VideoView.types';
+export type { VideoThumbnail } from './VideoThumbnail';
 
 export { createVideoPlayer } from './VideoPlayer';
+export { default as VideoAirPlayButton } from './VideoAirPlayButton';
 
-export {
+export type {
   VideoPlayer,
   VideoPlayerStatus,
   VideoSource,
@@ -25,16 +26,10 @@ export {
   VideoThumbnailOptions,
   VideoSize,
   SubtitleTrack,
+  AudioTrack,
   VideoTrack,
+  ContentType,
 } from './VideoPlayer.types';
 
-export {
-  VideoPlayerEvents,
-  StatusChangeEventPayload,
-  PlayingChangeEventPayload,
-  PlaybackRateChangeEventPayload,
-  VolumeChangeEventPayload,
-  MutedChangeEventPayload,
-  TimeUpdateEventPayload,
-  SourceChangeEventPayload,
-} from './VideoPlayerEvents.types';
+export type * from './VideoPlayerEvents.types';
+export type * from './VideoAirPlayButton.types';

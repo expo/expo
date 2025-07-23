@@ -56,7 +56,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
 
   expect(generate(results.ast).code).toMatchSnapshot();
 
-  expect(babel.transformSync).toBeCalledWith(fixture, {
+  expect(babel.transformSync).toHaveBeenCalledWith(fixture, {
     ast: true,
     babelrc: true,
     caller: {
@@ -118,10 +118,10 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
     plugins: [],
   });
 
-  expect(console.warn).toBeCalledTimes(0);
+  expect(console.warn).toHaveBeenCalledTimes(0);
   expect(generate(results.ast).code).toMatchSnapshot();
 
-  expect(babel.transformSync).toBeCalledWith(fixture, {
+  expect(babel.transformSync).toHaveBeenCalledWith(fixture, {
     ast: true,
     babelrc: true,
     caller: expect.objectContaining({

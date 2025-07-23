@@ -20,6 +20,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,7 @@ private fun SectionTitle(text: String) {
 }
 
 @Composable
-fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatchers: ContextMenuDispatchers) {
+fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatchers: ContextMenuDispatchers, expanded: MutableState<Boolean>) {
   sectionTitle?.takeIf { !it.isEmpty() }?.let {
     SectionTitle(it)
   }
@@ -68,6 +69,7 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
         text = { Text(it.text) },
         onClick = {
           dispatchers.buttonPressed(ContextMenuButtonPressedEvent(id))
+          expanded.value = false
         }
       )
     }
@@ -95,13 +97,14 @@ fun FlatMenu(elements: Array<ContextMenuElement>, sectionTitle: String?, dispatc
           dispatchers.switchCheckedChanged(
             ContextMenuSwitchValueChangeEvent(!it.value, id)
           )
+          expanded.value = false
         }
       )
     }
 
     element.submenu?.let {
       HorizontalDivider()
-      FlatMenu(it.elements, it.button.text, dispatchers)
+      FlatMenu(it.elements, it.button.text, dispatchers, expanded)
     }
   }
 }
@@ -111,7 +114,8 @@ data class ContextMenuDispatchers(
   val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchValueChangeEvent>
 )
 
-class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<ContextMenuProps>(context, appContext) {
+class ContextMenu(context: Context, appContext: AppContext) :
+  ExpoComposeView<ContextMenuProps>(context, appContext, withHostingView = true) {
   override val props = ContextMenuProps()
   val expanded = mutableStateOf(false)
   val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()
@@ -143,29 +147,29 @@ class ContextMenu(context: Context, appContext: AppContext) : ExpoComposeView<Co
     return super.dispatchTouchEvent(ev)
   }
 
-  init {
-    setContent {
-      var elements by remember { props.elements }
-      val color by remember { props.color }
+  @Composable
+  override fun Content(modifier: Modifier) {
+    var elements by remember { props.elements }
+    val color by remember { props.color }
 
-      return@setContent Box {
-        DynamicTheme {
-          DropdownMenu(
-            containerColor = color?.composeOrNull ?: MenuDefaults.containerColor,
-            expanded = expanded.value,
-            onDismissRequest = {
-              expanded.value = !expanded.value
-            }
-          ) {
-            FlatMenu(
-              elements,
-              null,
-              dispatchers = ContextMenuDispatchers(
-                buttonPressed = onContextMenuButtonPressed,
-                switchCheckedChanged = onContextMenuSwitchValueChanged
-              )
-            )
+    return Box {
+      DynamicTheme {
+        DropdownMenu(
+          containerColor = color?.composeOrNull ?: MenuDefaults.containerColor,
+          expanded = expanded.value,
+          onDismissRequest = {
+            expanded.value = !expanded.value
           }
+        ) {
+          FlatMenu(
+            elements,
+            null,
+            dispatchers = ContextMenuDispatchers(
+              buttonPressed = onContextMenuButtonPressed,
+              switchCheckedChanged = onContextMenuSwitchValueChanged
+            ),
+            expanded = expanded
+          )
         }
       }
     }

@@ -46,7 +46,7 @@
 @@ -46,6 +46,7 @@
  
  #if !TARGET_OS_OSX
- @interface RNCWebViewImpl : RCTView <UIEditMenuInteractionDelegate>
+ @interface RNCWebViewImpl : RCTView <UIEditMenuInteractionDelegate, UIGestureRecognizerDelegate>
 +@property (nonatomic, strong) NSString *scopeKey;
  
  @property (nonatomic, nullable) UIEditMenuInteraction *editMenuInteraction API_AVAILABLE(ios(16.0));

@@ -71,9 +71,14 @@ export type Router = {
      * @hidden
      */
     reload: () => void;
+    /**
+     * Prefetch a screen in the background before navigating to it
+     */
+    prefetch: (name: Href) => void;
 };
 /**
  * @hidden
  */
 export declare const router: Router;
+export declare function ImperativeApiEmitter(): null;
 //# sourceMappingURL=imperative-api.d.ts.map

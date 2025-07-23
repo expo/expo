@@ -32,11 +32,6 @@ import javax.annotation.Nonnull;
 public class AsyncStoragePackage extends TurboReactPackage {
 
     @Override
-    protected List<ModuleSpec> getViewManagers(ReactApplicationContext reactContext) {
-        return null;
-    }
-
-    @Override
     public NativeModule getModule(String name, @Nonnull ReactApplicationContext reactContext) {
         switch (name) {
             case AsyncStorageModule.NAME:

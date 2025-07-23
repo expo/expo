@@ -1,26 +1,21 @@
 import * as Device from 'expo-device';
-import { type EventSubscription } from 'expo-modules-core';
+import { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
-import * as TaskManager from 'expo-task-manager';
+import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React from 'react';
-import { Alert, Text, Platform, ScrollView, View } from 'react-native';
+import { Alert, Text, ScrollView, View, Platform } from 'react-native';
 
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
-const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
-const BACKGROUND_TASK_SUCCESSFUL = 'Background task successfully ran!';
-const BACKGROUND_TEST_INFO = `To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.dev/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check your terminal for:\n"${BACKGROUND_TASK_SUCCESSFUL}"`;
-
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async () => {
-  console.log(BACKGROUND_TASK_SUCCESSFUL);
-});
+const BACKGROUND_TEST_INFO = `[notification-tester app only]: To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.dev/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check the "persisted data" presented in the notification-tester app`;
 
 const remotePushSupported = Device.isDevice;
+
 export default class NotificationScreen extends React.Component<
-  object,
+  void,
   {
     lastNotifications?: Notifications.Notification;
   }
@@ -29,51 +24,52 @@ export default class NotificationScreen extends React.Component<
     title: 'Notifications',
   };
 
-  private _onReceivedListener: EventSubscription | undefined;
-  private _onResponseReceivedListener: EventSubscription | undefined;
-
-  constructor(props: object) {
+  constructor(props: void) {
     super(props);
     this.state = {};
   }
 
+  private _onReceivedListener: EventSubscription | undefined;
+  private _onResponseReceivedListener: EventSubscription | undefined;
+
   componentDidMount() {
-    if (Platform.OS !== 'web') {
-      this._onReceivedListener = Notifications.addNotificationReceivedListener(
-        this._handelReceivedNotification
-      );
-      this._onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
-        this._handelNotificationResponseReceived
-      );
-      Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
-      // Using the same category as in `registerForPushNotificationsAsync`
-      Notifications.setNotificationCategoryAsync('welcome', [
-        {
-          buttonTitle: `Don't open app`,
-          identifier: 'first-button',
-          options: {
-            opensAppToForeground: false,
-          },
-        },
-        {
-          buttonTitle: 'Respond with text',
-          identifier: 'second-button-with-text',
-          textInput: {
-            submitButtonTitle: 'Submit button',
-            placeholder: 'Placeholder text',
-          },
-        },
-        {
-          buttonTitle: 'Open app',
-          identifier: 'third-button',
-          options: {
-            opensAppToForeground: true,
-          },
-        },
-      ])
-        .then((_category) => {})
-        .catch((error) => console.warn('Could not have set notification category', error));
+    if (Platform.OS !== 'ios' && Platform.OS !== 'android') {
+      return;
     }
+    // Using the same category as in `registerForPushNotificationsAsync`
+    Notifications.setNotificationCategoryAsync('welcome', [
+      {
+        buttonTitle: `Don't open app`,
+        identifier: 'first-button',
+        options: {
+          opensAppToForeground: false,
+        },
+      },
+      {
+        buttonTitle: 'Respond with text',
+        identifier: 'second-button-with-text',
+        textInput: {
+          submitButtonTitle: 'Submit button',
+          placeholder: 'Placeholder text',
+        },
+      },
+      {
+        buttonTitle: 'Open app',
+        identifier: 'third-button',
+        options: {
+          opensAppToForeground: true,
+        },
+      },
+    ])
+      .then((_category) => {})
+      .catch((error) => console.warn('Could not have set notification category', error));
+
+    this._onReceivedListener = Notifications.addNotificationReceivedListener(
+      this._handleReceivedNotification
+    );
+    this._onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
+      this._handleNotificationResponseReceived
+    );
   }
 
   componentWillUnmount() {
@@ -88,6 +84,18 @@ export default class NotificationScreen extends React.Component<
         <ListButton
           onPress={this._presentLocalNotificationAsync}
           title="Present a notification immediately"
+        />
+        <ListButton
+          title="getAllScheduledNotificationsAsync()"
+          onPress={() => {
+            getAllScheduledNotificationsAsync()
+              .then((notificationRequests) => {
+                const text = JSON.stringify(notificationRequests, null, 2);
+                console.log(`scheduledNotificationRequests = ${text}`);
+                alert(text);
+              })
+              .catch(console.error);
+          }}
         />
         <ListButton
           onPress={async () => {
@@ -135,10 +143,20 @@ export default class NotificationScreen extends React.Component<
             should warn accordingly.
           </Text>
         )}
-        <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
+        <ListButton
+          onPress={this._sendNotificationAsync}
+          title="Send me a push notification with action buttons"
+        />
         <ListButton
           onPress={this._unregisterForNotificationsAsync}
           title="Unregister for push notifications"
+        />
+        <ListButton
+          onPress={async () => {
+            const token = await Notifications.getDevicePushTokenAsync();
+            Alert.alert('Push token received', JSON.stringify(token));
+          }}
+          title="Get push token after unregistering"
         />
         <BackgroundNotificationHandlingSection />
         <HeadingText>Badge Number</HeadingText>
@@ -202,13 +220,13 @@ export default class NotificationScreen extends React.Component<
     );
   }
 
-  _handelReceivedNotification = (notification: Notifications.Notification) => {
+  _handleReceivedNotification = (notification: Notifications.Notification) => {
     this.setState({
       lastNotifications: notification,
     });
   };
 
-  _handelNotificationResponseReceived = (
+  _handleNotificationResponseReceived = (
     notificationResponse: Notifications.NotificationResponse
   ) => {
     console.log({ notificationResponse });

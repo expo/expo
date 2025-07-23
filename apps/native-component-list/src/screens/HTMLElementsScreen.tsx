@@ -36,7 +36,7 @@ import {
   TR,
   UL,
 } from '@expo/html-elements';
-import View from '@expo/html-elements/build/primitives/View';
+import View from '@expo/html-elements/src/primitives/View';
 import { ScrollView } from 'react-native';
 
 function CustomArticle({ title, children }: any) {

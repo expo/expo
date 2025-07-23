@@ -29,15 +29,16 @@ declare global {
 }
 /** @deprecated */
 export declare const ExpoRequest: {
-    new (input: URL | RequestInfo, init?: RequestInit | undefined): Request;
+    new (input: RequestInfo | URL, init?: RequestInit): Request;
     prototype: Request;
 };
 /** @deprecated */
 export declare const ExpoResponse: {
-    new (body?: BodyInit | null | undefined, init?: ResponseInit | undefined): Response;
+    new (body?: BodyInit | null, init?: ResponseInit): Response;
     prototype: Response;
     error(): Response;
-    redirect(url: string | URL, status?: number | undefined): Response;
+    json(data: any, init?: ResponseInit): Response;
+    redirect(url: string | URL, status?: number): Response;
 };
 /** Use global polyfills from undici */
 export declare function installGlobals(): void;

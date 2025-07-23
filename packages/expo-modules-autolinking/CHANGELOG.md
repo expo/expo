@@ -4,14 +4,111 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `:projectRoot` option to `use_expo_modules!` ([#38210](https://github.com/expo/expo/pull/38210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [iOS] Add support for user script sandboxing ([#38206](https://github.com/expo/expo/pull/38206) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactor JSON loading in `findModules` algorithm path to use plain `fs`. ([#38202](https://github.com/expo/expo/pull/38202) by [@kitten](https://github.com/kitten))
+
+## 2.1.14 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed breaking change for local AAR autolinking. ([#37882](https://github.com/expo/expo/pull/37882) by [@kudo](https://github.com/kudo))
+- [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.13 - 2025-07-01
+
+### 💡 Others
+
+- Added `System.getenv()` syntax support to credentials for extraMavenRepos. ([#37343](https://github.com/expo/expo/pull/37343) by [@kudo](https://github.com/kudo))
+
+## 2.1.12 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+
+## 2.1.11 - 2025-06-08
+
+### 💡 Others
+
+- Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Added `--transitive-linking-dependencies` option to support react-native-edge-to-edge autolinking in CNG projects. ([#37194](https://github.com/expo/expo/pull/37194) by [@kudo](https://github.com/kudo))
+
+## 2.1.10 — 2025-05-06
+
+### 🐛 Bug fixes
+
+- [Android] Fixed project properties were not being resolved correctly. ([#36666](https://github.com/expo/expo/pull/36666) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.9 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.8 — 2025-04-28
+
+### 🐛 Bug fixes
+
+- Fixed `react-native-config` linked result order. ([#36442](https://github.com/expo/expo/pull/36442) by [@kudo](https://github.com/kudo))
+
+## 2.1.7 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.6 — 2025-04-23
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.5 — 2025-04-21
+
+### 🎉 New features
+
+- Removed restriction preventing local expo modules from being excluded from autolinking. ([#36117](https://github.com/expo/expo/pull/36117) by [@wuguishifu](https://github.com/wuguishifu))
+
+### 🐛 Bug fixes
+
+- Fixed Android building error on Windows. ([#36179](https://github.com/expo/expo/pull/36179) by [@kudo](https://github.com/kudo))
+
+## 2.1.4 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.3 — 2025-04-11
+
+### 🎉 New features
+
+- [Android] Support `android.enableEdgeToEdge` field in app config. ([#35958](https://github.com/expo/expo/pull/35958) by [@behenate](https://github.com/behenate))
+
+## 2.1.2 — 2025-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2025-04-08
+
+### 🐛 Bug fixes
+
+- Fixed E2E test timeout. ([#35953](https://github.com/expo/expo/pull/35953) by [@kudo](https://github.com/kudo))
+
+## 2.1.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
 - Refactored how declaring multiple Android projects works. ([#35138](https://github.com/expo/expo/pull/35138) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
 - Added `coreFeatures` field. ([#34015](https://github.com/expo/expo/pull/34015) by [@lukmccall](https://github.com/lukmccall))
 - Add macOS support. ([#35065](https://github.com/expo/expo/pull/35065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 🐛 Bug fixes
+- [Android] Added `expoAutolinking.useExpoVersionCatalog` and `expoAutolinking.reactNativeGradlePlugin`. ([#35789](https://github.com/expo/expo/pull/35789) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -20,6 +117,7 @@
 - Drop `fast-glob` in favor of `glob`. ([#35082](https://github.com/expo/expo/pull/35082) by [@kitten](https://github.com/kitten))
 - [Android] Added `publication` configuration. ([#35068](https://github.com/expo/expo/pull/35068) by [@lukmccall](https://github.com/lukmccall))
 - Removed legacy `modulesClassNames` field. ([#35095](https://github.com/expo/expo/pull/35095) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Add a special case for autolinking `react-native-edge-to-edge` ([#35812](https://github.com/expo/expo/pull/35812) by [@behenate](https://github.com/behenate))
 
 ## 2.0.8 - 2025-02-19
 

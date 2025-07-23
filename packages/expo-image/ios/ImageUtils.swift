@@ -103,24 +103,7 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
 }
 
 /**
- Resizes the animated image to fit in the given size and scale.
- */
-func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
-  if image.sd_isAnimated,
-    let animatedImage = image as? AnimatedImage,
-    let actualCoder = animatedImage.animatedCoder {
-    let animatedCoder = ResizedAnimatedCoder(actualCoder: actualCoder, size: size, scale: scale)
-    if let result = AnimatedImage(animatedCoder: animatedCoder, scale: scale) {
-      return result
-    }
-  }
-
-  // fallback to a resized static image
-  return resize(image: image, toSize: size, scale: scale)
-}
-
-/**
- Resizes a still image to fit in the given size and scale.
+ Resizes a static image to fit in the given size and scale.
  */
 func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
   let format = UIGraphicsImageRendererFormat()
@@ -175,7 +158,7 @@ func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
 /**
  Creates a default image context based on the source and the cache policy.
  */
-func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk) -> SDWebImageContext {
+func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCachePolicy = .disk, useAppleWebpCodec: Bool = true) -> SDWebImageContext {
   var context = SDWebImageContext()
 
   // Modify URL request to add headers.
@@ -190,18 +173,21 @@ func createSDWebImageContext(forSource source: ImageSource, cachePolicy: ImageCa
   // which has better compatibility with the UIImage and fixes issues with the image duration.
   context[.animatedImageClass] = AnimatedImage.self
 
+  // Passing useAppleWebpCodec into WebPCoder
+  context[.imageDecodeOptions] = [
+    imageCoderOptionUseAppleWebpCodec: useAppleWebpCodec
+  ]
+
   // Assets from the bundler have `scale` prop which needs to be passed to the context,
   // otherwise they would be saved in cache with scale = 1.0 which may result in
   // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
   context[.imageScaleFactor] = source.scale
 
-  // Set which cache can be used to query and store the downloaded image.
-  // We want to store only original images (without transformations).
-  context[.queryCacheType] = SDImageCacheType.none.rawValue
-  context[.storeCacheType] = SDImageCacheType.none.rawValue
+  let sdCacheType = cachePolicy.toSdCacheType().rawValue
+  context[.queryCacheType] = sdCacheType
+  context[.storeCacheType] = sdCacheType
 
-  if source.isCachingAllowed {
-    let sdCacheType = cachePolicy.toSdCacheType().rawValue
+  if source.cacheOriginalImage {
     context[.originalQueryCacheType] = sdCacheType
     context[.originalStoreCacheType] = sdCacheType
   } else {

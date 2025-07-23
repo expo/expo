@@ -25,7 +25,7 @@ export function matchEstimatedBinaryPath(buildOutput: string): string | null {
   if (!appBinaryPathMatch?.length) {
     throw new CommandError(
       'XCODE_BUILD',
-      `Malformed xcodebuild results: app binary path was not generated in build output. Please report this issue and run your project with Xcode instead.`
+      `Malformed xcodebuild results: app binary path was not generated in build output. Report this issue and run your project with Xcode instead.`
     );
   } else {
     // Sort for the shortest
@@ -92,7 +92,7 @@ export function getEscapedPath(filePath: string): string {
   }
   throw new CommandError(
     'XCODE_BUILD',
-    `Unexpected: Generated app at path "${filePath}" cannot be read, the app cannot be installed. Please report this and build onto a simulator.`
+    `Unexpected: Generated app at path "${filePath}" cannot be read, the app cannot be installed. Report this and build onto a simulator.`
   );
 }
 
@@ -104,7 +104,7 @@ export function extractEnvVariableFromBuild(buildOutput: string, variableName: s
   if (!matched || !matched.length) {
     throw new CommandError(
       'XCODE_BUILD',
-      `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Please report this issue and run your project with Xcode instead.`
+      `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Report this issue and run your project with Xcode instead.`
     );
   }
   return matched.map((value) => value[1]).filter(Boolean) as string[];

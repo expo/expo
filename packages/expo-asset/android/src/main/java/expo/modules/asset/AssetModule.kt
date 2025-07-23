@@ -2,6 +2,7 @@ package expo.modules.asset
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
@@ -57,11 +58,15 @@ class AssetModule : Module() {
       try {
         val inputStream = when {
           uri.toString().contains(":").not() -> openAssetResourceStream(context, uri.toString())
+          uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE) -> openAndroidResStream(context, uri.toString())
           else -> uri.toURL().openStream()
         }
         inputStream.use { input ->
           localUrl.outputStream().use { output ->
-            input.copyTo(output)
+            val bytesCopied = input.copyTo(output)
+            if (bytesCopied == 0L) {
+              Log.w("ExpoAsset", "Asset downloaded to $localUrl is empty. It might be conflicting with another asset, or corrupted.")
+            }
           }
         }
         Uri.fromFile(localUrl)
@@ -75,7 +80,7 @@ class AssetModule : Module() {
     Name("ExpoAsset")
 
     AsyncFunction("downloadAsync") Coroutine { uri: URI, md5Hash: String?, type: String ->
-      if (uri.scheme === "file") {
+      if (uri.scheme == "file" && !uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
         return@Coroutine uri
       }
 

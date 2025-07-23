@@ -9,8 +9,8 @@ import {
   RecordingInput,
   RecordingOptions,
 } from './Audio.types';
+import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
-import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './ExpoAudio';
 import { RecordingPresets } from './RecordingConstants';
 import resolveAssetSource from './utils/resolveAssetSource';
 
@@ -63,6 +63,9 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     };
 
   return new Promise((resolve, reject) => {
+    // TODO(@kitten): The types indicates that this is incorrect.
+    // Please check whether this is correct!
+    // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
     getUserMedia.call(navigator, constraints, resolve, reject);
   });
 }
@@ -78,8 +81,8 @@ function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
   const status: AudioStatus = {
     id,
     isLoaded: true,
-    duration: media.duration * 1000,
-    currentTime: media.currentTime * 1000,
+    duration: media.duration,
+    currentTime: media.currentTime,
     playbackState: '',
     timeControlStatus: isPlaying ? 'playing' : 'paused',
     reasonForWaitingToPlay: '',
@@ -113,6 +116,7 @@ export class AudioPlayerWeb
 
   private src: AudioSource = null;
   private media: HTMLAudioElement;
+  // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
   private interval = 100;
   private isPlaying = false;
   private loaded = false;
@@ -138,11 +142,11 @@ export class AudioPlayerWeb
   }
 
   get duration(): number {
-    return this.media.duration * 1000;
+    return this.media.duration;
   }
 
   get currentTime(): number {
-    return this.media.currentTime * 1000;
+    return this.media.currentTime;
   }
 
   get paused(): boolean {
@@ -188,8 +192,12 @@ export class AudioPlayerWeb
     this.media = this._createMediaElement();
   }
 
-  async seekTo(seconds: number): Promise<void> {
-    this.media.currentTime = seconds / 1000;
+  async seekTo(
+    seconds: number,
+    toleranceMillisBefore?: number,
+    toleranceMillisAfter?: number
+  ): Promise<void> {
+    this.media.currentTime = seconds;
   }
 
   // Not supported on web

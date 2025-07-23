@@ -4,13 +4,91 @@
 
 ### 🛠 Breaking changes
 
-- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Mock Expo's default async-require messaging socket. ([#37524](https://github.com/expo/expo/pull/37524) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
+
+- Change the `global.expo` polyfill to work with package exports and be more explicit. ([#37588](https://github.com/expo/expo/pull/37588) by [@EvanBacon](https://github.com/EvanBacon))
+- add experimental link preview ([#37336](https://github.com/expo/expo/pull/37336) by [@Ubax](https://github.com/Ubax))
+- Add ExpoFont to ignorelist. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+
+## 53.0.9 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.8 - 2025-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.7 - 2025-06-06
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.6 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- Fix `requireOptionalNativeModule` throwing error if mock is missing. ([#36839](https://github.com/expo/expo/pull/36839) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- Fix ES6 import syntax inconsistency in setup.js by converting to CommonJS require. ([#37240](https://github.com/expo/expo/pull/37240) by [@huextrat](https://github.com/huextrat))
+- Rework mock generation for expo modules. ([#36677](https://github.com/expo/expo/pull/36677) by [@aleqsio](https://github.com/aleqsio))
+
+## 53.0.5 — 2025-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.4 — 2025-05-02
+
+### 🐛 Bug fixes
+
+- Add ExpoFontUtils mock ([#36585](https://github.com/expo/expo/pull/36585) by [@brentvatne](https://github.com/brentvatne))
+
+## 53.0.3 — 2025-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.2 — 2025-04-30
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.1 — 2025-04-28
+
+### 🎉 New features
+
+- add web stream API support globally on native ([#36407](https://github.com/expo/expo/pull/36407) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 53.0.0 — 2025-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.3 — 2025-04-14
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.2 — 2025-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.1 — 2025-04-08
+
+_This version does not introduce any user-facing changes._
+
+## 53.0.0-preview.0 — 2025-04-04
+
+### 🛠 Breaking changes
+
+- upgrade RN to 0.78 ([#35050](https://github.com/expo/expo/pull/35050) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- Drop `fbemitter` in favor of internal logic. ([#35318](https://github.com/expo/expo/pull/35319) by [@kitten](https://github.com/kitten)
+- Update mocks to for esm exports. ([#35574](https://github.com/expo/expo/pull/35574) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 52.0.6 - 2025-03-11
 

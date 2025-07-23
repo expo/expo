@@ -7,12 +7,16 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 internal class NativeStatement : SharedRef<NativeStatementBinding>(NativeStatementBinding()) {
   var isFinalized = false
 
-  override fun deallocate() {
-    super.deallocate()
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     this.ref.close()
   }
 
   override fun equals(other: Any?): Boolean {
     return other is NativeStatement && this.ref == other.ref
+  }
+
+  override fun hashCode(): Int {
+    return ref.hashCode()
   }
 }

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useDeprecated = exports.useWarnOnce = void 0;
+exports.useWarnOnce = useWarnOnce;
+exports.useDeprecated = useDeprecated;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 // Node environment may render in multiple processes causing the warning to log mutiple times
@@ -20,9 +21,7 @@ function useWarnOnce(message, guard = true, key = message) {
         }
     }, [guard]);
 }
-exports.useWarnOnce = useWarnOnce;
 function useDeprecated(message, guard = true, key = message) {
     return useWarnOnce(key, guard, `Expo Router: ${message}`);
 }
-exports.useDeprecated = useDeprecated;
 //# sourceMappingURL=useDeprecated.js.map

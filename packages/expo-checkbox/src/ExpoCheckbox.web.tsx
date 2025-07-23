@@ -10,6 +10,7 @@
  */
 
 import React from 'react';
+// @ts-expect-error: TODO(@kitten): We optimally shouldn't pull in all of react-native-web just for expo-checkbox. It's excessive
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';

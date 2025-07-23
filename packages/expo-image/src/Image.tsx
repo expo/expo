@@ -2,7 +2,7 @@
 
 import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import {
@@ -20,9 +20,10 @@ let loggedDefaultSourceDeprecationWarning = false;
 let loggedRenderingChildrenWarning = false;
 
 export class Image extends React.PureComponent<ImageProps> {
-  nativeViewRef;
-  containerViewRef;
-  constructor(props) {
+  nativeViewRef: React.RefObject<ExpoImage | null>;
+  containerViewRef: React.RefObject<View | null>;
+
+  constructor(props: ImageProps) {
     super(props);
     this.nativeViewRef = createSnapshotFriendlyRef();
     this.containerViewRef = createSnapshotFriendlyRef();
@@ -128,17 +129,29 @@ export class Image extends React.PureComponent<ImageProps> {
 
   /**
    * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
-   * @param url - The URL of the image to generate a blurhash from.
+   * @param source - The image source, either a URL (string) or an ImageRef
    * @param numberOfComponents - The number of components to encode the blurhash with.
    * Must be between 1 and 9. Defaults to `[4, 3]`.
+   * @platform android
    * @platform ios
    * @return A promise resolving to the blurhash string.
    */
   static async generateBlurhashAsync(
-    url: string,
+    source: string | ImageRef,
     numberOfComponents: [number, number] | { width: number; height: number }
   ): Promise<string | null> {
-    return await ImageModule.generateBlurhashAsync(url, numberOfComponents);
+    return ImageModule.generateBlurhashAsync(source, numberOfComponents);
+  }
+
+  /**
+   * Asynchronously generates a [Thumbhash](https://evanw.github.io/thumbhash/) from an image.
+   * @param source - The image source, either a URL (string) or an ImageRef
+   * @platform android
+   * @platform ios
+   * @return A promise resolving to the thumbhash string.
+   */
+  static async generateThumbhashAsync(source: string | ImageRef): Promise<string> {
+    return ImageModule.generateThumbhashAsync(source);
   }
 
   /**
@@ -147,7 +160,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    */
   async startAnimating(): Promise<void> {
-    await this.nativeViewRef.current.startAnimating();
+    await this.nativeViewRef.current?.startAnimating();
   }
 
   /**
@@ -156,7 +169,34 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    */
   async stopAnimating(): Promise<void> {
-    await this.nativeViewRef.current.stopAnimating();
+    await this.nativeViewRef.current?.stopAnimating();
+  }
+
+  /**
+   * Prevents the resource from being reloaded by locking it.
+   * @platform android
+   * @platform ios
+   */
+  async lockResourceAsync(): Promise<void> {
+    await this.nativeViewRef.current?.lockResourceAsync();
+  }
+
+  /**
+   * Releases the lock on the resource, allowing it to be reloaded.
+   * @platform android
+   * @platform ios
+   */
+  async unlockResourceAsync(): Promise<void> {
+    await this.nativeViewRef.current?.unlockResourceAsync();
+  }
+
+  /**
+   * Reloads the resource, ignoring lock.
+   * @platform android
+   * @platform ios
+   */
+  async reloadAsync(): Promise<void> {
+    await this.nativeViewRef.current?.reloadAsync();
   }
 
   /**
@@ -167,7 +207,7 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform web
    */
   static async loadAsync(
-    source: ImageSource | string,
+    source: ImageSource | string | number,
     options?: ImageLoadOptions
   ): Promise<ImageRef> {
     const resolvedSource = resolveSource(source) as ImageSource;

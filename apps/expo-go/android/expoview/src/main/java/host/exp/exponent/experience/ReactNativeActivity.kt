@@ -17,7 +17,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.view.contains
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
@@ -30,7 +30,6 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
 import expo.modules.ReactNativeHostWrapper
@@ -58,7 +57,6 @@ import host.exp.exponent.utils.ScopedPermissionsRequester
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import host.exp.expoview.Exponent.StartReactInstanceDelegate
-import host.exp.expoview.R
 import org.json.JSONException
 import org.json.JSONObject
 import versioned.host.exp.exponent.ExpoNetworkInterceptor
@@ -136,15 +134,13 @@ abstract class ReactNativeActivity :
     setContentView(containerView)
 
     reactContainerView = FrameLayout(this)
+    reactContainerView.layoutParams = ViewGroup.LayoutParams(
+      ViewGroup.LayoutParams.MATCH_PARENT,
+      ViewGroup.LayoutParams.MATCH_PARENT
+    )
     containerView.addView(reactContainerView)
 
     if (shouldCreateLoadingView()) {
-      containerView.setBackgroundColor(
-        ContextCompat.getColor(
-          this,
-          R.color.splashscreen_background
-        )
-      )
       loadingView = LoadingView(this)
       loadingView!!.show()
       containerView.addView(loadingView)
@@ -165,7 +161,9 @@ abstract class ReactNativeActivity :
   }
 
   fun addReactViewToContentContainer(reactView: View) {
-    reactContainerView.addView(reactView)
+    if (!reactContainerView.contains(reactView)) {
+      reactContainerView.addView(reactView)
+    }
   }
 
   fun hasReactView(reactView: View): Boolean {
@@ -516,19 +514,6 @@ abstract class ReactNativeActivity :
           existingEmitter.emit(eventName, eventPayload)
         }
       }
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-  }
-
-  /**
-   * Emits events to `RCTNativeAppEventEmitter`
-   */
-  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
-    try {
-      val emitter =
-        reactHost?.currentReactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)
-      emitter?.emit(eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }

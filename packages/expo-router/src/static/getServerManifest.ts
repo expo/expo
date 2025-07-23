@@ -40,6 +40,7 @@ export async function getBuildTimeServerManifestAsync(
 export async function getManifest(options: Options = {}) {
   const routeTree = getRoutes(ctx, {
     preserveApiRoutes: true,
+    preserveRedirectAndRewrites: true,
     platform: 'web',
     ...options,
   });

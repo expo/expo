@@ -1,7 +1,7 @@
-'use client';
 "use strict";
+'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorBoundary = void 0;
+exports.ErrorBoundary = ErrorBoundary;
 const bottom_tabs_1 = require("@react-navigation/bottom-tabs");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -9,66 +9,6 @@ const react_native_safe_area_context_1 = require("react-native-safe-area-context
 const Pressable_1 = require("./Pressable");
 const Link_1 = require("../link/Link");
 const errors_1 = require("../rsc/router/errors");
-let useMetroSymbolication;
-if (process.env.NODE_ENV === 'development') {
-    const { LogBoxLog, parseErrorStack } = require('@expo/metro-runtime/symbolicate');
-    useMetroSymbolication = function (error) {
-        const [logBoxLog, setLogBoxLog] = (0, react_1.useState)(null);
-        (0, react_1.useEffect)(() => {
-            let isMounted = true;
-            const stack = parseErrorStack(error.stack);
-            const log = new LogBoxLog({
-                level: 'error',
-                message: {
-                    content: error.message,
-                    substitutions: [],
-                },
-                isComponentError: false,
-                stack,
-                category: error.message,
-                componentStack: [],
-            });
-            log.symbolicate('stack', () => {
-                if (isMounted) {
-                    setLogBoxLog(log);
-                }
-            });
-            return () => {
-                isMounted = false;
-            };
-        }, [error]);
-        return logBoxLog;
-    };
-}
-else {
-    useMetroSymbolication = function () {
-        return null;
-    };
-}
-let StackTrace;
-if (process.env.NODE_ENV === 'development') {
-    const { LogContext } = require('@expo/metro-runtime/src/error-overlay/Data/LogContext');
-    const { LogBoxInspectorStackFrames, } = require('@expo/metro-runtime/src/error-overlay/overlay/LogBoxInspectorStackFrames');
-    StackTrace = function ({ logData }) {
-        if (!logData?.symbolicated?.stack?.stack) {
-            return null;
-        }
-        return (<react_native_1.ScrollView style={{ flex: 1 }}>
-        <LogContext.Provider value={{
-                isDisabled: false,
-                logs: [logData],
-                selectedLogIndex: 0,
-            }}>
-          <LogBoxInspectorStackFrames onRetry={function () { }} type="stack"/>
-        </LogContext.Provider>
-      </react_native_1.ScrollView>);
-    };
-}
-else {
-    StackTrace = function () {
-        return <react_native_1.View style={{ flex: 1 }}/>;
-    };
-}
 function StandardErrorView({ error }) {
     return (<react_native_1.View style={{
             marginBottom: 12,
@@ -84,19 +24,13 @@ function StandardErrorView({ error }) {
     </react_native_1.View>);
 }
 function ErrorBoundary({ error, retry }) {
-    const logBoxLog = useMetroSymbolication(error);
-    const inTabBar = (0, react_1.useContext)(bottom_tabs_1.BottomTabBarHeightContext);
+    const inTabBar = (0, react_1.use)(bottom_tabs_1.BottomTabBarHeightContext);
     const Wrapper = inTabBar ? react_native_1.View : react_native_safe_area_context_1.SafeAreaView;
     const isServerError = error instanceof errors_1.ReactServerError;
     return (<react_native_1.View style={styles.container}>
       <Wrapper style={{ flex: 1, gap: 8, maxWidth: 720, marginHorizontal: 'auto' }}>
-        {isServerError ? (<>
-            <ReactServerErrorView error={error}/>
-            <react_native_1.View style={{ flex: 1 }}/>
-          </>) : (<>
-            <StandardErrorView error={error}/>
-            <StackTrace logData={logBoxLog}/>
-          </>)}
+        {isServerError ? (<ReactServerErrorView error={error}/>) : (<StandardErrorView error={error}/>)}
+        <react_native_1.View style={{ flex: 1 }}/>
 
         {process.env.NODE_ENV === 'development' && (<Link_1.Link testID="router_error_sitemap" href="/_sitemap" style={styles.link}>
             Sitemap
@@ -116,7 +50,6 @@ function ErrorBoundary({ error, retry }) {
       </Wrapper>
     </react_native_1.View>);
 }
-exports.ErrorBoundary = ErrorBoundary;
 const COMMON_ERROR_STATUS = {
     404: 'NOT_FOUND',
     500: 'INTERNAL_SERVER_ERROR',

@@ -74,16 +74,25 @@ describe(resolveOptionsAsync, () => {
   it(`asserts that the function only runs on darwin machines`, async () => {
     mockPlatform('win32');
     await expect(runIosAsync('/', {})).rejects.toThrow(/EXIT_CALLED/);
-    expect(Log.exit).toBeCalledWith(expect.stringMatching(/eas build -p ios/));
+    expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
   });
 
   it(`runs ios on simulator`, async () => {
     mockPlatform('darwin');
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runIosAsync('/', {});
 
-    expect(buildAsync).toBeCalledWith({
+    expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
@@ -96,7 +105,7 @@ describe(resolveOptionsAsync, () => {
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
 
-    expect(launchAppAsync).toBeCalledWith(
+    expect(launchAppAsync).toHaveBeenCalledWith(
       '/mock_binary',
       expect.anything(),
       {
@@ -107,7 +116,7 @@ describe(resolveOptionsAsync, () => {
       undefined
     );
 
-    expect(logProjectLogsLocation).toBeCalled();
+    expect(logProjectLogsLocation).toHaveBeenCalled();
   });
 
   it(`runs ios on device`, async () => {
@@ -121,11 +130,20 @@ describe(resolveOptionsAsync, () => {
     });
     jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');
-    vol.fromJSON(rnFixture, '/');
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
 
     await runIosAsync('/', { device: '00008101-001964A22629003A' });
 
-    expect(buildAsync).toBeCalledWith({
+    expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
       configuration: 'Debug',
       device: {
@@ -145,7 +163,7 @@ describe(resolveOptionsAsync, () => {
       xcodeProject: { isWorkspace: false, name: '/ios/ReactNativeProject.xcodeproj' },
     });
 
-    expect(launchAppAsync).toBeCalledWith(
+    expect(launchAppAsync).toHaveBeenCalledWith(
       '/mock_binary',
       expect.anything(),
       {
@@ -163,6 +181,6 @@ describe(resolveOptionsAsync, () => {
       undefined
     );
 
-    expect(logProjectLogsLocation).toBeCalled();
+    expect(logProjectLogsLocation).toHaveBeenCalled();
   });
 });

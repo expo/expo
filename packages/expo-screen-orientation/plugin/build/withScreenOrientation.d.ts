@@ -17,6 +17,6 @@ interface ExpoConfigWithInitialOrientation extends ExpoConfig {
 }
 export declare function setInitialOrientation(config: Pick<ExpoConfigWithInitialOrientation, 'initialOrientation'>, infoPlist: InfoPlist): InfoPlist;
 declare const _default: ConfigPlugin<void | {
-    initialOrientation?: "DEFAULT" | "ALL" | "PORTRAIT" | "PORTRAIT_UP" | "PORTRAIT_DOWN" | "LANDSCAPE" | "LANDSCAPE_LEFT" | "LANDSCAPE_RIGHT" | undefined;
+    initialOrientation?: keyof typeof OrientationLock;
 }>;
 export default _default;

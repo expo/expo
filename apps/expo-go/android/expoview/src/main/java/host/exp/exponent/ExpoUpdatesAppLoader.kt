@@ -4,6 +4,7 @@ package host.exp.exponent
 import android.content.Context
 import android.util.Log
 import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.easclient.EASClientID
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -29,11 +30,13 @@ import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
 import host.exp.exponent.storage.ExponentSharedPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
-import java.util.*
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -56,7 +59,8 @@ private const val UPDATE_ERROR_EVENT = "error"
 class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private val manifestUrl: String,
   private val callback: AppLoaderCallback,
-  private val useCacheOnly: Boolean = false
+  private val useCacheOnly: Boolean = false,
+  private val loaderScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
@@ -160,11 +164,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       return
     }
     val logger = UpdatesLogger(context.filesDir)
-    val fileDownloader = FileDownloader(context, configuration, logger)
-    startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
+    val fileDownloader = FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), configuration, logger)
+    loaderScope.launch {
+      startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
+    }
   }
 
-  private fun startLoaderTask(
+  private suspend fun startLoaderTask(
     configuration: UpdatesConfiguration,
     fileDownloader: FileDownloader,
     directory: File,
@@ -292,7 +298,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
             Log.e(TAG, "Failed to emit event to JS", e)
           }
         }
-      }
+      },
+      CoroutineScope(Dispatchers.IO)
     ).start()
   }
 

@@ -3,11 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.expoRouterBabelPlugin = void 0;
-/**
- * Copyright © 2024 650 Industries.
- */
-const core_1 = require("@babel/core");
+exports.expoRouterBabelPlugin = expoRouterBabelPlugin;
 const node_path_1 = __importDefault(require("node:path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 const common_1 = require("./common");
@@ -33,7 +29,7 @@ function expoRouterBabelPlugin(api) {
     const asyncRoutes = api.caller(common_1.getAsyncRoutes);
     const routerAbsoluteRoot = api.caller(common_1.getExpoRouterAbsoluteAppRoot);
     function isFirstInAssign(path) {
-        return core_1.types.isAssignmentExpression(path.parent) && path.parent.left === path.node;
+        return t.isAssignmentExpression(path.parent) && path.parent.left === path.node;
     }
     return {
         name: 'expo-router',
@@ -67,4 +63,3 @@ function expoRouterBabelPlugin(api) {
         },
     };
 }
-exports.expoRouterBabelPlugin = expoRouterBabelPlugin;

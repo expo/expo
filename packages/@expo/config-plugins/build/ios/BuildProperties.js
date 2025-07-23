@@ -55,7 +55,7 @@ const withJsEnginePodfileProps = exports.withJsEnginePodfileProps = createBuildP
  */
 const withNewArchEnabledPodfileProps = exports.withNewArchEnabledPodfileProps = createBuildPodfilePropsConfigPlugin([{
   propName: 'newArchEnabled',
-  propValueGetter: config => (config.ios?.newArchEnabled ?? config.newArchEnabled ?? false).toString()
+  propValueGetter: config => (config.ios?.newArchEnabled ?? config.newArchEnabled)?.toString()
 }], 'withNewArchEnabledPodfileProps');
 function updateIosBuildPropertiesFromConfig(config, podfileProperties, configToPropertyRules) {
   for (const configToProperty of configToPropertyRules) {

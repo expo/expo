@@ -1,12 +1,19 @@
 ---
 title: Stack
 description: Learn how to use the Stack navigator in Expo Router.
+hasVideoLink: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
+import { ReactNavigationOptions } from '~/ui/components/ReactNavigationOptions';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<VideoBoxLink
+  videoId="izZv6a99Roo"
+  title="Using a Stack Navigator with Expo Router"
+  description="Navigate between screens, pass params between screens, create dynamic routes, and configure the screen titles and animations."
+  className="mb-6"
+/>
 
 A stack navigator is the foundational way of navigating between routes in an app. On Android, a stacked route animates on top of the current screen. On iOS, a stacked route animates from the right. Expo Router provides a `Stack` navigation component that creates a navigation stack and allows you to add new routes in your app.
 
@@ -23,7 +30,7 @@ This file structure produces a layout where the `index` route is the first route
 You can use the **app/\_layout.tsx** file to define your app's `Stack` navigator with these two routes:
 
 ```tsx app/_layout.tsx
-import { Stack } from 'expo-router/stack';
+import { Stack } from 'expo-router';
 
 export default function Layout() {
   return <Stack />;
@@ -156,6 +163,12 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Available header options
+
+The `Stack` navigator supports comprehensive header configuration options. Below are all the header-related options available:
+
+<ReactNavigationOptions category="header" />
+
 ### Set screen options dynamically
 
 To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
@@ -235,11 +248,17 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Other screen options
+
+For a complete list of all available other screen options including animations, gestures, and other configurations:
+
+<ReactNavigationOptions excludeCategories={['header']} />
+
 ## Custom push behavior
 
 By default, the `Stack` navigator removes duplicate screens when pushing a route that is already in the stack. For example, if you push the same screen twice, the second push will be ignored. You can change this push behavior by providing a custom `getId()` function to the `<Stack.Screen>`.
 
-For example, the `index` route in the following layout structure shows a list of different user profiles in the app. Let's make the `[details]` route a [dynamic route](/router/create-pages/#dynamic-routes) so that the app user can navigate to see a profile's details.
+For example, the `index` route in the following layout structure shows a list of different user profiles in the app. Let's make the `[details]` route a [dynamic route](/router/basics/notation/#square-brackets) so that the app user can navigate to see a profile's details.
 
 <FileTree
   files={[
@@ -468,12 +487,3 @@ export default function Layout() {
 ```
 
 For more information on available options, see [`@react-navigation/stack` documentation](https://reactnavigation.org/docs/stack-navigator).
-
-## More
-
-<BoxLink
-  title="Native Stack Navigator options"
-  Icon={BookOpen02Icon}
-  description="For a list of all options available in the stack layout, see React Navigation's documentation."
-  href="https://reactnavigation.org/docs/native-stack-navigator#options"
-/>

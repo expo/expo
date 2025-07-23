@@ -13,6 +13,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Audio Tracks',
+    route: 'video/audio-tracks',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoAudioTracksScreen'));
+    },
+  },
+  {
     name: 'Cache',
     route: 'video/cache',
     options: {},
@@ -119,6 +127,17 @@ if (Platform.OS === 'ios') {
     options: {},
     getComponent() {
       return optionalRequire(() => require('./VideoLiveTextInteractionScreen'));
+    },
+  });
+}
+
+if (Platform.OS === 'android') {
+  VideoScreens.push({
+    name: 'VideoView Surface Type',
+    route: 'video/video-view-surface-type',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoSurfaceTypeScreen'));
     },
   });
 }

@@ -19,7 +19,7 @@ type Props = PropsWithChildren<TabsProps> & {
 
 const generateTabLabels = (children: ReactNode) => {
   return Children.map(children, child =>
-    isValidElement(child) ? child?.props?.label : (child ?? '[untitled]')
+    isValidElement<{ label: string }>(child) ? child?.props?.label : (child ?? '[untitled]')
   );
 };
 
@@ -43,7 +43,7 @@ const InnerTabs = ({
   const tabTitles = tabs ?? generateTabLabels(children);
 
   const layoutId = useMemo(
-    () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).substring(5)}-`),
+    () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).slice(5)}-`),
     []
   );
 
@@ -60,7 +60,8 @@ const InnerTabs = ({
       <TabPanels
         className={mergeClasses(
           'px-5 py-4',
-          '[&_pre]:first-of-type:mt-1 [&_ul]:mb-3',
+          '[&_ul]:mb-3',
+          'first:[&_figure]:mt-1 first:[&_pre]:mt-1',
           'last:[&>div>*]:!mb-0'
         )}>
         {children}

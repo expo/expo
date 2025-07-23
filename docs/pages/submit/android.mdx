@@ -22,8 +22,9 @@ This guide outlines how to submit your app to the Google Play Store from your co
   </Requirement>
   <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
-    
+
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+
   </Requirement>
   <Requirement number={5} title="Include a package name in app.json">
     Include your app's package name in **app.json**:
@@ -39,7 +40,7 @@ This guide outlines how to submit your app to the Google Play Store from your co
   </Requirement>
   <Requirement number={6} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-    
+
     <Terminal cmd={['$ eas build --platform android --profile production']} />
 
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
@@ -81,8 +82,9 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
   </Requirement>
   <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
-    
+
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
+
   </Requirement>
   <Requirement number={5} title="Include a package name in app.json">
     Include your app's package name in **app.json**:
@@ -116,7 +118,7 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
   </Requirement>
   <Requirement number={7} title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-    
+
     <Terminal cmd={['$ eas build --platform android --profile production']} />
 
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
@@ -155,6 +157,7 @@ You can use [EAS Workflows](/eas-workflows/get-started/) to build and submit you
      # @info #
      submit_android:
        name: Submit to Google Play Store
+       needs: [build_android]
        type: submit
        params:
          platform: android

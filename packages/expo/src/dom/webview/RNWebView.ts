@@ -2,7 +2,7 @@
  * A re-export of `react-native-webview` that supports optional dependency.
  */
 
-let module;
+let module: undefined | typeof import('react-native-webview').WebView;
 try {
   module = require('react-native-webview').WebView;
 } catch {}

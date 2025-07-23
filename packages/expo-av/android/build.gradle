@@ -17,7 +17,7 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '15.0.1'
+version = '15.1.4'
 
 android {
   if (rootProject.hasProperty("ndkPath")) {
@@ -30,14 +30,15 @@ android {
   namespace "expo.modules.av"
   defaultConfig {
     versionCode 24
-    versionName "15.0.1"
+    versionName "15.1.4"
 
     externalNativeBuild {
       cmake {
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters (*reactNativeArchitectures())
         arguments "-DANDROID_STL=c++_shared",
-            "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
+          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
       }
     }
   }

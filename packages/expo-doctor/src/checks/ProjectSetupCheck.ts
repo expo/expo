@@ -12,6 +12,7 @@ export class ProjectSetupCheck implements DoctorCheck {
 
   async runAsync({ projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
+    const advice: string[] = [];
 
     /* Check that Expo modules native projects aren't getting gitignored.  Skip
      * this check when running on an EAS Build worker, where we may or may not
@@ -32,7 +33,10 @@ export class ProjectSetupCheck implements DoctorCheck {
         )
       ) {
         issues.push(
-          `The "android" and/or "ios" directories (./modules/your-module/[android|ios]) for local Expo modules are gitignored, and they should not be. This is often due to overly general gitignore rules. Use patterns like "/android" and "/ios" in your .gitignore file to exclude only the top-level "android" and "ios" directories, and not those in the modules directory.`
+          `The "android" and/or "ios" directories (./modules/your-module/[android|ios]) for local Expo modules are gitignored, and they should not be. This is often due to overly general gitignore rules.`
+        );
+        advice.push(
+          `Use patterns like "/android" and "/ios" in your .gitignore file to exclude only the top-level "android" and "ios" directories, and not those in the modules directory.`
         );
       }
     }
@@ -55,12 +59,10 @@ export class ProjectSetupCheck implements DoctorCheck {
           ', '
         )}). This may result in unexpected behavior in CI environments, such as EAS Build, which infer the package manager from the lock file.`
       );
+      advice.push(`Remove any lock files for package managers you are not using.`);
     }
 
-    return {
-      isSuccessful: issues.length === 0,
-      issues,
-    };
+    return { isSuccessful: issues.length === 0, issues, advice };
   }
 }
 
@@ -68,10 +70,7 @@ async function areAnyMatchingPathsIgnoredAsync({
   pattern,
   ...options
 }: { pattern: string } & GlobOptions): Promise<boolean> {
-  const matchingNativeFiles = await glob(pattern, {
-    ...options,
-    withFileTypes: false,
-  });
+  const matchingNativeFiles = await glob(pattern, { ...options, withFileTypes: false });
   if (!matchingNativeFiles.length) return false;
   // multiple matches may occur if there are multiple modules
   return (

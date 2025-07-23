@@ -204,7 +204,7 @@ describe('readConfigJson', () => {
 
     it(`will not throw if the expo package is missing when skipSDKVersionRequirement is enabled`, () => {
       expect(() => getConfig('/no-package', { skipSDKVersionRequirement: false })).toThrow(
-        /Cannot determine which native SDK version your project uses/
+        /Cannot determine the project's Expo SDK version/
       );
     });
   });

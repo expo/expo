@@ -12,7 +12,7 @@ export interface DoctorCheckResult {
   /** many checks currently output their own issues, no need to duplicate */
   issues: string[];
   // Optional: a string with a suggestion to resolve the issue, which will be appended to the issue
-  advice?: string;
+  advice: string[];
 }
 
 export interface DoctorCheckParams {

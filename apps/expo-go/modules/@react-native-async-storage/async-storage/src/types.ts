@@ -128,7 +128,7 @@ export type AsyncStorageStatic = {
    * See https://react-native-async-storage.github.io/async-storage/docs/api#multiset
    */
   multiSet: (
-    keyValuePairs: [string, string][],
+    keyValuePairs: ReadonlyArray<readonly [string, string]>,
     callback?: MultiCallback
   ) => Promise<void>;
 

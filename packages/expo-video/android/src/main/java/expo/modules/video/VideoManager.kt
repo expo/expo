@@ -34,7 +34,7 @@ object VideoManager {
   }
 
   fun registerVideoView(videoView: VideoView) {
-    videoViews[videoView.id] = videoView
+    videoViews[videoView.videoViewId] = videoView
   }
 
   fun getVideoView(id: String): VideoView {
@@ -42,7 +42,7 @@ object VideoManager {
   }
 
   fun unregisterVideoView(videoView: VideoView) {
-    videoViews.remove(videoView.id)
+    videoViews.remove(videoView.videoViewId)
   }
 
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {

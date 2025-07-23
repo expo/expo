@@ -15,7 +15,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedAsyncTask;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -25,7 +24,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.common.ModuleDataCleaner;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -33,8 +31,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @ReactModule(name = AsyncStorageModule.NAME)
-public class AsyncStorageModule
-    extends NativeAsyncStorageModuleSpec implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
+public class AsyncStorageModule extends NativeAsyncStorageModuleSpec {
 
   // changed name to not conflict with AsyncStorage from RN repo
   public static final String NAME = "RNCAsyncStorage";
@@ -60,11 +57,12 @@ public class AsyncStorageModule
   @VisibleForTesting
   AsyncStorageModule(ReactApplicationContext reactContext, Executor executor) {
     super(reactContext);
+
     // The migration MUST run before the AsyncStorage database is created for the first time.
     AsyncStorageExpoMigration.migrate(reactContext);
 
     this.executor = new SerialExecutor(executor);
-    reactContext.addLifecycleEventListener(this);
+
     // Creating the database MUST happen after the migration.
     // NOTE(kudo): ExponentAsyncStorageModule will setup the `mReactDatabaseSupplier`
     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
@@ -82,26 +80,8 @@ public class AsyncStorageModule
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     mShuttingDown = true;
-  }
-
-  @Override
-  public void clearSensitiveData() {
-    // Clear local storage. If fails, crash, since the app is potentially in a bad state and could
-    // cause a privacy violation. We're still not recovering from this well, but at least the error
-    // will be reported to the server.
-    mReactDatabaseSupplier.clearAndCloseDatabase();
-  }
-
-  @Override
-  public void onHostResume() {}
-
-  @Override
-  public void onHostPause() {}
-
-  @Override
-  public void onHostDestroy() {
     // ensure we close database when activity is destroyed
     mReactDatabaseSupplier.closeDatabase();
   }

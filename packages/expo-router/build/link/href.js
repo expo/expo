@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveHrefStringWithSegments = exports.resolveHref = void 0;
+exports.resolveHref = void 0;
+exports.resolveHrefStringWithSegments = resolveHrefStringWithSegments;
 /** Resolve an href object into a fully qualified, relative href. */
 const resolveHref = (href) => {
     if (typeof href === 'string') {
@@ -49,7 +50,6 @@ function resolveHrefStringWithSegments(href, { segments = [], params = {} } = {}
     }
     return href;
 }
-exports.resolveHrefStringWithSegments = resolveHrefStringWithSegments;
 function createQualifiedPathname(pathname, params) {
     for (const [key, value = ''] of Object.entries(params)) {
         const dynamicKey = `[${key}]`;

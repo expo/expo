@@ -5,6 +5,13 @@ set -xeuo pipefail
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../.. && pwd )"
 export PATH="$ROOT_DIR/bin:$PATH"
 
+if [ -n "${EXPO_TOKEN+x}" ]; then
+  echo "Unsetting EXPO_TOKEN"
+  unset EXPO_TOKEN
+else
+  echo "EXPO_TOKEN is not set"
+fi
+
 notify_slack() {
   if [[ ! -z "$SLACK_HOOK" ]]; then
     curl \

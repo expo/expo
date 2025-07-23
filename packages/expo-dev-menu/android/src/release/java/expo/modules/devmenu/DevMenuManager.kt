@@ -13,6 +13,8 @@ import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 
+const val DEV_MENU_TAG = "[disabled] ExpoDevMenu"
+
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
@@ -33,7 +35,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  fun getDevSettings(): Bundle {
+  fun getDevSettings(): DevToolsSettings {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
@@ -73,10 +75,6 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun getMenuHost(): ReactHostWrapper {
-    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
-  }
-
   override fun synchronizeDelegate() = Unit
 
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
@@ -99,6 +97,9 @@ object DevMenuManager : DevMenuManagerInterface {
     get() = throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
 
   fun reload() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+  fun goToHome() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
   fun togglePerformanceMonitor() {

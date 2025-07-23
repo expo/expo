@@ -6,17 +6,13 @@
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXAppLoadingCancelView.h"
-#import "EXManagedAppSplashScreenViewProvider.h"
-#import "EXManagedAppSplashScreenConfigurationBuilder.h"
-#import "EXManagedAppSplashScreenViewController.h"
-#import "EXHomeAppSplashScreenViewProvider.h"
+#import "Expo_Go-Swift.h"
 #import "EXHomeModule.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
-#import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
 #import "EXVersions.h"
 #import "EXUpdatesManager.h"
@@ -329,15 +325,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsManifest *)manifest
 {
-  if ( _isHomeApp) {
+  if (_isHomeApp) {
     return;
   }
   if (!_managedAppSplashScreenViewProvider) {
-    _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
+    _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWith:manifest];
 
     [self _showManagedSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
-    [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
+    [_managedAppSplashScreenViewProvider updateSplashScreenViewWith:manifest];
   }
 }
 
@@ -417,8 +413,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
-    self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
-                                                                                splashScreenView:splashScreenView];
+    self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWith:rootView splashScreenView:splashScreenView];
+    
     [splashScreenService showSplashScreenFor:self
                                      options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController

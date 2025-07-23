@@ -23,6 +23,7 @@ import { TextTheme } from '~/ui/components/Text/types';
 
 // @ts-expect-error Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
+const tippyFunc = testTippy ?? tippy;
 
 const attributes = {
   'data-text': true,
@@ -48,13 +49,22 @@ export function Code({ className, children, title }: CodeProps) {
   const [isExpanded, setExpanded] = useState(false);
   const [collapseBound, setCollapseBound] = useState<number | undefined>(undefined);
   const [blockHeight, setBlockHeight] = useState<number | undefined>(undefined);
-
+  const [didMount, setDidMount] = useState(false);
   const collapseHeight = getCollapseHeight(params);
   const showExpand = !isExpanded && blockHeight && collapseBound && blockHeight > collapseBound;
   const highlightedHtml = getCodeData(value, language);
 
   useEffect(() => {
-    const tippyFunc = testTippy || tippy;
+    if (contentRef?.current?.clientHeight) {
+      setBlockHeight(contentRef.current.clientHeight);
+      if (contentRef.current.clientHeight > collapseHeight) {
+        setCollapseBound(collapseHeight);
+      }
+    }
+    setDidMount(true);
+  }, []);
+
+  useEffect(() => {
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
@@ -62,7 +72,7 @@ export function Code({ className, children, title }: CodeProps) {
       arrow: roundArrow,
       interactive: true,
       offset: [0, 20],
-      appendTo: document.body,
+      appendTo: () => document.body,
     });
 
     tippyFunc('.tutorial-code-annotation.with-tooltip', {
@@ -72,16 +82,9 @@ export function Code({ className, children, title }: CodeProps) {
       arrow: roundArrow,
       interactive: true,
       offset: [0, 20],
-      appendTo: document.body,
+      appendTo: () => document.body,
     });
-
-    if (contentRef?.current?.clientHeight) {
-      setBlockHeight(contentRef.current.clientHeight);
-      if (contentRef.current.clientHeight > collapseHeight) {
-        setCollapseBound(collapseHeight);
-      }
-    }
-  }, []);
+  }, [didMount, isExpanded]);
 
   function expandCodeBlock() {
     setExpanded(true);

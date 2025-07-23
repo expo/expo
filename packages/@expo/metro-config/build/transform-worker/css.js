@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.escapeBackticksAndOctals = exports.wrapDevelopmentCSS = exports.getHotReplaceTemplate = exports.pathToHtmlSafeName = void 0;
+exports.pathToHtmlSafeName = pathToHtmlSafeName;
+exports.getHotReplaceTemplate = getHotReplaceTemplate;
+exports.wrapDevelopmentCSS = wrapDevelopmentCSS;
+exports.escapeBackticksAndOctals = escapeBackticksAndOctals;
 function pathToHtmlSafeName(path) {
     return path.replace(/[^a-zA-Z0-9_]/g, '_');
 }
-exports.pathToHtmlSafeName = pathToHtmlSafeName;
 function getHotReplaceTemplate(id) {
     // In dev mode, we need to replace the style tag instead of appending it
     // use the path as the expo-css-hmr attribute to find the style tag
@@ -16,9 +18,29 @@ function getHotReplaceTemplate(id) {
     previousStyle.parentNode.replaceChild(style, previousStyle);
   }`;
 }
-exports.getHotReplaceTemplate = getHotReplaceTemplate;
 function wrapDevelopmentCSS(props) {
     const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
+    // Ensure we had HMR support to the CSS module in development.
+    // Why?
+    // -----
+    // • Metro recompiles *every* direct dependency of the file you edit. When you
+    //   change a component that imports a CSS-module, Metro re-emits the JS stub
+    //   that represents that `*.module.css` file, marking it "updated".
+    // • The stub exports a plain object (class-name strings) which React-Refresh
+    //   does **not** recognise as a component -> the stub itself cannot be a refresh
+    //   boundary.
+    // • If an UPDATED, NON-BOUNDARY module bubbles all the way up the dependency
+    //   graph without meeting another UPDATED boundary, React-Refresh falls
+    //   back to a full reload — wiping React state and breaking fast-refresh.
+    // • That is exactly what happened: `modal.module.css` changed, its parent
+    //   (ModalStack.web.tsx) *didn't* change, so refresh bailed out.
+    //
+    // Solution
+    // ---------
+    // We import the CSS here and immediately call `module.hot.accept()` so the
+    // update is consumed at this level. React-Refresh no longer has to walk past
+    // the stub, the rest of the graph (including the edited component) hot-swaps
+    // normally, and local state is preserved.
     const injectClientStyle = `const head = document.head || document.getElementsByTagName('head')[0];
 const style = document.createElement('style');
 ${getHotReplaceTemplate(props.filename)}
@@ -50,10 +72,11 @@ if (typeof window === 'undefined') {
   return
 }
 ${injectClientStyle}
+
+if (module.hot) module.hot.accept();
 })();`;
     return injectStyle;
 }
-exports.wrapDevelopmentCSS = wrapDevelopmentCSS;
 function escapeBackticksAndOctals(str) {
     if (typeof str !== 'string') {
         return '';
@@ -61,7 +84,6 @@ function escapeBackticksAndOctals(str) {
     return str
         .replace(/\\/g, '\\\\')
         .replace(/`/g, '\\`')
-        .replace(/[\0-\7]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
+        .replace(/[\x00-\x07]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
 }
-exports.escapeBackticksAndOctals = escapeBackticksAndOctals;
 //# sourceMappingURL=css.js.map

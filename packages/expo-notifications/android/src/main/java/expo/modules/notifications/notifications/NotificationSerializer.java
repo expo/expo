@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications;
 
 import static expo.modules.notifications.UtilsKt.filteredBundleForJSTypeConverter;
 import static expo.modules.notifications.UtilsKt.isValidJSONString;
+import static expo.modules.notifications.notifications.model.NotificationResponse.DEFAULT_ACTION_IDENTIFIER;
 
 import android.os.Bundle;
 
@@ -31,12 +32,6 @@ import expo.modules.notifications.notifications.model.TextInputNotificationRespo
 import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger;
 
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
-import expo.modules.notifications.notifications.triggers.DailyTrigger;
-import expo.modules.notifications.notifications.triggers.DateTrigger;
-import expo.modules.notifications.notifications.triggers.MonthlyTrigger;
-import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
-import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
-import expo.modules.notifications.notifications.triggers.YearlyTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
@@ -64,14 +59,13 @@ public class NotificationSerializer {
     Bundle content = toBundle(request.getContent());
     Bundle existingContentData = content.getBundle("data");
     if (existingContentData == null) {
-      if(requestTrigger instanceof FirebaseNotificationTrigger trigger) {
+      if (requestTrigger instanceof FirebaseNotificationTrigger trigger) {
         RemoteMessage message = trigger.getRemoteMessage();
-        RemoteMessage.Notification notification = message.getNotification();
         Map<String, String> data = message.getData();
         String dataBody = data.get("body");
-        String notificationBody = notification != null ? notification.getBody() : null;
-        if (isValidJSONString(dataBody) && notificationBody != null && notificationBody.equals(data.get("message"))) {
-          // Expo sends notification.body as data.message, and JSON stringifies data.body
+        if (isValidJSONString(dataBody)) {
+          // If the body is a JSON object string, the notification was sent by the Expo notification service,
+          // so we do the expected remapping of fields (we JSON-parse the string into an object in JS)
           content.putString("dataString", dataBody);
         } else {
           // The message was sent directly from Firebase or some other service,
@@ -127,7 +121,7 @@ public class NotificationSerializer {
       serializedContent.putString("priority", content.getPriority().getEnumValue());
     }
     if (content.getVibrationPattern() != null) {
-      serializedContent.putIntArray("vibrationPattern", RemoteMessageSerializer.intArrayFromLongArray(content.getVibrationPattern()));
+      serializedContent.putLongArray("vibrationPattern", content.getVibrationPattern());
     }
     serializedContent.putBoolean("autoDismiss", content.isAutoDismiss());
     if (content.getCategoryId() != null) {
@@ -196,9 +190,8 @@ public class NotificationSerializer {
     serializedContent.putString("title", extras.getString("title"));
     String body = extras.getString("body");
     if (isValidJSONString(body) ) {
-      // If the body is a JSON string,
-      // the notification was sent by the Expo notification service,
-      // so we do the expected remapping of fields
+      // If the body is a JSON object string, the notification was sent by the Expo notification service,
+      // so we do the expected remapping of fields (we JSON-parse the string into an object in JS)
       serializedContent.putString("dataString", body);
       serializedContent.putString("body", extras.getString("message"));
     } else {
@@ -222,7 +215,7 @@ public class NotificationSerializer {
     serializedNotification.putBundle("request", serializedRequest);
 
     Bundle serializedResponse = new Bundle();
-    serializedResponse.putString("actionIdentifier", "expo.modules.notifications.actions.DEFAULT");
+    serializedResponse.putString("actionIdentifier", DEFAULT_ACTION_IDENTIFIER);
     serializedResponse.putBundle("notification", serializedNotification);
 
     return serializedResponse;

@@ -1,11 +1,13 @@
-import { ReadableStream } from 'web-streams-polyfill';
-
 import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeResponse } from './NativeRequest';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
-
 export type AbortSubscriptionCleanupFunction = () => void;
+
+// FormData from react-native is not compatible with the web standard.
+// We need to extend it with the react-native FormData.
+type RNFormData = Awaited<ReturnType<globalThis.Response['formData']>>;
+type UniversalFormData = globalThis.FormData & RNFormData;
 
 /**
  * A response implementation for the `fetch.Response` API.
@@ -86,17 +88,20 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
 
   public readonly type = 'default';
 
+  /**
+   * This method is not currently supported by react-native's Blob constructor.
+   */
   async blob(): Promise<Blob> {
     const buffer = await this.arrayBuffer();
     return new Blob([buffer]);
   }
 
-  async formData(): Promise<FormData> {
+  async formData(): Promise<UniversalFormData> {
     // Reference implementation:
     // https://chromium.googlesource.com/chromium/src/+/ed9f0b5933cf5ffb413be1ca844de5be140514bf/third_party/blink/renderer/core/fetch/body.cc#120
     const text = await this.text();
     const searchParams = new URLSearchParams(text);
-    const formData = new FormData();
+    const formData = new FormData() as UniversalFormData;
     searchParams.forEach((value, key) => {
       formData.append(key, value);
     });
@@ -106,6 +111,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
   async json(): Promise<any> {
     const text = await this.text();
     return JSON.parse(text);
+  }
+
+  async bytes(): Promise<Uint8Array> {
+    return new Uint8Array(await this.arrayBuffer());
   }
 
   toString(): string {
@@ -121,7 +130,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     };
   }
 
-  clone(): FetchResponse {
+  clone(): Response {
     throw new Error('Not implemented');
   }
 

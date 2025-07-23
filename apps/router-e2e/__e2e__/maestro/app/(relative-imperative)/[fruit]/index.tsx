@@ -1,4 +1,4 @@
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { Pressable, Text } from 'react-native';
 
 export default function RelativeFruit() {

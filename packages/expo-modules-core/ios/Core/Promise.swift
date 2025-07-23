@@ -19,15 +19,6 @@ public struct Promise: AnyArgument {
   }
 
   public func resolve(_ value: Any? = nil) {
-    if let value = value as? AnySharedObject {
-      let result = Conversions.convertFunctionResult(
-        value,
-        appContext: appContext,
-        dynamicType: type(of: value).getDynamicType()
-      )
-      resolver(result)
-      return
-    }
     resolver(value)
   }
 

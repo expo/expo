@@ -16,6 +16,7 @@
 #import "EXDevMenuManager.h"
 #import "EXEmbeddedHomeLoader.h"
 #import "EXBuildConstants.h"
+#import "EXUtil.h"
 #import "Expo_Go-Swift.h"
 
 @import ExpoScreenOrientation;
@@ -106,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
   BOOL isHomeApp = appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
-  if (isHomeApp || [self isLocalNetworkAccessGranted]) {
+  if (isHomeApp || [EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
     [self foregroundApp:appRecord];
     return;
   }

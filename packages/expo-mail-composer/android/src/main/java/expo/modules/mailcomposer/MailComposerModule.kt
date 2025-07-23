@@ -1,7 +1,6 @@
 package expo.modules.mailcomposer
 
 import android.content.Intent
-import android.content.pm.LabeledIntent
 import android.net.Uri
 import android.os.Bundle
 import expo.modules.kotlin.Promise
@@ -20,7 +19,15 @@ class MailComposerModule : Module() {
     Name("ExpoMailComposer")
 
     AsyncFunction<Boolean>("isAvailableAsync") {
-      return@AsyncFunction true
+      try {
+        val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
+        val packageManager = context.packageManager
+        val canOpen = packageManager != null && intent.resolveActivity(packageManager) != null
+
+        return@AsyncFunction canOpen
+      } catch (e: Exception) {
+        throw ResolveActivityException(e)
+      }
     }
 
     Function("getClients") {
@@ -41,13 +48,7 @@ class MailComposerModule : Module() {
           .putSubject(Intent.EXTRA_SUBJECT)
           .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
           .putAttachments(Intent.EXTRA_STREAM, application)
-
-        LabeledIntent(
-          mailIntentBuilder.build(),
-          info.activityInfo.packageName,
-          info.loadLabel(context.packageManager),
-          info.icon
-        )
+        mailIntentBuilder.build()
       }.toMutableList()
 
       val primaryIntent = mailIntents.removeAt(mailIntents.size - 1)

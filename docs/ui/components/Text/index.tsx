@@ -10,8 +10,8 @@ export { AnchorContext } from './AnchorContext';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
-const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
+const CRAWLABLE_HEADINGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5']);
+const CRAWLABLE_TEXT = new Set(['span', 'p', 'li', 'blockquote', 'code', 'pre']);
 
 type PermalinkedComponentProps = PropsWithChildren<
   { level?: number; id?: string } & AdditionalProps & TextComponentProps
@@ -29,13 +29,13 @@ export const createPermalinkedComponent = (
   const { baseNestingLevel, iconSize = 'sm', sidebarType = HeadingType.TEXT } = options ?? {};
   return ({ children, level, id, className, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = Children.map(children, child => {
-      if (isValidElement(child) && child?.props?.href) {
+      if (isValidElement<PropsWithChildren<{ href: string }>>(child) && child?.props?.href) {
         isDev &&
           console.warn(
             `It looks like the header on this page includes a link, this is an invalid pattern, nested link will be removed!`,
             child?.props?.href
           );
-        return (child as JSX.Element)?.props?.children;
+        return child?.props?.children;
       }
       return child;
     });
@@ -79,8 +79,8 @@ export function createTextComponent(Element: TextElement, textClassName?: string
           className
         )}
         data-testid={testID}
-        data-heading={(crawlable && CRAWLABLE_HEADINGS.includes(TextElementTag)) || undefined}
-        data-text={(crawlable && CRAWLABLE_TEXT.includes(TextElementTag)) || undefined}
+        data-heading={(crawlable && CRAWLABLE_HEADINGS.has(TextElementTag)) || undefined}
+        data-text={(crawlable && CRAWLABLE_TEXT.has(TextElementTag)) || undefined}
         {...rest}
       />
     );

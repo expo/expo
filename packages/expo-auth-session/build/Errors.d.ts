@@ -41,7 +41,7 @@ export declare class ResponseError extends CodedError {
      * Raw results of the error.
      */
     params: Record<string, string>;
-    constructor(params: ResponseErrorConfig, errorCodeType: string);
+    constructor(params: ResponseErrorConfig, errorCodeType: 'auth' | 'token');
 }
 /**
  * Represents an authorization response error: [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2).

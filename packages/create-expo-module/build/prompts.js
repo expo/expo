@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLocalSubstitutionDataPrompts = exports.getSubstitutionDataPrompts = exports.getLocalFolderNamePrompt = exports.getSlugPrompt = void 0;
+exports.getSlugPrompt = getSlugPrompt;
+exports.getLocalFolderNamePrompt = getLocalFolderNamePrompt;
+exports.getSubstitutionDataPrompts = getSubstitutionDataPrompts;
+exports.getLocalSubstitutionDataPrompts = getLocalSubstitutionDataPrompts;
 const path_1 = __importDefault(require("path"));
 const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
 const git_1 = require("./utils/git");
@@ -24,7 +27,6 @@ function getSlugPrompt(customTargetPath) {
         validate: (input) => (0, validate_npm_package_name_1.default)(input).validForNewPackages || 'Must be a valid npm package name',
     };
 }
-exports.getSlugPrompt = getSlugPrompt;
 function getLocalFolderNamePrompt(customTargetPath) {
     const initial = getInitialName(customTargetPath);
     return {
@@ -35,7 +37,6 @@ function getLocalFolderNamePrompt(customTargetPath) {
         validate: (input) => (0, validate_npm_package_name_1.default)(input).validForNewPackages || 'Must be a valid npm package name',
     };
 }
-exports.getLocalFolderNamePrompt = getLocalFolderNamePrompt;
 async function getSubstitutionDataPrompts(slug) {
     return [
         {
@@ -98,7 +99,6 @@ async function getSubstitutionDataPrompts(slug) {
         },
     ];
 }
-exports.getSubstitutionDataPrompts = getSubstitutionDataPrompts;
 async function getLocalSubstitutionDataPrompts(slug) {
     return [
         {
@@ -128,5 +128,4 @@ async function getLocalSubstitutionDataPrompts(slug) {
         },
     ];
 }
-exports.getLocalSubstitutionDataPrompts = getLocalSubstitutionDataPrompts;
 //# sourceMappingURL=prompts.js.map

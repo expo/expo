@@ -9,7 +9,7 @@
  * From waku https://github.com/dai-shi/waku/blob/32d52242c1450b5f5965860e671ff73c42da8bd0/packages/waku/src/lib/renderers/rsc-renderer.ts
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renderRsc = void 0;
+exports.renderRsc = renderRsc;
 // This file must remain platform agnostic for production exports.
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 require("@expo/metro-runtime/rsc/runtime");
@@ -148,7 +148,6 @@ async function renderRsc(args, opts) {
     // method === 'GET'
     return renderWithContext(context, input, decodedBody);
 }
-exports.renderRsc = renderRsc;
 // TODO is this correct? better to use a library?
 const parseFormData = (body, contentType) => {
     const boundary = contentType.split('boundary=')[1];

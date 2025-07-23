@@ -4,9 +4,18 @@ import {
   AndroidConfig,
   createRunOncePlugin,
   IOSConfig,
+  withInfoPlist,
 } from 'expo/config-plugins';
 
 const pkg = require('expo-media-library/package.json');
+
+type GranularPermission = 'photo' | 'video' | 'audio';
+const GRANULAR_PERMISSIONS_MAP: Record<GranularPermission, string> = {
+  photo: 'android.permission.READ_MEDIA_IMAGES',
+  video: 'android.permission.READ_MEDIA_VIDEO',
+  audio: 'android.permission.READ_MEDIA_AUDIO',
+};
+const defaultGranularPermissions: GranularPermission[] = ['photo', 'video', 'audio'];
 
 export function modifyAndroidManifest(
   manifest: AndroidConfig.Manifest.AndroidManifest
@@ -31,8 +40,19 @@ const withMediaLibrary: ConfigPlugin<
     photosPermission?: string | false;
     savePhotosPermission?: string | false;
     isAccessMediaLocationEnabled?: boolean;
+    preventAutomaticLimitedAccessAlert?: boolean;
+    granularPermissions?: GranularPermission[];
   } | void
-> = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
+> = (
+  config,
+  {
+    photosPermission,
+    savePhotosPermission,
+    isAccessMediaLocationEnabled,
+    preventAutomaticLimitedAccessAlert,
+    granularPermissions = defaultGranularPermissions,
+  } = {}
+) => {
   IOSConfig.Permissions.createPermissionsPlugin({
     NSPhotoLibraryUsageDescription: 'Allow $(PRODUCT_NAME) to access your photos',
     NSPhotoLibraryAddUsageDescription: 'Allow $(PRODUCT_NAME) to save photos',
@@ -46,9 +66,18 @@ const withMediaLibrary: ConfigPlugin<
     [
       'android.permission.READ_EXTERNAL_STORAGE',
       'android.permission.WRITE_EXTERNAL_STORAGE',
+      'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
       isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
+      ...granularPermissions.map((type) => GRANULAR_PERMISSIONS_MAP[type]),
     ].filter(Boolean) as string[]
   );
+
+  if (preventAutomaticLimitedAccessAlert) {
+    config = withInfoPlist(config, (config) => {
+      config.modResults.PHPhotoLibraryPreventAutomaticLimitedAccessAlert = true;
+      return config;
+    });
+  }
 
   return withMediaLibraryExternalStorage(config);
 };

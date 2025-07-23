@@ -1,5 +1,6 @@
 {
   "platforms": ["apple", "android"],
+  "coreFeatures": ["swiftui", "compose"],
   "apple": {
     "modules": ["ExpoUIModule"]
   },

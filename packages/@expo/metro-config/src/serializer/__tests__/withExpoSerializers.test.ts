@@ -15,9 +15,7 @@ import {
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {
     const customSerializer = jest.fn();
-
     const customProcessor = jest.fn((...res) => res);
-
     const config = withSerializerPlugins(
       {
         serializer: {
@@ -34,8 +32,52 @@ describe(withSerializerPlugins, () => {
     // @ts-expect-error
     await config.serializer.customSerializer('a', 'b', 'c', options);
 
-    expect(customProcessor).toBeCalledWith('a', 'b', 'c', options);
-    expect(customSerializer).toBeCalledWith('a', 'b', 'c', options);
+    expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', options);
+    expect(customSerializer).toHaveBeenCalledWith('a', 'b', 'c', options);
+  });
+
+  it('does not lose the original config object reference', async () => {
+    // Create the `getRunBeforeMainModules` default and (user) override function
+    const defaultGetMainModules = jest.fn(() => ['default/module']);
+    const overrideGetMainModules = jest.fn(() => ['override/module']);
+
+    // Create a fake serializer, running `getRunBeforeMainModules` from the config
+    const customProcessor = jest.fn((...res) => res);
+    const customSerializer = jest.fn((_entryPoint, _preModules, _graph, options) => {
+      // Mimick serializer behavior where we call getModulesRunBeforeMainModule
+      options.getModulesRunBeforeMainModule('path/to/entry.js');
+    });
+
+    // Create the Metro config, already containing the serializer options (source URL)
+    // This is added through a mutation later on in the process
+    const config = {
+      serializer: {
+        getModulesRunBeforeMainModule: defaultGetMainModules,
+        customSerializer,
+        createModuleId: expect.any(Function),
+        sourceUrl: 'https://localhost:8081/index.bundle?platform=ios&dev=true&minify=false',
+      },
+    };
+    // @ts-expect-error
+    const configWithSerializer = withSerializerPlugins(config, [customProcessor as any]);
+
+    // Modify the original config, which should also modify the function in the serializer config
+    config.serializer.getModulesRunBeforeMainModule = overrideGetMainModules;
+
+    // @ts-expect-error
+    await configWithSerializer.serializer.customSerializer(
+      'a',
+      'b',
+      'c',
+      configWithSerializer.serializer
+    );
+
+    // Ensure the serializer was invoked correctly
+    expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
+    expect(customSerializer).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
+    // Ensure the serializer invoked the overriden config property
+    expect(defaultGetMainModules).not.toHaveBeenCalled();
+    expect(overrideGetMainModules).toHaveBeenCalled();
   });
 });
 
@@ -315,13 +357,13 @@ describe('serializes', () => {
       const filenames = artifacts.map(({ filename }) => filename);
 
       expect(filenames).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure no directive to include them is added.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]{32}\.js\.map/
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
       // Debug ID annotation is included at the end.
       expect(artifacts[0].source).toMatch(/\/\/# debugId=295379f8-3d45-4ee7-8da9-c63d70ba75f3/);
@@ -356,13 +398,13 @@ describe('serializes', () => {
       const filenames = artifacts.map(({ filename }) => filename);
 
       expect(filenames).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/),
       ]);
 
       // Ensure no directive to include them is added.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]{32}\.hbc\.map/
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/
       );
       // Debug ID annotation is included at the end.
       expect(artifacts[0].source).toMatch(/\/\/# debugId=295379f8-3d45-4ee7-8da9-c63d70ba75f3/);
@@ -397,7 +439,7 @@ describe('serializes', () => {
       const filenames = artifacts.map(({ filename }) => filename);
 
       expect(filenames).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
       ]);
 
       // Ensure no directive to include them is added.
@@ -437,7 +479,7 @@ describe('serializes', () => {
 
       // Ensure no source maps exist
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
       ]);
 
       // Ensure no directive to include them is added.
@@ -457,14 +499,14 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/),
       ]);
 
       // Ensure the annotation is included and uses the .hbc.map. We make this modification as
       // a string before passing to Hermes.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-[\w\d]+\.hbc\.map/
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/
       );
     });
     it(`serializes with relative base url in production`, async () => {
@@ -481,13 +523,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/subdomain\/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=https:\/\/localhost:8081\/subdomain\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
     it(`serializes source maps in production for web`, async () => {
@@ -503,13 +545,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -527,13 +569,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the relative base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=\/subdomain\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=\/subdomain\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -551,13 +593,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/ios\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -575,13 +617,13 @@ describe('serializes', () => {
 
       // Ensure the assets both use the .hbc extension
       expect(artifacts.map(({ filename }) => filename)).toEqual([
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js/),
-        expect.stringMatching(/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/),
       ]);
 
       // Ensure the source uses the absolute base URL in production to fetch maps from a non-standard hosting location.
       expect(artifacts[0].source).toMatch(
-        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/web\/index-[\w\d]+\.js\.map/
+        /\/\/# sourceMappingURL=https:\/\/evanbacon\.dev\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
     });
 
@@ -631,8 +673,8 @@ describe('serializes', () => {
       "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
-        var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
-        console.log(foo);
+        var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
+        console.log(_foo.foo);
       },"/app/index.js",["/app/foo.js"],"index.js");
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
@@ -1275,7 +1317,7 @@ describe('serializes', () => {
       );
 
       expect(artifacts.map((art) => art.filename)).toEqual([
-        '_expo/static/js/web/index-e442a5eec0eab76e713768637a386582.js',
+        expect.stringMatching(/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js/),
       ]);
 
       // Split bundle
@@ -1302,9 +1344,11 @@ describe('serializes', () => {
           Object.defineProperty(exports, '__esModule', {
             value: true
           });
-          const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("file:///app/other.js");
+          const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("./other.js");
           module.exports = proxy;
-          const foo = proxy["foo"];
+          const foo = _$$_REQUIRE(_dependencyMap[0]).registerClientReference(function () {
+            throw new Error("Attempted to call foo() of /app/other.js from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
+          }, "./other.js", "foo");
           exports.foo = foo;
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
         __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);

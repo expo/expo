@@ -3,27 +3,75 @@ import { CommandError } from '../utils/errors';
 const debug = require('debug')('expo:utils:variadic') as typeof console.log;
 
 /** Given a list of CLI args, return a sorted set of args based on categories used in a complex command. */
-export function parseVariadicArguments(argv: string[]): {
+export function parseVariadicArguments(
+  argv: string[],
+  strFlags: string[] = []
+): {
   variadic: string[];
   extras: string[];
-  flags: Record<string, boolean | undefined>;
+  flags: Record<string, boolean | string | string[] | undefined>;
 } {
   const variadic: string[] = [];
-  const flags: Record<string, boolean> = {};
+  const parsedFlags: Record<string, boolean | string | string[]> = {};
 
-  for (const arg of argv) {
+  let i = 0;
+  while (i < argv.length) {
+    const arg = argv[i];
+
     if (!arg.startsWith('-')) {
       variadic.push(arg);
     } else if (arg === '--') {
       break;
     } else {
-      flags[arg] = true;
+      const flagIndex = strFlags.indexOf(arg.split('=')[0]);
+      if (flagIndex !== -1) {
+        // Handle flags that expect a value
+        const [flag, value] = arg.split('=');
+        if (value !== undefined) {
+          // If the flag has a value inline (e.g., --flag=value)
+          if (parsedFlags[flag] === undefined) {
+            parsedFlags[flag] = value;
+          } else if (Array.isArray(parsedFlags[flag])) {
+            (parsedFlags[flag] as string[]).push(value);
+          } else {
+            parsedFlags[flag] = [parsedFlags[flag] as string, value];
+          }
+        } else {
+          const nextArg = argv[i + 1];
+          if (nextArg && !nextArg.startsWith('-')) {
+            if (parsedFlags[arg] === undefined) {
+              parsedFlags[arg] = nextArg;
+            } else if (Array.isArray(parsedFlags[arg])) {
+              (parsedFlags[arg] as string[]).push(nextArg);
+            } else {
+              parsedFlags[arg] = [parsedFlags[arg] as string, nextArg];
+            }
+            i++; // Skip the next argument since it's part of the current flag
+          } else {
+            if (parsedFlags[arg] === undefined) {
+              parsedFlags[arg] = true; // Flag without a value
+            } else if (Array.isArray(parsedFlags[arg])) {
+              (parsedFlags[arg] as (string | boolean)[]).push(true);
+            } else {
+              parsedFlags[arg] = [parsedFlags[arg] as any, true];
+            }
+          }
+        }
+      } else {
+        if (parsedFlags[arg] === undefined) {
+          parsedFlags[arg] = true; // Unknown flag
+        } else if (Array.isArray(parsedFlags[arg])) {
+          (parsedFlags[arg] as (string | boolean)[]).push(true);
+        } else {
+          parsedFlags[arg] = [parsedFlags[arg] as any, true];
+        }
+      }
     }
+    i++;
   }
 
   // Everything after `--` that is not an option is passed to the underlying install command.
   const extras: string[] = [];
-
   const extraOperator = argv.indexOf('--');
   if (extraOperator > -1 && argv.length > extraOperator + 1) {
     const extraArgs = argv.slice(extraOperator + 1);
@@ -34,11 +82,11 @@ export function parseVariadicArguments(argv: string[]): {
     debug('Extra arguments: ' + extras.join(', '));
   }
 
-  debug(`Parsed arguments (variadic: %O, flags: %O, extra: %O)`, variadic, flags, extras);
+  debug(`Parsed arguments (variadic: %O, flags: %O, extra: %O)`, variadic, parsedFlags, extras);
 
   return {
     variadic,
-    flags,
+    flags: parsedFlags,
     extras,
   };
 }

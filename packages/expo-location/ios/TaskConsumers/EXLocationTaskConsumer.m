@@ -68,11 +68,10 @@
     EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
 
     locationManager.desiredAccuracy = [EXLocation CLLocationAccuracyFromOption:accuracy];
-    locationManager.distanceFilter = [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone;
-    locationManager.activityType = [EXLocation CLActivityTypeFromOption:[options[@"activityType"] integerValue]];
-    locationManager.pausesLocationUpdatesAutomatically = [options[@"pausesUpdatesAutomatically"] boolValue];
-
-    locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];
+    locationManager.distanceFilter = [self numberToDouble:options[@"distanceInterval"] defaultValue:kCLDistanceFilterNone];
+    locationManager.activityType = [EXLocation CLActivityTypeFromOption:[self numberToInteger:options[@"activityType"] defaultValue:CLActivityTypeOther]];
+    locationManager.pausesLocationUpdatesAutomatically = [self numberToBool:options[@"pausesUpdatesAutomatically"] defaultValue:true];
+    locationManager.showsBackgroundLocationIndicator = [self numberToBool:options[@"showsBackgroundLocationIndicator"] defaultValue:false];
 
     [locationManager startUpdatingLocation];
     [locationManager startMonitoringSignificantLocationChanges];
@@ -91,15 +90,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-  if (error.domain == kCLErrorDomain) {
-    // This error might happen when the device is not able to find out the location. Try to restart monitoring location.
-    [manager stopUpdatingLocation];
-    [manager stopMonitoringSignificantLocationChanges];
-    [manager startUpdatingLocation];
-    [manager startMonitoringSignificantLocationChanges];
-  } else {
-    [_task executeWithData:nil withError:error];
-  }
+  [_task executeWithData:nil withError:error];
 }
 
 # pragma mark - internal
@@ -172,7 +163,17 @@
 
 - (double)numberToDouble:(NSNumber *)number defaultValue:(double)defaultValue
 {
-  return number == nil ? defaultValue : [number doubleValue];
+  return [number isEqual:[NSNull null]] || number == nil ? defaultValue : [number doubleValue];
+}
+
+- (NSInteger)numberToInteger:(NSNumber *)number defaultValue:(NSInteger)defaultValue
+{
+  return [number isEqual:[NSNull null]] || number == nil ? defaultValue : [number integerValue];
+}
+
+- (BOOL)numberToBool:(NSNumber *)number defaultValue:(BOOL)defaultValue
+{
+  return [number isEqual:[NSNull null]] || number == nil ? defaultValue : [number boolValue];
 }
 
 + (NSArray<NSDictionary *> *)_exportLocations:(NSArray<CLLocation *> *)locations

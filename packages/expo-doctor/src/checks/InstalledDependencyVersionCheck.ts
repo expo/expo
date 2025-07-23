@@ -34,8 +34,8 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       isSuccessful: issues.length === 0,
       issues,
       advice: issues.length
-        ? `Use 'npx expo install --check' to review and upgrade your dependencies.`
-        : undefined,
+        ? [`Use 'npx expo install --check' to review and upgrade your dependencies.`]
+        : [],
     };
   }
 }

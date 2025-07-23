@@ -1,13 +1,70 @@
 import { stripAnsi } from '../../../../utils/ansi';
 import {
+  maybeSymbolicateAndFormatReactErrorLogAsync,
+  parseErrorStringToObject,
+} from '../../serverLogLikeMetro';
+import {
   formatUsingNodeStandardLibraryError,
   isNodeStdLibraryModule,
   MetroTerminalReporter,
   stripMetroInfo,
 } from '../MetroTerminalReporter';
 import { BundleDetails } from '../TerminalReporter.types';
+import { LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED } from './fixtures/terminal-logs';
 
 const asBundleDetails = (value: any) => value as BundleDetails;
+
+jest.mock('../../serverLogLikeMetro', () => {
+  const original = jest.requireActual('../../serverLogLikeMetro');
+  return {
+    ...original,
+    parseErrorStringToObject: jest.fn(original.parseErrorStringToObject),
+    maybeSymbolicateAndFormatReactErrorLogAsync: jest.fn(),
+  };
+});
+
+describe('symbolicate React stacks', () => {
+  const buildID = '1';
+  const reporter = new MetroTerminalReporter('/', {
+    log: jest.fn(),
+    persistStatus: jest.fn(),
+    status: jest.fn(),
+    flush: jest.fn(),
+    _update: jest.fn(),
+  } as any);
+  reporter._getElapsedTime = jest.fn(() => BigInt(100));
+  reporter._bundleTimers.set(buildID, BigInt(0));
+
+  it(`should symbolicate a react error stack`, () => {
+    let parsedError: any;
+    jest
+      .mocked(maybeSymbolicateAndFormatReactErrorLogAsync)
+      .mockImplementationOnce((projectRoot, level, error) => {
+        parsedError = error;
+        return Promise.resolve('Symbolicated error message\n\n  at App.js:1:1\n  at index.js:2:2');
+      });
+
+    reporter._log(LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED as any);
+    expect(parseErrorStringToObject).toHaveBeenCalledWith(
+      expect.stringMatching(
+        /http:\/\/192.168.1.245:8081\/packages\/expo-router\/entry.bundle\/\/&platform=ios/
+      )
+    );
+
+    expect(maybeSymbolicateAndFormatReactErrorLogAsync).toHaveBeenCalledTimes(1);
+
+    expect(parsedError.message).toEqual(
+      'Warning: Text strings must be rendered within a <Text> component.'
+    );
+    expect(parsedError.stack[1]).toEqual({
+      arguments: [],
+      column: 42,
+      file: 'http://192.168.1.245:8081/packages/expo-router/entry.bundle//&platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=__e2e__%2Fstatic-rendering%2Fapp&unstable_transformProfile=hermes-stable',
+      lineNumber: 62489,
+      methodName: 'View',
+    });
+  });
+});
 
 describe('_getBundleStatusMessage', () => {
   const buildID = '1';
@@ -16,9 +73,9 @@ describe('_getBundleStatusMessage', () => {
     persistStatus: jest.fn(),
     status: jest.fn(),
     flush: jest.fn(),
-  });
-  reporter._getElapsedTime = jest.fn(() => 100);
-  reporter._bundleTimers.set(buildID, 0);
+  } as any);
+  reporter._getElapsedTime = jest.fn(() => BigInt(100));
+  reporter._bundleTimers.set(buildID, BigInt(0));
 
   it(`should format standard progress`, () => {
     expect(

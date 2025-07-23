@@ -35,9 +35,9 @@ function useChildren(inputChildren: React.ReactNode) {
 
 /** Extend a view with a `children` filter that asserts more helpful warnings/errors. */
 export function createDevView<TView extends React.ComponentType<any>>(View: TView) {
-  return React.forwardRef(({ children, ...props }: any, forwardedRef: React.Ref<TView>) => {
-    return <View ref={forwardedRef} {...props} children={useChildren(children)} />;
-  });
+  return function DevView({ children, ...props }: any) {
+    return <View {...props} children={useChildren(children)} />;
+  };
 }
 
 const styles = StyleSheet.create({

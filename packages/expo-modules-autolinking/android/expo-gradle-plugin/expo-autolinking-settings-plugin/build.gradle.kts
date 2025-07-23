@@ -12,12 +12,13 @@ repositories {
 }
 
 dependencies {
-  implementation(project(":shared"))
+  implementation(project(":expo-autolinking-plugin-shared"))
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("com.google.truth:truth:1.1.2")
+  testImplementation("io.mockk:mockk:1.14.2")
 }
 
 java {

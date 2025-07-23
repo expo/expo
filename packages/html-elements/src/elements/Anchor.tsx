@@ -1,10 +1,10 @@
-import React, { ComponentType, forwardRef } from 'react';
+import React from 'react';
 import { Linking, Platform } from 'react-native';
 
 import { LinkProps } from './Text.types';
 import Text from '../primitives/Text';
 
-export const A = forwardRef(({ href, target, download, rel, ...props }: LinkProps, ref) => {
+export function A({ href, target, download, rel, ...props }: LinkProps) {
   const nativeProps = Platform.select<LinkProps>({
     web: {
       href,
@@ -23,5 +23,5 @@ export const A = forwardRef(({ href, target, download, rel, ...props }: LinkProp
       },
     },
   });
-  return <Text role="link" {...props} {...nativeProps} ref={ref} />;
-}) as ComponentType<LinkProps>;
+  return <Text role="link" {...props} {...nativeProps} />;
+}

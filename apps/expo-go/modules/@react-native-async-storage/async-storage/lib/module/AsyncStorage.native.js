@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -47,11 +49,10 @@ const AsyncStorage = (() => {
       return new Promise((resolve, reject) => {
         checkValidInput(key);
         RCTAsyncStorage.multiGet([key], (errors, result) => {
-          var _result$;
           // Unpack result to get value from [[key,value]]
-          const value = result !== null && result !== void 0 && (_result$ = result[0]) !== null && _result$ !== void 0 && _result$[1] ? result[0][1] : null;
+          const value = result?.[0]?.[1] ? result[0][1] : null;
           const errs = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(errs === null || errs === void 0 ? void 0 : errs[0], value);
+          callback?.(errs?.[0], value);
           if (errs) {
             reject(errs[0]);
           } else {
@@ -70,7 +71,7 @@ const AsyncStorage = (() => {
         checkValidInput(key, value);
         RCTAsyncStorage.multiSet([[key, value]], errors => {
           const errs = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(errs === null || errs === void 0 ? void 0 : errs[0]);
+          callback?.(errs?.[0]);
           if (errs) {
             reject(errs[0]);
           } else {
@@ -89,7 +90,7 @@ const AsyncStorage = (() => {
         checkValidInput(key);
         RCTAsyncStorage.multiRemove([key], errors => {
           const errs = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(errs === null || errs === void 0 ? void 0 : errs[0]);
+          callback?.(errs?.[0]);
           if (errs) {
             reject(errs[0]);
           } else {
@@ -109,7 +110,7 @@ const AsyncStorage = (() => {
         checkValidInput(key, value);
         RCTAsyncStorage.multiMerge([[key, value]], errors => {
           const errs = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(errs === null || errs === void 0 ? void 0 : errs[0]);
+          callback?.(errs?.[0]);
           if (errs) {
             reject(errs[0]);
           } else {
@@ -129,7 +130,7 @@ const AsyncStorage = (() => {
       return new Promise((resolve, reject) => {
         RCTAsyncStorage.clear(error => {
           const err = convertError(error);
-          callback === null || callback === void 0 ? void 0 : callback(err);
+          callback?.(err);
           if (err) {
             reject(err);
           } else {
@@ -147,7 +148,7 @@ const AsyncStorage = (() => {
       return new Promise((resolve, reject) => {
         RCTAsyncStorage.getAllKeys((error, keys) => {
           const err = convertError(error);
-          callback === null || callback === void 0 ? void 0 : callback(err, keys);
+          callback?.(err, keys);
           if (keys) {
             resolve(keys);
           } else {
@@ -184,7 +185,7 @@ const AsyncStorage = (() => {
         // Is there a way to avoid using the map but fix the bug in this breaking test?
         // https://github.com/facebook/react-native/commit/8dd8ad76579d7feef34c014d387bf02065692264
         const map = {};
-        result === null || result === void 0 ? void 0 : result.forEach(([key, value]) => {
+        result?.forEach(([key, value]) => {
           map[key] = value;
           return value;
         });
@@ -200,19 +201,17 @@ const AsyncStorage = (() => {
          * the rest of them will be rejected as well (with the same error).
          */
         const errorList = convertErrors(errors);
-        const error = errorList !== null && errorList !== void 0 && errorList.length ? errorList[0] : null;
+        const error = errorList?.length ? errorList[0] : null;
         for (let i = 0; i < reqLength; i++) {
-          var _request$callback2, _request$resolve;
           const request = getRequests[i];
           if (error) {
-            var _request$callback, _request$reject;
-            (_request$callback = request.callback) === null || _request$callback === void 0 ? void 0 : _request$callback.call(request, errorList);
-            (_request$reject = request.reject) === null || _request$reject === void 0 ? void 0 : _request$reject.call(request, error);
+            request.callback?.(errorList);
+            request.reject?.(error);
             continue;
           }
           const requestResult = request.keys.map(key => [key, map[key]]);
-          (_request$callback2 = request.callback) === null || _request$callback2 === void 0 ? void 0 : _request$callback2.call(request, null, requestResult);
-          (_request$resolve = request.resolve) === null || _request$resolve === void 0 ? void 0 : _request$resolve.call(request, requestResult);
+          request.callback?.(null, requestResult);
+          request.resolve?.(requestResult);
         }
       });
     },
@@ -263,7 +262,7 @@ const AsyncStorage = (() => {
         });
         RCTAsyncStorage.multiSet(keyValuePairs, errors => {
           const error = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(error);
+          callback?.(error);
           if (error) {
             reject(error);
           } else {
@@ -282,7 +281,7 @@ const AsyncStorage = (() => {
         keys.forEach(key => checkValidInput(key));
         RCTAsyncStorage.multiRemove(keys, errors => {
           const error = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(error);
+          callback?.(error);
           if (error) {
             reject(error);
           } else {
@@ -301,7 +300,7 @@ const AsyncStorage = (() => {
       return new Promise((resolve, reject) => {
         RCTAsyncStorage.multiMerge(keyValuePairs, errors => {
           const error = convertErrors(errors);
-          callback === null || callback === void 0 ? void 0 : callback(error);
+          callback?.(error);
           if (error) {
             reject(error);
           } else {

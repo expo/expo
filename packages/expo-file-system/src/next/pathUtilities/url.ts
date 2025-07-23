@@ -28,6 +28,7 @@ const carriageReturnRegEx = /\r/g;
 const tabRegEx = /\t/g;
 const questionRegex = /\?/g;
 const hashRegex = /#/g;
+const spaceRegEx = / /g;
 
 function encodePathChars(filepath: string) {
   if (filepath.indexOf('%') !== -1) filepath = filepath.replace(percentRegEx, '%25');
@@ -36,13 +37,14 @@ function encodePathChars(filepath: string) {
   if (filepath.indexOf('\n') !== -1) filepath = filepath.replace(newlineRegEx, '%0A');
   if (filepath.indexOf('\r') !== -1) filepath = filepath.replace(carriageReturnRegEx, '%0D');
   if (filepath.indexOf('\t') !== -1) filepath = filepath.replace(tabRegEx, '%09');
+  if (filepath.indexOf(' ') !== -1) filepath = filepath.replace(spaceRegEx, '%20');
   return filepath;
 }
 
-export function pathToFileURLString(filepath: string) {
-  let resolved = resolve(filepath);
+export function encodeURLChars(path: string) {
+  let resolved = resolve(path);
   // path.resolve strips trailing slashes so we must add them back
-  const filePathLast = filepath.charAt(filepath.length - 1);
+  const filePathLast = path.charAt(path.length - 1);
   if (filePathLast === '/' && resolved[resolved.length - 1] !== sep) resolved += '/';
 
   // Call encodePathChars first to avoid encoding % again for ? and #.
@@ -54,38 +56,23 @@ export function pathToFileURLString(filepath: string) {
   // later triggering pathname setter, which impacts performance
   if (resolved.indexOf('?') !== -1) resolved = resolved.replace(questionRegex, '%3F');
   if (resolved.indexOf('#') !== -1) resolved = resolved.replace(hashRegex, '%23');
-  return `file://${resolved}`;
+  return resolved;
 }
 
-export function pathToFileURL(filepath: string) {
-  return new URL(pathToFileURLString(filepath));
-}
-
-function getPathFromURLPosix(url: { hostname: string; pathname: string }) {
-  if (url.hostname !== '') {
-    throw new Error(
-      'URL host must be localhost or empty – are you sure your url starts with `file:///`?'
-    );
+export function isUrl(url: string) {
+  try {
+    return !!new URL(url);
+  } catch (error) {
+    return false;
   }
-  const pathname = url.pathname;
-  for (let n = 0; n < pathname.length; n++) {
-    if (pathname[n] === '%') {
-      const third = +pathname.charAt(n + 2) | 0x20;
-      if (pathname[n + 1] === '2' && third === 102) {
-        throw new Error('pathname must not include encoded / characters');
-      }
-    }
+}
+
+export function asUrl(url: string | URL) {
+  try {
+    const newUrl = new URL(url);
+    newUrl.hash = '';
+    return newUrl;
+  } catch (error) {
+    return null;
   }
-  return decodeURIComponent(pathname);
-}
-
-export function fileURLToPath(path: string | URL) {
-  if (typeof path === 'string') path = new URL(path);
-  if (path.protocol !== 'file:')
-    throw new Error('Must be a file URL – are you sure your url starts with `file:///`?');
-  return getPathFromURLPosix(path);
-}
-
-export function isFileUrl(url: string) {
-  return url.startsWith('file:');
 }

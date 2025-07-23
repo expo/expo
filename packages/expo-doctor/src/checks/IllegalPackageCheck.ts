@@ -31,10 +31,12 @@ export class IllegalPackageCheck implements DoctorCheck {
       isSuccessful: !issues.length,
       issues,
       advice: issues.length
-        ? `Remove any 'unimodules' packages from your project. Learn more: ${learnMore(
-            'https://expo.fyi/r/sdk-44-remove-unimodules'
-          )}`
-        : undefined,
+        ? [
+            `Remove any 'unimodules' packages from your project. Learn more: ${learnMore(
+              'https://expo.fyi/r/sdk-44-remove-unimodules'
+            )}`,
+          ]
+        : [],
     };
   }
 }

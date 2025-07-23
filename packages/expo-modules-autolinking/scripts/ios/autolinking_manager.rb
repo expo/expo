@@ -209,7 +209,14 @@ module Expo
     end
 
     private def resolve_command_args
-      node_command_args('resolve').concat(['--json'])
+      resolve_command_args = ['--json']
+
+      project_root = @options.fetch(:projectRoot, nil)
+      if project_root
+        resolve_command_args.concat(['--project-root', project_root])
+      end
+
+      node_command_args('resolve').concat(resolve_command_args)
     end
 
     public def generate_modules_provider_command_args(target_path)

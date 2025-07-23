@@ -22,6 +22,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
+import androidx.annotation.RequiresApi
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.permissions.Permissions.askForPermissionsWithPermissionsManager
 import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermissionsManager
@@ -33,6 +34,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
 import expo.modules.medialibrary.albums.AddAssetsToAlbum
 import expo.modules.medialibrary.albums.CreateAlbum
+import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
 import expo.modules.medialibrary.albums.DeleteAlbums
 import expo.modules.medialibrary.albums.GetAlbum
 import expo.modules.medialibrary.albums.GetAlbums
@@ -40,7 +42,7 @@ import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
 import expo.modules.medialibrary.albums.getAssetsInAlbums
 import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
 import expo.modules.medialibrary.albums.migration.MigrateAlbum
-import expo.modules.medialibrary.assets.CreateAsset
+import expo.modules.medialibrary.assets.CreateAssetWithAlbumId
 import expo.modules.medialibrary.assets.DeleteAssets
 import expo.modules.medialibrary.assets.GetAssetInfo
 import expo.modules.medialibrary.assets.GetAssets
@@ -64,7 +66,7 @@ class MediaLibraryModule : Module() {
     if (isExpoGo) {
       listOf(GranularPermission.AUDIO)
     } else {
-      listOf(GranularPermission.AUDIO, GranularPermission.PHOTO, GranularPermission.VIDEO)
+      getManifestDeclaredPermissions(context, listOf(GranularPermission.PHOTO, GranularPermission.VIDEO, GranularPermission.AUDIO))
     }
   }
 
@@ -104,16 +106,16 @@ class MediaLibraryModule : Module() {
     AsyncFunction("saveToLibraryAsync") { localUri: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise, false)
+          CreateAssetWithAlbumId(context, localUri, promise, false)
             .execute()
         }
       }
     }
 
-    AsyncFunction("createAssetAsync") { localUri: String, promise: Promise ->
+    AsyncFunction("createAssetAsync") { localUri: String, albumId: String?, promise: Promise ->
       throwUnlessPermissionsGranted {
         withModuleScope(promise) {
-          CreateAsset(context, localUri, promise)
+          CreateAssetWithAlbumId(context, localUri, promise, true, albumId)
             .execute()
         }
       }
@@ -151,7 +153,7 @@ class MediaLibraryModule : Module() {
               .execute()
           }
         }
-        runActionWithPermissions(assetsId, action)
+        runActionWithPermissions(assetsId, action, useDeletePermission = true)
       }
     }
 
@@ -180,15 +182,27 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
+    AsyncFunction("createAlbumAsync") { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri?, promise: Promise ->
       throwUnlessPermissionsGranted {
         val action = actionIfUserGrantedPermission(promise) {
           withModuleScope(promise) {
-            CreateAlbum(context, albumName, assetId, copyAsset, promise)
-              .execute()
+            assetId?.let {
+              CreateAlbum(context, albumName, assetId, copyAsset, promise)
+                .execute()
+            }
+
+            initialAssetUri?.let {
+              CreateAlbumWithInitialFileUri(context, albumName, it, promise)
+                .execute()
+            }
           }
         }
-        runActionWithPermissions(if (copyAsset) emptyList() else listOf(assetId), action)
+        val assetIdList = if (!copyAsset && assetId != null) {
+          listOf(assetId)
+        } else {
+          emptyList()
+        }
+        runActionWithPermissions(assetIdList, action)
       }
     }
 
@@ -320,7 +334,7 @@ class MediaLibraryModule : Module() {
     }
 
     OnActivityResult { _, payload ->
-      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE }?.let {
+      awaitingAction?.takeIf { payload.requestCode == WRITE_REQUEST_CODE || payload.requestCode == DELETE_REQUEST_CODE }?.let {
         it.runWithPermissions(payload.resultCode == Activity.RESULT_OK)
         awaitingAction = null
       }
@@ -373,16 +387,9 @@ class MediaLibraryModule : Module() {
       Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
         MediaLibraryUtils.hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
 
-    val shouldAddGranularPermissions =
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-        granularPermissions.all {
-          MediaLibraryUtils.hasManifestPermission(
-            context,
-            it.toManifestPermission()
-          )
-        }
-
+    val shouldAddGranularPermissions = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     val shouldIncludeGranular = shouldAddGranularPermissions && !writeOnly
+
     return listOfNotNull(
       WRITE_EXTERNAL_STORAGE.takeIf { shouldAddWriteExternalStorage },
       READ_EXTERNAL_STORAGE.takeIf { !writeOnly && !shouldAddGranularPermissions },
@@ -396,15 +403,31 @@ class MediaLibraryModule : Module() {
     shouldIncludeGranular: Boolean,
     granularPermissions: List<GranularPermission>
   ): Array<String> {
-    return if (shouldIncludeGranular) {
-      listOfNotNull(
+    if (shouldIncludeGranular) {
+      assertGranularPermissionIntegrity(context, granularPermissions)
+      return listOfNotNull(
         READ_MEDIA_IMAGES.takeIf { granularPermissions.contains(GranularPermission.PHOTO) },
         READ_MEDIA_VIDEO.takeIf { granularPermissions.contains(GranularPermission.VIDEO) },
         READ_MEDIA_AUDIO.takeIf { granularPermissions.contains(GranularPermission.AUDIO) }
       ).toTypedArray()
-    } else {
-      arrayOf()
     }
+    return arrayOf()
+  }
+
+  @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+  private fun assertGranularPermissionIntegrity(context: Context, granularPermissions: List<GranularPermission>) {
+    for (permission in granularPermissions) {
+      if (!MediaLibraryUtils.hasManifestPermission(context, permission.toManifestPermission())) {
+        throw PermissionsException("You have requested the $permission permission, but it is not declared in AndroidManifest. Update expo-media-library config plugin to include the permission before requesting it.")
+      }
+    }
+  }
+
+  private fun getManifestDeclaredPermissions(context: Context, granularPermissions: List<GranularPermission>): List<GranularPermission> {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return granularPermissions.filter { MediaLibraryUtils.hasManifestPermission(context, it.toManifestPermission()) }
+    }
+    return granularPermissions
   }
 
   private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = true, block: () -> Unit) {
@@ -458,7 +481,7 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private fun runActionWithPermissions(assetsId: List<String>, action: Action) {
+  private fun runActionWithPermissions(assetsId: List<String>, action: Action, useDeletePermission: Boolean = false) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
         .filter { uri ->
@@ -470,14 +493,17 @@ class MediaLibraryModule : Module() {
         }
 
       if (pathsWithoutPermissions.isNotEmpty()) {
-        val deleteRequest =
+        val request = if (useDeletePermission) {
+          MediaStore.createDeleteRequest(context.contentResolver, pathsWithoutPermissions)
+        } else {
           MediaStore.createWriteRequest(context.contentResolver, pathsWithoutPermissions)
+        }
 
         try {
           awaitingAction = action
           appContext.throwingActivity.startIntentSenderForResult(
-            deleteRequest.intentSender,
-            WRITE_REQUEST_CODE,
+            request.intentSender,
+            if (useDeletePermission) DELETE_REQUEST_CODE else WRITE_REQUEST_CODE,
             null,
             0,
             0,
@@ -537,6 +563,7 @@ class MediaLibraryModule : Module() {
 
   companion object {
     private const val WRITE_REQUEST_CODE = 7463
+    private const val DELETE_REQUEST_CODE = 7464
     internal val TAG = MediaLibraryModule::class.java.simpleName
   }
 }

@@ -1,2 +1,2 @@
-import { NativeModule } from 'expo-modules-core';
+export {};
 //# sourceMappingURL=ExpoUpdatesModule.types.js.map

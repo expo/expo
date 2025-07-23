@@ -12,4 +12,7 @@ internal struct SecureStoreOptions: Record {
 
   @Field
   var requireAuthentication: Bool
+
+  @Field
+  var accessGroup: String?
 }

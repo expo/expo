@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports._assertNodeFetchSupport = void 0;
+exports._assertNodeFetchSupport = _assertNodeFetchSupport;
 // Add assertions to improve usage in non-standard environments.
 function _assertNodeFetchSupport({ Request, Response, process } = globalThis) {
     // Check if Request and Response are available.
@@ -17,14 +17,13 @@ function _assertNodeFetchSupport({ Request, Response, process } = globalThis) {
             const version = process.version;
             const majorVersion = parseInt(version.replace(/v/g, '').split('.')[0], 10);
             if (majorVersion < 18) {
-                throw new Error(`Node.js version ${majorVersion} is not supported. Please upgrade to Node.js 20 or newer.`);
+                throw new Error(`Node.js version ${majorVersion} is not supported. Upgrade to Node.js 20 or newer.`);
             }
         }
         // Default error event for missing APIs.
         throw new Error('Node built-in Request/Response APIs are not available. Ensure that Node Fetch API, first available in Node.js 18, is enabled.');
     }
 }
-exports._assertNodeFetchSupport = _assertNodeFetchSupport;
 // If this is in the wrong place (called after Request/Response are used), then a less helpful error such as `Request is not defined` will be thrown.
 _assertNodeFetchSupport();
 //# sourceMappingURL=assertion.js.map

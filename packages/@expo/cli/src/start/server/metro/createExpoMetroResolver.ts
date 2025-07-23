@@ -103,6 +103,7 @@ export function createFastResolver({
       | 'unstable_conditionNames'
       | 'unstable_conditionsByPlatform'
       | 'fileSystemLookup'
+      | 'isESMImport'
     >,
     moduleName: string,
     platform: string | null
@@ -122,6 +123,7 @@ export function createFastResolver({
       ? [
           ...new Set([
             'default',
+            context.isESMImport === true ? 'import' : 'require',
             ...context.unstable_conditionNames,
             ...(platform != null ? (context.unstable_conditionsByPlatform[platform] ?? []) : []),
           ]),
@@ -144,9 +146,7 @@ export function createFastResolver({
         blockList,
         enablePackageExports: context.unstable_enablePackageExports,
         basedir: path.dirname(context.originModulePath),
-        moduleDirectory: context.nodeModulesPaths.length
-          ? (context.nodeModulesPaths as string[])
-          : undefined,
+        paths: context.nodeModulesPaths.length ? (context.nodeModulesPaths as string[]) : undefined,
         extensions,
         conditions,
         realpathSync(file: string): string {

@@ -124,9 +124,10 @@ export type AssetInfo = Asset & {
 };
 /**
  * Constants identifying specific variations of asset media, such as panorama or screenshot photos,
- * and time-lapse or high-frame-rate video. Maps to [these values](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * and time-lapse or high-frame-rate video. Maps to [`PHAssetMediaSubtype`](https://developer.apple.com/documentation/photokit/phassetmediasubtype#1603888).
+ * @platform ios
  * */
-export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse';
+export type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'livePhoto' | 'panorama' | 'screenshot' | 'stream' | 'timelapse' | 'spatialMedia' | 'videoCinematic';
 export type MediaLibraryAssetInfoQueryOptions = {
     /**
      * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
@@ -241,6 +242,11 @@ export type AssetsOptions = {
      */
     mediaType?: MediaTypeValue[] | MediaTypeValue;
     /**
+     * An array of [MediaSubtype](#mediasubtype)s or a single `MediaSubtype`.
+     * @platform ios
+     */
+    mediaSubtypes?: MediaSubtype[] | MediaSubtype;
+    /**
      * `Date` object or Unix timestamp in milliseconds limiting returned assets only to those that
      * were created after this date.
      */
@@ -250,6 +256,13 @@ export type AssetsOptions = {
      * date.
      */
     createdBefore?: Date | number;
+    /**
+     * Whether to resolve full info for the assets during the query.
+     * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+     * @default false
+     * @platform android
+     */
+    resolveWithFullInfo?: boolean;
 };
 export type PagedInfo<T> = {
     /**
@@ -292,6 +305,8 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * @param writeOnly
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
+ *
+ * > When using granular permissions with a custom config plugin configuration, make sure that all the requested permissions are included in the plugin.
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export declare function requestPermissionsAsync(writeOnly?: boolean, granularPermissions?: GranularPermission[]): Promise<PermissionResponse>;
@@ -313,8 +328,8 @@ export declare function getPermissionsAsync(writeOnly?: boolean, granularPermiss
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
-    writeOnly?: boolean | undefined;
-    granularPermissions?: GranularPermission[] | undefined;
+    writeOnly?: boolean;
+    granularPermissions?: GranularPermission[];
 }> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Allows the user to update the assets that your app has access to.
@@ -342,9 +357,12 @@ export declare function presentPermissionsPickerAsync(mediaTypes?: MediaTypeFilt
  * ```
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`
+ *
+ * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
+ * The album has exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
-export declare function createAssetAsync(localUri: string): Promise<Asset>;
+export declare function createAssetAsync(localUri: string, album?: AlbumRef): Promise<Asset>;
 /**
  * Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri),
  * This method doesn't return created asset.
@@ -412,13 +430,16 @@ export declare function getAlbumAsync(title: string): Promise<Album>;
  * given asset from the current album to the new one, however it's also possible to move it by
  * passing `false` as `copyAsset` argument.
  * In case it's copied you should keep in mind that `getAssetsAsync` will return duplicated asset.
+ * > On Android, it's not possible to create an empty album. You must provide an existing asset to copy or move into the album or an uri of a local file, which will be used to create an initial asset for the album.
  * @param albumName Name of the album to create.
- * @param asset An [Asset](#asset) or its ID (required on Android).
- * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it.
+ * @param asset An [Asset](#asset) or its ID. On Android you either need to provide an asset or a localUri.
+ * @param initialAssetLocalUri A URI to the local media file, which will be used to create the initial asset inside the album. It must contain an extension. On Android it
+ * must be a local path, so it must start with `file:///`. If the `asset` was provided, this parameter will be ignored.
+ * @param copyAsset __Android Only.__ Whether to copy asset to the new album instead of move it. This parameter is ignored if `asset` was not provided.
  * Defaults to `true`.
  * @return Newly created [`Album`](#album).
  */
-export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;
+export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean, initialAssetLocalUri?: string): Promise<Album>;
 /**
  * Deletes given albums from the library. On Android by default it deletes assets belonging to given
  * albums from the library. On iOS it doesn't delete these assets, however it's possible to do by

@@ -1,8 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import SwiftUI
 import MapKit
+import SwiftUI
 
 struct Coordinate: Record {
   @Field var latitude: Double = 0
@@ -37,9 +37,8 @@ struct CameraPosition: Record, Equatable {
   @Field var zoom: Double = 1
 
   static func == (lhs: CameraPosition, rhs: CameraPosition) -> Bool {
-    return lhs.coordinates.latitude == rhs.coordinates.latitude &&
-    lhs.coordinates.longitude == rhs.coordinates.longitude &&
-    lhs.zoom == rhs.zoom
+    return lhs.coordinates.latitude == rhs.coordinates.latitude
+      && lhs.coordinates.longitude == rhs.coordinates.longitude && lhs.zoom == rhs.zoom
   }
 }
 
@@ -60,6 +59,81 @@ struct MapAnnotation: Record, Identifiable {
   }
 }
 
+struct ExpoAppleMapPolyline: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var coordinates: [Coordinate]
+  @Field var color: Color = .blue
+  @Field var width: Double = 4
+  @Field var contourStyle: String = "straight"
+
+  var clLocationCoordinates2D: [CLLocationCoordinate2D] {
+    return coordinates.map {
+      CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    )
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
+struct Circle: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var center: Coordinate
+  @Field var radius: Double
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
+  @Field var color: Color = .green
+
+  var clLocationCoordinate2D: CLLocationCoordinate2D {
+    CLLocationCoordinate2D(
+      latitude: center.latitude,
+      longitude: center.longitude
+    )
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(coordinate: clLocationCoordinate2D)
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
+struct Polygon: Record, Identifiable {
+  @Field var id: String = UUID().uuidString
+
+  @Field var coordinates: [Coordinate]
+  @Field var color: Color = .blue
+  @Field var lineColor: Color?
+  @Field var lineWidth: Double?
+
+  var clLocationCoordinates2D: [CLLocationCoordinate2D] {
+    return coordinates.map {
+      CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(
+      coordinate: clLocationCoordinates2D.first ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
+    )
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
+  }
+}
+
 struct MapUISettings: Record {
   @Field var compassEnabled: Bool = true
   @Field var myLocationButtonEnabled: Bool = true
@@ -68,9 +142,26 @@ struct MapUISettings: Record {
 }
 
 struct MapProperties: Record {
+  @Field var isMyLocationEnabled: Bool = false
   @Field var mapType: MapType = .standard
   @Field var isTrafficEnabled: Bool = false
   @Field var selectionEnabled: Bool = true
+  @Field var polylineTapThreshold: Double = 20
+}
+
+enum MapContourStyle: String, Enumerable {
+  case straight = "STRAIGHT"
+  case geodesic = "GEODESIC"
+
+  @available(iOS 17.0, *)
+  func toContourStyle() -> MapPolyline.ContourStyle {
+    switch self {
+    case .straight:
+      return .straight
+    case .geodesic:
+      return .geodesic
+    }
+  }
 }
 
 enum MapType: String, Enumerable {

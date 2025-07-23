@@ -193,6 +193,7 @@ You can use [EAS Workflows](/eas-workflows/get-started/) to build and submit you
      # @info #
      submit_ios:
        name: Submit to Apple App Store
+       needs: [build_ios]
        type: submit
        params:
          platform: ios

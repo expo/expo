@@ -77,4 +77,4 @@ class ExpoUpdatesModule extends NativeModule<UpdatesEvents> implements UpdatesMo
   }
 }
 
-export default registerWebModule(ExpoUpdatesModule);
+export default registerWebModule(ExpoUpdatesModule, 'ExpoUpdates');

@@ -17,16 +17,22 @@ export class DevToolsPluginClientImplBrowser extends DevToolsPluginClient {
   }
 
   private startHandshake() {
-    this.addMessageListener('terminateBrowserClient', (params) => {
-      if (this.browserClientId !== params.browserClientId) {
-        return;
+    this.addHandskakeMessageListener((params) => {
+      if (
+        params.method === 'terminateBrowserClient' &&
+        this.browserClientId === params.browserClientId
+      ) {
+        logger.info(
+          'Received terminateBrowserClient messages and terminate the current connection'
+        );
+        this.closeAsync();
       }
-      logger.info('Received terminateBrowserClient messages and terminate the current connection');
-      this.closeAsync();
     });
-    this.sendMessage('handshake', {
-      browserClientId: this.browserClientId,
+    this.sendHandshakeMessage({
+      protocolVersion: this.connectionInfo.protocolVersion,
       pluginName: this.connectionInfo.pluginName,
+      method: 'handshake',
+      browserClientId: this.browserClientId,
     });
   }
 }

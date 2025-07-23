@@ -23,10 +23,10 @@ export async function composeAsync(options) {
 /**
  * Determine if the `MailComposer` API can be used in this app.
  * @return A promise resolves to `true` if the API can be used, and `false` otherwise.
- * - Returns `true` on iOS when the device has a default email setup for sending mail.
+ * - Returns `true` when the device has a default email setup for sending mail.
  * - Can return `false` on iOS if an MDM profile is setup to block outgoing mail. If this is the
  * case, you may want to use the Linking API instead.
- * - Always returns `true` in the browser and on Android.
+ * - Always returns `true` in the browser.
  */
 export async function isAvailableAsync() {
     return await ExpoMailComposer.isAvailableAsync();

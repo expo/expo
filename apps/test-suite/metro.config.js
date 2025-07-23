@@ -1,35 +1,11 @@
-// Learn more https://docs.expo.dev/guides/customizing-metro/
 /* eslint-env node */
+// Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
-const path = require('path');
+const path = require('node:path');
 
-const monorepoRoot = path.join(__dirname, '../..');
+/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
-
-config.resolver.blockList = [
-  // Exclude react-native-lab from haste map.
-  // Because react-native versions may be different between node_modules/react-native and react-native-lab,
-  // we should use the one from node_modules for bare-expo.
-  /\breact-native-lab\/react-native\/node_modules\b/,
-
-  // Copied from expo-yarn-workspaces
-  /\/__tests__\//,
-  /\/android\/React(Android|Common)\//,
-  /\/versioned-react-native\//,
-];
-
-// To test test-suite from Expo Go, the react-native js source is from our fork.
-config.serializer.getPolyfills = () => {
-  const reactNativeRoot = path.join(
-    monorepoRoot,
-    'react-native-lab',
-    'react-native',
-    'packages',
-    'react-native'
-  );
-
-  return require(path.join(reactNativeRoot, 'rn-get-polyfills'))();
-};
+const monorepoRoot = path.join(__dirname, '../..');
 
 // Minimize the "watched" folders that Metro crawls through to speed up Metro in big monorepos.
 // Note, omitting folders disables Metro from resolving files within these folders
@@ -41,5 +17,8 @@ config.watchFolders = [
   path.join(monorepoRoot, 'react-native-lab'), // Allow Metro to resolve `react-native-lab/react-native` files
   path.join(monorepoRoot, 'apps/common'), // Allow Metro to resolve common ThemeProvider
 ];
+
+// Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
+config.transformer.enableBabelRCLookup = false;
 
 module.exports = config;

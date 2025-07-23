@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Copyright © 2024 650 Industries.
  *
@@ -5,12 +6,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 'use client';
-"use strict";
+/**
+ * Copyright © 2024 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.App = void 0;
+exports.App = App;
 const react_1 = __importDefault(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const client_1 = require("./router/client");
@@ -52,5 +58,4 @@ function App() {
       </Try_1.Try>
     </react_native_safe_area_context_1.SafeAreaProvider>);
 }
-exports.App = App;
 //# sourceMappingURL=entry.js.map

@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.downloadImage = exports.downloadOrUseCachedImage = void 0;
+exports.downloadOrUseCachedImage = downloadOrUseCachedImage;
+exports.downloadImage = downloadImage;
 const fs_1 = __importDefault(require("fs"));
 // @ts-ignore
 const jimp_compact_1 = __importDefault(require("jimp-compact"));
@@ -34,7 +35,6 @@ async function downloadOrUseCachedImage(url) {
     }
     return cacheDownloadedKeys[url];
 }
-exports.downloadOrUseCachedImage = downloadOrUseCachedImage;
 async function downloadImage(url) {
     const outputPath = temporaryDirectory();
     const response = await fetch(url);
@@ -65,5 +65,4 @@ async function downloadImage(url) {
     }
     return localPath;
 }
-exports.downloadImage = downloadImage;
 //# sourceMappingURL=Download.js.map

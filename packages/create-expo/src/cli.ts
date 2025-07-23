@@ -93,6 +93,7 @@ async function run() {
       event: AnalyticsEventTypes.CREATE_EXPO_APP,
       properties: { phase: AnalyticsEventPhases.SUCCESS },
     });
+
     // Flush all events.
     await flushAsync();
   } catch (error: any) {

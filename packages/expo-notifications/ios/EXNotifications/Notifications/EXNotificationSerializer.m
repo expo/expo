@@ -9,7 +9,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 
 @implementation EXNotificationSerializer
 
-+ (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)response
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationResponse:(UNNotificationResponse *)response
 {
   NSMutableDictionary *serializedResponse = [NSMutableDictionary dictionary];
   NSString *actionIdentifier = response.actionIdentifier;
@@ -25,7 +25,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedResponse;
 }
 
-+ (NSDictionary *)serializedNotification:(UNNotification *)notification
++ (NSDictionary<NSString *, NSObject *> *)serializedNotification:(UNNotification *)notification
 {
   NSMutableDictionary *serializedNotification = [NSMutableDictionary dictionary];
   serializedNotification[@"request"] = [self serializedNotificationRequest:notification.request];
@@ -33,16 +33,16 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedNotification;
 }
 
-+ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationRequest:(UNNotificationRequest *)request
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
   serializedRequest[@"content"] = [self serializedNotificationContent:request];
-  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request];
+  serializedRequest[@"trigger"] = request.trigger ? [self serializedNotificationTrigger:request] : [NSNull null];
   return serializedRequest;
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationContent:(UNNotificationRequest *)request
 {
   UNNotificationContent *content = request.content;
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
@@ -76,7 +76,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return [interruptionLevelMap objectForKey:@(interruptionLevel)];
 }
 
-+ (NSDictionary *)serializedNotificationData:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationData:(UNNotificationRequest *)request
 {
   BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
   return isRemote ? request.content.userInfo[@"body"] : request.content.userInfo;
@@ -109,7 +109,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachments;
 }
 
-+ (NSDictionary *)serializedNotificationAttachment:(UNNotificationAttachment *)attachment
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationAttachment:(UNNotificationAttachment *)attachment
 {
   NSMutableDictionary *serializedAttachment = [NSMutableDictionary dictionary];
   serializedAttachment[@"identifier"] = attachment.identifier ?: [NSNull null];
@@ -118,7 +118,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachment;
 }
 
-+ (NSDictionary *)serializedNotificationTrigger:(UNNotificationRequest *)request
++ (NSDictionary<NSString *, NSObject *> *)serializedNotificationTrigger:(UNNotificationRequest *)request
 {
   UNNotificationTrigger *trigger = request.trigger;
   NSMutableDictionary *serializedTrigger = [NSMutableDictionary dictionary];
@@ -149,7 +149,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedTrigger;
 }
 
-+ (NSDictionary *)serializedDateComponents:(NSDateComponents *)dateComponents
++ (NSDictionary<NSString *, NSObject *> *)serializedDateComponents:(NSDateComponents *)dateComponents
 {
   NSMutableDictionary *serializedComponents = [NSMutableDictionary dictionary];
   NSArray<NSNumber *> *autoConvertedUnits = [[self calendarUnitsConversionMap] allKeys];
@@ -197,7 +197,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return [self calendarUnitsConversionMap][@(calendarUnit)];
 }
 
-+ (NSDictionary *)serializedRegion:(CLRegion *)region
++ (NSDictionary<NSString *, NSObject *> *)serializedRegion:(CLRegion *)region
 {
   NSMutableDictionary *serializedRegion = [NSMutableDictionary dictionary];
   serializedRegion[@"identifier"] = region.identifier;

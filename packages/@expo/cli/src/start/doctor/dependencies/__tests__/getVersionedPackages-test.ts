@@ -57,7 +57,7 @@ describe(getCombinedKnownVersionsAsync, () => {
     });
 
     // Should not call the API
-    expect(getVersionsAsync).not.toBeCalled();
+    expect(getVersionsAsync).not.toHaveBeenCalled();
     // Should only return the bundled modules value
     expect(
       await getCombinedKnownVersionsAsync({
@@ -352,10 +352,10 @@ describe(getRemoteVersionsForSdkAsync, () => {
     expect(await getRemoteVersionsForSdkAsync({ sdkVersion: '1.0.0', skipCache: true })).toEqual(
       {}
     );
-    expect(Log.warn).toBeCalledWith(
+    expect(Log.warn).toHaveBeenCalledWith(
       expect.stringMatching(/Dependency validation is unreliable in offline-mode/)
     );
-    expect(getVersionsAsync).not.toBeCalled();
+    expect(getVersionsAsync).not.toHaveBeenCalled();
   });
   it('returns an empty object when the SDK version is not supported', async () => {
     jest.mocked(getVersionsAsync).mockResolvedValueOnce({ sdkVersions: {} } as any);

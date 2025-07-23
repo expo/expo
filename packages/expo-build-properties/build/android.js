@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidSettingsGradle = exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.updateAndroidProguardRules = updateAndroidProguardRules;
+exports.updateAndroidSettingsGradle = updateAndroidSettingsGradle;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -74,7 +76,7 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     },
     {
         propName: 'expo.useLegacyPackaging',
-        propValueGetter: (config) => (config.android?.useLegacyPackaging ?? false).toString(),
+        propValueGetter: (config) => config.android?.useLegacyPackaging?.toString(),
     },
     {
         propName: 'android.extraMavenRepos',
@@ -85,12 +87,24 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
                 }
                 return item;
             });
-            return JSON.stringify(extraMavenRepos);
+            return extraMavenRepos.length > 0 ? JSON.stringify(extraMavenRepos) : undefined;
         },
     },
     {
         propName: 'android.useDayNightTheme',
-        propValueGetter: (config) => (config.android?.useDayNightTheme ?? false).toString(),
+        propValueGetter: (config) => config.android?.useDayNightTheme?.toString(),
+    },
+    {
+        propName: 'android.enableBundleCompression',
+        propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
+    },
+    {
+        propName: 'reactNativeArchitectures',
+        propValueGetter: (config) => config.android?.buildArchs?.join(','),
+    },
+    {
+        propName: 'exclusiveEnterpriseRepository',
+        propValueGetter: (config) => config.android?.exclusiveMavenMirror,
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -178,7 +192,6 @@ function updateAndroidProguardRules(contents, newProguardRules, updateMode) {
     }
     return newContents;
 }
-exports.updateAndroidProguardRules = updateAndroidProguardRules;
 const withAndroidCleartextTraffic = (config, props) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         if (props.android?.usesCleartextTraffic == null) {
@@ -243,3 +256,32 @@ const withAndroidDayNightTheme = (config, props) => {
     });
 };
 exports.withAndroidDayNightTheme = withAndroidDayNightTheme;
+const withAndroidSettingsGradle = (config, props) => {
+    return (0, config_plugins_1.withSettingsGradle)(config, (config) => {
+        config.modResults.contents = updateAndroidSettingsGradle({
+            contents: config.modResults.contents,
+            buildFromSource: props.android?.buildFromSource,
+        });
+        return config;
+    });
+};
+exports.withAndroidSettingsGradle = withAndroidSettingsGradle;
+function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
+    let newContents = contents;
+    if (buildFromSource === true) {
+        const addCodeBlock = [
+            '', // new line
+            'includeBuild(expoAutolinking.reactNative) {',
+            '  dependencySubstitution {',
+            '    substitute(module("com.facebook.react:react-android")).using(project(":packages:react-native:ReactAndroid"))',
+            '    substitute(module("com.facebook.react:react-native")).using(project(":packages:react-native:ReactAndroid"))',
+            '    substitute(module("com.facebook.react:hermes-android")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
+            '    substitute(module("com.facebook.react:hermes-engine")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
+            '  }',
+            '}',
+            '', // new line
+        ];
+        newContents += addCodeBlock.join('\n');
+    }
+    return newContents;
+}

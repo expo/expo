@@ -1,4 +1,3 @@
-import { EventEmitter } from 'fbemitter';
 import { Linking } from 'react-native';
 
 const allOriginalPropertyDescriptors = new Map();
@@ -60,17 +59,15 @@ export function unmockAllProperties() {
 }
 
 export function mockLinking() {
-  const emitter = new EventEmitter();
-  const subscriptions = {};
+  const listeners = Object.create(null);
 
   mockProperty(
     Linking,
     'addEventListener',
     jest.fn((type, cb) => {
-      const subscription = emitter.addListener(type, cb);
-      subscriptions[type] = subscriptions[type] || new Map();
-      subscriptions[type].set(cb, subscription);
-      return subscription;
+      const listenersForType = listeners[type] || (listeners[type] = new Set());
+      listenersForType.add(cb);
+      return { remove: () => listenersForType.delete(cb) };
     })
   );
 
@@ -78,11 +75,11 @@ export function mockLinking() {
     Linking,
     'removeEventListener',
     jest.fn((type, cb) => {
-      subscriptions[type].delete(cb);
+      listeners[type]?.delete(cb);
     })
   );
 
   return (type, data) => {
-    emitter.emit(type, data);
+    listeners[type]?.forEach((listener) => listener(data));
   };
 }

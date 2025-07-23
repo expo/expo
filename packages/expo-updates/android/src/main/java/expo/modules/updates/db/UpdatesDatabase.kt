@@ -14,6 +14,8 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.JSONDataEntity
 import expo.modules.updates.db.entity.UpdateAssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asExecutor
 import java.util.*
 
 /**
@@ -53,27 +55,38 @@ abstract class UpdatesDatabase : RoomDatabase() {
   abstract fun jsonDataDao(): JSONDataDao?
 
   companion object {
-    private var instance: UpdatesDatabase? = null
-
     private const val DB_NAME = "updates.db"
 
-    @JvmStatic @Synchronized
-    fun getInstance(context: Context): UpdatesDatabase {
-      if (instance == null) {
-        instance = Room.databaseBuilder(context, UpdatesDatabase::class.java, DB_NAME)
-          .addMigrations(MIGRATION_4_5)
-          .addMigrations(MIGRATION_5_6)
-          .addMigrations(MIGRATION_6_7)
-          .addMigrations(MIGRATION_7_8)
-          .addMigrations(MIGRATION_8_9)
-          .addMigrations(MIGRATION_9_10)
-          .addMigrations(MIGRATION_10_11)
-          .addMigrations(MIGRATION_11_12)
-          .fallbackToDestructiveMigration()
+    @Volatile
+    private var INSTANCE: UpdatesDatabase? = null
+
+    fun getInstance(context: Context, dispatcher: CoroutineDispatcher?): UpdatesDatabase {
+      return INSTANCE ?: synchronized(this) {
+        val instance = Room.databaseBuilder(
+          context.applicationContext,
+          UpdatesDatabase::class.java,
+          DB_NAME
+        ).apply {
+          if (dispatcher != null) {
+            setQueryExecutor(dispatcher.asExecutor())
+          }
+        }.addMigrations(
+          MIGRATION_4_5,
+          MIGRATION_5_6,
+          MIGRATION_6_7,
+          MIGRATION_7_8,
+          MIGRATION_8_9,
+          MIGRATION_9_10,
+          MIGRATION_10_11,
+          MIGRATION_11_12
+        )
           .allowMainThreadQueries()
+          .fallbackToDestructiveMigration()
           .build()
+
+        INSTANCE = instance
+        instance
       }
-      return instance!!
     }
 
     private fun SupportSQLiteDatabase.runInTransaction(block: SupportSQLiteDatabase.() -> Unit) {
@@ -90,13 +103,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
       // https://www.sqlite.org/lang_altertable.html#otheralter
       try {
         execSQL("PRAGMA foreign_keys=OFF")
-        beginTransaction()
-        try {
-          block()
-          setTransactionSuccessful()
-        } finally {
-          endTransaction()
-        }
+        runInTransaction(block)
       } finally {
         execSQL("PRAGMA foreign_keys=ON")
       }

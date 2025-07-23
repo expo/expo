@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isTabSlot = exports.defaultTabsSlotRender = exports.TabSlot = exports.useTabSlot = void 0;
+exports.useTabSlot = useTabSlot;
+exports.TabSlot = TabSlot;
+exports.defaultTabsSlotRender = defaultTabsSlotRender;
+exports.isTabSlot = isTabSlot;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
@@ -39,7 +42,6 @@ function useTabSlot({ detachInactiveScreens = ['android', 'ios', 'web'].includes
         })}
     </react_native_screens_1.ScreenContainer>);
 }
-exports.useTabSlot = useTabSlot;
 /**
  * Renders the current tab.
  *
@@ -58,7 +60,6 @@ exports.useTabSlot = useTabSlot;
 function TabSlot(props) {
     return useTabSlot(props);
 }
-exports.TabSlot = TabSlot;
 /**
  * @hidden
  */
@@ -75,14 +76,12 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveSc
       {descriptor.render()}
     </react_native_screens_1.Screen>);
 }
-exports.defaultTabsSlotRender = defaultTabsSlotRender;
 /**
  * @hidden
  */
 function isTabSlot(child) {
     return child.type === TabSlot;
 }
-exports.isTabSlot = isTabSlot;
 const styles = react_native_1.StyleSheet.create({
     screen: {
         flex: 1,

@@ -138,11 +138,6 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
     moduleName = `${moduleName}/${segments.shift()}`;
   }
 
-  // Disable package exports for babel/runtime for https://github.com/facebook/metro/issues/984/
-  if (moduleName === '@babel/runtime') {
-    return path;
-  }
-
   // self-reference
   const closestPackageJson = findClosestPackageJson(options.basedir, options);
   if (closestPackageJson) {
@@ -173,7 +168,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
 
       if (pkg.exports) {
         throw new Error(
-          "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
+          "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Report an issue: https://github.com/expo/expo/issues"
         );
       }
     }
@@ -206,7 +201,7 @@ function getPathInModule(path: string, options: UpstreamResolveOptionsWithCondit
 
   if (pkg.exports) {
     throw new Error(
-      "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Please report an issue"
+      "`exports` exists, but no results - this is a bug in Expo CLI's Metro resolver. Report an issue: https://github.com/expo/expo/issues"
     );
   }
 

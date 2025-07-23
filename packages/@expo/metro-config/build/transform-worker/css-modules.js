@@ -3,8 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.collectCssImports = exports.printCssWarnings = exports.matchCssModule = exports.convertLightningCssToReactNativeWebStyleSheet = exports.transformCssModuleWeb = void 0;
+exports.transformCssModuleWeb = transformCssModuleWeb;
+exports.convertLightningCssToReactNativeWebStyleSheet = convertLightningCssToReactNativeWebStyleSheet;
+exports.matchCssModule = matchCssModule;
+exports.printCssWarnings = printCssWarnings;
+exports.collectCssImports = collectCssImports;
 const code_frame_1 = __importDefault(require("@babel/code-frame"));
+const browserslist_1 = require("./browserslist");
 const css_1 = require("./css");
 const RNW_CSS_CLASS_ID = '_';
 async function transformCssModuleWeb(props) {
@@ -27,6 +32,8 @@ async function transformCssModuleWeb(props) {
         minify: props.options.minify,
         // @ts-expect-error: Added for testing against virtual file system.
         resolver: props.options._test_resolveCss,
+        targets: await (0, browserslist_1.getBrowserslistTargets)(props.options.projectRoot),
+        include: 1, // Nesting
     });
     printCssWarnings(props.filename, props.src, cssResults.warnings);
     const { styles, reactNativeWeb, variables } = convertLightningCssToReactNativeWebStyleSheet(cssResults.exports);
@@ -47,7 +54,6 @@ async function transformCssModuleWeb(props) {
         ...cssImports,
     };
 }
-exports.transformCssModuleWeb = transformCssModuleWeb;
 function convertLightningCssToReactNativeWebStyleSheet(input) {
     const styles = {};
     const reactNativeWeb = {};
@@ -71,11 +77,9 @@ function convertLightningCssToReactNativeWebStyleSheet(input) {
     });
     return { styles, reactNativeWeb, variables };
 }
-exports.convertLightningCssToReactNativeWebStyleSheet = convertLightningCssToReactNativeWebStyleSheet;
 function matchCssModule(filePath) {
     return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
 }
-exports.matchCssModule = matchCssModule;
 function printCssWarnings(filename, code, warnings) {
     if (warnings) {
         for (const warning of warnings) {
@@ -83,7 +87,6 @@ function printCssWarnings(filename, code, warnings) {
         }
     }
 }
-exports.printCssWarnings = printCssWarnings;
 function isExternalUrl(url) {
     return url.match(/^\w+:\/\//);
 }
@@ -152,5 +155,4 @@ function collectCssImports(filename, originalCode, code, cssResults) {
     }
     return { externalImports, code, dependencies: cssModuleDeps };
 }
-exports.collectCssImports = collectCssImports;
 //# sourceMappingURL=css-modules.js.map

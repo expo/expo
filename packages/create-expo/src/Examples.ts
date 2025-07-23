@@ -29,6 +29,23 @@ export type GithubContent = {
   type: 'file' | 'dir';
 };
 
+export type ExamplesMetadata = {
+  aliases: {
+    [key: string]:
+      | string
+      | {
+          destination: string;
+          message?: string;
+        };
+  };
+  deprecated: {
+    [key: string]: {
+      outdatedExampleHref: string;
+      message?: string;
+    };
+  };
+};
+
 /** List all existing examples directory from https://github.com/expo/examples. */
 async function listExamplesAsync() {
   const response = await fetch('https://api.github.com/repos/expo/examples/contents');
@@ -38,6 +55,17 @@ async function listExamplesAsync() {
 
   const data = (await response.json()) as GithubContent[];
   return data.filter((item) => item.type === 'dir' && !item.name.startsWith('.'));
+}
+
+/** Fetch the metadata for the examples from https://github.com/expo/examples. This includes aliases and deprecated examples. */
+export async function fetchMetadataAsync() {
+  const response = await fetch(`https://raw.githubusercontent.com/expo/examples/master/meta.json`);
+
+  if (!response.ok) {
+    throw new Error(`Unexpected GitHub API response: ${response.status} - ${response.statusText}`);
+  }
+
+  return (await response.json()) as ExamplesMetadata;
 }
 
 /** Determine if an example exists, using only its name */
@@ -79,7 +107,7 @@ export async function promptExamplesAsync() {
 
   if (!answer) {
     console.log();
-    console.log(chalk`Please specify the example, example: {cyan --example with-router}`);
+    console.log(chalk`Specify the example name, for example: {cyan --example with-router}`);
     console.log();
     process.exit(1);
   }

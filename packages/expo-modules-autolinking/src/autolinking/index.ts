@@ -9,6 +9,7 @@ import {
 } from './mergeLinkingOptions';
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 import type { ModuleDescriptor, SearchOptions } from '../types';
+import { getConfiguration } from './getConfiguration';
 
 export {
   findModulesAsync,
@@ -17,6 +18,7 @@ export {
   resolveExtraBuildDependenciesAsync,
   resolveModulesAsync,
   resolveSearchPathsAsync,
+  getConfiguration,
 };
 export { generateModulesProviderAsync, generatePackageListAsync } from './generatePackageList';
 export { verifySearchResults } from './verifySearchResults';

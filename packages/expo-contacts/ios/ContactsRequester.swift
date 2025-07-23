@@ -8,25 +8,32 @@ class ContactsPermissionRequester: NSObject, EXPermissionsRequester {
 
   func getPermissions() -> [AnyHashable: Any] {
     var status: EXPermissionStatus
+    var scope: String
     let permissions = CNContactStore.authorizationStatus(for: .contacts)
 
     switch permissions {
     case .authorized:
       status = EXPermissionStatusGranted
+      scope = "all"
     #if compiler(>=6)
     case .limited:
       status = EXPermissionStatusGranted
+      scope = "limited"
     #endif
     case .denied, .restricted:
       status = EXPermissionStatusDenied
+      scope = "none"
     case .notDetermined:
       status = EXPermissionStatusUndetermined
+      scope = "none"
     @unknown default:
       status = EXPermissionStatusUndetermined
+      scope = "none"
     }
 
     return [
-      "status": status.rawValue
+      "status": status.rawValue,
+      "accessPrivileges": scope
     ]
   }
 

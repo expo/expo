@@ -1,5 +1,5 @@
 {
-  "platforms": ["apple", "android"],
+  "platforms": ["apple"],
   "apple": {
     "modules": ["SymbolModule"]
   },

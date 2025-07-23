@@ -36,10 +36,10 @@ export default function VideoSourcesScreen() {
           style={styles.picker}
           mode="dropdown"
           selectedValue={currentSourceIndex}
-          onValueChange={(value: number) => {
+          onValueChange={async (value: number) => {
             setCurrentSourceIndex(value);
             if (useReplaceFunction) {
-              player.replace(videoSources[value]);
+              await player.replaceAsync(videoSources[value]);
             } else {
               setStatefulSource(videoSources[value]);
             }
