@@ -76,7 +76,7 @@ export function mergeWithDuplicate(
   } else if (b.depth < a.depth) {
     target = b;
     duplicate = a;
-  } else if (a.path < b.path) {
+  } else if (a.originPath < b.originPath) {
     target = a;
     duplicate = b;
   } else {
