@@ -61,12 +61,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
     '@expo/config-plugins/build/utils/warnings.js': 'ignore-dev', // TODO: Remove
   },
 
-  'expo-updates': {
-    debug: 'ignore-dev', // TODO: Add dependency
-    getenv: 'ignore-dev', // TODO: Add dependency
-    '@expo/plist': 'ignore-dev', // TODO: Add dependency
-  },
-
   '@expo/image-utils': {
     sharp: 'ignore-dev', // TODO: Mark as optional peer dep, if that's the intention
     'sharp-cli': 'ignore-dev',
