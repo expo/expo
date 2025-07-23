@@ -44,7 +44,7 @@ async function resolveExpoModule(
         name: resolution.name,
         path: duplicate,
         version: '', // NOTE: Are we actually using this?
-      })),
+      })) ?? [],
     };
   } else {
     return null;
