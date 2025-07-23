@@ -3,7 +3,11 @@ import fs from 'fs';
 import path from 'path';
 
 import type { PlatformAutolinkingOptions, SearchOptions, SupportedPlatform } from '../types';
-import { loadPackageJSONAsync } from './utils';
+
+async function loadPackageJSONAsync(packageJsonPath: string) {
+  const packageJsonText = await fs.promises.readFile(packageJsonPath, 'utf8');
+  return JSON.parse(packageJsonText);
+}
 
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
