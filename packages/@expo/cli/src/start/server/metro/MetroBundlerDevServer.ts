@@ -111,7 +111,9 @@ interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
   map: string;
 }
 
-const debug = require('debug')('expo:start:server:metro') as typeof console.log;
+const debugNamespace = 'expo:start:server:metro';
+const isDebug = require('debug').enabled(debugNamespace);
+const debug = require('debug')(debugNamespace) as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 8081;
@@ -1568,13 +1570,22 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           revision = props.revision;
         }
       } catch (error) {
-        if (error instanceof Error) {
-          // Space out build failures.
-          const cause = error.cause as undefined | { _expoImportStack?: string };
-          if (cause && '_expoImportStack' in cause) {
-            error.message += '\n\n' + cause._expoImportStack;
+        const attachImportStackToRootMessage = (err: unknown, root: unknown = err) => {
+          if (!(err instanceof Error) || !(root instanceof Error)) return;
+
+          if ('_expoImportStack' in err) {
+            // Space out build failures.
+            root.message += '\n\n' + err._expoImportStack;
+            if (!isDebug) {
+              // When not debugging remove the stack to avoid cluttering the output and confusing users,
+              // the import stack is the guide to fixing the error.
+              delete root.stack;
+            }
+          } else {
+            attachImportStackToRootMessage(err.cause, root);
           }
-        }
+        };
+        attachImportStackToRootMessage(error);
 
         throw error;
       }
