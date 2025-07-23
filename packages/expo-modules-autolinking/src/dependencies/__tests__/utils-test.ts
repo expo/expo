@@ -16,7 +16,7 @@ describe(defaultShouldIncludeDependency, () => {
     ['@typescript-eslint/test', false],
     ['@types/node', false],
     ['@expo/env', false],
-    ['react-native', false],
+    ['react-native', true],
     ['expo', true],
     ['expo-audio', true],
     ['react-native-third-party', true],
