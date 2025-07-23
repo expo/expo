@@ -104,7 +104,7 @@
     "expo-print": "~14.1.4",
     "expo-processing": "2.4.5",
     "expo-progress": "^0.0.2",
-    "expo-screen-capture": "~7.1.5",
+    "expo-screen-capture": "~7.2.0",
     "expo-screen-orientation": "~8.1.7",
     "expo-secure-store": "~14.2.3",
     "expo-sensors": "~14.1.4",
