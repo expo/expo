@@ -64,7 +64,7 @@ export async function loadPackageJson(jsonPath: string): Promise<PackageJson | n
   }
 }
 
-function mergeWithDuplicate(
+export function mergeWithDuplicate(
   a: DependencyResolution,
   b: DependencyResolution
 ): DependencyResolution {
@@ -76,7 +76,7 @@ function mergeWithDuplicate(
   } else if (b.depth < a.depth) {
     target = b;
     duplicate = a;
-  } else if (a.name < b.name) {
+  } else if (a.path < b.path) {
     target = a;
     duplicate = b;
   } else {
