@@ -1,69 +1,15 @@
----
-title: Expo Application Services
-sidebar_title: Introduction
-hideTOC: true
-description: Learn about Expo Application Services (EAS) for Expo and React Native apps.
----
-
-import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
-import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
-import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
-import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
-import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
-import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
-import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
-
-import { BoxLink } from '~/ui/components/BoxLink';
-
-Expo Application Services (EAS) are deeply integrated cloud services for Expo and React Native apps, from the team behind Expo.
-
-Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links below to learn how to get started.
-
-<BoxLink
-  title="EAS Workflows"
-  description="Automate your development release workflows."
-  href="/eas/workflows/get-started/"
-  Icon={Dataflow03Icon}
-/>
-
-<BoxLink
-  title="EAS Build"
-  description="Compile and sign Android/iOS apps with custom native code in the cloud."
-  href="/build/introduction"
-  Icon={BuildIcon}
-/>
-
-<BoxLink
-  title="EAS Submit"
-  description="Upload your app to the Google Play Store or Apple App Store from the cloud with one CLI command."
-  href="/submit/introduction"
-  Icon={EasSubmitIcon}
-/>
-
-<BoxLink
-  title="EAS Hosting (in preview)"
-  description="Deploy Expo Router and React Native web apps and API routes."
-  href="/eas/hosting/introduction"
-  Icon={Cloud01Icon}
-/>
-
-<BoxLink
-  title="EAS Update"
-  description="Address small bugs and push quick fixes directly to end-users."
-  href="/eas-update/introduction"
-  Icon={LayersTwo02Icon}
-/>
-
-<BoxLink
-  title="EAS Metadata (in preview)"
-  description="Upload all app store information required to get your app published."
-  href="/eas/metadata/"
-  Icon={EasMetadataIcon}
-/>
-
-<BoxLink
-  title="EAS Insights (in preview)"
-  description="View analytics about a project's performance, usage, and reach."
-  href="/eas-insights/introduction/"
-  Icon={DataIcon}
-/>
+{
+  "build": {
+    "production": {
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    }
+  },
+  "cli": {
+    "version": ">= 3.0.0"
+  }
+}
