@@ -1,14 +1,21 @@
 import fs from 'fs';
-import { vol, NestedDirectoryJSON } from 'memfs';
+import { vol } from 'memfs';
+import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
 import { findModulesAsync } from '../findModules';
 
 const projectRoot = '/fake/project';
-const realpath = jest.spyOn(fs.promises, 'realpath');
 
 const expectAnyModule = (version = expect.any(String)) => {
   return expect.objectContaining({ version });
+};
+
+const symlinkMany = (symlinks: Record<string, string>) => {
+  for (const from in symlinks) {
+    vol.mkdirSync(path.dirname(path.join(projectRoot, from)), { recursive: true });
+    vol.symlinkSync(path.join(projectRoot, symlinks[from]), path.join(projectRoot, from));
+  }
 };
 
 function mockedRoot(
@@ -51,7 +58,6 @@ function mockedModule(
 
 describe(findModulesAsync, () => {
   afterEach(() => {
-    realpath.mockRestore();
     vol.reset();
   });
 
@@ -276,15 +282,13 @@ describe(findModulesAsync, () => {
         ...mockedRoot(),
         'packages/app': {
           ...mockedRoot('app', {
-            pkgDependencies: { pkg: '*' },
+            pkgDependencies: {
+              '@expo/test': '*',
+              'react-native-third-party': '*',
+            },
           }),
         },
         node_modules: {
-          'react-native-third-party': mockedModule('react-native-third-party', {
-            pkgVersion: 'INVALID',
-          }),
-          '@expo/test': mockedModule('@expo/test', { pkgVersion: 'INVALID' }),
-          // Isolated store
           '.pnpm/react-native-third-party@x/node_modules': {
             'react-native-third-party': mockedModule('react-native-third-party', {
               pkgVersion: 'VALID',
@@ -300,24 +304,14 @@ describe(findModulesAsync, () => {
       projectRoot
     );
 
-    const realpath = jest.spyOn(fs.promises, 'realpath').mockImplementation(async (filePath) => {
-      const filePathStr = filePath.toString();
-      switch (filePathStr) {
-        case `${projectRoot}/node_modules/react-native-third-party`:
-          return `${projectRoot}/node_modules/.pnpm/react-native-third-party@x/node_modules/react-native-third-party`;
-        case `${projectRoot}/node_modules/@expo/test`:
-          return `${projectRoot}/node_modules/.pnpm/@expo+expo-test@x/node_modules/@expo/test`;
-        default:
-          if (filePathStr.includes('.pnpm')) {
-            return filePathStr;
-          } else {
-            throw new Error(`Test: Unexpected realpath call ${filePathStr}`);
-          }
-      }
+    symlinkMany({
+      'node_modules/react-native-third-party':
+        'node_modules/.pnpm/react-native-third-party@x/node_modules/react-native-third-party',
+      'node_modules/@expo/test': 'node_modules/.pnpm/@expo+expo-test@x/node_modules/@expo/test',
     });
 
     const result = await findModulesAsync({
-      searchPaths: [path.join(projectRoot, 'node_modules')],
+      searchPaths: [],
       platform: 'ios',
       projectRoot,
     });
@@ -326,8 +320,6 @@ describe(findModulesAsync, () => {
       'react-native-third-party': expectAnyModule('VALID'),
       '@expo/test': expectAnyModule('VALID'),
     });
-
-    expect(realpath).toHaveBeenCalledTimes(4);
   });
 
   /**
@@ -346,10 +338,6 @@ describe(findModulesAsync, () => {
       {
         ...mockedRoot(),
         node_modules: {
-          'react-native-third-party': mockedModule('react-native-third-party', {
-            pkgVersion: 'INVALID',
-          }),
-          '@expo/test': mockedModule('@expo/test', { pkgVersion: 'INVALID' }),
           // Isolated store
           '.pnpm/react-native-third-party@x/node_modules': {
             'react-native-third-party': mockedModule('react-native-third-party', {
@@ -374,20 +362,10 @@ describe(findModulesAsync, () => {
       projectRoot
     );
 
-    const realpath = jest.spyOn(fs.promises, 'realpath').mockImplementation(async (filePath) => {
-      const filePathStr = filePath.toString();
-      switch (filePathStr) {
-        case `${projectRoot}/node_modules/react-native-third-party`:
-          return `${projectRoot}/node_modules/.pnpm/react-native-third-party@x/node_modules/react-native-third-party`;
-        case `${projectRoot}/node_modules/@expo/test`:
-          return `${projectRoot}/node_modules/.pnpm/@expo+expo-test@x/node_modules/@expo/test`;
-        default:
-          if (filePathStr.includes('.pnpm')) {
-            return filePathStr;
-          } else {
-            throw new Error(`Test: Unexpected realpath call ${filePathStr}`);
-          }
-      }
+    symlinkMany({
+      'node_modules/react-native-third-party':
+        'node_modules/.pnpm/react-native-third-party@x/node_modules/react-native-third-party',
+      'node_modules/@expo/test': 'node_modules/.pnpm/@expo+expo-test@x/node_modules/@expo/test',
     });
 
     const result = await findModulesAsync({
@@ -400,8 +378,6 @@ describe(findModulesAsync, () => {
       'react-native-third-party': expectAnyModule('VALID'),
       '@expo/test': expectAnyModule('VALID'),
     });
-
-    expect(realpath).toHaveBeenCalledTimes(5);
   });
 
   it('should not link modules excluded by `options.exclude`', async () => {
