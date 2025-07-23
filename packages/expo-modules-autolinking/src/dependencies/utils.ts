@@ -91,17 +91,17 @@ export function mergeWithDuplicate(
   return target;
 }
 
-export async function filterMapResolutionResult<T extends DependencyResolution>(
+export async function filterMapResolutionResult<T extends { name: string }>(
   results: ResolutionResult,
   filterMap: (resolution: DependencyResolution) => Promise<T | null> | T | null
-) {
+): Promise<Record<string, T | undefined>> {
   const resolutions = await Promise.all(
     Object.keys(results).map(async (key) => {
       const resolution = results[key];
       return resolution ? await filterMap(resolution) : null;
     })
   );
-  const output: ResolutionResult = Object.create(null);
+  const output: Record<string, T | undefined> = Object.create(null);
   for (let idx = 0; idx < resolutions.length; idx++) {
     const resolution = resolutions[idx];
     if (resolution != null) {
