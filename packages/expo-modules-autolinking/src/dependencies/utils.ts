@@ -47,7 +47,7 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
   }
 };
 
-export type PackageJson = Record<string, unknown> & { name: string };
+export type PackageJson = Record<string, unknown> & { name: string; version?: string };
 
 export async function loadPackageJson(jsonPath: string): Promise<PackageJson | null> {
   try {

@@ -1,6 +1,7 @@
 export interface DependencyResolution {
   name: string;
   path: string;
+  version: string;
   originPath: string;
   duplicates: string[] | null;
   depth: number;

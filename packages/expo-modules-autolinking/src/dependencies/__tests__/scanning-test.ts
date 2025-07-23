@@ -48,6 +48,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "@my/expo-module",
           "originPath": "/fake/project/node_modules/@my/expo-module",
           "path": "/fake/project/node_modules/@my/expo-module",
+          "version": "0.0.1",
         },
         "react-native-third-party": {
           "depth": 0,
@@ -55,6 +56,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -86,6 +88,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -126,6 +129,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/.pnpm/react-native-third-party@x.x.x/node_modules/react-native-third-party",
+          "version": "0.0.1",
         },
       }
     `);
@@ -154,6 +158,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "duplicate",
           "originPath": "/fake/project/node_modules/a",
           "path": "/fake/project/node_modules/a",
+          "version": "0.0.1",
         },
       }
     `);
@@ -180,6 +185,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "@my/expo-module",
           "originPath": "/fake/project/node_modules/@my/expo-module",
           "path": "/fake/project/node_modules/@my/expo-module",
+          "version": "",
         },
         "react-native-third-party": {
           "depth": 0,
@@ -187,6 +193,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "react-native-third-party",
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
+          "version": "",
         },
       }
     `);
@@ -230,6 +237,7 @@ describe(scanDependenciesInSearchPath, () => {
           "name": "included",
           "originPath": "/fake/project/node_modules/included",
           "path": "/fake/project/node_modules/included",
+          "version": "0.0.1",
         },
       }
     `);
