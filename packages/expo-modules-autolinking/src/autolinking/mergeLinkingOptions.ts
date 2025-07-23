@@ -59,6 +59,9 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
     providedOptions.projectRoot
   );
 
+  // We shouldn't assume that `projectRoot` (which typically is CWD) is already at the project root
+  finalOptions.projectRoot = path.dirname(packageJsonPath);
+
   return finalOptions;
 }
 
