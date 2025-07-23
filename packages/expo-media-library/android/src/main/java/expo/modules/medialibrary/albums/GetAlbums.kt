@@ -5,17 +5,14 @@ import android.database.Cursor.FIELD_TYPE_NULL
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AlbumException
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.UnableToLoadException
 
 internal open class GetAlbums(
-  private val context: Context,
-  private val promise: Promise
+  private val context: Context
 ) {
-  fun execute() {
+  fun execute(): List<Bundle> {
     val projection = arrayOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME)
     val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
 
@@ -53,17 +50,12 @@ internal open class GetAlbums(
 
             album.count++
           }
-
-          promise.resolve(albums.values.map { it.toBundle() })
+          return albums.values.map { it.toBundle() }
         }
     } catch (e: SecurityException) {
-      promise.reject(
-        ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get albums: need READ_EXTERNAL_STORAGE permission.",
-        e
-      )
+      throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission $e")
     } catch (e: RuntimeException) {
-      promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get albums.", e)
+      throw UnableToLoadException("Could not get albums $e")
     }
   }
 

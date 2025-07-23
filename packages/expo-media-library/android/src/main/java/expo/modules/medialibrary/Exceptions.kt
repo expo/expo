@@ -37,3 +37,9 @@ class UnableToLoadPermissionException(message: String) :
 
 class UnableToLoadException(message: String) :
   CodedException(message)
+
+class UnableToDeleteException(message: String) :
+  CodedException(message)
+
+class UnableToSaveException(message: String) :
+  CodedException(message)

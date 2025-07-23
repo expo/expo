@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AlbumNotFound
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import java.io.File
@@ -12,15 +11,14 @@ import java.io.File
 @RequiresApi(Build.VERSION_CODES.R)
 class CheckIfAlbumShouldBeMigrated(
   private val context: Context,
-  private val albumId: String,
-  private val promise: Promise
+  private val albumId: String
 ) {
-  fun execute() {
+  fun execute(): Boolean {
     val albumDir = getAlbumDirectory(context, albumId)
     if (albumDir == null) {
       throw AlbumNotFound()
     } else {
-      promise.resolve(!albumDir.canWrite())
+      return !albumDir.canWrite()
     }
   }
 }

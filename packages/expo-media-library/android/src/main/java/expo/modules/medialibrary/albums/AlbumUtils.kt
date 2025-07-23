@@ -6,15 +6,13 @@ import android.provider.MediaStore
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
 import expo.modules.core.utilities.ifNull
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.AssetFileException
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.MediaLibraryException
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
+import expo.modules.medialibrary.UnableToLoadException
 import java.io.File
 
 /**
@@ -24,9 +22,8 @@ import java.io.File
 fun queryAlbum(
   context: Context,
   selection: String,
-  selectionArgs: Array<String>?,
-  promise: Promise
-) {
+  selectionArgs: Array<String>?
+): Bundle? {
   val projection = arrayOf(MediaColumns.BUCKET_ID, MediaColumns.BUCKET_DISPLAY_NAME)
   val order = MediaColumns.BUCKET_DISPLAY_NAME
   try {
@@ -41,8 +38,7 @@ fun queryAlbum(
         throw AlbumException("Could not get album. Query is incorrect.")
       }
       if (!albumsCursor.moveToNext()) {
-        promise.resolve(null)
-        return
+        return null
       }
       val bucketIdIndex = albumsCursor.getColumnIndex(MediaColumns.BUCKET_ID)
       val bucketDisplayNameIndex = albumsCursor.getColumnIndex(MediaColumns.BUCKET_DISPLAY_NAME)
@@ -51,16 +47,12 @@ fun queryAlbum(
         putString("title", albumsCursor.getString(bucketDisplayNameIndex))
         putInt("assetCount", albumsCursor.count)
       }
-      promise.resolve(result)
+      return result
     }
   } catch (e: SecurityException) {
-    promise.reject(
-      ERROR_UNABLE_TO_LOAD_PERMISSION,
-      "Could not get albums: need READ_EXTERNAL_STORAGE permission.",
-      e
-    )
+    throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission $e")
   } catch (e: IllegalArgumentException) {
-    promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album.", e)
+    throw UnableToLoadException("Could not get album $e")
   }
 }
 

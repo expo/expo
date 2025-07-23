@@ -6,19 +6,19 @@ import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.core.utilities.ifNull
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AssetException
 import expo.modules.medialibrary.AssetFileException
 import expo.modules.medialibrary.ContentEntryException
-import expo.modules.medialibrary.ERROR_IO_EXCEPTION
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
-import expo.modules.medialibrary.ERROR_UNABLE_TO_SAVE
 import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.UnableToLoadPermissionException
+import expo.modules.medialibrary.UnableToSaveException
 import expo.modules.medialibrary.albums.getAlbumFileOrNull
+import kotlinx.coroutines.CompletableDeferred
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -32,7 +32,6 @@ import java.io.IOException
 class CreateAssetWithAlbumFile(
   private val context: Context,
   uri: String,
-  private val promise: Promise,
   private val resolveWithAdditionalData: Boolean = true,
   private val albumFile: File?
 ) {
@@ -100,7 +99,7 @@ class CreateAssetWithAlbumFile(
    */
   @RequiresApi(api = Build.VERSION_CODES.R)
   @Throws(IOException::class)
-  private fun createAssetUsingContentResolver() {
+  private fun createAssetUsingContentResolver(): ArrayList<Bundle>? {
     val assetUri = createContentResolverAssetEntry().ifNull {
       throw ContentEntryException()
     }
@@ -109,9 +108,9 @@ class CreateAssetWithAlbumFile(
     if (resolveWithAdditionalData) {
       val selection = "${MediaStore.MediaColumns._ID}=?"
       val args = arrayOf(ContentUris.parseId(assetUri).toString())
-      queryAssetInfo(context, selection, args, false, promise)
+      return queryAssetInfo(context, selection, args, false)
     } else {
-      promise.resolve(null)
+      return null
     }
   }
 
@@ -133,43 +132,44 @@ class CreateAssetWithAlbumFile(
     return destFile
   }
 
-  fun execute() {
+  suspend fun execute(): ArrayList<Bundle>? {
     if (!isFileExtensionPresent) {
       throw AssetFileException("Could not get the file's extension.")
     }
+
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        createAssetUsingContentResolver()
-        return
+        return createAssetUsingContentResolver()
       }
 
       val asset = createAssetFileLegacy(albumFile)
+      val result = CompletableDeferred<ArrayList<Bundle>?>()
+
       MediaScannerConnection.scanFile(
         context,
         arrayOf(asset.path),
         null
       ) { path: String, uri: Uri? ->
         if (uri == null) {
-          throw AssetException()
+          result.completeExceptionally(AssetException())
+          return@scanFile
         }
         if (resolveWithAdditionalData) {
           val selection = MediaStore.Images.Media.DATA + "=?"
           val args = arrayOf(path)
-          queryAssetInfo(context, selection, args, false, promise)
+          val info = queryAssetInfo(context, selection, args, false)
+          result.complete(info)
         } else {
-          promise.resolve(null)
+          result.complete(null)
         }
       }
+      return result.await()
     } catch (e: IOException) {
-      promise.reject(ERROR_IO_EXCEPTION, "Unable to copy file into external storage.", e)
+      throw IOException("Unable to copy file into external storage.", e)
     } catch (e: SecurityException) {
-      promise.reject(
-        ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get asset: need READ_EXTERNAL_STORAGE permission.",
-        e
-      )
+      throw UnableToLoadPermissionException("Could not get asset: need READ_EXTERNAL_STORAGE permission $e")
     } catch (e: Exception) {
-      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)
+      throw UnableToSaveException("Could not create asset $e")
     }
   }
 }
@@ -177,7 +177,6 @@ class CreateAssetWithAlbumFile(
 class CreateAssetWithAlbumId @JvmOverloads constructor(
   private val context: Context,
   private val uri: String,
-  private val promise: Promise,
   private val resolveWithAdditionalData: Boolean = true,
   private val albumId: String? = null
 ) {
@@ -186,7 +185,7 @@ class CreateAssetWithAlbumId @JvmOverloads constructor(
       return albumId?.let { getAlbumFileOrNull(context, albumId) }
     }
 
-  fun execute() {
-    CreateAssetWithAlbumFile(context, uri, promise, resolveWithAdditionalData, album).execute()
+  suspend fun execute(): ArrayList<Bundle>? {
+    return CreateAssetWithAlbumFile(context, uri, resolveWithAdditionalData, album).execute()
   }
 }

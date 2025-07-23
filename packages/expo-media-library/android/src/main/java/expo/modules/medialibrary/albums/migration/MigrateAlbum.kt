@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.AssetFile
@@ -16,8 +15,7 @@ import java.io.File
 internal class MigrateAlbum(
   private val context: Context,
   private val assetFiles: List<AssetFile>,
-  private val albumDirName: String,
-  private val promise: Promise
+  private val albumDirName: String
 ) {
   fun execute() {
     // Previously, users were able to save different assets type in the same directory.
@@ -47,6 +45,5 @@ internal class MigrateAlbum(
           null
         )
     }
-    promise.resolve(null)
   }
 }
