@@ -11,7 +11,7 @@ import ExpoModulesCore
  */
 public class DisabledAppController: InternalAppControllerInterface {
   public var reloadScreenManager: ReloadScreenManager?
-  
+
   public let isActiveController = false
   private var isStarted: Bool = false
   private var startupStartTime: DispatchTime?
