@@ -76,12 +76,9 @@ export function mergeWithDuplicate(
   } else if (b.depth < a.depth) {
     target = b;
     duplicate = a;
-  } else if (a.originPath < b.originPath) {
+  } else {
     target = a;
     duplicate = b;
-  } else {
-    target = b;
-    duplicate = a;
   }
   const duplicates = target.duplicates || (target.duplicates = []);
   duplicates.push(duplicate.path);
@@ -94,14 +91,14 @@ export function mergeWithDuplicate(
 export async function filterMapResolutionResult<T extends { name: string }>(
   results: ResolutionResult,
   filterMap: (resolution: DependencyResolution) => Promise<T | null> | T | null
-): Promise<Record<string, T | undefined>> {
+): Promise<Record<string, T>> {
   const resolutions = await Promise.all(
     Object.keys(results).map(async (key) => {
       const resolution = results[key];
       return resolution ? await filterMap(resolution) : null;
     })
   );
-  const output: Record<string, T | undefined> = Object.create(null);
+  const output: Record<string, T> = Object.create(null);
   for (let idx = 0; idx < resolutions.length; idx++) {
     const resolution = resolutions[idx];
     if (resolution != null) {
