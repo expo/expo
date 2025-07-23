@@ -108,7 +108,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       logger: self.logger,
       shouldRunReaper: false,
       triggerReloadCommandListenersReason: "Relaunch after fatal error",
-      reloadScreenManager: self.reloadScreenManager,
+      reloadScreenManager: self.reloadScreenManager
     ) {
       return self.startupProcedure.launchedUpdate()
     } setLauncher: { newLauncher in
