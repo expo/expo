@@ -46,7 +46,7 @@ public final class ScreenCaptureModule: Module {
 
       NotificationCenter.default.addObserver(
         self,
-        selector: #selector(preventScreenRecording),
+        selector: #selector(self.preventScreenRecording),
         name: UIScreen.capturedDidChangeNotification,
         object: nil
       )
@@ -101,7 +101,7 @@ public final class ScreenCaptureModule: Module {
     let isCaptured = UIScreen.main.isCaptured
 
     if isCaptured {
-      keyWindow.subviews.first?.addSubview(blockView)
+      visibleView.addSubview(blockView)
     } else {
       blockView.removeFromSuperview()
     }
