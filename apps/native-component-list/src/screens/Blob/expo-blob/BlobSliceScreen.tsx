@@ -34,7 +34,7 @@ const sliceExamples: SliceExampleData[] = [
   {
     key: 'mixed-blob-slice',
     title: 'Mixed Blob',
-    code: 'new ExpoBlob([new ArrayBuffer(16), "squiggle", "foo"]).slice(0, 8, "text/plain")',
+    code: 'new ExpoBlob([new Uint8Array(..., 3, 5), "squiggle", "foo"]).slice(0, 8, "text/plain")',
     blobParts: (() => {
       const arrayBuffer = new ArrayBuffer(16);
       const int8View = new Int8Array(arrayBuffer);

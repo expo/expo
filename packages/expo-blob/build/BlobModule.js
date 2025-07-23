@@ -1,9 +1,30 @@
 import { requireNativeModule } from 'expo';
-import { normalizedContentType } from './utils';
+import { isTypedArray, normalizedContentType, preprocessOptions, DEFAULT_CHUNK_SIZE, } from './utils';
 const NativeBlobModule = requireNativeModule('ExpoBlob');
 export class ExpoBlob extends NativeBlobModule.Blob {
     constructor(blobParts, options) {
-        super(blobParts?.flat(Infinity) ?? [], options);
+        const inputMapping = (v) => {
+            if (v instanceof ArrayBuffer) {
+                return new Uint8Array(v);
+            }
+            if (v instanceof ExpoBlob || isTypedArray(v)) {
+                return v;
+            }
+            return String(v);
+        };
+        let bps = [];
+        if (blobParts === undefined) {
+            super([], preprocessOptions(options));
+        }
+        else if (blobParts === null || typeof blobParts !== 'object') {
+            throw TypeError();
+        }
+        else {
+            for (let bp of blobParts) {
+                bps.push(inputMapping(bp));
+            }
+            super(bps, preprocessOptions(options));
+        }
     }
     slice(start, end, contentType) {
         const normalizedType = normalizedContentType(contentType);
@@ -12,19 +33,36 @@ export class ExpoBlob extends NativeBlobModule.Blob {
         return slicedBlob;
     }
     stream() {
-        const text = super.syncText();
-        const encoder = new TextEncoder();
-        const uint8 = encoder.encode(text);
+        const self = this;
         let offset = 0;
+        let bytesPromise = null;
         return new ReadableStream({
-            pull(controller) {
-                if (offset < uint8.length) {
-                    controller.enqueue(uint8.subarray(offset));
-                    offset = uint8.length;
+            type: 'bytes',
+            async pull(controller) {
+                if (!bytesPromise) {
+                    bytesPromise = self.bytes();
                 }
-                else {
+                const bytes = await bytesPromise;
+                if (offset >= bytes.length) {
                     controller.close();
+                    return;
                 }
+                if (controller.byobRequest?.view) {
+                    const view = controller.byobRequest.view;
+                    const end = Math.min(offset + view.byteLength, bytes.length);
+                    const chunk = bytes.subarray(offset, end);
+                    view.set(chunk, 0);
+                    controller.byobRequest.respond(chunk.length);
+                    offset = end;
+                    if (offset >= bytes.length) {
+                        controller.close();
+                    }
+                    return;
+                }
+                const chunkSize = DEFAULT_CHUNK_SIZE;
+                const end = Math.min(offset + chunkSize, bytes.length);
+                controller.enqueue(bytes.subarray(offset, end));
+                offset = end;
             },
         });
     }
@@ -33,5 +71,12 @@ export class ExpoBlob extends NativeBlobModule.Blob {
             .bytes()
             .then((bytes) => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
     }
+    toString() {
+        return '[object Blob]';
+    }
 }
+Object.defineProperty(ExpoBlob, 'length', {
+    value: 0,
+    writable: false,
+});
 //# sourceMappingURL=BlobModule.js.map

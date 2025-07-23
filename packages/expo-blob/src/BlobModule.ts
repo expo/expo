@@ -1,7 +1,13 @@
 import { NativeModule, requireNativeModule, SharedObject } from 'expo';
 
 import { Blob, BlobPart } from './BlobModule.types';
-import { normalizedContentType } from './utils';
+import {
+  isTypedArray,
+  normalizedContentType,
+  preprocessOptions,
+  DEFAULT_CHUNK_SIZE,
+} from './utils';
+
 declare class NativeBlob extends SharedObject {
   readonly size: number;
   readonly type: string;
@@ -9,7 +15,6 @@ declare class NativeBlob extends SharedObject {
   slice(start?: number, end?: number, contentType?: string): ExpoBlob;
   bytes(): Promise<Uint8Array>;
   text(): Promise<string>;
-  syncText(): string;
 }
 
 declare class ExpoBlobModule extends NativeModule {
@@ -19,8 +24,29 @@ declare class ExpoBlobModule extends NativeModule {
 const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
 
 export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
-  constructor(blobParts?: any[], options?: BlobPropertyBag) {
-    super(blobParts?.flat(Infinity) ?? [], options);
+  constructor(blobParts?: any[] | Iterable<any>, options?: BlobPropertyBag) {
+    const inputMapping = (v: any) => {
+      if (v instanceof ArrayBuffer) {
+        return new Uint8Array(v);
+      }
+      if (v instanceof ExpoBlob || isTypedArray(v)) {
+        return v;
+      }
+      return String(v);
+    };
+
+    let bps: any[] = [];
+
+    if (blobParts === undefined) {
+      super([], preprocessOptions(options));
+    } else if (blobParts === null || typeof blobParts !== 'object') {
+      throw TypeError();
+    } else {
+      for (let bp of blobParts) {
+        bps.push(inputMapping(bp));
+      }
+      super(bps, preprocessOptions(options));
+    }
   }
 
   slice(start?: number, end?: number, contentType?: string): ExpoBlob {
@@ -31,18 +57,39 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
   }
 
   stream(): ReadableStream {
-    const text = super.syncText();
-    const encoder = new TextEncoder();
-    const uint8 = encoder.encode(text);
+    const self = this;
     let offset = 0;
-    return new ReadableStream<Uint8Array>({
-      pull(controller) {
-        if (offset < uint8.length) {
-          controller.enqueue(uint8.subarray(offset));
-          offset = uint8.length;
-        } else {
-          controller.close();
+    let bytesPromise: Promise<Uint8Array> | null = null;
+
+    return new ReadableStream({
+      type: 'bytes',
+      async pull(controller: any) {
+        if (!bytesPromise) {
+          bytesPromise = self.bytes();
         }
+        const bytes = await bytesPromise;
+        if (offset >= bytes.length) {
+          controller.close();
+          return;
+        }
+
+        if (controller.byobRequest?.view) {
+          const view = controller.byobRequest.view;
+          const end = Math.min(offset + view.byteLength, bytes.length);
+          const chunk = bytes.subarray(offset, end);
+          view.set(chunk, 0);
+          controller.byobRequest.respond(chunk.length);
+          offset = end;
+          if (offset >= bytes.length) {
+            controller.close();
+          }
+          return;
+        }
+
+        const chunkSize = DEFAULT_CHUNK_SIZE;
+        const end = Math.min(offset + chunkSize, bytes.length);
+        controller.enqueue(bytes.subarray(offset, end));
+        offset = end;
       },
     });
   }
@@ -54,4 +101,13 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
         bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
       );
   }
+
+  toString(): string {
+    return '[object Blob]';
+  }
 }
+
+Object.defineProperty(ExpoBlob, 'length', {
+  value: 0,
+  writable: false,
+});

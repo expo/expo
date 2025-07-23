@@ -17,7 +17,7 @@ extension BlobPart {
         return blob.text()
     }
   }
-  
+
   func size() -> Int {
     switch self {
     case .string(let str):
@@ -28,7 +28,7 @@ extension BlobPart {
       return blob.size
     }
   }
-  
+
   func bytes() async -> [UInt8] {
     switch self {
       case .string(let str):
@@ -39,4 +39,10 @@ extension BlobPart {
         return await blob.bytes()
     }
   }
+}
+func toNativeNewlines(_ str: String) -> String {
+    let nativeEnding = "\n"
+    var s = str.replacingOccurrences(of: "\r\n", with: nativeEnding)
+    s = s.replacingOccurrences(of: "\r", with: nativeEnding)
+    return s
 }
