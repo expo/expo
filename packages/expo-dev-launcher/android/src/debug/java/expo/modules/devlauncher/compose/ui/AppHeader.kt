@@ -6,12 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.core.Icon
 import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.R
 import expo.modules.devmenu.compose.primitives.AppIcon
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
@@ -38,10 +37,9 @@ fun AppHeader(
         )
       } else {
         Surface(shape = RoundedCornerShape(Theme.sizing.borderRadius.full), modifier = Modifier.clickable(onClick = onProfileClick)) {
-          Icon(
-            painter = painterResource(R.drawable._expodevclientcomponents_assets_usericonlight),
+          DayNighIcon(
+            id = R.drawable.user_icon,
             contentDescription = "Expo Logo",
-            tint = Theme.colors.icon.default,
             modifier = Modifier.padding(Theme.spacing.tiny)
           )
         }

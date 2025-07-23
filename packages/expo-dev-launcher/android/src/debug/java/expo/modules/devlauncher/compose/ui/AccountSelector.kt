@@ -4,12 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import com.composables.core.Icon
 import com.composeunstyled.Button
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.models.Account
 import expo.modules.devlauncher.compose.utils.withIsLast
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.RowLayout
@@ -43,8 +42,8 @@ fun AccountSelector(
               leftComponent = avatar,
               rightComponent = {
                 if (account.isSelected) {
-                  Icon(
-                    painterResource(R.drawable._expodevclientcomponents_assets_checkicon),
+                  DayNighIcon(
+                    id = R.drawable.check_icon,
                     contentDescription = "Checked"
                   )
                 }
