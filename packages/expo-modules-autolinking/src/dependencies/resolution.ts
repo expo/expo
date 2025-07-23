@@ -4,6 +4,7 @@ import type { ResolutionResult, DependencyResolution } from './types';
 import {
   type PackageJson,
   defaultShouldIncludeDependency,
+  mergeWithDuplicate,
   loadPackageJson,
   maybeRealpath,
   fastJoin,
@@ -142,7 +143,7 @@ export async function scanDependenciesRecursively(
 
         const prevEntry = searchResults[resolution.name];
         if (prevEntry != null && resolution.path !== prevEntry.path) {
-          (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push(resolution.path);
+          searchResults[resolution.name] = mergeWithDuplicate(prevEntry, resolution);
         } else if (prevEntry == null) {
           searchResults[resolution.name] = resolution;
         }
