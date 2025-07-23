@@ -1,0 +1,154 @@
+import Module from 'node:module';
+
+import type { ResolutionResult, DependencyResolution } from './types';
+import {
+  type PackageJson,
+  defaultShouldIncludeDependency,
+  loadPackageJson,
+  maybeRealpath,
+  fastJoin,
+} from './utils';
+
+declare module 'node:module' {
+  export function _nodeModulePaths(base: string): readonly string[];
+}
+
+// NOTE(@kitten): There's no need to search very deep for modules
+// We don't expect native modules to be excessively nested in the dependency tree
+const MAX_DEPTH = 8;
+
+const createNodeModulePathsCreator = (rootPath: string) => {
+  const _nodeModulePathCache = new Map<string, string>();
+  return async function getNodeModulePaths(packagePath: string) {
+    const outputPaths: string[] = [];
+    const nodeModulePaths = Module._nodeModulePaths(packagePath);
+    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
+      const nodeModulePath = nodeModulePaths[idx];
+      if (idx !== 0 && !nodeModulePath.startsWith(rootPath)) {
+        break;
+      }
+      const target =
+        _nodeModulePathCache.get(nodeModulePath) || (await maybeRealpath(nodeModulePath));
+      if (target != null) {
+        outputPaths.push(target);
+        if (idx !== 0) {
+          _nodeModulePathCache.set(nodeModulePath, target);
+        }
+      }
+    }
+    return outputPaths;
+  };
+};
+
+async function resolveDependencies(
+  packageJson: PackageJson | null,
+  nodeModulePaths: readonly string[],
+  depth: number,
+  shouldIncludeDependency: (dependencyName: string) => boolean
+): Promise<DependencyResolution[]> {
+  const modules: DependencyResolution[] = [];
+  if (!packageJson) {
+    return modules;
+  }
+
+  const dependencies =
+    packageJson.dependencies != null && typeof packageJson.dependencies === 'object'
+      ? packageJson.dependencies
+      : {};
+  for (const dependencyName in dependencies) {
+    if (!shouldIncludeDependency(dependencyName)) {
+      continue;
+    }
+    for (let idx = 0; idx < nodeModulePaths.length; idx++) {
+      const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
+      const nodeModulePath = await maybeRealpath(originPath);
+      if (nodeModulePath != null) {
+        modules.push({
+          name: dependencyName,
+          path: nodeModulePath,
+          originPath,
+          duplicates: null,
+          depth,
+        });
+        break;
+      }
+    }
+  }
+
+  if (packageJson.peerDependencies != null && typeof packageJson.peerDependencies === 'object') {
+    for (const dependencyName in packageJson.peerDependencies) {
+      if (dependencyName in dependencies || !shouldIncludeDependency(dependencyName)) {
+        continue;
+      }
+      for (let idx = 0; idx < nodeModulePaths.length; idx++) {
+        const originPath = fastJoin(nodeModulePaths[idx], dependencyName);
+        const nodeModulePath = await maybeRealpath(originPath);
+        if (nodeModulePath != null) {
+          modules.push({
+            name: dependencyName,
+            path: nodeModulePath,
+            originPath,
+            duplicates: null,
+            depth,
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  return modules;
+}
+
+interface ResolutionOptions {
+  shouldIncludeDependency?(name: string): boolean;
+}
+
+export async function scanDependenciesRecursively(
+  rawPath: string,
+  { shouldIncludeDependency = defaultShouldIncludeDependency }: ResolutionOptions = {}
+): Promise<ResolutionResult> {
+  const rootPath = await maybeRealpath(rawPath);
+  const getNodeModulePaths = createNodeModulePathsCreator(rootPath || rawPath);
+  const modulePathsQueue = rootPath ? [rootPath] : [];
+  const searchResults: ResolutionResult = Object.create(null);
+
+  const _visitedPackagePaths = new Set();
+  for (let depth = 0; modulePathsQueue.length > 0 && depth < MAX_DEPTH; depth++) {
+    const resolutions = await Promise.all(
+      modulePathsQueue.map(async (packagePath) => {
+        const nodeModulePaths = await getNodeModulePaths(packagePath);
+        const packageJson = await loadPackageJson(fastJoin(packagePath, 'package.json'));
+        return await resolveDependencies(
+          packageJson,
+          nodeModulePaths,
+          depth,
+          shouldIncludeDependency
+        );
+      })
+    );
+
+    modulePathsQueue.length = 0;
+    for (let resolutionIdx = 0; resolutionIdx < resolutions.length; resolutionIdx++) {
+      const modules = resolutions[resolutionIdx];
+      for (let moduleIdx = 0; moduleIdx < modules.length; moduleIdx++) {
+        const resolution = modules[moduleIdx];
+        if (_visitedPackagePaths.has(resolution.path)) {
+          continue;
+        }
+
+        _visitedPackagePaths.add(resolution.path);
+        modulePathsQueue.push(resolution.path);
+
+        const prevEntry = searchResults[resolution.name];
+        if (prevEntry != null && resolution.path !== prevEntry.path) {
+          (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push(resolution.path);
+        } else if (prevEntry == null) {
+          searchResults[resolution.name] = resolution;
+        }
+      }
+    }
+  }
+
+  return searchResults;
+}
