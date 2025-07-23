@@ -23,7 +23,6 @@ export function defaultShouldIncludeDependency(dependencyName: string): boolean 
     case '@expo/prebuild-config':
     case '@expo/env':
     case '@react-native/codegen':
-    case 'react-native':
     case 'eslint':
     case 'eslint-config-expo':
     case 'eslint-plugin-expo':
