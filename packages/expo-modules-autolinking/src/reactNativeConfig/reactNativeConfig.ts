@@ -24,6 +24,7 @@ import {
   DependencyResolution,
   filterMapResolutionResult,
   mergeResolutionResults,
+  scanDependenciesFromRNProjectConfig,
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
@@ -92,6 +93,7 @@ export async function createReactNativeConfigAsync(
 
   const resolutions = mergeResolutionResults(
     await Promise.all([
+      scanDependenciesFromRNProjectConfig(options.projectRoot, projectConfig),
       ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
       scanDependenciesRecursively(options.projectRoot),
     ])
