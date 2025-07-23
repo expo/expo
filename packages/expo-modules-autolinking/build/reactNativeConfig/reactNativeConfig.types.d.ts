@@ -8,6 +8,7 @@ export interface RNConfigCommandOptions {
     searchPaths: string[];
     transitiveLinkingDependencies: string[];
     sourceDir?: string;
+    nativeModulesDir?: string | null;
 }
 /**
  * Dependency configuration for Android platform.
