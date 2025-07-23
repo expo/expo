@@ -8,6 +8,7 @@
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/EXJavaScriptSharedObjectBinding.h>
+#import <ExpoModulesCore/EXStringUtils.h>
 
 namespace expo {
 
@@ -26,7 +27,12 @@ jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *value)
 
 jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, [value UTF8String] ?: "");
+  const uint8_t *utf8 = (const uint8_t *)[value UTF8String];
+  const size_t length = [value length];
+  if (expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
+    return jsi::String::createFromAscii(runtime, (const char *)utf8, length);
+  }
+  return jsi::String::createFromUtf16(runtime, (const char16_t *)[value cStringUsingEncoding:NSUTF16StringEncoding], length);
 }
 
 jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)

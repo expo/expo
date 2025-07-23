@@ -188,7 +188,7 @@
 {
   jsi::Runtime *jsiRuntime = [runtime get];
   return [[EXJavaScriptValue alloc] initWithRuntime:runtime
-                                              value:jsi::String::createFromUtf8(*jsiRuntime, [value UTF8String])];
+                                              value:expo::convertNSStringToJSIString(*jsiRuntime, value)];
 }
 
 + (nonnull EXJavaScriptValue *)from:(nullable id)value runtime:(nonnull EXJavaScriptRuntime *)runtime
