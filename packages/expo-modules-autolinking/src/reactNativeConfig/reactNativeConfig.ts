@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
-import { fileExistsAsync } from '../fileUtils';
 import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
@@ -29,7 +27,6 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
-import { resolveGradlePropertyAsync } from '../platforms/android';
 
 export async function _resolveTurboModule(
   resolution: DependencyResolution,
@@ -114,24 +111,6 @@ export async function createReactNativeConfigAsync(
       options.sourceDir
     ),
   };
-}
-
-/**
- * Find local dependencies that specified in the `react-native.config.js` file.
- */
-function findProjectLocalDependencyRoots(
-  projectConfig: RNConfigReactNativeProjectConfig | null
-): Record<string, string> {
-  if (!projectConfig?.dependencies) {
-    return {};
-  }
-  const results: Record<string, string> = {};
-  for (const [name, config] of Object.entries(projectConfig.dependencies)) {
-    if (typeof config.root === 'string') {
-      results[name] = config.root;
-    }
-  }
-  return results;
 }
 
 export async function resolveAppProjectConfigAsync(
