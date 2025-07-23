@@ -38,7 +38,7 @@
     "abort-controller": "^3.0.0",
     "debug": "^4.3.4",
     "source-map-support": "~0.5.21",
-    "undici": "^6.18.2 || ^7.0.0"
+    "undici": "^6.21.2"
   },
   "devDependencies": {
     "@netlify/functions": "^1.4.0",
