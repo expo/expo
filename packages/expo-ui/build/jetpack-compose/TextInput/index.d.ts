@@ -1,10 +1,18 @@
+import { Ref } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../types';
 /**
  * @hidden Not used anywhere yet.
  */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
+export type TextInputRef = {
+    setText: (newText: string) => Promise<void>;
+};
 export type TextInputProps = {
+    /**
+     * Can be used for imperatively setting text on the TextInput component.
+     */
+    ref?: Ref<TextInputRef>;
     /**
      * Additional styles to apply to the TextInput.
      */

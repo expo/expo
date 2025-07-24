@@ -1,4 +1,4 @@
-import { TextInput } from '@expo/ui/jetpack-compose';
+import { TextInput, TextInputRef, Button } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { Text } from 'react-native';
 
@@ -6,13 +6,25 @@ import { ScrollPage, Section } from '../../components/Page';
 
 export default function TextInputScreen() {
   const [value, setValue] = React.useState<string>('');
+  const textRef = React.useRef<TextInputRef>(null);
   return (
     <ScrollPage>
       <Section title="Current value">
         <Text>{JSON.stringify(value)}</Text>
       </Section>
+      <Button
+        onPress={async () => {
+          textRef.current?.setText('Hello there!');
+        }}>
+        Set text
+      </Button>
       <Section title="Text Input">
-        <TextInput autocorrection={false} defaultValue="hey there" onChangeText={setValue} />
+        <TextInput
+          ref={textRef}
+          autocorrection={false}
+          defaultValue="hey there"
+          onChangeText={setValue}
+        />
       </Section>
       <Section title="Multiline Text Input">
         <TextInput
