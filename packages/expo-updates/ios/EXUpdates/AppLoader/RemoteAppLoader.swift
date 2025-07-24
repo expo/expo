@@ -41,51 +41,72 @@ public final class RemoteAppLoader: AppLoader {
         successBlockArg(updateResponse)
         return
       }
-      // even if update is nil (meaning we didn't load a new update),
-      // we want to persist the header data from remoteUpdateResponse
-      if let remoteUpdateResponse = strongSelf.remoteUpdateResponse,
-        let responseHeaderData = remoteUpdateResponse.responseHeaderData {
-        strongSelf.database.databaseQueue.async {
-          do {
-            try strongSelf.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: strongSelf.config.scopeKey)
-            successBlockArg(updateResponse)
-          } catch {
-            let cause = UpdatesError.remoteAppLoaderHeaderDataError(cause: error)
-            strongSelf.logger.error(cause: cause, code: UpdatesErrorCode.unknown)
-            errorBlockArg(cause)
-          }
-        }
-      } else {
-        successBlockArg(updateResponse)
-      }
+      strongSelf.processUpdateResponse(updateResponse, success: successBlockArg, error: errorBlockArg)
     }
 
     database.databaseQueue.async {
-      let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
-      let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
-        withDatabase: self.database,
-        config: self.config,
-        logger: self.logger,
-        launchedUpdate: self.launchedUpdate,
-        embeddedUpdate: embeddedUpdate
-      )
-      self.downloader.downloadRemoteUpdate(
-        fromURL: url,
-        withDatabase: self.database,
-        extraHeaders: extraHeaders
-      ) { updateResponse in
+      self.startRemoteLoad(fromURL: url)
+    }
+  }
+
+  private func processUpdateResponse(
+    _ updateResponse: UpdateResponse?,
+    success successBlockArg: @escaping AppLoaderSuccessBlock,
+    error errorBlockArg: @escaping AppLoaderErrorBlock
+  ) {
+    // even if update is nil (meaning we didn't load a new update),
+    // we want to persist the header data from remoteUpdateResponse
+    if let remoteUpdateResponse = self.remoteUpdateResponse,
+      let responseHeaderData = remoteUpdateResponse.responseHeaderData {
+      self.database.databaseQueue.async {
+        do {
+          try self.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: self.config.scopeKey)
+          successBlockArg(updateResponse)
+        } catch {
+          let cause = UpdatesError.remoteAppLoaderHeaderDataError(cause: error)
+          self.logger.error(cause: cause, code: UpdatesErrorCode.unknown)
+          errorBlockArg(cause)
+        }
+      }
+    } else {
+      successBlockArg(updateResponse)
+    }
+  }
+
+  private func startRemoteLoad(fromURL url: URL) {
+    let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
+    let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
+      withDatabase: self.database,
+      config: self.config,
+      logger: self.logger,
+      launchedUpdate: self.launchedUpdate,
+      embeddedUpdate: embeddedUpdate
+    )
+    self.downloader.downloadRemoteUpdate(
+      fromURL: url,
+      withDatabase: self.database,
+      extraHeaders: extraHeaders,
+      successBlock: { updateResponse in
         self.remoteUpdateResponse = updateResponse
         self.startLoading(fromUpdateResponse: updateResponse)
-      } errorBlock: { error in
+      },
+      errorBlock: { error in
         self.errorBlock.let { it in
           it(error)
         }
       }
-    }
+    )
   }
 
   override public func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
+
+    let progressBlock = { [weak self] fractionCompleted in
+      guard let self = self else {
+        return
+      }
+      self.assetLoadProgressListener(asset: asset, progress: fractionCompleted)
+    }
 
     FileDownloader.assetFilesQueue.async {
       if FileManager.default.fileExists(atPath: urlOnDisk.path) {
@@ -106,19 +127,18 @@ public final class RemoteAppLoader: AppLoader {
           verifyingHash: asset.expectedHash,
           toPath: urlOnDisk.path,
           extraHeaders: extraHeaders.merging(asset.extraRequestHeaders ?? [:]) { current, _ in current },
-          progressBlock: { [weak self] fractionCompleted in
-            guard let self = self else { return }
-            self.assetLoadProgressListener(asset: asset, progress: fractionCompleted)
+          progressBlock: progressBlock,
+          successBlock: { data, response, _ in
+            DispatchQueue.global().async {
+              self.handleAssetDownload(withData: data, response: response, asset: asset)
+            }
+          },
+          errorBlock: { error in
+            DispatchQueue.global().async {
+              self.handleAssetDownload(withError: error, asset: asset)
+            }
           }
-        ) { data, response, _ in
-          DispatchQueue.global().async {
-            self.handleAssetDownload(withData: data, response: response, asset: asset)
-          }
-        } errorBlock: { error in
-          DispatchQueue.global().async {
-            self.handleAssetDownload(withError: error, asset: asset)
-          }
-        }
+        )
       }
     }
   }

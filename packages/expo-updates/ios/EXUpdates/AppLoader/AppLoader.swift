@@ -274,20 +274,20 @@ open class AppLoader: NSObject {
     }
     arrayLock.unlock()
   }
-  
+
   public func assetLoadProgressListener(asset: UpdateAsset, progress: Double) {
     arrayLock.lock()
     notifyAssetLoadProgress(asset: asset, progress: progress)
     arrayLock.unlock()
   }
-  
+
   /**
    * This should only be called on threads that have acquired self->_arrayLock
    */
   public func notifyAssetLoadProgress(asset: UpdateAsset, progress: Double) {
     assetDownloadProgress[asset] = progress
     let totalAssetsCount = finishedAssets.count + existingAssets.count + erroredAssets.count + assetsToLoad.count
-    if (totalAssetsCount > 0) {
+    if totalAssetsCount > 0 {
       let progress = assetDownloadProgress.values.reduce(0, +) / Double(totalAssetsCount)
       if let assetLoadProgressBlock = assetLoadProgressBlock {
         assetLoadProgressBlock(progress)

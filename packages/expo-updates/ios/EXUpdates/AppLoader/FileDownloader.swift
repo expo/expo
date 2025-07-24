@@ -830,7 +830,7 @@ public final class FileDownloader {
         self.progressObservations.removeValue(forKey: task)
         self.progressObservationsLock.unlock()
       }
-      
+
       guard let response = response else {
         // error is non-nil when data and response are both nil
         // swiftlint:disable:next force_unwrapping
@@ -858,7 +858,7 @@ public final class FileDownloader {
     if let progressBlock = progressBlock, let task = task {
       progressObservationsLock.lock()
       progressObservations[task] = task.progress.observe(\.fractionCompleted) { progress, _ in
-        progressBlock(progress.fractionCompleted);
+        progressBlock(progress.fractionCompleted)
       }
       progressObservationsLock.unlock()
     }
