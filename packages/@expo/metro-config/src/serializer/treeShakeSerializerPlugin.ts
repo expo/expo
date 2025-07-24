@@ -6,9 +6,15 @@
  */
 import { type NodePath, traverse, types } from '@babel/core';
 import generate from '@babel/generator';
+import type {
+  AsyncDependencyType,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
-import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
 
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
@@ -252,9 +258,11 @@ export async function treeShakeSerializer(
       const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
       // If the dependency was already removed, then we don't need to do anything.
 
-      const importInstance = value.dependencies.get(targetHashId)!;
-
-      const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+      const importInstance = value.dependencies.get(targetHashId);
+      const graphEntryForTargetImport =
+        importInstance &&
+        isResolvedDependency(importInstance) &&
+        graph.dependencies.get(importInstance.absolutePath);
       // Should never happen but we're playing with fire here.
       if (!graphEntryForTargetImport) {
         throw new Error(
@@ -385,6 +393,7 @@ export async function treeShakeSerializer(
     if (!node) return;
     // Recursively remove all dependencies.
     for (const dep of node.dependencies.values()) {
+      if (!isResolvedDependency(dep)) continue;
       const child = graph.dependencies.get(dep.absolutePath);
       if (!child) continue;
 
@@ -436,9 +445,11 @@ export async function treeShakeSerializer(
     const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
     // If the dependency was already removed, then we don't need to do anything.
 
-    const importInstance = graphModule.dependencies.get(targetHashId)!;
-
-    const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+    const importInstance = graphModule.dependencies.get(targetHashId);
+    const graphEntryForTargetImport =
+      importInstance &&
+      isResolvedDependency(importInstance) &&
+      graph.dependencies.get(importInstance.absolutePath);
     // Should never happen but we're playing with fire here.
     if (!graphEntryForTargetImport) {
       throw new Error(
@@ -834,7 +845,7 @@ export async function treeShakeSerializer(
         // The hash key for the dependency instance in the module.
         const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
         const importInstance = value.dependencies.get(targetHashId);
-        if (importInstance) {
+        if (importInstance && isResolvedDependency(importInstance)) {
           dirtyImports.push(importInstance.absolutePath);
         }
       }
@@ -912,7 +923,7 @@ export async function treeShakeSerializer(
       // Optimize all deps without marking as dirty to prevent
       // circular dependencies from creating infinite loops.
       dep.dependencies.forEach((dep) => {
-        paths.push(dep.absolutePath);
+        if (isResolvedDependency(dep)) paths.push(dep.absolutePath);
       });
     }
 

@@ -36,7 +36,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     }
 
     AsyncFunction("reload") { (options: ReloadScreenOptions?, promise: Promise) in
-      ReloadScreenManager.shared.setConfiguration(options)
+      AppController.sharedInstance.reloadScreenManager?.setConfiguration(options)
       AppController.sharedInstance.requestRelaunch {
         promise.resolve(nil)
       } error: { error in
@@ -148,14 +148,18 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
 
     AsyncFunction("showReloadScreen") { (options: ReloadScreenOptions?) in
 #if DEBUG
-      ReloadScreenManager.shared.setConfiguration(options)
-      ReloadScreenManager.shared.show()
+      if let reloadScreenManager = AppController.sharedInstance.reloadScreenManager {
+        reloadScreenManager.setConfiguration(options)
+        reloadScreenManager.show()
+      }
 #endif
     }.runOnQueue(.main)
 
     AsyncFunction("hideReloadScreen") {
 #if DEBUG
-      ReloadScreenManager.shared.hide()
+      if let reloadScreenManager = AppController.sharedInstance.reloadScreenManager {
+        reloadScreenManager.hide()
+      }
 #endif
     }.runOnQueue(.main)
   }
