@@ -153,6 +153,96 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
+  private async exportServerRoute({
+    contents,
+    artifactFilename,
+    files,
+    includeSourceMaps,
+    routeId,
+  }: {
+    contents: { src: string; map?: any } | null | undefined;
+    artifactFilename: string;
+    files: ExportAssetMap;
+    includeSourceMaps?: boolean;
+    routeId?: string;
+  }) {
+    if (!contents) return;
+
+    let src = contents.src;
+    if (includeSourceMaps && contents.map) {
+      // TODO(kitten): Merge the source map transformer in the future
+      // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
+      // Alternatively, check whether `sourcesRoot` helps here
+      const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
+      src = src.replace(/\/\/# sourceMappingURL=.*/g, `//# sourceMappingURL=${artifactBasename}`);
+      const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
+      const mapData: any = {
+        contents: JSON.stringify({
+          version: parsedMap.version,
+          sources: parsedMap.sources.map((source: string) => {
+            source =
+              typeof source === 'string' && source.startsWith(this.projectRoot)
+                ? path.relative(this.projectRoot, source)
+                : source;
+            return convertPathToModuleSpecifier(source);
+          }),
+          sourcesContent: new Array(parsedMap.sources.length).fill(null),
+          names: parsedMap.names,
+          mappings: parsedMap.mappings,
+        }),
+        targetDomain: 'server',
+      };
+      if (routeId) {
+        mapData.apiRouteId = routeId;
+      }
+      files.set(artifactFilename + '.map', mapData);
+    }
+    const fileData: any = {
+      contents: src,
+      targetDomain: 'server',
+    };
+    if (routeId) {
+      fileData.apiRouteId = routeId;
+    }
+    files.set(artifactFilename, fileData);
+  }
+
+  private async exportMiddleware({
+    manifest,
+    appDir,
+    outputDir,
+    files,
+    platform,
+    includeSourceMaps,
+  }: {
+    manifest: ExpoRouterServerManifestV1;
+    appDir: string;
+    outputDir: string;
+    files: ExportAssetMap;
+    platform: string;
+    includeSourceMaps?: boolean;
+  }) {
+    if (!manifest.middleware) return;
+
+    const middlewareFilepath = path.isAbsolute(manifest.middleware.file)
+      ? manifest.middleware.file
+      : path.join(appDir, manifest.middleware.file);
+    const contents = await this.bundleApiRoute(middlewareFilepath, { platform });
+    const artifactFilename = convertPathToModuleSpecifier(
+      path.join(outputDir, path.relative(appDir, middlewareFilepath.replace(/\.[tj]sx?$/, '.js')))
+    );
+
+    await this.exportServerRoute({
+      contents,
+      artifactFilename,
+      files,
+      includeSourceMaps,
+    });
+
+    // Remap the middleware file to represent the output file.
+    manifest.middleware.file = artifactFilename;
+  }
+
   async exportExpoRouterApiRoutesAsync({
     includeSourceMaps,
     outputDir,
@@ -194,6 +284,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
+    await this.exportMiddleware({
+      manifest,
+      appDir,
+      outputDir,
+      files,
+      platform,
+      includeSourceMaps,
+    });
+
     for (const route of manifest.apiRoutes) {
       const filepath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
       const contents = await this.bundleApiRoute(filepath, { platform });
@@ -206,45 +305,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')))
             );
 
-      if (contents) {
-        let src = contents.src;
-
-        if (includeSourceMaps && contents.map) {
-          // TODO(kitten): Merge the source map transformer in the future
-          // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
-          // Alternatively, check whether `sourcesRoot` helps here
-          const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
-          src = src.replace(
-            /\/\/# sourceMappingURL=.*/g,
-            `//# sourceMappingURL=${artifactBasename}`
-          );
-
-          const parsedMap =
-            typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
-          files.set(artifactFilename + '.map', {
-            contents: JSON.stringify({
-              version: parsedMap.version,
-              sources: parsedMap.sources.map((source: string) => {
-                source =
-                  typeof source === 'string' && source.startsWith(this.projectRoot)
-                    ? path.relative(this.projectRoot, source)
-                    : source;
-                return convertPathToModuleSpecifier(source);
-              }),
-              sourcesContent: new Array(parsedMap.sources.length).fill(null),
-              names: parsedMap.names,
-              mappings: parsedMap.mappings,
-            }),
-            apiRouteId: route.page,
-            targetDomain: 'server',
-          });
-        }
-        files.set(artifactFilename, {
-          contents: src,
-          apiRouteId: route.page,
-          targetDomain: 'server',
-        });
-      }
+      await this.exportServerRoute({
+        contents,
+        artifactFilename,
+        files,
+        includeSourceMaps,
+        routeId: route.page,
+      });
       // Remap the manifest files to represent the output files.
       route.file = artifactFilename;
     }

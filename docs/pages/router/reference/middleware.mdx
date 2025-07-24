@@ -1,0 +1,139 @@
+---
+title: Server middleware
+description: Learn how to create middleware that runs for every request to the server in Expo Router.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **info** Server middleware requires a [deployed server](/router/reference/api-routes/#deployment) for production use.
+
+Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging. Unlike [API routes](/router/reference/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, giving you fine-grained control over handling incoming requests.
+
+Middleware in Expo Router is built on top of [Web standards](https://fetch.spec.whatwg.org/), allowing you to use [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) objects directly. This means you can leverage familiar web concepts like headers, cookies, and query parameters.
+
+It is important to remember that middleware runs for every route in your app, so it should run as quickly as possible to avoid slowing down your app's performance.
+
+## Setup
+
+<Step label="1">
+
+### Enable server output in your app configuration
+
+First, configure your app to use server output by adding the server configuration to your [app config](/versions/latest/config/app/):
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */
+    /* @end */
+    "web": {
+      /* @info Middleware is only supported in server mode */
+      "output": "server"
+      /* @end */
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+### Create your middleware file
+
+Create a **+middleware.ts**/**+middleware.js** file in your **app** directory. This file will contain your middleware function:
+
+```ts app/+middleware.ts
+export default function middleware(request: Request) {
+  console.log(`Middleware executed for: ${request.url}`);
+  // Your middleware logic goes here
+}
+```
+
+The middleware function must be the default export of the file. It receives a [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object and can return either a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response), or nothing to let the request pass through unmodified.
+
+</Step>
+
+<Step label="3">
+
+### Start your development server
+
+Run your development server to test the middleware:
+
+<Terminal cmd={['$ npx expo start']} />
+
+Your middleware will now run for all requests to your app.
+
+</Step>
+
+<Step label="4">
+
+### Test middleware functionality
+
+Visit your app in a browser or make requests to test that your middleware is working. Check your console for the log messages from the middleware function.
+
+</Step>
+
+## How it works
+
+Middleware functions are executed before any route handlers, allowing you to perform actions like logging, authentication, or modifying responses.
+
+### Request/response flow
+
+When a request comes to your app, Expo Router processes it in this order:
+
+1. The **middleware function** runs first with the incoming `Request`
+2. If middleware returns a `Response`, that response is sent immediately
+3. If middleware returns nothing, the request continues to the matching route
+4. The route handler processes the request and returns its response
+
+### Middleware execution order
+
+Currently, Expo Router supports a single middleware file named **+middleware.ts**/**+middleware.js** that runs for all routes. Middleware executes before any route matching or rendering occurs, giving you complete control over the request lifecycle.
+
+## Examples
+
+### Authentication
+
+Middleware is often used to perform authorization checks before a route has loaded. You can check headers, cookies, or query parameters to determine if a user has access to certain routes:
+
+```ts app/+middleware.ts
+import { jwtVerify } from 'jose';
+
+export default function middleware(request: Request) {
+  const token = request.headers.get('authorization');
+
+  const decoded = jwtVerify(token, process.env.SECRET_KEY);
+  if (!decoded.payload) {
+    return new Response('Forbidden', { status: 403 });
+  }
+}
+```
+
+### Logging
+
+You can use middleware to log requests for debugging or analytics purposes. This can help you track user activity or diagnose issues in your app:
+
+```ts app/+middleware.ts
+export default function middleware(request: Request) {
+  console.log(`${request.method} ${request.url}`);
+}
+```
+
+### Dynamic redirects
+
+Middleware can also be used to perform dynamic redirects. This allows you to control user navigation based on specific conditions:
+
+```ts app/+middleware.ts
+export default function middleware(request: Request) {
+  if (request.headers.has('specific-header')) {
+    return Response.redirect('https://expo.dev');
+  }
+}
+```
+
+## Limitations
+
+- You can only have one root-level **+middleware.ts** in your app.
+- The same limitations that [apply to API routes](/router/reference/api-routes/#known-limitations) also apply to middleware.

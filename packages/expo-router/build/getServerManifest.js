@@ -71,13 +71,19 @@ function getServerManifest(route) {
         .reverse();
     const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
     const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
-    return {
+    const manifest = {
         apiRoutes: getMatchableManifestForPaths(apiRoutes),
         htmlRoutes: getMatchableManifestForPaths(standardRoutes),
         notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes),
         redirects: getMatchableManifestForPaths(redirects),
         rewrites: getMatchableManifestForPaths(rewrites),
     };
+    if (route.middleware) {
+        manifest.middleware = {
+            file: route.middleware.contextKey,
+        };
+    }
+    return manifest;
 }
 function getMatchableManifestForPaths(paths) {
     return paths.map(([normalizedRoutePath, absoluteRoute, node]) => {
