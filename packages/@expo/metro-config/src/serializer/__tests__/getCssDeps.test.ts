@@ -1,4 +1,4 @@
-import CountingSet from 'metro/src/lib/CountingSet';
+import CountingSet from '@expo/metro/metro/lib/CountingSet';
 
 import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
 
@@ -21,7 +21,10 @@ const fooModule: JSModule = {
       './bar',
       {
         absolutePath: '/root/bar',
-        data: { data: { asyncType: null, locs: [], key: './bar' }, name: './bar' },
+        data: {
+          data: { asyncType: null, locs: [], key: './bar', isESMImport: false },
+          name: './bar',
+        },
       },
     ],
   ]),

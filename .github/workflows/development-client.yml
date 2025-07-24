@@ -38,7 +38,8 @@ jobs:
           ndk-version: ${{ matrix.ndk-version }}
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: Init new expo app
         working-directory: ../
         run: yarn create expo-app ./development-client-android-test --yes
@@ -93,7 +94,8 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: Init new expo app
         working-directory: ../
         run: yarn create expo-app ./development-client-ios-test --yes

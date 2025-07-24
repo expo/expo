@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 import {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
@@ -174,8 +176,9 @@ export class ExpoModuleConfig {
 /**
  * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
  */
-export function requireAndResolveExpoModuleConfig(path: string): ExpoModuleConfig {
+export async function loadExpoModuleConfigAsync(targetPath: string): Promise<ExpoModuleConfig> {
   // TODO: Validate the raw config against a schema.
   // TODO: Support for `*.js` files, not only static `*.json`.
-  return new ExpoModuleConfig(require(path) as RawExpoModuleConfig);
+  const text = await fs.promises.readFile(targetPath, 'utf8');
+  return new ExpoModuleConfig(JSON.parse(text) as RawExpoModuleConfig);
 }

@@ -135,14 +135,14 @@ export default withPlugin;
 
 We recommend writing config plugins in TypeScript, since this will provide intellisense for the configuration objects. However, your app config is ultimately evaluated by Node.js, which does not recognize TypeScript code by default. Therefore, you will need to add a parser for the TypeScript files from the the **plugins** directory to **app.config.ts** file.
 
-Install `ts-node` library by running the following command:
+Install `tsx` library by running the following command:
 
-<Terminal cmd={['$ npm install --save-dev ts-node']} />
+<Terminal cmd={['$ npm install --save-dev tsx']} />
 
 Then, change the static app config (**app.json**) to the [dynamic app config (**app.config.ts**)](/workflow/configuration/#dynamic-configuration) file. You can do this by renaming the **app.json** file to **app.config.ts** and changing the content of the file as shown below. Ensure to add the following import statement at the top of your **app.config.ts** file:
 
 ```ts app.config.ts
-import 'ts-node/register';
+import 'tsx/cjs';
 
 module.exports = () => {
   /* @hide ... rest of your app config */
@@ -159,7 +159,7 @@ module.exports = () => {
 Now, you can call the config plugin from your dynamic app config. To do this, you need to add the path to the **withPlugin.ts** file to the plugins array in your app config:
 
 ```ts app.config.ts
-import "ts-node/register";
+import "tsx/cjs";
 /* @info */
 import { ExpoConfig } from "expo/config";
 /* @end */

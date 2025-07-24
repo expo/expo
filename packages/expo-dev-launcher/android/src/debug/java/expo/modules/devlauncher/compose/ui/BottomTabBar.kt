@@ -43,12 +43,12 @@ fun BottomTabBar(
       val icons = listOf(
         Tab(
           label = "Home",
-          icon = painterResource(id = R.drawable._expodevclientcomponents_assets_homefilledinactiveicon),
+          icon = painterResource(id = R.drawable.home_icon),
           screen = Home
         ),
         Tab(
           label = "Settings",
-          icon = painterResource(id = R.drawable._expodevclientcomponents_assets_settingsfilledinactiveicon),
+          icon = painterResource(id = R.drawable.settings_icon),
           screen = Settings
         )
       )
