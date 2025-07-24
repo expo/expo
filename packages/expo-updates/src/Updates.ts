@@ -1,4 +1,5 @@
 import { CodedError } from 'expo-modules-core';
+import { Image } from 'react-native';
 
 import ExpoUpdates from './ExpoUpdates';
 import { UpdatesCheckAutomaticallyNativeValue } from './ExpoUpdatesModule.types';
@@ -9,6 +10,8 @@ import {
   UpdateFetchResult,
   UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
+  ReloadScreenOptions,
+  ReloadScreenImageSource,
 } from './Updates.types';
 
 /**
@@ -143,6 +146,42 @@ const manualUpdatesInstructions =
   'To test usage of the expo-updates JS API in your app, make a release build with `npx expo run:ios --configuration Release` or ' +
   '`npx expo run:android --variant Release`.';
 
+function resolveImageSource(
+  source?: string | number | ReloadScreenImageSource | null
+): ReloadScreenImageSource | null {
+  if (typeof source === 'string') {
+    return { url: source };
+  }
+  if (typeof source === 'number') {
+    const resolved = Image.resolveAssetSource(source);
+    if (resolved) {
+      return {
+        url: resolved.uri,
+        width: resolved.width,
+        height: resolved.height,
+        scale: resolved.scale,
+      };
+    }
+    return null;
+  }
+  if (typeof source === 'object' && source !== null) {
+    return source;
+  }
+  return null;
+}
+
+function resolveReloadScreenOptions(options: ReloadScreenOptions): ReloadScreenOptions {
+  if (!options.image) {
+    return options;
+  }
+
+  const resolvedImage = resolveImageSource(options.image);
+  return {
+    ...options,
+    image: resolvedImage || undefined,
+  };
+}
+
 /**
  * Instructs the app to reload using the most recently downloaded version. This is useful for
  * triggering a newly downloaded update to launch without the user needing to manually restart the
@@ -169,7 +208,9 @@ const manualUpdatesInstructions =
  * `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the
  * proper instance of `ReactNativeHost`.
  */
-export async function reloadAsync(): Promise<void> {
+export async function reloadAsync(options?: {
+  reloadScreenOptions?: ReloadScreenOptions;
+}): Promise<void> {
   if (
     (__DEV__ || isUsingDeveloperTool) &&
     !shouldDeferToNativeForAPIMethodAvailabilityInDevelopment
@@ -178,6 +219,10 @@ export async function reloadAsync(): Promise<void> {
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
     );
+  }
+  if (options?.reloadScreenOptions) {
+    const resolvedOptions = resolveReloadScreenOptions(options.reloadScreenOptions);
+    return await ExpoUpdates.reload(resolvedOptions);
   }
   await ExpoUpdates.reload();
 }
@@ -317,4 +362,61 @@ export function setUpdateURLAndRequestHeadersOverride(
   configOverride: { updateUrl: string; requestHeaders: Record<string, string> } | null
 ): void {
   ExpoUpdates.setUpdateURLAndRequestHeadersOverride(configOverride);
+}
+
+/**
+ * Shows the reload screen with customizable appearance. This is primarily useful for testing
+ * how the reload screen will appear to users during app reloads and is only available in
+ * debug builds of the app. The reload screen can be hidden by calling `hideReloadScreen()`.
+ *
+ *
+ * @param options Configuration options for customizing the reload screen appearance.
+ *
+ * @hidden exposed for testing
+ * @example
+ * ```ts
+ * import * as Updates from 'expo-updates';
+ *
+ * // Show the reload screen with custom styling for testing
+ * await Updates.showReloadScreen({
+ *   reloadScreenOptions: {
+ *     backgroundColor: '#1a1a1a',
+ *     spinner: {
+ *       color: '#ffffff'
+ *     }
+ *   }
+ * });
+ *
+ * // Hide it after 3 seconds
+ * setTimeout(async () => {
+ *   await Updates.hideReloadScreen();
+ * }, 3000);
+ *
+ * // Test with a custom image
+ * await Updates.showReloadScreen({
+ *   reloadScreenOptions: {
+ *     backgroundColor: '#ffffff',
+ *     image: require('./assets/loading.png'),
+ *     imageResizeMode: 'contain'
+ *   }
+ * });
+ * ```
+ */
+export async function showReloadScreen(options?: {
+  reloadScreenOptions?: ReloadScreenOptions;
+}): Promise<void> {
+  if (options?.reloadScreenOptions) {
+    const resolvedOptions = resolveReloadScreenOptions(options.reloadScreenOptions);
+    return ExpoUpdates.showReloadScreen(resolvedOptions);
+  }
+  return ExpoUpdates.showReloadScreen();
+}
+
+/**
+ *
+ * @hidden exposed for testing
+ * @return A promise that resolves when the reload screen is hidden.
+ */
+export async function hideReloadScreen(): Promise<void> {
+  return ExpoUpdates.hideReloadScreen();
 }

@@ -34,7 +34,11 @@ const utils_1 = require("./utils");
  * }
  */
 function Modal(props) {
+<<<<<<< HEAD
     const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, largestUndimmedDetentIndex, ...viewProps } = props;
+=======
+    const { children, visible, onClose, onShow, animationType, presentationStyle, transparent, detents, closeOnNavigation, ...viewProps } = props;
+>>>>>>> main
     const { openModal, updateModal, closeModal, addEventListener } = (0, ModalContext_1.useModalContext)();
     const [currentModalId, setCurrentModalId] = (0, react_1.useState)();
     const navigation = (0, useNavigation_1.useNavigation)();
@@ -75,6 +79,16 @@ function Modal(props) {
         }
         return () => { };
     }, [visible]);
+    (0, react_1.useEffect)(() => {
+        if (navigation.isFocused()) {
+            return navigation.addListener('blur', () => {
+                if (currentModalId && closeOnNavigation) {
+                    closeModal(currentModalId);
+                }
+            });
+        }
+        return () => { };
+    }, [navigation, closeModal, currentModalId, closeOnNavigation]);
     (0, react_1.useEffect)(() => {
         if (currentModalId && visible) {
             updateModal(currentModalId, {

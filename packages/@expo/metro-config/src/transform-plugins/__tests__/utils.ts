@@ -6,9 +6,9 @@
  */
 
 import { codeFrameColumns } from '@babel/code-frame';
-import type { SourceLocation as BabelSourceLocation } from '@babel/types';
-import type { Dependency } from 'metro/src/ModuleGraph/worker/collectDependencies';
-import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
+import { types as t } from '@babel/core';
+import type { Dependency } from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
+import collectDependencies from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
 
 import { importExportPlugin } from '../import-export-plugin';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
@@ -51,22 +51,27 @@ function formatDependencyLocs(dependencies: readonly Dependency[], code: string)
 }
 
 function adjustPosForCodeFrame(
-  pos: BabelSourceLocation['start'] | BabelSourceLocation['end'] | null | undefined
+  pos: t.SourceLocation['start'] | t.SourceLocation['end'] | null | undefined
 ) {
   return pos ? { ...pos, column: pos.column + 1 } : pos;
 }
 
-function adjustLocForCodeFrame(loc: BabelSourceLocation) {
+function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
     start: adjustPosForCodeFrame(loc.start),
     end: adjustPosForCodeFrame(loc.end),
   };
 }
 
-function formatLoc(loc: BabelSourceLocation, depIndex: number, dep: Dependency, code: string) {
-  return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
-    message: `dep #${depIndex} (${dep.name})`,
-    linesAbove: 0,
-    linesBelow: 0,
-  });
+function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: string) {
+  return codeFrameColumns(
+    code,
+    // @ts-ignore-error TODO(@kitten): Unclear why this doesn't match up. Are our @babel/* types misaligned or is this incorrect?
+    adjustLocForCodeFrame(loc),
+    {
+      message: `dep #${depIndex} (${dep.name})`,
+      linesAbove: 0,
+      linesBelow: 0,
+    }
+  );
 }

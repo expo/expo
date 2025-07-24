@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - [iOS] Add support for user script sandboxing ([#38206](https://github.com/expo/expo/pull/38206) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactor JSON loading in `findModules` algorithm path to use plain `fs`. ([#38202](https://github.com/expo/expo/pull/38202) by [@kitten](https://github.com/kitten))
 
 ## 2.1.14 - 2025-07-07
 

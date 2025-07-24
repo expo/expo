@@ -133,7 +133,7 @@ function withLocation(nodeOrArray, loc) {
     }
     return node;
 }
-function importExportPlugin({ types: t }) {
+function importExportPlugin({ types: t, }) {
     const { isDeclaration, isVariableDeclaration } = t;
     return {
         visitor: {
@@ -560,8 +560,7 @@ function importExportPlugin({ types: t }) {
                         }
                     });
                     path.traverse({
-                        // @ts-expect-error ReferencedIdentifier is not in the types
-                        ReferencedIdentifier: (path, state) => {
+                        ReferencedIdentifier(path, state) {
                             const localName = path.node.name;
                             const { namespace, remote } = state.namespaceForLocal.get(localName) ?? {};
                             // not from a namespace

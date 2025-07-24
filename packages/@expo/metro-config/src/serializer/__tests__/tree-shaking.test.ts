@@ -1,4 +1,4 @@
-import * as babylon from '@babel/parser';
+import { parse } from '@babel/core';
 
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 import { isModuleEmptyFor } from '../treeShakeSerializerPlugin';
@@ -416,13 +416,13 @@ describe(isModuleEmptyFor, () => {
   ].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns true for: ${title}`, () => {
-      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(true);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(true);
     });
   });
   [`export {}`, `const foo = 'bar'`, `3`, `{}`, `true`, `console.log('hey')`].forEach((source) => {
     const [title, src] = Array.isArray(source) ? source : [source, source];
     it(`returns false for: ${title}`, () => {
-      expect(isModuleEmptyFor(babylon.parse(src, { sourceType: 'unambiguous' }))).toBe(false);
+      expect(isModuleEmptyFor(parse(src, { sourceType: 'unambiguous' }))).toBe(false);
     });
   });
 });

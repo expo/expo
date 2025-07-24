@@ -3,8 +3,10 @@ package expo.modules.devmenu.compose
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import expo.modules.devmenu.DevMenuManager
+import expo.modules.devmenu.DevMenuPreferencesHandle
 
 class DevMenuViewModel : ViewModel() {
+  private val menuPreferences = DevMenuPreferencesHandle
   private val _state = mutableStateOf(
     DevMenuState(
       devToolsSettings = DevMenuManager.getDevSettings()
@@ -13,6 +15,21 @@ class DevMenuViewModel : ViewModel() {
 
   val state
     get() = _state.value
+
+  private val listener = {
+    _state.value = state.copy(
+      showFab = menuPreferences.showFab
+    )
+  }
+
+  init {
+    menuPreferences.addOnChangeListener(listener)
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    menuPreferences.removeOnChangeListener(listener)
+  }
 
   fun updateAppInfo(appInfo: DevMenuState.AppInfo) {
     _state.value = _state.value.copy(
@@ -44,6 +61,7 @@ class DevMenuViewModel : ViewModel() {
       DevMenuAction.OpenReactNativeDevMenu -> getReactHost()?.devSupportManager?.showDevOptionsDialog()
       DevMenuAction.ToggleElementInspector -> toggleInspector()
       is DevMenuAction.ToggleFastRefresh -> toggleFastRefresh()
+      is DevMenuAction.ToggleFab -> toggleFab()
       DevMenuAction.FinishOnboarding -> {
         DevMenuManager.getSettings()?.isOnboardingFinished = true
         _state.value = _state.value.copy(isOnboardingFinished = true)

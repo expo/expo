@@ -1,4 +1,4 @@
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, ReloadScreenOptions } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration
@@ -106,7 +106,9 @@ export declare const createdAt: Date | null;
  * `ReactApplication` you want to reload, or call `UpdatesController.setReactNativeHost` with the
  * proper instance of `ReactNativeHost`.
  */
-export declare function reloadAsync(): Promise<void>;
+export declare function reloadAsync(options?: {
+    reloadScreenOptions?: ReloadScreenOptions;
+}): Promise<void>;
 /**
  * Checks the server to see if a newly deployed update to your project is available. Does not
  * actually download the update. This method cannot be used in development mode, and the returned
@@ -185,4 +187,51 @@ export declare function setUpdateURLAndRequestHeadersOverride(configOverride: {
     updateUrl: string;
     requestHeaders: Record<string, string>;
 } | null): void;
+/**
+ * Shows the reload screen with customizable appearance. This is primarily useful for testing
+ * how the reload screen will appear to users during app reloads and is only available in
+ * debug builds of the app. The reload screen can be hidden by calling `hideReloadScreen()`.
+ *
+ *
+ * @param options Configuration options for customizing the reload screen appearance.
+ *
+ * @hidden exposed for testing
+ * @example
+ * ```ts
+ * import * as Updates from 'expo-updates';
+ *
+ * // Show the reload screen with custom styling for testing
+ * await Updates.showReloadScreen({
+ *   reloadScreenOptions: {
+ *     backgroundColor: '#1a1a1a',
+ *     spinner: {
+ *       color: '#ffffff'
+ *     }
+ *   }
+ * });
+ *
+ * // Hide it after 3 seconds
+ * setTimeout(async () => {
+ *   await Updates.hideReloadScreen();
+ * }, 3000);
+ *
+ * // Test with a custom image
+ * await Updates.showReloadScreen({
+ *   reloadScreenOptions: {
+ *     backgroundColor: '#ffffff',
+ *     image: require('./assets/loading.png'),
+ *     imageResizeMode: 'contain'
+ *   }
+ * });
+ * ```
+ */
+export declare function showReloadScreen(options?: {
+    reloadScreenOptions?: ReloadScreenOptions;
+}): Promise<void>;
+/**
+ *
+ * @hidden exposed for testing
+ * @return A promise that resolves when the reload screen is hidden.
+ */
+export declare function hideReloadScreen(): Promise<void>;
 //# sourceMappingURL=Updates.d.ts.map

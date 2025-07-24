@@ -1,13 +1,16 @@
 package expo.modules.devmenu.compose
 
+import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
+
 import org.json.JSONObject
 
 data class DevMenuState(
   val appInfo: AppInfo? = null,
   val isOpen: Boolean = false,
   val devToolsSettings: DevToolsSettings = DevToolsSettings(),
-  val isOnboardingFinished: Boolean = false
+  val isOnboardingFinished: Boolean = false,
+  val showFab: Boolean = DevMenuPreferencesHandle.showFab
 ) {
   data class AppInfo(
     val appName: String,
