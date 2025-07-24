@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as Print from 'expo-print';
+import * as XLSX from 'xlsx';
+
+const initialState = {
+  date: '',
+  description: '',
+  income: '',
+  expense: '',
+};
+
+export default function App() {
+  const [form, setForm] = useState(initialState);
+  const [transactions, setTransactions] = useState([]);
+  const [balance, setBalance] = useState(0);
+
+  const handleChange = (key, value) => setForm({ ...form, [key]: value });
+
+  const addTransaction = () => {
+    const date = form.date.trim();
+    const description = form.description.trim();
+    const income = parseFloat(form.income) || 0;
+    const expense = parseFloat(form.expense) || 0;
+    if (!date || !description || (income <= 0 && expense <= 0)) {
+      Alert.alert('Isi data dengan benar!');
+      return;
+    }
+    const newTrans = {
+      id: Date.now().toString(),
+      date,
+      description,
+      income,
+      expense,
+    };
+    setTransactions([...transactions, newTrans]);
+    setBalance(balance + income - expense);
+    setForm(initialState);
+  };
+
+  const exportExcel = async () => {
+    const data = transactions.map((t, i) => ({
+      No: i + 1,
+      Tanggal: t.date,
+      Keterangan: t.description,
+      Pemasukan: t.income,
+      Pengeluaran: t.expense,
+      Saldo: balance,
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Rekap');
+    const buf = XLSX.write(wb, { type: 'base64', bookType: "xlsx" });
+    const filename = FileSystem.documentDirectory + "rekap.xlsx";
+    await FileSystem.writeAsStringAsync(filename, buf, { encoding: FileSystem.EncodingType.Base64 });
+    await Sharing.shareAsync(filename);
+  };
+
+  const exportPDF = async () => {
+    let html = `<h1>Rekap Bendahara</h1><table border="1" style="width:100%;border-collapse:collapse"><tr><th>No</th><th>Tanggal</th><th>Keterangan</th><th>Pemasukan</th><th>Pengeluaran</th></tr>`;
+    transactions.forEach((t, i) => {
+      html += `<tr><td>${i + 1}</td><td>${t.date}</td><td>${t.description}</td><td>${t.income}</td><td>${t.expense}</td></tr>`;
+    });
+    html += `</table><p>Saldo: <b>${balance}</b></p>`;
+    const { uri } = await Print.printToFileAsync({ html });
+    await Sharing.shareAsync(uri);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Aplikasi Bendahara</Text>
+      <View style={styles.form}>
+        <TextInput style={styles.input} placeholder="Tanggal (YYYY-MM-DD)" value={form.date} onChangeText={v => handleChange('date', v)} />
+        <TextInput style={styles.input} placeholder="Keterangan" value={form.description} onChangeText={v => handleChange('description', v)} />
+        <TextInput style={styles.input} placeholder="Pemasukan" keyboardType="numeric" value={form.income} onChangeText={v => handleChange('income', v)} />
+        <TextInput style={styles.input} placeholder="Pengeluaran" keyboardType="numeric" value={form.expense} onChangeText={v => handleChange('expense', v)} />
+        <Button title="Tambah" onPress={addTransaction} />
+      </View>
+      <Text style={styles.balance}>SALDO: Rp {balance}</Text>
+      <FlatList
+        data={transactions}
+        keyExtractor={item => item.id}
+        renderItem={({ item, index }) => (
+          <View style={styles.listItem}>
+            <Text>{index + 1}. {item.date} - {item.description}</Text>
+            <Text>Pemasukan: {item.income} | Pengeluaran: {item.expense}</Text>
+          </View>
+        )}
+        style={{ marginTop: 10, marginBottom: 10 }}
+      />
+      <View style={styles.exportRow}>
+        <TouchableOpacity style={styles.exportBtn} onPress={exportExcel}>
+          <Text style={styles.exportText}>Export Excel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.exportBtn} onPress={exportPDF}>
+          <Text style={styles.exportText}>Export PDF</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 12, backgroundColor: '#f7f7f7' },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#007bff', marginBottom: 18, textAlign: 'center' },
+  form: { backgroundColor: '#fff', padding: 12, borderRadius: 8, marginBottom: 16, elevation: 2 },
+  input: { borderBottomWidth: 1, borderColor: '#ddd', marginBottom: 10, padding: 8 },
+  balance: { fontSize: 20, fontWeight: 'bold', color: '#155724', marginVertical: 10 },
+  listItem: { backgroundColor: '#fff', marginBottom: 6, padding: 10, borderRadius: 6, elevation: 1 },
+  exportRow: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 },
+  exportBtn: { backgroundColor: '#007bff', padding: 12, borderRadius: 8 },
+  exportText: { color: '#fff', fontWeight: 'bold' }
+});
