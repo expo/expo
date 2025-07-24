@@ -27,6 +27,7 @@ jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *value)
 
 jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
+#if !TARGET_OS_OSX
   const uint8_t *utf8 = (const uint8_t *)[value UTF8String];
   const size_t length = [value length];
   if (expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
@@ -34,6 +35,9 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
   }
   // Using cStringUsingEncoding should be fine as long as we provide the length.
   return jsi::String::createFromUtf16(runtime, (const char16_t *)[value cStringUsingEncoding:NSUTF16StringEncoding], length);
+#else
+  return jsi::String::createFromUtf8(runtime, [value UTF8String]);
+#endif
 }
 
 jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
