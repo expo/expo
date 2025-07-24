@@ -1,6 +1,6 @@
 import { Link, Modal } from 'expo-router';
 import { useState } from 'react';
-import { Button, ScrollView, Text, TextInput, View } from 'react-native';
+import { Button, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 
 import { MutateButton } from '../components/MutateButton';
 
@@ -123,6 +123,7 @@ function FormsheetFitToContentsDemo() {
 
 function FormsheetDetentsDemo() {
   const [isOpen, setIsOpen] = useState(false);
+  const [shouldCloseOnNavigation, setShouldCloseOnNavigation] = useState(false);
   return (
     <>
       <Button title="Formsheet Modal (Detents)" onPress={() => setIsOpen(true)} />
@@ -131,6 +132,7 @@ function FormsheetDetentsDemo() {
         detents={[0.25, 0.5, 0.75, 1]}
         initialDetentIndex={1}
         onClose={() => setIsOpen(false)}
+        closeOnNavigation={shouldCloseOnNavigation}
         presentationStyle="formSheet">
         <View style={{ padding: 20 }}>
           <Text>This is a Formsheet Modal with detents 0.25, 0.5, 0.75, 1</Text>
@@ -144,6 +146,10 @@ function FormsheetDetentsDemo() {
               marginTop: 12,
             }}
           />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text>Close on navigation:</Text>
+            <Switch value={shouldCloseOnNavigation} onValueChange={setShouldCloseOnNavigation} />
+          </View>
           <Link href="/random">Go to Different Screen</Link>
           <Button title="Close" onPress={() => setIsOpen(false)} />
         </View>

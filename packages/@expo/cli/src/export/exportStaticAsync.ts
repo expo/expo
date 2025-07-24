@@ -81,6 +81,11 @@ export async function getFilesToExportFromServerAsync(
   await Promise.all(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
+        // Rewrite routes should not be statically generated
+        if (route.type === 'rewrite') {
+          return;
+        }
+
         try {
           const targetDomain = exportServer ? 'server' : 'client';
           files.set(filePath, { contents: '', targetDomain });

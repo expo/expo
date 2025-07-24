@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLinkingImplementationForPlatform = getLinkingImplementationForPlatform;
 exports.getIsolatedModulesPath = getIsolatedModulesPath;
+exports.loadPackageJSONAsync = loadPackageJSONAsync;
+const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 function getLinkingImplementationForPlatform(platform) {
     switch (platform) {
@@ -35,5 +37,9 @@ function getIsolatedModulesPath(packagePath, packageName) {
     );
     const isIsolatedModulesPath = path_1.default.basename(maybeIsolatedModulesPath) === 'node_modules';
     return isIsolatedModulesPath ? maybeIsolatedModulesPath : null;
+}
+async function loadPackageJSONAsync(packageJsonPath) {
+    const packageJsonText = await fs_1.default.promises.readFile(packageJsonPath, 'utf8');
+    return JSON.parse(packageJsonText);
 }
 //# sourceMappingURL=utils.js.map

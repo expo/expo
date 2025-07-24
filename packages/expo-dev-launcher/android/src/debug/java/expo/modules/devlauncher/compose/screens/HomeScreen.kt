@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogState
-import com.composables.core.Icon
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
@@ -36,7 +35,6 @@ import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
-import expo.modules.devmenu.compose.primitives.pulseEffect
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
@@ -46,16 +44,17 @@ import expo.modules.devlauncher.compose.ui.ServerUrlInput
 import expo.modules.devlauncher.compose.utils.withIsLast
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.Heading
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
+import expo.modules.devmenu.compose.primitives.pulseEffect
 import expo.modules.devmenu.compose.theme.Theme
 import kotlinx.coroutines.delay
 import kotlin.time.Clock
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -80,8 +79,8 @@ fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
             Button(onClick = {
               dialogState.visible = false
             }) {
-              Icon(
-                painterResource(R.drawable._expodevclientcomponents_assets_xicon),
+              DayNighIcon(
+                id = R.drawable.x_icon,
                 contentDescription = "Close dialog"
               )
             }
@@ -168,7 +167,7 @@ fun HomeScreen(
           "Development servers",
           leftIcon = {
             Image(
-              painter = painterResource(R.drawable._expodevclientcomponents_assets_terminalicon),
+              painter = painterResource(R.drawable.terminal_icon),
               contentDescription = "Terminal Icon"
             )
           },
@@ -178,9 +177,10 @@ fun HomeScreen(
                 Button(onClick = {
                   dialogState.visible = true
                 }) {
-                  Image(
-                    painter = painterResource(R.drawable._expodevclientcomponents_assets_infoicon),
-                    contentDescription = "Terminal Icon"
+                  Theme.colors.icon
+                  DayNighIcon(
+                    id = R.drawable.info_icon,
+                    contentDescription = "Info Icon"
                   )
                 }
 

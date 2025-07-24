@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.Icon
 import com.composeunstyled.Button
+import expo.modules.devlauncher.R
 import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Spacer
 import expo.modules.devmenu.compose.primitives.Text
@@ -46,7 +47,7 @@ fun RunningAppCard(
         },
         rightComponent = {
           Icon(
-            painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_chevronrighticon),
+            painterResource(R.drawable.chevron_right_icon),
             contentDescription = "Open app",
             tint = Theme.colors.icon.default,
             modifier = Modifier

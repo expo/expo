@@ -53,7 +53,8 @@ jobs:
           key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: ⭐️ Create test-nightlies Project (New Architecture)
         run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
         working-directory: packages/create-expo-nightly
@@ -145,7 +146,8 @@ jobs:
           key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: ⭐️ Create test-nightlies Project (New Architecture)
         run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
         working-directory: packages/create-expo-nightly
