@@ -1,3 +1,4 @@
+import * as Device from 'expo-device';
 import Environment from 'src/utils/Environment';
 
 const SDK_VERSION_REGEXP = new RegExp(/\b(\d*)\.0\.0/);
@@ -28,6 +29,13 @@ export async function shouldShowUpgradeWarningAsync(): Promise<{
   shouldShow: boolean;
   betaSdkVersion?: string;
 }> {
+  // No need to show the message on simulator / emulator
+  if (!Device.isDevice) {
+    return {
+      shouldShow: false,
+    };
+  }
+
   const result = await fetch('https://api.expo.dev/v2/versions');
 
   try {
