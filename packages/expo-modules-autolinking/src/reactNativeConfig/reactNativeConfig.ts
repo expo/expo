@@ -59,7 +59,7 @@ export async function _resolveTurboModule(
     );
   } else if (platform === 'ios') {
     platformData = await resolveDependencyConfigImplIosAsync(
-      resolution.path,
+      resolution,
       reactNativeConfig.platforms?.ios
     );
   }

@@ -57,7 +57,7 @@ describe(createReactNativeConfigAsync, () => {
       '/app/node_modules/react-native-test/package.json': '',
       '/app/node_modules/@react-native/subtest/package.json': '',
     });
-    mockPlatformResolverIos.mockImplementationOnce(async (packageRoot, reactNativeConfig) => {
+    mockPlatformResolverIos.mockImplementationOnce(async ({ path: packageRoot }, _reactNativeConfig) => {
       if (packageRoot.endsWith('react-native-test')) {
         return {
           podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
@@ -126,7 +126,7 @@ describe(createReactNativeConfigAsync, () => {
       '/app/modules/react-native-test/package.json': '',
       '/app/node_modules/react-native/package.json': '',
     });
-    mockPlatformResolverIos.mockImplementationOnce(async (packageRoot, reactNativeConfig) => {
+    mockPlatformResolverIos.mockImplementationOnce(async ({ path: packageRoot }, _reactNativeConfig) => {
       if (packageRoot.endsWith('react-native-test')) {
         return {
           podspecPath: '/app/modules/react-native-test/RNTest.podspec',
@@ -317,7 +317,7 @@ describe(_resolveTurboModule, () => {
       'ios'
     );
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
-      '/app/node_modules/react-native-test',
+      expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
       undefined
     );
   });
@@ -347,10 +347,13 @@ describe(_resolveTurboModule, () => {
       null,
       'ios'
     );
-    expect(mockPlatformResolverIos).toHaveBeenCalledWith('/app/node_modules/react-native-test', {
-      configurations: ['Debug'],
-      scriptPhases: [{ name: 'test', path: './test.js' }],
-    });
+    expect(mockPlatformResolverIos).toHaveBeenCalledWith(
+      expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
+      {
+        configurations: ['Debug'],
+        scriptPhases: [{ name: 'test', path: './test.js' }],
+      }
+    );
   });
 
   it('should call platform resolver with merged config and project config will override library config', async () => {
@@ -389,7 +392,7 @@ describe(_resolveTurboModule, () => {
     );
 
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
-      '/app/node_modules/react-native-test',
+      expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
       null
     );
   });
