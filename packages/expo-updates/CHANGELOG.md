@@ -8,6 +8,7 @@
 
 - Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add support for a customisable reloading view when `reloadAsync` is called. ([#38074](https://github.com/expo/expo/pull/38074) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `downloadProgress` state to the `useUpdates` hook to support listening to assets download progress. ([#38307](https://github.com/expo/expo/pull/38307)) by [@nishan](https://github.com/intergalacticspacehighway)
 
 ### 🐛 Bug fixes
 
