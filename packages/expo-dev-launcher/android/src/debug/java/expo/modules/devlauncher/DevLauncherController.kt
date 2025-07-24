@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
@@ -52,10 +53,6 @@ import org.koin.core.component.get
 import org.koin.core.component.inject
 import org.koin.dsl.module
 
-// Use this to load from a development server for the development client launcher UI
-// private val DEV_LAUNCHER_HOST = "10.0.0.175:8090";
-private val DEV_LAUNCHER_HOST: String? = null
-
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
   Intent.FLAG_ACTIVITY_NO_ANIMATION
@@ -89,7 +86,6 @@ class DevLauncherController private constructor() :
     }
 
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
-
 
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: Manifest? = null
@@ -419,6 +415,17 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     internal fun initialize(context: Context, reactHost: ReactHostWrapper) {
+      try {
+        val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
+        val splashScreenManager = splashScreenManagerClass
+          .kotlin
+          .objectInstance
+        splashScreenManagerClass.getMethod("hide")
+          .invoke(splashScreenManager)
+      } catch (e: Throwable) {
+        Log.e("DevLauncherController", "Failed to hide splash screen", e)
+      }
+
       val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }

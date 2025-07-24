@@ -1,13 +1,13 @@
 /**
  * Copyright © 2024 650 Industries.
  */
-import { ConfigAPI, types } from '@babel/core';
+import type { PluginObj, ConfigAPI, types as t } from '@babel/core';
 
 const debug = require('debug')('expo:babel:exports');
 
 // A babel pass to detect the usage of `module.exports` or `exports` in a module for use in
 // export all expansion passes during tree shaking.
-export function detectDynamicExports(api: ConfigAPI & { types: typeof types }): babel.PluginObj {
+export function detectDynamicExports(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
 
   return {

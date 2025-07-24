@@ -226,6 +226,7 @@ exceptions:
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
+  - '.*TLS.*'
   - '.*Transporter.*'
   - '.*TTF.*'
   - '.*Turtle.*'

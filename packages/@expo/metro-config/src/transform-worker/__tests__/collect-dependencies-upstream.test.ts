@@ -9,16 +9,14 @@
  * This helps establish a baseline of support.
  */
 import { codeFrameColumns } from '@babel/code-frame';
-import { transformFromAstSync } from '@babel/core';
+import { transformFromAstSync, parse, types as t } from '@babel/core';
+import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import * as babylon from '@babel/parser';
-import type { NodePath } from '@babel/traverse';
-import * as t from '@babel/types';
-import dedent from 'dedent';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
+} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import dedent from 'dedent';
 import assert from 'node:assert';
 
 import { importExportPlugin } from '../../transform-plugins/import-export-plugin';
@@ -44,10 +42,11 @@ const opts: Options = {
   allowOptionalDependencies: false,
   dependencyMapName: null,
   unstable_allowRequireContext: false,
+  unstable_isESMImportAtSource: null,
 };
 
 // asserts non-null
-function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
+function nullthrows<T>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
   return x;
 }
@@ -1296,6 +1295,7 @@ describe('Evaluating static arguments', () => {
       allowOptionalDependencies: false,
       dependencyMapName: null,
       unstable_allowRequireContext: false,
+      unstable_isESMImportAtSource: null,
     };
     const { dependencies } = collectDependencies(ast, opts);
     expect(dependencies).toEqual([]);
@@ -1317,6 +1317,7 @@ describe('Evaluating static arguments', () => {
       allowOptionalDependencies: false,
       dependencyMapName: null,
       unstable_allowRequireContext: false,
+      unstable_isESMImportAtSource: null,
     };
     const { dependencies } = collectDependencies(ast, opts);
     expect(dependencies).toEqual([]);
@@ -1340,6 +1341,7 @@ describe('Evaluating static arguments', () => {
       allowOptionalDependencies: false,
       dependencyMapName: null,
       unstable_allowRequireContext: false,
+      unstable_isESMImportAtSource: null,
     };
     const { dependencies } = collectDependencies(ast, opts);
     expect(dependencies).toEqual([]);
@@ -1496,6 +1498,9 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
 
   const inlineableCalls = [importDefault, importAll];
 
+  const {
+    inlineRequiresPlugin,
+  }: typeof import('@expo/metro/metro-transform-plugins') = require('@expo/metro/metro-transform-plugins');
   const { ast: transformedAst } = transformFromAstSync(ast, code, {
     ast: true,
     plugins: [
@@ -1506,7 +1511,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
           importAll,
         },
       ],
-      [require('metro-transform-plugins').inlineRequiresPlugin, { inlineableCalls }],
+      [inlineRequiresPlugin, { inlineableCalls }],
     ],
     babelrc: false,
     configFile: false,
@@ -1577,6 +1582,7 @@ describe('optional dependencies', () => {
     allowOptionalDependencies: true,
     dependencyMapName: null,
     unstable_allowRequireContext: false,
+    unstable_isESMImportAtSource: null,
   };
   const validateDependencies = (dependencies: readonly Dependency[], expectedCount: number) => {
     let hasAsync = false;
@@ -1699,12 +1705,12 @@ describe('optional dependencies', () => {
           '@babel/plugin-transform-runtime', // Required to have `@babel/runtime/helpers/..` applied
           '@babel/plugin-transform-modules-commonjs', // Required to apply `@babel/runtime/helpers/interopRequireDefault`
         ],
-      });
-      // @ts-expect-error - `metadata.metro` is not typed in the babel result
-      const importLocations = metadata.metro.unstable_importDeclarationLocs;
+      })!;
+      // @ts-expect-error: Internal/Metro-specific property
+      const importLocations = metadata?.metro.unstable_importDeclarationLocs;
 
       // Collect the dependencies, using the `isESMImport` location-based lookup
-      const { dependencies } = collectDependencies(ast, {
+      const { dependencies } = collectDependencies(ast!, {
         ...opts,
         unstable_isESMImportAtSource: (loc) => importLocations.has(locToKey(loc)),
       });
@@ -1910,10 +1916,12 @@ function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, cod
 }
 
 function astFromCode(code: string) {
-  return babylon.parse(code, {
-    plugins: ['dynamicImport', 'flow'],
+  return parse(code, {
     sourceType: 'module',
-  });
+    parserOpts: {
+      plugins: ['dynamicImport', 'flow'],
+    },
+  })!;
 }
 
 // Mock transformer for dependencies. Uses a "readable" format

@@ -14,7 +14,7 @@
       "sdk": "52.0.0",
       "android": "7+",
       "compileSdkVersion": "35",
-      "targetSdkVersion": "35",
+      "targetSdkVersion": "34",
       "ios": "15.1+",
       "xcode": "16.0+",
       "react-native": "0.76",
