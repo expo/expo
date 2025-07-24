@@ -4,9 +4,8 @@
  * Returns the lowercased content type if it is valid, or an empty string otherwise.
  *
  * A valid content type:
- *  - Is not null, undefined, or empty
+ *  - Is not undefined
  *  - Contains only printable ASCII characters (0x20–0x7E)
- *  - Does not contain forbidden control characters: NUL (\x00), LF (\x0A), or CR (\x0D)
  *
  * If any of these conditions are not met, returns an empty string to indicate an invalid or unsafe content type.
  *
@@ -20,7 +19,10 @@ export declare function normalizedContentType(type?: string): string;
  */
 export declare function isTypedArray(obj: any): boolean;
 /**
- * Processes the options object and
+ * Processes the options object if defined and not null.
+ * The function coerces .type and .options to 'string' (if they are defined objects)
+ * TypeError is thrown when the options is not an object or .endings are invalid.
+ *
  * @param options
  * @returns BlobPropertyBag object
  */

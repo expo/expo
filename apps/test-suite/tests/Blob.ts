@@ -1,3 +1,5 @@
+/* eslint-disable getter-return */
+/* eslint-disable no-new */
 // Based on tests in https://github.com/web-platform-tests/wpt/tree/master/FileAPI/blob
 
 import { ExpoBlob as Blob } from 'expo-blob';
@@ -5,19 +7,19 @@ import { Platform } from 'expo-modules-core';
 
 export const name = 'Blob';
 
-var test_error = {
+const test_error = {
   name: 'test',
   message: 'test error',
 };
 
 export async function test({ describe, it, expect }) {
   const test_blob = (fn, expectations) => {
-    var expected = expectations.expected,
+    const expected = expectations.expected,
       type = expectations.type,
       desc = expectations.desc;
 
     it(desc, async (t) => {
-      var blob = fn();
+      const blob = fn();
       expect(blob instanceof Blob).toBeTruthy();
       expect(blob instanceof File).toBeFalsy();
       expect(blob.type).toEqual(type);
@@ -28,11 +30,11 @@ export async function test({ describe, it, expect }) {
     });
   };
   const test_blob_binary = async (fn, expectations) => {
-    var expected = expectations.expected,
+    const expected = expectations.expected,
       type = expectations.type,
       desc = expectations.desc;
     it(desc, async () => {
-      var blob = fn();
+      const blob = fn();
       expect(blob instanceof Blob).toBeTruthy();
       expect(blob instanceof File).toBeFalsy();
       expect(blob.type).toBe(type);
@@ -69,10 +71,10 @@ export async function test({ describe, it, expect }) {
     expect('read' in reader).toBeTruthy();
     let read_value = await read_and_gc(reader, perform_gc);
 
-    let out = [];
+    const out = [];
     let i = 0;
     while (!read_value.done) {
-      for (let val of read_value.value) {
+      for (const val of read_value.value) {
         out[i++] = val;
       }
       read_value = await read_and_gc(reader, perform_gc);
@@ -121,6 +123,40 @@ export async function test({ describe, it, expect }) {
         const blob = new Blob(['aa', ['ab', 'cd'], 'ef']);
         expect(await blob.text()).toBe('aaab,cdef');
       });
+      it('Unicode emotes', async () => {
+        const blob = new Blob(['Hello 🌍 世界']);
+        console.log('Hello 🌍 世界'.length);
+        console.log(blob.size);
+        expect(await blob.text()).toBe('Hello 🌍 世界');
+        expect(await blob.bytes()).toEqual(
+          Uint8Array.from([
+            72, 101, 108, 108, 111, 32, 240, 159, 140, 141, 32, 228, 184, 150, 231, 149, 140,
+          ])
+        );
+        expect(await blob.size).toBe(17);
+      });
+      describe('large slice start and end', async () => {
+        it('large positive start', async () => {
+          const blob = new Blob(['PASS']);
+          const str = await blob.slice(10000).text();
+          expect(str).toBe('');
+        });
+        it('large negative start', async () => {
+          const blob = new Blob(['PASS']);
+          const str = await blob.slice(-10000).text();
+          expect(str).toBe('PASS');
+        });
+        it('large positive end', async () => {
+          const blob = new Blob(['PASS']);
+          const str = await blob.slice(0, 10000).text();
+          expect(str).toBe('PASS');
+        });
+        it('large negative end', async () => {
+          const blob = new Blob(['PASS']);
+          const str = await blob.slice(0, -10000).text();
+          expect(str).toBe('');
+        });
+      });
     });
 
     describe('Array buffer', () => {
@@ -160,7 +196,7 @@ export async function test({ describe, it, expect }) {
           blob.arrayBuffer(),
           blob.arrayBuffer(),
         ]);
-        for (let array_buffer of array_buffer_results) {
+        for (const array_buffer of array_buffer_results) {
           expect(array_buffer instanceof ArrayBuffer).toBeTruthy();
           expect(new Uint8Array(array_buffer)).toEqual(input_arr);
         }
@@ -199,7 +235,7 @@ export async function test({ describe, it, expect }) {
         const input_arr = new TextEncoder().encode('PASS');
         const blob = new Blob([input_arr]);
         const uint8array_results = await Promise.all([blob.bytes(), blob.bytes(), blob.bytes()]);
-        for (let uint8array of uint8array_results) {
+        for (const uint8array of uint8array_results) {
           expect(uint8array instanceof Uint8Array).toBeTruthy();
           expect(uint8array).toEqual(input_arr);
         }
@@ -218,12 +254,8 @@ export async function test({ describe, it, expect }) {
       });
       it('Invalid endings value', () => {
         [null, '', 'invalidEnumValue', 'Transparent', 'NATIVE', 0, {}].forEach((ending) => {
-          try {
-            // @ts-expect-error
-            new Blob([], { endings: ending });
-          } catch (e) {
-            expect(e instanceof TypeError).toBeTruthy();
-          }
+          // @ts-expect-error
+          expect(() => new Blob([], { endings: ending })).toThrowError(TypeError);
         });
       });
       it('Exception propagation from options', () => {
@@ -301,7 +333,7 @@ export async function test({ describe, it, expect }) {
         expect(Blob instanceof Function).toBeTruthy();
       });
       it('Blob constructor with no arguments', () => {
-        var blob = new Blob();
+        const blob = new Blob();
         expect(blob instanceof Blob).toBeTruthy();
         expect(String(blob)).toBe('[object Blob]');
         expect(blob.size).toBe(0);
@@ -310,17 +342,17 @@ export async function test({ describe, it, expect }) {
       it("Blob constructor with no arguments, without 'new'", () => {
         expect(() => {
           // @ts-ignore
-          var blob = Blob();
+          Blob();
         }).toThrow();
       });
       it('Blob constructor without brackets', () => {
-        var blob = new Blob();
+        const blob = new Blob();
         expect(blob instanceof Blob).toBeTruthy();
         expect(blob.size).toBe(0);
         expect(blob.type).toBe('');
       });
       it('Blob constructor with undefined as first argument', () => {
-        var blob = new Blob(undefined);
+        const blob = new Blob(undefined);
         expect(blob instanceof Blob).toBeTruthy();
         expect(String(blob)).toBe('[object Blob]');
         expect(blob.size).toBe(0);
@@ -342,13 +374,8 @@ export async function test({ describe, it, expect }) {
           {},
           { 0: 'FAIL', length: 1 },
         ].forEach((arg) => {
-          try {
-            // @ts-expect-error
-            new Blob(arg);
-            expect(false).toBeTruthy();
-          } catch (err) {
-            expect(err instanceof TypeError).toBeTruthy();
-          }
+          // @ts-expect-error
+          expect(() => new Blob(arg)).toThrowError(TypeError);
         });
       });
       test_blob(
@@ -367,7 +394,7 @@ export async function test({ describe, it, expect }) {
         const blob = new Blob({
           // @ts-ignore
           [Symbol.iterator]() {
-            var i = 0;
+            let i = 0;
             return {
               next: () =>
                 [{ done: false, value: 'ab' }, { done: false, value: 'cde' }, { done: true }][i++],
@@ -413,7 +440,7 @@ export async function test({ describe, it, expect }) {
 
       it('The length getter should be invoked and any exceptions should be propagated.', () => {
         expect(() => {
-          var obj = {
+          const obj = {
             [Symbol.iterator]: Array.prototype[Symbol.iterator],
             get length() {
               throw test_error;
@@ -424,11 +451,11 @@ export async function test({ describe, it, expect }) {
       });
       it('ToUint32 should be applied to the length and any exceptions should be propagated.', () => {
         expect(() => {
-          var obj = {
+          const obj = {
             [Symbol.iterator]: Array.prototype[Symbol.iterator],
             length: {
               valueOf: null,
-              toString: function () {
+              toString() {
                 throw test_error;
               },
             },
@@ -436,10 +463,10 @@ export async function test({ describe, it, expect }) {
           new Blob(obj);
         }).toThrow(test_error);
         expect(() => {
-          var obj = {
+          const obj = {
             [Symbol.iterator]: Array.prototype[Symbol.iterator],
             length: {
-              valueOf: function () {
+              valueOf() {
                 throw test_error;
               },
             },
@@ -448,8 +475,8 @@ export async function test({ describe, it, expect }) {
         }).toThrow(test_error);
       });
       it('Getters and value conversions should happen in order until an exception is thrown.', () => {
-        var received = [];
-        var obj = {
+        const received = [];
+        const obj = {
           get [Symbol.iterator]() {
             received.push('Symbol.iterator');
             return Array.prototype[Symbol.iterator];
@@ -457,7 +484,7 @@ export async function test({ describe, it, expect }) {
           get length() {
             received.push('length getter');
             return {
-              valueOf: function () {
+              valueOf() {
                 received.push('length valueOf');
                 return 3;
               },
@@ -466,7 +493,7 @@ export async function test({ describe, it, expect }) {
           get 0() {
             received.push('0 getter');
             return {
-              toString: function () {
+              toString() {
                 received.push('0 toString');
                 return 'a';
               },
@@ -499,7 +526,7 @@ export async function test({ describe, it, expect }) {
           () =>
             new Blob([
               {
-                toString: function () {
+                toString() {
                   throw test_error;
                 },
               },
@@ -510,7 +537,7 @@ export async function test({ describe, it, expect }) {
             new Blob([
               {
                 toString: undefined,
-                valueOf: function () {
+                valueOf() {
                   throw test_error;
                 },
               },
@@ -520,34 +547,29 @@ export async function test({ describe, it, expect }) {
           () =>
             new Blob([
               {
-                toString: function () {
+                toString() {
                   throw test_error;
                 },
-                valueOf: function () {
+                valueOf() {
                   expect('Should not call valueOf if toString is present.').toBe('');
                 },
               },
             ])
         ).toThrow(test_error);
 
-        try {
-          new Blob([{ toString: null, valueOf: null }]);
-          expect('NOT REACHABLE').toBe('');
-        } catch (e) {
-          expect(e instanceof TypeError).toBeTruthy();
-        }
+        expect(() => new Blob([{ toString: null, valueOf: null }])).toThrowError(TypeError);
       });
       test_blob(
         function () {
-          var arr = [
+          const arr = [
             {
-              toString: function () {
+              toString() {
                 arr.pop();
                 return 'PASS';
               },
             },
             {
-              toString: function () {
+              toString() {
                 expect(
                   'Should have removed the second element of the array rather than called toString() on it.'
                 ).toBe('');
@@ -564,15 +586,15 @@ export async function test({ describe, it, expect }) {
       );
       test_blob(
         function () {
-          var arr = [
+          const arr = [
             {
-              toString: function () {
+              toString() {
                 if (arr.length === 3) {
                   return 'A';
                 }
                 arr.unshift({
                   // @ts-ignore
-                  toString: function () {
+                  toString() {
                     expect('Should only access index 0 once.').toBe('');
                   },
                 });
@@ -580,7 +602,7 @@ export async function test({ describe, it, expect }) {
               },
             },
             {
-              toString: function () {
+              toString() {
                 return 'SS';
               },
             },
@@ -609,18 +631,18 @@ export async function test({ describe, it, expect }) {
             {},
             { 0: 'FAIL', length: 1 },
             {
-              toString: function () {
+              toString() {
                 return 'stringA';
               },
             },
             {
               toString: undefined,
-              valueOf: function () {
+              valueOf() {
                 return 'stringB';
               },
             },
             {
-              valueOf: function () {
+              valueOf() {
                 expect('Should not call valueOf if toString is present on the prototype.').toBe('');
               },
             },
@@ -709,24 +731,24 @@ export async function test({ describe, it, expect }) {
 
       // Message channel doesn't exist in React Native
       // it("Passing a FrozenArray as the blobParts array should work (FrozenArray<MessagePort>).", async () => {
-      //     var channel = new MessageChannel();
+      //     const channel = new MessageChannel();
       //     channel.port2.onmessage = this.step_func(function(e) {
-      //         var b_ports = new Blob(e.ports);
+      //         const b_ports = new Blob(e.ports);
       //         expect(b_ports.size).toEqual("[object MessagePort]".length)
       //         this.done();
       //     });
-      //     var channel2 = new MessageChannel();
+      //     const channel2 = new MessageChannel();
       //     channel.port1.postMessage('', [channel2.port1]);
       // })
       it('Passing a FrozenArray as the blobParts array should work', async () => {
-        let arr = ['PA', 'SS'];
+        const arr = ['PA', 'SS'];
         Object.freeze(arr);
         expect(await new Blob(arr).text()).toBe('PASS');
       });
 
       test_blob(
         function () {
-          var blob = new Blob(['foo']);
+          const blob = new Blob(['foo']);
           return new Blob([blob, blob]);
         },
         {
@@ -737,7 +759,7 @@ export async function test({ describe, it, expect }) {
       );
       test_blob_binary(
         function () {
-          var view = new Uint8Array([0, 255, 0]);
+          const view = new Uint8Array([0, 255, 0]);
           return new Blob([view.buffer, view.buffer]);
         },
         {
@@ -749,10 +771,10 @@ export async function test({ describe, it, expect }) {
 
       test_blob_binary(
         function () {
-          var view = new Uint8Array([0, 255, 0, 4]);
-          var blob = new Blob([view, view]);
+          const view = new Uint8Array([0, 255, 0, 4]);
+          const blob = new Blob([view, view]);
           expect(blob.size).toBe(8);
-          var view1 = new Uint16Array(view.buffer, 2);
+          const view1 = new Uint16Array(view.buffer, 2);
           return new Blob([view1, view.buffer, view1]);
         },
         {
@@ -764,8 +786,8 @@ export async function test({ describe, it, expect }) {
 
       test_blob(
         function () {
-          var view = new Uint8Array([0]);
-          var blob = new Blob(['fo']);
+          const view = new Uint8Array([0]);
+          const blob = new Blob(['fo']);
           return new Blob([view.buffer, blob, 'foo']);
         },
         {
@@ -816,7 +838,7 @@ export async function test({ describe, it, expect }) {
             new Blob(
               [
                 {
-                  toString: function () {
+                  toString() {
                     throw test_error;
                   },
                 },
@@ -879,7 +901,7 @@ export async function test({ describe, it, expect }) {
       });
 
       describe('Type test', () => {
-        var type_tests = [
+        const type_tests = [
           // blobParts, type, expected type
           [[], '', ''],
           [[], 'a', 'a'],
@@ -901,10 +923,10 @@ export async function test({ describe, it, expect }) {
           [[0x47, 0x49, 0x46, 0x38, 0x39, 0x61], 'image/png', 'image/png'], // "GIF89a"
         ];
 
-        type_tests.forEach(function (t: Array<any>) {
+        type_tests.forEach(function (t: any[]) {
           it('Blob with type ' + JSON.stringify(t[1]), () => {
-            var arr = new Uint8Array([t[0]]).buffer;
-            var b = new Blob([arr], { type: t[1] });
+            const arr = new Uint8Array([t[0]]).buffer;
+            const b = new Blob([arr], { type: t[1] });
             expect(b.type).toEqual(t[2]);
           });
         });
@@ -914,7 +936,7 @@ export async function test({ describe, it, expect }) {
     // HTML ONLY, not applicable
     // describe('constructor dom windows', async () => {
     //     it("Passing platform objects for blobParts should throw a TypeError.", () => {
-    //         var args = [
+    //         const args = [
     //             document.createElement("div"),
     //             window,
     //         ];
@@ -923,10 +945,10 @@ export async function test({ describe, it, expect }) {
     //         });
     //     });
     //     it("A platform object that supports indexed properties should be treated as a sequence for the blobParts argument (overwritten 'length'.)", () => {
-    //         var element = document.createElement("div");
+    //         const element = document.createElement("div");
     //         element.appendChild(document.createElement("div"));
     //         element.appendChild(document.createElement("p"));
-    //         var list = element.children;
+    //         const list = element.children;
     //         Object.defineProperty(list, "length", {
     //             get: function() { throw test_error; }
     //         });
@@ -934,7 +956,7 @@ export async function test({ describe, it, expect }) {
     //     });
 
     //     test_blob(function() {
-    //         var select = document.createElement("select");
+    //         const select = document.createElement("select");
     //         select.appendChild(document.createElement("option"));
     //         return new Blob(select);
     //     }, {
@@ -944,7 +966,7 @@ export async function test({ describe, it, expect }) {
     //     });
 
     //     test_blob(function() {
-    //         var elm = document.createElement("div");
+    //         const elm = document.createElement("div");
     //         elm.setAttribute("foo", "bar");
     //         return new Blob(elm.attributes);
     //     }, {
@@ -1022,64 +1044,41 @@ export async function test({ describe, it, expect }) {
     });
 
     describe('Blob slice overflow', async () => {
-      var text = '';
+      let text = '';
 
-      for (var i = 0; i < 2000; ++i) {
+      for (let i = 0; i < 2000; ++i) {
         text += 'A';
       }
 
       it('slice start is negative, relativeStart will be max((size + start), 0)', () => {
-        var blob = new Blob([text]);
-        var sliceBlob = blob.slice(-1, blob.size);
+        const blob = new Blob([text]);
+        const sliceBlob = blob.slice(-1, blob.size);
         expect(sliceBlob.size).toBe(1);
       });
 
       it('slice start is greater than blob size, relativeStart will be min(start, size)', () => {
-        var blob = new Blob([text]);
-        var sliceBlob = blob.slice(blob.size + 1, blob.size);
+        const blob = new Blob([text]);
+        const sliceBlob = blob.slice(blob.size + 1, blob.size);
         expect(sliceBlob.size).toBe(0);
       });
 
       it('slice end is negative, relativeEnd will be max((size + end), 0)', () => {
-        var blob = new Blob([text]);
-        var sliceBlob = blob.slice(blob.size - 2, -1);
+        const blob = new Blob([text]);
+        const sliceBlob = blob.slice(blob.size - 2, -1);
         expect(sliceBlob.size).toBe(1);
       });
 
       it('slice end is greater than blob size, relativeEnd will be min(end, size)', () => {
-        var blob = new Blob([text]);
-        var sliceBlob = blob.slice(blob.size - 2, blob.size + 999);
+        const blob = new Blob([text]);
+        const sliceBlob = blob.slice(blob.size - 2, blob.size + 999);
         expect(sliceBlob.size).toBe(2);
-      });
-    });
-
-    describe('large slice start and end', async () => {
-      it('large positive start', async () => {
-        let blob = new Blob(['PASS']);
-        let str = await blob.slice(10000).text();
-        expect(str).toBe('');
-      });
-      it('large negative start', async () => {
-        let blob = new Blob(['PASS']);
-        let str = await blob.slice(-10000).text();
-        expect(str).toBe('PASS');
-      });
-      it('large positive end', async () => {
-        let blob = new Blob(['PASS']);
-        let str = await blob.slice(0, 10000).text();
-        expect(str).toBe('PASS');
-      });
-      it('large negative end', async () => {
-        let blob = new Blob(['PASS']);
-        let str = await blob.slice(0, -10000).text();
-        expect(str).toBe('');
       });
     });
 
     describe('Blob Slice', async () => {
       test_blob(
         () => {
-          var blobTemp = new Blob(['PASS']);
+          const blobTemp = new Blob(['PASS']);
           return blobTemp.slice();
         },
         {
@@ -1090,8 +1089,8 @@ export async function test({ describe, it, expect }) {
       );
 
       describe('Slices', async () => {
-        var blob1 = new Blob(['squiggle']);
-        var blob2 = new Blob(['steak'], { type: 'content/type' });
+        const blob1 = new Blob(['squiggle']);
+        const blob2 = new Blob(['steak'], { type: 'content/type' });
 
         test_blob(() => blob1, {
           expected: 'squiggle',
@@ -1138,13 +1137,13 @@ export async function test({ describe, it, expect }) {
           }
         );
 
-        var arrayBuffer = new ArrayBuffer(16);
-        var int8View = new Int8Array(arrayBuffer);
-        for (var i = 0; i < 16; i++) {
+        const arrayBuffer = new ArrayBuffer(16);
+        const int8View = new Int8Array(arrayBuffer);
+        for (let i = 0; i < 16; i++) {
           int8View[i] = i + 65;
         }
 
-        var testData = [
+        const testData = [
           [
             ['PASSSTRING'],
             [
@@ -1255,11 +1254,11 @@ export async function test({ describe, it, expect }) {
         ];
 
         testData.forEach(function (data, i) {
-          var blobs = data[0];
-          var tests = data[1];
+          const blobs = data[0];
+          const tests = data[1];
           tests.forEach(function (expectations, j) {
             describe('Slicing test (' + i + ',' + j + ').', () => {
-              var blob = new Blob(blobs);
+              const blob = new Blob(blobs);
 
               it('blob is an instance of Blob', () => {
                 expect(blob instanceof Blob).toBeTruthy();
@@ -1284,7 +1283,7 @@ export async function test({ describe, it, expect }) {
       });
 
       describe('Invalid content types', () => {
-        var invalidTypes = [
+        const invalidTypes = [
           '\xFF',
           'te\x09xt/plain',
           'te\x00xt/plain',
@@ -1294,7 +1293,7 @@ export async function test({ describe, it, expect }) {
         invalidTypes.forEach(function (type) {
           test_blob(
             () => {
-              var blob = new Blob(['PASS']);
+              const blob = new Blob(['PASS']);
               return blob.slice(0, 4, type);
             },
             {
@@ -1306,7 +1305,7 @@ export async function test({ describe, it, expect }) {
         });
       });
 
-      var validTypes = [
+      const validTypes = [
         'te(xt/plain',
         'te)xt/plain',
         'te<xt/plain',
@@ -1333,7 +1332,7 @@ export async function test({ describe, it, expect }) {
         validTypes.forEach((type) => {
           test_blob(
             () => {
-              var blob = new Blob(['PASS']);
+              const blob = new Blob(['PASS']);
               return blob.slice(0, 4, type);
             },
             {
@@ -1348,10 +1347,10 @@ export async function test({ describe, it, expect }) {
 
     describe('stream', async () => {
       it('stream byob crash', async () => {
-        let a = new Blob(['', '', undefined], {});
-        let b = a.stream();
-        let c = new ReadableStreamBYOBReader(b);
-        let d = new Int16Array(8);
+        const a = new Blob(['', '', undefined], {});
+        const b = a.stream();
+        const c = new ReadableStreamBYOBReader(b);
+        const d = new Int16Array(8);
         await c.read(d);
         c.releaseLock();
         await a.text();
@@ -1366,7 +1365,7 @@ export async function test({ describe, it, expect }) {
           {
             // @ts-ignore
             size() {
-              let xhr = new XMLHttpRequest();
+              const xhr = new XMLHttpRequest();
               xhr.open('POST', '1', false);
               xhr.send();
             },
@@ -1379,7 +1378,7 @@ export async function test({ describe, it, expect }) {
         const blob = new Blob(['PASS']);
         const stream = blob.stream();
         const chunks = await read_all_chunks(stream);
-        for (let [index, value] of chunks.entries()) {
+        for (const [index, value] of chunks.entries()) {
           expect(value).toEqual('PASS'.charCodeAt(index));
         }
       });
@@ -1400,36 +1399,30 @@ export async function test({ describe, it, expect }) {
         expect(chunks).toEqual(input_arr);
       });
 
-      it(
-        "Blob.stream() garbage collection of blob shouldn't break stream " + 'consumption',
-        async () => {
-          const input_arr = [8, 241, 48, 123, 151];
-          const typed_arr = new Uint8Array(input_arr);
-          let blob = new Blob([typed_arr]);
-          const stream = blob.stream();
-          blob = null;
-          gc();
-          const chunks = await read_all_chunks(stream, { perform_gc: true });
-          expect(chunks).toEqual(input_arr);
-        }
-      );
+      it("Blob.stream() garbage collection of blob shouldn't break stream consumption", async () => {
+        const input_arr = [8, 241, 48, 123, 151];
+        const typed_arr = new Uint8Array(input_arr);
+        let blob = new Blob([typed_arr]);
+        const stream = blob.stream();
+        blob = null;
+        gc();
+        const chunks = await read_all_chunks(stream, { perform_gc: true });
+        expect(chunks).toEqual(input_arr);
+      });
 
-      it(
-        "Blob.stream() garbage collection of stream shouldn't break stream " + 'consumption',
-        async () => {
-          const input_arr = [8, 241, 48, 123, 151];
-          const typed_arr = new Uint8Array(input_arr);
-          let blob = new Blob([typed_arr]);
-          const chunksPromise = read_all_chunks(blob.stream());
-          gc();
-          expect(await chunksPromise).toEqual(input_arr);
-        }
-      );
+      it("Blob.stream() garbage collection of stream shouldn't break stream consumption", async () => {
+        const input_arr = [8, 241, 48, 123, 151];
+        const typed_arr = new Uint8Array(input_arr);
+        const blob = new Blob([typed_arr]);
+        const chunksPromise = read_all_chunks(blob.stream());
+        gc();
+        expect(await chunksPromise).toEqual(input_arr);
+      });
 
       it('Reading Blob.stream() with BYOB reader', async () => {
         const input_arr = [8, 241, 48, 123, 151];
         const typed_arr = new Uint8Array(input_arr);
-        let blob = new Blob([typed_arr]);
+        const blob = new Blob([typed_arr]);
         const stream = blob.stream();
         const chunks = await read_all_chunks(stream, { mode: 'byob' });
         expect(chunks).toEqual(input_arr);

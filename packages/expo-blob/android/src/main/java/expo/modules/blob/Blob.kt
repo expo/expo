@@ -7,6 +7,7 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.Enumerable
+import java.io.ByteArrayOutputStream
 
 class Blob() : SharedObject() {
     var blobParts: List<InternalBlobPart> = listOf()
@@ -30,6 +31,14 @@ class Blob() : SharedObject() {
             str += bp.text()
         }
         return str
+    }
+
+    fun bytes(): ByteArray {
+        val stream = ByteArrayOutputStream()
+        for (bp in blobParts) {
+            stream.write(bp.bytes())
+        }
+        return stream.toByteArray()
     }
 
     private fun InternalBlobPart.offsetSlice(start: Int, end: Int, offset: Int): InternalBlobPart {
@@ -146,7 +155,7 @@ sealed class InternalBlobPart() {
 
     fun size(): Int {
         return when (this) {
-            is StringPart -> string.length
+            is StringPart -> string.toByteArray().size
             is BlobPart -> blob.size
             is BufferPart -> buffer.size
         }
@@ -157,6 +166,14 @@ sealed class InternalBlobPart() {
             is StringPart -> string
             is BlobPart -> blob.text()
             is BufferPart -> buffer.decodeToString()
+        }
+    }
+
+    fun bytes(): ByteArray {
+        return when (this) {
+            is StringPart -> string.toByteArray()
+            is BlobPart -> blob.bytes()
+            is BufferPart -> buffer
         }
     }
 }

@@ -18,6 +18,7 @@ export declare class ExpoBlob extends NativeBlobModule.Blob implements Blob {
     stream(): ReadableStream;
     arrayBuffer(): Promise<ArrayBufferLike>;
     toString(): string;
+    static get length(): number;
 }
 export {};
 //# sourceMappingURL=BlobModule.d.ts.map

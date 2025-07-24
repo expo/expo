@@ -35,14 +35,14 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
       return String(v);
     };
 
-    let bps: any[] = [];
+    const bps: any[] = [];
 
     if (blobParts === undefined) {
       super([], preprocessOptions(options));
     } else if (blobParts === null || typeof blobParts !== 'object') {
       throw TypeError();
     } else {
-      for (let bp of blobParts) {
+      for (const bp of blobParts) {
         bps.push(inputMapping(bp));
       }
       super(bps, preprocessOptions(options));
@@ -105,9 +105,9 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
   toString(): string {
     return '[object Blob]';
   }
-}
 
-Object.defineProperty(ExpoBlob, 'length', {
-  value: 0,
-  writable: false,
-});
+  // Changed the length property to match that of the default js implementation
+  static get length() {
+    return 0;
+  }
+}

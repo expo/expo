@@ -4,9 +4,8 @@
  * Returns the lowercased content type if it is valid, or an empty string otherwise.
  *
  * A valid content type:
- *  - Is not null, undefined, or empty
+ *  - Is not undefined
  *  - Contains only printable ASCII characters (0x20–0x7E)
- *  - Does not contain forbidden control characters: NUL (\x00), LF (\x0A), or CR (\x0D)
  *
  * If any of these conditions are not met, returns an empty string to indicate an invalid or unsafe content type.
  *
@@ -14,11 +13,10 @@
  * @returns The normalized (lowercased) content type, or an empty string if invalid.
  */
 export function normalizedContentType(type?: string): string {
-  if (type === null) return 'null';
-  if (!type || type.length === 0) return '';
+  const str = '' + type;
   const asciiPrintable = /^[\x20-\x7E]+$/;
-  if (!asciiPrintable.test(type)) return '';
-  return type.toLowerCase();
+  if (type === undefined || !asciiPrintable.test(str)) return '';
+  return str.toLowerCase();
 }
 
 /**
@@ -41,35 +39,35 @@ export function isTypedArray(obj: any): boolean {
 }
 
 /**
- * Processes the options object and
+ * Processes the options object if defined and not null.
+ * The function coerces .type and .options to 'string' (if they are defined objects)
+ * TypeError is thrown when the options is not an object or .endings are invalid.
+ *
  * @param options
  * @returns BlobPropertyBag object
  */
 export const preprocessOptions = (options?: BlobPropertyBag): BlobPropertyBag | undefined => {
-  if (options) {
-    if (!(options instanceof Object)) {
-      throw TypeError();
-    }
-
-    let e = options.endings;
-    let t = options.type;
-    if (e && typeof e === 'object') {
-      e = String(e);
-    }
-    if (t && typeof t === 'object') {
-      t = String(t);
-    }
-    if (e !== undefined && e !== 'native' && e !== 'transparent') {
-      throw TypeError();
-    }
-
-    return {
-      endings: e,
-      type: normalizedContentType(t),
-    };
+  if (!options) return options;
+  if (!(options instanceof Object)) {
+    throw TypeError();
   }
 
-  return options;
+  let e = options.endings;
+  let t = options.type;
+  if (e && typeof e === 'object') {
+    e = String(e);
+  }
+  if (t && typeof t === 'object') {
+    t = String(t);
+  }
+  if (e !== undefined && e !== 'native' && e !== 'transparent') {
+    throw TypeError();
+  }
+
+  return {
+    endings: e,
+    type: normalizedContentType(t),
+  };
 };
 
 /**
