@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix view functions for SwiftUI views. ([#38275](https://github.com/expo/expo/pull/38275) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix missing CDP headers when using static frameworks. ([#37448](https://github.com/expo/expo/pull/37448) by [@alanjhughes](https://github.com/alanjhughes))
 - [android] Fix android build without coreFeatures compose ([#38153](https://github.com/expo/expo/pull/38153) by [@Ubax](https://github.com/Ubax))
 - [iOS] Fix `ExpoRequestInterceptorProtocol` to properly notify client about HTTP redirects. ([#38078](https://github.com/expo/expo/pull/38078) by [@kudo](https://github.com/kudo))
