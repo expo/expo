@@ -105,7 +105,7 @@ export async function test({ describe, expect, it, ...t }) {
           directory.create();
           const file = new File(testDirectory, 'test');
           expect(() => {
-            file.text();
+            file.textSync();
           }).toThrow();
         });
 
@@ -201,21 +201,25 @@ export async function test({ describe, expect, it, ...t }) {
         expect(outputFile.exists).toBe(true);
       });
 
-      it('Writes a string to a file reference', () => {
+      it('Writes a string to a file reference', async () => {
         const outputFile = new File(testDirectory, 'file.txt');
         outputFile.create();
         outputFile.write(new Uint8Array([97, 98, 99]));
         expect(outputFile.exists).toBe(true);
-        expect(outputFile.bytes()).toEqual(new Uint8Array([97, 98, 99]));
-        expect(outputFile.text()).toBe('abc');
+        expect(await outputFile.bytes()).toEqual(new Uint8Array([97, 98, 99]));
+        expect(outputFile.bytesSync()).toEqual(new Uint8Array([97, 98, 99]));
+        expect(await outputFile.text()).toBe('abc');
+        expect(outputFile.textSync()).toBe('abc');
       });
 
-      it('Reads a string from a file reference', () => {
+      it('Reads a string from a file reference', async () => {
         const outputFile = new File(testDirectory, 'file2.txt');
         outputFile.write('Hello world');
         expect(outputFile.exists).toBe(true);
-        const content = outputFile.text();
+        const content = await outputFile.text();
         expect(content).toBe('Hello world');
+        const contentSync = await outputFile.textSync();
+        expect(contentSync).toBe('Hello world');
       });
 
       it('Deletes a file reference', () => {
@@ -261,14 +265,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'newFolder');
         file.create();
         expect(file.exists).toBe(true);
-        expect(file.text()).toBe('');
+        expect(file.textSync()).toBe('');
       });
 
       it('Throws an error if the file exists', () => {
         const file = new File(testDirectory, 'newFolder');
         file.create();
         expect(file.exists).toBe(true);
-        expect(file.text()).toBe('');
+        expect(file.textSync()).toBe('');
       });
 
       it('Overwrites a file if it exists and `overwrite` is set', () => {
@@ -276,9 +280,9 @@ export async function test({ describe, expect, it, ...t }) {
         file.create();
         expect(file.exists).toBe(true);
         file.write('Hello world');
-        expect(file.text()).toBe('Hello world');
+        expect(file.textSync()).toBe('Hello world');
         file.create({ overwrite: true });
-        expect(file.text()).toBe('');
+        expect(file.textSync()).toBe('');
       });
 
       it('Deletes a folder', () => {
@@ -318,10 +322,10 @@ export async function test({ describe, expect, it, ...t }) {
           dstFolder.create();
           src.copy(dstFolder);
           expect(src.exists).toBe(true);
-          expect(src.text()).toBe('Hello world');
+          expect(src.textSync()).toBe('Hello world');
           const dst = new File(testDirectory, '/destination/file.txt');
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
         });
 
         it('Throws an error when copying to a nonexistant folder without options', () => {
@@ -337,7 +341,7 @@ export async function test({ describe, expect, it, ...t }) {
           const dst = new File(testDirectory, 'file2.txt');
           src.copy(dst);
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
           expect(src.exists).toBe(true);
         });
 
@@ -414,7 +418,7 @@ export async function test({ describe, expect, it, ...t }) {
           const dst = new File(testDirectory, '/destination/file.txt');
           expect(src.uri).toBe(dst.uri);
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
         });
 
         it('Throws an error when moving to a nonexistant folder without options', () => {
@@ -430,7 +434,7 @@ export async function test({ describe, expect, it, ...t }) {
           const dst = new File(testDirectory, 'file2.txt');
           src.move(dst);
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
           expect(src.exists).toBe(true);
           expect(src.uri).toBe(dst.uri);
         });
@@ -572,7 +576,8 @@ export async function test({ describe, expect, it, ...t }) {
         it('gets base64 of a file', async () => {
           const src = new File(testDirectory, 'file.txt');
           src.write('Hello world');
-          expect(src.base64()).toBe('SGVsbG8gd29ybGQ=');
+          expect(await src.base64()).toBe('SGVsbG8gd29ybGQ=');
+          expect(src.base64Sync()).toBe('SGVsbG8gd29ybGQ=');
         });
       });
 
@@ -580,7 +585,7 @@ export async function test({ describe, expect, it, ...t }) {
         it('gets file as a Uint8Array', async () => {
           const src = new File(testDirectory, 'file.txt');
           src.write('Hello world');
-          expect(src.bytes()).toEqual(
+          expect(src.bytesSync()).toEqual(
             new Uint8Array([72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100])
           );
         });
@@ -868,7 +873,7 @@ export async function test({ describe, expect, it, ...t }) {
       handle.offset = 0;
       expect(handle.readBytes(26 * 4).length).toBe(26 * 4);
       handle.close();
-      expect(src.text()).toBe(alphabet.repeat(4 * 10));
+      expect(src.textSync()).toBe(alphabet.repeat(4 * 10));
     });
 
     it('Provides a ReadableStream', async () => {
@@ -908,7 +913,7 @@ export async function test({ describe, expect, it, ...t }) {
       const writer = writable.getWriter();
       await writer.write(new Uint8Array(alphabet.split('').map((char) => char.charCodeAt(0))));
       writer.close();
-      expect(src.text()).toBe(alphabet);
+      expect(src.textSync()).toBe(alphabet);
     });
 
     it('Returns correct file type', async () => {
@@ -920,24 +925,14 @@ export async function test({ describe, expect, it, ...t }) {
       expect(src2.type).toBe('text/plain');
     });
 
-    it('Exposes a file as blob', async () => {
-      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-      const src = new File(asset.localUri);
-
-      const blob = src.blob();
-
-      expect(blob.size).toBe(src.size);
-    });
-
     // You can also use something like container twostoryrobot/simple-file-upload to test if the file is saved correctly
     it('Supports sending a file using blob', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
-      const blob = src.blob();
 
       const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
-        body: blob,
+        body: src,
       });
       const body = await response.json();
       expect(body.data).toEqual('abcde');
@@ -949,9 +944,8 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
 
       const formData = new FormData();
-      const blob = src.blob();
 
-      formData.append('data', blob);
+      formData.append('data', src);
 
       const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
@@ -959,6 +953,27 @@ export async function test({ describe, expect, it, ...t }) {
       });
       const body = await response.json();
       expect(body.files.data[0]).toEqual('abcde');
+    });
+
+    it('Supports sending a named file blob using blob with formdata', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+
+      const formData = new FormData();
+
+      formData.append('data', src, 'FileName.txt');
+
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: formData,
+      });
+      const body = await response.json();
+      // TODO: This is the expected behavior, but following [spec](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#create-an-entry)
+      // would require us to create a new File object when setting filename – we could make it work only if File is available in (global.expo)
+      // expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('FileName.txt');
+
+      // this is invalid
+      expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('file.txt');
     });
   });
 
