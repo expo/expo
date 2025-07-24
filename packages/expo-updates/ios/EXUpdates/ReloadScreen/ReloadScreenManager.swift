@@ -2,15 +2,13 @@
 
 import ExpoModulesCore
 
-internal class ReloadScreenManager {
-  static let shared = ReloadScreenManager()
-
+public class ReloadScreenManager {
   private var currentConfiguration: ReloadScreenConfiguration?
   private var currentReloadScreen: ReloadScreenView?
   private var overlayWindow: UIWindow?
   private var isShowing = false
 
-  private init() {
+  init() {
     NotificationCenter.default.addObserver(self, selector: #selector(hide), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
   }
 
