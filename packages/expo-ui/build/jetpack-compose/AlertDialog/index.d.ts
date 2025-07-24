@@ -8,11 +8,11 @@ export type AlertDialogProps = {
      */
     text?: string;
     /**
-     * The confirm button of the alert dialog.
+     * The text of the confirm button of the alert dialog.
      */
     confirmButtonText?: string;
     /**
-     * The dismiss button of the alert dialog.
+     * The text of the dismiss button of the alert dialog.
      */
     dismissButtonText?: string;
     /**
