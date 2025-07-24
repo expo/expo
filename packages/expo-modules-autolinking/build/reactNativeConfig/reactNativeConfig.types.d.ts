@@ -6,7 +6,7 @@ export interface RNConfigCommandOptions {
     platform: SupportedPlatform;
     projectRoot: string;
     searchPaths: string[];
-    transitiveLinkingDependencies: string[];
+    transitiveLinkingDependencies?: string[];
     sourceDir?: string;
     nativeModulesDir?: string | null;
 }
