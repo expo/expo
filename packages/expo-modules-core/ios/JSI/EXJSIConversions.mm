@@ -32,6 +32,7 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
   if (expo::isAllASCIIAndNotNull(utf8, utf8 + length)) {
     return jsi::String::createFromAscii(runtime, (const char *)utf8, length);
   }
+  // Using cStringUsingEncoding should be fine as long as we provide the length.
   return jsi::String::createFromUtf16(runtime, (const char16_t *)[value cStringUsingEncoding:NSUTF16StringEncoding], length);
 }
 
