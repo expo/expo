@@ -22,6 +22,9 @@ export const AndroidIOSCompatibilityTable = () => {
           <HeaderCell>
             <CODE>compileSdkVersion</CODE>
           </HeaderCell>
+          <HeaderCell>
+            <CODE>targetSdkVersion</CODE>
+          </HeaderCell>
           <HeaderCell>iOS version</HeaderCell>
           <HeaderCell>Xcode version</HeaderCell>
         </Row>
@@ -32,6 +35,7 @@ export const AndroidIOSCompatibilityTable = () => {
             <Cell>{version.sdk}</Cell>
             <Cell>{version.android}</Cell>
             <Cell>{version.compileSdkVersion}</Cell>
+            <Cell>{version.targetSdkVersion}</Cell>
             <Cell>{version.ios}</Cell>
             <Cell>{version.xcode}</Cell>
           </Row>

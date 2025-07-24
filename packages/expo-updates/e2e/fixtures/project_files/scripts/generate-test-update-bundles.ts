@@ -5,7 +5,7 @@ const fs = require('fs/promises');
 const path = require('path');
 
 const projectRoot = path.resolve(__dirname, '..');
-const notifyStrings = [
+let notifyStrings = [
   'test-update-1',
   'test-update-2',
   'test-update-3',
@@ -16,6 +16,11 @@ const notifyStrings = [
 ];
 
 const platform = process.argv[2];
+
+// If a specific test update is specified, only generate that one
+if (process.argv.length > 3) {
+  notifyStrings = notifyStrings.filter((s) => s === process.argv[3]);
+}
 
 createTestUpdateBundles(projectRoot, notifyStrings, platform);
 

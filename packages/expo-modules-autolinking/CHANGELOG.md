@@ -6,11 +6,43 @@
 
 ### 🎉 New features
 
+- Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add `:projectRoot` option to `use_expo_modules!` ([#38210](https://github.com/expo/expo/pull/38210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
+
+- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [iOS] Add support for user script sandboxing ([#38206](https://github.com/expo/expo/pull/38206) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Refactor JSON loading in `findModules` algorithm path to use plain `fs`. ([#38202](https://github.com/expo/expo/pull/38202) by [@kitten](https://github.com/kitten))
+
+## 2.1.14 - 2025-07-07
+
+### 🐛 Bug fixes
+
+- Fixed breaking change for local AAR autolinking. ([#37882](https://github.com/expo/expo/pull/37882) by [@kudo](https://github.com/kudo))
+- [Android] Fixed local aar files is not being linked correctly. ([#37280](https://github.com/expo/expo/pull/37280) by [@lukmccall](https://github.com/lukmccall))
+
+## 2.1.13 - 2025-07-01
+
+### 💡 Others
+
+- Added `System.getenv()` syntax support to credentials for extraMavenRepos. ([#37343](https://github.com/expo/expo/pull/37343) by [@kudo](https://github.com/kudo))
+
+## 2.1.12 - 2025-06-18
+
+### 🐛 Bug fixes
+
+- Fix updates native debug for iOS. ([#37323](https://github.com/expo/expo/pull/37323) by [@douglowder](https://github.com/douglowder))
+
+## 2.1.11 - 2025-06-08
 
 ### 💡 Others
 
 - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
+- Added `--transitive-linking-dependencies` option to support react-native-edge-to-edge autolinking in CNG projects. ([#37194](https://github.com/expo/expo/pull/37194) by [@kudo](https://github.com/kudo))
 
 ## 2.1.10 — 2025-05-06
 

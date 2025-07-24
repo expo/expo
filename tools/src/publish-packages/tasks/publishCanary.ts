@@ -55,7 +55,7 @@ export const prepareCanaries = new Task<TaskArgs>(
       const { pkg, state, pkgView } = parcel;
       const baseVersion = SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName)
         ? nextSdkVersion
-        : resolveReleaseTypeAndVersion(parcel, options);
+        : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
 
       // Strip any pre-release tag from the baseVersion
       // For example, convert "5.0.0-rc.0" or "5.0.0-preview.0" to "5.0.0"

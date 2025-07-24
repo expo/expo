@@ -2,6 +2,7 @@
 title: Create and share internal distribution build
 sidebar_title: Internal distribution build
 description: Learn about internal distribution builds, why we need them, and how to create them.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -85,10 +86,10 @@ On the other hand, Apple has stricter rules for app distribution on iOS devices.
 
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
-- This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
+- This command triggers the EAS Build, and on the EAS dashboard, we can see the build's progress:
 
 <ContentSpotlight
-  alt="Android preview build details and progress in Expo dashboard"
+  alt="Android preview build details and progress in EAS dashboard"
   src="/static/images/tutorial/eas/android-preview-build.png"
   className="max-w-[800px]"
 />
@@ -111,10 +112,10 @@ Apps signed with an ad hoc provisioning profile can be installed by an iOS devic
 
 <Terminal cmd={['$ eas build --platform ios --profile preview']} />
 
-- This command triggers the EAS Build, and on the Expo dashboard, we can see the build's progress:
+- This command triggers the EAS Build, and on the EAS dashboard, we can see the build's progress:
 
 <ContentSpotlight
-  alt="iOS preview build details and progress in Expo dashboard"
+  alt="iOS preview build details and progress in EAS dashboard"
   src="/static/images/tutorial/eas/ios-preview-build.png"
   className="max-w-[800px]"
 />
@@ -169,8 +170,8 @@ Once the build finishes, the Build artifact section gets updated, indicating tha
 - Copy the link from **Send a link to a device** section and send it to the test device.
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in Expo dashboard"
-  src="/static/images/tutorial/eas/distribution-link.png"
+  alt="Internal distribution build details and install link in EAS dashboard"
+  src="/static/images/tutorial/eas/android-qr-code.png"
   className="max-w-[450px]"
 />
 
@@ -189,7 +190,7 @@ Since we have already set up multiple app variants, we can see both the developm
 - On Android:
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in Expo dashboard for Android"
+  alt="Internal distribution build details and install link in EAS dashboard for Android"
   src="/static/images/tutorial/eas/android-multi-variants-installed.png"
   className="max-w-[270px]"
 />
@@ -197,7 +198,7 @@ Since we have already set up multiple app variants, we can see both the developm
 - On iOS:
 
 <ContentSpotlight
-  alt="Internal distribution build details and install link in Expo dashboard for iOS"
+  alt="Internal distribution build details and install link in EAS dashboard for iOS"
   src="/static/images/tutorial/eas/ios-multi-variants-installed.png"
   className="max-w-[250px]"
 />

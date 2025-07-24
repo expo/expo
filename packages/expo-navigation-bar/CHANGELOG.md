@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.2.7 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.6 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.5 - 2025-06-04
+
+### 🐛 Bug fixes
+
+- Fix broken OS recognition. ([#36965](https://github.com/expo/expo/pull/36965) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Fix inconsistencies with the docs. ([#36966](https://github.com/expo/expo/pull/36966) by [@behenate](https://github.com/behenate))
+
 ## 4.2.4 — 2025-05-01
 
 _This version does not introduce any user-facing changes._

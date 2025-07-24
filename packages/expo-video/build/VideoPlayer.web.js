@@ -53,8 +53,11 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     bufferOptions = {}; // Not supported on web. Dummy to match the interface.
     subtitleTrack = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
     availableSubtitleTracks = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
+    audioTrack = null; // Not supported on web. Dummy to match the interface.
+    availableAudioTracks = []; // Not supported on web. Dummy to match the interface.
     videoTrack = null; // Not supported on web. Dummy to match the interface.
     availableVideoTracks = []; // Not supported on web. Dummy to match the interface.
+    isExternalPlaybackActive = false; // Not supported on web. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;

@@ -17,7 +17,7 @@ For EAS Build, a flat fee is charged for an individual build executed at higher-
 
 > **Note**: Builds that are canceled before any work is done are not charged.
 
-[Production, Enterprise, and Legacy plans](/billing/plans/#plans) subscribers receive credits for EAS Build. These credits can be used to offset the cost of builds. They are reset at the start of the billing period and expire at the end of that billing period. Visit our [pricing page](https://expo.dev/pricing) for more information on the pricing schedule for supported build platforms and the available resource classes.
+[Starter, Production, Enterprise, and Legacy plans](/billing/plans/#plans) subscribers receive credits for EAS Build. These credits can be used to offset the cost of builds. They are reset at the start of the billing period and expire at the end of that billing period. Visit our [pricing page](https://expo.dev/pricing) for more information on the pricing schedule for supported build platforms and the available resource classes.
 
 #### Example: EAS Build credit usage
 
@@ -42,12 +42,14 @@ Consider another example where the credit limit is exceeded:
 | Android builds (large)  |    $2 |       10 |     $20 |
 | iOS builds (medium)     |    $2 |       15 |     $30 |
 | iOS builds (large)      |    $4 |       15 |     $60 |
-| EAS Build Credit        |       |          |    -$99 |
-| **Total (USD)**         |       |          | **$31** |
+| EAS Build Credit        |       |          |   -$100 |
+| **Total (USD)**         |       |          | **$30** |
 
-In this scenario, the subscriber pays $31 for 60 builds instead of $130 because the EAS Build Credit covers $99.
+In this scenario, the subscriber pays $30 for 60 builds instead of $130 because the EAS Build Credit covers $100.
 
 ### EAS Update
+
+> **info** **Tip:** Use the [pricing calculator](https://expo.dev/pricing#update) to estimate your EAS Update usage.
 
 Usage-based pricing for EAS Update comprises two metrics: monthly active users and global edge bandwidth.
 
@@ -59,27 +61,27 @@ Each plan has a number of monthly active users and global edge bandwidth include
 
 #### Example: EAS Update usage
 
-> **Note**: The [On-demand plan](/billing/plans/#on-demand) includes the same amount of monthly active users and global edge bandwidth as the Free plan.
+> **Note**: The [Starter plan](/billing/plans/#starter) includes 3,000 monthly active users and 100 GiB per month, compared to 1,000 monthly active users in the Free plan.
 
-Consider a subscriber to the On-demand plan who deploys 20 updates of 5 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 1,000 monthly active users and 100 GiB per month. As a result, the subscriber's bill for extra usage will be:
+Consider a subscriber to the Starter plan who deploys 20 updates of 5 MiB each via EAS Update to 10,000 users. The subscription to the plan includes 3,000 monthly active users and 100 GiB per month. As a result, the subscriber's bill for extra usage will be:
 
-| Description           | Price           | Quantity |     Total |
-| --------------------- | --------------- | -------- | --------: |
-| Updated users         | $0.005 per user | 9,000    |       $45 |
-| Global edge bandwidth | $0.10 per GiB   | 525 GiB  |     $52.5 |
-| **Total (USD)**       |                 |          | **$97.5** |
+| Description           | Price           | Quantity   |      Total |
+| --------------------- | --------------- | ---------- | ---------: |
+| Updated users         | $0.005 per user | 7,000      |        $35 |
+| Global edge bandwidth | $0.10 per GiB   | 603.13 GiB |     $60.31 |
+| **Total (USD)**       |                 |            | **$95.31** |
 
-Out of the 10,000 users, 1,000 are included in the On-demand plan. As a result, 9,000 are billed for as part of usage-based billing. Paying for 9,000 updated users also includes approximately 351.6 GiB (9000 users \* 40 MiB / 1024).
+Out of the 10,000 users, 3,000 are included in the Starter plan. As a result, 7,000 are billed for as part of usage-based billing. Paying for 7,000 updated users also includes approximately 273.4 GiB (7000 users \* 40 MiB / 1024).
 
 The global edge bandwidth calculation is:
 
-| Description                                       | Calculation                         | Quantity     |
-| ------------------------------------------------- | ----------------------------------- | ------------ |
-| Bandwidth used to send updates                    | 20 updates \* 5 MiB \* 10,000 users | 976.5625 GiB |
+| Description                                       | Calculation                         | Quantity        |
+| ------------------------------------------------- | ----------------------------------- | --------------- |
+| Bandwidth used to send updates                    | 20 updates \* 5 MiB \* 10,000 users | 976.5625 GiB    |
 |                                                   |
-| Bandwidth included in plan                        |                                     | 100 GiB      |
-| Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB |
-| **Total**                                         | **976.5625 - 100 - 351.5625**       | **525 GiB**  |
+| Bandwidth included in plan                        |                                     | 100 GiB         |
+| Bandwidth included with 7,000 extra updated users | 7,000 \* 40 MiB                     | 273.4375 GiB    |
+| **Total**                                         | **976.5625 - 100 - 273.4375**       | **603.125 GiB** |
 
 If the same subscriber sends the 21st update of 5 MiB to the same 10,000 users in the current billing period, they will only pay for any extra bandwidth used.
 
@@ -88,16 +90,16 @@ If the same subscriber sends the 21st update of 5 MiB to the same 10,000 users i
 | Bandwidth used to send updates                    | 21 updates \* 5 MiB \* 10,000 users | 1,025.39 GiB   |
 |                                                   |
 | Bandwidth included in plan                        |                                     | 100 GiB        |
-| Bandwidth included with 9,000 extra updated users | 9,000 \* 40 MiB                     | 351.5625 GiB   |
-| **Total**                                         | **1,025.39 - 100 - 351.5625**       | **573.83 GiB** |
+| Bandwidth included with 7,000 extra updated users | 7,000 \* 40 MiB                     | 273.4375 GiB   |
+| **Total**                                         | **1,025.39 - 100 - 273.4375**       | **651.95 GiB** |
 
 This is because Expo only charges for [unique monthly active users](/eas-update/faq/#how-are-monthly-updated-users-counted-for-a-billing-cycle). As a result, the subscriber's bill for extra usage will be:
 
 | Description           | Price           | Quantity   |      Total |
 | --------------------- | --------------- | ---------- | ---------: |
-| Updated users         | $0.005 per user | 9,000      |        $45 |
-| Global edge bandwidth | $0.10 per GiB   | 573.83 GiB |      $57.4 |
-| **Total (USD)**       |                 |            | **$102.4** |
+| Updated users         | $0.005 per user | 7,000      |        $35 |
+| Global edge bandwidth | $0.10 per GiB   | 651.95 GiB |      $65.2 |
+| **Total (USD)**       |                 |            | **$100.2** |
 
 If the same subscriber is on a Production plan, they will pay $0 as the Production plan includes 50,000 monthly active users and 1 TiB (1024 GiB). As such, there is no extra bandwidth usage.
 
@@ -105,12 +107,12 @@ If the same subscriber is on a Production plan, they will pay $0 as the Producti
 
 > **Note**: Billing estimates shown may be delayed by up to 24 hours (one day).
 
-To see the current billing period's usage summary, go to the [Billing](https://expo.dev/settings/billing) and under **Usage this month**, you will find a summary for both EAS Build and EAS Update usage.
+To see the current billing period's usage summary, go to the [Billing](https://expo.dev/settings/billing) and under **Usage**, you will find a summary for both EAS Build and EAS Update usage.
 
 <ContentSpotlight
-  alt="Billing usage summary for EAS Build and EAS update in the Expo dashboard."
+  alt="Billing usage summary for EAS Build, EAS Update, and EAS Workflows in the EAS dashboard."
   src="/static/images/billing/usage-01.png"
-  className="max-w-[640px]"
+  className="max-w-[400px]"
 />
 
 ### EAS Build usage history
@@ -121,7 +123,7 @@ To see detailed EAS Build usage for a current or previous billing period:
 - Under the **EAS Build** section, you will find details on builds count and executed builds based on their platform and resource class.
 
 <ContentSpotlight
-  alt="Detailed EAS Build usage in the Expo dashboard."
+  alt="Detailed EAS Build usage in the EAS dashboard."
   src="/static/images/billing/usage-02.png"
   className="max-w-[600px]"
 />
@@ -134,7 +136,7 @@ To see detailed EAS Update usage for a current or previous billing period:
 - Under the **EAS Update** section, you will find details on updated users and global edge bandwidth details.
 
 <ContentSpotlight
-  alt="Detailed EAS Update usage in the Expo dashboard."
+  alt="Detailed EAS Update usage in the EAS dashboard."
   src="/static/images/billing/usage-03.png"
   className="max-w-[600px]"
 />
@@ -143,13 +145,13 @@ To see detailed EAS Update usage for a current or previous billing period:
 
 You can enable **Plan credit usage** notifications to closely monitor your EAS Build usage. It enables email notifications when 80% and 100% of your plan's EAS Build credit is used.
 
-To enable EAS Build credit usage notification
+To enable EAS Build credit usage notification:
 
 - Click **Email notifications** in the navigation menu under your account's settings:
 - Under **EAS Build notifications**, click **Subscribe** for **Plan credit usage notifications**.
 
 <ContentSpotlight
-  alt="Enabling EAS Build plan credit usage notifications in the Expo dashboard."
+  alt="Enabling EAS Build plan credit usage notifications in the EAS dashboard."
   src="/static/images/billing/usage-04.png"
   className="max-w-[720px]"
 />

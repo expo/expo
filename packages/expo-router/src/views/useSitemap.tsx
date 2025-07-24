@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { RouteNode, sortRoutes } from '../Route';
 import { store } from '../global-state/router-store';
-import { matchDeepDynamicRouteName } from '../matchers';
+import { matchDynamicName } from '../matchers';
 import { Href } from '../types';
 
 const routeSegments = (route: RouteNode, parents: string[]) => [
@@ -15,7 +15,7 @@ const routeHref = (route: RouteNode, parents: string[]) =>
   routeSegments(route, parents)
     .map((segment) => {
       // add an extra layer of entropy to the url for deep dynamic routes
-      if (matchDeepDynamicRouteName(segment)) {
+      if (matchDynamicName(segment)?.deep) {
         return segment + '/' + Date.now();
       }
       // index must be erased but groups can be preserved.
@@ -48,10 +48,7 @@ export type SitemapType = {
   children: SitemapType[];
 };
 
-const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (
-  route,
-  parents
-): SitemapType => ({
+const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route, parents) => ({
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),

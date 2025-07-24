@@ -10,6 +10,7 @@ const react_native_1 = require("react-native");
 const withLayoutContext_1 = require("./withLayoutContext");
 const Link_1 = require("../link/Link");
 const TabRouter_1 = require("./TabRouter");
+const Protected_1 = require("../views/Protected");
 // This is the only way to access the navigator.
 const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
 const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
@@ -45,6 +46,7 @@ const Tabs = Object.assign((props) => {
     return <ExpoTabs {...props} UNSTABLE_router={TabRouter_1.tabRouterOverride}/>;
 }, {
     Screen: ExpoTabs.Screen,
+    Protected: Protected_1.Protected,
 });
 exports.default = Tabs;
 //# sourceMappingURL=TabsClient.js.map

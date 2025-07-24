@@ -44,7 +44,7 @@ jobs:
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 16.0
-        run: sudo xcode-select --switch /Applications/Xcode_16.0.app
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:
@@ -65,7 +65,8 @@ jobs:
           native-tests-pods: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
         if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install

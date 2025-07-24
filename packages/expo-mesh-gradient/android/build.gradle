@@ -1,0 +1,36 @@
+buildscript {
+
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = 'host.exp.exponent'
+version = '0.3.4'
+
+android {
+  namespace "expo.modules.meshgradient"
+  defaultConfig {
+    versionCode 1
+    versionName "0.3.4"
+  }
+  buildFeatures {
+    compose true
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation 'androidx.compose.foundation:foundation-android:1.7.6'
+  implementation 'androidx.compose.ui:ui-android:1.7.6'
+}

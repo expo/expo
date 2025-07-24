@@ -367,6 +367,10 @@ export type ImagePickerCancelledResult = ImagePickerCanceledResult;
  * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
  */
 export type ImagePickerMultipleResult = ImagePickerResult;
+/**
+ * The shape of the crop area.
+ */
+export type CropShape = 'rectangle' | 'oval';
 export type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
@@ -387,6 +391,14 @@ export type ImagePickerOptions = {
      * Android, since on iOS the crop rectangle is always a square.
      */
     aspect?: [number, number];
+    /**
+     * Specify the shape of the crop area if the user is allowed to edit the image
+     * (by passing `allowsEditing: true`). This option is only applicable on Android.
+     *
+     * @default rectangle
+     * @platform android
+     */
+    shape?: CropShape;
     /**
      * Specify the quality of compression, from `0` to `1`. `0` means compress for small size,
      * `1` means compress for maximum quality.

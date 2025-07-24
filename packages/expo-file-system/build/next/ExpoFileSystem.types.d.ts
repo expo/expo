@@ -36,8 +36,7 @@ export declare class Directory {
      */
     delete(): void;
     /**
-     * A boolean representing if a directory exists. `true` if the directory exists, `false` otherwise.
-     * Also, `false` if the application does not have read access to the file.
+     * A boolean representing if a directory exists and can be accessed.
      */
     exists: boolean;
     /**
@@ -46,6 +45,8 @@ export declare class Directory {
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
      */
     create(options?: CreateOptions): void;
+    createFile(name: string, mimeType: string | null): File;
+    createDirectory(name: string): Directory;
     /**
      * Copies a directory.
      */
@@ -67,7 +68,25 @@ export declare class Directory {
      * Lists the contents of a directory.
      */
     list(): (Directory | File)[];
+    /**
+     * Retrieves an object containing properties of a directory
+     * @throws Error If the application does not have read access to the directory, or if the path does not point to a directory (e.g., it points to a file).
+     * @returns An object with directory metadata (e.g., size, creation date, etc.).
+     */
+    info(): DirectoryInfo;
+    /**
+     * A size of the directory in bytes. Null if the directory does not exist, or it cannot be read.
+     */
+    size: number | null;
 }
+export type DownloadOptions = {
+    /**
+     * The headers to send with the request.
+     */
+    headers?: {
+        [key: string]: string;
+    };
+};
 /**
  * Represents a file on the file system.
  */
@@ -89,19 +108,34 @@ export declare class File {
     validatePath(): void;
     /**
      * Retrieves text from the file.
+     * @returns A promise that resolves with the contents of the file as string.
+     */
+    text(): Promise<string>;
+    /**
+     * Retrieves text from the file.
      * @returns The contents of the file as string.
      */
-    text(): string;
+    textSync(): Promise<string>;
+    /**
+     * Retrieves content of the file as base64.
+     * @returns A promise that resolves with the contents of the file as a base64 string.
+     */
+    base64(): string;
     /**
      * Retrieves content of the file as base64.
      * @returns The contents of the file as a base64 string.
      */
-    base64(): string;
+    base64Sync(): string;
     /**
      * Retrieves byte content of the entire file.
-     * @returns The contents of the file as a Uint8Array.
+     * @returns A promise that resolves with the contents of the file as a Uint8Array.
      */
-    bytes(): Uint8Array;
+    bytes(): Promise<Uint8Array>;
+    /**
+     * Retrieves byte content of the entire file.
+     * @returns A promise that resolves with the contents of the file as a Uint8Array.
+     */
+    bytesSync(): Uint8Array;
     /**
      * Writes content to the file.
      * @param content The content to write into the file.
@@ -113,6 +147,12 @@ export declare class File {
      * @throws Error if the directory does not exist or cannot be deleted.
      */
     delete(): void;
+    /**
+     * Retrieves an object containing properties of a file
+     * @throws Error If the application does not have read access to the file, or if the path does not point to a file (e.g., it points to a directory).
+     * @returns An object with file metadata (e.g., size, creation date, etc.).
+     */
+    info(options?: InfoOptions): FileInfo;
     /**
      * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
      * Also, `false` if the application does not have read access to the file.
@@ -147,19 +187,27 @@ export declare class File {
      * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
      * ```
      */
-    static downloadFileAsync(url: string, destination: Directory | File): Promise<File>;
+    static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
     /**
-     * A size of the file in bytes. Null if the file does not exist, or it cannot be read.
+     * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
-    size: number | null;
+    size: number;
     /**
      * A md5 hash of the file. Null if the file does not exist, or it cannot be read.
      */
     md5: string | null;
     /**
-     * A mime type of the file. Null if the file does not exist, or it cannot be read.
+     * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
      */
-    type: string | null;
+    modificationTime: number | null;
+    /**
+     * A creation time of the file expressed in milliseconds since epoch. Returns null if the file does not exist, cannot be read or the Android version is earlier than API 26.
+     */
+    creationTime: number | null;
+    /**
+     * A mime type of the file. An empty string if the file does not exist, or it cannot be read.
+     */
+    type: string;
 }
 export declare class FileHandle {
     close(): void;
@@ -168,4 +216,73 @@ export declare class FileHandle {
     offset: number | null;
     size: number | null;
 }
+export type FileInfo = {
+    /**
+     * Indicates whether the file exists.
+     */
+    exists: boolean;
+    /**
+     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     */
+    uri?: string;
+    /**
+     * The size of the file in bytes.
+     */
+    size?: number;
+    /**
+     * The last modification time of the file expressed in milliseconds since epoch.
+     */
+    modificationTime?: number;
+    /**
+     * A creation time of the file expressed in milliseconds since epoch. Returns null if the Android version is earlier than API 26.
+     */
+    creationTime?: number;
+    /**
+     * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+     */
+    md5?: string;
+};
+export type InfoOptions = {
+    /**
+     * Whether to return the MD5 hash of the file.
+     * @default false
+     */
+    md5?: boolean;
+};
+export type PathInfo = {
+    /**
+     * Indicates whether the path exists. Returns true if it exists; false if the path does not exist or if there is no read permission.
+     */
+    exists: boolean;
+    /**
+     * Indicates whether the path is a directory. Returns true or false if the path exists; otherwise, returns null.
+     */
+    isDirectory: boolean | null;
+};
+export type DirectoryInfo = {
+    /**
+     * Indicates whether the directory exists.
+     */
+    exists: boolean;
+    /**
+     * A `file://` URI pointing to the directory.
+     */
+    uri?: string;
+    /**
+     * The size of the file in bytes.
+     */
+    size?: number;
+    /**
+     * The last modification time of the directory expressed in milliseconds since epoch.
+     */
+    modificationTime?: number;
+    /**
+     * A creation time of the directory expressed in milliseconds since epoch. Returns null if the Android version is earlier than API 26.
+     */
+    creationTime?: number;
+    /**
+     * A list of file names contained within a directory.
+     */
+    files?: string[];
+};
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

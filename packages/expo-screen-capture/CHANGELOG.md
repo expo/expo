@@ -6,7 +6,19 @@
 
 ### 🎉 New features
 
+- Implemented `useScreenshotListener` hook. ([#37411](https://github.com/expo/expo/pull/37411) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- Implemented screenshot prevention on iOS. ([#37874](https://github.com/expo/expo/pull/37874) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- Implement App Switcher protection on iOS. ([#38192](https://github.com/expo/expo/pull/38192) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
 ### 🐛 Bug fixes
+
+- [Android] Fix permissions on Android 13.
+
+### 💡 Others
+
+- [iOS] Replaced deprecated keyWindow usage. ([#38207](https://github.com/expo/expo/pull/38207) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+
+## 7.1.5 - 2025-07-01
 
 ### 💡 Others
 

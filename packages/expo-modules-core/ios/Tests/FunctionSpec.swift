@@ -297,7 +297,11 @@ class FunctionSpec: ExpoSpec {
           AsyncFunction("withSharedObjectAsync") {
             return SharedString("Test")
           }
-          
+
+          AsyncFunction("withArrayOfSharedObjectsAsync") {
+            return [SharedString("Test1"), SharedString("Test2"), SharedString("Test3")]
+          }
+
           AsyncFunction("withSharedObjectPromise") { (p: Promise) in
             p.resolve(SharedString("Test with Promise"))
           }
@@ -380,6 +384,28 @@ class FunctionSpec: ExpoSpec {
         let result = try runtime.eval("object.value")
         expect(result.kind) == .string
         expect(result.getString()) == "Test"
+      }
+      
+      it("returns an Array of SharedObjects (async)") {
+        try runtime
+          .eval(
+            "expo.modules.TestModule.withArrayOfSharedObjectsAsync().then((result) => { globalThis.resultArray = result; })"
+          )
+
+        expect(safeBoolEval("globalThis.resultArray != null")).toEventually(beTrue(), timeout: .milliseconds(2000))
+        let object = try runtime.eval("object = globalThis.resultArray")
+        
+        expect(object.kind) == .object
+        expect(object.getObject().hasProperty("length")) == true
+
+        let result = object.getArray()
+        try result.enumerated().forEach { index, element in
+          expect(element.kind) == .object
+          expect(element.getObject().hasProperty("value")) == true
+          let value = try runtime.eval("object[\(index)].value")
+          expect(value.kind) == .string
+          expect(value.getString()) == "Test\(index + 1)"
+        }
       }
       
       it("returns a SharedObject with Promise") {

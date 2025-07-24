@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationTargetException
 
 class DevLauncherBridgeDevSupportManager(
   applicationContext: Context,
-  reactInstanceDevHelper: ReactInstanceDevHelper?,
+  reactInstanceDevHelper: ReactInstanceDevHelper,
   packagerPathForJSBundleName: String?,
   enableOnCreate: Boolean,
   redBoxHandler: RedBoxHandler?,
@@ -50,7 +50,7 @@ class DevLauncherBridgeDevSupportManager(
   @get:JvmName("getjSBundleURLForRemoteDebugging")
   override val jSBundleURLForRemoteDebugging: String? = null
 
-  override fun showNewJavaError(message: String?, e: Throwable?) {
+  override fun showNewJavaError(message: String?, e: Throwable) {
     Log.e("DevLauncher", "$message", e)
     if (!DevLauncherController.wasInitialized()) {
       Log.e(
@@ -71,7 +71,8 @@ class DevLauncherBridgeDevSupportManager(
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, cause))
   }
 
-  override fun getUniqueTag() = "DevLauncherApp-Bridge"
+  override val uniqueTag: String
+    get() = "DevLauncherApp-Bridge"
 
   override fun startInspector() {
     // no-op for the default `startInspector` which would be implicitly called
@@ -86,6 +87,6 @@ class DevLauncherBridgeDevSupportManager(
   }
 
   companion object {
-    fun getDevHelperInternalFieldName() = "mReactInstanceDevHelper"
+    fun getDevHelperInternalFieldName() = "reactInstanceDevHelper"
   }
 }

@@ -1,6 +1,7 @@
 ---
 title: Keyboard handling
 description: A guide for handling common keyboard interactions on an Android or iOS device.
+hasVideoLink: true
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
@@ -153,9 +154,11 @@ export default function RootLayout() {
 
 ### Handling multiple inputs
 
-The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping but requires platform-specific configuration and is not very customizable. To achieve the same functionality, you can use [`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view), which automatically scrolls to focused `TextInput` and provides a native-like performance, we recommend using `KeyboardAwareScrollView` for simple screens with not many elements.
+The [`KeyboardAvoidingView`](#keyboard-avoiding-view) component is excellent for prototyping, but it requires platform-specific configuration and is not very customizable.
 
-For screens with multiple inputs, the Keyboard Controller provides `KeyboardAwareScrollView` and `KeyboardToolbar` components. These components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
+As a more powerful alternative, you can use the [`KeyboardAwareScrollView`](https://kirillzyusko.github.io/react-native-keyboard-controller/docs/api/components/keyboard-aware-scroll-view) component. It automatically scrolls to a focused `TextInput` and provides native-like performance. For simple screens with only a few elements, using `KeyboardAwareScrollView` is a great approach.
+
+For screens with multiple inputs, the Keyboard Controller library also provides a `KeyboardToolbar` component to use alongside `KeyboardAwareScrollView`. Together, these components handle input navigation and prevent the keyboard from covering the screen without custom configuration:
 
 ```tsx FormScreen.tsx
 import { TextInput, View, StyleSheet } from 'react-native';

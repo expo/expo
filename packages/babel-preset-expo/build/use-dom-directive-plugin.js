@@ -4,16 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.expoUseDomDirectivePlugin = expoUseDomDirectivePlugin;
-/**
- * Copyright © 2024 650 Industries.
- */
-const core_1 = require("@babel/core");
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function expoUseDomDirectivePlugin(api) {
-    const { types: t } = api;
+    const { template, types: t } = api;
     const isProduction = api.caller(common_1.getIsProd);
     const platform = api.caller((caller) => caller?.platform);
     const projectRoot = api.caller(common_1.getPossibleProjectRoot);
@@ -107,7 +103,7 @@ function expoUseDomDirectivePlugin(api) {
           export default _Expo_DOMProxyComponent;
         `;
                 // Convert template to AST and push to body
-                const ast = core_1.template.ast(proxyModuleTemplate);
+                const ast = template.ast(proxyModuleTemplate);
                 const results = path.pushContainer('body', ast);
                 // Find and register the component declaration
                 results.forEach((nodePath) => {

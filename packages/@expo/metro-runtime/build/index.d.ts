@@ -5,7 +5,5 @@
  * LICENSE file in the root directory of this source tree.
  */
 import './location/install';
-import './effects';
-import './async-require';
 import '@expo/metro-runtime/rsc/runtime';
 //# sourceMappingURL=index.d.ts.map

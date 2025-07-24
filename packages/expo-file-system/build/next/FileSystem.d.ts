@@ -1,4 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
+import type { PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -10,30 +11,20 @@ export declare class Paths extends PathUtilities {
      */
     static get document(): Directory;
     static get appleSharedContainers(): Record<string, Directory>;
-}
-/**
- * @hidden
- */
-export declare class FileBlob extends Blob {
-    file: File;
     /**
-     * @internal
+     * A property that represents the total space on device's internal storage, represented in bytes.
      */
-    key: string;
-    constructor(file: File);
-    get size(): number;
+    static get totalDiskSpace(): number;
     /**
-     * @internal
+     * A property that represents the available space on device's internal storage, represented in bytes.
      */
-    get name(): string;
-    get type(): string;
-    arrayBuffer(): Promise<ArrayBuffer>;
-    text(): Promise<string>;
-    bytes(): Promise<Uint8Array>;
-    stream(): ReadableStream<Uint8Array>;
-    slice(start?: number, end?: number, contentType?: string): Blob;
+    static get availableDiskSpace(): number;
+    /**
+     * Returns an object that indicates if the specified path represents a directory.
+     */
+    static info(...uris: string[]): PathInfo;
 }
-export declare class File extends ExpoFileSystem.FileSystemFile {
+export declare class File extends ExpoFileSystem.FileSystemFile implements Blob {
     /**
      * Creates an instance of a file.
      * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
@@ -43,7 +34,6 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
      * ```
      */
     constructor(...uris: (string | File | Directory)[]);
-    blob(): Blob;
     get parentDirectory(): Directory;
     /**
      * File extension.
@@ -56,6 +46,9 @@ export declare class File extends ExpoFileSystem.FileSystemFile {
     get name(): string;
     readableStream(): ReadableStream<Uint8Array<ArrayBufferLike>>;
     writableStream(): WritableStream<Uint8Array<ArrayBufferLike>>;
+    arrayBuffer(): Promise<ArrayBuffer>;
+    stream(): ReadableStream<Uint8Array>;
+    slice(start?: number, end?: number, contentType?: string): Blob;
 }
 /**
  * Represents a directory on the filesystem.
@@ -83,5 +76,7 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
      * Directory name.
      */
     get name(): string;
+    createFile(name: string, mimeType: string | null): File;
+    createDirectory(name: string): Directory;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

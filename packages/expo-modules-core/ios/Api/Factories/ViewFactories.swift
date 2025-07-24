@@ -46,6 +46,22 @@ public func Prop<ViewType: UIView, PropType: AnyArgument>(
   )
 }
 
+/**
+ Creates a view prop that defines its name, default value and setter.
+ */
+public func Prop<ViewType: UIView, PropType: AnyArgument>(
+  _ name: String,
+  _ defaultValue: PropType,
+  @_implicitSelfCapture _ setter: @escaping (ViewType, PropType) -> Void
+) -> ConcreteViewProp<ViewType, PropType> {
+  return ConcreteViewProp(
+    name: name,
+    propType: ~PropType.self,
+    defaultValue: defaultValue,
+    setter: setter
+  )
+}
+
 // MARK: - View lifecycle
 
 /**

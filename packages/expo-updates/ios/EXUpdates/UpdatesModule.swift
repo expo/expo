@@ -35,7 +35,8 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       AppController.removeUpdatesEventManagerObserver()
     }
 
-    AsyncFunction("reload") { (promise: Promise) in
+    AsyncFunction("reload") { (options: ReloadScreenOptions?, promise: Promise) in
+      AppController.sharedInstance.reloadScreenManager?.setConfiguration(options)
       AppController.sharedInstance.requestRelaunch {
         promise.resolve(nil)
       } error: { error in
@@ -50,7 +51,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           promise.resolve([
             "isAvailable": false,
             "isRollBackToEmbedded": false,
-            "reason": reason
+            "reason": reason.rawValue
           ])
           return
         case .updateAvailable(let manifest):
@@ -144,6 +145,23 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { (configOverride: UpdatesConfigOverrideParam?) in
       try AppController.sharedInstance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigOverride())
     }
+
+    AsyncFunction("showReloadScreen") { (options: ReloadScreenOptions?) in
+#if DEBUG
+      if let reloadScreenManager = AppController.sharedInstance.reloadScreenManager {
+        reloadScreenManager.setConfiguration(options)
+        reloadScreenManager.show()
+      }
+#endif
+    }.runOnQueue(.main)
+
+    AsyncFunction("hideReloadScreen") {
+#if DEBUG
+      if let reloadScreenManager = AppController.sharedInstance.reloadScreenManager {
+        reloadScreenManager.hide()
+      }
+#endif
+    }.runOnQueue(.main)
   }
 
   public func onStateMachineContextEvent(context: UpdatesStateContext) {

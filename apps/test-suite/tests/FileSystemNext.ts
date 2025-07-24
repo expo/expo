@@ -3,8 +3,7 @@ import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import * as FS from 'expo-file-system';
-import { File, Directory } from 'expo-file-system/next';
-import { Paths } from 'expo-file-system/src/next';
+import { File, Directory, Paths } from 'expo-file-system/next';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem@next';
@@ -48,6 +47,23 @@ export async function test({ describe, expect, it, ...t }) {
         // });
       });
     } else {
+      // This test fails on CI.
+      // it('Supports some operations on SAF picker files', async () => {
+      //   const saf = await FS.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      //   if (!saf.granted) {
+      //     throw new Error();
+      //   }
+      //   const safDirectory = new Directory(saf.directoryUri);
+      //   expect(safDirectory.list().length).toBe(0);
+
+      //   safDirectory.createFile('newFile', 'text/plain');
+      //   expect(safDirectory.list().length).toBe(1);
+
+      //   safDirectory.list().forEach((sd) => {
+      //     sd.delete();
+      //   });
+      //   expect(safDirectory.list().length).toBe(0);
+      // });
       it('Creates a lazy file reference', () => {
         const file = new File('file:///path/to/file');
         expect(file.uri).toBe('file:///path/to/file');
@@ -55,9 +71,11 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('Supports different slash combinations', async () => {
         expect(new File('file:/path/to/file').uri).toBe('file:///path/to/file');
+
         // This URL is confusing, as path is actually a hostname.
-        // We throw a descriptive error in this case.
-        expect(() => new File('file://path/to/file').uri).toThrow();
+        // We can no longer throw a descriptive error in this case, since this URL scheme is also used for SAF URIs.
+        // TODO: Consider bringing back the scheme validation check.
+        // expect(() => new File('file://path/to/file').uri).toThrow();
 
         expect(new File('file://localhost/path/to/file').uri).toBe('file:///path/to/file');
         expect(new File('file:///path/to/file').uri).toBe('file:///path/to/file');
@@ -87,7 +105,7 @@ export async function test({ describe, expect, it, ...t }) {
           directory.create();
           const file = new File(testDirectory, 'test');
           expect(() => {
-            file.text();
+            file.textSync();
           }).toThrow();
         });
 
@@ -167,11 +185,12 @@ export async function test({ describe, expect, it, ...t }) {
           expect(dir.name).toBe('my%file.txt');
         });
 
-        it('Throws error on invalid uris passed in as argument', () => {
-          expect(() => {
-            // eslint-disable-next-line no-new
-            new Directory(testDirectory + '/TestFolder%query');
-          }).toThrow();
+        it('(disabled) Throws error on invalid uris passed in as argument', () => {
+          // We no longer throw on url with hash passed as first argument to constructor, instead clearing the hash segment of the URL during joining paths.
+          // expect(() => {
+          //   // eslint-disable-next-line no-new
+          //   new Directory(testDirectory + '/TestFolder%query');
+          // }).toThrow();
         });
       });
 
@@ -182,21 +201,25 @@ export async function test({ describe, expect, it, ...t }) {
         expect(outputFile.exists).toBe(true);
       });
 
-      it('Writes a string to a file reference', () => {
+      it('Writes a string to a file reference', async () => {
         const outputFile = new File(testDirectory, 'file.txt');
         outputFile.create();
         outputFile.write(new Uint8Array([97, 98, 99]));
         expect(outputFile.exists).toBe(true);
-        expect(outputFile.bytes()).toEqual(new Uint8Array([97, 98, 99]));
-        expect(outputFile.text()).toBe('abc');
+        expect(await outputFile.bytes()).toEqual(new Uint8Array([97, 98, 99]));
+        expect(outputFile.bytesSync()).toEqual(new Uint8Array([97, 98, 99]));
+        expect(await outputFile.text()).toBe('abc');
+        expect(outputFile.textSync()).toBe('abc');
       });
 
-      it('Reads a string from a file reference', () => {
+      it('Reads a string from a file reference', async () => {
         const outputFile = new File(testDirectory, 'file2.txt');
         outputFile.write('Hello world');
         expect(outputFile.exists).toBe(true);
-        const content = outputFile.text();
+        const content = await outputFile.text();
         expect(content).toBe('Hello world');
+        const contentSync = await outputFile.textSync();
+        expect(contentSync).toBe('Hello world');
       });
 
       it('Deletes a file reference', () => {
@@ -242,14 +265,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'newFolder');
         file.create();
         expect(file.exists).toBe(true);
-        expect(file.text()).toBe('');
+        expect(file.textSync()).toBe('');
       });
 
       it('Throws an error if the file exists', () => {
         const file = new File(testDirectory, 'newFolder');
         file.create();
         expect(file.exists).toBe(true);
-        expect(file.text()).toBe('');
+        expect(file.textSync()).toBe('');
       });
 
       it('Overwrites a file if it exists and `overwrite` is set', () => {
@@ -257,9 +280,9 @@ export async function test({ describe, expect, it, ...t }) {
         file.create();
         expect(file.exists).toBe(true);
         file.write('Hello world');
-        expect(file.text()).toBe('Hello world');
+        expect(file.textSync()).toBe('Hello world');
         file.create({ overwrite: true });
-        expect(file.text()).toBe('');
+        expect(file.textSync()).toBe('');
       });
 
       it('Deletes a folder', () => {
@@ -299,10 +322,10 @@ export async function test({ describe, expect, it, ...t }) {
           dstFolder.create();
           src.copy(dstFolder);
           expect(src.exists).toBe(true);
-          expect(src.text()).toBe('Hello world');
+          expect(src.textSync()).toBe('Hello world');
           const dst = new File(testDirectory, '/destination/file.txt');
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
         });
 
         it('Throws an error when copying to a nonexistant folder without options', () => {
@@ -318,7 +341,7 @@ export async function test({ describe, expect, it, ...t }) {
           const dst = new File(testDirectory, 'file2.txt');
           src.copy(dst);
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
           expect(src.exists).toBe(true);
         });
 
@@ -395,7 +418,7 @@ export async function test({ describe, expect, it, ...t }) {
           const dst = new File(testDirectory, '/destination/file.txt');
           expect(src.uri).toBe(dst.uri);
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
         });
 
         it('Throws an error when moving to a nonexistant folder without options', () => {
@@ -411,7 +434,7 @@ export async function test({ describe, expect, it, ...t }) {
           const dst = new File(testDirectory, 'file2.txt');
           src.move(dst);
           expect(dst.exists).toBe(true);
-          expect(dst.text()).toBe('Hello world');
+          expect(dst.textSync()).toBe('Hello world');
           expect(src.exists).toBe(true);
           expect(src.uri).toBe(dst.uri);
         });
@@ -489,6 +512,23 @@ export async function test({ describe, expect, it, ...t }) {
           }
           expect(error.message.includes('Destination already exists')).toBe(true);
         });
+
+        it('downloads file when headers are set', async () => {
+          const url = 'https://picsum.photos/id/237/200/300';
+          const file = new File(testDirectory, 'image.jpeg');
+          const output = await File.downloadFileAsync(url, file, { headers: { Token: '1234' } });
+          expect(file.exists).toBe(true);
+          expect(output.uri).toBe(file.uri);
+        });
+
+        it('Supports downloading a file using bytes', async () => {
+          const url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+          const md5 = '2942bfabb3d05332b66eb128e0842cff';
+          const response = await fetch(url);
+          const src = new File(testDirectory, 'file.pdf');
+          src.write(await response.bytes());
+          expect(src.md5).toEqual(md5);
+        });
       });
 
       describe('Computes file properties', () => {
@@ -496,6 +536,17 @@ export async function test({ describe, expect, it, ...t }) {
           const file = new File(testDirectory, 'file.txt');
           file.write('Hello world');
           expect(file.size).toBe(11);
+        });
+
+        it('creationTime is earlier than modificationTime or equal', async () => {
+          const file = new File(
+            testDirectory,
+            'creationTime_is_earlier_than_modificationTime_or_equal.txt'
+          );
+          file.write('Hello world');
+          expect(file.creationTime).not.toBeNull();
+          expect(file.modificationTime).not.toBeNull();
+          expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
         });
 
         it('computes md5', async () => {
@@ -509,11 +560,15 @@ export async function test({ describe, expect, it, ...t }) {
           expect(file.size).toBe(null);
           expect(file.md5).toBe(null);
         });
+      });
 
-        it('computes md5', async () => {
-          const file = new File(testDirectory, 'file.txt');
+      describe('Computes directory properties', () => {
+        it('computes size', async () => {
+          const dir = new Directory(testDirectory, 'directory');
+          const file = new File(testDirectory, 'directory', 'file.txt');
+          file.create({ intermediates: true });
           file.write('Hello world');
-          expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+          expect(dir.size).toBe(11);
         });
       });
 
@@ -521,7 +576,8 @@ export async function test({ describe, expect, it, ...t }) {
         it('gets base64 of a file', async () => {
           const src = new File(testDirectory, 'file.txt');
           src.write('Hello world');
-          expect(src.base64()).toBe('SGVsbG8gd29ybGQ=');
+          expect(await src.base64()).toBe('SGVsbG8gd29ybGQ=');
+          expect(src.base64Sync()).toBe('SGVsbG8gd29ybGQ=');
         });
       });
 
@@ -529,9 +585,39 @@ export async function test({ describe, expect, it, ...t }) {
         it('gets file as a Uint8Array', async () => {
           const src = new File(testDirectory, 'file.txt');
           src.write('Hello world');
-          expect(src.bytes()).toEqual(
+          expect(src.bytesSync()).toEqual(
             new Uint8Array([72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100])
           );
+        });
+      });
+
+      describe('Returns path info', () => {
+        it('correctly if exists and is a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_a_directory';
+          const src = new Directory(uri);
+          src.create();
+          expect(Paths.info(uri)).toEqual({
+            exists: true,
+            isDirectory: true,
+          });
+        });
+
+        it('correctly if exists and is not a directory', () => {
+          const uri = testDirectory + 'correctly_if_exists_and_is_not_a_directory.txt';
+          const src = new File(uri);
+          src.create();
+          expect(Paths.info(uri)).toEqual({
+            exists: true,
+            isDirectory: false,
+          });
+        });
+
+        it('correctly if does not exist', () => {
+          const uri = testDirectory + 'correctly_if_does_not_exist.txt';
+          expect(Paths.info(uri)).toEqual({
+            exists: false,
+            isDirectory: null,
+          });
         });
       });
 
@@ -593,8 +679,93 @@ export async function test({ describe, expect, it, ...t }) {
         });
       });
 
+      describe('When getting file info', () => {
+        it('executes correctly', () => {
+          const url = `${testDirectory}execute_correctly.txt`;
+          const src = new File(url);
+          src.create();
+          src.write('Hello World');
+          const result = src.info({ md5: true });
+          expect(result.exists).toBe(true);
+          if (result.exists) {
+            const { uri, size, modificationTime, creationTime, md5 } = result;
+            expect(modificationTime).not.toBeNull();
+            expect(creationTime).not.toBeNull();
+            expect(md5).not.toBeNull();
+            expect(uri).toBe(url);
+            expect(size).toBe(11);
+          }
+        });
+        it('executes correctly when options are undefined', () => {
+          const url = `${testDirectory}executes_correctly_when_options_are_undefined.txt`;
+          const src = new File(url);
+          src.write('Hello World');
+          const result = src.info();
+          if (result.exists) {
+            expect(result.md5).toBeNull();
+          }
+        });
+        it('returns exists false if file does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_file_does_not_exist.txt`;
+          const src = new File(url);
+          src.write('Hello world');
+          src.delete();
+          const result = src.info();
+          expect(result.exists).toBe(false);
+        });
+      });
+      describe('When getting directory info', () => {
+        it('executes correctly on an empty directory', () => {
+          const url = `${testDirectory}executes_correctly_on_an_empty_directory/`;
+          const src = new Directory(url);
+          src.create();
+
+          const result = src.info();
+
+          expect(result.exists).toBe(true);
+          expect(result.modificationTime).not.toBeNull();
+          expect(result.creationTime).not.toBeNull();
+          expect(result.uri).toBe(url);
+          expect(result.size).toBe(0);
+        });
+        it('executes correctly on a non empty directory', () => {
+          const url = `${testDirectory}executes_correctly_on_a_non_empty_directory/`;
+          const src = new Directory(url);
+          src.create();
+          const file = new File(`${url}1.txt`);
+          file.write('Hello world');
+
+          const result = src.info();
+
+          expect(result.exists).toBe(true);
+          expect(result.modificationTime).not.toBeNull();
+          expect(result.creationTime).not.toBeNull();
+          expect(result.files).toContain('1.txt');
+          expect(result.uri).toBe(url);
+          expect(result.size).toBe(11);
+        });
+        it('returns exists false if a directory does not exist', () => {
+          const url = `${testDirectory}returns_exists_false_if_a_file_does_not_exist`;
+          const src = new Directory(url);
+          src.create();
+          src.delete();
+
+          const result = src.info();
+
+          expect(result.exists).toBe(false);
+        });
+      });
       addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
     }
+  });
+
+  describe('Exposes total filesystem sizes', () => {
+    it('Returns total filesystem space', () => {
+      expect(Paths.totalDiskSpace > 100000).toBe(true);
+    });
+    it('Returns available filesystem space', () => {
+      expect(Paths.availableDiskSpace > 100000).toBe(true);
+    });
   });
 
   describe('Exposes file handles', () => {
@@ -702,7 +873,7 @@ export async function test({ describe, expect, it, ...t }) {
       handle.offset = 0;
       expect(handle.readBytes(26 * 4).length).toBe(26 * 4);
       handle.close();
-      expect(src.text()).toBe(alphabet.repeat(4 * 10));
+      expect(src.textSync()).toBe(alphabet.repeat(4 * 10));
     });
 
     it('Provides a ReadableStream', async () => {
@@ -742,7 +913,7 @@ export async function test({ describe, expect, it, ...t }) {
       const writer = writable.getWriter();
       await writer.write(new Uint8Array(alphabet.split('').map((char) => char.charCodeAt(0))));
       writer.close();
-      expect(src.text()).toBe(alphabet);
+      expect(src.textSync()).toBe(alphabet);
     });
 
     it('Returns correct file type', async () => {
@@ -754,24 +925,14 @@ export async function test({ describe, expect, it, ...t }) {
       expect(src2.type).toBe('text/plain');
     });
 
-    it('Exposes a file as blob', async () => {
-      const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-      const src = new File(asset.localUri);
-
-      const blob = src.blob();
-
-      expect(blob.size).toBe(src.size);
-    });
-
     // You can also use something like container twostoryrobot/simple-file-upload to test if the file is saved correctly
     it('Supports sending a file using blob', async () => {
       const src = new File(testDirectory, 'file.txt');
       src.write('abcde');
-      const blob = src.blob();
 
       const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
-        body: blob,
+        body: src,
       });
       const body = await response.json();
       expect(body.data).toEqual('abcde');
@@ -783,9 +944,8 @@ export async function test({ describe, expect, it, ...t }) {
       src.write('abcde');
 
       const formData = new FormData();
-      const blob = src.blob();
 
-      formData.append('data', blob);
+      formData.append('data', src);
 
       const response = await fetch('https://httpbingo.org/anything', {
         method: 'POST',
@@ -793,6 +953,27 @@ export async function test({ describe, expect, it, ...t }) {
       });
       const body = await response.json();
       expect(body.files.data[0]).toEqual('abcde');
+    });
+
+    it('Supports sending a named file blob using blob with formdata', async () => {
+      const src = new File(testDirectory, 'file.txt');
+      src.write('abcde');
+
+      const formData = new FormData();
+
+      formData.append('data', src, 'FileName.txt');
+
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: formData,
+      });
+      const body = await response.json();
+      // TODO: This is the expected behavior, but following [spec](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#create-an-entry)
+      // would require us to create a new File object when setting filename – we could make it work only if File is available in (global.expo)
+      // expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('FileName.txt');
+
+      // this is invalid
+      expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('file.txt');
     });
   });
 

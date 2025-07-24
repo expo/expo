@@ -4,18 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import assert from 'assert';
-import {
-  AssetData,
-  MetroConfig,
+import type { MetroConfig, AssetData } from '@expo/metro/metro';
+import sourceMapStringMod from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+import type {
   MixedOutput,
   Module,
   ReadOnlyGraph,
   SerializerOptions,
-} from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT, SerializerConfigT } from 'metro-config';
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
+import assert from 'assert';
 import path from 'path';
 
 import { stringToUUID } from './debugId';
@@ -34,7 +34,6 @@ import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-
 type SerializerParameters = Parameters<Serializer>;
 
 type ChunkSettings = {
@@ -302,7 +301,7 @@ export class Chunk {
 
     this.deps.forEach((module) => {
       module.dependencies.forEach((dependency) => {
-        if (dependency.data.data.asyncType) {
+        if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
           const chunkContainingModule = chunks.find((chunk) =>
             chunk.hasAbsolutePath(dependency.absolutePath)
           );
@@ -681,7 +680,9 @@ function gatherChunks(
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
-      if (
+      if (!isResolvedDependency(dependency)) {
+        continue;
+      } else if (
         dependency.data.data.asyncType &&
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false

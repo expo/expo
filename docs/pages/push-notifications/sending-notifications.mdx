@@ -3,6 +3,7 @@ title: Send notifications with the Expo Push Service
 description: Learn how to call Expo Push Service API to send push notifications from your server.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 The [`expo-notifications`](/versions/latest/sdk/notifications) library provides all the client-side functionality for push notifications. Expo also handles sending push notifications off to FCM and APNs which then send them to particular devices. All you need to do is send a request to Expo Push API with the `ExpoPushToken` you obtain with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions).
@@ -223,7 +224,7 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 - `MessageRateExceeded`: You are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
-- `MismatchSenderId`: This indicates that there is an issue with your FCM push credentials. There are two pieces to FCM push credentials: your FCM server key, and your **google-services.json** file. Both must be associated with the same sender ID. You can find your sender ID in the [same place you find your server key](/push-notifications/push-notifications-setup/#upload-server-credentials). Check that the server key from your project's Expo dashboard under **Credentials** > **Application Identifier** > **FCM Server Key** and that the sender ID from your project's **google-services.json** > `project_number` is the same as shown in the Firebase console under **Project Settings** > **Cloud Messaging** tab > **Cloud Messaging API (Legacy)**.
+- `MismatchSenderId`: This indicates that there is an issue with your FCM push credentials. There are two pieces to FCM push credentials: your FCM server key, and your **google-services.json** file. Both must be associated with the same sender ID. You can find your sender ID in the [same place you find your server key](/push-notifications/push-notifications-setup/#upload-server-credentials). Check that the server key from your project's EAS dashboard under **Credentials** > **Application identifier** > **Service Credentials** > **FCM V1 service account key** and that the sender ID from your project's **google-services.json** > `project_number` is the same as shown in the Firebase console under **Project Settings** > **Cloud Messaging** tab > **Cloud Messaging API (Legacy)**.
 
 - `InvalidCredentials`: Your push notification credentials for your standalone app are invalid (for example, you may have revoked them).
 
@@ -246,7 +247,7 @@ If there's an error with the entire request for either push tickets or push rece
 
 ## Additional security
 
-You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.dev/settings/access-tokens).
+You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access) before we will deliver them to your users. You can enable this enhanced push security from your [EAS Dashboard](https://expo.dev/settings/access-tokens).
 
 By default, you can send a notification to your users by sending their Expo Push Token and any text or additional data needed for the message. This is easy to set up, but **if the tokens are leaked, a malicious user would be able to impersonate your server and send their message to your users.** We have never had an instance of this report. However, to follow best security practices, we offer the use of an access token alongside the push token as an additional layer of security.
 
@@ -344,3 +345,54 @@ Expo makes a best effort to deliver notifications to the push notification servi
 After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful. A push receipt denotes whether the underlying push notification service received the notification.
 
 Finally, the push notification services from Google and Apple follow their own policies to deliver the notifications to the device.
+
+## Troubleshooting
+
+<Collapsible summary="Network connectivity issues">
+This section helps you diagnose and resolve common network issues. Your server must have connectivity to Google Cloud Platform services in the United States region, as this is where Expo's push notification service is hosted.
+
+#### DNS resolution
+
+Test if your server can resolve Expo's push service domain name:
+
+```bash
+dig exp.host
+
+# Check with a public DNS server
+dig @8.8.8.8 exp.host
+```
+
+#### Network routing and connectivity
+
+Verify your server can reach Expo's endpoints:
+
+```bash
+# Use traceroute to identify routing issues
+traceroute exp.host
+
+# Test basic connectivity
+ping exp.host
+
+# Test HTTPS connectivity to the push server.
+# You should receive HTTP response headers with a 200 status code.
+curl --verbose https://exp.host/
+```
+
+Common issues to check:
+
+- Firewall rules blocking outbound HTTPS (port 443) traffic
+- Corporate proxy servers that may require authentication or special configuration
+- Network ACLs or security groups (in cloud environments) restricting outbound connections
+- Packet fragmentation due to MTU size issues
+
+#### TLS certificate validation
+
+Ensure your server can validate the server's TLS certificate:
+
+```bash
+openssl s_client -connect exp.host:443 -servername exp.host
+```
+
+We use standard TLS certificates signed by major service providers including Cloudflare, Google, and Let's Encrypt.
+
+</Collapsible>

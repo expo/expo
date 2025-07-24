@@ -109,7 +109,9 @@ function babelPresetExpo(api, options = {}) {
         // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
         // JSX is used in a function body. This is technically not required in production, but we
         // should retain the same behavior since it's hard to debug the differences.
-        extraPlugins.push(require('@babel/plugin-transform-parameters'));
+        extraPlugins.push(require('@babel/plugin-transform-parameters'), 
+        // Add support for class static blocks.
+        [require('@babel/plugin-transform-class-static-block'), { loose: true }]);
     }
     const inlines = {
         'process.env.EXPO_OS': platform,
@@ -241,7 +243,7 @@ function babelPresetExpo(api, options = {}) {
                 // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
                 // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
                 babelPresetReactNativeEnv.overrides.push({
-                    plugins: [require('@babel/plugin-transform-export-namespace-from')],
+                    plugins: [require('./babel-plugin-transform-export-namespace-from')],
                 });
                 return babelPresetReactNativeEnv;
             })(),
@@ -279,8 +281,12 @@ function babelPresetExpo(api, options = {}) {
             ],
             // Automatically add `react-native-reanimated/plugin` when the package is installed.
             // TODO: Move to be a customTransformOption.
-            (0, common_1.hasModule)('react-native-reanimated') &&
-                platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
+            (0, common_1.hasModule)('react-native-worklets') &&
+                platformOptions.worklets !== false &&
+                platformOptions.reanimated !== false
+                ? [require('react-native-worklets/plugin')]
+                : (0, common_1.hasModule)('react-native-reanimated') &&
+                    platformOptions.reanimated !== false && [require('react-native-reanimated/plugin')],
         ].filter(Boolean),
     };
 }

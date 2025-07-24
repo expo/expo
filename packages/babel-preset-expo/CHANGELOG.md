@@ -6,6 +6,37 @@
 
 ### 🎉 New features
 
+- Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Upgrade react-compiler to `19.1.0-rc.2`. ([#38309](https://github.com/expo/expo/pull/38309) by [@EvanBacon](https://github.com/EvanBacon))
+- Add fork of `@babel/transform-export-namespace-from` to preserve location of the transformed import/export statements ([#38042](https://github.com/expo/expo/pull/38042) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Remove Babel value-imports instead only relying on types and the `@babel/core` instance passed to the preset and plugins ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 13.2.3 - 2025-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.2 - 2025-07-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.1 - 2025-06-18
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 - 2025-06-04
+
+### 🎉 New features
+
 - Pass `disableDeepImportWarnings` option to the `@react-native/babel-preset` ([#36362](https://github.com/expo/expo/pull/36362) by [@coado](https://github.com/coado))
 
 ### 🐛 Bug fixes

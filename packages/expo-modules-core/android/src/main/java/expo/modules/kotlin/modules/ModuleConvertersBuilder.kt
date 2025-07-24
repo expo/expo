@@ -3,6 +3,7 @@
 package expo.modules.kotlin.modules
 
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.types.NullableTypeConverter
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterComponent
 import expo.modules.kotlin.types.TypeConverterProvider
@@ -14,14 +15,14 @@ class ModuleConvertersBuilder {
   @PublishedApi
   internal var convertersComponent = mutableListOf<TypeConverterComponent<*>>()
 
-  inline fun <reified T : Any> TypeConverter(classifier: KClass<T>): TypeConverterComponent<T> {
-    val converterComponent = TypeConverterComponent<T>(lazyTypeOf<T>(), lazyTypeOf<(T?)?>())
+  inline fun <reified T : Any> TypeConverter(classifier: KClass<T> = T::class): TypeConverterComponent<T> {
+    val converterComponent = TypeConverterComponent<T>(lazyTypeOf<T>())
     convertersComponent.add(converterComponent)
     return converterComponent
   }
 
   inline fun <reified T : Any, reified P0 : Any> TypeConverter(
-    classifier: KClass<T>,
+    classifier: KClass<T> = T::class,
     crossinline body: (p0: P0) -> T
   ): TypeConverterComponent<T> {
     return TypeConverter<T>(classifier).apply {
@@ -32,18 +33,24 @@ class ModuleConvertersBuilder {
   }
 
   fun buildTypeConverterProvider(): TypeConverterProvider {
-    val converterMap = convertersComponent
-      .map { it.build() }
-      .flatten()
-      .toMap()
+    val converters = convertersComponent
+      .mapNotNull { it.build() }
+
     return object : TypeConverterProvider {
       override fun obtainTypeConverter(type: KType): TypeConverter<*> {
-        val typeConverter = converterMap[type]
-        if (typeConverter != null) {
-          return typeConverter
-        } else {
-          throw MissingTypeConverter(type)
+        val nonNullableTypeConverter = findNonNullableTypeConverter(type)
+          ?: throw MissingTypeConverter(type)
+
+        if (type.isMarkedNullable) {
+          return NullableTypeConverter(nonNullableTypeConverter)
         }
+        return nonNullableTypeConverter
+      }
+
+      private fun findNonNullableTypeConverter(type: KType): TypeConverter<*>? {
+        return converters.find { (converterType, _) ->
+          converterType.classifier == type.classifier && converterType.arguments == type.arguments
+        }?.second
       }
     }
   }

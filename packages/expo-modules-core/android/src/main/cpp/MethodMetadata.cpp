@@ -74,41 +74,37 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     nullptr
   );
 
+#define CONVERT(arg, type, index) \
+try {                             \
+  auto converterValue = type->converter->convert(rt, env, arg); \
+  env->SetObjectArrayElement(argumentArray, index, converterValue); \
+  env->DeleteLocalRef(converterValue);                          \
+} catch (std::exception &exception) {                           \
+  auto stringRepresentation = arg.toString(rt).utf8(rt);        \
+  throwNewJavaException(                                       \
+    UnexpectedException::create(                               \
+      "[" + this->info.name + "] Cannot convert '" + stringRepresentation + \
+      "' to a Kotlin type.").get()                             \
+  );                              \
+}
 
-  const auto getCurrentArg = [&thisValue, args, takesOwner = info.takesOwner](
-    size_t index
-  ) -> const jsi::Value & {
-    if (!takesOwner) {
-      return args[index];
+  if (!info.takesOwner) {
+    for (size_t argIndex = 0; argIndex < count; argIndex++) {
+      const jsi::Value &arg = args[argIndex];
+      auto &type = info.argTypes[argIndex];
+      CONVERT(arg, type, argIndex)
     }
+  } else {
+    auto &thisType = info.argTypes[0];
+    CONVERT(thisValue, thisType, 0)
 
-    if (index != 0) {
-      return args[index - 1];
-    }
-    return thisValue;
-  };
-
-  for (size_t argIndex = 0; argIndex < count; argIndex++) {
-    const jsi::Value &arg = getCurrentArg(argIndex);
-    auto &type = info.argTypes[argIndex];
-
-    if (type->converter->canConvert(rt, arg)) {
-      auto converterValue = type->converter->convert(rt, env, arg);
-      env->SetObjectArrayElement(argumentArray, argIndex, converterValue);
-      env->DeleteLocalRef(converterValue);
-    } else if (arg.isNull() || arg.isUndefined()) {
-      // If value is null or undefined, we just passes a null
-      // Kotlin code will check if expected type is nullable.
-      continue;
-    } else {
-      auto stringRepresentation = arg.toString(rt).utf8(rt);
-      throwNewJavaException(
-        UnexpectedException::create(
-          "[" + this->info.name + "] Cannot convert '" + stringRepresentation +
-          "' to a Kotlin type.").get()
-      );
+    for (size_t argIndex = 1; argIndex < count; argIndex++) {
+      const jsi::Value &arg = args[argIndex - 1];
+      auto &type = info.argTypes[argIndex];
+      CONVERT(arg, type, argIndex)
     }
   }
+#undef CONVERT
 
   return argumentArray;
 }

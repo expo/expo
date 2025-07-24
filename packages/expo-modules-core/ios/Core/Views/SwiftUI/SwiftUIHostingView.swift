@@ -15,6 +15,13 @@ extension ExpoSwiftUI {
   /**
    Checks if the child view is wrapped by a `UIViewHost` and matches the specified SwiftUI view type.
    */
+  public static func isHostingView(_ view: any AnyChild) -> Bool {
+    return view is UIViewHost
+  }
+
+  /**
+   Checks if the child view is wrapped by a `UIViewHost` and matches the specified SwiftUI view type.
+   */
   public static func isHostingViewOfType<Props: ViewProps, ViewType: View<Props>>(view: any AnyChild, viewType: ViewType.Type) -> Bool {
     if let host = view as? UIViewHost {
       return host.view is HostingView<Props, ViewType>

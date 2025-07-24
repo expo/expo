@@ -217,7 +217,7 @@ export interface ExpoConfig {
         useNativeDebug?: boolean;
     };
     /**
-     * Provide overrides by locale for System Dialog prompts like Permissions Boxes
+     * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
      */
     locales?: {
         [k: string]: string | {

@@ -35,11 +35,6 @@ describe('Export DOM Components', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
-
-    // TODO(kudo,20250304): Remove this once we publish `@expo/metro-config` with DOM components fixes.
-    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
-    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
-    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {
@@ -99,10 +94,10 @@ describe('Export DOM Components', () => {
 
     // Linked assets should be MD5 named
     //   - icon.png
-    const iconAssetModule = `__d((function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
+    const iconAssetModule = `__d(function(g,r,i,a,m,e,d){m.exports={uri:"fb960eb5e4eb49ec8786c7f6c4a57ce2.png",`;
     expect(domJsBundleContent.indexOf(iconAssetModule)).toBeGreaterThan(-1);
     //   - font.ttf
-    const ttfModule = `__d((function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"}),`;
+    const ttfModule = `__d(function(g,r,i,a,m,e,d){m.exports="3858f62230ac3c915f300c664312c63f.ttf"},`;
     expect(domJsBundleContent.indexOf(ttfModule)).toBeGreaterThan(-1);
 
     // Because sourceMappingURL contains path info, we have to remove it and re-generate the MD5 hash files.
@@ -117,16 +112,16 @@ describe('Export DOM Components', () => {
           assets: [
             {
               ext: 'css',
-              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
+              path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
             },
             {
               ext: 'html',
-              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
+              path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
             },
 
             {
               ext: 'js',
-              path: expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
+              path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
             },
 
             {
@@ -264,8 +259,8 @@ describe('Export DOM Components', () => {
       .filter((file) => !(file.startsWith('www.bundle/') && file.endsWith('.map')))
       .sort();
     expect(outputFilesWithoutMap).toEqual([
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc$/),
-      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-[\w\d]+\.hbc\.map$/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
+      expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/),
       'assetmap.json',
       'assets/369745d4a4a6fa62fa0ed495f89aa964',
       'assets/3858f62230ac3c915f300c664312c63f',
@@ -277,9 +272,9 @@ describe('Export DOM Components', () => {
 
       'metadata.json',
 
-      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.js$/),
-      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.html$/),
-      expect.stringMatching(/^www\.bundle\/[\w\d]{32}\.css$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
+      expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
     ]);
   });
 });

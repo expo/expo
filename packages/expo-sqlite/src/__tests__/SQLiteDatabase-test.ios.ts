@@ -39,7 +39,7 @@ describe('Database', () => {
 
   it('execAsync should throw error from an invalid command', async () => {
     db = await openDatabaseAsync(':memory:');
-    await expect(db.execAsync('INVALID COMMAMD')).rejects.toThrowError();
+    await expect(db.execAsync('INVALID COMMAMD')).rejects.toThrow();
   });
 
   it('runAsync should return SQLiteRunResult', async () => {

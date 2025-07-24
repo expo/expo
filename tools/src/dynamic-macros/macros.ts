@@ -4,15 +4,13 @@ import {
   parseMultipartMixedResponseAsync,
 } from '@expo/multipart-body-parser';
 import spawnAsync from '@expo/spawn-async';
-import { Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
 import crypto from 'crypto';
-import ip from 'ip';
-import fetch, { Response } from 'node-fetch';
+import { lanNetwork } from 'lan-network';
 import os from 'os';
 import path from 'path';
 
-import { EXPO_GO_DIR } from '../Constants';
+import { EXPO_GO_DIR, EXPO_GO_DEV_SERVER_PORT } from '../Constants';
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getExpoGoSDKVersionAsync } from '../ProjectVersions';
 
@@ -110,19 +108,8 @@ export default {
   async TEST_APP_URI() {
     if (process.env.TEST_SUITE_URI) {
       return process.env.TEST_SUITE_URI;
-    } else {
-      try {
-        const testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
-        const status = await Project.currentStatus(testSuitePath);
-        if (status === 'running') {
-          return await UrlUtils.constructManifestUrlAsync(testSuitePath);
-        } else {
-          return '';
-        }
-      } catch {
-        return '';
-      }
     }
+    return '';
   },
 
   async TEST_CONFIG() {
@@ -134,19 +121,7 @@ export default {
   },
 
   async TEST_SERVER_URL() {
-    let url = 'TODO';
-
-    try {
-      const lanAddress = ip.address();
-      const localServerUrl = `http://${lanAddress}:3013`;
-      const response = await fetch(`${localServerUrl}/expo-test-server-status`, { timeout: 500 });
-      const data = await response.text();
-      if (data === 'running!') {
-        url = localServerUrl;
-      }
-    } catch {}
-
-    return url;
+    return 'TODO';
   },
 
   async TEST_RUN_ID() {
@@ -199,7 +174,8 @@ export default {
       return '';
     }
 
-    const url = await UrlUtils.constructManifestUrlAsync(EXPO_GO_DIR);
+    const { address } = await lanNetwork();
+    const url = `exp://${address}:${EXPO_GO_DEV_SERVER_PORT}`;
 
     try {
       const manifestAndAssetRequestHeaders = await getManifestAsync(url, platform);

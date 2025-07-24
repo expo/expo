@@ -44,7 +44,7 @@ function _onPictureSaved({ nativeEvent, }) {
 }
 export default class CameraView extends Component {
     /**
-     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+     * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
      */
     static isModernBarcodeScannerAvailable = CameraManager.isModernBarcodeScannerAvailable;
     /**
@@ -124,6 +124,9 @@ export default class CameraView extends Component {
     _lastEventsTimes = {};
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
+        if (Platform.OS === 'ios' && options?.pictureRef) {
+            return this._cameraRef.current?.takePictureRef?.(options);
+        }
         return this._cameraRef.current?.takePicture(pictureOptions);
     }
     /**

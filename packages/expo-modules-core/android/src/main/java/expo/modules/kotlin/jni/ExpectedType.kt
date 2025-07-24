@@ -132,12 +132,15 @@ class ExpectedType(
   override operator fun equals(other: Any?): Boolean {
     if (other !is ExpectedType) return false
 
-    if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) return false
+    if (this.innerPossibleTypes.size != other.innerPossibleTypes.size) {
+      return false
+    }
+
     for (i in this.innerPossibleTypes.indices) {
       if (this.innerPossibleTypes[i].expectedCppType != other.innerPossibleTypes[i].expectedCppType) {
         return false
       }
-      if (this.innerPossibleTypes[i].getFirstParameterType() != other.innerPossibleTypes[i].getFirstParameterType()) {
+      if (this.innerPossibleTypes[i] != other.innerPossibleTypes[i]) {
         return false
       }
     }
@@ -151,6 +154,14 @@ class ExpectedType(
 
     fun forPrimitiveArray(parameterType: ExpectedType) = ExpectedType(
       SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(parameterType))
+    )
+
+    fun forArray(parameterType: CppType) = ExpectedType(
+      SingleType(CppType.ARRAY, arrayOf(ExpectedType(parameterType)))
+    )
+
+    fun forArray(parameterType: ExpectedType) = ExpectedType(
+      SingleType(CppType.ARRAY, arrayOf(parameterType))
     )
 
     fun forEnum() = ExpectedType(

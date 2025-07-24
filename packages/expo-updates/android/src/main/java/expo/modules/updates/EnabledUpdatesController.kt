@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.easclient.EASClientID
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.updates.db.BuildData
@@ -23,12 +24,14 @@ import expo.modules.updates.procedures.CheckForUpdateProcedure
 import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
 import expo.modules.updates.procedures.StartupProcedure
+import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -54,15 +57,18 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
-  private val fileDownloader = FileDownloader(context, updatesConfiguration, logger)
   private val selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
     updatesConfiguration.getRuntimeVersion()
   )
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val fileDownloader by lazy {
+    FileDownloader(context.filesDir, EASClientID(context).uuid.toString(), updatesConfiguration, logger)
+  }
   private val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context, Dispatchers.IO))
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
+  override val reloadScreenManager = ReloadScreenManager()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
@@ -175,6 +181,7 @@ class EnabledUpdatesController(
       getCurrentLauncher = { startupProcedure.launcher!! },
       setCurrentLauncher = { currentLauncher -> startupProcedure.setLauncher(currentLauncher) },
       shouldRunReaper = shouldRunReaper,
+      reloadScreenManager = reloadScreenManager,
       callback
     )
     stateMachine.queueExecution(procedure)
@@ -269,6 +276,10 @@ class EnabledUpdatesController(
         continuation.resumeWithException(e.toCodedException())
       }
     }
+  }
+
+  override fun shutdown() {
+    controllerScope.cancel()
   }
 
   override fun setUpdateURLAndRequestHeadersOverride(configOverride: UpdatesConfigurationOverride?) {

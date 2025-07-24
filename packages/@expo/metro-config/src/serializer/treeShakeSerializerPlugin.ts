@@ -4,18 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { NodePath, traverse } from '@babel/core';
+import { type NodePath, traverse, types } from '@babel/core';
 import generate from '@babel/generator';
-import * as types from '@babel/types';
+import type {
+  AsyncDependencyType,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
-import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
 
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { DependencyData } from '../transform-worker/collect-dependencies';
+import {
+  DependencyData,
+  MutableInternalDependency,
+} from '../transform-worker/collect-dependencies';
 import { collectDependenciesForShaking } from '../transform-worker/metro-transform-worker';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
@@ -250,9 +258,11 @@ export async function treeShakeSerializer(
       const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
       // If the dependency was already removed, then we don't need to do anything.
 
-      const importInstance = value.dependencies.get(targetHashId)!;
-
-      const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+      const importInstance = value.dependencies.get(targetHashId);
+      const graphEntryForTargetImport =
+        importInstance &&
+        isResolvedDependency(importInstance) &&
+        graph.dependencies.get(importInstance.absolutePath);
       // Should never happen but we're playing with fire here.
       if (!graphEntryForTargetImport) {
         throw new Error(
@@ -383,6 +393,7 @@ export async function treeShakeSerializer(
     if (!node) return;
     // Recursively remove all dependencies.
     for (const dep of node.dependencies.values()) {
+      if (!isResolvedDependency(dep)) continue;
       const child = graph.dependencies.get(dep.absolutePath);
       if (!child) continue;
 
@@ -434,9 +445,11 @@ export async function treeShakeSerializer(
     const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
     // If the dependency was already removed, then we don't need to do anything.
 
-    const importInstance = graphModule.dependencies.get(targetHashId)!;
-
-    const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+    const importInstance = graphModule.dependencies.get(targetHashId);
+    const graphEntryForTargetImport =
+      importInstance &&
+      isResolvedDependency(importInstance) &&
+      graph.dependencies.get(importInstance.absolutePath);
     // Should never happen but we're playing with fire here.
     if (!graphEntryForTargetImport) {
       throw new Error(
@@ -507,13 +520,15 @@ export async function treeShakeSerializer(
       // Unless it's an empty module.
       isEmptyModule(graphEntryForTargetImport)
     ) {
-      // Remove a random instance of the dep count to track if there are multiple imports.
-      // TODO: Get the exact instance of the import.
+      // TODO: Get the exact instance of the import. This help with more readable errors when import was not counted.
+      const importData = importInstance.data.data as MutableInternalDependency;
+      assert(
+        'imports' in importData,
+        'Expo InternalDependency type expected, but `imports` key is missing.'
+      );
+      importData.imports -= 1;
 
-      // @ts-expect-error: typed as readonly
-      importInstance.data.data.locs.pop();
-
-      if (importInstance.data.data.locs.length === 0) {
+      if (importData.imports <= 0) {
         // Remove dependency from this module so it doesn't appear in the dependency map.
         graphModule.dependencies.delete(targetHashId);
 
@@ -741,7 +756,7 @@ export async function treeShakeSerializer(
 
   function removeUnusedImportsFromModule(
     value: Module<MixedOutput>,
-    ast: Parameters<typeof traverse>[0]
+    ast: types.Node | undefined
   ): string[] {
     // json, asset, script, etc.
     if (!ast) {
@@ -792,7 +807,6 @@ export async function treeShakeSerializer(
 
         // NOTE: This could be a problem if the AST is re-parsed.
         // TODO: This doesn't account for `import {} from './foo'`
-        // @ts-expect-error: custom property
         path.opts.originalSpecifiers ??= path.node.specifiers.length;
         importDecs.push(path);
       },
@@ -811,8 +825,6 @@ export async function treeShakeSerializer(
     // Remove the unused imports from the AST
     importDecs.forEach((path) => {
       const originalSize = path.node.specifiers.length;
-
-      // @ts-expect-error: custom property
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
 
       path.node.specifiers = path.node.specifiers.filter((specifier) => {
@@ -833,7 +845,7 @@ export async function treeShakeSerializer(
         // The hash key for the dependency instance in the module.
         const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
         const importInstance = value.dependencies.get(targetHashId);
-        if (importInstance) {
+        if (importInstance && isResolvedDependency(importInstance)) {
           dirtyImports.push(importInstance.absolutePath);
         }
       }
@@ -911,7 +923,7 @@ export async function treeShakeSerializer(
       // Optimize all deps without marking as dirty to prevent
       // circular dependencies from creating infinite loops.
       dep.dependencies.forEach((dep) => {
-        paths.push(dep.absolutePath);
+        if (isResolvedDependency(dep)) paths.push(dep.absolutePath);
       });
     }
 

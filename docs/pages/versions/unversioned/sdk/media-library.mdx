@@ -40,7 +40,8 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
-          "isAccessMediaLocationEnabled": true
+          "isAccessMediaLocationEnabled": true,
+          "granularPermissions": ["audio", "photo"]
         }
       ]
     ]
@@ -79,6 +80,13 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
       description:
         'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.',
       default: 'false',
+    },
+    {
+      name: 'granularPermissions',
+      platform: 'android',
+      description:
+        'Sets which [`GranularPermission`](#granularpermission) values to include, determining which media permissions (`READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO`, `READ_MEDIA_AUDIO`) will be added to the Android manifest. Matches the behavior of the runtime API.',
+      default: '["photo", "video", "audio"]',
     },
   ]}
 />
@@ -212,6 +220,10 @@ Due to system limitations on Android, it is impossible to create empty albums. I
 
 Android 11 introduced permission changes that make the operation of moving assets between albums require confirmation from the user every time.
 Therefore, when creating a new asset, instead of creating the asset and then moving it to the album, it is recommended to pass the `album` parameter to the [`createAssetAsync`](#medialibrarycreateassetasynclocaluri-album) method, which will automatically add the asset to the album without the need for user confirmation.
+
+### Wrong orientation of images
+
+On Android, when using `getAssetsAsync` without `resolveWithFullInfo: true`, image orientation may be incorrect because EXIF data (which includes orientation) is only read when that option is enabled.
 
 ## API
 

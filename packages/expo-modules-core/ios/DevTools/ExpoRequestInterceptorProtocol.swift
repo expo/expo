@@ -135,7 +135,23 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
         redirectResponse: response
       )
     }
-    completionHandler(request)
+
+    // The `shouldFollowRedirects` property is set by `expo/fetch`.
+    // It tells `ExpoRequestInterceptorProtocol` whether to follow HTTP redirects.
+    let shouldFollowRedirects = URLProtocol.property(forKey: "shouldFollowRedirects", in: request) as? Bool ?? true
+    if shouldFollowRedirects {
+      completionHandler(request)
+    } else {
+      completionHandler(nil)
+
+      // NOTE (kudo): The exact usage of
+      // `urlProtocol(_:wasRedirectedTo:redirectResponse:)` isn’t fully clear.
+      // My understanding is that this delegate method informs the client
+      // about a redirect when you’re handling it yourself.
+      // Since we’re not following the redirect and are stopping at the
+      // current request/response, we call it here with those values.
+      client?.urlProtocol(self, wasRedirectedTo: request, redirectResponse: response)
+    }
   }
 
   public func urlSession(
@@ -164,19 +180,29 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // Workaround to get the original task's URLSessionDelegate through the internal property and send upload process
     // Fixes https://github.com/expo/expo/issues/28269
     // swiftlint:enable line_length
-    guard let task = self.task else {
+    guard let dataTask = dataTask_ else {
       return
     }
-    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = task.delegate {
+
+    // Prevent recursive delegate calls
+    if task === dataTask {
+      return
+    }
+
+    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = dataTask.delegate {
       // For the case if the task has a dedicated delegate than the default delegate from its URLSession
-      delegate.urlSession?(session, task: task, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+      delegate.urlSession?(
+        session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+      )
       return
     }
     guard let session = task.value(forKey: "session") as? URLSession,
       let delegate = session.delegate as? URLSessionTaskDelegate else {
       return
     }
-    delegate.urlSession?(session, task: task, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+    delegate.urlSession?(
+      session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+    )
   }
 
   /**

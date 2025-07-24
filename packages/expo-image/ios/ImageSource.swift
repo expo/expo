@@ -21,9 +21,6 @@ struct ImageSource: Record {
   @Field
   var cacheKey: String?
 
-  @Field
-  var useAppleWebpCodec: Bool = true
-
   var pixelCount: Double {
     return width * height * scale * scale
   }
@@ -40,8 +37,7 @@ struct ImageSource: Record {
     return isPhotoLibraryAssetUrl(uri)
   }
 
-  var isCachingAllowed: Bool {
-    // TODO: Don't cache other non-network requests (e.g. data URIs, local files)
+  var cacheOriginalImage: Bool {
     return !isPhotoLibraryAsset
   }
 }

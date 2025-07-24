@@ -4,8 +4,8 @@ import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import requireString from 'require-from-string';
-import resolveFrom from 'resolve-from';
 
+import { getExpoConfigAsync } from '../../ExpoConfig';
 import { HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import { SourceSkips } from '../../sourcer/SourceSkips';
@@ -26,6 +26,7 @@ jest.mock('fs/promises');
 jest.mock('resolve-from');
 jest.mock('/app/package.json', () => {}, { virtual: true });
 jest.mock('../../ExpoResolver');
+jest.mock('../../ProjectWorkflow');
 jest.mock('../../utils/SpawnIPC');
 
 // NOTE(cedric): this is a workaround to also mock `node:fs`
@@ -168,22 +169,19 @@ describe(getExpoConfigSourcesAsync, () => {
     vol.reset();
   });
 
-  it('should return empty array when expo package is not installed', async () => {
+  it('should return empty array when expo config is null (expo package is not installed)', async () => {
     vol.fromJSON(require('./fixtures/BareReactNative70Project.json'));
-    const mockedResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-    mockedResolveFrom.mockImplementationOnce((fromDirectory: string, moduleId: string) => {
-      const actualResolver = jest.requireActual('resolve-from').silent;
-      // To fake the case as no expo installed, trying to resolve as **nonexist/expo/config** module
-      return actualResolver(fromDirectory, 'nonexist/expo/config');
-    });
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const sources = await getExpoConfigSourcesAsync('/app', null, null, options);
     expect(sources.length).toBe(0);
   });
 
   it('should contain expo config', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     const expoConfigSource = sources.find<HashSourceContents>(
       (source): source is HashSourceContents =>
         source.type === 'contents' && source.id === 'expoConfig'
@@ -195,7 +193,9 @@ describe(getExpoConfigSourcesAsync, () => {
 
   it('should keep expo config contents in deterministic order', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
 
     const appJsonContents = vol.readFileSync('/app/app.json', 'utf8').toString();
     const appJson = JSON.parse(appJsonContents);
@@ -208,7 +208,12 @@ describe(getExpoConfigSourcesAsync, () => {
     vol.writeFileSync('/app/app.json', newAppJsonContents);
 
     // Even new app.json contents changed its order, the source contents should be the same.
-    const sources2 = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+
+    const { config: config2, loadedModules: loadedModules2 } = await getExpoConfigAsync(
+      '/app',
+      options
+    );
+    const sources2 = await getExpoConfigSourcesAsync('/app', config2, loadedModules2, options);
     expect(sources).toEqual(sources2);
   });
 
@@ -219,7 +224,9 @@ describe(getExpoConfigSourcesAsync, () => {
     appJson.expo.extra.testFile = '/app/test-file.txt';
     appJson.expo.extra.testNestedFile = '/app/nested/test-file.txt';
     vol.writeFileSync('/app/app.json', JSON.stringify(appJson, null, 2));
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     const expoConfigSource = sources.find<HashSourceContents>(
       (source): source is HashSourceContents =>
         source.type === 'contents' && source.id === 'expoConfig'
@@ -233,7 +240,9 @@ describe(getExpoConfigSourcesAsync, () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.mkdirSync('/app/assets');
     vol.writeFileSync('/app/assets/icon.png', 'PNG data');
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -262,7 +271,9 @@ describe(getExpoConfigSourcesAsync, () => {
       signal: null,
       status: 0,
     });
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -292,7 +303,9 @@ describe(getExpoConfigSourcesAsync, () => {
       signal: null,
       status: 0,
     });
-    const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    const options = await normalizeOptionsAsync('/app');
+    const { config: expoConfig, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', expoConfig, loadedModules, options);
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -329,10 +342,11 @@ export default ({ config }) => {
 };`
     );
 
-    const sources = await getExpoConfigSourcesAsync(
-      '/app',
-      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.ExpoConfigVersions })
-    );
+    const options = await normalizeOptionsAsync('/app', {
+      sourceSkips: SourceSkips.ExpoConfigVersions,
+    });
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     const expoConfigSource = sources.find<HashSourceContents>(
       (source): source is HashSourceContents =>
         source.type === 'contents' && source.id === 'expoConfig'
@@ -370,7 +384,9 @@ module.exports = config;
         virtual: true,
       });
 
-      const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+      const options = await normalizeOptionsAsync('/app');
+      const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+      const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
       const expoConfigSource = sources.find<HashSourceContents>(
         (source): source is HashSourceContents =>
           source.type === 'contents' && source.id === 'expoConfig'
@@ -411,7 +427,9 @@ module.exports = config;
         virtual: true,
       });
 
-      const sources = await getExpoConfigSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+      const options = await normalizeOptionsAsync('/app');
+      const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+      const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
       const expoConfigSource = sources.find<HashSourceContents>(
         (source): source is HashSourceContents =>
           source.type === 'contents' && source.id === 'expoConfig'
@@ -439,12 +457,11 @@ export default ({ config }) => {
   return config;
 };`
     );
-    const sources = await getExpoConfigSourcesAsync(
-      '/app',
-      await normalizeOptionsAsync('/app', {
-        sourceSkips: SourceSkips.ExpoConfigRuntimeVersionIfString,
-      })
-    );
+    const options = await normalizeOptionsAsync('/app', {
+      sourceSkips: SourceSkips.ExpoConfigRuntimeVersionIfString,
+    });
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     const expoConfigSource = sources.find<HashSourceContents>(
       (source): source is HashSourceContents =>
         source.type === 'contents' && source.id === 'expoConfig'
@@ -470,12 +487,11 @@ export default ({ config }) => {
   return config;
 };`
     );
-    const sources = await getExpoConfigSourcesAsync(
-      '/app',
-      await normalizeOptionsAsync('/app', {
-        sourceSkips: SourceSkips.ExpoConfigRuntimeVersionIfString,
-      })
-    );
+    const options = await normalizeOptionsAsync('/app', {
+      sourceSkips: SourceSkips.ExpoConfigRuntimeVersionIfString,
+    });
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     const expoConfigSource = sources.find<HashSourceContents>(
       (source): source is HashSourceContents =>
         source.type === 'contents' && source.id === 'expoConfig'
@@ -492,10 +508,11 @@ export default ({ config }) => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.mkdirSync('/app/assets');
     vol.writeFileSync('/app/assets/icon.png', 'PNG data');
-    const sources = await getExpoConfigSourcesAsync(
-      '/app',
-      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.ExpoConfigAssets })
-    );
+    const options = await normalizeOptionsAsync('/app', {
+      sourceSkips: SourceSkips.ExpoConfigAssets,
+    });
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     expect(sources).not.toContainEqual(
       expect.objectContaining({
         type: 'file',
@@ -508,10 +525,9 @@ export default ({ config }) => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.mkdirSync('/app/assets');
     vol.writeFileSync('/app/assets/icon.png', 'PNG data');
-    const sources = await getExpoConfigSourcesAsync(
-      '/app',
-      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.ExpoConfigAll })
-    );
+    const options = await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.ExpoConfigAll });
+    const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+    const sources = await getExpoConfigSourcesAsync('/app', config, loadedModules, options);
     expect(sources).toEqual([]);
   });
 });

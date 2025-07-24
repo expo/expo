@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix transition issues with `react-native-screens` when using `dimezisBlurView` blur method. ([#37904](https://github.com/expo/expo/pull/37904) by [@hannojg](https://github.com/hannojg)
+
 ### 💡 Others
+
+## 14.1.5 - 2025-06-05
+
+_This version does not introduce any user-facing changes._
 
 ## 14.1.4 — 2025-04-30
 

@@ -10,6 +10,7 @@ exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
 const find_up_1 = __importDefault(require("find-up"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("./utils");
 /**
  * Find the path to the `package.json` of the closest project in the given project root.
  */
@@ -37,7 +38,8 @@ function getProjectPackageJsonPathSync(projectRoot) {
  * - options provided to the CLI command
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
-    const packageJson = require(await getProjectPackageJsonPathAsync(providedOptions.projectRoot));
+    const packageJsonPath = await getProjectPackageJsonPathAsync(providedOptions.projectRoot);
+    const packageJson = await (0, utils_1.loadPackageJSONAsync)(packageJsonPath);
     const baseOptions = packageJson.expo?.autolinking;
     const platformOptions = getPlatformOptions(providedOptions.platform, baseOptions);
     const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);

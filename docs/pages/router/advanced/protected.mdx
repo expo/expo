@@ -1,11 +1,17 @@
 ---
 title: Protected routes
 description: Learn how to make screens inaccessible to client-side navigation.
+hasVideoLink: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **warning** Protected routes are available in SDK 53 and above.
+
+<VideoBoxLink videoId="zHZjJDTTHJg" title="Watch: Using protected routes" />
+
+## Overview
 
 Protected screens allow you to prevent users from accessing certain routes using client-side navigation. If a user tries to navigate to a protected screen, or if a screen becomes protected while it is active, they will be redirected to the anchor route (usually the index screen) or the first available screen in the stack.
 
@@ -87,7 +93,7 @@ export function AppLayout() {
     <Stack>
       <Stack.Protected guard={isLoggedIn}>
         <Stack.Protected guard={isAdmin}>
-          <Stack.Screen name="protected" />
+          <Stack.Screen name="private" />
         </Stack.Protected>
 
         <Stack.Screen name="about" />
@@ -138,6 +144,36 @@ export function AppLayout() {
 ```
 
 Here, because the **index** screen is protected and the **protected** is **false**, the router redirects to the first available screen &mdash; **login**.
+
+## Tabs and Drawer
+
+Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.
+
+```tsx app/_layout.tsx
+import { Tabs } from 'expo-router';
+
+const isLoggedIn = false;
+
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" options={{ tabBarLabel: 'Home' }} />
+      <Tabs.Protected guard={isLoggedIn}>
+        <Tabs.Screen name="private" options={{ tabBarLabel: 'Private' }} />
+        <Tabs.Screen name="profile" options={{ tabBarLabel: 'Profile' }} />
+      </Tabs.Protected>
+
+      <Tabs.Protected guard={!isLoggedIn}>
+        <Tabs.Screen name="login" options={{ tabBarLabel: 'Login' }} />
+      </Tabs.Protected>
+    </Tabs>
+  );
+}
+```
+
+## Custom navigators
+
+`Protected` is also available for [custom navigators](/router/migrate/from-react-navigation/#rewrite-custom-navigators) using the `withLayoutContext` hook.
 
 ## Static rendering considerations
 

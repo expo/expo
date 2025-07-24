@@ -189,7 +189,7 @@ function screenOptionsFactory(route, options) {
             ...dynamicResult,
         };
         // Prevent generated screens from showing up in the tab bar.
-        if (route.generated) {
+        if (route.internal) {
             output.tabBarItemStyle = { display: 'none' };
             output.tabBarButton = () => null;
             // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
@@ -208,7 +208,7 @@ function getSingularId(name, options = {}) {
         if (segment.startsWith('[...')) {
             return options.params?.[segment.slice(4, -1)]?.join('/') || segment;
         }
-        else if (segment.startsWith('[')) {
+        else if (segment.startsWith('[') && segment.endsWith(']')) {
             return options.params?.[segment.slice(1, -1)] || segment;
         }
         else {

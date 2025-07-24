@@ -52,18 +52,8 @@ public class ReactAndroidCodeTransformer {
         ;
     }
 
-    private static abstract class KtMethodVisitor {
-        String modifySource(final String source) {
-            return source;
-        }
-
-        ;
-
-        public abstract Node visit(String methodName, MethodDeclaration n);
-    }
 
     private static final Map<String, MethodVisitor> JAVA_FILES_TO_MODIFY = new HashMap<>();
-    private static final Map<String, KtMethodVisitor> KOTLIN_FILES_TO_MODIFY = new HashMap<>();
 
     private static String getCallMethodReflectionBlock(String className, String methodNameAndTypes, String targetAndValues) {
         return getCallMethodReflectionBlock(className, methodNameAndTypes, targetAndValues, "", "");
@@ -109,143 +99,28 @@ public class ReactAndroidCodeTransformer {
         return new CatchClause(exceptionParam, catchBlock);
     }
 
-  private static TryStmt getTryCatch(Statement statement, String title, String details, String exceptionId, String isFatal) {
-    TryStmt tryStatement = new TryStmt();
-    BlockStmt tryBlockStatement = new BlockStmt(NodeList.nodeList(statement));
-    tryStatement.setTryBlock(tryBlockStatement);
-    tryStatement.setCatchClauses(NodeList.nodeList(getCatchClause(title, details, exceptionId, isFatal)));
-    return tryStatement;
-  }
+    private static TryStmt getTryCatch(Statement statement, String title, String details, String exceptionId, String isFatal) {
+        TryStmt tryStatement = new TryStmt();
+        BlockStmt tryBlockStatement = new BlockStmt(NodeList.nodeList(statement));
+        tryStatement.setTryBlock(tryBlockStatement);
+        tryStatement.setCatchClauses(NodeList.nodeList(getCatchClause(title, details, exceptionId, isFatal)));
+        return tryStatement;
+    }
 
-  private static TryStmt getTryCatch(Statement statement) {
-    TryStmt tryStatement = new TryStmt();
-    BlockStmt tryBlockStatement = new BlockStmt(NodeList.nodeList(statement));
-    tryStatement.setTryBlock(tryBlockStatement);
-    tryStatement.setCatchClauses(NodeList.nodeList(getCatchClause()));
-    return tryStatement;
-  }
+    private static TryStmt getTryCatch(Statement statement) {
+        TryStmt tryStatement = new TryStmt();
+        BlockStmt tryBlockStatement = new BlockStmt(NodeList.nodeList(statement));
+        tryStatement.setTryBlock(tryBlockStatement);
+        tryStatement.setCatchClauses(NodeList.nodeList(getCatchClause()));
+        return tryStatement;
+    }
 
-  private static String addBeforeEndOfClass(final String source, final String add) {
-    int endOfClass = source.lastIndexOf("}");
-    return source.substring(0, endOfClass) + "\n" + add + "\n" + source.substring(endOfClass);
-  }
+    private static String addBeforeEndOfClass(final String source, final String add) {
+        int endOfClass = source.lastIndexOf("}");
+        return source.substring(0, endOfClass) + "\n" + add + "\n" + source.substring(endOfClass);
+    }
 
     static {
-        JAVA_FILES_TO_MODIFY.put("devsupport/DevServerHelper.java", new MethodVisitor() {
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                switch (methodName) {
-                    case "createBundleURL":
-                        // In RN 0.54 this method is overloaded; skip the convenience version
-                        NodeList<Parameter> params = n.getParameters();
-                        if (params.size() == 2 && params.get(0).getNameAsString().equals("mainModuleID") &&
-                                params.get(1).getNameAsString().equals("type")) {
-                            return n;
-                        }
-
-                        BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
-                                "host.exp.exponent.ReactNativeStaticHelpers",
-                                "\"getBundleUrlForActivityId\", int.class, String.class, String.class, String.class, boolean.class, boolean.class",
-                                "null, mSettings.getExponentActivityId(), host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode()",
-                                "return (String) ",
-                                "return null;"));
-                        n.setBody(stmt);
-                        n.getModifiers().remove(Modifier.STATIC);
-                        return n;
-                }
-
-                return n;
-            }
-        });
-        KOTLIN_FILES_TO_MODIFY.put("modules/network/OkHttpClientProvider.kt", new KtMethodVisitor() {
-            @Override
-            String modifySource(String source) {
-                String replacementSource = """
-                          @JvmStatic
-                          public fun createClient(): OkHttpClient {
-                            try {
-                              return (Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod(
-                                "getOkHttpClient",
-                                Class::class.java
-                              ).invoke(null, OkHttpClientProvider::class.java) as OkHttpClient)
-                            } catch (expoHandleErrorException: Exception) {
-                              expoHandleErrorException.printStackTrace()
-                              return factory?.createNewNetworkModuleClient() ?: createClientBuilder().build()
-                            }
-                          }
-                        """;
-
-                String originalSource = """
-                          @JvmStatic
-                          public fun createClient(): OkHttpClient {
-                            return factory?.createNewNetworkModuleClient() ?: createClientBuilder().build()
-                          }
-                        """;
-                return source.replace(originalSource, replacementSource);
-            }
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                return null;
-            }
-        });
-        JAVA_FILES_TO_MODIFY.put("devsupport/DevSupportManagerBase.java", new MethodVisitor() {
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                switch (methodName) {
-                    case "handleReloadJS":
-                        // Catch error if "draw over other apps" not enabled
-                        return handleReloadJS(n);
-                    case "handleException":
-                        // Handle any uncaught error in original method
-                        return handleException(n);
-                    case "hasUpToDateJSBundleInCache":
-                        // Use this to always force a refresh in debug mode.
-                        return hasUpToDateJSBundleInCache(n);
-                    case "showDevOptionsDialog":
-                        return showDevOptionsDialog(n);
-                    case "getExponentActivityId":
-                        n.setBody(JavaParser.parseBlock("{return mDevServerHelper.mSettings.getExponentActivityId();}"));
-                        return n;
-                }
-
-                return n;
-            }
-        });
-        JAVA_FILES_TO_MODIFY.put("devsupport/BridgeDevSupportManager.java", null);
-
-        KOTLIN_FILES_TO_MODIFY.put("modules/core/ExceptionsManagerModule.kt", new KtMethodVisitor() {
-
-            public Node visit(String methodName, MethodDeclaration n) {
-                // In dev mode call the original methods. Otherwise open Expo error screen
-                switch (methodName) {
-                    case "reportFatalException":
-                        return exceptionsManagerModuleHandleException(n, "message", "stack", "(int) idDouble", "true");
-                    case "reportSoftException":
-                        return exceptionsManagerModuleHandleException(n, "message", "stack", "(int) idDouble", "false");
-                    case "updateExceptionMessage":
-                        return exceptionsManagerModuleHandleException(n, "title", "details", "(int) exceptionIdDouble", "false");
-                }
-
-                return n;
-            }
-        });
-        JAVA_FILES_TO_MODIFY.put("modules/dialog/DialogModule.java", new MethodVisitor() {
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                switch (methodName) {
-                    case "onHostResume":
-                        return wrapInTryCatch(n);
-                }
-
-                return n;
-            }
-        });
-        JAVA_FILES_TO_MODIFY.put("modules/network/NetworkingModule.java", null);
-        KOTLIN_FILES_TO_MODIFY.put("modules/systeminfo/AndroidInfoHelpers.kt", null);
         JAVA_FILES_TO_MODIFY.put("uimanager/NativeViewHierarchyManager.java", new MethodVisitor() {
 
             @Override
@@ -253,117 +128,6 @@ public class ReactAndroidCodeTransformer {
                 switch (methodName) {
                     case "updateProperties":
                         return wrapInTryCatch(n);
-                }
-
-                return n;
-            }
-        });
-        KOTLIN_FILES_TO_MODIFY.put("bridge/DefaultJSExceptionHandler.kt", new KtMethodVisitor() {
-
-            @Override
-            String modifySource(String source) {
-
-                String replacementSource = """
-                              public override fun handleException(e: Exception) {
-                                try {
-                                  run {
-                                    if (e is RuntimeException) {
-                                      throw e
-                                    } else {
-                                      throw RuntimeException(e)
-                                    }
-                                  }
-                                } catch (expoException: RuntimeException) {
-                                  try {
-                                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod(
-                                      "handleReactNativeError",
-                                      String::class.java,
-                                      Any::class.java,
-                                      Int::class.java,
-                                      Boolean::class.java
-                                    ).invoke(null, expoException.message, null, -1, true)
-                                  } catch (expoHandleErrorException: Exception) {
-                                    expoHandleErrorException.printStackTrace()
-                                  }
-                                }
-                              }
-                            """;
-
-                String originalSource = """
-                   override fun handleException(e: Exception) {
-                      throw if (e is RuntimeException) {
-                        // Because we are rethrowing the original exception, the original stacktrace will be
-                        // preserved.
-                        e
-                      } else {
-                        RuntimeException(e)
-                      }
-                    }
-                  """;
-                return source.replace(originalSource, replacementSource);
-            }
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                switch (methodName) {
-                    case "handleException":
-                        // Catch any uncaught exceptions
-                        return wrapInTryCatchAndHandleError(n);
-                }
-
-                return n;
-            }
-        });
-        KOTLIN_FILES_TO_MODIFY.put("devsupport/DevInternalSettings.kt", new KtMethodVisitor() {
-
-            @Override
-            String modifySource(String source) {
-                // Make DevInternalSettings class "public"
-                source = source.replace("\ninternal class DevInternalSettings", "\npublic class DevInternalSettings");
-                source = source.replace("companion object", "public companion object");
-                source = source.replace("interface Listener", "public interface Listener");
-                source = source.replace("fun onInternalSettingsChanged()", "public fun onInternalSettingsChanged()");
-                source = source.replace("override fun addMenuItem(title: String) = Unit", "override fun addMenuItem(title: String): Unit = Unit");
-
-                return addBeforeEndOfClass(source, """
-                          private var exponentActivityId: Int = -1
-                        
-                          public fun setExponentActivityId(value: Int) {
-                             exponentActivityId = value
-                          }
-                        
-                          public override fun getExponentActivityId(): Int {
-                            return exponentActivityId
-                          }
-                        """);
-            }
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                return n;
-            }
-        });
-
-        KOTLIN_FILES_TO_MODIFY.put("modules/debug/interfaces/DeveloperSettings.kt", new KtMethodVisitor() {
-
-            @Override
-            String modifySource(String source) {
-                return addBeforeEndOfClass(source, "public fun getExponentActivityId(): Int");
-            }
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                return n;
-            }
-        });
-
-        KOTLIN_FILES_TO_MODIFY.put("BaseReactPackage.kt", new KtMethodVisitor() {
-
-            @Override
-            public Node visit(String methodName, MethodDeclaration n) {
-                if (methodName.equals("getNativeModuleIterator")) {
-                    n.setPublic(true);
-                    return n;
                 }
 
                 return n;
@@ -410,13 +174,7 @@ public class ReactAndroidCodeTransformer {
             }
         }
 
-        for (String fileName : KOTLIN_FILES_TO_MODIFY.keySet()) {
-            try {
-                updateKotlinFile(path + fileName, KOTLIN_FILES_TO_MODIFY.get(fileName));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
+        ReactAndroidKotlinTransformer.processAllKotlinFiles(path);
     }
 
     private static void replaceInFile(final File file, final String searchString, final String replaceString) {
@@ -441,20 +199,6 @@ public class ReactAndroidCodeTransformer {
                 out.write(methodVisitor.modifySource(cu.toString()).getBytes());
             } else {
                 out.write(cu.toString().getBytes());
-            }
-        }
-    }
-
-    private static void updateKotlinFile(final String path, final KtMethodVisitor methodVisitor) throws IOException, ParseException {
-        FileInputStream in = new FileInputStream(path);
-        String content = new String(in.readAllBytes());
-        in.close();
-
-        try (FileOutputStream out = new FileOutputStream(path)) {
-            if (methodVisitor != null) {
-                out.write(methodVisitor.modifySource(content).getBytes());
-            } else {
-                out.write(content.getBytes());
             }
         }
     }

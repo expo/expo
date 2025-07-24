@@ -2,38 +2,35 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
-class TypeConverterComponent<Type : Any>(val notNullableType: KType, val nullableType: KType) {
-  val nonNullableConverter = lazy { TypeConverterCollection<Type>(notNullableType, false) }
-  val nullableConverter = lazy { TypeConverterCollection<Type>(nullableType, true) }
+class TypeConverterComponent<Type : Any>(val desireType: KType) {
+  val desireTypeConverter = lazy { TypeConverterCollection<Type>(desireType) }
 
   inline fun <reified P0 : Any> from(crossinline body: (p0: P0) -> Type): TypeConverterComponent<Type> {
-    nonNullableConverter.value.from(body)
-    nullableConverter.value.from(body)
+    desireTypeConverter.value.from(body)
     return this
   }
 
-  fun build(): List<Pair<KType, TypeConverter<*>>> {
-    if (nonNullableConverter.isInitialized() && nullableConverter.isInitialized()) {
-      return listOf(
-        notNullableType to nonNullableConverter.value,
-        nullableType to nullableConverter.value
-      )
+  fun build(): Pair<KType, TypeConverter<*>>? {
+    if (desireTypeConverter.isInitialized()) {
+      val typeConverter = TypeConverterCollection<Type>(desireType)
+      typeConverter.converters = desireTypeConverter.value.converters
+      return desireType to typeConverter
     }
-
-    return emptyList()
+    return null
   }
 }
 
 class TypeConverterCollection<Type : Any>(
-  val type: KType,
-  isOptional: Boolean
-) : NullAwareTypeConverter<Type>(isOptional) {
+  val type: KType
+) : NonNullableTypeConverter<Type>() {
   @PublishedApi
   internal var converters: MutableMap<KType, (Any?) -> Type> = mutableMapOf()
 
@@ -46,7 +43,7 @@ class TypeConverterCollection<Type : Any>(
     return this
   }
 
-  override fun convertNonOptional(value: Any, context: AppContext?): Type {
+  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Type {
     val possibleConverters = converters
       .map { (key, converter) -> key to converter }
       .filter { (key, _) ->
@@ -58,18 +55,40 @@ class TypeConverterCollection<Type : Any>(
       // We don't have a converter for Dynamic, but we can try to convert it to ExpoDynamic
       // and see if we have a converter for that.
       if (value is Dynamic) {
-        return convertNonOptional(ExpoDynamic(value), context)
+        return convertNonNullable(ExpoDynamic(value), context, forceConversion)
       }
 
       throw MissingTypeConverter(type)
     }
 
     if (possibleConverters.size > 1) {
-      throw TypeCastException("Cannot cast '$value' to '$type'. Type converters conflict")
+      val errors = mutableListOf<CodedException>()
+      for ((type, userConverter) in possibleConverters) {
+        try {
+          val inputConverter = TypeConverterProviderImpl.obtainTypeConverter(type)
+          val input = inputConverter.convert(value, context, forceConversion = true)
+          return userConverter.invoke(input)
+        } catch (e: Exception) {
+          errors.add(e.toCodedException())
+        }
+      }
+      throw TypeCastException("Cannot cast '$value' to '$type'. Tried: ${possibleConverters.joinToString { it.first.toString() }}. Errors: ${errors.joinToString { it.message ?: "" }}")
     }
 
-    return possibleConverters.first().second.invoke(value)
+    val (inputType, userConverter) = possibleConverters.first()
+    val inputTypeConverter = TypeConverterProviderImpl.obtainTypeConverter(inputType)
+    if (inputTypeConverter.isTrivial() && !forceConversion) {
+      // If the input type converter is trivial, we can skip the conversion.
+      // This is useful for types like String, Int, etc.
+      return userConverter.invoke(value)
+    }
+
+    return userConverter.invoke(
+      inputTypeConverter.convert(value, context, forceConversion)
+    )
   }
+
+  override fun isTrivial(): Boolean = false
 
   override fun getCppRequiredTypes(): ExpectedType {
     return ExpectedType.merge(

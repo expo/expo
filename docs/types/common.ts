@@ -48,6 +48,7 @@ export type NavigationRoute = {
   isAlpha?: boolean;
   isDeprecated?: boolean;
   inExpoGo?: boolean;
+  hasVideoLink?: boolean;
   children?: NavigationRouteWithSection[];
 };
 

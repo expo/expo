@@ -1,6 +1,6 @@
 import generate from '@babel/generator';
+import type { BabelTransformer } from '@expo/metro/metro-babel-transformer';
 import { vol } from 'memfs';
-import type { BabelTransformer } from 'metro-babel-transformer';
 
 import * as babel from '../babel-core';
 // eslint-disable-next-line import/namespace
@@ -42,7 +42,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
       dev: true,
       projectRoot: '/',
       hot: true,
-      inlineRequires: false,
+      inlineRequires: false as any, // TODO(@kitten): Remove
       minify: false,
       platform: 'ios',
       publicPath: '/',
@@ -56,7 +56,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
 
   expect(generate(results.ast).code).toMatchSnapshot();
 
-  expect(babel.transformSync).toBeCalledWith(fixture, {
+  expect(babel.transformSync).toHaveBeenCalledWith(fixture, {
     ast: true,
     babelrc: true,
     caller: {
@@ -106,7 +106,7 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
       dev: true,
       projectRoot: '/',
       hot: true,
-      inlineRequires: false,
+      inlineRequires: false as any, // TODO(@kitten): Remove
       minify: false,
       platform: 'ios',
       publicPath: '/',
@@ -118,10 +118,10 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
     plugins: [],
   });
 
-  expect(console.warn).toBeCalledTimes(0);
+  expect(console.warn).toHaveBeenCalledTimes(0);
   expect(generate(results.ast).code).toMatchSnapshot();
 
-  expect(babel.transformSync).toBeCalledWith(fixture, {
+  expect(babel.transformSync).toHaveBeenCalledWith(fixture, {
     ast: true,
     babelrc: true,
     caller: expect.objectContaining({

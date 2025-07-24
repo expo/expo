@@ -37,7 +37,7 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
     } else {
       const array = new Uint8Array(theView.buffer);
       for (let i = 0; i < bytes.length; i++) {
-        array[i + theView.byteOffset] = bytes[i];
+        array[i + (theView.byteOffset ?? 0)] = bytes[i]!;
       }
     }
     controller.byobRequest.respond(bytes.length);

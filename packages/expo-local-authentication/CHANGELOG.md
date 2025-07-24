@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- [Android] Added `promptSubtitle` and `promptDescription` parameters to `authenticateAsync`. ([#35335](https://github.com/expo/expo/pull/35335) by [@filipejuan](https://github.com/filipejuan))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 16.0.5 - 2025-07-01
 
 ### 💡 Others
 

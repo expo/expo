@@ -7,6 +7,7 @@ import { getHashSourcesAsync } from '../Sourcer';
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
 jest.mock('fs/promises');
+jest.mock('../../ProjectWorkflow');
 jest.mock('../../utils/SpawnIPC');
 jest.mock('/app/package.json', () => ({}), { virtual: true });
 
@@ -26,6 +27,15 @@ describe(getPatchPackageSourcesAsync, () => {
         filePath: 'patches',
       })
     );
+  });
+
+  it('should NOT add patches dir if it is ignored from the root', async () => {
+    vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+    vol.fromJSON(require('./fixtures/PatchPackage.json'));
+
+    const options = await normalizeOptionsAsync('/app', { ignorePaths: ['patches/'] });
+    const sources = await getPatchPackageSourcesAsync('/app', options);
+    expect(sources).toEqual([]);
   });
 });
 

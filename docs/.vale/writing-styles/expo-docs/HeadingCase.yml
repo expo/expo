@@ -76,6 +76,7 @@ exceptions:
   - '.*Developer Mode.*'
   - '.*Dynamic.*'
   - '.*detach.*'
+  - '.*DNS.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'
@@ -225,6 +226,7 @@ exceptions:
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
+  - '.*TLS.*'
   - '.*Transporter.*'
   - '.*TTF.*'
   - '.*Turtle.*'
@@ -264,3 +266,4 @@ exceptions:
   - architecture?
   - index.tsx files
   - registerRootComponent
+  - browserslist
