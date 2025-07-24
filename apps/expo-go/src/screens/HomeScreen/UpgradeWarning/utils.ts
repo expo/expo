@@ -24,12 +24,16 @@ type VersionsApiResponseType = {
   sdkVersions: Record<string, SdkVersionFromApiType>;
 };
 
-// Show the message if current SDK !== latest SDK AND the latest SDK is yet to be released
+/**
+ * Show the message if:
+ * - On a real device AND
+ * - The latest SDK is in beta AND
+ * - The app is running the latest published SDK (this avoids showing on Android when the user has installed an older version)
+ */
 export async function shouldShowUpgradeWarningAsync(): Promise<{
   shouldShow: boolean;
   betaSdkVersion?: string;
 }> {
-  // No need to show the message on simulator / emulator
   if (!Device.isDevice) {
     return {
       shouldShow: false,
