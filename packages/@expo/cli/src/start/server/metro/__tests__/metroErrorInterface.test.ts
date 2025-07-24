@@ -1,4 +1,9 @@
-import { attachImportStackToRootMessage, nearestImportStack } from '../metroErrorInterface';
+import {
+  attachImportStackToRootMessage,
+  nearestImportStack,
+  likelyContainsCodeFrame,
+  dropStackIfContainsCodeFrame,
+} from '../metroErrorInterface';
 
 type ErrorWithImportStack = Error & {
   _expoImportStack?: string;
@@ -171,5 +176,70 @@ describe('nearestImportStack', () => {
       Import stack:
         hooks/hooks/useBananas.ts
         | import "not-existing-module"`);
+  });
+});
+
+describe('likelyContainsCodeFrame', () => {
+  it('returns false for undefined', () => {
+    expect(likelyContainsCodeFrame(undefined)).toBe(false);
+  });
+
+  it('returns false for empty string', () => {
+    expect(likelyContainsCodeFrame('')).toBe(false);
+  });
+
+  it('returns false for non-code frame message', () => {
+    expect(likelyContainsCodeFrame('This is a regular error message')).toBe(false);
+  });
+
+  it('returns true for code frame message', () => {
+    expect(
+      likelyContainsCodeFrame(`
+SyntaxError: hooks/useBananas.ts: Unexpected token (3:9)
+
+  2 | import { FruitLabelPrefix } from './useFruit';
+> 3 | import { [] } from './useFruit';
+    |          ^
+  4 |
+  5 | export function useBananas() {
+    `)
+    ).toBe(true);
+  });
+
+  it('returns true for code frame with ANSI colors', () => {
+    expect(
+      likelyContainsCodeFrame(`
+\x1b[31mSyntaxError: hooks/useBananas.ts: Unexpected token (3:9)\x1b[0m
+
+\x1b[90m  2 |\x1b[0m import { FruitLabelPrefix } from './useFruit';
+\x1b[31m> 3 |\x1b[0m import { [] } from './useFruit';
+\x1b[31m    |\x1b[0m          \x1b[31m^\x1b[0m
+\x1b[90m  4 |\x1b[0m
+\x1b[90m  5 |\x1b[0m export function useBananas() {
+      `)
+    ).toBe(true);
+  });
+});
+
+describe('dropStackIfContainsCodeFrame', () => {
+  it('keeps stack if no code frame', () => {
+    const error = new Error('This is a regular error message');
+    const originalStack = error.stack;
+    dropStackIfContainsCodeFrame(error);
+    expect(error.stack).toEqual(originalStack);
+  });
+
+  it('drops stack if code frame is present', () => {
+    const error = new Error(`
+\x1b[31mSyntaxError: hooks/useBananas.ts: Unexpected token (3:9)\x1b[0m
+
+\x1b[90m  2 |\x1b[0m import { FruitLabelPrefix } from './useFruit';
+\x1b[31m> 3 |\x1b[0m import { [] } from './useFruit';
+\x1b[31m    |\x1b[0m          \x1b[31m^\x1b[0m
+\x1b[90m  4 |\x1b[0m
+\x1b[90m  5 |\x1b[0m export function useBananas() {
+      `);
+    dropStackIfContainsCodeFrame(error);
+    expect(error.stack).toBeUndefined();
   });
 });

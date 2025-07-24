@@ -419,7 +419,7 @@ export function dropStackIfContainsCodeFrame(err: unknown) {
  * Tests given string on presence of ` [num] |` at the start of any line.
  * Returns `false` for undefined or empty strings.
  */
-function likelyContainsCodeFrame(message: string | undefined): boolean {
+export function likelyContainsCodeFrame(message: string | undefined): boolean {
   if (!message) return false;
 
   const clean = stripVTControlCharacters(message);
