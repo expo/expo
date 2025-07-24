@@ -16,10 +16,14 @@
 
 ### 🐛 Bug fixes
 
+- Support `--output-dir` being a directory outside of the project root. ([#38260](https://github.com/expo/expo/pull/38260) by [@EvanBacon](https://github.com/EvanBacon))
 - Update error message for ngrok ([#22469](https://github.com/expo/expo/pull/22469) by [@russorat](https://github.com/russorat))
 - Support SSR imports of internal node builtins such as `_http_agent`. ([#37494](https://github.com/expo/expo/pull/37494) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow anonymous sessions even when `projectId` is set ([#36874](https://github.com/expo/expo/pull/36874) by [@kadikraman](https://github.com/kadikraman))
 - Add static rewrites support to export and server-side handling ([#37930](https://github.com/expo/expo/pull/37930) by [@hassankhan](https://github.com/hassankhan))
+- Fix missing Error import stack with `EXPO_METRO_UNSTABLE_ERRORS` enabled and no cause ([#38256](https://github.com/expo/expo/pull/38256)) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Enable inverse dependency stack trace (`EXPO_METRO_UNSTABLE_ERRORS`) for Metro bundling errors by default ([#38296](https://github.com/expo/expo/pull/38296) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix duplicate code frames printed in transformation error ([#38288](https://github.com/expo/expo/pull/38288) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
@@ -31,6 +35,7 @@
 - Added tests for modal stacking ([#37856](https://github.com/expo/expo/pull/37856) by [@hirbod](https://github.com/hirbod))
 - simplify/optimize web-modal tests ([#38025](https://github.com/expo/expo/pull/38025) by [@hirbod](https://github.com/hirbod))
 - Fix e2e start-test for local runs ([#38066](https://github.com/expo/expo/pull/38066) by [@Ubax](https://github.com/Ubax))
+- Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

@@ -10,6 +10,11 @@ public final class ScreenCaptureModule: Module {
   private var originalParent: CALayer?
   private var blurEffectView: AnimatedBlurEffectView?
   private var blurIntensity: CGFloat = 0.5
+  private var keyWindow: UIWindow? {
+    return UIApplication.shared.connectedScenes
+      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+      .last { $0.isKeyWindow }
+  }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenCapture")
@@ -91,10 +96,12 @@ public final class ScreenCaptureModule: Module {
 
   @objc
   func preventScreenRecording() {
+    guard let keyWindow = keyWindow,
+      let visibleView = keyWindow.subviews.first else { return }
     let isCaptured = UIScreen.main.isCaptured
 
     if isCaptured {
-      UIApplication.shared.keyWindow?.subviews.first?.addSubview(blockView)
+      visibleView.addSubview(blockView)
     } else {
       blockView.removeFromSuperview()
     }
@@ -108,7 +115,7 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func preventScreenshots() {
-    guard let keyWindow = UIApplication.shared.keyWindow,
+    guard let keyWindow = keyWindow,
       let visibleView = keyWindow.subviews.first else { return }
 
     let textField = UITextField()
@@ -192,7 +199,7 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func showPrivacyOverlay() {
-    if let keyWindow = UIApplication.shared.keyWindow,
+    if let keyWindow = keyWindow,
       let rootView = keyWindow.subviews.first {
       let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
       blurEffectView.frame = rootView.bounds

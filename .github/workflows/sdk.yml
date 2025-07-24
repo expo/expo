@@ -56,7 +56,8 @@ jobs:
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"

@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { types } from '@babel/core';
-import { MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
+import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types.flow';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;

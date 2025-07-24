@@ -8,8 +8,7 @@
  * Based on this but with web support:
  * https://github.com/facebook/react-native/blob/086714b02b0fb838dee5a66c5bcefe73b53cf3df/Libraries/Utilities/HMRClient.js
  */
-// @ts-expect-error: no types for MetroHMRClient
-import MetroHMRClient from 'metro-runtime/src/modules/HMRClient';
+import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 import { DeviceEventEmitter } from 'react-native';
 

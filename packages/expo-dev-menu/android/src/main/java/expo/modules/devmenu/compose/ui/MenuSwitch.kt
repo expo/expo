@@ -19,10 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composables.core.Icon
 import com.composeunstyled.Button
 import com.composeunstyled.Thumb
 import com.composeunstyled.ToggleSwitch
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
@@ -61,10 +61,9 @@ fun MenuSwitch(
         .padding(Theme.spacing.small)
     ) {
       if (icon != null) {
-        Icon(
+        DayNighIcon(
           icon,
           contentDescription = label,
-          tint = Theme.colors.icon.default,
           modifier = Modifier.size(Theme.sizing.icon.small)
         )
 

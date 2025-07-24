@@ -50,59 +50,7 @@ export class Paths extends PathUtilities {
   }
 }
 
-/**
- * @hidden
- */
-export class FileBlob extends Blob {
-  file: File;
-
-  /**
-   * @internal
-   */
-  key: string = 'FileBlob';
-
-  constructor(file: File) {
-    super();
-    this.file = file;
-  }
-
-  override get size(): number {
-    return this.file.size ?? 0;
-  }
-
-  /**
-   * @internal
-   */
-  get name(): string {
-    return this.file.name;
-  }
-
-  override get type(): string {
-    return this.file.type ?? '';
-  }
-
-  override async arrayBuffer(): Promise<ArrayBuffer> {
-    return this.file.bytes().buffer as ArrayBuffer;
-  }
-
-  override async text(): Promise<string> {
-    return this.file.text();
-  }
-
-  async bytes(): Promise<Uint8Array> {
-    return this.file.bytes();
-  }
-
-  override stream(): ReadableStream<Uint8Array> {
-    return this.file.readableStream();
-  }
-
-  override slice(start?: number, end?: number, contentType?: string): Blob {
-    return new Blob([this.file.bytes().slice(start, end)], { type: contentType });
-  }
-}
-
-export class File extends ExpoFileSystem.FileSystemFile {
+export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   /**
    * Creates an instance of a file.
    * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
@@ -114,13 +62,6 @@ export class File extends ExpoFileSystem.FileSystemFile {
   constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
-  }
-
-  /*
-   * Returns the file as a `Blob`. The blob can be used in `@expo/fetch` to send files over network and for other uses.
-   */
-  blob(): Blob {
-    return new FileBlob(this);
   }
 
   /*
@@ -151,6 +92,19 @@ export class File extends ExpoFileSystem.FileSystemFile {
 
   writableStream() {
     return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
+  }
+
+  async arrayBuffer(): Promise<ArrayBuffer> {
+    const bytes = await this.bytes();
+    return bytes.buffer as ArrayBuffer;
+  }
+
+  stream(): ReadableStream<Uint8Array> {
+    return this.readableStream();
+  }
+
+  slice(start?: number, end?: number, contentType?: string): Blob {
+    return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
   }
 }
 

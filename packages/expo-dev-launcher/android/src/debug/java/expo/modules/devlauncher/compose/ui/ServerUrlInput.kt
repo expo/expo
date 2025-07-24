@@ -44,6 +44,7 @@ fun ServerUrlInput(
       },
       placeholder = "http://10.0.2.2:8081",
       textStyle = Theme.typography.medium.font,
+      contentColor = Theme.colors.text.default,
       singleLine = true,
       modifier = Modifier
         .border(

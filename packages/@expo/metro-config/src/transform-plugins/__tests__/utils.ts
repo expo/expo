@@ -7,8 +7,8 @@
 
 import { codeFrameColumns } from '@babel/code-frame';
 import { types as t } from '@babel/core';
-import type { Dependency } from 'metro/src/ModuleGraph/worker/collectDependencies';
-import collectDependencies from 'metro/src/ModuleGraph/worker/collectDependencies';
+import type { Dependency } from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
+import collectDependencies from '@expo/metro/metro/ModuleGraph/worker/collectDependencies';
 
 import { importExportPlugin } from '../import-export-plugin';
 import { transformToAst } from './__mocks__/test-helpers-upstream';
@@ -64,9 +64,14 @@ function adjustLocForCodeFrame(loc: t.SourceLocation) {
 }
 
 function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: string) {
-  return codeFrameColumns(code, adjustLocForCodeFrame(loc), {
-    message: `dep #${depIndex} (${dep.name})`,
-    linesAbove: 0,
-    linesBelow: 0,
-  });
+  return codeFrameColumns(
+    code,
+    // @ts-ignore-error TODO(@kitten): Unclear why this doesn't match up. Are our @babel/* types misaligned or is this incorrect?
+    adjustLocForCodeFrame(loc),
+    {
+      message: `dep #${depIndex} (${dep.name})`,
+      linesAbove: 0,
+      linesBelow: 0,
+    }
+  );
 }
