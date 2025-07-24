@@ -20,7 +20,7 @@ export type LoadedRoute = {
 
 export type RouteNode = {
   /** The type of RouteNode */
-  type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
+  type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite' | 'middleware';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */
@@ -45,6 +45,8 @@ export type RouteNode = {
   entryPoints?: string[];
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
   methods?: string[];
+  /** Middleware function for server-side request processing. Only present on the root route node. */
+  middleware?: RouteNode;
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);

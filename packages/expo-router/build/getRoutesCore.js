@@ -19,12 +19,46 @@ const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
  *      - If multiple routes have the same name, the most specific route is used
  */
 function getRoutes(contextModule, options) {
+    // First check for and prepare middleware information before building directory tree. Middleware is
+    // excluded from the regular route processing flow, and is attached to the rootNode directly.
+    const middlewareFilePath = contextModule
+        .keys()
+        .find((key) => /^\.\/\+middleware\.[tj]sx?$/.test(key));
+    let middleware = null;
+    if (middlewareFilePath) {
+        middleware = {
+            type: 'middleware',
+            loadRoute() {
+                if (options.ignoreRequireErrors) {
+                    try {
+                        return contextModule(middlewareFilePath);
+                    }
+                    catch {
+                        return {};
+                    }
+                }
+                else {
+                    return contextModule(middlewareFilePath);
+                }
+            },
+            contextKey: middlewareFilePath,
+            route: '',
+            dynamic: null,
+            children: [],
+        };
+        if (options.internal_stripLoadRoute) {
+            delete middleware.loadRoute;
+        }
+    }
     const directoryTree = getDirectoryTree(contextModule, options);
     // If there are no routes
     if (!directoryTree) {
         return null;
     }
     const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
+    if (middleware) {
+        rootNode.middleware = middleware;
+    }
     if (!options.ignoreEntryPoints) {
         crawlAndAppendInitialRoutesAndEntryFiles(rootNode, options);
     }
@@ -42,6 +76,8 @@ function getDirectoryTree(contextModule, options) {
     if (!options.preserveApiRoutes) {
         ignoreList.push(/\+api$/, /\+api\.[tj]sx?$/);
     }
+    // Always ignore middleware files in regular route processing
+    ignoreList.push(/\+middleware$/, /\+middleware\.[tj]sx?$/);
     const rootDirectory = {
         files: new Map(),
         subdirectories: new Map(),
@@ -437,11 +473,19 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
     const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
+    const isMiddleware = filenameWithoutExtensions === '+middleware';
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
         throw new Error(`Invalid route ${originalKey}. Routes cannot end with '(group)' syntax`);
     }
+    // Check for nested middleware files
+    if (isMiddleware && parts.length > 2) {
+        throw new Error(`Invalid route ${originalKey}. Middleware files can only be placed at the root level.`);
+    }
     // Nested routes cannot start with the '+' character, except for the '+not-found' route
-    if (!isApi && filename.startsWith('+') && filenameWithoutExtensions !== '+not-found') {
+    if (!isApi &&
+        !isMiddleware &&
+        filename.startsWith('+') &&
+        filenameWithoutExtensions !== '+not-found') {
         const renamedRoute = [...parts.slice(0, -1), filename.slice(1)].join('/');
         throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Rename it to ${renamedRoute}"`);
     }
@@ -481,6 +525,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
         specificity,
         isLayout,
         isApi,
+        isMiddleware,
         isRedirect: key in redirects,
         isRewrite: key in rewrites,
     };
