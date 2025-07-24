@@ -55,7 +55,6 @@ final class FetchUpdateProcedure: StateMachineProcedure {
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(.download)
     remoteAppLoader.assetLoadProgressBlock = { progress in
-      print("Final progress! \(progress)")
       procedureContext.processStateEvent(.downloadProgress(progress: progress))
     }
     remoteAppLoader.loadUpdate(

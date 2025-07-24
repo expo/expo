@@ -200,5 +200,9 @@ export type UseUpdatesReturnType = {
    * app reloads or restarts.
    */
   lastCheckForUpdateTimeSinceRestart?: Date;
-  downloadProgress: number;
+  /**
+   * If `isDownloading` is true, this will be a number from 0 to 1 representing the progress of the download.
+   * A value of 0 means the download has just started, and a value of 1 means it is complete.
+   */
+  downloadProgress?: number;
 };
