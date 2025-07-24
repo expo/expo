@@ -23,7 +23,7 @@ import {
 } from '../start/server/metro/MetroBundlerDevServer';
 import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import { getApiRoutesForDirectory } from '../start/server/metro/router';
+import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
@@ -518,6 +518,13 @@ function warnPossibleInvalidExportType(appDir: string) {
       chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
         .map((v) => path.relative(appDir, v))
         .join(', ')}`
+    );
+  }
+
+  const middlewareFile = getMiddlewareForDirectory(appDir);
+  if (middlewareFile) {
+    Log.warn(
+      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
     );
   }
 }
