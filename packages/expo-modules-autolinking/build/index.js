@@ -48,6 +48,7 @@ function registerReactNativeConfigCommand() {
         .command('react-native-config [paths...]')
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "android", "ios"', 'ios')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
+        .option('--transitive-linking-dependencies <transitiveLinkingDependencies...>', 'The transitive dependencies to include in autolinking. Internally used by fingerprint and only supported react-native-edge-to-edge.')
         .option('--source-dir <sourceDir>', 'The path to the native source directory')
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
         .action(async (searchPaths, providedOptions) => {
