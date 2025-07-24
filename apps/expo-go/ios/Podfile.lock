@@ -486,9 +486,9 @@ PODS:
   - GoogleUtilities/UserDefaults (8.0.2):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - hermes-engine (0.81.0-rc.1):
-    - hermes-engine/Pre-built (= 0.81.0-rc.1)
-  - hermes-engine/Pre-built (0.81.0-rc.1)
+  - hermes-engine (0.81.0-rc.2):
+    - hermes-engine/Pre-built (= 0.81.0-rc.2)
+  - hermes-engine/Pre-built (0.81.0-rc.2)
   - libavif/core (0.11.1)
   - libavif/libdav1d (0.11.1):
     - libavif/core
@@ -4246,7 +4246,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: ebf353fe47a71a4771e31060913caa6c78418abf
+  hermes-engine: 3be3e04cd57dac8336622aa8e19f9b6c1ad97fc0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
