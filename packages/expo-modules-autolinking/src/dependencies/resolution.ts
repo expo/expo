@@ -19,19 +19,21 @@ declare module 'node:module' {
 const MAX_DEPTH = 8;
 
 const createNodeModulePathsCreator = () => {
-  const _nodeModulePathCache = new Map<string, string>();
+  const _nodeModulePathCache = new Map<string, string | null>();
   return async function getNodeModulePaths(packagePath: string) {
     const outputPaths: string[] = [];
     const nodeModulePaths = Module._nodeModulePaths(packagePath);
     for (let idx = 0; idx < nodeModulePaths.length; idx++) {
       const nodeModulePath = nodeModulePaths[idx];
-      const target =
-        _nodeModulePathCache.get(nodeModulePath) || (await maybeRealpath(nodeModulePath));
-      if (target != null) {
-        outputPaths.push(target);
+      let target = _nodeModulePathCache.get(nodeModulePath);
+      if (target === undefined) {
+        target = await maybeRealpath(nodeModulePath);
         if (idx !== 0) {
           _nodeModulePathCache.set(nodeModulePath, target);
         }
+      }
+      if (target != null) {
+        outputPaths.push(target);
       }
     }
     return outputPaths;
