@@ -6,6 +6,7 @@
  */
 import { getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
+import { stripVTControlCharacters } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { parse, StackFrame } from 'stacktrace-parser';
@@ -83,7 +84,13 @@ export function getStackAsFormattedLog(
 ): string {
   const logs: string[] = [];
   let hasCodeFramePresented = false;
-  if (codeFrame) {
+  const containsCodeFrame = likelyContainsCodeFrame(error?.message);
+
+  if (containsCodeFrame) {
+    // Some transformation errors will have a code frame embedded in the error message
+    // from Babel and we should not duplicate it as message is already printed before this call.
+    hasCodeFramePresented = true;
+  } else if (codeFrame) {
     const maxWarningLineLength = Math.max(800, process.stdout.columns);
 
     const lineText = codeFrame.content;
@@ -397,6 +404,28 @@ function canParse(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+export function dropStackIfContainsCodeFrame(err: unknown) {
+  if (!(err instanceof Error)) return;
+
+  if (likelyContainsCodeFrame(err.message)) {
+    // If the error message contains a code frame, we should drop the stack to avoid cluttering the output.
+    delete err.stack;
+  }
+}
+
+/**
+ * Tests given string on presence of ` [num] |` at the start of any line.
+ * Returns `false` for undefined or empty strings.
+ */
+export function likelyContainsCodeFrame(message: string | undefined): boolean {
+  if (!message) return false;
+
+  const clean = stripVTControlCharacters(message);
+  if (!clean) return false;
+
+  return /^\s*\d+\s+\|/m.test(clean);
 }
 
 /**

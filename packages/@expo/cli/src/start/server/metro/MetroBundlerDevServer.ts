@@ -42,6 +42,7 @@ import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest
 import { instantiateMetroAsync } from './instantiateMetro';
 import {
   attachImportStackToRootMessage,
+  dropStackIfContainsCodeFrame,
   getErrorOverlayHtmlAsync,
   IS_METRO_BUNDLE_ERROR_SYMBOL,
 } from './metroErrorInterface';
@@ -1576,6 +1577,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       } catch (error) {
         attachImportStackToRootMessage(error);
+        dropStackIfContainsCodeFrame(error);
         throw error;
       }
 
