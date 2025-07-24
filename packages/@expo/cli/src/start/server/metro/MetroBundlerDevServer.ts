@@ -40,7 +40,11 @@ import {
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { ExpoRouterServerManifestV1, fetchManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getErrorOverlayHtmlAsync, IS_METRO_BUNDLE_ERROR_SYMBOL } from './metroErrorInterface';
+import {
+  attachImportStackToRootMessage,
+  getErrorOverlayHtmlAsync,
+  IS_METRO_BUNDLE_ERROR_SYMBOL,
+} from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   getRouterDirectoryModuleIdWithManifest,
@@ -1571,14 +1575,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           revision = props.revision;
         }
       } catch (error) {
-        if (error instanceof Error) {
-          // Space out build failures.
-          const cause = error.cause as undefined | { _expoImportStack?: string };
-          if (cause && '_expoImportStack' in cause) {
-            error.message += '\n\n' + cause._expoImportStack;
-          }
-        }
-
+        attachImportStackToRootMessage(error);
         throw error;
       }
 
