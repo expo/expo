@@ -49,11 +49,12 @@ export async function shouldShowUpgradeWarningAsync(): Promise<{
       .filter((version) => !!version.sdk) as SdkVersionTypeWithSdkType[];
 
     const lastVersion = publishedVersions[publishedVersions.length - 1];
-    const currentIsOutdated = Environment.supportedSdksString !== lastVersion.sdk;
+    const penultimateVersion = publishedVersions[publishedVersions.length - 2];
+    const currentIsLatestPublished = Environment.supportedSdksString === penultimateVersion.sdk;
     const latestIsBeta = !lastVersion.releaseNoteUrl;
 
     return {
-      shouldShow: Boolean(currentIsOutdated && latestIsBeta),
+      shouldShow: Boolean(currentIsLatestPublished && latestIsBeta),
       betaSdkVersion: lastVersion.sdk,
     };
   } catch {}
