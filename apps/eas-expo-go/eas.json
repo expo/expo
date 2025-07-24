@@ -7,6 +7,7 @@
   },
   "build": {
     "base": {
+      "node": "22.17.1",
       "credentialsSource": "local",
       "android": {
         "image": "latest",

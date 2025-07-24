@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.SheetDetent.Companion.Hidden
+import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.primitives.Divider
@@ -100,6 +101,14 @@ fun DevMenuContent(
           toggled = devToolsSettings.isHotLoadingEnabled,
           onToggled = { newValue -> onAction(DevMenuAction.ToggleFastRefresh(newValue)) }
         )
+        Divider()
+        MenuSwitch(
+          "Show Dev Menu button",
+          // TODO: @behenate Find a correct icon for this action
+          icon = painterResource(R.drawable.home_icon),
+          toggled = DevMenuPreferencesHandle.showFab,
+          onToggled = { newValue -> onAction(DevMenuAction.ToggleFab) }
+        )
       }
 
       Spacer(Modifier.size(Theme.spacing.large))
@@ -145,7 +154,7 @@ fun DevMenuContent(
 @Composable
 fun DevMenuScreen(
   state: DevMenuState,
-  onAction: (DevMenuAction) -> Unit = {}
+  onAction: DevMenuActionHandler = {}
 ) {
   val appInfo = state.appInfo ?: return
   val isOpen = state.isOpen

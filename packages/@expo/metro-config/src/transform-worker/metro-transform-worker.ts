@@ -11,25 +11,29 @@
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import generateImportNames from 'metro/src/ModuleGraph/worker/generateImportNames';
+import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
 import {
   importLocationsPlugin,
   locToKey,
-} from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
-import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
-import { stableHash } from 'metro-cache';
-import getMetroCacheKey from 'metro-cache-key';
+} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import { stableHash } from '@expo/metro/metro-cache';
+import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
 import {
   fromRawMappings,
   functionMapBabelPlugin,
   toBabelSegments,
   toSegmentTuple,
-} from 'metro-source-map';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from 'metro-source-map';
-import metroTransformPlugins from 'metro-transform-plugins';
-import { JsTransformerConfig, JsTransformOptions, Type } from 'metro-transform-worker';
-import getMinifier from 'metro-transform-worker/src/utils/getMinifier';
+} from '@expo/metro/metro-source-map';
+import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import * as metroTransformPlugins from '@expo/metro/metro-transform-plugins';
+import type {
+  JsTransformerConfig,
+  JsTransformOptions,
+  Type,
+} from '@expo/metro/metro-transform-worker';
+import getMinifier from '@expo/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -780,15 +784,16 @@ export async function transform(
 export function getCacheKey(config: JsTransformerConfig): string {
   const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
 
+  // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
     require.resolve(minifierPath),
-    require.resolve('metro-transform-worker/src/utils/getMinifier'),
+    require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
-    require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-    require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
+    require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),
+    require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
   ]);
 

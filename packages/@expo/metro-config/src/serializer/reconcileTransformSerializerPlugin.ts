@@ -6,13 +6,19 @@
  */
 import { types as t } from '@babel/core';
 import generate from '@babel/generator';
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  SerializerOptions,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
+import { toSegmentTuple } from '@expo/metro/metro-source-map';
+import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import assert from 'assert';
-import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import JsFileWrapping from 'metro/src/ModuleGraph/worker/JsFileWrapping';
-import { locToKey } from 'metro/src/ModuleGraph/worker/importLocationsPlugin';
-import { SerializerConfigT } from 'metro-config';
-import { toSegmentTuple } from 'metro-source-map';
-import metroTransformPlugins from 'metro-transform-plugins';
 import util from 'node:util';
 
 import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
@@ -189,7 +195,9 @@ export async function reconcileTransformSerializerPlugin(
     const sideEffectReferences = () =>
       [...value.dependencies.values()]
         .filter((dep) => {
-          const fullDep = graph.dependencies.get(dep.absolutePath);
+          const fullDep = isResolvedDependency(dep)
+            ? graph.dependencies.get(dep.absolutePath)
+            : undefined;
           return fullDep && hasSideEffectWithDebugTrace(options, graph, fullDep)[0];
         })
         .map((dep) => dep.data.name);
@@ -266,7 +274,7 @@ export async function reconcileTransformSerializerPlugin(
     if (reconcile.normalizePseudoGlobals) {
       // This MUST run before `generate` as it mutates the ast out of place.
       reserved.push(
-        ...metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
+        ...normalizePseudoGlobals(wrappedAst, {
           reservedNames: reserved,
         })
       );

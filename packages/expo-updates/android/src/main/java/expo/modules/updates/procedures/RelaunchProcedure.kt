@@ -36,6 +36,7 @@ class RelaunchProcedure(
   private val getCurrentLauncher: () -> Launcher,
   private val setCurrentLauncher: (launcher: Launcher) -> Unit,
   private val shouldRunReaper: Boolean,
+  private val reloadScreenManager: ReloadScreenManager?,
   private val callback: Launcher.LauncherCallback,
   private val procedureScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) : StateMachineProcedure() {
@@ -82,7 +83,7 @@ class RelaunchProcedure(
 
     procedureScope.launch {
       withContext(Dispatchers.Main) {
-        ReloadScreenManager.show(weakActivity?.get())
+        reloadScreenManager?.show(weakActivity?.get())
         reactApplication.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
       }
     }

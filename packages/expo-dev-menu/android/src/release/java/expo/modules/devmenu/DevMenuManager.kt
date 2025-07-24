@@ -114,4 +114,7 @@ object DevMenuManager : DevMenuManagerInterface {
   fun toggleFastRefresh() {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+  fun toggleFab() {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
 }

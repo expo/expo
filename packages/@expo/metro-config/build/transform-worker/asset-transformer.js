@@ -15,7 +15,7 @@ exports.transform = transform;
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
 const core_1 = require("@babel/core");
-const util_1 = require("metro/src/Bundler/util");
+const util_1 = require("@expo/metro/metro/Bundler/util");
 const node_path_1 = __importDefault(require("node:path"));
 const node_url_1 = __importDefault(require("node:url"));
 const getAssets_1 = require("./getAssets");
