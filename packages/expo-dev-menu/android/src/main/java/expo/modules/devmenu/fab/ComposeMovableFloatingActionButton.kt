@@ -171,7 +171,7 @@ fun ComposeMovableFloatingActionButton(
       ) {
         Image(
           // TODO: @behenate Get a proper icon for the dev menu.
-          painter = painterResource(id = R.drawable._expodevclientcomponents_assets_showmenuatlaunchicon),
+          painter = painterResource(id = R.drawable.home_icon),
           contentDescription = "Pull up the dev menu"
         )
       }
