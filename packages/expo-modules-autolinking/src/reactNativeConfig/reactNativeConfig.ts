@@ -28,6 +28,7 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
+import { resolveGradlePropertyAsync } from '../platforms/android';
 
 export async function _resolveTurboModule(
   resolution: DependencyResolution,
@@ -102,6 +103,33 @@ export async function createReactNativeConfigAsync(
   const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
     _resolveTurboModule(resolution, projectConfig, options.platform)
   );
+
+  // For Expo SDK 53 onwards, react-native-edge-to-edge is a transitive dependency of every expo project.
+  // However, if the user opts out of it and it isn't a direct dependency, we have to exclude it from autolinking
+  // The current implementation of this exclusion isn't stateless, and has some caveats
+  // We currently have to disable autolinking for react-native-edge-to-edge because:
+  // 1. `react-native-is-edge-to-edge` tries to check if the edge-to-edge turbo module is present to determine whether edge-to-edge is enabled.
+  // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
+  if (options.platform === 'android' && dependencies['react-native-edge-to-edge'] != null) {
+    const androidRoot = path.join(options.projectRoot, 'android');
+    // `@expo/fingerprint` passes this when react-native-edge-to-edge is explicitly enabled
+    // See: https://github.com/expo/expo/blob/bc4ab18/packages/%40expo/fingerprint/src/sourcer/Sourcer.ts#L44-L54
+    const fingerprintForceEdgeToEdge = options.transitiveLinkingDependencies?.includes(
+      'react-native-edge-to-edge'
+    );
+    // When `expo.edgeToEdgeEnabled` is enabled, the `gradle.properties` is prebuilt with this flag set to true
+    // (Prebuild may not have run yet, so this isn't guaranteed)
+    // We're explicitly excluding `react-native-edge-to-edge` from autolinking if it's disabled, or Prebuild
+    // hasn't run yet, or `@expo/fingerprint` doesn't force-enable it (see above)
+    // TODO: This is a hack and it should be removed, as it relies on Prebuild!
+    const gradleEdgeToEdgeEnabled = await resolveGradlePropertyAsync(
+      androidRoot,
+      'expo.edgeToEdgeEnabled'
+    );
+    if (gradleEdgeToEdgeEnabled !== 'true' && !fingerprintForceEdgeToEdge) {
+      delete dependencies['react-native-edge-to-edge'];
+    }
+  }
 
   return {
     root: options.projectRoot,

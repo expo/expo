@@ -109,6 +109,10 @@ function registerReactNativeConfigCommand() {
         'The path to the root of the project'
       ).default(process.cwd(), 'process.cwd()')
     )
+    .option(
+      '--transitive-linking-dependencies <transitiveLinkingDependencies...>',
+      'The transitive dependencies to include in autolinking. Internally used by fingerprint and only supported react-native-edge-to-edge.'
+    )
     .option('--source-dir <sourceDir>', 'The path to the native source directory')
     .option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths, providedOptions) => {
