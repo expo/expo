@@ -42,6 +42,7 @@
     "expo-router": "^5.0.7",
     "expo-speech": "~13.1.7",
     "expo-sqlite": "~15.2.10",
+    "jose": "^5",
     "react": "19.1.0",
     "react-native": "0.81.0-rc.5",
     "react-native-safe-area-context": "5.5.2",

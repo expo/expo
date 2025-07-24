@@ -114,7 +114,9 @@ export async function transform(
     // TODO: Ensure this works with windows.
     (filename.match(new RegExp(`^app/\\+html(\\.${options.platform})?\\.([tj]sx?|[cm]js)?$`)) ||
       // Strip +api files.
-      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/))
+      filename.match(/\+api(\.(native|ios|android|web))?\.[tj]sx?$/) ||
+      // Strip +middleware files.
+      filename.match(/\+middleware\.[tj]sx?$/))
   ) {
     // Remove the server-only +html file and API Routes from the bundle when bundling for a client environment.
     return worker.transform(
@@ -181,7 +183,7 @@ export async function transform(
       // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
       // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
       const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
-    
+
     export const env = !dotEnvModules.keys().length ? process.env : { ...process.env, ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
       return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
     }, {}) };`;
