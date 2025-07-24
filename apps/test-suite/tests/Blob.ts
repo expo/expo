@@ -662,16 +662,19 @@ export async function test({ describe, it, expect }) {
           desc: 'Passing typed arrays as elements of the blobParts array should work.',
         }
       );
-      test_blob(
-        function () {
-          return new Blob([new Float16Array([2.65625, 58.59375])]);
-        },
-        {
-          expected: 'PASS',
-          type: '',
-          desc: 'Passing a Float16Array as element of the blobParts array should work.',
-        }
-      );
+      // The Float16Array is not supported
+      //  https://github.com/facebook/hermes/blob/5372b97d40d019de1e74f71c5237cdba3003b7d2/unsupported/juno/crates/juno/src/sema/known_globals.rs#L48
+      //  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float16Array
+      // test_blob(
+      //   function () {
+      //     return new Blob([new Float16Array([2.65625, 58.59375])]);
+      //   },
+      //   {
+      //     expected: 'PASS',
+      //     type: '',
+      //     desc: 'Passing a Float16Array as element of the blobParts array should work.',
+      //   }
+      // );
       test_blob(
         function () {
           return new Blob([
