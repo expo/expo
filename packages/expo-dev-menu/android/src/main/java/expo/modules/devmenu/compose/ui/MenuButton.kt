@@ -1,6 +1,5 @@
 package expo.modules.devmenu.compose.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -11,6 +10,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composeunstyled.Button
 import expo.modules.devmenu.R
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.RowLayout
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
@@ -19,8 +19,43 @@ import expo.modules.devmenu.compose.theme.Theme
 fun MenuButton(
   label: String,
   labelTextColor: Color? = null,
-  icon: Painter? = null,
+  leftIcon: Painter? = null,
   rightIcon: Painter? = null,
+  enabled: Boolean = true,
+  onClick: () -> Unit = {}
+) {
+  MenuButton(
+    label = label,
+    labelTextColor = labelTextColor,
+    leftComponent = leftIcon?.let {
+      @Composable {
+        DayNighIcon(
+          painter = it,
+          contentDescription = label,
+          modifier = Modifier.size(Theme.sizing.icon.small)
+        )
+      }
+    },
+    rightComponent = rightIcon?.let {
+      @Composable {
+        DayNighIcon(
+          painter = it,
+          contentDescription = null,
+          modifier = Modifier.size(Theme.sizing.icon.small)
+        )
+      }
+    },
+    enabled = enabled,
+    onClick = onClick
+  )
+}
+
+@Composable
+fun MenuButton(
+  label: String,
+  labelTextColor: Color? = null,
+  leftComponent: (@Composable () -> Unit)? = null,
+  rightComponent: (@Composable () -> Unit)? = null,
   enabled: Boolean = true,
   onClick: () -> Unit = {}
 ) {
@@ -29,31 +64,11 @@ fun MenuButton(
     onClick = onClick,
     backgroundColor = Theme.colors.background.default
   ) {
-    val leftIcon = icon?.let {
-      @Composable {
-        Image(
-          painter = it,
-          contentDescription = label,
-          modifier = Modifier.size(Theme.sizing.icon.small)
-        )
-      }
-    }
-
-    val rightIcon = rightIcon?.let {
-      @Composable {
-        Image(
-          painter = it,
-          contentDescription = null,
-          modifier = Modifier.size(Theme.sizing.icon.small)
-        )
-      }
-    }
-
     RowLayout(
       modifier = Modifier
         .padding(Theme.spacing.small),
-      leftComponent = leftIcon,
-      rightComponent = rightIcon
+      leftComponent = leftComponent,
+      rightComponent = rightComponent
     ) {
       Text(
         label,
@@ -68,6 +83,6 @@ fun MenuButton(
 fun MenuButtonPreview() {
   MenuButton(
     label = "Menu Button",
-    icon = painterResource(R.drawable._expodevclientcomponents_assets_refreshicon)
+    leftIcon = painterResource(R.drawable.refresh_icon)
   )
 }

@@ -63,13 +63,4 @@ class EXDevLauncherUtils {
     }
     return method_getImplementation(method)
   }
-
-  static func resourcesBundle() -> Bundle? {
-    let frameworkBundle = Bundle(for: EXDevLauncherUtils.self)
-
-    guard let resourcesBundleUrl = frameworkBundle.url(forResource: "EXDevLauncher", withExtension: "bundle") else {
-      return nil
-    }
-    return Bundle(url: resourcesBundleUrl)
-  }
 }

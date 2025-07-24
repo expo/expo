@@ -1,6 +1,6 @@
 package expo.modules.devmenu.api
 
-import android.net.Uri
+import androidx.core.net.toUri
 import expo.modules.devmenu.helpers.await
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -10,7 +10,7 @@ class DevMenuMetroClient {
   private val httpClient = OkHttpClient()
 
   suspend fun openJSInspector(metroHost: String, applicationId: String) {
-    val url = Uri.parse("$metroHost/_expo/debugger")
+    val url = "$metroHost/_expo/debugger".toUri()
       .buildUpon()
       .appendQueryParameter("applicationId", applicationId)
       .build()

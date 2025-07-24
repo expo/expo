@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.composables.core.SheetDetent.Companion.Hidden
+import expo.modules.devmenu.DevMenuPreferencesHandle
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.R
 import expo.modules.devmenu.compose.primitives.Divider
@@ -28,6 +30,7 @@ import expo.modules.devmenu.compose.ui.MenuButton
 import expo.modules.devmenu.compose.ui.MenuContainer
 import expo.modules.devmenu.compose.ui.MenuInfo
 import expo.modules.devmenu.compose.ui.MenuSwitch
+import expo.modules.devmenu.compose.ui.Onboarding
 import expo.modules.devmenu.compose.ui.Warning
 import expo.modules.devmenu.compose.utils.copyToClipboard
 
@@ -35,9 +38,17 @@ import expo.modules.devmenu.compose.utils.copyToClipboard
 fun DevMenuContent(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
+  shouldShowOnboarding: Boolean = false,
   onAction: DevMenuActionHandler = {}
 ) {
   val context = LocalContext.current
+
+  if (shouldShowOnboarding) {
+    Onboarding {
+      onAction(DevMenuAction.FinishOnboarding)
+    }
+    return
+  }
 
   Column {
     BundlerInfo(
@@ -52,13 +63,13 @@ fun DevMenuContent(
       MenuContainer {
         MenuButton(
           "Reload",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_refreshicon),
+          leftIcon = painterResource(R.drawable.refresh_icon),
           onClick = { onAction(DevMenuAction.Reload) }
         )
         Divider()
         MenuButton(
           "Go home",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_homefilledinactiveicon),
+          leftIcon = painterResource(R.drawable.home_icon),
           onClick = { onAction(DevMenuAction.GoHome) }
         )
       }
@@ -68,27 +79,35 @@ fun DevMenuContent(
       MenuContainer {
         MenuButton(
           "Toggle performance monitor",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_performanceicon),
+          leftIcon = painterResource(R.drawable.performance_icon),
           onClick = { onAction(DevMenuAction.TogglePerformanceMonitor) }
         )
         Divider()
         MenuButton(
           "Toggle element inspector",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_inspectelementicon),
+          leftIcon = painterResource(R.drawable.inspect_element_icon),
           onClick = { onAction(DevMenuAction.ToggleElementInspector) }
         )
         Divider()
         MenuButton(
           "Open JS debugger",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_debugicon),
+          leftIcon = painterResource(R.drawable.debug_icon),
           onClick = { onAction(DevMenuAction.OpenJSDebugger) }
         )
         Divider()
         MenuSwitch(
           "Fast Refresh",
-          icon = painterResource(R.drawable._expodevclientcomponents_assets_runicon),
+          icon = painterResource(R.drawable.run_icon),
           toggled = devToolsSettings.isHotLoadingEnabled,
           onToggled = { newValue -> onAction(DevMenuAction.ToggleFastRefresh(newValue)) }
+        )
+        Divider()
+        MenuSwitch(
+          "Show Dev Menu button",
+          // TODO: @behenate Find a correct icon for this action
+          icon = painterResource(R.drawable.home_icon),
+          toggled = DevMenuPreferencesHandle.showFab,
+          onToggled = { newValue -> onAction(DevMenuAction.ToggleFab) }
         )
       }
 
@@ -105,7 +124,7 @@ fun DevMenuContent(
         Divider()
         MenuButton(
           "Tap to Copy All",
-          icon = null,
+          leftIcon = null,
           labelTextColor = Theme.colors.text.link,
           onClick = {
             copyToClipboard(
@@ -122,7 +141,7 @@ fun DevMenuContent(
       MenuContainer {
         MenuButton(
           "Open React Native dev menu",
-          icon = null,
+          leftIcon = null,
           onClick = { onAction(DevMenuAction.OpenReactNativeDevMenu) }
         )
       }
@@ -132,51 +151,51 @@ fun DevMenuContent(
   }
 }
 
-fun handleDevMenuAction(
-  state: com.composables.core.ModalBottomSheetState,
-  onAction: DevMenuActionHandler
-): DevMenuActionHandler = customHandler@{ action ->
-  val shouldClose = action.shouldCloseMenu
-
-  if (action == DevMenuAction.Close) {
-    // If the action is to close the menu, we want to start the animation and then close the menu
-    state.targetDetent = Hidden
-    return@customHandler
-  }
-
-  onAction(action)
-  if (shouldClose) {
-    state.targetDetent = Hidden
-  }
-}
-
 @Composable
 fun DevMenuScreen(
   state: DevMenuState,
-  onAction: (DevMenuAction) -> Unit = {}
+  onAction: DevMenuActionHandler = {}
 ) {
   val appInfo = state.appInfo ?: return
-
-  val bottomSheetState = rememberBottomSheetState()
-
   val isOpen = state.isOpen
+  val shouldShowOnboarding = remember(state.isOnboardingFinished) {
+    mutableStateOf(!state.isOnboardingFinished)
+  }
+  val bottomSheetState = rememberBottomSheetState()
 
   LaunchedEffect(isOpen) {
     if (isOpen) {
-      bottomSheetState.jumpTo(Peek)
+      bottomSheetState.targetDetent = Peek
     } else {
-      bottomSheetState.targetDetent = Hidden
+      if (bottomSheetState.currentDetent != Hidden) {
+        bottomSheetState.animateTo(Hidden)
+        shouldShowOnboarding.value = false
+      }
     }
   }
 
   val wrappedOnAction: DevMenuActionHandler = remember {
-    handleDevMenuAction(bottomSheetState, onAction)
+    ActionHandler@{ action: DevMenuAction ->
+      val shouldClose = action.shouldCloseMenu
+
+      if (action == DevMenuAction.Close) {
+        // If the action is to close the menu, we want to start the animation and then close the menu
+        bottomSheetState.targetDetent = Hidden
+        return@ActionHandler
+      }
+
+      onAction(action)
+      if (shouldClose) {
+        bottomSheetState.targetDetent = Hidden
+      }
+    }
   }
 
   BottomSheet(
     state = bottomSheetState,
     onDismiss = {
       if (isOpen) {
+        shouldShowOnboarding.value = false
         // If the menu is open, we want to close it
         // and not just hide the bottom sheet.
         onAction(DevMenuAction.Close)
@@ -194,6 +213,7 @@ fun DevMenuScreen(
     DevMenuContent(
       appInfo = appInfo,
       devToolsSettings = state.devToolsSettings,
+      shouldShowOnboarding = shouldShowOnboarding.value,
       onAction = wrappedOnAction
     )
   }

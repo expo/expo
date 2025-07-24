@@ -1,6 +1,5 @@
 import { ExpoConfig } from '@expo/config';
-import type { BundleOptions as MetroBundleOptions } from 'metro/src/shared/types';
-import resolveFrom from 'resolve-from';
+import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types.flow';
 
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -44,6 +43,8 @@ export type ExpoMetroOptions = {
 
   modulesOnly?: boolean;
   runModule?: boolean;
+  /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
+  liveBindings?: boolean;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -92,6 +93,7 @@ function withDefaults({
     usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
     environment: environment === 'client' ? undefined : environment,
+    liveBindings: env.EXPO_UNSTABLE_LIVE_BINDINGS,
     ...props,
   };
 }
@@ -158,6 +160,7 @@ export function getMetroDirectBundleOptions(
     runModule,
     modulesOnly,
     useMd5Filename,
+    liveBindings,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -197,6 +200,7 @@ export function getMetroDirectBundleOptions(
     reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
     dom: domRoot,
     useMd5Filename: useMd5Filename || undefined,
+    liveBindings: !liveBindings ? String(liveBindings) : undefined,
   };
 
   // Iterate and delete undefined values
@@ -291,6 +295,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     domRoot,
     modulesOnly,
     runModule,
+    liveBindings,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -380,6 +385,10 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.set('runModule', String(runModule));
   }
 
+  if (liveBindings === false) {
+    queryParams.append('transform.liveBindings', String(false));
+  }
+
   return queryParams;
 }
 
@@ -427,6 +436,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     engine: assertEngine(getStringParam('transform.engine')),
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
+    liveBindings: isTruthy(getStringParam('transform.liveBindings') ?? 'true'),
   };
 
   return options;

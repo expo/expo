@@ -107,8 +107,8 @@ export async function createFromFixtureAsync(
     copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
+    pkg ??= {};
     if (pkg || linkExpoPackages || linkExpoPackagesDev) {
-      pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
 
@@ -133,6 +133,9 @@ export async function createFromFixtureAsync(
           resolutions[pkg] = tarball.packageReference;
         }
       }
+
+      // TODO(@kitten): Temporary addition until we have at least one publish with the `@expo/metro` dependency
+      devDependencies['@expo/metro'] = '~0.1.0';
 
       await JsonFile.writeAsync(pkgPath, {
         ...pkg,
@@ -165,6 +168,12 @@ export async function createFromFixtureAsync(
 
     // Install the packages for e2e experience.
     await executeBunAsync(projectRoot, ['install']);
+
+    // TODO(cedric): Remove this once we publish `@expo/metro-config` with `export --dev` fixes
+    // Or when we can build `@expo/metro-config` on Windows
+    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
+    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
+    await fs.promises.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   } catch (error) {
     log.error(error);
     throw error;

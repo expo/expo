@@ -204,8 +204,4 @@ class UpdatesStateMachine(
       }
     }
   }
-
-  fun shutdown() {
-    serialExecutorQueue.cancel()
-  }
 }
