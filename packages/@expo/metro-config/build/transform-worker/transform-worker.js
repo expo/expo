@@ -44,7 +44,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transform = transform;
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
+const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
 const node_path_1 = require("node:path");
 const browserslist_1 = require("./browserslist");
 const css_1 = require("./css");

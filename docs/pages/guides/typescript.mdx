@@ -185,19 +185,19 @@ Some Expo libraries provide both static types and type generation capabilities. 
 
 ## TypeScript for project's config files
 
-Additional setup is required to use TypeScript for configuration files such as **metro.config.js** or **app.config.js**. You need to utilize [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to import TypeScript files within your JS config file. This hook allows TypeScript imports while keeping the root file as JavaScript.
+Additional setup is required to use TypeScript for configuration files such as **metro.config.js** or **app.config.js**. You need to utilize [`tsx/cjs` require hook](https://tsx.is/dev-api/entry-point#commonjs-mode-only) to import TypeScript files within your JS config file. This hook allows TypeScript imports while keeping the root file as JavaScript.
 
 <Tabs>
 
 <Tab label="macOS/Linux">
 
-<Terminal cmd={['$ npx expo install ts-node --dev']} />
+<Terminal cmd={['$ npx expo install tsx --dev']} />
 
 </Tab>
 
 <Tab label="Windows">
 
-<Terminal cmd={['$ npx expo install ts-node "--" --dev']} />
+<Terminal cmd={['$ npx expo install tsx "--" --dev']} />
 
 </Tab>
 
@@ -208,7 +208,7 @@ Additional setup is required to use TypeScript for configuration files such as *
 Update **metro.config.js** to require **metro.config.ts** file:
 
 ```js metro.config.js
-require('ts-node/register');
+require('tsx/cjs');
 module.exports = require('./metro.config.ts');
 ```
 
@@ -227,7 +227,7 @@ module.exports = config;
 Install the `@expo/webpack-config` package.
 
 ```js webpack.config.js
-require('ts-node/register');
+require('tsx/cjs');
 module.exports = require('./webpack.config.ts');
 ```
 
@@ -249,7 +249,7 @@ module.exports = async function (env: Environment, argv: Arguments) {
 **app.config.ts** is supported by default. However, it doesn't support external TypeScript modules, or **tsconfig.json** customization. You can use the following approach to get a more comprehensive TypeScript setup:
 
 ```ts app.config.ts
-import 'ts-node/register'; // Add this to import TypeScript files
+import 'tsx/cjs'; // Add this to import TypeScript files
 import { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {

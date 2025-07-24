@@ -7,15 +7,9 @@ exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
 exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
-/**
- * Copyright © 2022 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+const sourceMapString_1 = __importDefault(require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString"));
+const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
 const jsc_safe_url_1 = require("jsc-safe-url");
-const sourceMapString_1 = __importDefault(require("metro/src/DeltaBundler/Serializers/sourceMapString"));
-const bundleToString_1 = __importDefault(require("metro/src/lib/bundleToString"));
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");

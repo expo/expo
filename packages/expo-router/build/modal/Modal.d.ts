@@ -57,12 +57,23 @@ export interface ModalProps extends ViewProps {
      */
     detents?: ModalConfig['detents'];
     /**
+<<<<<<< HEAD
      * See {@link ScreenProps["sheetCornerRadius"]}.
      *
      * The corner radius that the sheet will try to render with.
      * Works only when `presentation` is set to `formSheet`.
      */
     cornerRadius?: ModalConfig['cornerRadius'];
+=======
+     * Determines whether the modal should close when navigating away from the screen that opened it.
+     *
+     * If set to `true`, the modal will close when the user navigates to a different screen.
+     *
+     * If set to `false`, the modal will remain open when pushing a new screen.
+     * However, it will still close when navigating back or replacing the current screen.
+     */
+    closeOnNavigation?: boolean;
+>>>>>>> main
 }
 /**
  * A standalone modal component that can be used in Expo Router apps.

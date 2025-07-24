@@ -513,7 +513,7 @@ The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`][prebuild
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
-> This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
+> This example uses `tsx` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
 
 ```ts withAppDelegateHeaderBaseMod.ts
 import { ConfigPlugin, IOSConfig, Mod, withMod, BaseMods } from 'expo/config-plugins';
@@ -578,7 +578,7 @@ To use this new base mod, add it to the plugins array. The base mod **MUST** be 
 
 ```js app.config.js
 // Required for external files using TS
-require('ts-node/register');
+require('tsx/cjs');
 
 import {
   withAppDelegateHeaderBaseMod,

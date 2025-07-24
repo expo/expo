@@ -405,6 +405,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/UpdatesScreen'));
+    },
+    name: 'Updates Reload Screen',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',

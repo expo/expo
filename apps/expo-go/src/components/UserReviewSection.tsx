@@ -78,8 +78,8 @@ export default function UserReviewSection({ snacks, apps }: Props) {
 const styles = StyleSheet.create({
   dismissButton: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: spacing[4],
+    right: spacing[4],
     zIndex: 1,
   },
   title: {

@@ -6,7 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCssSerialAssets = getCssSerialAssets;
 exports.fileNameFromContents = fileNameFromContents;
 exports.getFileName = getFileName;
-const js_js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js.js");
+// NOTE(@kitten): jest-resolver -> resolve.exports bug (https://github.com/lukeed/resolve.exports/issues/40)
+const js_js_1 = require("@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js");
+const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const path_1 = __importDefault(require("path"));
 const css_1 = require("../transform-worker/css");
 const filePath_1 = require("../utils/filePath");
@@ -78,7 +80,9 @@ function getCssSerialAssets(dependencies, { projectRoot, entryFile }) {
         }
         next.dependencies.forEach((dep) => {
             // Traverse the deps next to ensure the CSS is pushed in the correct order.
-            checkDep(dep.absolutePath);
+            if ((0, isResolvedDependency_1.isResolvedDependency)(dep)) {
+                checkDep(dep.absolutePath);
+            }
         });
         // Then push the JS after the siblings.
         if (getCssMetadata(next) && isTypeJSModule(next)) {

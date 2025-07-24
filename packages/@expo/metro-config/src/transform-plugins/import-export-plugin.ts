@@ -10,11 +10,9 @@
 // https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js
 
 import { template } from '@babel/core';
-import type { PluginObj, NodePath, types as t } from '@babel/core';
+import type { ConfigAPI, NodePath, PluginObj, types as t } from '@babel/core';
 import assert from 'node:assert';
 const debug = require('debug')('expo:metro-config:import-export-plugin') as typeof console.log;
-
-type Types = typeof t;
 
 function nullthrows<T extends object>(x: T | null, message?: string): NonNullable<T> {
   assert(x != null, message);
@@ -196,7 +194,9 @@ function withLocation<TNode extends t.Node>(
   return node;
 }
 
-export function importExportPlugin({ types: t }: { types: Types }): PluginObj<State> {
+export function importExportPlugin({
+  types: t,
+}: ConfigAPI & typeof import('@babel/core')): PluginObj<State> {
   const { isDeclaration, isVariableDeclaration } = t;
 
   return {
@@ -794,11 +794,10 @@ export function importExportPlugin({ types: t }: { types: Types }): PluginObj<St
           };
           path.traverse<ReferencedIdentifierTravelerState>(
             {
-              // @ts-expect-error ReferencedIdentifier is not in the types
-              ReferencedIdentifier: (
+              ReferencedIdentifier(
                 path: NodePath<t.Identifier | t.JSXIdentifier>,
                 state: ReferencedIdentifierTravelerState
-              ) => {
+              ) {
                 const localName = path.node.name;
                 const { namespace, remote } = state.namespaceForLocal.get(localName) ?? {};
                 // not from a namespace

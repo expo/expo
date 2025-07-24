@@ -99,7 +99,7 @@ fun BundlerInfo(
               horizontalArrangement = Arrangement.SpaceBetween
             ) {
               Icon(
-                painterResource(R.drawable._expodevclientcomponents_assets_clipboardicon),
+                painterResource(R.drawable.clip_board_icon),
                 contentDescription = "Share",
                 tint = Theme.colors.icon.default,
                 modifier = Modifier
