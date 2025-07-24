@@ -5,22 +5,19 @@ import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.CursorResults
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.throwableContentResolver
-import expo.modules.test.core.legacy.PromiseMock
-import expo.modules.test.core.legacy.assertRejected
-import expo.modules.test.core.legacy.assertRejectedWithCode
-import expo.modules.test.core.legacy.promiseResolved
-import expo.modules.test.core.legacy.promiseResolvedWithType
-import io.mockk.justRun
+import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,12 +31,10 @@ private const val ALBUM_SELECTION = "${FileColumns.MEDIA_TYPE} != ${FileColumns.
 @RunWith(RobolectricTestRunner::class)
 internal class GetAlbumTests {
 
-  private lateinit var promise: PromiseMock
   private lateinit var mockContext: MockContext
 
   @Before
   fun setUp() {
-    promise = PromiseMock()
     mockContext = MockContext()
   }
 
@@ -51,20 +46,19 @@ internal class GetAlbumTests {
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(::queryAlbum)
-    justRun {
+    every {
       queryAlbum(
         context,
         capture(selectionSlot),
-        capture(selectionArgsSlot),
-        promise
+        capture(selectionArgsSlot)
       )
-    }
+    } returns mockk<Bundle>(relaxed = true)
 
     val expectedSelection = ALBUM_SELECTION
     val albumName = "TestAlbum"
 
     // act
-    GetAlbum(context, albumName, promise).execute()
+    GetAlbum(context, albumName).execute()
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
@@ -83,13 +77,13 @@ internal class GetAlbumTests {
     val selectionArgs = arrayOf(MockData.mockAlbum.name)
 
     // act
-    queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
+    val result = queryAlbum(context, ALBUM_SELECTION, selectionArgs)
 
     // assert
-    promiseResolved(promise) {
+    result?.let {
       assertEquals(MockData.mockAlbum.id, it.getString("id"))
       assertEquals(MockData.mockAlbum.name, it.getString("title"))
-    }
+    } ?: fail()
   }
 
   @Test
@@ -99,12 +93,10 @@ internal class GetAlbumTests {
     val selectionArgs = arrayOf(MockData.mockAlbum.name)
 
     // act
-    queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
+    val result = queryAlbum(context, ALBUM_SELECTION, selectionArgs)
 
     // assert
-    promiseResolvedWithType<Bundle?>(promise) { result ->
-      assertNull(result)
-    }
+    assertNull(result)
   }
 
   @Test
@@ -112,10 +104,9 @@ internal class GetAlbumTests {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
-    // act
-    // assert
+    // act && assert
     assertThrows(AlbumException::class.java) {
-      queryAlbum(context, "", emptyArray(), promise)
+      queryAlbum(context, "", emptyArray())
     }
   }
 
@@ -124,11 +115,13 @@ internal class GetAlbumTests {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    // act
-    queryAlbum(context, "", emptyArray(), promise)
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
+    // act && assert
+    try {
+      GetAlbums(context).execute()
+      fail()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
+    }
   }
 
   @Test
@@ -136,11 +129,13 @@ internal class GetAlbumTests {
     // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
-    // act
-    queryAlbum(context, "", emptyArray(), promise)
-
-    // assert
-    assertRejected(promise)
+    // act && assert
+    try {
+      queryAlbum(context, "", emptyArray())
+      fail()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
+    }
   }
 
   private fun mockAlbumCursor(cursorResults: CursorResults): RoboCursor {
