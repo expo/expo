@@ -81,7 +81,7 @@ class FileDownloader(
     request: Request,
     expectedBase64URLEncodedSHA256Hash: String?,
     destination: File,
-    progressListener: FileDownloadProgressListener? = null,
+    progressListener: FileDownloadProgressListener? = null
   ): FileDownloadResult {
     try {
       val response = downloadData(request, progressListener)
@@ -365,7 +365,7 @@ class FileDownloader(
           asset.expectedHash,
           path,
           assetLoadProgressListener?.let { listener ->
-            object: FileDownloadProgressListener {
+            object : FileDownloadProgressListener {
               override fun onProgressUpdate(progress: Double) {
                 listener.invoke(progress)
               }
@@ -627,7 +627,7 @@ private interface FileDownloadProgressListener {
       onProgressUpdate(bytesRead.toDouble() / contentLength.toDouble())
     }
   }
-  
+
   fun onProgressUpdate(progress: Double) {}
 }
 

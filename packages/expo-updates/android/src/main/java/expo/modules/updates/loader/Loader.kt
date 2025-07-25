@@ -269,7 +269,7 @@ abstract class Loader protected constructor(
     // do not emit progress update for errored assets
     // let the progress bar stay at whatever the last successful progress was
     if (result == AssetLoadResult.FINISHED || result == AssetLoadResult.ALREADY_EXISTS) {
-      assetProgressMap[assetEntity] = 1.0;
+      assetProgressMap[assetEntity] = 1.0
       notifyAssetLoadProgress()
     }
 
