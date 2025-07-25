@@ -1,7 +1,15 @@
+import { Ref } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../types';
 import { TextFieldKeyboardType } from '../TextField';
+/**
+ * Can be used for imperatively setting text on the SecureField component.
+ */
+export type SecureFieldRef = {
+    setText: (newText: string) => Promise<void>;
+};
 export type SecureFieldProps = {
+    ref?: Ref<SecureFieldRef>;
     /**
      * Initial value that the SecureField displays when being mounted. As the SecureField is an uncontrolled component, change the key prop if you need to change the text value.
      */
