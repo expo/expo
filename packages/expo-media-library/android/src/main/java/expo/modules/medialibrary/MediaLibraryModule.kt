@@ -28,7 +28,6 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.medialibrary.MediaLibraryModule.Action
 import expo.modules.medialibrary.albums.AddAssetsToAlbum
 import expo.modules.medialibrary.albums.CreateAlbum
 import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
@@ -47,7 +46,6 @@ import expo.modules.medialibrary.contracts.DeleteContract
 import expo.modules.medialibrary.contracts.DeleteContractInput
 import expo.modules.medialibrary.contracts.WriteContract
 import expo.modules.medialibrary.contracts.WriteContractInput
-import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 
 class MediaLibraryModule : Module() {
@@ -102,92 +100,77 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("saveToLibraryAsync") Coroutine { localUri: String ->
-      requirePermissions()
+      requireSystemPermissions()
       CreateAssetWithAlbumId(context, localUri, false).execute()
     }
 
     AsyncFunction("createAssetAsync") Coroutine { localUri: String, albumId: String? ->
-      requirePermissions()
+      requireSystemPermissions()
       CreateAssetWithAlbumId(context, localUri, true, albumId).execute()
     }
 
     AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: List<String>, albumId: String, copyToAlbum: Boolean ->
-      requirePermissions()
-      val action = actionIfUserGrantedPermission {
-        runBlocking {
-          AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum).execute()
-        }
-      }
-      runActionWithPermissions(if (copyToAlbum) emptyList() else assetsId, action)
+      requireSystemPermissions()
+      requestMediaLibraryActionPermission(if (copyToAlbum) emptyList() else assetsId)
+      AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum).execute()
     }
 
     AsyncFunction("removeAssetsFromAlbumAsync") Coroutine { assetsId: List<String>, albumId: String ->
-      requirePermissions()
-      val action = actionIfUserGrantedPermission {
-        RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId).execute()
-      }
-      runActionWithPermissions(assetsId, action)
+      requireSystemPermissions()
+      requestMediaLibraryActionPermission(assetsId)
+      RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId).execute()
     }
 
     AsyncFunction("deleteAssetsAsync") Coroutine { assetsId: List<String> ->
-      requirePermissions()
-      val action = actionIfUserGrantedPermission {
-        DeleteAssets(context, assetsId.toTypedArray()).execute()
-      }
-      runActionWithPermissions(assetsId, action, useDeletePermission = true)
+      requireSystemPermissions()
+      requestMediaLibraryActionPermission(assetsId, needsDeletePermission = true)
+      DeleteAssets(context, assetsId.toTypedArray()).execute()
     }
 
     AsyncFunction("getAssetInfoAsync") Coroutine { assetId: String, _: Map<String, Any?>?/* unused on android atm */ ->
-      requirePermissions(false)
+      requireSystemPermissions(false)
       GetAssetInfo(context, assetId).execute()
     }
 
     AsyncFunction("getAlbumsAsync") Coroutine { _: Map<String, Any?>?/* unused on android atm */ ->
-      requirePermissions(false)
+      requireSystemPermissions(false)
       GetAlbums(context).execute()
     }
 
     AsyncFunction("getAlbumAsync") Coroutine { albumName: String ->
-      requirePermissions(false)
+      requireSystemPermissions(false)
       GetAlbum(context, albumName).execute()
     }
 
     AsyncFunction("createAlbumAsync") Coroutine { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri? ->
-      requirePermissions()
-      val action = actionIfUserGrantedPermission {
-        assetId?.let {
-          return@actionIfUserGrantedPermission runBlocking {
-            CreateAlbum(context, albumName, assetId, copyAsset).execute()
-          }
-        }
+      requireSystemPermissions()
 
-        initialAssetUri?.let {
-          return@actionIfUserGrantedPermission runBlocking {
-            CreateAlbumWithInitialFileUri(context, albumName, it).execute()
-          }
-        }
-
-        null
-      }
       val assetIdList = if (!copyAsset && assetId != null) {
         listOf(assetId)
       } else {
         emptyList()
       }
-      runActionWithPermissions(assetIdList, action)
+
+      requestMediaLibraryActionPermission(assetIdList)
+
+      if (assetId != null) {
+        CreateAlbum(context, albumName, assetId, copyAsset).execute()
+      } else if (initialAssetUri != null) {
+        CreateAlbumWithInitialFileUri(context, albumName, initialAssetUri).execute()
+      } else {
+        null
+      }
     }
 
     AsyncFunction("deleteAlbumsAsync") Coroutine { albumIds: List<String> ->
-      requirePermissions()
-      val action = actionIfUserGrantedPermission {
-        DeleteAlbums(context, albumIds).execute()
-      }
+      requireSystemPermissions()
       val assetIds = getAssetsInAlbums(context, *albumIds.toTypedArray())
-      runActionWithPermissions(assetIds, action)
+      requestMediaLibraryActionPermission(assetIds)
+      DeleteAlbums(context, albumIds).execute()
     }
 
     AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
-      requirePermissions(false)
+      requireSystemPermissions(false)
       GetAssets(context, assetOptions).execute()
     }
 
@@ -225,16 +208,13 @@ class MediaLibraryModule : Module() {
         return@Coroutine
       }
 
-      val action = actionIfUserGrantedPermission {
-        MigrateAlbum(context, assets, albumDir.name).execute()
-      }
-
       val needsToCheckPermissions = assets.map { it.assetId }
-      runActionWithPermissions(needsToCheckPermissions, action)
+      requestMediaLibraryActionPermission(needsToCheckPermissions)
+      MigrateAlbum(context, assets, albumDir.name).execute()
     }
 
     AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String ->
-      requirePermissions(false)
+      requireSystemPermissions(false)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         CheckIfAlbumShouldBeMigrated(context, albumId).execute()
       }
@@ -363,7 +343,7 @@ class MediaLibraryModule : Module() {
     return granularPermissions
   }
 
-  private fun requirePermissions(isWritePermissionRequired: Boolean = true) {
+  private fun requireSystemPermissions(isWritePermissionRequired: Boolean = true) {
     val missingPermissionsCondition =
       if (isWritePermissionRequired) isMissingWritePermission else isMissingPermissions
     if (missingPermissionsCondition) {
@@ -371,10 +351,6 @@ class MediaLibraryModule : Module() {
         if (isWritePermissionRequired) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
       throw PermissionsException(missingPermissionsMessage)
     }
-  }
-
-  private fun interface Action<out T> {
-    fun runWithPermissions(permissionsWereGranted: Boolean): T
   }
 
   private fun hasReadPermissions(): Boolean {
@@ -413,43 +389,41 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private suspend fun <T> runActionWithPermissions(
-    assetsId: List<String>,
-    action: Action<T>,
-    useDeletePermission: Boolean = false
-  ): T {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
-        .filter { uri ->
-          context.checkUriPermission(
-            uri,
-            Binder.getCallingPid(),
-            Binder.getCallingUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-          ) != PackageManager.PERMISSION_GRANTED
-        }
-
-      if (pathsWithoutPermissions.isNotEmpty()) {
-        val granted = if (useDeletePermission) {
-          deleteLauncher.launch(DeleteContractInput(uris = pathsWithoutPermissions))
-        } else {
-          writeLauncher.launch(WriteContractInput(uris = pathsWithoutPermissions))
-        }
-        if (!granted) {
-          return action.runWithPermissions(false)
-        }
-      }
+  private suspend fun requestMediaLibraryActionPermission(
+    assetIds: List<String>,
+    needsDeletePermission: Boolean = false
+  ) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      return
     }
-    return action.runWithPermissions(true)
+
+    val uris = MediaLibraryUtils.getAssetsUris(context, assetIds)
+    val urisWithoutPermission = uris.filterNot { uri ->
+      hasWritePermissionForUri(uri)
+    }
+
+    if (urisWithoutPermission.isEmpty()) {
+      return
+    }
+
+    val granted = if (needsDeletePermission) {
+      deleteLauncher.launch(DeleteContractInput(uris = urisWithoutPermission))
+    } else {
+      writeLauncher.launch(WriteContractInput(uris = urisWithoutPermission))
+    }
+
+    if (!granted) {
+      throw PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
+    }
   }
 
-  private fun <T> actionIfUserGrantedPermission(
-    block: () -> T
-  ) = Action { permissionsWereGranted ->
-    if (!permissionsWereGranted) {
-      throw PermissionsException(ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-    } else {
-      block()
-    }
+  private fun hasWritePermissionForUri(uri: Uri): Boolean {
+    return context.checkUriPermission(
+      uri,
+      Binder.getCallingPid(),
+      Binder.getCallingUid(),
+      Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+    ) == PackageManager.PERMISSION_GRANTED
   }
 
   private inner class MediaStoreContentObserver(handler: Handler, private val mMediaType: Int) :
