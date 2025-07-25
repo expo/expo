@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Remove flipper hack support ([#37532](https://github.com/expo/expo/pull/37532) by [@EvanBacon](https://github.com/EvanBacon))
+- CLI returns non-zero return code on Abort and Silent Errors ([#](https://github.com/expo/expo/pull/) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 🎉 New features
 

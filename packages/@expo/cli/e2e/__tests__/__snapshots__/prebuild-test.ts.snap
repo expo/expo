@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runs \`npx expo prebuild --template <github-url>\` 1`] = `
+exports[`prebuild from github runs \`npx expo prebuild --template <github-url>\` 1`] = `
 [
   "App.js",
   "android/.gitignore",
