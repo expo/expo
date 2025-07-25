@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.h b/node_modules/react-native-screens/ios/RNSScreenStack.h
-index 71dc7f3..0425e63 100644
+index f3a2363..40c5dc0 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.h
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.h
-@@ -9,6 +9,14 @@
+@@ -10,6 +10,15 @@
  
  NS_ASSUME_NONNULL_BEGIN
  
@@ -14,14 +14,15 @@ index 71dc7f3..0425e63 100644
 +
 +@end
 +
- @interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate>
++
+ @interface RNSNavigationController
+     : UINavigationController <RNSViewControllerDelegate, RNSBottomTabsSpecialEffectsSupporting>
  
- @end
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-index b3970af..43bc304 100644
+index 56481ac..fa709dd 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-@@ -534,58 +534,66 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+@@ -571,47 +571,55 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
  
    UIViewController *firstModalToBeDismissed = changeRootController.presentedViewController;
  
@@ -97,7 +98,7 @@ index b3970af..43bc304 100644
        }
 -      return;
      }
--  }
+   }
  
 -  // changeRootController does not have presentedViewController but it does not mean that no modals are in presentation;
 -  // modals could be presented by another stack (nested / outer), third-party view controller or they could be using
@@ -105,35 +106,20 @@ index b3970af..43bc304 100644
 -  // for some reason system asks top-level (react root) vc to present instead of our stack, despite the fact that
 -  // `definesPresentationContext` returns `YES` for UINavigationController.
 -  // So we first need to find top-level controller manually:
--  UIViewController *reactRootVc = [self findReactRootViewController];
--  UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
--
--  if (topMostVc != reactRootVc) {
--    changeRootController = topMostVc;
--
--    // Here we handle just the simplest case where the top level VC was dismissed. In any more complex
--    // scenario we will still have problems, see: https://github.com/software-mansion/react-native-screens/issues/1813
--    if ([_presentedModals containsObject:topMostVc] && ![controllers containsObject:topMostVc]) {
--      [changeRootController dismissViewControllerAnimated:YES completion:finish];
--      return;
-+    // changeRootController does not have presentedViewController but it does not mean that no modals are in
-+    // presentation; modals could be presented by another stack (nested / outer), third-party view controller or they
-+    // could be using UIModalPresentationCurrentContext / UIModalPresentationOverCurrentContext presentation styles; in
-+    // the last case for some reason system asks top-level (react root) vc to present instead of our stack, despite the
-+    // fact that `definesPresentationContext` returns `YES` for UINavigationController. So we first need to find
-+    // top-level controller manually:
-+    UIViewController *reactRootVc = [self findReactRootViewController];
-+    UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
-+
-+    if (topMostVc != reactRootVc) {
-+      changeRootController = topMostVc;
-+
-+      // Here we handle just the simplest case where the top level VC was dismissed. In any more complex
-+      // scenario we will still have problems, see: https://github.com/software-mansion/react-native-screens/issues/1813
-+      if ([_presentedModals containsObject:topMostVc] && ![controllers containsObject:topMostVc]) {
-+        [changeRootController dismissViewControllerAnimated:YES completion:finish];
-+        return;
-+      }
++  // changeRootController does not have presentedViewController but it does not mean that no modals are in
++  // presentation; modals could be presented by another stack (nested / outer), third-party view controller or they
++  // could be using UIModalPresentationCurrentContext / UIModalPresentationOverCurrentContext presentation styles; in
++  // the last case for some reason system asks top-level (react root) vc to present instead of our stack, despite the
++  // fact that `definesPresentationContext` returns `YES` for UINavigationController. So we first need to find
++  // top-level controller manually:
+   UIViewController *reactRootVc = [self findReactRootViewController];
+   UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
+ 
+@@ -625,7 +633,6 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+       return;
      }
    }
- 
+-
+   // We didn't detect any controllers for dismissal, thus we start presenting new VCs
+   finish();
+ }
