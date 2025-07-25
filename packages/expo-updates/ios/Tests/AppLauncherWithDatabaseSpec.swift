@@ -71,8 +71,13 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
         let testUpdate = AppLauncherWithDatabaseMock.testUpdate
         let yesterday = Date(timeIntervalSinceNow: 24 * 60 * 60 * -1)
         testUpdate.lastAccessed = yesterday
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+        ])
         db.databaseQueue.sync {
-          try! db.addUpdate(testUpdate)
+          try! db.addUpdate(testUpdate, config: config)
         }
 
         let testAsset = UpdateAsset(key: "bundle-1234", type: "js")
@@ -83,11 +88,6 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
           try! db.addNewAssets([testAsset], toUpdateWithId: testUpdate.updateId)
         }
 
-        let config = try! UpdatesConfig.config(fromDictionary: [
-          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
-          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
-          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
-        ])
         let launcher = AppLauncherWithDatabaseMock(
           config: config,
           database: db,
@@ -96,7 +96,7 @@ class AppLauncherWithDatabaseSpec : ExpoSpec {
           logger: UpdatesLogger()
         )
         let successValue = Synchronized<Bool?>(nil)
-        launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1")) { error, success in
+        launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1", config: config)) { error, success in
           successValue.value = success
         }
         expect(successValue.value).toEventually(beTrue(), timeout: .milliseconds(10_000))

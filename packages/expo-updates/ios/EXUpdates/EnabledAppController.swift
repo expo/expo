@@ -31,7 +31,12 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
 
   private let stateMachine: UpdatesStateMachine
 
-  private var selectionPolicy: SelectionPolicy
+  private var selectionPolicy: SelectionPolicy {
+    return SelectionPolicyFactory.filterAwarePolicy(
+      withRuntimeVersion: config.runtimeVersion,
+      config: config
+    )
+  }
 
   private let logger = UpdatesLogger()
 
@@ -50,7 +55,6 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     self.database = database
     self.updatesDirectoryInternal = updatesDirectory
     self.updatesDirectory = updatesDirectory
-    self.selectionPolicy = Self.createSelectionPolicy(config)
     self.logger.info(message: "AppController sharedInstance created")
     self.eventManager = QueueUpdatesEventManager(logger: logger)
     self.stateMachine = UpdatesStateMachine(logger: self.logger, eventManager: self.eventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
@@ -257,15 +261,4 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
     }
     UpdatesConfigOverride.save(configOverride)
     self.config = try UpdatesConfig.config(fromConfig: self.config, configOverride: configOverride)
-    self.selectionPolicy = Self.createSelectionPolicy(self.config)
-  }
-
-  private static func createSelectionPolicy(_ config: UpdatesConfig) -> SelectionPolicy {
-    if config.hasUpdatesOverride {
-      return SelectionPolicyFactory.overrideAwarePolicy()
-    }
-    return SelectionPolicyFactory.filterAwarePolicy(
-      withRuntimeVersion: config.runtimeVersion
-    )
-  }
-}
+  }}

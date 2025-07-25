@@ -14,7 +14,7 @@
  */
 @objc(EXUpdatesReaperSelectionPolicyFilterAware)
 @objcMembers
-public class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPolicy {
+public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPolicy {
   public func updatesToDelete(withLaunchedUpdate launchedUpdate: Update, updates: [Update], filters: [String: Any]?) -> [Update] {
     var updatesToDelete: [Update] = []
 

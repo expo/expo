@@ -129,10 +129,7 @@ open class AppLoader: NSObject {
     if updateManifest.isDevelopmentMode {
       database.databaseQueue.async {
         do {
-          try self.database.addUpdate(updateManifest)
-          if self.config.hasUpdatesOverride {
-            try self.database.markUpdateFromOverride(updateManifest)
-          }
+          try self.database.addUpdate(updateManifest, config: self.config)
           try self.database.markUpdateFinished(updateManifest)
         } catch {
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
@@ -199,10 +196,7 @@ open class AppLoader: NSObject {
         // no update already exists with this ID, so we need to insert it and download everything.
         self.updateResponseContainingManifest = updateResponse
         do {
-          try self.database.addUpdate(updateManifest)
-          if self.config.hasUpdatesOverride {
-            try self.database.markUpdateFromOverride(updateManifest)
-          }
+          try self.database.addUpdate(updateManifest, config: self.config)
         } catch {
           self.finish(withError: UpdatesError.appLoaderUnknownError(cause: error))
           return

@@ -83,9 +83,9 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          try! db.addUpdate(update1)
-          try! db.addUpdate(update2)
-          
+          try! db.addUpdate(update1, config: config)
+          try! db.addUpdate(update2, config: config)
+
           expect(try! db.allUpdates(withConfig: config).count) == 2
           
           try! UpdatesDatabaseIntegrityCheck().run(withDatabase: db, directory: testDatabaseDir, config: config, embeddedUpdate: update2)
@@ -142,8 +142,8 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          try! db.addUpdate(update1)
-          try! db.addUpdate(update2)
+          try! db.addUpdate(update1, config: config)
+          try! db.addUpdate(update2, config: config)
           try! db.addNewAssets([asset1], toUpdateWithId: update1.updateId)
           try! db.addNewAssets([asset2], toUpdateWithId: update2.updateId)
           

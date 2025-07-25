@@ -110,10 +110,10 @@ public final class UpdatesDatabase: NSObject {
     return try execute(sql: sql, withArgs: args)
   }
 
-  public func addUpdate(_ update: Update) throws {
+  public func addUpdate(_ update: Update, config: UpdatesConfig) throws {
     let sql = """
-      INSERT INTO "updates" ("id", "scope_key", "commit_time", "runtime_version", "manifest", "status" , "keep", "last_accessed", "successful_launch_count", "failed_launch_count")
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9);
+      INSERT INTO "updates" ("id", "scope_key", "commit_time", "runtime_version", "manifest", "status" , "keep", "last_accessed", "successful_launch_count", "failed_launch_count", "url", "headers")
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10, ?11);
     """
     _ = try execute(
       sql: sql,
@@ -126,7 +126,9 @@ public final class UpdatesDatabase: NSObject {
         update.status.rawValue,
         update.lastAccessed,
         update.successfulLaunchCount,
-        update.failedLaunchCount
+        update.failedLaunchCount,
+        config.updateUrl.absoluteString,
+        Self.encodeRequestHeaders(config.requestHeaders)
       ]
     )
   }
@@ -290,12 +292,6 @@ public final class UpdatesDatabase: NSObject {
     update.lastAccessed = Date()
     let updateSql = "UPDATE updates SET last_accessed = ?1 WHERE id = ?2;"
     _ = try execute(sql: updateSql, withArgs: [update.lastAccessed, update.updateId])
-  }
-
-  public func markUpdateFromOverride(_ update: Update) throws {
-    update.isFromOverride = true
-    let updateSql = "UPDATE updates SET from_override = 1 WHERE id =?1;"
-    _ = try execute(sql: updateSql, withArgs: [update.updateId])
   }
 
   public func incrementSuccessfulLaunchCountForUpdate(_ update: Update) throws {
@@ -637,7 +633,8 @@ public final class UpdatesDatabase: NSObject {
     let status: NSNumber = row.requiredValue(forKey: "status")
     let successfulLaunchCount: NSNumber = row.requiredValue(forKey: "successful_launch_count")
     let failedLaunchCount: NSNumber = row.requiredValue(forKey: "failed_launch_count")
-    let fromOverride: NSNumber = row.requiredValue(forKey: "from_override")
+    let url = row.optionalValue(forKey: "url").flatMap(URL.init(string:))
+    let requestHeaders: [String: String]? = Self.decodeRequestHeaders(row.optionalValue(forKey: "headers"))
 
     let update = Update(
       manifest: ManifestFactory.manifest(forManifestJSON: manifest),
@@ -655,7 +652,8 @@ public final class UpdatesDatabase: NSObject {
     update.lastAccessed = UpdatesDatabaseUtils.date(fromUnixTimeMilliseconds: row.requiredValue(forKey: "last_accessed"))
     update.successfulLaunchCount = successfulLaunchCount.intValue
     update.failedLaunchCount = failedLaunchCount.intValue
-    update.isFromOverride = fromOverride.intValue != 0
+    update.url = url
+    update.requestHeaders = requestHeaders
     return update
   }
 
@@ -705,6 +703,22 @@ public final class UpdatesDatabase: NSObject {
     }
 
     return asset
+  }
+
+  internal static func encodeRequestHeaders(_ requestHeader: [String: String]) -> String? {
+    let encoder = JSONEncoder()
+    guard let data = try? encoder.encode(requestHeader) else {
+      return nil
+    }
+    return String(data: data, encoding: .utf8)
+  }
+
+  internal static func decodeRequestHeaders(_ jsonString: String?) -> [String: String]? {
+    guard let data = jsonString?.data(using: .utf8) else {
+      return nil
+    }
+    let decoder = JSONDecoder()
+    return try? decoder.decode([String: String].self, from: data)
   }
 }
 

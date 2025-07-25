@@ -91,7 +91,8 @@ public final class ExpoUpdatesUpdate: Update {
       isDevelopmentMode: isDevelopmentMode,
       assetsFromManifest: processedAssets
     )
-    update.isFromOverride = config.hasUpdatesOverride
+    update.url = config.updateUrl
+    update.requestHeaders = config.requestHeaders
     return update
   }
 }

@@ -12,6 +12,12 @@ import Foundation
 @objc(EXUpdatesLoaderSelectionPolicyFilterAware)
 @objcMembers
 public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPolicy {
+  private let config: UpdatesConfig?
+
+  public required init(config: UpdatesConfig?) {
+    self.config = config
+  }
+
   public func shouldLoadNewUpdate(_ newUpdate: Update?, withLaunchedUpdate launchedUpdate: Update?, filters: [String: Any]?) -> Bool {
     guard let newUpdate = newUpdate,
       SelectionPolicies.doesUpdate(newUpdate, matchFilters: filters) else {
@@ -26,6 +32,13 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     // we should load the new update no matter the commitTime
     if !SelectionPolicies.doesUpdate(launchedUpdate, matchFilters: filters) {
       return true
+    }
+
+    let hasUpdatesOverride = self.config?.hasUpdatesOverride ?? false
+    if hasUpdatesOverride {
+      return newUpdate.updateId != launchedUpdate.updateId &&
+        newUpdate.url == self.config?.updateUrl &&
+        newUpdate.requestHeaders == self.config?.requestHeaders
     }
 
     return launchedUpdate.commitTime.compare(newUpdate.commitTime) == .orderedAscending

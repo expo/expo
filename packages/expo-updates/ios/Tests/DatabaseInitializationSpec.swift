@@ -944,7 +944,7 @@ class UpdatesDatabaseInitializationSpec : ExpoSpec {
         )
 
         // verify data integrity
-        let updatesSql1 = "SELECT * FROM `updates` WHERE `from_override` = 0"
+        let updatesSql1 = "SELECT * FROM `updates`"
         expect(try! UpdatesDatabaseUtils.execute(sql:updatesSql1, withArgs:nil, onDatabase:migratedDb).count) == 2
       }
     }

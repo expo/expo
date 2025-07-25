@@ -57,7 +57,8 @@ internal final class UpdatesDatabaseInitialization {
       "last_accessed"  INTEGER NOT NULL,
       "successful_launch_count"  INTEGER NOT NULL DEFAULT 0,
       "failed_launch_count"  INTEGER NOT NULL DEFAULT 0,
-      "from_override"  INTEGER NOT NULL DEFAULT 0,
+      "url"  TEXT,
+      "headers"  TEXT,
       PRIMARY KEY("id"),
       FOREIGN KEY("launch_asset_id") REFERENCES "assets"("id") ON DELETE CASCADE
     );
