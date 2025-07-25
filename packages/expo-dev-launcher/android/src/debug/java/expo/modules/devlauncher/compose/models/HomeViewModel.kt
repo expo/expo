@@ -26,10 +26,10 @@ import kotlinx.coroutines.launch
 
 sealed interface HomeAction {
   class OpenApp(val url: String) : HomeAction
-  data object RefetchRunningApps : HomeAction
-  data object ResetRecentlyOpenedApps : HomeAction
+  object RefetchRunningApps : HomeAction
+  object ResetRecentlyOpenedApps : HomeAction
   class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
-  data object ScanQRCode : HomeAction
+  object ScanQRCode : HomeAction
 }
 
 data class HomeState(
