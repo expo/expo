@@ -1,20 +1,16 @@
 package expo.modules.medialibrary.albums
 
-import android.os.Bundle
 import android.provider.MediaStore.Images.Media
 import expo.modules.medialibrary.AlbumException
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
-import expo.modules.test.core.legacy.PromiseMock
-import expo.modules.test.core.legacy.assertRejectedWithCode
-import expo.modules.test.core.legacy.promiseResolvedWithType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,12 +19,10 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class GetAlbumsTests {
 
-  private lateinit var promise: PromiseMock
   private lateinit var mockContext: MockContext
 
   @Before
   fun setUp() {
-    promise = PromiseMock()
     mockContext = MockContext()
   }
 
@@ -48,17 +42,14 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    GetAlbums(context, promise).execute()
+    val result = GetAlbums(context).execute()
 
     // assert
-    promiseResolvedWithType<List<Bundle>>(promise) {
-      assertEquals(1, it.size)
-
-      val firstAlbum = it[0]
-      assertEquals(MockData.MOCK_ALBUM_ID, firstAlbum.getString("id"))
-      assertEquals(2, firstAlbum.getInt("assetCount"))
-      assertEquals(bucketDisplayName, firstAlbum.getString("title"))
-    }
+    assertEquals(1, result.size)
+    val firstAlbum = result[0]
+    assertEquals(MockData.MOCK_ALBUM_ID, firstAlbum.getString("id"))
+    assertEquals(2, firstAlbum.getInt("assetCount"))
+    assertEquals(bucketDisplayName, firstAlbum.getString("title"))
   }
 
   @Test
@@ -77,12 +68,10 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    GetAlbums(context, promise).execute()
+    val result = GetAlbums(context).execute()
 
     // assert
-    promiseResolvedWithType<List<Bundle>>(promise) {
-      assertEquals(0, it.size)
-    }
+    assertEquals(0, result.size)
   }
 
   @Test
@@ -90,10 +79,9 @@ class GetAlbumsTests {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
-    // act
-    // assert
+    // act && assert
     assertThrows(AlbumException::class.java) {
-      GetAlbums(context, promise).execute()
+      GetAlbums(context).execute()
     }
   }
 
@@ -102,11 +90,13 @@ class GetAlbumsTests {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    // act
-    GetAlbums(context, promise).execute()
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
+    // act && assert
+    try {
+      GetAlbums(context).execute()
+      fail()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
+    }
   }
 
   @Test
@@ -114,10 +104,12 @@ class GetAlbumsTests {
     // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
-    // act
-    GetAlbums(context, promise).execute()
-
-    // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
+    // act && assert
+    try {
+      GetAlbums(context).execute()
+      fail()
+    } catch (e: Exception) {
+      assert(e is UnableToLoadException)
+    }
   }
 }

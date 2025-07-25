@@ -144,13 +144,12 @@ export async function test(t) {
       let album;
 
       async function initializeDefaultAssetsAsync() {
-        testAssets = await getAssets(files);
         album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
-        if (album == null) {
-          album = await createAlbum(testAssets, ALBUM_NAME);
-        } else {
-          await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, shouldCopyAssets);
+        if (album != null) {
+          await MediaLibrary.deleteAlbumsAsync(album, true);
         }
+        testAssets = await getAssets(files);
+        album = await createAlbum(testAssets, ALBUM_NAME);
       }
 
       async function cleanupAsync() {

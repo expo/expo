@@ -11,7 +11,6 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
-import expo.modules.kotlin.Promise
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -75,7 +74,7 @@ object MediaLibraryUtils {
     }
   }
 
-  fun deleteAssets(context: Context, selection: String?, selectionArgs: Array<out String?>?, promise: Promise) {
+  fun deleteAssets(context: Context, selection: String?, selectionArgs: Array<out String?>?) {
     val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
     try {
       context.contentResolver.query(
@@ -112,18 +111,12 @@ object MediaLibraryUtils {
               }
             }
           }
-          promise.resolve(true)
         }
       }
     } catch (e: SecurityException) {
-      promise.reject(
-        ERROR_UNABLE_TO_SAVE_PERMISSION,
-        "Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.",
-        e
-      )
+      throw UnableToDeleteException("Could not delete asset: need WRITE_EXTERNAL_STORAGE permission. $e")
     } catch (e: Exception) {
-      e.printStackTrace()
-      promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.", e)
+      throw UnableToDeleteException("Could not delete file. $e")
     }
   }
 
