@@ -51,5 +51,12 @@ class ExpoUIModule : Module() {
     View(ColumnView::class)
     View(ContainerView::class)
     View(TextView::class)
+
+    View(AlertDialogView::class) {
+      Events(
+        "onDismissPressed",
+        "onConfirmPressed"
+      )
+    }
   }
 }
