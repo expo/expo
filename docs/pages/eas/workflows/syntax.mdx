@@ -236,6 +236,20 @@ jobs:
     # @end #
 ```
 
+### `jobs.<job_id>.env`
+
+Sets individual environment variables for the job. This is often useful for exposing outputs from a previous job as environment variables for use in the current job:
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    env:
+      PREV_JOB_OUTPUT: ${{ needs.previous_job.outputs.some_output }}
+      OTHER_ENV_VAR: test
+    # @end #
+```
+
 ### `jobs.<job_id>.defaults.run.working_directory`
 
 Sets the directory to run commands in for all steps in the job.
