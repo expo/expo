@@ -50,6 +50,14 @@ export const BlobScreens = [
       return optionalRequire(() => require('./expo-blob/BlobBytesScreen'));
     },
   },
+  {
+    name: 'Blob Performance Test',
+    route: 'expo-blob/performance',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./expo-blob/BlobPerformanceTestScreen'));
+    },
+  },
 ];
 
 export default function BlobScreen() {

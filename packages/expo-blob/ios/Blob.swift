@@ -51,19 +51,23 @@ public class Blob: SharedObject {
         continue
       }
 
-      switch part {
-        case .string(let str):
-          let utf8 = Array(str.utf8)
-          let subUtf8 = Array(utf8[partStart..<partEnd])
-          if let subStr = String(bytes: subUtf8, encoding: .utf8) {
-            dataSlice.append(.string(subStr))
-          }
-        case .data(let data):
-          let subData = data.subdata(in: partStart..<partEnd)
-          dataSlice.append(.data(subData))
-        case .blob(let blob):
-          let subBlob = blob.slice(start: partStart, end: partEnd, contentType: blob.type)
-          dataSlice.append(.blob(subBlob))
+      if partStart == 0 && partEnd == partSize {
+        dataSlice.append(part)
+      } else {
+        switch part {
+          case .string(let str):
+            let utf8 = Array(str.utf8)
+            let subUtf8 = Array(utf8[partStart..<partEnd])
+            if let subStr = String(bytes: subUtf8, encoding: .utf8) {
+              dataSlice.append(.string(subStr))
+            }
+          case .data(let data):
+            let subData = data.subdata(in: partStart..<partEnd)
+            dataSlice.append(.data(subData))
+          case .blob(let blob):
+            let subBlob = blob.slice(start: partStart, end: partEnd, contentType: blob.type)
+            dataSlice.append(.blob(subBlob))
+        }
       }
 
       currentPos += partSize
