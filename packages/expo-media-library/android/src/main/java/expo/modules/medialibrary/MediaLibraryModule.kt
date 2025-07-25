@@ -28,20 +28,20 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.medialibrary.albums.AddAssetsToAlbum
-import expo.modules.medialibrary.albums.CreateAlbum
-import expo.modules.medialibrary.albums.CreateAlbumWithInitialFileUri
-import expo.modules.medialibrary.albums.DeleteAlbums
-import expo.modules.medialibrary.albums.GetAlbum
-import expo.modules.medialibrary.albums.GetAlbums
-import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
+import expo.modules.medialibrary.albums.addAssetsToAlbum
+import expo.modules.medialibrary.albums.createAlbum
+import expo.modules.medialibrary.albums.createAlbumWithInitialFileUri
+import expo.modules.medialibrary.albums.deleteAlbums
+import expo.modules.medialibrary.albums.getAlbum
+import expo.modules.medialibrary.albums.getAlbums
 import expo.modules.medialibrary.albums.getAssetsInAlbums
-import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
-import expo.modules.medialibrary.albums.migration.MigrateAlbum
-import expo.modules.medialibrary.assets.CreateAssetWithAlbumId
-import expo.modules.medialibrary.assets.DeleteAssets
-import expo.modules.medialibrary.assets.GetAssetInfo
-import expo.modules.medialibrary.assets.GetAssets
+import expo.modules.medialibrary.albums.migration.checkIfAlbumShouldBeMigrated
+import expo.modules.medialibrary.albums.migration.migrateAlbum
+import expo.modules.medialibrary.albums.removeAssetsFromAlbum
+import expo.modules.medialibrary.assets.createAssetWithAlbumId
+import expo.modules.medialibrary.assets.deleteAssets
+import expo.modules.medialibrary.assets.getAssetInfo
+import expo.modules.medialibrary.assets.getAssets
 import expo.modules.medialibrary.contracts.DeleteContract
 import expo.modules.medialibrary.contracts.DeleteContractInput
 import expo.modules.medialibrary.contracts.WriteContract
@@ -101,45 +101,45 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("saveToLibraryAsync") Coroutine { localUri: String ->
       requireSystemPermissions()
-      CreateAssetWithAlbumId(context, localUri, false).execute()
+      createAssetWithAlbumId(context, localUri, false)
     }
 
     AsyncFunction("createAssetAsync") Coroutine { localUri: String, albumId: String? ->
       requireSystemPermissions()
-      CreateAssetWithAlbumId(context, localUri, true, albumId).execute()
+      createAssetWithAlbumId(context, localUri, true, albumId)
     }
 
     AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: List<String>, albumId: String, copyToAlbum: Boolean ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(if (copyToAlbum) emptyList() else assetsId)
-      AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum).execute()
+      addAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum)
     }
 
     AsyncFunction("removeAssetsFromAlbumAsync") Coroutine { assetsId: List<String>, albumId: String ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(assetsId)
-      RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId).execute()
+      removeAssetsFromAlbum(context, assetsId.toTypedArray(), albumId)
     }
 
     AsyncFunction("deleteAssetsAsync") Coroutine { assetsId: List<String> ->
       requireSystemPermissions()
       requestMediaLibraryActionPermission(assetsId, needsDeletePermission = true)
-      DeleteAssets(context, assetsId.toTypedArray()).execute()
+      deleteAssets(context, assetsId.toTypedArray())
     }
 
     AsyncFunction("getAssetInfoAsync") Coroutine { assetId: String, _: Map<String, Any?>?/* unused on android atm */ ->
       requireSystemPermissions(false)
-      GetAssetInfo(context, assetId).execute()
+      getAssetInfo(context, assetId)
     }
 
     AsyncFunction("getAlbumsAsync") Coroutine { _: Map<String, Any?>?/* unused on android atm */ ->
       requireSystemPermissions(false)
-      GetAlbums(context).execute()
+      getAlbums(context)
     }
 
     AsyncFunction("getAlbumAsync") Coroutine { albumName: String ->
       requireSystemPermissions(false)
-      GetAlbum(context, albumName).execute()
+      getAlbum(context, albumName)
     }
 
     AsyncFunction("createAlbumAsync") Coroutine { albumName: String, assetId: String?, copyAsset: Boolean, initialAssetUri: Uri? ->
@@ -154,9 +154,9 @@ class MediaLibraryModule : Module() {
       requestMediaLibraryActionPermission(assetIdList)
 
       if (assetId != null) {
-        CreateAlbum(context, albumName, assetId, copyAsset).execute()
+        createAlbum(context, albumName, assetId, copyAsset)
       } else if (initialAssetUri != null) {
-        CreateAlbumWithInitialFileUri(context, albumName, initialAssetUri).execute()
+        createAlbumWithInitialFileUri(context, albumName, initialAssetUri)
       } else {
         null
       }
@@ -166,12 +166,12 @@ class MediaLibraryModule : Module() {
       requireSystemPermissions()
       val assetIds = getAssetsInAlbums(context, *albumIds.toTypedArray())
       requestMediaLibraryActionPermission(assetIds)
-      DeleteAlbums(context, albumIds).execute()
+      deleteAlbums(context, albumIds)
     }
 
     AsyncFunction("getAssetsAsync") Coroutine { assetOptions: AssetsOptions ->
       requireSystemPermissions(false)
-      GetAssets(context, assetOptions).execute()
+      getAssets(context, assetOptions)
     }
 
     AsyncFunction("migrateAlbumIfNeededAsync") Coroutine { albumId: String ->
@@ -210,13 +210,13 @@ class MediaLibraryModule : Module() {
 
       val needsToCheckPermissions = assets.map { it.assetId }
       requestMediaLibraryActionPermission(needsToCheckPermissions)
-      MigrateAlbum(context, assets, albumDir.name).execute()
+      migrateAlbum(context, assets, albumDir.name)
     }
 
     AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String ->
       requireSystemPermissions(false)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        CheckIfAlbumShouldBeMigrated(context, albumId).execute()
+        checkIfAlbumShouldBeMigrated(context, albumId)
       }
       false
     }

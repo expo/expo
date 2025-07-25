@@ -9,62 +9,58 @@ import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.UnableToLoadException
 
-internal open class GetAlbums(
-  private val context: Context
-) {
-  fun execute(): List<Bundle> {
-    val projection = arrayOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME)
-    val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
+fun getAlbums(context: Context): List<Bundle> {
+  val projection = arrayOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME)
+  val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
 
-    val albums = HashMap<String, Album>()
+  val albums = HashMap<String, Album>()
 
-    try {
-      context.contentResolver
-        .query(
-          EXTERNAL_CONTENT_URI,
-          projection,
-          selection,
-          null,
-          Media.BUCKET_DISPLAY_NAME
-        )
-        .use { assetCursor ->
-          if (assetCursor == null) {
-            throw AlbumException("Could not get albums. Query returns null")
-          }
-          val bucketIdIndex = assetCursor.getColumnIndex(Media.BUCKET_ID)
-          val bucketDisplayNameIndex = assetCursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
-
-          while (assetCursor.moveToNext()) {
-            val id = assetCursor.getString(bucketIdIndex)
-
-            if (assetCursor.getType(bucketDisplayNameIndex) == FIELD_TYPE_NULL) {
-              continue
-            }
-
-            val album = albums[id] ?: Album(
-              id = id,
-              title = assetCursor.getString(bucketDisplayNameIndex)
-            ).also {
-              albums[id] = it
-            }
-
-            album.count++
-          }
-          return albums.values.map { it.toBundle() }
+  try {
+    context.contentResolver
+      .query(
+        EXTERNAL_CONTENT_URI,
+        projection,
+        selection,
+        null,
+        Media.BUCKET_DISPLAY_NAME
+      )
+      .use { assetCursor ->
+        if (assetCursor == null) {
+          throw AlbumException("Could not get albums. Query returns null")
         }
-    } catch (e: SecurityException) {
-      throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission ${e.message}", e)
-    } catch (e: RuntimeException) {
-      throw UnableToLoadException("Could not get albums ${e.message}", e)
-    }
-  }
+        val bucketIdIndex = assetCursor.getColumnIndex(Media.BUCKET_ID)
+        val bucketDisplayNameIndex = assetCursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
 
-  private class Album(private val id: String, private val title: String, var count: Int = 0) {
-    fun toBundle() = Bundle().apply {
-      putString("id", id)
-      putString("title", title)
-      putParcelable("type", null)
-      putInt("assetCount", count)
-    }
+        while (assetCursor.moveToNext()) {
+          val id = assetCursor.getString(bucketIdIndex)
+
+          if (assetCursor.getType(bucketDisplayNameIndex) == FIELD_TYPE_NULL) {
+            continue
+          }
+
+          val album = albums[id] ?: Album(
+            id = id,
+            title = assetCursor.getString(bucketDisplayNameIndex)
+          ).also {
+            albums[id] = it
+          }
+
+          album.count++
+        }
+        return albums.values.map { it.toBundle() }
+      }
+  } catch (e: SecurityException) {
+    throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission ${e.message}", e)
+  } catch (e: RuntimeException) {
+    throw UnableToLoadException("Could not get albums ${e.message}", e)
+  }
+}
+
+private class Album(private val id: String, private val title: String, var count: Int = 0) {
+  fun toBundle() = Bundle().apply {
+    putString("id", id)
+    putString("title", title)
+    putParcelable("type", null)
+    putInt("assetCount", count)
   }
 }
