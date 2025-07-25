@@ -37,11 +37,11 @@ public final class RemoteAppLoader: AppLoader {
     self.errorBlock = errorBlockArg
 
     self.successBlock = { [weak self] (updateResponse: UpdateResponse?) in
-      guard let strongSelf = self else {
+      guard let self else {
         successBlockArg(updateResponse)
         return
       }
-      strongSelf.processUpdateResponse(updateResponse, success: successBlockArg, error: errorBlockArg)
+      processUpdateResponse(updateResponse, success: successBlockArg, error: errorBlockArg)
     }
 
     database.databaseQueue.async {
@@ -102,7 +102,7 @@ public final class RemoteAppLoader: AppLoader {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     let progressBlock = { [weak self] fractionCompleted in
-      guard let self = self else {
+      guard let self else {
         return
       }
       self.assetLoadProgressListener(asset: asset, progress: fractionCompleted)

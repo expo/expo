@@ -364,13 +364,7 @@ class FileDownloader(
           createRequestForAsset(asset, extraHeaders, configuration),
           asset.expectedHash,
           path,
-          assetLoadProgressListener?.let { listener ->
-            object : FileDownloadProgressListener {
-              override fun onProgressUpdate(progress: Double) {
-                listener.invoke(progress)
-              }
-            }
-          }
+          assetLoadProgressListener?.let { listener -> { listener.invoke(it) } }
         )
 
         asset.downloadTime = Date()
@@ -394,15 +388,13 @@ class FileDownloader(
 
     try {
       val response = call.execute()
-      if (progressListener != null) {
+      val wrappedResponse = progressListener?.let { listener ->
         response.body?.let { responseBody ->
-          val wrappedBody = FileDownloadProgressResponseBody(responseBody, progressListener)
-          val wrappedResponse = response.newBuilder().body(wrappedBody).build()
-          continuation.resume(wrappedResponse)
-        } ?: continuation.resume(response)
-      } else {
-        continuation.resume(response)
+          val wrappedBody = FileDownloadProgressResponseBody(responseBody, listener)
+          response.newBuilder().body(wrappedBody).build()
+        }
       }
+      continuation.resume(wrappedResponse ?: response)
     } catch (e: Exception) {
       continuation.resumeWithException(e)
     }
@@ -620,7 +612,7 @@ class FileDownloader(
   }
 }
 
-private interface FileDownloadProgressListener {
+private fun interface FileDownloadProgressListener {
   fun update(bytesRead: Long, contentLength: Long) {
     // Only emit progress if content length is known
     if (contentLength > 0) {
@@ -628,7 +620,7 @@ private interface FileDownloadProgressListener {
     }
   }
 
-  fun onProgressUpdate(progress: Double) {}
+  fun onProgressUpdate(progress: Double)
 }
 
 private class FileDownloadProgressResponseBody(

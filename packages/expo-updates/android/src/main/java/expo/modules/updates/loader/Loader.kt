@@ -70,7 +70,7 @@ abstract class Loader protected constructor(
 
   private fun notifyAssetLoadProgress() {
     if (assetTotal > 0) {
-      val progress = assetProgressMap.values.reduce { acc, value -> acc + value } / assetTotal.toDouble()
+      val progress = assetProgressMap.values.sum() / assetTotal.toDouble()
       assetLoadProgressBlock?.invoke(progress)
     }
   }
