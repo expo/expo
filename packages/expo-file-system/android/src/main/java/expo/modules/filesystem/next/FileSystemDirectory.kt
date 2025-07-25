@@ -26,7 +26,7 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   val size: Long get() {
     validatePermission(Permission.READ)
     validateType()
-    return javaFile.walkTopDown().filter { it.isFile }.map { it.length() }.sum()
+    return file.walkTopDown().filter { it.isFile() }.map { it.length() }.sum()
   }
 
   fun info(): DirectoryInfo {
@@ -35,33 +35,31 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
     if (!file.exists()) {
       val directoryInfo = DirectoryInfo(
         exists = false,
-        uri = slashifyFilePath(javaFile.toURI().toString())
+        uri = slashifyFilePath(file.uri.toString())
       )
       return directoryInfo
     }
 
-    when {
-      javaFile.toURI().scheme == "file" -> {
-        val directoryInfo = DirectoryInfo(
-          exists = true,
-          uri = slashifyFilePath(javaFile.toURI().toString()),
-          files = javaFile.listFiles()?.map { i -> i.name },
-          modificationTime = modificationTime,
-          creationTime = creationTime,
-          size = size
-        )
-        return directoryInfo
-      }
-      else -> throw UnableToGetInfoException("file schema ${javaFile.toURI().scheme} is not supported")
-    }
+    val directoryInfo = DirectoryInfo(
+      exists = true,
+      uri = slashifyFilePath(file.uri.toString()),
+      files = file.listFilesAsUnified().mapNotNull { i -> i.fileName },
+      modificationTime = modificationTime,
+      creationTime = creationTime,
+      size = size
+    )
+    return directoryInfo
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
     validateType()
     validatePermission(Permission.WRITE)
     validateCanCreate(options)
+    if (uri.isContentUri) {
+      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
+    }
     if (options.overwrite && file.exists()) {
-      javaFile.delete()
+      file.delete()
     }
     val created = if (options.intermediates) {
       javaFile.mkdirs()
@@ -74,11 +72,15 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   fun createFile(mimeType: String?, fileName: String): FileSystemFile {
+    validateType()
+    validatePermission(Permission.WRITE)
     val newFile = file.createFile(mimeType ?: "text/plain", fileName) ?: throw UnableToCreateException("file could not be created")
     return FileSystemFile(newFile.uri)
   }
 
   fun createDirectory(fileName: String): FileSystemDirectory {
+    validateType()
+    validatePermission(Permission.WRITE)
     val newDirectory = file.createDirectory(fileName) ?: throw UnableToCreateException("directory could not be created")
     return FileSystemDirectory(newDirectory.uri)
   }

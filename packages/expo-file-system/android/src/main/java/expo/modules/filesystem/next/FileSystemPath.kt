@@ -9,12 +9,8 @@ import expo.modules.filesystem.next.unifiedfile.UnifiedFileInterface
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
-import java.nio.file.attribute.BasicFileAttributes
 import java.util.EnumSet
-import kotlin.io.path.Path
 import kotlin.io.path.moveTo
-import kotlin.io.path.readAttributes
-import kotlin.time.Duration.Companion.milliseconds
 
 val Uri.isContentUri get(): Boolean {
   return scheme == "content"
@@ -144,18 +140,12 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
   }
 
-  val modificationTime: Long get() {
+  val modificationTime: Long? get() {
     validateType()
-    return javaFile.lastModified()
+    return file.lastModified
   }
 
   val creationTime: Long? get() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      validateType()
-      val attributes = Path(javaFile.path).readAttributes<BasicFileAttributes>()
-      return attributes.creationTime().toMillis().milliseconds.inWholeMilliseconds
-    } else {
-      return null
-    }
+    return file.creationTime
   }
 }
