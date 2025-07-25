@@ -12,38 +12,32 @@ import expo.modules.medialibrary.MediaLibraryUtils.AssetFile
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.R)
-internal class MigrateAlbum(
-  private val context: Context,
-  private val assetFiles: List<AssetFile>,
-  private val albumDirName: String
-) {
-  fun execute() {
-    // Previously, users were able to save different assets type in the same directory.
-    // But now, it's not always possible.
-    // If album contains movies or pictures, we can move it to Environment.DIRECTORY_PICTURES.
-    // Otherwise, we reject.
-    val assetsRelativePaths = assetFiles
-      .map { MediaLibraryUtils.getRelativePathForAssetType(it.mimeType, false) }
-      .toSet()
-    if (assetsRelativePaths.size > 1) {
-      throw AlbumException("The album contains incompatible file types.")
-    }
+fun migrateAlbum(context: Context, assetFiles: List<AssetFile>, albumDirName: String) {
+  // Previously, users were able to save different assets type in the same directory.
+  // But now, it's not always possible.
+  // If album contains movies or pictures, we can move it to Environment.DIRECTORY_PICTURES.
+  // Otherwise, we reject.
+  val assetsRelativePaths = assetFiles
+    .map { MediaLibraryUtils.getRelativePathForAssetType(it.mimeType, false) }
+    .toSet()
+  if (assetsRelativePaths.size > 1) {
+    throw AlbumException("The album contains incompatible file types.")
+  }
 
-    val relativePath = assetsRelativePaths.iterator().next() + File.separator + albumDirName
-    val values = ContentValues().apply {
-      put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
-    }
-    assetFiles.forEach { assetFile ->
-      context
-        .contentResolver
-        .update(
-          ContentUris.withAppendedId(
-            MediaLibraryUtils.mimeTypeToExternalUri(assetFile.mimeType),
-            assetFile.assetId.toLong()
-          ),
-          values,
-          null
-        )
-    }
+  val relativePath = assetsRelativePaths.iterator().next() + File.separator + albumDirName
+  val values = ContentValues().apply {
+    put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+  }
+  assetFiles.forEach { assetFile ->
+    context
+      .contentResolver
+      .update(
+        ContentUris.withAppendedId(
+          MediaLibraryUtils.mimeTypeToExternalUri(assetFile.mimeType),
+          assetFile.assetId.toLong()
+        ),
+        values,
+        null
+      )
   }
 }

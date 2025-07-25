@@ -9,17 +9,12 @@ import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.R)
-class CheckIfAlbumShouldBeMigrated(
-  private val context: Context,
-  private val albumId: String
-) {
-  fun execute(): Boolean {
-    val albumDir = getAlbumDirectory(context, albumId)
-    if (albumDir == null) {
-      throw AlbumNotFound()
-    } else {
-      return !albumDir.canWrite()
-    }
+fun checkIfAlbumShouldBeMigrated(context: Context, albumId: String): Boolean {
+  val albumDir = getAlbumDirectory(context, albumId)
+  if (albumDir == null) {
+    throw AlbumNotFound()
+  } else {
+    return !albumDir.canWrite()
   }
 }
 
