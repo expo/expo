@@ -52,7 +52,7 @@ internal class GetAlbumInfoTests {
     val albumName = "testAlbumName"
 
     // act
-    GetAlbum(context, albumName).execute()
+    getAlbum(context, albumName)
 
     // assert
     assertTrue(selectionSlot.captured.contains(expectedSelection, ignoreCase = true))

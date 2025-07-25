@@ -5,15 +5,10 @@ import android.os.Bundle
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
 
-internal class GetAlbum(
-  private val context: Context,
-  private val albumName: String
-) {
-  fun execute(): Bundle? {
-    val selection = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE}" +
-      " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
-    val selectionArgs = arrayOf(albumName)
+fun getAlbum(context: Context, albumName: String): Bundle? {
+  val selection = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE}" +
+    " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
+  val selectionArgs = arrayOf(albumName)
 
-    return queryAlbum(context, selection, selectionArgs)
-  }
+  return queryAlbum(context, selection, selectionArgs)
 }

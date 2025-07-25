@@ -58,7 +58,7 @@ internal class GetAlbumTests {
     val albumName = "TestAlbum"
 
     // act
-    GetAlbum(context, albumName).execute()
+    getAlbum(context, albumName)
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
@@ -117,7 +117,7 @@ internal class GetAlbumTests {
 
     // act && assert
     try {
-      GetAlbums(context).execute()
+      getAlbums(context)
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)

@@ -42,7 +42,7 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    val result = GetAlbums(context).execute()
+    val result = getAlbums(context)
 
     // assert
     assertEquals(1, result.size)
@@ -68,7 +68,7 @@ class GetAlbumsTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    val result = GetAlbums(context).execute()
+    val result = getAlbums(context)
 
     // assert
     assertEquals(0, result.size)
@@ -81,7 +81,7 @@ class GetAlbumsTests {
 
     // act && assert
     assertThrows(AlbumException::class.java) {
-      GetAlbums(context).execute()
+      getAlbums(context)
     }
   }
 
@@ -92,7 +92,7 @@ class GetAlbumsTests {
 
     // act && assert
     try {
-      GetAlbums(context).execute()
+      getAlbums(context)
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)
@@ -106,7 +106,7 @@ class GetAlbumsTests {
 
     // act && assert
     try {
-      GetAlbums(context).execute()
+      getAlbums(context)
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)

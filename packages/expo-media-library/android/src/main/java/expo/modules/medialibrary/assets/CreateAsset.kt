@@ -174,18 +174,12 @@ class CreateAssetWithAlbumFile(
   }
 }
 
-class CreateAssetWithAlbumId @JvmOverloads constructor(
-  private val context: Context,
-  private val uri: String,
-  private val resolveWithAdditionalData: Boolean = true,
-  private val albumId: String? = null
-) {
-  private val album: File?
-    get() {
-      return albumId?.let { getAlbumFileOrNull(context, albumId) }
-    }
-
-  suspend fun execute(): ArrayList<Bundle>? {
-    return CreateAssetWithAlbumFile(context, uri, resolveWithAdditionalData, album).execute()
-  }
+suspend fun createAssetWithAlbumId(
+  context: Context,
+  uri: String,
+  resolveWithAdditionalData: Boolean = true,
+  albumId: String? = null
+): ArrayList<Bundle>? {
+  val album = albumId?.let { getAlbumFileOrNull(context, albumId) }
+  return CreateAssetWithAlbumFile(context, uri, resolveWithAdditionalData, album).execute()
 }
