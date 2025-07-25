@@ -69,7 +69,8 @@ class UpdatesDevLauncherController(
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
-    initialUpdatesConfiguration?.getRuntimeVersion() ?: "1"
+    initialUpdatesConfiguration?.getRuntimeVersion() ?: "1",
+    initialUpdatesConfiguration
   )
   private val selectionPolicy: SelectionPolicy
     get() = mSelectionPolicy ?: defaultSelectionPolicy

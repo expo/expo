@@ -1,5 +1,6 @@
 package expo.modules.updates.selectionpolicy
 
+import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.UpdateDirective
 import org.json.JSONObject
@@ -11,7 +12,7 @@ import org.json.JSONObject
  *
  * Uses `commitTime` to determine ordering of updates.
  */
-class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
+class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration?) : LoaderSelectionPolicy {
   override fun shouldLoadNewUpdate(
     newUpdate: UpdateEntity?,
     launchedUpdate: UpdateEntity?,
@@ -29,11 +30,18 @@ class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
     }
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
-    return if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
-      true
-    } else {
-      newUpdate.commitTime.after(launchedUpdate.commitTime)
+    if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
+      return true
     }
+
+    val hasUpdatesOverride = config?.hasUpdatesOverride ?: false
+    if (hasUpdatesOverride) {
+      return newUpdate.id != launchedUpdate.id &&
+        newUpdate.url == config?.updateUrl &&
+        newUpdate.requestHeaders == config?.requestHeaders
+    }
+
+    return newUpdate.commitTime.after(launchedUpdate.commitTime)
   }
 
   override fun shouldLoadRollBackToEmbeddedDirective(

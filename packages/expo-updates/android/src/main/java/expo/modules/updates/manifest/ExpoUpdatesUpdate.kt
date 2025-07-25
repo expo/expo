@@ -29,13 +29,17 @@ class ExpoUpdatesUpdate private constructor(
   private val runtimeVersion: String,
   private val launchAsset: JSONObject,
   private val assets: JSONArray?,
-  private val extensions: JSONObject?
+  private val extensions: JSONObject?,
+  private val url: Uri?,
+  private val requestHeaders: Map<String, String>?
 ) : Update {
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@ExpoUpdatesUpdate.manifest.getRawJson()).apply {
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
+      this.url = this@ExpoUpdatesUpdate.url
+      this.requestHeaders = this@ExpoUpdatesUpdate.requestHeaders
     }
   }
 
@@ -111,7 +115,9 @@ class ExpoUpdatesUpdate private constructor(
       runtimeVersion = manifest.getRuntimeVersion(),
       launchAsset = manifest.getLaunchAsset(),
       assets = manifest.getAssets(),
-      extensions
+      extensions = extensions,
+      url = configuration.updateUrl,
+      requestHeaders = configuration.requestHeaders
     )
   }
 }

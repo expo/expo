@@ -1,5 +1,6 @@
 package expo.modules.updates.db.entity
 
+import android.net.Uri
 import androidx.room.*
 import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONObject
@@ -59,6 +60,12 @@ class UpdateEntity(
 
   @ColumnInfo(name = "failed_launch_count", defaultValue = "0")
   var failedLaunchCount = 0
+
+  @ColumnInfo(name = "url")
+  var url: Uri? = null
+
+  @ColumnInfo(name = "headers")
+  var requestHeaders: Map<String, String>? = null
 
   fun debugInfo(): String = JSONObject(mapOf("id" to id.toString(), "status" to status.name)).toString()
 }
