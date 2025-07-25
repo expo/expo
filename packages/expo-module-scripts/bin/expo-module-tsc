@@ -4,4 +4,8 @@ set -eo pipefail
 
 script_dir="$(dirname "$0")"
 
-"$script_dir/npx" tsc -b "$@"
+if [[ "$#" -eq 0 ]]; then
+  "$script_dir/npx" tsc -b
+else
+  "$script_dir/npx" tsc "$@"
+fi
