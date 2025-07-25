@@ -247,6 +247,7 @@ jobs:
     env:
       APP_VARIANT: staging
       RETRY_COUNT: 3
+      PREV_JOB_OUTPUT: ${{ needs.previous_job.outputs.some_output }}
     # @end #
 ```
 
