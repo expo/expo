@@ -28,7 +28,7 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
             super.onAuthenticationError(errorCode, errString)
 
             val errorType = convertErrorCode(errorCode)
-            val message = "$errorType. ${errString.toString()}"
+            val·message·=·"$errorType.·$errString"
             continuation.resumeWithException(AuthenticationException(message))
           }
 
