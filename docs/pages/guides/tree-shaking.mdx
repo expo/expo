@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'tvos']
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Tree shaking (also referred to as _dead code removal_) is a technique to remove unused code from the production bundle. Expo CLI employs different techniques, including [minification](/guides/minify), to improve startup time by removing unused code.
 
@@ -282,9 +283,11 @@ This system scales up to automatically optimize all `import` and `export` syntax
 
 <Step label="1">
 
-Enable `experimentalImportSupport` and ensure your app builds and runs as expected.
+Ensure `experimentalImportSupport` and ensure your app builds and runs as expected.
 
 > **info** **Note**: Enabled by default in SDK 54 and above.
+
+<Collapsible summary="How to enable import support in older SDK versions?">
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -301,6 +304,9 @@ module.exports = config;
 ```
 
 Experimental import support uses a custom version of the `@babel/plugin-transform-modules-commonjs` plugin. This drastically reduces the number of resolutions and simplifies your output bundle. This feature can be used with `inlineRequires` to further optimize your bundle experimentally.
+
+</Collapsible>
+
 
 </Step>
 
