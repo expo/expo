@@ -39,6 +39,7 @@
 
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
 - Add formsheet warning ([#37982](https://github.com/expo/expo/pull/37982) by [@Ubax](https://github.com/Ubax))
+- Extract screen search logic to swift ([#38320](https://github.com/expo/expo/pull/38320) by [@Ubax](https://github.com/Ubax))
 
 
 ## 5.1.4 - 2025-07-18
