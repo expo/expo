@@ -1,7 +1,10 @@
 package expo.modules.notifications.notifications.model;
 
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import expo.modules.notifications.notifications.NotificationSerializer;
 
 /**
  * A POJO representing user's response to a notification. It may be a default action,
@@ -56,5 +59,12 @@ public class NotificationResponse implements Parcelable {
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeParcelable(mAction, 0);
     dest.writeParcelable(mNotification, 0);
+  }
+
+  public Bundle toBundle() {
+    Bundle serializedResponse = new Bundle();
+    serializedResponse.putString("actionIdentifier", getActionIdentifier());
+    serializedResponse.putBundle("notification", NotificationSerializer.toBundle(getNotification()));
+    return serializedResponse;
   }
 }
