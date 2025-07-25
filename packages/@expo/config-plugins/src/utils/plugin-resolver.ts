@@ -115,8 +115,9 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
   try {
     result = requirePluginFile(pluginFile);
   } catch (error) {
+    const learnMoreLink = `Learn more: https://docs.expo.dev/guides/config-plugins/#creating-a-plugin`;
+
     if (error instanceof SyntaxError) {
-      const learnMoreLink = `Learn more: https://docs.expo.dev/guides/config-plugins/#creating-a-plugin`;
       // If the plugin reference is a node module, and that node module has a syntax error, then it probably doesn't have an official config plugin.
       if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
         const pluginError = new PluginError(
@@ -127,7 +128,41 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
         throw pluginError;
       }
     }
-    throw error;
+
+    // For any other error, fall back to a generic error message.
+    // This can happen if the passed module exists, but does not export a valid config plugin
+    // In some cases, the resolver would import modules, that had src/index.ts as main entry point,
+    // causing a "unknown file extension .ts" error. Instead of just throwing the error,
+    // we'll try to provide a more helpful error message and include the failing plugin.
+
+    let underlyingError: string;
+    let stack: string | undefined;
+
+    if (error instanceof Error) {
+      const errorWithCode = error as Error & { code?: string };
+      underlyingError = `${errorWithCode.message} ${errorWithCode.code ?? ''}`;
+      stack = errorWithCode.stack;
+    } else {
+      underlyingError = String(error);
+    }
+
+    let errorMessage =
+      `Could not find a valid config plugin for "${pluginReference}".\n` +
+      `We found "${pluginFile}" but an error was thrown while requiring it.\n` +
+      `Make sure that the package actually ships a config plugin.\n\n`;
+
+    if (!isPluginFile) {
+      errorMessage += `Config plugins are usually exported from an "app.plugin.js" file in the package root, but "${pluginReference}" does not have this file.\n\n`;
+    }
+
+    errorMessage += `The underlying error was: ${underlyingError}\n${learnMoreLink}`;
+
+    const pluginError = new PluginError(errorMessage, 'INVALID_PLUGIN_IMPORT');
+
+    if (stack) {
+      pluginError.stack = stack;
+    }
+    throw pluginError;
   }
 
   const plugin = resolveConfigPluginExport({
