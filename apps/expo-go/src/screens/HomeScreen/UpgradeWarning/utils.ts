@@ -1,4 +1,5 @@
 import * as Device from 'expo-device';
+import LocalStorage from 'src/storage/LocalStorage';
 import Environment from 'src/utils/Environment';
 
 const SDK_VERSION_REGEXP = new RegExp(/\b(\d*)\.0\.0/);
@@ -34,6 +35,15 @@ export async function shouldShowUpgradeWarningAsync(): Promise<{
   shouldShow: boolean;
   betaSdkVersion?: string;
 }> {
+  // Make it easy for us to debug this warning.
+  const debugMode = await LocalStorage.getDebugModeAsync();
+  if (debugMode) {
+    return {
+      shouldShow: true,
+      betaSdkVersion: '100.0.0',
+    };
+  }
+
   if (!Device.isDevice) {
     return {
       shouldShow: false,
