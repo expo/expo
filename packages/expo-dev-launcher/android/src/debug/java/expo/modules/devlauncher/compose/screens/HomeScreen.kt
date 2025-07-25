@@ -15,8 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -31,6 +33,7 @@ import com.composables.core.DialogState
 import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
 import com.composeunstyled.Button
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
@@ -58,8 +61,6 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 @Composable
 fun HowToStartDevelopmentServerDialog(dialogState: DialogState) {
@@ -289,6 +290,29 @@ fun HomeScreen(
           }
 
           Divider()
+
+          if (!EmulatorUtilities.isRunningOnEmulator()) {
+            Button(
+              onClick = {
+                onAction(HomeAction.ScanQRCode)
+              }
+            ) {
+              RowLayout(
+                modifier = Modifier.padding(Theme.spacing.medium),
+                leftComponent = {
+                  Image(
+                    painter = painterResource(R.drawable.qr_code),
+                    contentDescription = "QR Code Icon",
+                    modifier = Modifier.size(24.dp)
+                  )
+                }
+              ) {
+                Text("Scan QR code")
+              }
+            }
+
+            Divider()
+          }
 
           Accordion("Enter URL manually", initialState = false) {
             Column {
