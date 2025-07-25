@@ -142,7 +142,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
 
   val modificationTime: Long? get() {
     validateType()
-    return file.lastModified
+    return file.lastModified()
   }
 
   val creationTime: Long? get() {
