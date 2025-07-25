@@ -180,6 +180,90 @@ on:
     - cron: '0 0 * * *' # Runs at midnight GMT every day
 ```
 
+### `on.workflow_dispatch.inputs`
+
+Defines inputs that can be provided when manually triggering a workflow using the `eas workflow:run` command. This allows you to create parameterized workflows that can accept different values each time they run.
+
+```yaml
+on:
+  workflow_dispatch:
+    # @info #
+    inputs:
+      name:
+        type: string
+        required: false
+        description: 'Name of the person to greet'
+        default: 'World'
+      choice_example:
+        type: choice
+        options:
+          - to be
+          - not to be
+        required: true
+    # @end #
+```
+
+#### Input Properties
+
+Each input can have the following properties:
+
+| Property      | Type     | Required                 | Description                                                                |
+| ------------- | -------- | ------------------------ | -------------------------------------------------------------------------- |
+| `type`        | string   | Yes                      | The input type (`string`, `boolean`, `number`, `choice` or `environment`). |
+| `description` | string   | No                       | Description for the input.                                                 |
+| `required`    | boolean  | No                       | Whether the input is required. Defaults to `false`.                        |
+| `default`     | varies   | No                       | Default value for the input. Must match the input type.                    |
+| `options`     | string[] | Yes (for `type: choice`) | Available options for choice inputs.                                       |
+
+#### Providing Inputs
+
+When running a workflow with inputs, you can provide them in several ways:
+
+**1. Command line flags:**
+
+```bash
+eas workflow:run .eas/workflows/deploy.yml -F environment=production -F debug=true -F version=1.2.3
+```
+
+**2. JSON via stdin:**
+
+```bash
+echo '{"environment": "production", "debug": true, "version": "1.2.3"}' | eas workflow:run .eas/workflows/deploy.yml
+```
+
+**3. Interactive prompts:**
+If required inputs are missing and you're not using `--non-interactive`, the CLI will prompt you for them:
+
+```bash
+eas workflow:run .eas/workflows/deploy.yml
+# CLI will prompt for missing required inputs
+```
+
+#### Using Inputs in Workflows
+
+Input values are available in your workflow jobs through the `${{ inputs.<input_name> }}` syntax:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: string
+        required: true
+        description: 'Name of the person to greet'
+
+jobs:
+  deploy:
+    steps:
+      - name: Deploy to environment
+        run: |
+          echo "Hello, ${{ inputs.name }}!"
+
+          # Note: you can use `||` to provide a default value
+          #       for non-eas-workflow:run-run workflows.
+          echo "Hello, ${{ inputs.name || 'World' }}!"
+```
+
 ## `jobs`
 
 A workflow run is made up of one or more jobs.
@@ -547,7 +631,6 @@ jobs:
     type: fingerprint
     # @end #
     params:
-      environment: production | preview | development # optional, defaults to production
       env: # optional
         APP_VARIANT: staging # just an example
 ```
