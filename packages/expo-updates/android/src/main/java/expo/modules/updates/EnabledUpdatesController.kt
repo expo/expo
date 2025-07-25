@@ -25,6 +25,7 @@ import expo.modules.updates.procedures.FetchUpdateProcedure
 import expo.modules.updates.procedures.RelaunchProcedure
 import expo.modules.updates.procedures.StartupProcedure
 import expo.modules.updates.reloadscreen.ReloadScreenManager
+import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
@@ -57,7 +58,8 @@ class EnabledUpdatesController(
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
-  private var selectionPolicy = createSelectionPolicy(updatesConfiguration)
+  private val selectionPolicy: SelectionPolicy
+    get() = SelectionPolicyFactory.createFilterAwarePolicy(updatesConfiguration.getRuntimeVersion(), updatesConfiguration)
   private val stateMachine = UpdatesStateMachine(logger, eventManager, UpdatesStateValue.entries.toSet())
   private val controllerScope = CoroutineScope(Dispatchers.IO)
   private val fileDownloader: FileDownloader
@@ -287,15 +289,7 @@ class EnabledUpdatesController(
     }
     UpdatesConfigurationOverride.save(context, configOverride)
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
-    selectionPolicy = createSelectionPolicy(updatesConfiguration)
   }
-
-  private fun createSelectionPolicy(config: UpdatesConfiguration) =
-    if (config.hasUpdatesOverride) {
-      SelectionPolicyFactory.createOverrideAwarePolicy()
-    } else {
-      SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion())
-    }
 
   companion object {
     private val TAG = EnabledUpdatesController::class.java.simpleName

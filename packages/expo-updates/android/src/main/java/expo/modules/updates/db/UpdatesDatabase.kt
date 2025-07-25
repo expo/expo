@@ -234,7 +234,8 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_12_13: Migration = object : Migration(12, 13) {
       override fun migrate(db: SupportSQLiteDatabase) {
         db.runInTransaction {
-          execSQL("ALTER TABLE `updates` ADD COLUMN `from_override` INTEGER NOT NULL DEFAULT 0")
+          execSQL("ALTER TABLE `updates` ADD COLUMN `url` TEXT")
+          execSQL("ALTER TABLE `updates` ADD COLUMN `headers` TEXT")
         }
       }
     }

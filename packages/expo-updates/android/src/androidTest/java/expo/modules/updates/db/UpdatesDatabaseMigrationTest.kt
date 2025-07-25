@@ -544,7 +544,7 @@ class UpdatesDatabaseMigrationTest {
 
     // schema changes automatically verified, we just need to verify data integrity
     val cursorUpdates1 =
-      db.query("SELECT * FROM `updates` WHERE `from_override` = 0")
+      db.query("SELECT * FROM `updates`")
     Assert.assertEquals(2, cursorUpdates1.count.toLong())
   }
 

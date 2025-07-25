@@ -144,9 +144,6 @@ abstract class Loader protected constructor(
       // the RN runtime will take care of that and we don't want to cache anything
       val updateEntity = update.updateEntity
       database.updateDao().insertUpdate(updateEntity!!)
-      if (configuration.hasUpdatesOverride) {
-        database.updateDao().markUpdateFromOverride(updateEntity)
-      }
       database.updateDao().markUpdateFinished(updateEntity)
       this.updateEntity = updateEntity
       return finish()
@@ -174,9 +171,6 @@ abstract class Loader protected constructor(
         // no update already exists with this ID, so we need to insert it and download everything.
         updateEntity = newUpdateEntity
         database.updateDao().insertUpdate(updateEntity!!)
-        if (configuration.hasUpdatesOverride) {
-          database.updateDao().markUpdateFromOverride(updateEntity!!)
-        }
       } else {
         // we've already partially downloaded the update, so we should use the existing entity.
         // however, it's not ready, so we should try to download all the assets again.
