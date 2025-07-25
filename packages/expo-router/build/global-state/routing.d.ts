@@ -1,4 +1,5 @@
-import { NavigationAction } from '@react-navigation/native';
+import { NavigationAction, type NavigationState, PartialRoute, type PartialState } from '@react-navigation/native';
+import { ResultState } from '../fork/getStateFromPath';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 export declare const routingQueue: {
@@ -47,4 +48,30 @@ export type LinkToOptions = {
     __internal__PreviewKey?: string;
 };
 export declare function linkTo(originalHref: Href, options?: LinkToOptions): void;
+/**
+ * React Navigation uses params to store information about the screens, rather then create new state for each level.
+ * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
+ */
+export declare function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>): Record<string, any>;
+export declare function findDivergentState(_actionState: ResultState, _navigationState: NavigationState): {
+    actionState: PartialState<Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[];
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>>;
+    navigationState: Readonly<{
+        key: string;
+        index: number;
+        routeNames: string[];
+        history?: unknown[];
+        routes: import("@react-navigation/native").NavigationRoute<import("@react-navigation/native").ParamListBase, string>[];
+        type: string;
+        stale: false;
+    }>;
+    actionStateRoute: PartialRoute<any> | undefined;
+};
 //# sourceMappingURL=routing.d.ts.map

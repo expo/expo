@@ -47,6 +47,8 @@ exports.canGoBack = canGoBack;
 exports.canDismiss = canDismiss;
 exports.setParams = setParams;
 exports.linkTo = linkTo;
+exports.getPayloadFromStateRoute = getPayloadFromStateRoute;
+exports.findDivergentState = findDivergentState;
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
@@ -208,7 +210,7 @@ function linkTo(originalHref, options = {}) {
     }
     exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, options.__internal__PreviewKey));
 }
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular, previewKey) {
+function getNavigateAction(_actionState, _navigationState, type = 'NAVIGATE', withAnchor, singular, previewKey) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -223,48 +225,12 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
      *
      * Other parameters such as search params and hash are not evaluated.
      */
-    let actionStateRoute;
-    // Traverse the state tree comparing the current state and the action state until we find where they diverge
-    while (actionState && navigationState) {
-        const stateRoute = navigationState.routes[navigationState.index];
-        actionStateRoute = actionState.routes[actionState.routes.length - 1];
-        const childState = actionStateRoute.state;
-        const nextNavigationState = stateRoute.state;
-        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
-        const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
-            !childState ||
-            !nextNavigationState ||
-            (dynamicName &&
-                // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
-                actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
-        if (didActionAndCurrentStateDiverge) {
-            break;
-        }
-        actionState = childState;
-        navigationState = nextNavigationState;
-    }
+    const { actionStateRoute, navigationState } = findDivergentState(_actionState, _navigationState);
     /*
      * We found the target navigator, but the payload is in the incorrect format
      * We need to convert the action state to a payload that can be dispatched
      */
-    const rootPayload = { params: {} };
-    let payload = rootPayload;
-    let params = payload.params;
-    // The root level of payload is a bit weird, its params are in the child object
-    while (actionStateRoute) {
-        Object.assign(params, { ...payload.params, ...actionStateRoute.params });
-        // Assign the screen name to the payload
-        payload.screen = actionStateRoute.name;
-        // Merge the params, ensuring that we create a new object
-        payload.params = { ...params };
-        // Params don't include the screen, thats a separate attribute
-        delete payload.params['screen'];
-        // Continue down the payload tree
-        // Initially these values are separate, but React Nav merges them after the first layer
-        payload = payload.params;
-        params = payload;
-        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
-    }
+    const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
     if (type === 'PUSH' && navigationState.type !== 'stack') {
         type = 'NAVIGATE';
     }
@@ -301,6 +267,62 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
             singular,
             previewKey,
         },
+    };
+}
+/**
+ * React Navigation uses params to store information about the screens, rather then create new state for each level.
+ * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
+ */
+function getPayloadFromStateRoute(_actionStateRoute) {
+    const rootPayload = { params: {} };
+    let payload = rootPayload;
+    let params = payload.params;
+    let actionStateRoute = _actionStateRoute;
+    while (actionStateRoute) {
+        Object.assign(params, { ...payload.params, ...actionStateRoute.params });
+        // Assign the screen name to the payload
+        payload.screen = actionStateRoute.name;
+        // Merge the params, ensuring that we create a new object
+        payload.params = { ...params };
+        // Params don't include the screen, thats a separate attribute
+        delete payload.params['screen'];
+        // Continue down the payload tree
+        // Initially these values are separate, but React Nav merges them after the first layer
+        payload = payload.params;
+        params = payload;
+        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
+    }
+    return rootPayload;
+}
+/*
+ * Traverse the state tree comparing the current state and the action state until we find where they diverge
+ */
+function findDivergentState(_actionState, _navigationState) {
+    let actionState = _actionState;
+    let navigationState = _navigationState;
+    let actionStateRoute;
+    while (actionState && navigationState) {
+        actionStateRoute = actionState.routes[actionState.routes.length - 1];
+        const stateRoute = navigationState.routes[navigationState.index];
+        const childState = actionStateRoute.state;
+        const nextNavigationState = stateRoute.state;
+        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
+            !childState ||
+            !nextNavigationState ||
+            (dynamicName &&
+                // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
+                actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
+        if (didActionAndCurrentStateDiverge) {
+            break;
+        }
+        actionState = childState;
+        navigationState = nextNavigationState;
+    }
+    return {
+        actionState,
+        navigationState,
+        actionStateRoute,
     };
 }
 //# sourceMappingURL=routing.js.map

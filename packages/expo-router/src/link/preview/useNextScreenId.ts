@@ -2,10 +2,12 @@ import {
   ParamListBase,
   StackNavigationState,
   type NavigationRoute,
+  type NavigationState,
 } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 
 import { store, type ReactNavigationState } from '../../global-state/router-store';
+import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
 import { Href } from '../../types';
 import { resolveHref } from '../href';
 
@@ -23,31 +25,49 @@ function getPreloadedRouteFromRootStateByHref(
   href: Href
 ): NavigationRoute<ParamListBase, string> | undefined {
   const rootState = store.state;
-  let hrefState = store.getStateForHref(resolveHref(href));
-  let state: ReactNavigationState | undefined = rootState;
-  while (hrefState && state) {
-    const currentHrefRoute = hrefState.routes[0];
-    const currentStateRoute = currentHrefRoute
-      ? state.routes.find((r) => r.name === currentHrefRoute.name)
-      : undefined;
-
-    if (!currentStateRoute) {
-      // Only checking stack, because it is the only native navigator.
-      if (state.type === 'stack') {
-        const stackState = state as StackNavigationState<ParamListBase>;
-        // Sometimes the route is stored inside params
-        const innerRoute = currentHrefRoute.state ? currentHrefRoute.state.routes[0] : undefined;
-        const preloadedRoute = stackState.preloadedRoutes.find(
-          (route) =>
-            route.name === currentHrefRoute.name &&
-            (!innerRoute ||
-              (route.params && 'screen' in route.params && route.params.screen === innerRoute.name))
-        );
-        return preloadedRoute;
-      }
-    }
-    hrefState = currentHrefRoute?.state;
-    state = currentStateRoute?.state;
+  const hrefState = store.getStateForHref(resolveHref(href));
+  const state: ReactNavigationState | undefined = rootState;
+  if (!hrefState || !state) {
+    return undefined;
   }
+  // Replicating the logic from `linkTo`
+  const { navigationState, actionStateRoute } = findDivergentState(
+    hrefState,
+    state as NavigationState
+  );
+
+  if (!navigationState || !actionStateRoute) {
+    return undefined;
+  }
+
+  if (navigationState.type === 'stack') {
+    const stackState = navigationState as StackNavigationState<ParamListBase>;
+    const payload = getPayloadFromStateRoute(actionStateRoute);
+
+    const preloadedRoute = stackState.preloadedRoutes.find(
+      (route) => route.name === actionStateRoute.name && deepEqual(route.params, payload.params)
+    );
+    return preloadedRoute;
+  }
+
   return undefined;
+}
+
+function deepEqual(
+  a: { [key: string]: any } | undefined,
+  b: { [key: string]: any } | undefined
+): boolean {
+  if (a === b) {
+    return true;
+  }
+  if (a == null || b == null) {
+    return false;
+  }
+  if (typeof a !== 'object' || typeof b !== 'object') {
+    return false;
+  }
+  return (
+    Object.keys(a).length === Object.keys(b).length &&
+    Object.keys(a).every((key) => deepEqual(a[key], b[key]))
+  );
 }

@@ -31,6 +31,7 @@
 - fix navigation from preview to modal ([#37832](https://github.com/expo/expo/pull/37832) by [@Ubax](https://github.com/Ubax))
 - Fix children update in modal ([#38064](https://github.com/expo/expo/pull/38064) by [@Ubax](https://github.com/Ubax))
 - Add static rewrites support to export and server-side handling ([#37930](https://github.com/expo/expo/pull/37930) by [@hassankhan](https://github.com/hassankhan))
+- Fix Link Preview between two separate stacks ([#38299](https://github.com/expo/expo/pull/38299) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

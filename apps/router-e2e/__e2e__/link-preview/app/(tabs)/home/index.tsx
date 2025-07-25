@@ -22,6 +22,8 @@ const HomeIndex = () => {
       <Text>Home - Index</Text>
       <Text>Current Path: {pathname}</Text>
       <Text style={{ marginBottom: 16 }}>Time: {time}</Text>
+      <Link href="/(tabs)/home/nested">Normal link: /(tabs)/home/nested</Link>
+      <Spacer />
       <Link href="/home">
         <Link.Trigger>Link.Preview: /home</Link.Trigger>
         <Link.Preview />
