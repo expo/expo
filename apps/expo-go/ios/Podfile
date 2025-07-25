@@ -8,8 +8,7 @@ install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
 platform :ios, '15.1'
-install! 'cocoapods',
-  :deterministic_uuids => false
+
 inhibit_all_warnings!
 
 # Disable expo-updates auto create updates resources in podspec script_phase
