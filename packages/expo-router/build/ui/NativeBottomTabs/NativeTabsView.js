@@ -12,6 +12,7 @@ const BottomTabsScreen_1 = __importDefault(require("react-native-screens/src/com
 const TabInfoContext_1 = require("./TabInfoContext");
 const isControlledMode = expo_modules_core_1.Platform.OS === 'android';
 react_native_screens_1.featureFlags.experiment.controlledBottomTabs = isControlledMode;
+(0, react_native_screens_1.enableFreeze)(false);
 function NativeTabsView(props) {
     const { builder, style } = props;
     const { state, descriptors, navigation } = builder;
