@@ -1,4 +1,4 @@
-import { areDetentsValid } from '../utils';
+import { areDetentsValid, isInitialDetentIndexValid } from '../utils';
 
 describe(areDetentsValid, () => {
   describe('valid detents', () => {
@@ -8,7 +8,7 @@ describe(areDetentsValid, () => {
       { detents: [0.5] },
       { detents: [1] },
       { detents: [0] },
-      { detents: null },
+      { detents: null as never },
       { detents: undefined },
       { detents: 'fitToContents' } as const,
     ])('areDetentsValid($detents) returns true', (input) => {
@@ -30,6 +30,35 @@ describe(areDetentsValid, () => {
     ])('areDetentsValid($detents) returns false', (input) => {
       // @ts-expect-error
       expect(areDetentsValid(input.detents)).toBe(false);
+    });
+  });
+});
+
+describe(isInitialDetentIndexValid, () => {
+  describe('valid initialDetentIndex', () => {
+    it.each([
+      { detents: [0, 0.5, 1], detentIndex: 1 },
+      { detents: [0.1, 0.2, 0.9], detentIndex: 2 },
+      { detents: [0.1, 0.9], detentIndex: 'last' as const },
+      { detents: [0.5], detentIndex: 0 },
+      { detents: [1], detentIndex: null as never },
+      { detents: [0], detentIndex: undefined },
+      { detents: null as never, detentIndex: 0 },
+      { detents: undefined, detentIndex: null as never },
+      { detents: 'fitToContents', detentIndex: 0 } as const,
+    ])('isInitialDetentIndexValid($detents, $initialDetentIndex) returns true', (input) => {
+      expect(isInitialDetentIndexValid(input.detents, input.detentIndex)).toBe(true);
+    });
+  });
+
+  describe('invalid initialDetentIndex', () => {
+    it.each([
+      { detents: [0, 0.5, 1], detentIndex: 3 },
+      { detents: [0.1, 0.2, 0.9], detentIndex: -1 },
+      { detents: [0.5], detentIndex: 1 },
+      { detents: 'fitToContents', detentIndex: 1 } as const,
+    ])('isInitialDetentIndexValid($detents, $initialDetentIndex) returns false', (input) => {
+      expect(isInitialDetentIndexValid(input.detents, input.detentIndex)).toBe(false);
     });
   });
 });
