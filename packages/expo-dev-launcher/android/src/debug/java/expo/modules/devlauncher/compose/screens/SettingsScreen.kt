@@ -43,7 +43,7 @@ fun SettingsScreen(
 
     RoundedSurface {
       MenuSwitch(
-        "Show menu as launch",
+        "Show menu at launch",
         icon = painterResource(R.drawable.show_menu_at_launch_icon),
         toggled = state.showMenuAtLaunch,
         onToggled = { onAction(SettingsAction.ToggleShowMenuAtLaunch(it)) }
@@ -92,6 +92,20 @@ fun SettingsScreen(
             onAction(SettingsAction.ToggleThreeFingerLongPressEnable(!state.isThreeFingerLongPressEnable))
           },
           rightIcon = if (state.isThreeFingerLongPressEnable) {
+            painterResource(R.drawable.check_icon)
+          } else {
+            null
+          }
+        )
+        Divider()
+        MenuButton(
+          "Floating Action Button",
+          // TODO: @behenate Find a proper icon for this option
+          leftIcon = painterResource(R.drawable.show_menu_at_launch_icon),
+          onClick = {
+            onAction(SettingsAction.ToggleShowFabAtLaunch(!state.showFabAtLaunch))
+          },
+          rightIcon = if (state.showFabAtLaunch) {
             painterResource(R.drawable.check_icon)
           } else {
             null

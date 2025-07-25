@@ -13,7 +13,9 @@ data class SettingsState(
   val isShakeEnable: Boolean = true,
   val isThreeFingerLongPressEnable: Boolean = true,
   val isKeyCommandEnabled: Boolean = true,
-  val applicationInfo: ApplicationInfo? = null
+  val applicationInfo: ApplicationInfo? = null,
+  // TODO @behenate - make true the default for VR
+  val showFabAtLaunch: Boolean = false
 )
 
 sealed interface SettingsAction {
@@ -21,6 +23,7 @@ sealed interface SettingsAction {
   data class ToggleShakeEnable(val newValue: Boolean) : SettingsAction
   data class ToggleThreeFingerLongPressEnable(val newValue: Boolean) : SettingsAction
   data class ToggleKeyCommandEnable(val newValue: Boolean) : SettingsAction
+  data class ToggleShowFabAtLaunch(val newValue: Boolean) : SettingsAction
 }
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,7 +36,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
       isShakeEnable = menuPreferences.motionGestureEnabled,
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
       isKeyCommandEnabled = menuPreferences.keyCommandsEnabled,
-      applicationInfo = appService.applicationInfo
+      applicationInfo = appService.applicationInfo,
+      showFabAtLaunch = menuPreferences.showFab
     )
   )
 
@@ -45,7 +49,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
       showMenuAtLaunch = menuPreferences.showsAtLaunch,
       isShakeEnable = menuPreferences.motionGestureEnabled,
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
-      isKeyCommandEnabled = menuPreferences.keyCommandsEnabled
+      isKeyCommandEnabled = menuPreferences.keyCommandsEnabled,
+      showFabAtLaunch = menuPreferences.showFab
     )
   }
 
@@ -74,6 +79,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
 
       is SettingsAction.ToggleKeyCommandEnable -> {
         menuPreferences.keyCommandsEnabled = action.newValue
+      }
+
+      is SettingsAction.ToggleShowFabAtLaunch -> {
+        menuPreferences.showFab = action.newValue
       }
     }
   }
