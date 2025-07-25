@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo';
-import { isTypedArray, normalizedContentType, preprocessOptions, DEFAULT_CHUNK_SIZE, } from './utils';
+import { DEFAULT_CHUNK_SIZE, isTypedArray, normalizedContentType, preprocessOptions, } from './utils';
 const NativeBlobModule = requireNativeModule('ExpoBlob');
 export class ExpoBlob extends NativeBlobModule.Blob {
     constructor(blobParts, options) {

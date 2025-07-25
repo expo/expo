@@ -1,25 +1,12 @@
-import { NativeModule, requireNativeModule, SharedObject } from 'expo';
+import { requireNativeModule } from 'expo';
 
-import { Blob, BlobPart } from './BlobModule.types';
+import { Blob, ExpoBlobModule } from './BlobModule.types';
 import {
+  DEFAULT_CHUNK_SIZE,
   isTypedArray,
   normalizedContentType,
   preprocessOptions,
-  DEFAULT_CHUNK_SIZE,
 } from './utils';
-
-declare class NativeBlob extends SharedObject {
-  readonly size: number;
-  readonly type: string;
-  constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
-  slice(start?: number, end?: number, contentType?: string): ExpoBlob;
-  bytes(): Promise<Uint8Array>;
-  text(): Promise<string>;
-}
-
-declare class ExpoBlobModule extends NativeModule {
-  Blob: typeof NativeBlob;
-}
 
 const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
 
