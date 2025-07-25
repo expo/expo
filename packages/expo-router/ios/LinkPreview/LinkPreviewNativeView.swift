@@ -36,7 +36,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
   }
 
   // MARK: - Children
-
+#if RCT_NEW_ARCH_ENABLED
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let triggerView = childComponentView as? NativeLinkPreviewTrigger {
       trigger = triggerView
@@ -79,6 +79,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
         "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewView")
     }
   }
+#endif
 
   // MARK: - UIContextMenuInteractionDelegate
 
