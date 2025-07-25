@@ -15,6 +15,8 @@ declare const _default: {
     unstable_getPositionAsync: () => Promise<NavigationBarPosition>;
     setVisibilityAsync: (visibility: NavigationBarVisibility) => Promise<void>;
     getVisibilityAsync: () => Promise<NavigationBarVisibility>;
+    setHidden: (hidden: boolean) => Promise<void>;
+    setTransparent: (transparent: boolean) => Promise<void>;
 };
 export default _default;
 //# sourceMappingURL=ExpoNavigationBar.d.ts.map

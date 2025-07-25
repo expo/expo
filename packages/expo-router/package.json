@@ -114,7 +114,7 @@
     "client-only": "^0.0.1",
     "invariant": "^2.2.4",
     "react-fast-compare": "^3.2.2",
-    "react-native-is-edge-to-edge": "^1.1.6",
+    "react-native-is-edge-to-edge": "^1.2.1",
     "schema-utils": "^4.0.1",
     "semver": "~7.6.3",
     "server-only": "^0.0.1",
