@@ -430,10 +430,10 @@ class MediaLibraryModule : Module() {
 
       if (pathsWithoutPermissions.isNotEmpty()) {
         val granted = if (useDeletePermission) {
-            deleteLauncher.launch(DeleteContractInput(uris = pathsWithoutPermissions))
-          } else {
-            writeLauncher.launch(WriteContractInput(uris = pathsWithoutPermissions))
-          }
+          deleteLauncher.launch(DeleteContractInput(uris = pathsWithoutPermissions))
+        } else {
+          writeLauncher.launch(WriteContractInput(uris = pathsWithoutPermissions))
+        }
         if (!granted) {
           return action.runWithPermissions(false)
         }
