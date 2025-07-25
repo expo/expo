@@ -1,4 +1,5 @@
 import { WebSocketBackingStore } from './WebSocketBackingStore';
+import { type WebSocketMessageEvent } from './WebSocketWithReconnect';
 import type { ConnectionInfo, DevToolsPluginClientOptions, HandshakeMessageParams } from './devtools.types';
 export interface EventSubscription {
     remove(): void;

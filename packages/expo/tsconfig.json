@@ -4,6 +4,12 @@
     "outDir": "./build",
     "emitDeclarationOnly": true
   },
+  "rootDir": ".",
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "references": [
+    {
+      "path": "./src-devtools"
+    }
+  ]
 }

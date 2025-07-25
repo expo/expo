@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../build/devtools",
+    "emitDeclarationOnly": false,
+    "composite": true,
+    "types": ["node"],
+    "typeRoots": ["../ts-declarations", "../node_modules/@types", "../../../node_modules/@types"]
+  },
+  "include": ["./**/*"],
+  "exclude": ["**/__tests__/*"]
+}
