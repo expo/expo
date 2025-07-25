@@ -22,6 +22,12 @@ jobs:
           submodules: true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+      - name: 💎 Install Ruby gems
+        run: gem install cocoapods xcpretty
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
