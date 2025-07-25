@@ -117,24 +117,6 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
   } catch (error) {
     const learnMoreLink = `Learn more: https://docs.expo.dev/guides/config-plugins/#creating-a-plugin`;
 
-    if (error instanceof SyntaxError) {
-      // If the plugin reference is a node module, and that node module has a syntax error, then it probably doesn't have an official config plugin.
-      if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
-        const pluginError = new PluginError(
-          `Package "${pluginReference}" does not contain a valid config plugin.\n${learnMoreLink}\n\n${error.message}`,
-          'INVALID_PLUGIN_IMPORT'
-        );
-        pluginError.stack = error.stack;
-        throw pluginError;
-      }
-    }
-
-    // For any other error, fall back to a generic error message.
-    // This can happen if the passed module exists, but does not export a valid config plugin
-    // In some cases, the resolver would import modules, that had src/index.ts as main entry point,
-    // causing a "unknown file extension .ts" error. Instead of just throwing the error,
-    // we'll try to provide a more helpful error message and include the failing plugin.
-
     let underlyingError: string;
     let stack: string | undefined;
 
