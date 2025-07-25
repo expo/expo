@@ -157,7 +157,7 @@ function resolveConfigPluginFunctionWithInfo(projectRoot, pluginReference) {
     } else {
       underlyingError = String(error);
     }
-    let errorMessage = `Could not find a valid config plugin for "${pluginReference}".\n` + `We found "${pluginFile}" but an error was thrown while requiring it.\n` + `Make sure that the package actually ships a config plugin.\n\n`;
+    let errorMessage = `Could not find a valid config plugin for "${pluginReference}".\n` + `We found "${pluginFile}" but an error was thrown while requiring it.\n` + `Make sure that ${pluginReference} actually ships a config plugin. If not, remove the entry from the app config file.\n\n`;
     if (!isPluginFile) {
       errorMessage += `Config plugins are usually exported from an "app.plugin.js" file in the package root, but "${pluginReference}" does not have this file.\n\n`;
     }
