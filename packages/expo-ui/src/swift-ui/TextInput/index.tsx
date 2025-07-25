@@ -9,6 +9,16 @@ import { Host } from '../Host';
  */
 export type TextInputRole = 'default' | 'cancel' | 'destructive';
 
+interface TextStyleProps {
+  color?: string;
+  size?: number;
+  lineHeight?: number;
+  letterSpacing?: number;
+  height?: number;
+  fontFamily?: string;
+  fontWeight?: string;
+}
+
 export type TextInputProps = {
   /**
    * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
@@ -18,6 +28,14 @@ export type TextInputProps = {
    * A callback triggered when user types in text into the TextInput.
    */
   onChangeText: (value: string) => void;
+  /**
+   * A callback triggered when user focus TextInput.
+   */
+  onTextFieldFocus: () => void;
+  /**
+   * A callback triggered when user blur TextInput.
+   */
+  onTextFieldBlur: () => void;
   /**
    * The string that will be rendered before text input has been entered.
    */
@@ -70,6 +88,34 @@ export type TextInputProps = {
    * @default true
    */
   autocorrection?: boolean;
+  /**
+   * If true, the text input is editable.
+   */
+  editable: boolean;
+  /**
+   * The string with the testId for E2E tests.
+   */
+  testID: string;
+  /**
+   * Text styles object.
+   * @default undefined, which means default text style.
+   */
+  style: TextStyleProps | undefined;
+  /**
+   * If true, password text field will be showed.
+   */
+  secureEntry: boolean;
+  /**
+   * The mask that should be aplied to the field. Please follow the following pattern:
+   * [0]: mandatory digit. For instance, [000] will allow entering three digits: 123.
+     [9]: optional digit.For instance, [00099] will allow entering up to five digits, but at least three.
+     [A]: mandatory letter. For instance, [AAA] will allow entering three letters: ABC.
+     [a]: optional letter. [АААааа] will allow entering from three to six letters.
+     [_]: mandatory symbol (digit or letter).
+     [-]: optional symbol (digit or letter).
+     […]: ellipsis. Allows to enter endless count of symbols.
+   */
+  mask?: string;
 };
 
 export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<
@@ -92,6 +138,12 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
+    onTextFieldFocus: () => {
+      props.onTextFieldFocus?.();
+    },
+    onTextFieldBlur: () => {
+      props.onTextFieldBlur?.();
+    }
   };
 }
 

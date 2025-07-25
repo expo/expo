@@ -6,31 +6,29 @@ import { Page, Section } from '../../components/Page';
 
 export default function TextInputScreen() {
   const [value, setValue] = React.useState<string>('');
+
+  function focus() {
+    console.log("focus")
+  }
+
+  function blur() {
+    console.log("blur")
+  }
+
   return (
     <Page>
-      <Section title="Current value">
-        <Text>{JSON.stringify(value)}</Text>
-      </Section>
-      <Section title="Text Input">
-        <TextInput autocorrection={false} defaultValue="hey there" onChangeText={setValue} />
-      </Section>
-      <Section title="Multiline Text Input">
+      <Section title="Text input">
         <TextInput
           multiline
+          placeholder='Valor'
           numberOfLines={5}
           autocorrection={false}
-          defaultValue="hey there"
           onChangeText={setValue}
-        />
-      </Section>
-      <Section title="Phone Text Input">
-        <TextInput
-          multiline
-          numberOfLines={5}
-          keyboardType="phone-pad"
-          autocorrection={false}
-          defaultValue="324342324"
-          onChangeText={setValue}
+          onTextFieldFocus={focus}
+          onTextFieldBlur={blur}
+          secureEntry
+          style={{color:"#4287f5", size: 40, fontFamily: "HelveticaNeue-Light", fontWeight: "100"}}
+         // mask={'[Aa0]{-}[00]{-}[AAAAAAAAAA]'}
         />
       </Section>
     </Page>
