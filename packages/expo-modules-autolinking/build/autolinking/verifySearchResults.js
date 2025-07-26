@@ -18,7 +18,9 @@ function verifySearchResults(searchResults, options) {
             console.warn(`⚠️  Found multiple versions of ${chalk_1.default.green(moduleName)}`);
             console.log(` - ${chalk_1.default.magenta(relativePath(revision))} (${chalk_1.default.cyan(revision.version)})`);
             for (const duplicate of revision.duplicates) {
-                console.log(` - ${chalk_1.default.gray(relativePath(duplicate))} (${chalk_1.default.gray(duplicate.version)})`);
+                console.log(` - ${chalk_1.default.gray(relativePath(duplicate))}` + duplicate.version
+                    ? ` (${chalk_1.default.gray(duplicate.version)})`
+                    : '');
             }
             counter++;
         }

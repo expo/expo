@@ -47,7 +47,6 @@ function registerReactNativeConfigCommand() {
     return commander_1.default
         .command('react-native-config [paths...]')
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "android", "ios"', 'ios')
-        .option('--transitive-linking-dependencies <transitiveLinkingDependencies...>', 'The transitive dependencies to include in autolinking. Internally used by fingerprint and only supported react-native-edge-to-edge.')
         .addOption(new commander_1.default.Option('--project-root <projectRoot>', 'The path to the root of the project').default(process.cwd(), 'process.cwd()'))
         .option('--source-dir <sourceDir>', 'The path to the native source directory')
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
@@ -56,7 +55,7 @@ function registerReactNativeConfigCommand() {
             throw new Error(`Unsupported platform: ${providedOptions.platform}`);
         }
         const projectRoot = path_1.default.dirname(await (0, autolinking_1.getProjectPackageJsonPathAsync)(providedOptions.projectRoot));
-        const linkingOptions = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
+        const options = await (0, autolinking_1.mergeLinkingOptionsAsync)(searchPaths.length > 0
             ? {
                 ...providedOptions,
                 projectRoot,
@@ -66,14 +65,6 @@ function registerReactNativeConfigCommand() {
                 ...providedOptions,
                 projectRoot,
             });
-        const transitiveLinkingDependencies = providedOptions.transitiveLinkingDependencies ?? [];
-        const options = {
-            platform: linkingOptions.platform,
-            projectRoot,
-            searchPaths: linkingOptions.searchPaths,
-            transitiveLinkingDependencies,
-            sourceDir: providedOptions.sourceDir,
-        };
         const results = await (0, reactNativeConfig_1.createReactNativeConfigAsync)(options);
         if (providedOptions.json) {
             console.log(JSON.stringify(results));

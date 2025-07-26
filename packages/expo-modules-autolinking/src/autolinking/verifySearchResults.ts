@@ -19,7 +19,11 @@ export function verifySearchResults(searchResults: SearchResults, options: Searc
       console.log(` - ${chalk.magenta(relativePath(revision))} (${chalk.cyan(revision.version)})`);
 
       for (const duplicate of revision.duplicates) {
-        console.log(` - ${chalk.gray(relativePath(duplicate))} (${chalk.gray(duplicate.version)})`);
+        console.log(
+          ` - ${chalk.gray(relativePath(duplicate))}` + duplicate.version
+            ? ` (${chalk.gray(duplicate.version)})`
+            : ''
+        );
       }
       counter++;
     }
