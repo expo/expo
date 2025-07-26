@@ -844,12 +844,12 @@ public final class FileDownloader {
 
     if let progressBlock = progressBlock {
       progressObservation = task.progress.observe(\.fractionCompleted) { progress, _ in
-        if (!progress.isIndeterminate) {
+        if !progress.isIndeterminate {
           progressBlock(progress.fractionCompleted)
         }
       }
     }
-    
+
     task.resume()
   }
 
