@@ -33,10 +33,8 @@ mkdir $WORKING_DIR_ROOT
 - Execute this command to generate the bundles used by the test server:
 
 ```
-// iOS
-yarn generate-test-update-bundles ios
-// android
-yarn generate-test-update-bundles android
+// it will generate android and iOS bundles.
+yarn generate-test-update-bundles
 ```
 
 - To run iOS tests:
