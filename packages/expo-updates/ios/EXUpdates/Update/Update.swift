@@ -105,6 +105,8 @@ public class Update: NSObject {
   public var lastAccessed: Date
   public var successfulLaunchCount: Int
   public var failedLaunchCount: Int
+  public var url: URL?
+  public var requestHeaders: [String: String]?
 
   private let config: UpdatesConfig
   private let database: UpdatesDatabase?

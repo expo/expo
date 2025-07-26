@@ -12,27 +12,23 @@ import Foundation
 @objcMembers
 public final class LauncherSelectionPolicyFilterAware: NSObject, LauncherSelectionPolicy {
   let runtimeVersion: String
+  private let config: UpdatesConfig?
 
-  public required init(runtimeVersion: String) {
+  public required init(runtimeVersion: String, config: UpdatesConfig?) {
     self.runtimeVersion = runtimeVersion
+    self.config = config
   }
 
   public func launchableUpdate(fromUpdates updates: [Update], filters: [String: Any]?) -> Update? {
-    var runnableUpdate: Update?
-    for update in updates {
-      if runtimeVersion != update.runtimeVersion || !SelectionPolicies.doesUpdate(update, matchFilters: filters) {
-        continue
-      }
+    var candidates = updates
+      .filter { runtimeVersion == $0.runtimeVersion && SelectionPolicies.doesUpdate($0, matchFilters: filters) }
 
-      guard let runnableUpdateInner = runnableUpdate else {
-        runnableUpdate = update
-        continue
-      }
-
-      if runnableUpdateInner.commitTime.compare(update.commitTime) == .orderedAscending {
-        runnableUpdate = update
-      }
+    let hasUpdatesOverride = self.config?.hasUpdatesOverride ?? false
+    if hasUpdatesOverride {
+      candidates = candidates
+        .filter { $0.url == self.config?.updateUrl && $0.requestHeaders == self.config?.requestHeaders }
     }
-    return runnableUpdate
+
+    return candidates.sorted { $0.commitTime > $1.commitTime }.first
   }
 }
