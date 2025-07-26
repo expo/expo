@@ -116,7 +116,7 @@ class AudioRecorder(
       return
     }
     with(recorder) {
-      setAudioSource(MediaRecorder.AudioSource.MIC)
+      setAudioSource(options.audioSource.toAudioSource())
       if (options.outputFormat != null) {
         setOutputFormat(options.outputFormat.toMediaOutputFormat())
       } else {

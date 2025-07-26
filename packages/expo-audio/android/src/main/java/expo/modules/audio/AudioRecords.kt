@@ -26,7 +26,8 @@ data class RecordingOptions(
   @Field val outputFormat: AndroidOutputFormat?,
   @Field val audioEncoder: AndroidAudioEncoder?,
   @Field val maxFileSize: Int?,
-  @Field val isMeteringEnabled: Boolean = false
+  @Field val isMeteringEnabled: Boolean = false,
+  @Field val audioSource: RecordingSource = RecordingSource.MIC
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {
@@ -80,4 +81,33 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
   DUCK_OTHERS("duckOthers")
+}
+
+
+enum class RecordingSource(val value: String) : Enumerable {
+  CAMCORDER("camcorder")
+  DEFAULT("default")
+  MIC("mic")
+  REMOTE_SUBMIX("remote_submix")
+  UNPROCESSED("unprocessed")
+  VOICE_CALL("voice_call")
+  VOICE_COMMUNICATION("voice_communication")
+  VOICE_DOWNLINK("voice_downlink")
+  VOICE_PERFORMANCE("voice_performance")
+  VOICE_RECOGNITION("voice_recognition")
+  VOICE_UPLINK("voice_uplink")
+
+  fun toAudioSource() = when (this) {
+    CAMCORDER -> MediaRecorder.AudioSource.CAMCORDER
+    DEFAULT -> MediaRecorder.AudioSource.DEFAULT
+    MIC -> MediaRecorder.AudioSource.MIC
+    REMOTE_SUBMIX -> MediaRecorder.AudioSource.REMOTE_SUBMIX
+    UNPROCESSED -> MediaRecorder.AudioSource.UNPROCESSED
+    VOICE_CALL -> MediaRecorder.AudioSource.VOICE_CALL
+    VOICE_COMMUNICATION -> MediaRecorder.AudioSource.VOICE_COMMUNICATION
+    VOICE_DOWNLINK -> MediaRecorder.AudioSource.VOICE_DOWNLINK
+    VOICE_PERFORMANCE -> MediaRecorder.AudioSource.VOICE_PERFORMANCE
+    VOICE_RECOGNITION -> MediaRecorder.AudioSource.VOICE_RECOGNITION
+    VOICE_UPLINK -> MediaRecorder.AudioSource.VOICE_UPLINK
+  }
 }
