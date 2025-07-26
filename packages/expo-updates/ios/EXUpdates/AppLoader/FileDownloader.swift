@@ -70,9 +70,6 @@ public final class FileDownloader {
   private var config: UpdatesConfig!
   private var logger: UpdatesLogger!
 
-  private var progressObservations: [URLSessionTask: NSKeyValueObservation] = [:]
-  private let progressObservationsLock = NSLock()
-
   public convenience init(config: UpdatesConfig, logger: UpdatesLogger) {
     self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default, logger: logger)
   }
@@ -86,10 +83,6 @@ public final class FileDownloader {
 
   deinit {
     self.session.finishTasksAndInvalidate()
-    progressObservationsLock.lock()
-    progressObservations.values.forEach { $0.invalidate() }
-    progressObservations.removeAll()
-    progressObservationsLock.unlock()
   }
 
   public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
@@ -821,19 +814,13 @@ public final class FileDownloader {
     successBlock: @escaping SuccessBlock,
     errorBlock: @escaping ErrorBlock
   ) {
-    var task: URLSessionTask?
-    task = session.dataTask(with: request) { data, response, error in
-      // when the task completes, invalidate and remove its observer
-      if let task = task {
-        self.progressObservationsLock.lock()
-        self.progressObservations[task]?.invalidate()
-        self.progressObservations.removeValue(forKey: task)
-        self.progressObservationsLock.unlock()
+    var progressObservation: NSKeyValueObservation?
+    let task = session.dataTask(with: request) { data, response, error in
+      // cleanup observer when task completes
+      if progressObservation != nil {
+        progressObservation?.invalidate()
       }
-
       guard let response = response else {
-        // error is non-nil when data and response are both nil
-        // swiftlint:disable:next force_unwrapping
         let cause = UpdatesError.fileDownloaderUnknownError(cause: error!)
         self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
@@ -855,15 +842,15 @@ public final class FileDownloader {
       successBlock(data, response)
     }
 
-    if let progressBlock = progressBlock, let task = task {
-      progressObservationsLock.lock()
-      progressObservations[task] = task.progress.observe(\.fractionCompleted) { progress, _ in
-        progressBlock(progress.fractionCompleted)
+    if let progressBlock = progressBlock {
+      progressObservation = task.progress.observe(\.fractionCompleted) { progress, _ in
+        if (!progress.isIndeterminate) {
+          progressBlock(progress.fractionCompleted)
+        }
       }
-      progressObservationsLock.unlock()
     }
-
-    task?.resume()
+    
+    task.resume()
   }
 
   private static func encoding(fromResponse response: URLResponse) -> String.Encoding {
