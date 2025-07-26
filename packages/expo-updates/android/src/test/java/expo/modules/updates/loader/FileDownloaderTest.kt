@@ -279,6 +279,53 @@ class FileDownloaderTest {
     Assert.assertTrue(result.isNew)
   }
 
+  @Test
+  fun test_downloadAsset_progressListener() = runTest {
+    val configMap = mapOf<String, Any>(
+      UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0"
+    )
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity(UUID.randomUUID().toString(), "jpg").apply {
+      url = Uri.parse("https://example.com")
+    }
+
+    val responseBodyContent = "hello world"
+    val client = mockk<OkHttpClient> {
+      every { newCall(any()) } returns mockk {
+        every { execute() } returns Response.Builder()
+          .request(Request.Builder().url("https://example.com").build())
+          .protocol(Protocol.HTTP_1_1)
+          .code(200)
+          .message("OK")
+          .body(responseBodyContent.toResponseBody("text/plain; charset=utf-8".toMediaTypeOrNull()))
+          .build()
+      }
+    }
+
+    val fileDownloader = FileDownloader(temporaryFolder.newFolder(), "eas-client-id-test", config, logger, client)
+
+    val progressValues = mutableListOf<Double>()
+    val assetLoadProgressListener: (Double) -> Unit = { progress: Double ->
+      progressValues.add(progress)
+    }
+
+    fileDownloader.downloadAsset(
+      assetEntity,
+      File(temporaryFolder.newFolder(), "test"),
+      JSONObject("{}"),
+      assetLoadProgressListener
+    )
+
+    Assert.assertTrue("Progress listener should have been called", progressValues.isNotEmpty())
+    Assert.assertEquals("Last progress value should be 1.0", 1.0, progressValues.last(), 0.001)
+    // Check if values are increasing
+    for (i in 0 until progressValues.size - 1) {
+      Assert.assertTrue(progressValues[i] <= progressValues[i + 1])
+    }
+  }
+
   private fun createFileDownloader(config: UpdatesConfiguration): FileDownloader {
     val filesDirectory = temporaryFolder.newFolder()
     return FileDownloader(

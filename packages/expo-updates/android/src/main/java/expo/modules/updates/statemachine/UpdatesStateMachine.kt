@@ -101,7 +101,7 @@ class UpdatesStateMachine(
     val updatesStateAllowedEvents: Map<UpdatesStateValue, Set<UpdatesStateEventType>> = mapOf(
       UpdatesStateValue.Idle to setOf(UpdatesStateEventType.StartStartup, UpdatesStateEventType.EndStartup, UpdatesStateEventType.Check, UpdatesStateEventType.Download, UpdatesStateEventType.Restart),
       UpdatesStateValue.Checking to setOf(UpdatesStateEventType.CheckCompleteAvailable, UpdatesStateEventType.CheckCompleteUnavailable, UpdatesStateEventType.CheckError),
-      UpdatesStateValue.Downloading to setOf(UpdatesStateEventType.DownloadComplete, UpdatesStateEventType.DownloadError),
+      UpdatesStateValue.Downloading to setOf(UpdatesStateEventType.DownloadComplete, UpdatesStateEventType.DownloadError, UpdatesStateEventType.DownloadProgress),
       UpdatesStateValue.Restarting to setOf()
     )
 
@@ -117,6 +117,7 @@ class UpdatesStateMachine(
       UpdatesStateEventType.CheckCompleteUnavailable to UpdatesStateValue.Idle,
       UpdatesStateEventType.CheckError to UpdatesStateValue.Idle,
       UpdatesStateEventType.Download to UpdatesStateValue.Downloading,
+      UpdatesStateEventType.DownloadProgress to UpdatesStateValue.Downloading,
       UpdatesStateEventType.DownloadComplete to UpdatesStateValue.Idle,
       UpdatesStateEventType.DownloadError to UpdatesStateValue.Idle,
       UpdatesStateEventType.Restart to UpdatesStateValue.Restarting
@@ -167,12 +168,17 @@ class UpdatesStateMachine(
           lastCheckForUpdateTime = Date()
         )
         is UpdatesStateEvent.Download -> context.copyAndIncrementSequenceNumber(
+          downloadProgress = 0.0,
           isDownloading = true
+        )
+        is UpdatesStateEvent.DownloadProgress -> context.copyAndIncrementSequenceNumber(
+          downloadProgress = event.progress
         )
         is UpdatesStateEvent.DownloadComplete -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true
+          isUpdatePending = true,
+          downloadProgress = 1.0
         )
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,

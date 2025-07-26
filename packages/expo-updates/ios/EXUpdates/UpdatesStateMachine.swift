@@ -35,6 +35,7 @@ internal enum UpdatesStateEvent {
   case downloadCompleteWithUpdate(manifest: [String: Any])
   case downloadCompleteWithRollback
   case downloadError(errorMessage: String)
+  case downloadProgress(progress: Double)
   case restart
 
   internal enum InternalType {
@@ -45,6 +46,7 @@ internal enum UpdatesStateEvent {
     case checkCompleteAvailable
     case checkError
     case download
+    case downloadProgress
     case downloadComplete
     case downloadError
     case restart
@@ -68,6 +70,8 @@ internal enum UpdatesStateEvent {
       return .checkError
     case .download:
       return .download
+    case .downloadProgress:
+      return .downloadProgress
     case .downloadComplete:
       return .downloadComplete
     case .downloadCompleteWithUpdate:
@@ -116,6 +120,7 @@ public struct UpdatesStateContext {
   public let rollback: UpdatesStateContextRollback?
   public let checkError: [String: String]?
   public let downloadError: [String: String]?
+  public let downloadProgress: Double
   public let lastCheckForUpdateTime: Date?
   public let sequenceNumber: Int
 
@@ -139,6 +144,7 @@ public struct UpdatesStateContext {
       "downloadedManifest": self.downloadedManifest,
       "checkError": self.checkError,
       "downloadError": self.downloadError,
+      "downloadProgress": self.downloadProgress,
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
       "rollback": rollback?.json,
       "sequenceNumber": sequenceNumber
@@ -159,6 +165,7 @@ public extension UpdatesStateContext {
     self.downloadedManifest = nil
     self.checkError = nil
     self.downloadError = nil
+    self.downloadProgress = 0.0
     self.lastCheckForUpdateTime = nil
     self.rollback = nil
     self.sequenceNumber = 0
@@ -188,6 +195,7 @@ public extension UpdatesStateContext {
     var latestManifest: [String: Any]?
     var downloadedManifest: [String: Any]?
     var checkError: [String: String]?
+    var downloadProgress: Double = 0
     var downloadError: [String: String]?
     var lastCheckForUpdateTime: Date?
     var rollback: UpdatesStateContextRollback?
@@ -204,6 +212,7 @@ public extension UpdatesStateContext {
       self.downloadedManifest = original.downloadedManifest
       self.checkError = original.checkError
       self.downloadError = original.downloadError
+      self.downloadProgress = original.downloadProgress
       self.lastCheckForUpdateTime = original.lastCheckForUpdateTime
       self.rollback = original.rollback
     }
@@ -222,6 +231,7 @@ public extension UpdatesStateContext {
         rollback: rollback,
         checkError: checkError,
         downloadError: downloadError,
+        downloadProgress: downloadProgress,
         lastCheckForUpdateTime: lastCheckForUpdateTime,
         sequenceNumber: newSequenceNumber
       )
@@ -388,13 +398,19 @@ internal class UpdatesStateMachine {
       }
     case .download:
       return context.copyAndIncrementSequenceNumber {
+        $0.downloadProgress = 0.0
         $0.isDownloading = true
+      }
+    case let .downloadProgress(progress):
+      return context.copyAndIncrementSequenceNumber {
+        $0.downloadProgress = progress
       }
     case .downloadComplete:
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.isUpdatePending = true
+        $0.downloadProgress = 1.0
       }
     case .downloadCompleteWithRollback:
       return context.copyAndIncrementSequenceNumber {
@@ -442,7 +458,7 @@ internal class UpdatesStateMachine {
   private static let updatesStateAllowedEvents: [UpdatesStateValue: Set<UpdatesStateEvent.InternalType>] = [
     .idle: [.startStartup, .endStartup, .check, .download, .restart],
     .checking: [.checkCompleteAvailable, .checkCompleteUnavailable, .checkError],
-    .downloading: [.downloadComplete, .downloadError],
+    .downloading: [.downloadComplete, .downloadError, .downloadProgress],
     .restarting: []
   ]
 
@@ -458,6 +474,7 @@ internal class UpdatesStateMachine {
     .checkCompleteUnavailable: .idle,
     .checkError: .idle,
     .download: .downloading,
+    .downloadProgress: .downloading,
     .downloadComplete: .idle,
     .downloadError: .idle,
     .restart: .restarting

@@ -25,6 +25,7 @@ class ExpoUpdatesModule extends NativeModule {
         isRestarting: false,
         restartCount: 0,
         sequenceNumber: 0,
+        downloadProgress: 0,
     };
     async reload() {
         if (typeof window !== 'undefined')

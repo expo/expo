@@ -199,6 +199,24 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   @Test
+  fun test_handleDownloadProgress() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.values().toSet())
+
+    machine.processEventTest(UpdatesStateEvent.Download())
+    Assert.assertEquals(UpdatesStateValue.Downloading, machine.getState())
+    Assert.assertEquals(0.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.001)
+
+    machine.processEventTest(UpdatesStateEvent.DownloadProgress(0.5))
+    Assert.assertEquals(UpdatesStateValue.Downloading, machine.getState())
+    Assert.assertEquals(0.5, testStateChangeEventManager.lastContext!!.downloadProgress, 0.001)
+
+    machine.processEventTest(UpdatesStateEvent.DownloadComplete())
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+    Assert.assertEquals(1.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.001)
+  }
+
+  @Test
   fun test_handleRollback() {
     val testStateChangeEventManager = TestStateChangeEventManager()
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.values().toSet())
