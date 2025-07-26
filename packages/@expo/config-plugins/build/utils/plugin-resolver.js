@@ -147,16 +147,26 @@ function resolveConfigPluginFunctionWithInfo(projectRoot, pluginReference) {
   try {
     result = requirePluginFile(pluginFile);
   } catch (error) {
-    if (error instanceof SyntaxError) {
-      const learnMoreLink = `Learn more: https://docs.expo.dev/guides/config-plugins/#creating-a-plugin`;
-      // If the plugin reference is a node module, and that node module has a syntax error, then it probably doesn't have an official config plugin.
-      if (!isPluginFile && !moduleNameIsDirectFileReference(pluginReference)) {
-        const pluginError = new (_errors().PluginError)(`Package "${pluginReference}" does not contain a valid config plugin.\n${learnMoreLink}\n\n${error.message}`, 'INVALID_PLUGIN_IMPORT');
-        pluginError.stack = error.stack;
-        throw pluginError;
-      }
+    const learnMoreLink = `Learn more: https://docs.expo.dev/guides/config-plugins/#creating-a-plugin`;
+    let underlyingError;
+    let stack;
+    if (error instanceof Error) {
+      const errorWithCode = error;
+      underlyingError = `${errorWithCode.message} ${errorWithCode.code ?? ''}`;
+      stack = errorWithCode.stack;
+    } else {
+      underlyingError = String(error);
     }
-    throw error;
+    let errorMessage = `Could not find a valid config plugin for "${pluginReference}".\n` + `We found "${pluginFile}" but an error was thrown while requiring it.\n` + `Make sure that ${pluginReference} actually ships a config plugin. If not, remove the entry from the app config file.\n\n`;
+    if (!isPluginFile) {
+      errorMessage += `Config plugins are usually exported from an "app.plugin.js" file in the package root, but "${pluginReference}" does not have this file.\n\n`;
+    }
+    errorMessage += `The underlying error was: ${underlyingError}\n${learnMoreLink}`;
+    const pluginError = new (_errors().PluginError)(errorMessage, 'INVALID_PLUGIN_IMPORT');
+    if (stack) {
+      pluginError.stack = stack;
+    }
+    throw pluginError;
   }
   const plugin = resolveConfigPluginExport({
     plugin: result,
