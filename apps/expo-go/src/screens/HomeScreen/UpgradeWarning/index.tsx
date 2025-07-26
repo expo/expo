@@ -21,14 +21,10 @@ export function UpgradeWarning({ collapsible = false }: Props) {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      shouldShowUpgradeWarningAsync().then(({ shouldShow, betaSdkVersion }) => {
-        setShouldShow(shouldShow);
-        setBetaSdkVersion(betaSdkVersion);
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
+    shouldShowUpgradeWarningAsync().then(({ shouldShow, betaSdkVersion }) => {
+      setShouldShow(shouldShow);
+      setBetaSdkVersion(betaSdkVersion);
+    });
   }, []);
 
   // Bail out early if we don't have a beta SDK version, since we require it for the message
