@@ -121,6 +121,7 @@ export const home = [
         makePage('config-plugins/mods.mdx'),
         makePage('config-plugins/dangerous-mods.mdx'),
         makePage('config-plugins/development-and-debugging.mdx'),
+        makePage('config-plugins/patch-project.mdx'),
       ],
       { expanded: false }
     ),
