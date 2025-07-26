@@ -12,4 +12,12 @@ interface UnifiedFileInterface {
   fun delete(): Boolean
   fun listFilesAsUnified(): List<UnifiedFileInterface>
   val uri: Uri
+  val type: String?
+  fun lastModified(): Long?
+  val creationTime: Long?
+  val fileName: String?
+  fun outputStream(): java.io.OutputStream
+  fun inputStream(): java.io.InputStream
+  fun length(): Long
+  fun walkTopDown(): Sequence<UnifiedFileInterface>
 }

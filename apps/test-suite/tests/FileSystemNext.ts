@@ -54,6 +54,9 @@ export async function test({ describe, expect, it, ...t }) {
       //     throw new Error();
       //   }
       //   const safDirectory = new Directory(saf.directoryUri);
+      //   safDirectory.list().forEach((sd) => {
+      //     sd.delete();
+      //   });
       //   expect(safDirectory.list().length).toBe(0);
 
       //   safDirectory.createFile('newFile', 'text/plain');
@@ -63,7 +66,20 @@ export async function test({ describe, expect, it, ...t }) {
       //     sd.delete();
       //   });
       //   expect(safDirectory.list().length).toBe(0);
+
+      //   const file = safDirectory.createFile('newFile', 'text/plain');
+      //   file.write('test');
+      //   expect(file.textSync()).toBe('test');
+      //   expect(file.bytesSync()).toEqual(new Uint8Array([116, 101, 115, 116]));
+      //   expect(file.base64Sync()).toBe('dGVzdA==');
+      //   const file2 = safDirectory.createFile('newFile2', 'text/plain');
+
+      //   file2.write(new Uint8Array([116, 101, 115, 116]));
+      //   expect(file2.textSync()).toBe('test');
+      //   expect(file2.size).toBe(4);
+      //   expect(safDirectory.size).toBe(8);
       // });
+
       it('Creates a lazy file reference', () => {
         const file = new File('file:///path/to/file');
         expect(file.uri).toBe('file:///path/to/file');

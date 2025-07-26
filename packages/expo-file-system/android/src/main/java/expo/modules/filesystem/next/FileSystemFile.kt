@@ -2,7 +2,6 @@ package expo.modules.filesystem.next
 
 import android.net.Uri
 import android.util.Base64
-import android.webkit.MimeTypeMap
 import expo.modules.filesystem.InfoOptions
 import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
@@ -40,17 +39,16 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     validateCanCreate(options)
     if (uri.isContentUri) {
       throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
-    } else {
-      if (options.overwrite && exists) {
-        javaFile.delete()
-      }
-      if (options.intermediates) {
-        javaFile.parentFile?.mkdirs()
-      }
-      val created = javaFile.createNewFile()
-      if (!created) {
-        throw UnableToCreateException("file already exists or could not be created")
-      }
+    }
+    if (options.overwrite && exists) {
+      javaFile.delete()
+    }
+    if (options.intermediates) {
+      javaFile.parentFile?.mkdirs()
+    }
+    val created = javaFile.createNewFile()
+    if (!created) {
+      throw UnableToCreateException("file already exists or could not be created")
     }
   }
 
@@ -60,8 +58,8 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     if (!exists) {
       create()
     }
-    FileOutputStream(javaFile).use {
-      it.write(content.toByteArray())
+    file.outputStream().use { outputStream ->
+      outputStream.write(content.toByteArray())
     }
   }
 
@@ -71,8 +69,16 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     if (!exists) {
       create()
     }
-    FileOutputStream(javaFile).use {
-      it.channel.write(content.toDirectBuffer())
+    if (uri.isContentUri) {
+      file.outputStream().use { outputStream ->
+        val array = ByteArray(content.length)
+        content.toDirectBuffer().get(array)
+        outputStream.write(array)
+      }
+    } else {
+      FileOutputStream(javaFile).use {
+        it.channel.write(content.toDirectBuffer())
+      }
     }
   }
 
@@ -84,40 +90,47 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   fun text(): String {
     validateType()
     validatePermission(Permission.READ)
-    return javaFile.readText()
+    return file.inputStream().use { inputStream ->
+      inputStream.bufferedReader().use { it.readText() }
+    }
   }
 
   fun base64(): String {
     validateType()
     validatePermission(Permission.READ)
-    return Base64.encodeToString(javaFile.readBytes(), Base64.NO_WRAP)
+    file.inputStream().use {
+      return Base64.encodeToString(it.readBytes(), Base64.NO_WRAP)
+    }
   }
 
   fun bytes(): ByteArray {
     validateType()
     validatePermission(Permission.READ)
-    return javaFile.readBytes()
+    file.inputStream().use {
+      return it.readBytes()
+    }
   }
 
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
     validatePermission(Permission.READ)
     val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(javaFile.readBytes())
-    return digest.toHexString()
+    file.inputStream().use {
+      val digest = md.digest(it.readBytes())
+      return digest.toHexString()
+    }
   }
 
   val size: Long? get() {
-    return if (javaFile.exists()) {
-      javaFile.length()
+    return if (file.exists()) {
+      file.length()
     } else {
       null
     }
   }
 
   val type: String? get() {
-    return MimeTypeMap.getFileExtensionFromUrl(javaFile.path)
-      ?.run { MimeTypeMap.getSingleton().getMimeTypeFromExtension(lowercase()) }
+    return file.type
   }
 
   fun info(options: InfoOptions?): FileInfo {
@@ -126,25 +139,20 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     if (!file.exists()) {
       val fileInfo = FileInfo(
         exists = false,
-        uri = slashifyFilePath(javaFile.toURI().toString())
+        uri = slashifyFilePath(file.uri.toString())
       )
       return fileInfo
     }
-    when {
-      javaFile.toURI().scheme == "file" -> {
-        val fileInfo = FileInfo(
-          exists = true,
-          uri = slashifyFilePath(javaFile.toURI().toString()),
-          size = size,
-          modificationTime = modificationTime,
-          creationTime = creationTime
-        )
-        if (options != null && options.md5 == true) {
-          fileInfo.md5 = md5
-        }
-        return fileInfo
-      }
-      else -> throw UnableToGetInfoException("file schema ${javaFile.toURI().scheme} is not supported")
+    val fileInfo = FileInfo(
+      exists = true,
+      uri = slashifyFilePath(file.uri.toString()),
+      size = size,
+      modificationTime = modificationTime,
+      creationTime = creationTime
+    )
+    if (options != null && options.md5 == true) {
+      fileInfo.md5 = md5
     }
+    return fileInfo
   }
 }
