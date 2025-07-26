@@ -28,3 +28,4 @@ export type {
 } from 'expo-modules-core/types';
 
 export { useEvent, useEventListener } from './hooks/useEvent';
+export { usePermissions, Permission } from './hooks/usePermissions';
