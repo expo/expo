@@ -4,7 +4,7 @@
 
 - [secure-store] Reset android isAuthenticating prompt flag when error is thrown ([#38132](https://github.com/expo/expo/pull/38132) by [@SYoder1](https://github.com/SYoder1))
 
-- [secure-store] Update logging for error while using authentication prompt ([#38340](https://github.com/expo/expo/pull/38340) by [@SYoder1](https://github.com/SYoder1))
+- [secure-store] use more specific error messages in authentication prompt errors ([#38340](https://github.com/expo/expo/pull/38340) by [@SYoder1](https://github.com/SYoder1))
 
 ### 🛠 Breaking changes
 
