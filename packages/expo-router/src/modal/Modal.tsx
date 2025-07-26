@@ -75,6 +75,13 @@ export interface ModalProps extends ViewProps {
    * However, it will still close when navigating back or replacing the current screen.
    */
   closeOnNavigation?: boolean;
+  /**
+   * See {@link ScreenProps["sheetLargestUndimmedDetentIndex"]}.
+   *
+   * The largest sheet detent for which a view underneath won't be dimmed.
+   * Works only when `presentation` is set to `formSheet`.
+   */
+  largestUndimmedDetentIndex?: ModalConfig['largestUndimmedDetentIndex'];
 }
 
 /**
@@ -113,6 +120,7 @@ export function Modal(props: ModalProps) {
     transparent,
     detents,
     closeOnNavigation,
+    largestUndimmedDetentIndex,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -148,6 +156,7 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
+        largestUndimmedDetentIndex,
         detents: detents ?? 'fitToContents',
       });
       setCurrentModalId(newId);
