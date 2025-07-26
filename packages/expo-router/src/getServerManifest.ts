@@ -34,7 +34,17 @@ export type ExpoRouterServerManifestV1Route<TRegex = string> = {
   methods?: string[];
 };
 
+export type ExpoRouterServerManifestV1Middleware = {
+  file: string;
+  page: string;
+};
+
 export type ExpoRouterServerManifestV1<TRegex = string> = {
+  /**
+   * Middleware function that runs before any route matching.
+   * Only allowed at the root level and requires web.output: "server".
+   */
+  middleware?: ExpoRouterServerManifestV1Middleware;
   /**
    * Rewrites. These occur first
    */
@@ -162,13 +172,22 @@ export function getServerManifest(route: RouteNode): ExpoRouterServerManifestV1 
   const standardRoutes = otherRoutes.filter(([, , route]) => !isNotFoundRoute(route));
   const notFoundRoutes = otherRoutes.filter(([, , route]) => isNotFoundRoute(route));
 
-  return {
+  const manifest: ExpoRouterServerManifestV1 = {
     apiRoutes: getMatchableManifestForPaths(apiRoutes),
     htmlRoutes: getMatchableManifestForPaths(standardRoutes),
     notFoundRoutes: getMatchableManifestForPaths(notFoundRoutes),
     redirects: getMatchableManifestForPaths(redirects),
     rewrites: getMatchableManifestForPaths(rewrites),
   };
+
+  if (route.middleware) {
+    manifest.middleware = {
+      file: route.middleware.contextKey,
+      page: '/',
+    };
+  }
+
+  return manifest;
 }
 
 function getMatchableManifestForPaths(

@@ -15,7 +15,13 @@ export type RouteInfo<TRegex = string> = {
   methods?: string[];
 };
 
+export type MiddlewareInfo = {
+  file: string;
+  page: string;
+};
+
 export type ExpoRoutesManifestV1<TRegex = string> = {
+  middleware?: MiddlewareInfo;
   apiRoutes: RouteInfo<TRegex>[];
   htmlRoutes: RouteInfo<TRegex>[];
   notFoundRoutes: RouteInfo<TRegex>[];

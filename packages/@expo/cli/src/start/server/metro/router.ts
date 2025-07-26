@@ -78,6 +78,16 @@ export function getApiRoutesForDirectory(cwd: string) {
   });
 }
 
+export function getMiddlewareForDirectory(cwd: string): string | null {
+  const files = globSync('+middleware.@(ts|tsx|js|jsx)', {
+    cwd,
+    absolute: true,
+    dot: true,
+  });
+  // TODO: Should we warn or throw an error if there's +middleware.ts and +middleware.tsx? Check behavior of +not-found.tsx
+  return files.length > 0 ? files[0] : null;
+}
+
 // Used to emulate a context module, but way faster. TODO: May need to adjust the extensions to stay in sync with Metro.
 export function getRoutePaths(cwd: string) {
   return globSync('**/*.@(ts|tsx|js|jsx)', {
@@ -91,9 +101,14 @@ function normalizePaths(p: string) {
 }
 
 let hasWarnedAboutApiRouteOutput = false;
+let hasWarnedAboutMiddlewareOutput = false;
 
 export function hasWarnedAboutApiRoutes() {
   return hasWarnedAboutApiRouteOutput;
+}
+
+export function hasWarnedAboutMiddleware() {
+  return hasWarnedAboutMiddlewareOutput;
 }
 
 export function warnInvalidWebOutput() {
@@ -106,4 +121,16 @@ export function warnInvalidWebOutput() {
   }
 
   hasWarnedAboutApiRouteOutput = true;
+}
+
+export function warnInvalidMiddlewareOutput() {
+  if (!hasWarnedAboutMiddlewareOutput) {
+    Log.warn(
+      chalk.yellow`Using middleware requires the {bold web.output} to be set to {bold "server"} in the project {bold app.json}. ${learnMore(
+        'https://docs.expo.dev/router/reference/api-routes/'
+      )}`
+    );
+  }
+
+  hasWarnedAboutMiddlewareOutput = true;
 }

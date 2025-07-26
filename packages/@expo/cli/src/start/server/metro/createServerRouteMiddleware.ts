@@ -12,7 +12,7 @@ import { promisify } from 'util';
 
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync, logMetroError } from './metroErrorInterface';
-import { warnInvalidWebOutput } from './router';
+import { warnInvalidWebOutput, warnInvalidMiddlewareOutput } from './router';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
@@ -138,11 +138,45 @@ export function createRouteHandlerMiddleware(
         })!;
 
         try {
-          debug(`Bundling middleware at: ${resolvedFunctionPath}`);
+          debug(`Bundling API route at: ${resolvedFunctionPath}`);
           return await options.bundleApiRoute(resolvedFunctionPath!);
         } catch (error: any) {
           return new Response(
             'Failed to load API Route: ' + resolvedFunctionPath + '\n\n' + error.message,
+            {
+              status: 500,
+              headers: {
+                'Content-Type': 'text/html',
+              },
+            }
+          );
+        }
+      },
+      async getMiddleware(route) {
+        const { exp } = options.config;
+        if (exp.web?.output !== 'server') {
+          warnInvalidMiddlewareOutput();
+
+          return {
+            default: () => {
+              console.warn(
+                'Server middleware is only supported when web.output is set to "server" in your app config'
+              );
+            },
+          };
+        }
+
+        const resolvedFunctionPath = await resolveAsync(route.file, {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          basedir: options.appDir,
+        })!;
+
+        try {
+          debug(`Bundling middleware at: ${resolvedFunctionPath}`);
+          return await options.bundleApiRoute(resolvedFunctionPath!);
+        } catch (error: any) {
+          return new Response(
+            'Failed to load middleware: ' + resolvedFunctionPath + '\n\n' + error.message,
             {
               status: 500,
               headers: {
