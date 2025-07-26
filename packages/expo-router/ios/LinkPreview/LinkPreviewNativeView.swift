@@ -32,7 +32,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
 
   func setNextScreenId(_ screenId: String) {
     self.nextScreenId = screenId
-    linkPreviewNativeNavigation.updatePreloadedView(screenId, with: self)
+    linkPreviewNativeNavigation.updatePreloadedView(screenId: screenId, responder: self)
   }
 
   // MARK: - Children
