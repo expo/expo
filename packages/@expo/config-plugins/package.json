@@ -64,7 +64,7 @@
     "getenv": "^2.0.0",
     "glob": "^10.4.2",
     "resolve-from": "^5.0.0",
-    "semver": "^7.5.4",
+    "semver": "^7.6.0",
     "slash": "^3.0.0",
     "slugify": "^1.6.6",
     "xcode": "^3.0.1",

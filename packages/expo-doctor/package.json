@@ -49,7 +49,7 @@
     "ignore": "^5.3.2",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
-    "semver": "7.5.4",
+    "semver": "7.6.0",
     "terminal-link": "^2.1.1"
   }
 }
