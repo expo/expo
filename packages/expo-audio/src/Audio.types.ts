@@ -441,3 +441,11 @@ export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
  * @platform android
  */
 export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
+
+// @docsMissing
+export type AudioMetadata = {
+  title?: string;
+  artist?: string;
+  albumTitle?: string;
+  artworkUrl?: string;
+};
