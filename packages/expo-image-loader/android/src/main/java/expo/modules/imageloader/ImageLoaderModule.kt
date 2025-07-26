@@ -11,6 +11,8 @@ import expo.modules.core.interfaces.InternalModule
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
 
 class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInterface {
 
@@ -91,6 +93,43 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInter
         override fun onLoadFailed(errorDrawable: Drawable?) {
           super.onLoadFailed(errorDrawable)
           resultListener.onFailure(Exception("Loading bitmap failed"))
+        }
+      })
+  }
+
+  override fun loadImageForManipulationFromURLWithHeaders(
+    url: String,
+    headers: Map<String, String>,
+    resultListener: ImageLoaderInterface.ResultListener
+  ) {
+    val normalizedUrl = normalizeAssetsUrl(url)
+
+    val glideUrl = GlideUrl(
+      normalizedUrl,
+      LazyHeaders.Builder().apply {
+        headers.forEach { (key, value) ->
+          addHeader(key, value)
+        }
+      }.build()
+    )
+
+    Glide.with(context)
+      .asBitmap()
+      .diskCacheStrategy(DiskCacheStrategy.NONE)
+      .skipMemoryCache(true)
+      .load(glideUrl)
+      .into(object : CustomTarget<Bitmap>() {
+        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+          resultListener.onSuccess(resource)
+        }
+
+        override fun onLoadCleared(placeholder: Drawable?) {
+          // no op
+        }
+
+        override fun onLoadFailed(errorDrawable: Drawable?) {
+          super.onLoadFailed(errorDrawable)
+          resultListener.onFailure(Exception("Loading bitmap with headers failed"))
         }
       })
   }
