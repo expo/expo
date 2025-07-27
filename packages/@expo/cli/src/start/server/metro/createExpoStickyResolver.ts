@@ -1,5 +1,5 @@
+import type { ResolutionContext } from '@expo/metro/metro-resolver';
 import type { SearchOptions as AutolinkingSearchOptions } from 'expo-modules-autolinking/exports';
-import type { ResolutionContext } from 'metro-resolver';
 
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';

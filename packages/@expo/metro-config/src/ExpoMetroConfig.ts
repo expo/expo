@@ -2,10 +2,17 @@
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import JsonFile from '@expo/json-file';
+import type { Reporter } from '@expo/metro/metro';
+import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  Options as GraphOptions,
+} from '@expo/metro/metro/DeltaBundler/types.flow';
+import { stableHash } from '@expo/metro/metro-cache';
+import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
 import chalk from 'chalk';
-import { MixedOutput, Module, ReadOnlyGraph, Reporter } from 'metro';
-import { stableHash } from 'metro-cache';
-import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import os from 'os';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -22,6 +29,7 @@ import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
 import { toPosixPath } from './utils/filePath';
+import { setOnReadonly } from './utils/setOnReadonly';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
 
@@ -62,14 +70,23 @@ let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
-  const { Graph } = require('metro/src/DeltaBundler/Graph');
+  const {
+    Graph,
+  }: typeof import('@expo/metro/metro/DeltaBundler/Graph') = require('@expo/metro/metro/DeltaBundler/Graph');
 
-  const original_traverseDependencies = Graph.prototype.traverseDependencies;
+  interface TraverseDependencies {
+    (paths: readonly string[], options: GraphOptions<any>): Promise<GraphResult<any>>;
+    __patched?: boolean;
+  }
+
+  const original_traverseDependencies = Graph.prototype
+    .traverseDependencies as TraverseDependencies;
+
   if (!original_traverseDependencies.__patched) {
     original_traverseDependencies.__patched = true;
-
-    Graph.prototype.traverseDependencies = function (paths: string[], options: unknown) {
-      this.dependencies.forEach((dependency: JSModule) => {
+    // eslint-disable-next-line no-inner-declarations
+    function traverseDependencies(this: Graph, paths: string[], options: GraphOptions<any>) {
+      this.dependencies.forEach((dependency: Module | JSModule) => {
         // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
         // `skipCache` is set when a CSS module is found by PostCSS.
         if (
@@ -78,7 +95,11 @@ function patchMetroGraphToSupportUncachedModules() {
         ) {
           // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
           // the Graph._processModule method.
-          dependency.unstable_transformResultKey = dependency.unstable_transformResultKey + '.';
+          setOnReadonly(
+            dependency,
+            'unstable_transformResultKey',
+            dependency.unstable_transformResultKey + '.'
+          );
 
           // Add the path to the list of modified paths so it gets run through the transformer again,
           // this will ensure it is passed to PostCSS -> Tailwind.
@@ -87,9 +108,10 @@ function patchMetroGraphToSupportUncachedModules() {
       });
       // Invoke the original method with the new paths to ensure the standard behavior is preserved.
       return original_traverseDependencies.call(this, paths, options);
-    };
+    }
     // Ensure we don't patch the method twice.
-    Graph.prototype.traverseDependencies.__patched = true;
+    Graph.prototype.traverseDependencies = traverseDependencies;
+    traverseDependencies.__patched = true;
   }
 }
 
@@ -251,7 +273,7 @@ export function getDefaultConfig(
           // Add default support for `expo-sqlite` file types.
           ['db']
         )
-        .filter((assetExt) => !sourceExts.includes(assetExt)),
+        .filter((assetExt: string) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
     },
@@ -354,7 +376,7 @@ export function getDefaultConfig(
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
-          experimentalImportSupport: false,
+          experimentalImportSupport: true,
           inlineRequires: false,
         },
       }),

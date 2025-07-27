@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
-object ReloadScreenManager {
+class ReloadScreenManager {
   private var currentConfiguration: ReloadScreenConfiguration? = null
   private var currentReloadScreen: WeakReference<ReloadScreenView>? = null
   private var currentActivity: WeakReference<Activity>? = null

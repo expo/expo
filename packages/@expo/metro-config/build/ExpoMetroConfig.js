@@ -10,8 +10,8 @@ exports.getDefaultConfig = getDefaultConfig;
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const json_file_1 = __importDefault(require("@expo/json-file"));
+const metro_cache_1 = require("@expo/metro/metro-cache");
 const chalk_1 = __importDefault(require("chalk"));
-const metro_cache_1 = require("metro-cache");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -27,16 +27,19 @@ const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const metro_config_1 = require("./traveling/metro-config");
 const filePath_1 = require("./utils/filePath");
+const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutExotic = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
 function patchMetroGraphToSupportUncachedModules() {
-    const { Graph } = require('metro/src/DeltaBundler/Graph');
-    const original_traverseDependencies = Graph.prototype.traverseDependencies;
+    const { Graph, } = require('@expo/metro/metro/DeltaBundler/Graph');
+    const original_traverseDependencies = Graph.prototype
+        .traverseDependencies;
     if (!original_traverseDependencies.__patched) {
         original_traverseDependencies.__patched = true;
-        Graph.prototype.traverseDependencies = function (paths, options) {
+        // eslint-disable-next-line no-inner-declarations
+        function traverseDependencies(paths, options) {
             this.dependencies.forEach((dependency) => {
                 // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
                 // `skipCache` is set when a CSS module is found by PostCSS.
@@ -44,7 +47,7 @@ function patchMetroGraphToSupportUncachedModules() {
                     !paths.includes(dependency.path)) {
                     // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
                     // the Graph._processModule method.
-                    dependency.unstable_transformResultKey = dependency.unstable_transformResultKey + '.';
+                    (0, setOnReadonly_1.setOnReadonly)(dependency, 'unstable_transformResultKey', dependency.unstable_transformResultKey + '.');
                     // Add the path to the list of modified paths so it gets run through the transformer again,
                     // this will ensure it is passed to PostCSS -> Tailwind.
                     paths.push(dependency.path);
@@ -52,9 +55,10 @@ function patchMetroGraphToSupportUncachedModules() {
             });
             // Invoke the original method with the new paths to ensure the standard behavior is preserved.
             return original_traverseDependencies.call(this, paths, options);
-        };
+        }
         // Ensure we don't patch the method twice.
-        Graph.prototype.traverseDependencies.__patched = true;
+        Graph.prototype.traverseDependencies = traverseDependencies;
+        traverseDependencies.__patched = true;
     }
 }
 function createNumericModuleIdFactory() {
@@ -285,7 +289,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {
-                    experimentalImportSupport: false,
+                    experimentalImportSupport: true,
                     inlineRequires: false,
                 },
             }),

@@ -174,7 +174,7 @@ export async function reloadAsync(options) {
         const resolvedOptions = resolveReloadScreenOptions(options.reloadScreenOptions);
         return await ExpoUpdates.reload(resolvedOptions);
     }
-    await ExpoUpdates.reload();
+    await ExpoUpdates.reload(null);
 }
 /**
  * Checks the server to see if a newly deployed update to your project is available. Does not

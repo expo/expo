@@ -156,9 +156,12 @@ class Env {
     return boolish('EXPO_NO_METRO_LAZY', false);
   }
 
-  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  /**
+   * Enable the unstable inverse dependency stack trace for Metro bundling errors.
+   * @deprecated This will be removed in the future.
+   */
   get EXPO_METRO_UNSTABLE_ERRORS() {
-    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
   /** Enable the experimental sticky resolver for Metro. */

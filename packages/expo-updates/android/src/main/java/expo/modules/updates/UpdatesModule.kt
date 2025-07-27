@@ -17,9 +17,8 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
-import expo.modules.updates.statemachine.UpdatesStateContext
-import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.reloadscreen.ReloadScreenOptions
+import expo.modules.updates.statemachine.UpdatesStateContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -65,7 +64,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     }
 
     AsyncFunction("reload") Coroutine { options: ReloadScreenOptions? ->
-      ReloadScreenManager.setConfiguration(options)
+      UpdatesController.instance.reloadScreenManager?.setConfiguration(options)
       UpdatesController.instance.relaunchReactApplicationForModule()
     }
 
@@ -169,14 +168,14 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     AsyncFunction("showReloadScreen") { options: ReloadScreenOptions? ->
       if (BuildConfig.DEBUG) {
         val activity = appContext.currentActivity
-        ReloadScreenManager.setConfiguration(options)
-        ReloadScreenManager.show(activity)
+        UpdatesController.instance.reloadScreenManager?.setConfiguration(options)
+        UpdatesController.instance.reloadScreenManager?.show(activity)
       }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("hideReloadScreen") {
       if (BuildConfig.DEBUG) {
-        ReloadScreenManager.hide()
+        UpdatesController.instance.reloadScreenManager?.hide()
       }
     }.runOnQueue(Queues.MAIN)
   }

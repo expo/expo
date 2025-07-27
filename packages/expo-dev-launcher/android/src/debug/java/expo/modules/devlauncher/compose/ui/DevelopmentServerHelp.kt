@@ -38,10 +38,6 @@ fun DevelopmentSessionHelper() {
     Spacer(Theme.spacing.small)
 
     Text("Then, select the local server when it appears here.")
-
-    Spacer(Theme.spacing.small)
-
-    Text("Alternatively, open the Camera app and scan the QR code that appears in your terminal")
   }
 }
 

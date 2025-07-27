@@ -1,5 +1,5 @@
+import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
-import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
@@ -18,6 +18,7 @@ import {
   maybeSymbolicateAndFormatReactErrorLogAsync,
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
+import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
@@ -234,17 +235,13 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logBundlingError(error: SnippetError): void {
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
-    const cause = error.cause as undefined | { _expoImportStack?: string };
     if (moduleResolutionError) {
       let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
-      if (cause?._expoImportStack) {
-        message += `\n\n${cause?._expoImportStack}`;
-      }
+      message += '\n\n' + nearestImportStack(error);
       return this.terminal.log(message);
     }
-    if (cause?._expoImportStack) {
-      error.message += `\n\n${cause._expoImportStack}`;
-    }
+
+    attachImportStackToRootMessage(error);
     return super._logBundlingError(error);
   }
 }

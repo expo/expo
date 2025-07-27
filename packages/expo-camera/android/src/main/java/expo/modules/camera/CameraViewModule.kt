@@ -122,9 +122,13 @@ class CameraViewModule : Module() {
       )
     }
 
-    AsyncFunction("launchScanner") { settings: BarcodeSettings ->
+    AsyncFunction("launchScanner") { settings: BarcodeSettings, promise: Promise ->
       val reactContext = appContext.reactContext
-        ?: throw Exceptions.ReactContextLost()
+
+      if (reactContext == null) {
+        promise.reject(Exceptions.ReactContextLost())
+        return@AsyncFunction
+      }
 
       val options = GmsBarcodeScannerOptions.Builder().apply {
         if (settings.barcodeTypes.isNotEmpty()) {
@@ -140,9 +144,13 @@ class CameraViewModule : Module() {
         .addOnSuccessListener { barcode ->
           val result = BarCodeScannerResultSerializer.parseBarcodeScanningResult(barcode)
           sendEvent("onModernBarcodeScanned", BarCodeScannerResultSerializer.toBundle(result, 1.0f))
+          promise.resolve()
+        }
+        .addOnCanceledListener {
+          promise.reject(CameraExceptions.BarcodeScanningCancelledException())
         }
         .addOnFailureListener {
-          throw CameraExceptions.BarcodeScanningFailedException()
+          promise.reject(CameraExceptions.BarcodeScanningFailedException())
         }
     }
 

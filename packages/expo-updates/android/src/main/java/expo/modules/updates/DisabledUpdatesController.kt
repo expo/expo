@@ -13,6 +13,7 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
+import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
@@ -80,6 +81,8 @@ class DisabledUpdatesController(
 
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
+  override val reloadScreenManager: ReloadScreenManager?
+    get() = null
 
   override fun onEventListenerStartObserving() {
     stateMachine.sendContextToJS()
