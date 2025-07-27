@@ -27,7 +27,7 @@ fun AccountAvatar(
       )
     } else {
       DayNighIcon(
-        id = R.drawable._expodevclientcomponents_assets_buildingicon,
+        id = R.drawable.building_icon,
         contentDescription = "Avatar",
         modifier = Modifier.padding(Theme.spacing.micro)
       )
