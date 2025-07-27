@@ -113,7 +113,7 @@ export declare class ExpoUpdatesModule
     rollbackString?: string;
   };
 
-  reload: (options?: ReloadScreenOptions) => Promise<void>;
+  reload: (options?: ReloadScreenOptions | null) => Promise<void>;
   checkForUpdateAsync: () => Promise<
     | UpdateCheckResultRollBack
     | (Omit<UpdateCheckResultAvailable, 'manifest'> &

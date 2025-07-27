@@ -84,7 +84,7 @@ export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> imple
         lastCheckForUpdateTimeString?: string;
         rollbackString?: string;
     };
-    reload: (options?: ReloadScreenOptions) => Promise<void>;
+    reload: (options?: ReloadScreenOptions | null) => Promise<void>;
     checkForUpdateAsync: () => Promise<UpdateCheckResultRollBack | (Omit<UpdateCheckResultAvailable, 'manifest'> & ({
         manifestString: string;
     } | {

@@ -166,7 +166,7 @@ export interface VideoViewProps extends ViewProps {
    * If undefined, does not use CORS at all.
    *
    * @platform web
-   * @default undefined
+   * @default 'anonymous'
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
 }

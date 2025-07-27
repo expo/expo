@@ -376,7 +376,7 @@ export function getDefaultConfig(
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
-          experimentalImportSupport: false,
+          experimentalImportSupport: true,
           inlineRequires: false,
         },
       }),
