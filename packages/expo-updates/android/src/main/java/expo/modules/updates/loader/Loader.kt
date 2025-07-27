@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Abstract class responsible for loading an update, enumerating the assets required for
@@ -46,7 +47,7 @@ abstract class Loader protected constructor(
   private var existingAssetList = mutableListOf<AssetEntity>()
   private var finishedAssetList = mutableListOf<AssetEntity>()
   private val _progressFlow = MutableSharedFlow<AssetLoadProgress>()
-  private var assetProgressMap = mutableMapOf<AssetEntity, Double>()
+  private var assetProgressMap: MutableMap<AssetEntity, Double> = ConcurrentHashMap()
 
   internal var assetLoadProgressBlock: ((Double) -> Unit)? = null
 
@@ -116,7 +117,7 @@ abstract class Loader protected constructor(
     erroredAssetList = mutableListOf()
     existingAssetList = mutableListOf()
     finishedAssetList = mutableListOf()
-    assetProgressMap = mutableMapOf<AssetEntity, Double>()
+    assetProgressMap = ConcurrentHashMap()
     assetLoadProgressBlock = null
   }
 
