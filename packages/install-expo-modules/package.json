@@ -48,7 +48,7 @@
     "glob": "^10.4.2",
     "prompts": "^2.3.2",
     "resolve-from": "^5.0.0",
-    "semver": "7.5.4",
+    "semver": "7.6.0",
     "terminal-link": "^2.1.1",
     "xcparse": "^0.0.3"
   },
