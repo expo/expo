@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders BR 1`] = `
+<Text
+  style={
+    {
+      "height": 16,
+      "width": 0,
+    }
+  }
+/>
+`;
