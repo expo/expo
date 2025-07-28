@@ -51,6 +51,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@expo/metro": "~0.1.0",
     "@types/jest": "^29.2.1",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",
