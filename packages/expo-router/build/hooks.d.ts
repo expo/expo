@@ -8,7 +8,6 @@ export { useRouteInfo };
  *
  * @example
  * ```tsx
- * import { Text } from 'react-native';
  * import { useRootNavigationState } from 'expo-router';
  *
  * export default function Route() {
