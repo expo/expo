@@ -266,15 +266,10 @@ object MediaLibraryUtils {
   fun hasManifestPermission(context: Context, permission: String): Boolean =
     getManifestPermissions(context).contains(permission)
 
-  suspend fun scanFile(
-    context: Context,
-    paths: Array<String>,
-    mimeTypes: Array<String>?
-  ) = withContext(Dispatchers.IO) {
+  suspend fun scanFile(context: Context, paths: Array<String>, mimeTypes: Array<String>?) =
     suspendCoroutine { complete ->
       MediaScannerConnection.scanFile(context, paths, mimeTypes) { path: String, uri: Uri? ->
         complete.resume(Pair(path, uri))
       }
     }
-  }
 }
