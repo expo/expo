@@ -50,14 +50,17 @@ function StreamExampleItem({ example, result, onEvaluate }: StreamExampleItemPro
         <MonoText>{example.code}</MonoText>
         {!result && <Button title="Evaluate" onPress={() => onEvaluate(example)} />}
         {result && (
-          <MonoText containerStyle={styles.resultContainer}>
-            <Text>Size: {result.size}</Text> {'\n'}
-            <Text>Type: {result.type}</Text> {'\n'}
-            <Text>Text: {result.text}</Text> {'\n'}
-            <Text>
-              Stream: {result.streamData ? Array.from(result.streamData).join(', ') : 'null'}
-            </Text>
-          </MonoText>
+          <View>
+            <MonoText containerStyle={styles.resultContainer}>
+              <Text>Size: {result.size}</Text> {'\n'}
+              <Text>Type: {result.type}</Text> {'\n'}
+              <Text>Text: {result.text}</Text> {'\n'}
+              <Text>
+                Stream: {result.streamData ? Array.from(result.streamData).join(', ') : 'null'}
+              </Text>
+            </MonoText>
+            <Button title="Re-evaluate" onPress={() => onEvaluate(example)} />
+          </View>
         )}
       </View>
     </View>

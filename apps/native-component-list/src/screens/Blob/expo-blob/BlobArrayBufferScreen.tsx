@@ -82,12 +82,15 @@ function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExam
         <MonoText>{example.code}</MonoText>
         {!result && <Button title="Evaluate" onPress={() => onEvaluate(example)} />}
         {result && (
-          <MonoText containerStyle={styles.resultContainer}>
-            <Text>Size: {result.size}</Text> {'\n'}
-            <Text>Type: {result.type}</Text> {'\n'}
-            <Text>Text: {result.text}</Text> {'\n'}
-            <Text>Hex: {result.hexString}</Text>
-          </MonoText>
+          <View>
+            <MonoText containerStyle={styles.resultContainer}>
+              <Text>Size: {result.size}</Text> {'\n'}
+              <Text>Type: {result.type}</Text> {'\n'}
+              <Text>Text: {result.text}</Text> {'\n'}
+              <Text>Hex: {result.hexString}</Text>
+            </MonoText>
+            <Button title="Re-evaluate" onPress={() => onEvaluate(example)} />
+          </View>
         )}
       </View>
     </View>

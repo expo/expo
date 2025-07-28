@@ -75,14 +75,17 @@ function SliceExampleItem({ example, result, onEvaluate }: SliceExampleItemProps
         <MonoText>{example.code}</MonoText>
         {!result && <Button title="Evaluate" onPress={() => onEvaluate(example)} />}
         {result && (
-          <MonoText containerStyle={styles.resultContainer}>
-            <Text>Original Size: {result.originalSize}</Text> {'\n'}
-            <Text>Original Type: {result.originalType}</Text> {'\n'}
-            <Text>Original Text: {result.originalText}</Text> {'\n'}
-            <Text>Sliced Size: {result.slicedSize}</Text> {'\n'}
-            <Text>Sliced Type: {result.slicedType}</Text> {'\n'}
-            <Text>Sliced Text: {result.slicedText}</Text>
-          </MonoText>
+          <View>
+            <MonoText containerStyle={styles.resultContainer}>
+              <Text>Original Size: {result.originalSize}</Text> {'\n'}
+              <Text>Original Type: {result.originalType}</Text> {'\n'}
+              <Text>Original Text: {result.originalText}</Text> {'\n'}
+              <Text>Sliced Size: {result.slicedSize}</Text> {'\n'}
+              <Text>Sliced Type: {result.slicedType}</Text> {'\n'}
+              <Text>Sliced Text: {result.slicedText}</Text>
+            </MonoText>
+            <Button title="Re-evaluate" onPress={() => onEvaluate(example)} />
+          </View>
         )}
       </View>
     </View>

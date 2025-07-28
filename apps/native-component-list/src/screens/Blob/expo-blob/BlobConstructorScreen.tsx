@@ -54,11 +54,17 @@ function ExampleItem({ example, result, onEvaluate }: ExampleItemProps) {
           />
         )}
         {result && (
-          <MonoText containerStyle={styles.resultContainer}>
-            <Text>Size: {result.size}</Text> {'\n'}
-            <Text>Type: {result.type}</Text> {'\n'}
-            <Text>Text: {result.text}</Text>
-          </MonoText>
+          <View>
+            <MonoText containerStyle={styles.resultContainer}>
+              <Text>Size: {result.size}</Text> {'\n'}
+              <Text>Type: {result.type}</Text> {'\n'}
+              <Text>Text: {result.text}</Text>
+            </MonoText>
+            <Button
+              title="Re-evaluate"
+              onPress={() => onEvaluate(example.key, example.blobParts, example.options)}
+            />
+          </View>
         )}
       </View>
     </View>
