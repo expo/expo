@@ -3,13 +3,13 @@ import {
   exportEmbedAssetsAsync,
 } from '@expo/cli/build/src/export/embed/exportEmbedAsync';
 import { drawableFileTypes } from '@expo/cli/build/src/export/metroAssetLocalPath';
+import Server from '@expo/metro/metro/Server';
+import type { BundleOptions } from '@expo/metro/metro/shared/types.flow';
 import { HashedAssetData } from '@expo/metro-config/build/transform-worker/getAssets';
 import crypto from 'crypto';
 import { convertEntryPointToRelative, resolveRelativeEntryPoint } from 'expo/config/paths';
 import { EmbeddedManifest } from 'expo-manifests';
 import fs from 'fs';
-import Server from 'metro/src/Server';
-import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 
 import { filterPlatformAssetScales } from './filterPlatformAssetScales';
