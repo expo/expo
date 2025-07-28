@@ -1,7 +1,6 @@
 package expo.modules.medialibrary.albums
 
 import android.content.Context
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -9,39 +8,36 @@ import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.assets.CreateAssetWithAlbumFile
-import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import kotlin.coroutines.coroutineContext
 
-suspend fun createAlbum(context: Context, albumName: String, assetId: String, copyAsset: Boolean): Bundle? {
+suspend fun createAlbum(
+  context: Context,
+  albumName: String,
+  assetId: String,
+  copyAsset: Boolean
+): Bundle? = withContext(Dispatchers.IO){
   try {
     val mStrategy = if (copyAsset) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
     val files = MediaLibraryUtils.getAssetsById(context, assetId)
     val albumCreator = files[0]
     val album = createAlbumFile(albumCreator.mimeType, albumName)
     val newFile = mStrategy.apply(albumCreator, album, context)
+    coroutineContext.ensureActive()
 
-    val result = CompletableDeferred<Bundle?>()
-
-    MediaScannerConnection.scanFile(
-      context,
-      arrayOf(newFile.path),
-      null
-    ) { path: String, uri: Uri? ->
-      if (uri == null) {
-        result.completeExceptionally(
-          AlbumException("Could not add image to album.")
-        )
-        return@scanFile
-      }
-
-      val selection = "${MediaStore.Images.Media.DATA}=?"
-      val args = arrayOf(path)
-      val bundle = queryAlbum(context, selection, args)
-      result.complete(bundle)
+    val (path, uri) = MediaLibraryUtils.scanFile(context, arrayOf(newFile.path), null)
+    coroutineContext.ensureActive()
+    if (uri == null) {
+      throw AlbumException("Could not add image to album.")
     }
-
-    return result.await()
+    val selection = "${MediaStore.Images.Media.DATA}=?"
+    val args = arrayOf(path)
+    val bundle = queryAlbum(context, selection, args)
+    return@withContext bundle
   } catch (e: SecurityException) {
     throw UnableToLoadException("Could not create album: need WRITE_EXTERNAL_STORAGE permission: ${e.message}", e)
   } catch (e: IOException) {
