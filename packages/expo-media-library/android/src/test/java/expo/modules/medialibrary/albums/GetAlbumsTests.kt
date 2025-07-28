@@ -8,6 +8,7 @@ import expo.modules.medialibrary.UnableToLoadException
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
@@ -27,7 +28,7 @@ class GetAlbumsTests {
   }
 
   @Test
-  fun `GetAlbums should resolve with correct response`() {
+  fun `getAlbums should resolve with correct response`() = runTest {
     // arrange
     val bucketDisplayName = "Some Album Name"
 
@@ -53,7 +54,7 @@ class GetAlbumsTests {
   }
 
   @Test
-  fun `GetAlbums should not list albums with null name`() {
+  fun `getAlbums should not list albums with null name`() = runTest {
     // arrange
     val bucketId = 123456
     val bucketDisplayName = null
@@ -75,18 +76,21 @@ class GetAlbumsTests {
   }
 
   @Test
-  fun `GetAlbums should reject on null cursor`() {
+  fun `getAlbums should reject on null cursor`() = runTest {
     // arrange
     val context = mockContext with mockContentResolver(null)
 
     // act && assert
-    assertThrows(AlbumException::class.java) {
+    try {
       getAlbums(context)
+      fail()
+    } catch (e: Exception) {
+      assert(e is AlbumException)
     }
   }
 
   @Test
-  fun `GetAlbums should reject on SecurityException`() {
+  fun `getAlbums should reject on SecurityException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
@@ -100,7 +104,7 @@ class GetAlbumsTests {
   }
 
   @Test
-  fun `GetAlbums should reject on IllegalArgumentException`() {
+  fun `getAlbums should reject on IllegalArgumentException`() = runTest {
     // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
