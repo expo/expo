@@ -29,6 +29,7 @@ const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
  *
  * @example
  * ```tsx
+ * import { Text } from 'react-native';
  * import { useRootNavigationState } from 'expo-router';
  *
  * export default function Route() {
@@ -132,7 +133,7 @@ function useSegments() {
  *   // pathname = "/profile/baconbrix"
  *   const pathname = usePathname();
  *
- *   return <Text>User: {user}</Text>;
+ *   return <Text>Pathname: {pathname}</Text>;
  * }
  * ```
  */

@@ -8,6 +8,7 @@ export { useRouteInfo };
  *
  * @example
  * ```tsx
+ * import { Text } from 'react-native';
  * import { useRootNavigationState } from 'expo-router';
  *
  * export default function Route() {
@@ -114,7 +115,7 @@ export declare function useSegments<TSegments extends RouteSegments<Route>>(): T
  *   // pathname = "/profile/baconbrix"
  *   const pathname = usePathname();
  *
- *   return <Text>User: {user}</Text>;
+ *   return <Text>Pathname: {pathname}</Text>;
  * }
  * ```
  */
