@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `contentPadding` property to the `GoogleMaps.View` component on Android. ([#38382])(https://github.com/expo/expo/pull/38382) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)
+- Add `contentPadding` property to the `GoogleMaps.View` component on Android. ([#38382](https://github.com/expo/expo/pull/38382) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
