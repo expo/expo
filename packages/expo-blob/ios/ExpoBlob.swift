@@ -2,27 +2,31 @@ import Foundation
 import ExpoModulesCore
 
 public class ExpoBlob: Module {
+  private func proccessBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, endings: EndingType) -> [BlobPart] {
+    return blobParts?.map { part in
+      if let part: String = part.get() {
+        let str = (endings == .native) ? toNativeNewlines(part) : part
+        return .string(str)
+      }
+      if let part: Blob = part.get() {
+        return .blob(part)
+      }
+      if let part: TypedArray = part.get() {
+        let copiedData = Data(bytes: part.rawPointer, count: part.byteLength)
+        return .data(copiedData)
+      }
+      return .string("")
+    } ?? []
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoBlob")
 
     Class(Blob.self) {
       Constructor { (blobParts: [EitherOfThree<String, Blob, TypedArray>]?, options: BlobOptions?) in
         let endings = options?.endings ?? .transparent
-        let blobPartsProcessed: [BlobPart]? = blobParts?.map { part in
-          if let part: String = part.get() {
-            let str = (endings == .native) ? toNativeNewlines(part) : part
-            return .string(str)
-          }
-          if let part: Blob = part.get() {
-            return .blob(part)
-          }
-          if let part: TypedArray = part.get() {
-            let copiedData = Data(bytes: part.rawPointer, count: part.byteLength)
-            return .data(copiedData)
-          }
-          return .string("")
-        }
-        return Blob(blobParts: blobPartsProcessed ?? [], options: options ?? BlobOptions())
+        let blobPartsProcessed = self.proccessBlobParts(blobParts, endings: endings)
+        return Blob(blobParts: blobPartsProcessed, options: options ?? BlobOptions())
       }
 
       Property("size") { (blob: Blob) in

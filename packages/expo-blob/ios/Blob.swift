@@ -79,7 +79,8 @@ public class Blob: SharedObject {
 
   func text() async -> String {
     let allBytes = await self.bytes()
-    return String(decoding: allBytes, as: UTF8.self)
+    let data = Data(allBytes)
+    return String(data: data, encoding: .utf8) ?? String(decoding: allBytes, as: UTF8.self)
   }
 
   func bytes() async -> [UInt8] {
@@ -92,8 +93,8 @@ public class Blob: SharedObject {
 }
 
 enum EndingType: String, Enumerable {
-  case transparent = "transparent"
-  case native = "native"
+  case transparent
+  case native
 }
 
 struct BlobOptions: Record {

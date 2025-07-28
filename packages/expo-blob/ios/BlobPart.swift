@@ -4,9 +4,7 @@ enum BlobPart {
   case string(String)
   case blob(Blob)
   case data(Data)
-}
 
-extension BlobPart {
   func size() -> Int {
     switch self {
     case .string(let str):
@@ -30,8 +28,8 @@ extension BlobPart {
   }
 }
 func toNativeNewlines(_ str: String) -> String {
-    let nativeEnding = "\n"
-    var s = str.replacingOccurrences(of: "\r\n", with: nativeEnding)
-    s = s.replacingOccurrences(of: "\r", with: nativeEnding)
-    return s
+  let nativeEnding = "\n"
+  var s = str.replacingOccurrences(of: "\r\n", with: nativeEnding)
+  s = s.replacingOccurrences(of: "\r", with: nativeEnding)
+  return s
 }
