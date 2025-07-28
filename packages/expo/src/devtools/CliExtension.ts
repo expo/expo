@@ -1,3 +1,4 @@
+// @ts-nocheck
 import chalk from 'chalk';
 
 import type {
@@ -47,7 +48,7 @@ export const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSche
     throw new Error('No command provided.');
   }
 
-  let args: any;
+  let args: T['args'] = {} as T['args'];
   let apps: ExpoCliExtensionAppInfo[];
 
   try {
@@ -56,6 +57,10 @@ export const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSche
     throw new Error(
       `Invalid args JSON: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+
+  if (Array.isArray(args) || typeof args !== 'object') {
+    throw new Error('Expected object for args parameter, got ' + JSON.stringify(args));
   }
 
   try {

@@ -1,3 +1,5 @@
+let didWarnAboutUsage = false;
+
 /**
  * Dummy implementation of the `startDevToolsPluginListenerAsync` function for platforms
  * that do not support it, such as web or non-native environments.
@@ -11,7 +13,14 @@ export const startDevToolsPluginListenerAsync = async (
   ) => void;
   sendMessageAsync: (eventName: string, message: string) => Promise<void>;
 }> => {
-  throw new Error(
-    'This function is not supported on this platform. Please use the native version instead.'
-  );
+  if (!didWarnAboutUsage) {
+    didWarnAboutUsage = true;
+    console.warn(
+      'This function is not supported on this platform. Please use the native version instead.'
+    );
+  }
+  return {
+    addMessageListener: () => {},
+    sendMessageAsync: () => Promise.resolve(),
+  };
 };

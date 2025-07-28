@@ -15,11 +15,7 @@ import { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
  */
 export const startDevToolsPluginListenerAsync = async (pluginName: string) => {
   // Only include this code if we are in a development environment.
-  if (
-    // iOS and Android has differeent class names for the dev launcher module.
-    globalThis.expo.modules.ExpoDevLauncherInternal !== undefined ||
-    globalThis.expo.modules.EXDevLauncher !== undefined
-  ) {
+  if (process.env.NODE_ENV !== 'production') {
     console.debug(`Starting startDevToolsPluginListenerAsync for plugin ${pluginName}...`);
     let clientRef: Awaited<ReturnType<typeof getDevToolsPluginClientAsync>> | null = null;
     const listenerRemovals: (() => void)[] = [];
