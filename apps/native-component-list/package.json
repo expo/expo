@@ -37,7 +37,7 @@
     "@expo/styleguide-base": "^1.0.1",
     "@expo/ui": "~0.1.1-alpha.7",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/datetimepicker": "8.4.1",
+    "@react-native-community/datetimepicker": "8.4.3",
     "@expo/app-integrity": "~0.0.1",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "4.5.6",

@@ -3264,7 +3264,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNDateTimePicker (8.4.1):
+  - RNDateTimePicker (8.4.3):
     - boost
     - DoubleConversion
     - fast_float
