@@ -12,6 +12,7 @@ const Keys = Object.fromEntries(
     Session: 'session',
     History: 'history',
     Settings: 'settings',
+    DebugMode: 'debugMode',
   }).map(([key, value]) => [key, `Exponent.${value}`])
 );
 
@@ -115,7 +116,18 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
   return {};
 });
 
+async function setDebugModeAsync(debugMode: boolean): Promise<void> {
+  await AsyncStorage.setItem(Keys.DebugMode, debugMode.toString());
+}
+
+async function getDebugModeAsync(): Promise<boolean> {
+  const debugMode = await AsyncStorage.getItem(Keys.DebugMode);
+  return debugMode === 'true';
+}
+
 export default {
+  setDebugModeAsync,
+  getDebugModeAsync,
   clearHistoryAsync,
   getSessionAsync,
   getHistoryAsync,

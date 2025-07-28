@@ -217,7 +217,7 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (14.1.4):
     - ExpoModulesCore
-  - ExpoScreenCapture (7.1.5):
+  - ExpoScreenCapture (7.2.0):
     - ExpoModulesCore
   - ExpoScreenOrientation (8.1.7):
     - DoubleConversion
@@ -3491,7 +3491,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: c87ba2da38070e3483a3049453a4dc898b972eb2
   ExpoNetwork: 9fdbef259f313a1ba7ede5fa977ee3dfed6fe653
   ExpoPrint: 187f43f5d16bc8db93fb6609707ed40b8e90d3a6
-  ExpoScreenCapture: dc269775f43591552f51cc3956190b580507ff06
+  ExpoScreenCapture: 329c26be22741077b81612de1edaee8648fb209e
   ExpoScreenOrientation: 2fb6a3c6fd118a1508f68afb05474cd2964025f5
   ExpoSecureStore: 3148869ad24ab94f9e0c5777c7941d7a37d60399
   ExpoSensors: a997847b03472f79eabb7989446088bd8f791657

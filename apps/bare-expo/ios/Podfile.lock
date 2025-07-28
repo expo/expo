@@ -53,7 +53,7 @@ PODS:
   - EXNotifications/Tests (0.31.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (53.0.19):
+  - Expo (53.0.20):
     - DoubleConversion
     - ExpoModulesCore
     - glog
@@ -425,7 +425,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (14.1.4):
     - ExpoModulesCore
-  - ExpoCamera (16.1.10):
+  - ExpoCamera (16.1.11):
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -458,14 +458,14 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (14.1.4):
     - ExpoModulesCore
-  - ExpoImage (2.3.2):
+  - ExpoImage (2.4.0):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (2.3.2):
+  - ExpoImage/Tests (2.4.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -509,7 +509,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (0.3.4):
     - ExpoModulesCore
-  - ExpoModulesCore (2.4.2):
+  - ExpoModulesCore (2.5.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -534,7 +534,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - ExpoModulesCore/Tests (2.4.2):
+  - ExpoModulesCore/Tests (2.5.0):
     - DoubleConversion
     - ExpoModulesTestCore
     - glog
@@ -569,7 +569,7 @@ PODS:
     - ExpoModulesCore
   - ExpoPrint (14.1.4):
     - ExpoModulesCore
-  - ExpoScreenCapture (7.1.5):
+  - ExpoScreenCapture (7.2.0):
     - ExpoModulesCore
   - ExpoScreenOrientation (8.1.7):
     - DoubleConversion
@@ -3607,7 +3607,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: f4cc4a62ee4f1c8a9cf2bb79d325eac6cb9f5684
   EXNotifications: d0a50a5490845c702f2c605e94533ae5ddf1aadb
-  Expo: 6e2b482fa24909b52b80ba00271e6d7742c1ef9f
+  Expo: 666a397fcb608d72b019e16ba139b74e93e0b7d7
   expo-dev-client: f1b99dfea0c9174d2e4ec96c2c5461587dda1e86
   expo-dev-launcher: 27e8eba58d52b2f471b0c4001b0535a1c0b5610d
   expo-dev-menu: 2868212810f6651bc5c30e72c636ef64de31ec6b
@@ -3621,7 +3621,7 @@ SPEC CHECKSUMS:
   ExpoBlur: 846780b2c90f59e964b9a50385d4deb67174ebfb
   ExpoBrightness: 05e750736f8886dcf235212b0caf85b0f605fc88
   ExpoCalendar: 660542dc1c5ef98f46bedcc8745aa707df5d501a
-  ExpoCamera: 0bf2f7b19a15815c009ee86d8ac1acc840ac2b3c
+  ExpoCamera: fc1ab0e1c665b543a307c577df107e37cc2edc8e
   ExpoCellular: 1da66d1dc828bf49feb5498ac1b2cb4c988f80b6
   ExpoClipboard: 6b9aae54fd48a579473fb101051ad693435b9294
   ExpoContacts: 8b3e0dfb1867c89187c9d7cb461329f35c5fea45
@@ -3633,7 +3633,7 @@ SPEC CHECKSUMS:
   ExpoFont: 091a47eeaa1b30b0b760aa1d0a2e7814e8bf6fe6
   ExpoGL: b4324d3a28d01d7664ed450333919ae336701146
   ExpoHaptics: 68c215e070f660e0a29c45dcda4f60eeff08aefb
-  ExpoImage: 3ad41dfaa6d33e72ee1b7e2cead5f678fad8dd02
+  ExpoImage: 04ffc79f9a0391573b77efbc549d59c655caa5a8
   ExpoImageManipulator: 094b748056f2654d5d7813370c910e20ef3d79b4
   ExpoImagePicker: d2fff488a0738343a3cc21e98544ee9feafaa0e6
   ExpoInsights: 58e0fb0aa39cabc674cf950942d241903fc94406
@@ -3648,11 +3648,11 @@ SPEC CHECKSUMS:
   ExpoMaps: 96144f3fae459bf09a5e6431a7968561d88eb5be
   ExpoMediaLibrary: 68f0c81280fe7efef3588ab498dae313b85932e9
   ExpoMeshGradient: ee97f0bfd80356910ca4fc2b67663ea0d9e14a41
-  ExpoModulesCore: 33476f0f608d791bbaf263af22a00d3b8877f6bc
+  ExpoModulesCore: 16f74d8df26d7e4b6bf7eb3d0effaf0f15df7b80
   ExpoModulesTestCore: c87ba2da38070e3483a3049453a4dc898b972eb2
   ExpoNetwork: 9fdbef259f313a1ba7ede5fa977ee3dfed6fe653
   ExpoPrint: 187f43f5d16bc8db93fb6609707ed40b8e90d3a6
-  ExpoScreenCapture: dc269775f43591552f51cc3956190b580507ff06
+  ExpoScreenCapture: 329c26be22741077b81612de1edaee8648fb209e
   ExpoScreenOrientation: 2fb6a3c6fd118a1508f68afb05474cd2964025f5
   ExpoSecureStore: 3148869ad24ab94f9e0c5777c7941d7a37d60399
   ExpoSensors: a997847b03472f79eabb7989446088bd8f791657
