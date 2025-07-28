@@ -286,10 +286,10 @@ class MediaLibraryModule : Module() {
     }
 
     RegisterActivityContracts {
-      val deleteContract = DeleteContract(this@MediaLibraryModule)
-      val writeContract = WriteContract(this@MediaLibraryModule)
-      deleteLauncher = registerForActivityResult(deleteContract)
-      writeLauncher = registerForActivityResult(writeContract)
+      deleteLauncher =
+        registerForActivityResult(DeleteContract(this@MediaLibraryModule))
+      writeLauncher =
+        registerForActivityResult(WriteContract(this@MediaLibraryModule))
     }
   }
 

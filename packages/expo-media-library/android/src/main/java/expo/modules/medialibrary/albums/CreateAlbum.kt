@@ -49,9 +49,9 @@ internal class CreateAlbum(
 
       return result.await()
     } catch (e: SecurityException) {
-      throw UnableToLoadException("Could not create album: need WRITE_EXTERNAL_STORAGE permission $e")
+      throw UnableToLoadException("Could not create album: need WRITE_EXTERNAL_STORAGE permission: ${e.message}", e)
     } catch (e: IOException) {
-      throw UnableToLoadException("Could not read file or parse EXIF tags $e")
+      throw UnableToLoadException("Could not read file or parse EXIF tags: ${e.message}", e)
     }
   }
 }

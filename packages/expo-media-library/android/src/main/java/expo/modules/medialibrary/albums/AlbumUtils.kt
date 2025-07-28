@@ -50,9 +50,9 @@ fun queryAlbum(
       return result
     }
   } catch (e: SecurityException) {
-    throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission $e")
+    throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission ${e.message}", e)
   } catch (e: IllegalArgumentException) {
-    throw UnableToLoadException("Could not get album $e")
+    throw UnableToLoadException("Could not get album: ${e.message}", e)
   }
 }
 

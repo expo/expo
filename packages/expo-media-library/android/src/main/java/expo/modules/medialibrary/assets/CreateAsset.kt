@@ -167,9 +167,9 @@ class CreateAssetWithAlbumFile(
     } catch (e: IOException) {
       throw IOException("Unable to copy file into external storage.", e)
     } catch (e: SecurityException) {
-      throw UnableToLoadPermissionException("Could not get asset: need READ_EXTERNAL_STORAGE permission $e")
+      throw UnableToLoadPermissionException("Could not get asset: need READ_EXTERNAL_STORAGE permission", e)
     } catch (e: Exception) {
-      throw UnableToSaveException("Could not create asset $e")
+      throw UnableToSaveException("Could not create asset: ${e.message}", e)
     }
   }
 }

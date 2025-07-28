@@ -53,9 +53,9 @@ internal open class GetAlbums(
           return albums.values.map { it.toBundle() }
         }
     } catch (e: SecurityException) {
-      throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission $e")
+      throw UnableToLoadException("Could not get albums: need READ_EXTERNAL_STORAGE permission ${e.message}", e)
     } catch (e: RuntimeException) {
-      throw UnableToLoadException("Could not get albums $e")
+      throw UnableToLoadException("Could not get albums ${e.message}", e)
     }
   }
 

@@ -62,9 +62,9 @@ fun queryAssetInfo(
     }
   } catch (e: Exception) {
     throw when (e) {
-      is SecurityException -> UnableToLoadException("Could not get asset: need READ_EXTERNAL_STORAGE permission. $e")
-      is IOException -> UnableToLoadException("Could not read file $e")
-      is UnsupportedOperationException -> UnableToLoadException(e.message ?: "Invalid MediaType $e")
+      is SecurityException -> UnableToLoadException("Could not get asset: need READ_EXTERNAL_STORAGE permission", e)
+      is IOException -> UnableToLoadException("Could not read file ${e.message}", e)
+      is UnsupportedOperationException -> UnableToLoadException(e.message ?: "Invalid MediaType", e)
       else -> e
     }
   }
