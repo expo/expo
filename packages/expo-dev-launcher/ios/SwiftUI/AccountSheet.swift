@@ -25,7 +25,9 @@ struct AccountSheet: View {
         Spacer()
       }
     }
+    #if !os(tvOS)
     .background(Color(.systemGroupedBackground))
+    #endif
   }
 
   private var accountScreenHeader: some View {
@@ -63,7 +65,9 @@ struct AccountSheet: View {
             }
           }
         }
+        #if !os(tvOS)
         .background(Color(.systemBackground))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
       }
 
@@ -102,7 +106,9 @@ struct AccountSheet: View {
       }
     }
     .padding(16)
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
     .cornerRadius(12)
   }
 
@@ -139,7 +145,9 @@ struct AccountSheet: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
     }
+    #if !os(tvOS)
     .background(Color(.systemGray5))
+    #endif
     .cornerRadius(8)
     .disabled(viewModel.isAuthenticating)
   }
@@ -169,7 +177,9 @@ struct AccountSheet: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
+      #if !os(tvOS)
       .background(Color(.systemBackground))
+      #endif
     }
     .buttonStyle(PlainButtonStyle())
   }
@@ -199,7 +209,9 @@ struct AccountSheet: View {
           .aspectRatio(contentMode: .fill)
       } placeholder: {
         Circle()
+        #if !os(tvOS)
           .fill(Color(.systemGray5))
+        #endif
           .overlay(
             Image(systemName: "person")
               .font(.system(size: 18))

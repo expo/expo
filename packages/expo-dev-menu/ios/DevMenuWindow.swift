@@ -3,7 +3,16 @@
 import UIKit
 import React
 
-class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
+#if os(tvOS)
+protocol PresentationControllerDelegate: AnyObject {
+
+}
+#else
+protocol PresentationControllerDelegate: UISheetPresentationControllerDelegate {
+
+}
+#endif
+class DevMenuWindow: UIWindow, PresentationControllerDelegate {
   private let manager: DevMenuManager
   private let devMenuViewController: DevMenuViewController
   private var isPresenting = false
@@ -17,7 +26,11 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
 
     self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
+    #if os(tvOS)
+    self.windowLevel = .normal
+    #else
     self.windowLevel = .statusBar
+    #endif
     self.isHidden = true
   }
 
@@ -39,8 +52,14 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
     }
 
     isPresenting = true
+    #if os(tvOS)
+    devMenuViewController.modalPresentationStyle = .automatic
+    #else
     devMenuViewController.modalPresentationStyle = .pageSheet
+    #endif
 
+    #if os(tvOS)
+    #else
     if #available(iOS 15.0, *) {
       if let sheet = devMenuViewController.sheetPresentationController {
         if #available(iOS 16.0, *) {
@@ -59,6 +78,7 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
         sheet.delegate = self
       }
     }
+    #endif
 
     self.rootViewController?.present(devMenuViewController, animated: true) {
       self.isPresenting = false

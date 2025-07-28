@@ -29,9 +29,13 @@ struct DevMenuAppInfo: View {
         .padding()
       }
       .disabled(viewModel.clipboardMessage != nil)
+      #if !os(tvOS)
       .background(Color(.systemBackground))
+      #endif
     }
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
     .cornerRadius(12)
     .padding(.horizontal)
     .padding(.vertical, 8)

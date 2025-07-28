@@ -31,9 +31,11 @@ class DevMenuViewController: UIViewController {
     NotificationCenter.default.post(name: DevMenuViewController.ContentDidAppearNotification, object: nil)
   }
 
+  #if !os(tvOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask.all
   }
+  #endif
 
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {

@@ -50,7 +50,9 @@ struct SettingsTabView: View {
         }
       }
     }
+    #if !os(tvOS)
     .background(Color(.systemGroupedBackground))
+    #endif
     .navigationBarHidden(true)
   }
 
@@ -90,6 +92,9 @@ struct SettingsTabView: View {
   }
 
   private var copyToClipboardButton: some View {
+    #if os(tvOS)
+    Button("Clipboard not available on tvOS") {}
+    #else
     Button(showCopiedMessage ? "Copied to clipboard!" : "Tap to Copy All") {
       let buildInfoJSON = createBuildInfoJSON()
       let clipboard = UIPasteboard.general
@@ -101,6 +106,7 @@ struct SettingsTabView: View {
         showCopiedMessage = false
       }
     }
+    #endif
   }
 
   private var isAdminUser: Bool {
@@ -134,7 +140,9 @@ struct SettingsTabView: View {
       VStack(alignment: .leading, spacing: 8) {
         Text(createEASConfigJSON())
           .font(.system(.caption, design: .monospaced))
+        #if !os(tvOS)
           .textSelection(.enabled)
+        #endif
           .padding(.vertical, 4)
       }
     }
