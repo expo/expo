@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+@preconcurrency import ExpoModulesCore
 
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
-internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
+@MainActor internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
 
-public final class ExpoFetchModule: Module {
+@MainActor public final class ExpoFetchModule: @preconcurrency Module {
   private lazy var urlSession = createURLSession()
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
 
@@ -99,7 +99,7 @@ public final class ExpoFetchModule: Module {
     }
   }
 
-  private func createURLSession() -> URLSession {
+  @MainActor private func createURLSession() -> URLSession {
     let config: URLSessionConfiguration
     if let urlSessionConfigurationProvider, let concreteConfig = urlSessionConfigurationProvider() {
       config = concreteConfig

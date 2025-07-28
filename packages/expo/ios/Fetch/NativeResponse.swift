@@ -5,7 +5,7 @@ import ExpoModulesCore
 /**
  A SharedObject for response.
  */
-internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
+internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @unchecked Sendable {
   internal let sink: ResponseSink
 
   private let dispatchQueue: DispatchQueue
@@ -20,7 +20,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
       }
     }
   }
-  private typealias StateChangeListener = (ResponseState) -> Bool
+  private typealias StateChangeListener = @Sendable (ResponseState) -> Bool
   private var stateChangeOnceListeners: [StateChangeListener] = []
 
   private(set) var responseInit: NativeResponseInit?
@@ -72,7 +72,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   /**
    Waits for given states and when it meets the requirement, executes the callback.
    */
-  func waitFor(states: [ResponseState], callback: @escaping (ResponseState) -> Void) {
+  func waitFor(states: [ResponseState], callback: @escaping @Sendable (ResponseState) -> Void) {
     if states.contains(state) {
       callback(state)
       return
