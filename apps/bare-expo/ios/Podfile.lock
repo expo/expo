@@ -2465,7 +2465,7 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.7.1):
+  - react-native-pager-view (6.8.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4376,7 +4376,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 4f1ef719ba6c7ebbd2d75346ffa2916f9b4771c9
   react-native-keyboard-controller: ca6a84ab8464c1fdf67e610bc9fa3eaa03a81a0f
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: 03553493db7fd49946d709ab6d65c7ef0cc929be
+  react-native-pager-view: adf5c4ae45a4ce743b0ff2855bda83ffce13b4c4
   react-native-safe-area-context: 47c1782a327ca2affa9bec5a2f95534cbabb620a
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
   react-native-slider: dd3636cb9b888b4d8aaf7ac0bb5e0d2921c5eec6
@@ -4431,6 +4431,6 @@ SPEC CHECKSUMS:
   Yoga: daa1e4de4b971b977b23bc842aaa3e135324f1f3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: a4b563d9d9c73e29b619314cb8136ce02bea61e0
+PODFILE CHECKSUM: f5d503a683b23e49517a81aa6eeffbc2b323828a
 
 COCOAPODS: 1.16.2

@@ -2244,7 +2244,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.7.1):
+  - react-native-pager-view (6.8.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4174,7 +4174,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 41dc1db6ed9185a3b80a9f917ba3c62dafd22eec
   EXStructuredHeaders: 1c799cb91e8057e0671610635e5b2109fa295114
   EXTaskManager: 0128b9f39a088b0c762d8d1c42017e6d44200b29
-  EXUpdates: 5cbd41ca43ec772070b5997ce1f51f2e99055731
+  EXUpdates: a8427b57ecd860a4391ee838c73903e76055f3f7
   EXUpdatesInterface: d6c802a2d1d11867523d03a95397957f9ba3d1c7
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 09f03e4b6f42f955734b64a118f86509cc719427
@@ -4193,7 +4193,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: a3ec960e841e867d0c120fb8722d1bad078789e9
+  hermes-engine: 95be12d50073e1867a87b55118fc1e23c92b3be2
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4242,7 +4242,7 @@ SPEC CHECKSUMS:
   react-native-keyboard-controller: ca6a84ab8464c1fdf67e610bc9fa3eaa03a81a0f
   react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: 03553493db7fd49946d709ab6d65c7ef0cc929be
+  react-native-pager-view: adf5c4ae45a4ce743b0ff2855bda83ffce13b4c4
   react-native-safe-area-context: 47c1782a327ca2affa9bec5a2f95534cbabb620a
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
   react-native-skia: 02ffb448bb7c1d181d9b6860274c2ac142331b11
@@ -4307,6 +4307,6 @@ SPEC CHECKSUMS:
   Yoga: daa1e4de4b971b977b23bc842aaa3e135324f1f3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: ee6901ca120b93e4938c943d3743febeb70fce16
+PODFILE CHECKSUM: 7116bc722000b18e5791b7675731af4a46e3ad5e
 
 COCOAPODS: 1.16.2
