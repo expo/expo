@@ -11,7 +11,7 @@ final class RelaunchProcedure: StateMachineProcedure {
   private let updatesDirectory: URL
   private let logger: UpdatesLogger
   private let shouldRunReaper: Bool
-  private let reloadScreenManager: ReloadScreenManager?
+  private let reloadScreenManager: Reloadable?
   private let triggerReloadCommandListenersReason: String
   private let getLaunchedUpdate: () -> Update?
   private let setLauncher: (_ newLauncher: AppLauncher) -> Void
@@ -30,7 +30,7 @@ final class RelaunchProcedure: StateMachineProcedure {
     logger: UpdatesLogger,
     shouldRunReaper: Bool,
     triggerReloadCommandListenersReason: String,
-    reloadScreenManager: ReloadScreenManager?,
+    reloadScreenManager: Reloadable?,
     getLaunchedUpdate: @escaping () -> Update?,
     setLauncher: @escaping (_ setCurrentLauncher: AppLauncher) -> Void,
     requestStartErrorMonitoring: @escaping () -> Void,
