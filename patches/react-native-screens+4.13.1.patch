@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.h b/node_modules/react-native-screens/ios/RNSScreenStack.h
-index 71dc7f3..0425e63 100644
+index f3a2363..fa520de 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.h
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.h
-@@ -9,6 +9,14 @@
+@@ -10,6 +10,14 @@
  
  NS_ASSUME_NONNULL_BEGIN
  
@@ -14,14 +14,14 @@ index 71dc7f3..0425e63 100644
 +
 +@end
 +
- @interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate>
+ @interface RNSNavigationController
+     : UINavigationController <RNSViewControllerDelegate, RNSBottomTabsSpecialEffectsSupporting>
  
- @end
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-index b3970af..43bc304 100644
+index 56481ac..0567296 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-@@ -534,58 +534,66 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
+@@ -571,59 +571,65 @@ RNS_IGNORE_SUPER_CALL_END
  
    UIViewController *firstModalToBeDismissed = changeRootController.presentedViewController;
  
@@ -77,9 +77,9 @@ index b3970af..43bc304 100644
 +          // If the modal is owned we let it control whether the dismissal is animated or not. For foreign controllers
 +          // we just assume animation.
 +          const BOOL firstModalToBeDismissedPrefersAnimation = firstModalToBeDismissedIsOwned
-+              ? static_cast<RNSScreen *>(firstModalToBeDismissed).screenView.stackAnimation !=
-+                  RNSScreenStackAnimationNone
-+              : YES;
++          ? static_cast<RNSScreen *>(firstModalToBeDismissed).screenView.stackAnimation !=
++          RNSScreenStackAnimationNone
++          : YES;
 +          [changeRootController dismissViewControllerAnimated:firstModalToBeDismissedPrefersAnimation
 +                                                   completion:finish];
 +        } else {
@@ -88,16 +88,16 @@ index b3970af..43bc304 100644
 +          // immediately present another owned one. Dismissal of the foreign one will be triggered by foreign
 +          // controller.
 +          [[firstModalToBeDismissed transitionCoordinator]
-+              animateAlongsideTransition:nil
-+                              completion:^(id<UIViewControllerTransitionCoordinatorContext> _) {
-+                                finish();
-+                              }];
++           animateAlongsideTransition:nil
++           completion:^(id<UIViewControllerTransitionCoordinatorContext> _) {
++            finish();
++          }];
 +        }
 +        return;
        }
 -      return;
      }
--  }
+   }
  
 -  // changeRootController does not have presentedViewController but it does not mean that no modals are in presentation;
 -  // modals could be presented by another stack (nested / outer), third-party view controller or they could be using
@@ -116,6 +116,7 @@ index b3970af..43bc304 100644
 -    if ([_presentedModals containsObject:topMostVc] && ![controllers containsObject:topMostVc]) {
 -      [changeRootController dismissViewControllerAnimated:YES completion:finish];
 -      return;
+-    }
 +    // changeRootController does not have presentedViewController but it does not mean that no modals are in
 +    // presentation; modals could be presented by another stack (nested / outer), third-party view controller or they
 +    // could be using UIModalPresentationCurrentContext / UIModalPresentationOverCurrentContext presentation styles; in
@@ -124,16 +125,16 @@ index b3970af..43bc304 100644
 +    // top-level controller manually:
 +    UIViewController *reactRootVc = [self findReactRootViewController];
 +    UIViewController *topMostVc = [RNSScreenStackView findTopMostPresentedViewControllerFromViewController:reactRootVc];
-+
++    
 +    if (topMostVc != reactRootVc) {
 +      changeRootController = topMostVc;
-+
++      
 +      // Here we handle just the simplest case where the top level VC was dismissed. In any more complex
 +      // scenario we will still have problems, see: https://github.com/software-mansion/react-native-screens/issues/1813
 +      if ([_presentedModals containsObject:topMostVc] && ![controllers containsObject:topMostVc]) {
 +        [changeRootController dismissViewControllerAnimated:YES completion:finish];
 +        return;
 +      }
-     }
    }
  
+   // We didn't detect any controllers for dismissal, thus we start presenting new VCs

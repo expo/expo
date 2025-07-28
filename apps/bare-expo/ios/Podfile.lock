@@ -3500,7 +3500,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNScreens (4.11.1-nightly-20250611-8b82e081e):
+  - RNScreens (4.13.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3528,10 +3528,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.11.1-nightly-20250611-8b82e081e)
+    - RNScreens/common (= 4.13.1)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.11.1-nightly-20250611-8b82e081e):
+  - RNScreens/common (4.13.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4420,7 +4420,7 @@ SPEC CHECKSUMS:
   RNFlashList: 995a7cad345dcb6f203db0f50bcf4b83cc04f3c9
   RNGestureHandler: 9d04ec6e1379b595222c2467f5e8d1c44157fcc9
   RNReanimated: 9afbfc6ca21aea3291cc058334b53b6069a2808b
-  RNScreens: 9ad148de25aabec3bd8aa81d1709ad70f7fec7cc
+  RNScreens: 75074e642b69b086813a943bdf63da7085fb2166
   RNSVG: c73af7848d94ca3e8136a5191d055e3c1d6fedab
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
@@ -4431,6 +4431,6 @@ SPEC CHECKSUMS:
   Yoga: daa1e4de4b971b977b23bc842aaa3e135324f1f3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: a4b563d9d9c73e29b619314cb8136ce02bea61e0
+PODFILE CHECKSUM: f5d503a683b23e49517a81aa6eeffbc2b323828a
 
 COCOAPODS: 1.16.2
