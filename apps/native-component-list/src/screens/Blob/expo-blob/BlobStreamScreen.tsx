@@ -139,11 +139,11 @@ export default function BlobStreamScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Stream Method</HeadingText>
           <MonoText>stream()</MonoText>
         </View>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {streamExamples.map((example) => (
@@ -162,7 +162,6 @@ export default function BlobStreamScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

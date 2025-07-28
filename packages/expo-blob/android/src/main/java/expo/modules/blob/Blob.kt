@@ -25,6 +25,10 @@ class Blob() : SharedObject() {
     this.type = if (validType(type)) type.lowercase() else ""
   }
 
+  public override fun getAdditionalMemoryPressure(): Int {
+    return size
+  }
+
   fun bytesToStream(byteStream: ByteArrayOutputStream) {
     for (bp in blobParts) {
       bp.bytesToStream(byteStream)
@@ -85,7 +89,6 @@ class Blob() : SharedObject() {
 }
 
 private fun validType(type: String): Boolean {
-  Log.d("UT", "type: " + type + ", type length: " + type.length.toString())
   for (c in type) {
     if (c.code < 0x20 || c.code > 0x7E) {
       return false

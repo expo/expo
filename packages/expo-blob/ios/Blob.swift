@@ -18,6 +18,10 @@ public class Blob: SharedObject {
     return options.type
   }
 
+  public override func getAdditionalMemoryPressure() -> Int {
+    return size
+  }
+
   func slice(start: Int, end: Int, contentType: String) -> Blob {
     let span = max(end - start, 0)
     let typeString = contentType

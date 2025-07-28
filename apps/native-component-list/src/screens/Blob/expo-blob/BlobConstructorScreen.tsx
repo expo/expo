@@ -99,13 +99,13 @@ export default function BlobConstructorScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Blob Constructor</HeadingText>
           <MonoText>
             new ExpoBlob(blobParts?: BlobPart[], {'\n  '}options?: BlobPropertyBag)
           </MonoText>
         </View>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {examples.map((example) => (
@@ -124,7 +124,6 @@ export default function BlobConstructorScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

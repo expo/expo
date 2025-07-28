@@ -241,7 +241,7 @@ export default function BlobArrayBufferScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Performance tests:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {performanceTest.map((example) => (
@@ -260,7 +260,6 @@ export default function BlobArrayBufferScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

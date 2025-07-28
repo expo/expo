@@ -921,49 +921,6 @@ export async function test({ describe, it, expect }) {
       });
     });
 
-    // HTML ONLY, not applicable
-    // describe('constructor dom windows', async () => {
-    //     it("Passing platform objects for blobParts should throw a TypeError.", () => {
-    //         const args = [
-    //             document.createElement("div"),
-    //             window,
-    //         ];
-    //         args.forEach((arg) => {
-    //             expect(() => new Blob(arg)).toThrow();
-    //         });
-    //     });
-    //     it("A platform object that supports indexed properties should be treated as a sequence for the blobParts argument (overwritten 'length'.)", () => {
-    //         const element = document.createElement("div");
-    //         element.appendChild(document.createElement("div"));
-    //         element.appendChild(document.createElement("p"));
-    //         const list = element.children;
-    //         Object.defineProperty(list, "length", {
-    //             get: function() { throw test_error; }
-    //         });
-    //         expect(() => {new Blob(list);}).toThrow(test_error);
-    //     });
-
-    //     test_blob(function() {
-    //         const select = document.createElement("select");
-    //         select.appendChild(document.createElement("option"));
-    //         return new Blob(select);
-    //     }, {
-    //         expected: "[object HTMLOptionElement]",
-    //         type: "",
-    //         desc: "Passing a platform object that supports indexed properties as the blobParts array should work (select)."
-    //     });
-
-    //     test_blob(function() {
-    //         const elm = document.createElement("div");
-    //         elm.setAttribute("foo", "bar");
-    //         return new Blob(elm.attributes);
-    //     }, {
-    //         expected: "[object Attr]",
-    //         type: "",
-    //         desc: "Passing an platform object that supports indexed properties as the blobParts array should work (attributes)."
-    //     });
-    // })
-
     describe('Text', async () => {
       it('simple', async () => {
         const blob = new Blob(['PASS']);

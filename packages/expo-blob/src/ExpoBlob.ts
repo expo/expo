@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo';
 
-import { Blob, ExpoBlobModule } from './BlobModule.types';
+import { Blob, ExpoBlobModule } from './ExpoBlob.types';
 import {
   DEFAULT_CHUNK_SIZE,
   isTypedArray,

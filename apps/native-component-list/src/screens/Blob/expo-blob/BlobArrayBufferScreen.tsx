@@ -142,11 +142,11 @@ export default function BlobArrayBufferScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>ArrayBuffer Method</HeadingText>
           <MonoText>arrayBuffer()</MonoText>
         </View>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {arrayBufferExamples.map((example) => (
@@ -165,7 +165,6 @@ export default function BlobArrayBufferScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

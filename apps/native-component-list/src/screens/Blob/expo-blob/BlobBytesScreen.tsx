@@ -142,11 +142,11 @@ export default function BlobBytesScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Bytes Method</HeadingText>
           <MonoText>bytes()</MonoText>
         </View>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {bytesExamples.map((example) => (
@@ -165,7 +165,6 @@ export default function BlobBytesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

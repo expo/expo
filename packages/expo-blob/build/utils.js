@@ -20,8 +20,15 @@ export function normalizedContentType(type) {
     return str.toLowerCase();
 }
 /**
- * @param obj The object to check whether it's a Typed Array or not.
- * @returns boolean indicating whether the obj is a Typed Array or not.
+ * Checks if the given object is a JavaScript TypedArray.
+ *
+ * This function detects all standard TypedArray types including:
+ * - Int8Array, Int16Array, Int32Array, BigInt64Array
+ * - Uint8Array, Uint16Array, Uint32Array, BigUint64Array
+ * - Float32Array, Float64Array
+ *
+ * @param obj - The object to check
+ * @returns `true` if the object is a TypedArray, `false` otherwise
  */
 export function isTypedArray(obj) {
     return (obj instanceof Int8Array ||

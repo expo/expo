@@ -1,6 +1,6 @@
 import { NativeModule, SharedObject } from 'expo';
 
-import { ExpoBlob } from './BlobModule';
+import { ExpoBlob } from './ExpoBlob';
 
 /**
  * Represents immutable raw binary data, similar to the web Blob API.

@@ -138,11 +138,11 @@ export default function BlobTextScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Text Method</HeadingText>
           <MonoText>text()</MonoText>
         </View>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {textExamples.map((example) => (
@@ -161,7 +161,6 @@ export default function BlobTextScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

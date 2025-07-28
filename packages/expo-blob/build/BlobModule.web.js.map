@@ -1,1 +1,0 @@
-{"version":3,"file":"BlobModule.web.js","sourceRoot":"","sources":["../src/BlobModule.web.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,MAAM,QAAQ,GAAG,IAAI,CAAC","sourcesContent":["export const ExpoBlob = Blob;\n"]}

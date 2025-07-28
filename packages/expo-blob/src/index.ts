@@ -1,2 +1,2 @@
-export * from './BlobModule';
-export * from './BlobModule.types';
+export * from './ExpoBlob';
+export * from './ExpoBlob.types';

@@ -133,11 +133,11 @@ export default function BlobSliceScreen() {
   return (
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Slice Method</HeadingText>
           <MonoText>slice(start?: number, end?: number, contentType?: string)</MonoText>
         </View>
-        <View style={styles.container}>
+        <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
             {sliceExamples.map((example) => (
@@ -156,7 +156,6 @@ export default function BlobSliceScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   scrollContainer: {
     paddingBottom: 20,
   },

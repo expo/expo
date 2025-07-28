@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,cAAc,CAAC;AAC7B,cAAc,oBAAoB,CAAC","sourcesContent":["export * from './BlobModule';\nexport * from './BlobModule.types';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,YAAY,CAAC;AAC3B,cAAc,kBAAkB,CAAC","sourcesContent":["export * from './ExpoBlob';\nexport * from './ExpoBlob.types';\n"]}
