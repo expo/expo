@@ -384,6 +384,9 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         this._pipRestoreCallbacks = null;
         // Web doesn't support PIP restoration, so this is a no-op
     }
+    respondToPipRestore(callbackId, decision) {
+        // Web doesn't support PIP restoration, so this is a no-op
+    }
     getPipRestoreCallbacks() {
         return this._pipRestoreCallbacks;
     }

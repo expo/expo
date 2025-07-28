@@ -11,6 +11,7 @@ import type {
   VideoTrack,
   AudioTrack,
   PipRestoreCallbacks,
+  PipRestoreDecision,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -462,6 +463,10 @@ export default class VideoPlayerWeb
 
   clearPipRestoreCallbacks(): void {
     this._pipRestoreCallbacks = null;
+    // Web doesn't support PIP restoration, so this is a no-op
+  }
+
+  respondToPipRestore(callbackId: string, decision: PipRestoreDecision): void {
     // Web doesn't support PIP restoration, so this is a no-op
   }
 

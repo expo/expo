@@ -338,6 +338,10 @@ class VideoModule : Module() {
         // Android doesn't support PIP restoration callbacks, this is a no-op
       }
 
+      AsyncFunction("respondToPipRestore") { ref: VideoPlayer, callbackId: String, decision: Map<String, Any> ->
+        // Android doesn't support PIP restoration callbacks, this is a no-op
+      }
+
       Class<VideoThumbnail> {
         Property("width") { ref -> ref.width }
         Property("height") { ref -> ref.height }
