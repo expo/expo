@@ -1,10 +1,14 @@
 package expo.modules.devlauncher.compose.models
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
@@ -25,6 +29,7 @@ sealed interface HomeAction {
   object RefetchRunningApps : HomeAction
   object ResetRecentlyOpenedApps : HomeAction
   class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
+  object ScanQRCode : HomeAction
 }
 
 data class HomeState(
@@ -60,15 +65,14 @@ class HomeViewModel() : ViewModel() {
     get() = _state.value
 
   init {
-    viewModelScope.launch {
-      packagerService.refetchedPackager()
-    }
-
-    packagerService.runningPackagers.onEach { newPackagers ->
-      _state.value = _state.value.copy(
-        runningPackagers = newPackagers
-      )
-    }.launchIn(viewModelScope)
+    packagerService
+      .runningPackagers
+      .onEach { newPackagers ->
+        _state.value = _state.value.copy(
+          runningPackagers = newPackagers
+        )
+      }
+      .launchIn(viewModelScope)
 
     sessionService.user.onEach { newUser ->
       when (newUser) {
@@ -100,7 +104,7 @@ class HomeViewModel() : ViewModel() {
           }
         }
 
-      HomeAction.RefetchRunningApps -> viewModelScope.launch { packagerService.refetchedPackager() }
+      HomeAction.RefetchRunningApps -> packagerService.refetchedPackager()
 
       HomeAction.ResetRecentlyOpenedApps -> viewModelScope.launch {
         devLauncherController.clearRecentlyOpenedApps()
@@ -108,6 +112,29 @@ class HomeViewModel() : ViewModel() {
       }
 
       is HomeAction.NavigateToCrashReport -> IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
+
+      is HomeAction.ScanQRCode -> IllegalStateException("QR code scanning should be handled by the UI layer, not the ViewModel.")
     }
+  }
+
+  fun scanQRCode(context: Context, onResult: (String) -> Unit, onError: (String) -> Unit) {
+    val options = GmsBarcodeScannerOptions.Builder()
+      .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+      .build()
+
+    val scanner = GmsBarcodeScanning.getClient(context, options)
+
+    scanner.startScan()
+      .addOnSuccessListener { barcode ->
+        barcode.rawValue?.let {
+          onResult(it)
+        } ?: onError("No QR code data found")
+      }
+      .addOnCanceledListener {
+        onError("Scanning cancelled")
+      }
+      .addOnFailureListener { exception ->
+        onError("Scanning failed: ${exception.message ?: "Unknown error"}")
+      }
   }
 }

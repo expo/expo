@@ -86,11 +86,17 @@ fun Modifier.horizontalScrollbar(
 
 @Composable
 fun StackTrace(
-  stack: String
+  stack: String,
+  modifier: Modifier = Modifier
 ) {
   val verticalScrollState = rememberScrollState()
   val horizontalScrollState = rememberScrollState()
-  Box(modifier = Modifier.verticalScrollbar(verticalScrollState).horizontalScrollbar(horizontalScrollState)) {
+  Box(
+    modifier = Modifier
+      .verticalScrollbar(verticalScrollState)
+      .horizontalScrollbar(horizontalScrollState)
+      .then(modifier)
+  ) {
     Box(
       Modifier
         .verticalScroll(verticalScrollState)

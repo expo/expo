@@ -45,6 +45,8 @@ export declare class Directory {
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists.
      */
     create(options?: CreateOptions): void;
+    createFile(name: string, mimeType: string | null): File;
+    createDirectory(name: string): Directory;
     /**
      * Copies a directory.
      */
@@ -106,19 +108,34 @@ export declare class File {
     validatePath(): void;
     /**
      * Retrieves text from the file.
+     * @returns A promise that resolves with the contents of the file as string.
+     */
+    text(): Promise<string>;
+    /**
+     * Retrieves text from the file.
      * @returns The contents of the file as string.
      */
-    text(): string;
+    textSync(): Promise<string>;
+    /**
+     * Retrieves content of the file as base64.
+     * @returns A promise that resolves with the contents of the file as a base64 string.
+     */
+    base64(): string;
     /**
      * Retrieves content of the file as base64.
      * @returns The contents of the file as a base64 string.
      */
-    base64(): string;
+    base64Sync(): string;
     /**
      * Retrieves byte content of the entire file.
-     * @returns The contents of the file as a Uint8Array.
+     * @returns A promise that resolves with the contents of the file as a Uint8Array.
      */
-    bytes(): Uint8Array;
+    bytes(): Promise<Uint8Array>;
+    /**
+     * Retrieves byte content of the entire file.
+     * @returns A promise that resolves with the contents of the file as a Uint8Array.
+     */
+    bytesSync(): Uint8Array;
     /**
      * Writes content to the file.
      * @param content The content to write into the file.
@@ -172,9 +189,9 @@ export declare class File {
      */
     static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
     /**
-     * A size of the file in bytes. Null if the file does not exist, or it cannot be read.
+     * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
-    size: number | null;
+    size: number;
     /**
      * A md5 hash of the file. Null if the file does not exist, or it cannot be read.
      */
@@ -188,9 +205,9 @@ export declare class File {
      */
     creationTime: number | null;
     /**
-     * A mime type of the file. Null if the file does not exist, or it cannot be read.
+     * A mime type of the file. An empty string if the file does not exist, or it cannot be read.
      */
-    type: string | null;
+    type: string;
 }
 export declare class FileHandle {
     close(): void;

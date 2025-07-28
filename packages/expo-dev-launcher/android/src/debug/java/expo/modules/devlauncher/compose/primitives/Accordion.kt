@@ -20,9 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.composables.core.Icon
+import expo.modules.devlauncher.R
+import expo.modules.devmenu.compose.primitives.DayNighIcon
 import expo.modules.devmenu.compose.primitives.Text
 import expo.modules.devmenu.compose.theme.Theme
 
@@ -52,8 +52,8 @@ fun Accordion(
           modifier = Modifier
             .padding(Theme.spacing.medium)
         ) {
-          Icon(
-            painter = painterResource(expo.modules.devmenu.R.drawable._expodevclientcomponents_assets_chevronrighticon),
+          DayNighIcon(
+            id = R.drawable.chevron_right_icon,
             contentDescription = "Accordion Arrow",
             modifier = Modifier
               .rotate(arrowRotation)

@@ -1,6 +1,8 @@
-import type MetroConfig from 'metro-config';
+import type MetroConfig from '@expo/metro/metro-config';
 import resolveFrom from 'resolve-from';
 
+// TODO(@kitten): This should be removed and we need to rely on `@expo/metro/metro-config`
+// Same for `@expo/metro-config/src/traveling/metro-config.ts` which should also be removed
 function importMetroConfigFromProject(projectDir: string): typeof MetroConfig {
   const resolvedPath = resolveFrom.silent(projectDir, 'metro-config');
   if (!resolvedPath) {

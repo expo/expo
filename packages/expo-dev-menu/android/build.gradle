@@ -27,13 +27,6 @@ android {
   buildFeatures {
     compose true
   }
-  sourceSets {
-    debug {
-      java {
-        srcDirs += ['../vendored/react-native-safe-area-context/android/']
-      }
-    }
-  }
   buildFeatures {
     buildConfig true
   }

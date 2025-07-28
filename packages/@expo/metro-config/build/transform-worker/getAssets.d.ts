@@ -5,8 +5,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { AssetData, Module } from 'metro';
-import { ReadOnlyDependencies } from '../serializer/getCssDeps';
+import { type AssetData } from '@expo/metro/metro/Assets';
+import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types.flow';
 type Options = {
     processModuleFilter: (modules: Module) => boolean;
     assetPlugins: readonly string[];

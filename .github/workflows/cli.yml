@@ -88,7 +88,8 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: yarn install --prefer-offline --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --prefer-offline --frozen-lockfile --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -162,7 +163,8 @@ jobs:
 
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -213,7 +215,8 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: yarn install --prefer-offline --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --prefer-offline --frozen-lockfile --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -309,7 +312,8 @@ jobs:
 
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 

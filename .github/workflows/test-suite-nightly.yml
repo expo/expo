@@ -105,7 +105,8 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.js --test
         working-directory: apps/bare-expo
@@ -213,7 +214,8 @@ jobs:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        # TODO(@kitten): Remove `--ignore-engines` when Node 22+ requirement is dropped again in React Native / Metro
+        run: yarn install --frozen-lockfile --ignore-engines
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator
         with:

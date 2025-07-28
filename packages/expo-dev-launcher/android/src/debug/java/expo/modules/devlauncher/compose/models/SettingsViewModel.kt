@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ApplicationInfo
 import expo.modules.devlauncher.services.inject
-import expo.modules.devmenu.modules.DevMenuPreferencesHandle
+import expo.modules.devmenu.DevMenuPreferencesHandle
 
 data class SettingsState(
   val showMenuAtLaunch: Boolean = false,

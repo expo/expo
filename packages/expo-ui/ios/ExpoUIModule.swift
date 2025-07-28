@@ -17,7 +17,8 @@ public final class ExpoUIModule: Module {
     View(ExpoUI.ContextMenuPreview.self)
     View(ColorPickerView.self)
     View(DateTimePickerView.self)
-    View(TextInputView.self)
+    View(TextFieldView.self)
+    View(SecureFieldView.self)
     View(ProgressView.self)
     View(GaugeView.self)
     View(ListView.self)
@@ -35,5 +36,6 @@ public final class ExpoUIModule: Module {
     View(SpacerView.self)
     View(GroupView.self)
     View(DisclosureGroupView.self)
+    View(ExpoUI.ContentUnavailableView.self)
   }
 }

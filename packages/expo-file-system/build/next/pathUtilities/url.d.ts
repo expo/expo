@@ -1,5 +1,4 @@
-export declare function pathToFileURLString(filepath: string): string;
-export declare function pathToFileURL(filepath: string): URL;
-export declare function fileURLToPath(path: string | URL): string;
-export declare function isFileUrl(url: string): boolean;
+export declare function encodeURLChars(path: string): string;
+export declare function isUrl(url: string): boolean;
+export declare function asUrl(url: string | URL): URL | null;
 //# sourceMappingURL=url.d.ts.map

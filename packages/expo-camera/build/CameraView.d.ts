@@ -63,9 +63,25 @@ export default class CameraView extends Component<CameraViewProps> {
         [eventName: string]: Date;
     };
     /**
+     * Takes a picture and returns an object that references the native image instance.
+     * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
+     *
+     * @param optionsWithRef An object in form of `CameraPictureOptions` type and `pictureRef` key set to `true`.
+     * @return Returns a Promise that resolves to `PictureRef` class which contains basic image data, and a reference to native image instance which can be passed
+     * to other Expo packages supporting handling such an instance.
+     */
+    takePictureAsync(optionsWithRef: CameraPictureOptions & {
+        pictureRef: true;
+    }): Promise<PictureRef>;
+    /**
      * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
      * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
      * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+     *
+     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
+     *
      * @param options An object in form of `CameraPictureOptions` type.
      * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
      * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
@@ -80,12 +96,7 @@ export default class CameraView extends Component<CameraViewProps> {
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
-     *
-     * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
      */
-    takePictureAsync(options: CameraPictureOptions & {
-        pictureRef: true;
-    }): Promise<PictureRef>;
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
     /**
      * On Android, we will use the [Google code scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner).

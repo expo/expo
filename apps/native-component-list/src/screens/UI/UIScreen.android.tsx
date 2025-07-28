@@ -3,6 +3,14 @@ import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
+    name: 'AlertDialog component',
+    route: 'ui/alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AlertDialogScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},

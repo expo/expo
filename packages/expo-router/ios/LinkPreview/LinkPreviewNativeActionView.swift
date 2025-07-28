@@ -12,6 +12,7 @@ class LinkPreviewNativeActionView: ExpoView {
     clipsToBounds = true
   }
 
+#if RCT_NEW_ARCH_ENABLED
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let childActionView = childComponentView as? LinkPreviewNativeActionView {
       subActions.append(childActionView)
@@ -31,4 +32,5 @@ class LinkPreviewNativeActionView: ExpoView {
       )
     }
   }
+#endif
 }

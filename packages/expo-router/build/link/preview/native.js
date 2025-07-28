@@ -7,7 +7,8 @@ exports.NativeLinkPreview = NativeLinkPreview;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
 const expo_1 = require("expo");
 const react_native_1 = require("react-native");
-const LinkPreviewNativeActionView = react_native_1.Platform.OS === 'ios'
+const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && global.RN$Bridgeless === true;
+const LinkPreviewNativeActionView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
     : null;
 function NativeLinkPreviewAction(props) {
@@ -16,7 +17,7 @@ function NativeLinkPreviewAction(props) {
     }
     return <LinkPreviewNativeActionView {...props}/>;
 }
-const NativeLinkPreviewTriggerView = react_native_1.Platform.OS === 'ios'
+const NativeLinkPreviewTriggerView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewTrigger')
     : null;
 function NativeLinkPreviewTrigger(props) {
@@ -25,7 +26,7 @@ function NativeLinkPreviewTrigger(props) {
     }
     return <NativeLinkPreviewTriggerView {...props}/>;
 }
-const NativeLinkPreviewView = react_native_1.Platform.OS === 'ios'
+const NativeLinkPreviewView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
     : null;
 function NativeLinkPreview(props) {
@@ -34,7 +35,7 @@ function NativeLinkPreview(props) {
     }
     return <NativeLinkPreviewView {...props}/>;
 }
-const NativeLinkPreviewContentView = react_native_1.Platform.OS === 'ios'
+const NativeLinkPreviewContentView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
     : null;
 function NativeLinkPreviewContent(props) {
