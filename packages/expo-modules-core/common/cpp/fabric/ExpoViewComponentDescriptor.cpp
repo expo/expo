@@ -27,6 +27,13 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
   auto width = state._width;
   auto height = state._height;
 
+  if (state._isRootKind) {
+      snode->getTraits().set(facebook::react::ShadowNodeTraits::RootNodeKind);
+  } else {
+      snode->getTraits().unset(facebook::react::ShadowNodeTraits::RootNodeKind);
+  }
+
+
   if (!isnan(width) or !isnan(height)) {
     auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(snode->getProps());
 
