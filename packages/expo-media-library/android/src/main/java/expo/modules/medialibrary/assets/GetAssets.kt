@@ -12,49 +12,44 @@ import kotlinx.coroutines.ensureActive
 import java.io.IOException
 import kotlin.coroutines.coroutineContext
 
-internal class GetAssets(
-  private val context: Context,
-  private val assetOptions: AssetsOptions
-) {
-  suspend fun execute(): Bundle {
-    val contentResolver = context.contentResolver
-    try {
-      val (selection, order, limit, offset) = getQueryFromOptions(assetOptions)
-      contentResolver.query(
-        EXTERNAL_CONTENT_URI,
-        ASSET_PROJECTION,
-        selection,
-        null,
-        order
-      ).use { assetsCursor ->
-        coroutineContext.ensureActive()
-        if (assetsCursor == null) {
-          throw AssetQueryException()
-        }
-        val assetsInfo = ArrayList<Bundle>()
-        putAssetsInfo(
-          contentResolver,
-          assetsCursor,
-          assetsInfo,
-          limit.toInt(),
-          offset,
-          assetOptions.resolveWithFullInfo ?: false
-        )
-        return Bundle().apply {
-          putParcelableArrayList("assets", assetsInfo)
-          putBoolean("hasNextPage", !assetsCursor.isAfterLast)
-          putString("endCursor", assetsCursor.position.toString())
-          putInt("totalCount", assetsCursor.count)
-        }
+suspend fun getAssets(context: Context, assetOptions: AssetsOptions): Bundle {
+  val contentResolver = context.contentResolver
+  try {
+    val (selection, order, limit, offset) = getQueryFromOptions(assetOptions)
+    contentResolver.query(
+      EXTERNAL_CONTENT_URI,
+      ASSET_PROJECTION,
+      selection,
+      null,
+      order
+    ).use { assetsCursor ->
+      coroutineContext.ensureActive()
+      if (assetsCursor == null) {
+        throw AssetQueryException()
       }
-    } catch (e: Exception) {
-      throw when (e) {
-        is SecurityException -> UnableToLoadException("Could not get asset: need read_external_storage permission", e)
-        is IOException -> UnableToLoadException("Could not read file: ${e.message}", e)
-        is IllegalArgumentException -> UnableToLoadException(e.message ?: "Invalid MediaType ${e.message}", e)
-        is UnsupportedOperationException -> PermissionsException(e.message ?: "Permission denied: ${e.message}")
-        else -> e
+      val assetsInfo = ArrayList<Bundle>()
+      putAssetsInfo(
+        contentResolver,
+        assetsCursor,
+        assetsInfo,
+        limit.toInt(),
+        offset,
+        assetOptions.resolveWithFullInfo ?: false
+      )
+      return Bundle().apply {
+        putParcelableArrayList("assets", assetsInfo)
+        putBoolean("hasNextPage", !assetsCursor.isAfterLast)
+        putString("endCursor", assetsCursor.position.toString())
+        putInt("totalCount", assetsCursor.count)
       }
+    }
+  } catch (e: Exception) {
+    throw when (e) {
+      is SecurityException -> UnableToLoadException("Could not get asset: need read_external_storage permission", e)
+      is IOException -> UnableToLoadException("Could not read file: ${e.message}", e)
+      is IllegalArgumentException -> UnableToLoadException(e.message ?: "Invalid MediaType ${e.message}", e)
+      is UnsupportedOperationException -> PermissionsException(e.message ?: "Permission denied: ${e.message}")
+      else -> e
     }
   }
 }
