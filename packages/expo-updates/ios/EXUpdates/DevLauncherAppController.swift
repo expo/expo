@@ -47,7 +47,7 @@ enum DevLauncherAppControllerError: Int, Error, LocalizedError {
 @objcMembers
 public final class DevLauncherAppController: NSObject, InternalAppControllerInterface, UpdatesExternalInterface {
   public let eventManager: UpdatesEventManager = NoOpUpdatesEventManager()
-  public var reloadScreenManager: ReloadScreenManager?
+  var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
   private let logger = UpdatesLogger()
 

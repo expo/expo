@@ -1,15 +1,13 @@
-// Copyright 2018-present 650 Industries. All rights reserved.
+#if os(macOS)
+import AppKit
 
-#if os(iOS) || os(tvOS)
-import UIKit
-
-public class ReloadScreenView: UIView {
-  private var activityIndicator: UIActivityIndicatorView?
-  private var imageView: UIImageView?
+public class ReloadScreenViewMacOS: NSView {
+  private var activityIndicator: NSProgressIndicator?
+  private var imageView: NSImageView?
   private var currentConfiguration: ReloadScreenConfiguration?
 
-  override init(frame: CGRect) {
-    super.init(frame: frame)
+  override init(frame frameRect: NSRect) {
+    super.init(frame: frameRect)
     setupView()
   }
 
@@ -19,16 +17,17 @@ public class ReloadScreenView: UIView {
   }
 
   private func setupView() {
-    autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    backgroundColor = UIColor.clear
+    autoresizingMask = [.width, .height]
+    layer?.backgroundColor = NSColor.clear.cgColor
+    wantsLayer = true
   }
 
   func updateConfiguration(_ configuration: ReloadScreenConfiguration) {
     currentConfiguration = configuration
-    backgroundColor = if configuration.imageFullScreen {
-      UIColor.clear
+    layer?.backgroundColor = if configuration.imageFullScreen {
+      NSColor.clear.cgColor
     } else {
-      configuration.backgroundColor
+      configuration.backgroundColor.cgColor
     }
 
     subviews.forEach { $0.removeFromSuperview() }
@@ -47,13 +46,12 @@ public class ReloadScreenView: UIView {
       return
     }
 
-    imageView = UIImageView()
+    imageView = NSImageView()
     guard let imageView else {
       return
     }
 
-    imageView.contentMode = configuration.imageResizeMode.contentMode
-    imageView.clipsToBounds = true
+    imageView.imageScaling = configuration.imageResizeMode.contentMode
     imageView.translatesAutoresizingMaskIntoConstraints = false
 
     addSubview(imageView)
@@ -78,7 +76,7 @@ public class ReloadScreenView: UIView {
     loadImage(source: url, into: imageView)
   }
 
-  private func addViewConstraints(for imageView: UIImageView) {
+  private func addViewConstraints(for imageView: NSImageView) {
     NSLayoutConstraint.activate([
       imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
       imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -88,20 +86,22 @@ public class ReloadScreenView: UIView {
   }
 
   private func addSpinner(configuration: SpinnerConfiguration) {
-    activityIndicator = UIActivityIndicatorView()
+    activityIndicator = NSProgressIndicator()
     guard let activityIndicator else {
       return
     }
-    activityIndicator.style = switch configuration.size {
+
+    activityIndicator.style = .spinning
+    activityIndicator.controlSize = switch configuration.size {
     case .large:
       .large
     case .medium:
-      .medium
+      .regular
     case .small:
-      .medium
+      .small
     }
 
-    activityIndicator.color = configuration.color
+    activityIndicator.layer?.backgroundColor = configuration.color.cgColor
     activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
     addSubview(activityIndicator)
@@ -113,28 +113,28 @@ public class ReloadScreenView: UIView {
       activityIndicator.heightAnchor.constraint(equalToConstant: configuration.size.spinnerSize)
     ])
 
-    activityIndicator.startAnimating()
+    activityIndicator.startAnimation(nil)
   }
 
-  private func loadImage(source: URL, into imageView: UIImageView) {
+  private func loadImage(source: URL, into imageView: NSImageView) {
     Task {
       await loadImageFromURL(source, into: imageView)
     }
   }
 
-  private func loadImageFromURL(_ url: URL, into imageView: UIImageView) async {
+  private func loadImageFromURL(_ url: URL, into imageView: NSImageView) async {
     do {
-      let image: UIImage?
+      let image: NSImage?
 
       switch url.scheme {
       case "http", "https":
         let (data, _) = try await URLSession.shared.data(from: url)
-        image = UIImage(data: data)
+        image = NSImage(data: data)
       case "file":
-        image = UIImage(contentsOfFile: url.path)
+        image = NSImage(contentsOfFile: url.path)
       case "data":
         let data = try Data(contentsOf: url)
-        image = UIImage(data: data)
+        image = NSImage(data: data)
       default:
         image = nil
       }
@@ -160,7 +160,7 @@ public class ReloadScreenView: UIView {
     imageView?.isHidden = true
 
     if let config = currentConfiguration {
-      backgroundColor = config.backgroundColor
+      layer?.backgroundColor = config.backgroundColor.cgColor
       let spinnerConfig = SpinnerConfiguration(
         enabled: true,
         color: config.spinner.color,
@@ -170,6 +170,4 @@ public class ReloadScreenView: UIView {
     }
   }
 }
-#else
-typealias ReloadScreenView = ReloadScreenViewMacOS
 #endif

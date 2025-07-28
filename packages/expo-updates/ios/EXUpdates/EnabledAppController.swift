@@ -8,7 +8,7 @@ import ExpoModulesCore
  */
 public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
-  public var reloadScreenManager: ReloadScreenManager? = ReloadScreenManager()
+  var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
   internal let config: UpdatesConfig
   private let database: UpdatesDatabase

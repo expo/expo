@@ -1,10 +1,10 @@
-#if os(iOS) || os(tvOS)
-import UIKit
+#if os(macOS)
+import AppKit
 
 public class ReloadScreenManager: Reloadable {
   private var currentConfiguration: ReloadScreenConfiguration?
   private var currentReloadScreen: ReloadScreenView?
-  private var overlayWindow: UIWindow?
+  private var overlayWindow: NSWindow?
   private var isShowing = false
 
   init() {
@@ -15,7 +15,7 @@ public class ReloadScreenManager: Reloadable {
     currentConfiguration = ReloadScreenConfiguration(options: options)
   }
 
-  func show() {
+  public func show() {
     if isShowing {
       return
     }
@@ -29,7 +29,7 @@ public class ReloadScreenManager: Reloadable {
   }
 
   @objc
-  func hide() {
+  public func hide() {
     if !isShowing {
       return
     }
@@ -41,29 +41,35 @@ public class ReloadScreenManager: Reloadable {
   private func showReloadScreen() throws {
     let config = currentConfiguration ?? ReloadScreenConfiguration(options: nil)
 
-    if let windowScene = UIApplication.shared.connectedScenes
-      .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-      overlayWindow = UIWindow(windowScene: windowScene)
+    // Create overlay window for macOS
+    let screenFrame: NSRect
+    if let mainScreen = NSScreen.main {
+      screenFrame = mainScreen.frame
     } else {
-      overlayWindow = UIWindow(frame: UIScreen.main.bounds)
+      screenFrame = NSRect(x: 0, y: 0, width: 800, height: 600)
     }
+    overlayWindow = NSWindow(
+      contentRect: screenFrame,
+      styleMask: [.borderless],
+      backing: .buffered,
+      defer: false
+    )
 
     guard let window = overlayWindow else {
       throw ReloadOverlayException()
     }
 
-    window.windowLevel = UIWindow.Level.alert + 1
-    window.backgroundColor = UIColor.clear
-    window.isHidden = false
+    window.level = .screenSaver
+    window.backgroundColor = NSColor.clear
+    window.isOpaque = false
+    window.hasShadow = false
+    window.ignoresMouseEvents = false
 
-    let reloadScreenView = ReloadScreenView(frame: window.bounds)
+    let reloadScreenView = ReloadScreenView(frame: window.contentRect(forFrameRect: window.frame))
     reloadScreenView.updateConfiguration(config)
 
-    let viewController = UIViewController()
-    viewController.view = reloadScreenView
-
-    window.rootViewController = viewController
-    window.makeKeyAndVisible()
+    window.contentView = reloadScreenView
+    window.makeKeyAndOrderFront(nil)
 
     currentReloadScreen = reloadScreenView
   }
@@ -76,17 +82,16 @@ public class ReloadScreenManager: Reloadable {
     let config = currentConfiguration ?? ReloadScreenConfiguration(options: nil)
 
     if config.fade {
-      UIView.animate(withDuration: 0.3) {
-        window.alpha = 0.0
-      } completion: { _ in
-        window.isHidden = true
-        window.rootViewController = nil
+      NSAnimationContext.runAnimationGroup { context in
+        context.duration = 0.3
+        window.animator().alphaValue = 0.0
+      } completionHandler: {
+        window.orderOut(nil)
         self.overlayWindow = nil
         self.currentReloadScreen = nil
       }
     } else {
-      window.isHidden = true
-      window.rootViewController = nil
+      window.orderOut(nil)
       overlayWindow = nil
       currentReloadScreen = nil
     }
@@ -96,6 +101,4 @@ public class ReloadScreenManager: Reloadable {
     NotificationCenter.default.removeObserver(self)
   }
 }
-#else
-typealias ReloadScreenManager = ReloadScreeenManagerMacOS
 #endif
