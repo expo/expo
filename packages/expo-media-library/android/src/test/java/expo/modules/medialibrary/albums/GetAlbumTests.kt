@@ -117,7 +117,7 @@ internal class GetAlbumTests {
 
     // act && assert
     try {
-      GetAlbums(context).execute()
+      queryAlbum(context, "", emptyArray())
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)

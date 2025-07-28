@@ -7,7 +7,6 @@ import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.UnableToLoadException
-import expo.modules.medialibrary.albums.queryAlbum
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
@@ -129,7 +128,7 @@ internal class GetAssetInfoTests {
 
     // act && assert
     try {
-      queryAlbum(context, "", emptyArray())
+      queryAssetInfo(context, "", emptyArray(), false)
       fail()
     } catch (e: Exception) {
       assert(e is UnableToLoadException)
@@ -143,10 +142,10 @@ internal class GetAssetInfoTests {
 
     // act && assert
     try {
-      queryAlbum(context, "", emptyArray())
+      queryAssetInfo(context, "", emptyArray(), false)
       fail()
     } catch (e: Exception) {
-      assert(e is IOException)
+      assert(e is UnableToLoadException)
     }
   }
 }
