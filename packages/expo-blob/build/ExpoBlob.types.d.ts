@@ -9,17 +9,17 @@ export declare class ExpoBlob {
      */
     readonly type: string;
     /**
-     * Creates a new NativeBlob object from the given parts and options.
+     * Creates a new Blob object from the given parts and options.
      * @param blobParts An array of BlobPart to include in the Blob.
      * @param options An optional BlobPropertyBag dictionary.
      */
     constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
     /**
-     * Returns a new Blob from native implementation object containing the data in the specified range of bytes of the source Blob.
+     * Returns a new Blob object containing the data in the specified range of bytes of the source Blob.
      * @param start The starting byte index (inclusive).
      * @param end The ending byte index (exclusive).
      * @param contentType The MIME type of the new Blob. If not provided, defaults to an empty string.
-     * @returns A new Blob from native implementation object containing the specified bytes.
+     * @returns A new Blob object containing the specified bytes.
      */
     slice(start?: number, end?: number, contentType?: string): ExpoBlob;
     /**
