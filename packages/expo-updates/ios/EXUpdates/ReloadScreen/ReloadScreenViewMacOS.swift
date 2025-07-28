@@ -90,7 +90,7 @@ public class ReloadScreenViewMacOS: NSView {
     guard let activityIndicator else {
       return
     }
-    
+
     activityIndicator.style = .spinning
     activityIndicator.controlSize = switch configuration.size {
     case .large:
