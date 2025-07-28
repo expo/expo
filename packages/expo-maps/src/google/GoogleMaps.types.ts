@@ -59,7 +59,8 @@ export type GoogleMapsMarker = {
   icon?: SharedRefType<'image'>;
 
   /**
-   * The anchor used to position the anchor relative to its coordinates. Defaults to the bottom-center of the icon.
+   * The anchor used to position the anchor relative to its coordinates.
+   * @default bottom-center of the icon
    */
   anchor?: GoogleMapsAnchor;
 
