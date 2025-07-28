@@ -1172,7 +1172,9 @@ describe('serializes', () => {
             "paths": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
-            "requires": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
           },
           "originFilename": "a.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1199,7 +1201,9 @@ describe('serializes', () => {
             "paths": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
-            "requires": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
           },
           "originFilename": "b.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1225,7 +1229,9 @@ describe('serializes', () => {
             "paths": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
-            "requires": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
           },
           "originFilename": "c.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1303,7 +1309,7 @@ describe('serializes', () => {
     expect(artifacts[1].metadata).toEqual({
       isAsync: true,
       modulePaths: ['/app/a.js'],
-      requires: [],
+      requires: [expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/)],
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
@@ -1312,7 +1318,7 @@ describe('serializes', () => {
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
       modulePaths: ['/app/b.js'],
-      requires: [],
+      requires: [expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/)],
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
@@ -1340,7 +1346,7 @@ describe('serializes', () => {
     );
     expect(artifacts[5].metadata).toEqual({
       isAsync: false,
-      requires: [],
+      requires: [], // No requires in the runtime chunk.
       modulePaths: [],
       paths: {},
       expoDomComponentReferences: [],

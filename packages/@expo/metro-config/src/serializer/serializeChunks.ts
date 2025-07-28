@@ -163,8 +163,6 @@ export async function graphToSerialAssetsAsync(
     // Create runtime chunk
     if (commonChunk) {
       const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
-      entryChunk.requiredChunks.add(runtimeChunk);
-      commonChunk.requiredChunks.add(runtimeChunk);
 
       // All premodules (including metro-runtime) should load first
       for (const preModule of entryChunk.preModules) {
@@ -172,6 +170,10 @@ export async function graphToSerialAssetsAsync(
       }
       entryChunk.preModules = new Set();
 
+      for (const chunk of chunks) {
+        // Runtime chunk has to load before any other a.k.a all chunks require it.
+        chunk.requiredChunks.add(runtimeChunk);
+      }
       chunks.add(runtimeChunk);
     }
   }
