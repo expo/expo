@@ -48,13 +48,13 @@ data class Coordinates(
 
 data class AnchorRecord(
   @Field
-  val x: Double = 0.5,
+  val x: Float = 0.5f,
 
   @Field
-  val y: Double = 1.0
+  val y: Float = 1.0f
 ) : Record {
   fun toOffset(): Offset {
-    return Offset(x, y)
+    return Offset(x = x, y = y)
   }
 }
 
@@ -84,7 +84,7 @@ data class MarkerRecord(
   val anchor: AnchorRecord = AnchorRecord(),
 
   @Field
-  val zIndex: Float = 0
+  val zIndex: Float = 0.0f
 ) : Record
 
 data class PolylineRecord(
