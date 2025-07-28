@@ -27,9 +27,3 @@ enum BlobPart {
     }
   }
 }
-func toNativeNewlines(_ str: String) -> String {
-  let nativeEnding = "\n"
-  var s = str.replacingOccurrences(of: "\r\n", with: nativeEnding)
-  s = s.replacingOccurrences(of: "\r", with: nativeEnding)
-  return s
-}
