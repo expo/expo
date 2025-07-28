@@ -1,4 +1,4 @@
-import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode, VideoTrack, AudioTrack } from './VideoPlayer.types';
+import type { BufferOptions, PlayerError, VideoPlayerStatus, VideoSource, VideoPlayer, SubtitleTrack, AudioMixingMode, VideoTrack, AudioTrack, PipRestoreCallbacks } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 export declare function useVideoPlayer(source: VideoSource, setup?: (player: VideoPlayer) => void): VideoPlayer;
@@ -27,6 +27,7 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
     currentLiveTimestamp: number | null;
     currentOffsetFromLive: number | null;
     targetOffsetFromLive: number;
+    private _pipRestoreCallbacks;
     bufferOptions: BufferOptions;
     subtitleTrack: SubtitleTrack | null;
     availableSubtitleTracks: SubtitleTrack[];
@@ -72,5 +73,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject<VideoPl
      */
     _emitOnce<EventName extends keyof VideoPlayerEvents>(eventSource: HTMLVideoElement, eventName: EventName, ...args: Parameters<VideoPlayerEvents[EventName]>): void;
     _addListeners(video: HTMLVideoElement): void;
+    setPipRestoreCallbacks(callbacks: PipRestoreCallbacks): void;
+    clearPipRestoreCallbacks(): void;
+    getPipRestoreCallbacks(): PipRestoreCallbacks | null;
 }
 //# sourceMappingURL=VideoPlayer.web.d.ts.map

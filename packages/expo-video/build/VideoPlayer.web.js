@@ -50,6 +50,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     currentLiveTimestamp = null; // Not supported on web. Dummy to match the interface.
     currentOffsetFromLive = null; // Not supported on web. Dummy to match the interface.
     targetOffsetFromLive = 0; // Not supported on web. Dummy to match the interface.
+    // PIP restoration callbacks - not supported on web but needed for interface compatibility
+    _pipRestoreCallbacks = null;
     bufferOptions = {}; // Not supported on web. Dummy to match the interface.
     subtitleTrack = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
     availableSubtitleTracks = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
@@ -372,6 +374,18 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         video.onloadstart = () => {
             this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
         };
+    }
+    // PIP restoration methods - not supported on web, but required for interface compatibility
+    setPipRestoreCallbacks(callbacks) {
+        this._pipRestoreCallbacks = callbacks;
+        // Web doesn't support PIP restoration, so this is a no-op
+    }
+    clearPipRestoreCallbacks() {
+        this._pipRestoreCallbacks = null;
+        // Web doesn't support PIP restoration, so this is a no-op
+    }
+    getPipRestoreCallbacks() {
+        return this._pipRestoreCallbacks;
     }
 }
 //# sourceMappingURL=VideoPlayer.web.js.map

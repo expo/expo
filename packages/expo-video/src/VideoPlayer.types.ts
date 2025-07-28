@@ -4,6 +4,135 @@ import { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 
 /**
+ * Restoration context provided to PIP restoration callbacks.
+ * Contains information about the player state when PIP restoration is requested.
+ */
+export interface PipRestoreContext {
+  /**
+   * Unique identifier for the video player instance.
+   */
+  playerId: string;
+
+  /**
+   * Timestamp when PIP restoration was initiated (in milliseconds since epoch).
+   */
+  timestamp: number;
+
+  /**
+   * Current playback time in seconds.
+   */
+  currentTime: number;
+
+  /**
+   * Whether the player is currently playing.
+   */
+  isPlaying: boolean;
+
+  /**
+   * Optional metadata about the video.
+   */
+  metadata?: {
+    /**
+     * Title of the video, if available.
+     */
+    title?: string;
+
+    /**
+     * Duration of the video in seconds, if available.
+     */
+    duration?: number;
+  };
+}
+
+/**
+ * Decision object returned from onBeforePipRestore callback.
+ * Controls whether and how PIP restoration should proceed.
+ */
+export interface PipRestoreDecision {
+  /**
+   * Whether to allow PIP restoration to continue.
+   */
+  allowRestore: boolean;
+
+  /**
+   * Optional delay in milliseconds before proceeding with restoration.
+   * Useful for allowing navigation to complete before restoring UI.
+   */
+  delay?: number;
+
+  /**
+   * Optional custom metadata to attach to the restoration event.
+   */
+  metadata?: Record<string, any>;
+}
+
+/**
+ * Error object for PIP restoration failures.
+ */
+export interface PipRestoreError {
+  /**
+   * Error code identifying the type of failure.
+   */
+  code: string;
+
+  /**
+   * Human-readable error message.
+   */
+  message: string;
+
+  /**
+   * Context information about when the error occurred.
+   */
+  context: PipRestoreContext;
+
+  /**
+   * Native error object, if available.
+   */
+  nativeError?: any;
+}
+
+/**
+ * Callback function called before PIP restoration.
+ * Should return a decision object indicating whether to allow restoration.
+ */
+export type PipRestoreCallback = (context: PipRestoreContext) => Promise<PipRestoreDecision>;
+
+/**
+ * Callback function called after successful PIP restoration.
+ */
+export type PipAfterRestoreCallback = (context: PipRestoreContext) => void;
+
+/**
+ * Callback function called when PIP restoration fails.
+ */
+export type PipRestoreErrorCallback = (error: PipRestoreError) => void;
+
+/**
+ * Configuration object for PIP restoration callbacks.
+ * These callbacks persist across component lifecycles and are attached to the VideoPlayer instance.
+ */
+export interface PipRestoreCallbacks {
+  /**
+   * Called before PIP restoration begins.
+   * Use this to navigate back to the video screen or perform other setup.
+   * Must return a decision object indicating whether to proceed.
+   */
+  onBeforePipRestore?: PipRestoreCallback;
+
+  /**
+   * Called after PIP restoration has completed successfully.
+   * Use this for analytics, state updates, or other cleanup.
+   */
+  onAfterPipRestore?: PipAfterRestoreCallback;
+
+  /**
+   * Called when PIP restoration fails for any reason.
+   * Use this for error reporting or fallback actions.
+   */
+  onPipRestoreFailed?: PipRestoreErrorCallback;
+}
+
+/**
  * A class that represents an instance of the video player.
  */
 export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
@@ -274,6 +403,30 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
     times: number | number[],
     options?: VideoThumbnailOptions
   ): Promise<VideoThumbnail[]>;
+
+  /**
+   * Sets PIP restoration callbacks that persist across component lifecycles.
+   * These callbacks are stored at the player level and survive VideoView mount/unmount cycles.
+   *
+   * @param callbacks Object containing restoration callback functions
+   * @platform ios
+   */
+  setPipRestoreCallbacks(callbacks: PipRestoreCallbacks): void;
+
+  /**
+   * Clears all PIP restoration callbacks.
+   *
+   * @platform ios
+   */
+  clearPipRestoreCallbacks(): void;
+
+  /**
+   * Gets the currently set PIP restoration callbacks.
+   *
+   * @returns The current callbacks object, or null if none are set
+   * @platform ios
+   */
+  getPipRestoreCallbacks(): PipRestoreCallbacks | null;
 }
 
 /**

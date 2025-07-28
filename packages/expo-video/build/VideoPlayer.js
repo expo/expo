@@ -13,6 +13,27 @@ const replaceAsync = NativeVideoModule.VideoPlayer.prototype.replaceAsync;
 NativeVideoModule.VideoPlayer.prototype.replaceAsync = function (source) {
     return replaceAsync.call(this, parseSource(source));
 };
+// Add PIP restoration callback management methods to the native VideoPlayer prototype
+NativeVideoModule.VideoPlayer.prototype.setPipRestoreCallbacks = function (callbacks) {
+    // Store callbacks on the instance for JavaScript-side access
+    this._pipRestoreCallbacks = callbacks;
+    // Call native method to register callbacks if platform supports it
+    const nativeModule = NativeVideoModule;
+    if (nativeModule.setPipRestoreCallbacks) {
+        return nativeModule.setPipRestoreCallbacks(this, callbacks);
+    }
+};
+NativeVideoModule.VideoPlayer.prototype.clearPipRestoreCallbacks = function () {
+    this._pipRestoreCallbacks = null;
+    // Call native method to clear callbacks if platform supports it
+    const nativeModule = NativeVideoModule;
+    if (nativeModule.clearPipRestoreCallbacks) {
+        return nativeModule.clearPipRestoreCallbacks(this);
+    }
+};
+NativeVideoModule.VideoPlayer.prototype.getPipRestoreCallbacks = function () {
+    return this._pipRestoreCallbacks || null;
+};
 /**
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
  *

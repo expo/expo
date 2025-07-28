@@ -10,6 +10,7 @@ import type {
   AudioMixingMode,
   VideoTrack,
   AudioTrack,
+  PipRestoreCallbacks,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -78,6 +79,9 @@ export default class VideoPlayerWeb
   currentLiveTimestamp: number | null = null; // Not supported on web. Dummy to match the interface.
   currentOffsetFromLive: number | null = null; // Not supported on web. Dummy to match the interface.
   targetOffsetFromLive: number = 0; // Not supported on web. Dummy to match the interface.
+
+  // PIP restoration callbacks - not supported on web but needed for interface compatibility
+  private _pipRestoreCallbacks: PipRestoreCallbacks | null = null;
   bufferOptions: BufferOptions = {} as BufferOptions; // Not supported on web. Dummy to match the interface.
   subtitleTrack: SubtitleTrack | null = null; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
   availableSubtitleTracks: SubtitleTrack[] = []; // Embedded subtitles are not supported by the html web player. Dummy to match the interface.
@@ -448,5 +452,20 @@ export default class VideoPlayerWeb
     video.onloadstart = () => {
       this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
     };
+  }
+
+  // PIP restoration methods - not supported on web, but required for interface compatibility
+  setPipRestoreCallbacks(callbacks: PipRestoreCallbacks): void {
+    this._pipRestoreCallbacks = callbacks;
+    // Web doesn't support PIP restoration, so this is a no-op
+  }
+
+  clearPipRestoreCallbacks(): void {
+    this._pipRestoreCallbacks = null;
+    // Web doesn't support PIP restoration, so this is a no-op
+  }
+
+  getPipRestoreCallbacks(): PipRestoreCallbacks | null {
+    return this._pipRestoreCallbacks;
   }
 }

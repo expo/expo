@@ -1,8 +1,18 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
 import NativeVideoModule from './NativeVideoModule';
-import { VideoSource, VideoPlayer } from './VideoPlayer.types';
+import { VideoSource, VideoPlayer, PipRestoreCallbacks } from './VideoPlayer.types';
 import resolveAssetSource from './resolveAssetSource';
+
+// Type extensions for PIP restoration methods
+interface VideoPlayerWithPipCallbacks extends VideoPlayer {
+  _pipRestoreCallbacks?: PipRestoreCallbacks | null;
+}
+
+interface NativeVideoModuleWithPipMethods {
+  setPipRestoreCallbacks?: (player: VideoPlayer, callbacks: PipRestoreCallbacks) => void;
+  clearPipRestoreCallbacks?: (player: VideoPlayer) => void;
+}
 
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = NativeVideoModule.VideoPlayer.prototype.replace;
@@ -23,6 +33,42 @@ const replaceAsync = NativeVideoModule.VideoPlayer.prototype.replaceAsync;
 NativeVideoModule.VideoPlayer.prototype.replaceAsync = function (source: VideoSource) {
   return replaceAsync.call(this, parseSource(source));
 };
+
+// Add PIP restoration callback management methods to the native VideoPlayer prototype
+NativeVideoModule.VideoPlayer.prototype.setPipRestoreCallbacks = function (
+  this: VideoPlayerWithPipCallbacks,
+  callbacks: PipRestoreCallbacks
+) {
+  // Store callbacks on the instance for JavaScript-side access
+  this._pipRestoreCallbacks = callbacks;
+
+  // Call native method to register callbacks if platform supports it
+  const nativeModule = NativeVideoModule as typeof NativeVideoModule &
+    NativeVideoModuleWithPipMethods;
+  if (nativeModule.setPipRestoreCallbacks) {
+    return nativeModule.setPipRestoreCallbacks(this, callbacks);
+  }
+};
+
+NativeVideoModule.VideoPlayer.prototype.clearPipRestoreCallbacks = function (
+  this: VideoPlayerWithPipCallbacks
+) {
+  this._pipRestoreCallbacks = null;
+
+  // Call native method to clear callbacks if platform supports it
+  const nativeModule = NativeVideoModule as typeof NativeVideoModule &
+    NativeVideoModuleWithPipMethods;
+  if (nativeModule.clearPipRestoreCallbacks) {
+    return nativeModule.clearPipRestoreCallbacks(this);
+  }
+};
+
+NativeVideoModule.VideoPlayer.prototype.getPipRestoreCallbacks = function (
+  this: VideoPlayerWithPipCallbacks
+): PipRestoreCallbacks | null {
+  return this._pipRestoreCallbacks || null;
+};
+
 /**
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
  *

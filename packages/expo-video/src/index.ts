@@ -29,6 +29,13 @@ export type {
   AudioTrack,
   VideoTrack,
   ContentType,
+  PipRestoreContext,
+  PipRestoreDecision,
+  PipRestoreError,
+  PipRestoreCallback,
+  PipAfterRestoreCallback,
+  PipRestoreErrorCallback,
+  PipRestoreCallbacks,
 } from './VideoPlayer.types';
 
 export type * from './VideoPlayerEvents.types';
