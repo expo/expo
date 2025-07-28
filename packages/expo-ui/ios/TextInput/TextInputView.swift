@@ -58,14 +58,6 @@ func getFontWeight(_ type: String) -> Font.Weight{
     }
 }
 
-func allowMultiLine() -> Bool {
-  #if os(tvOS)
-  return false
-  #else
-  return true
-  #endif
-}
-
 struct TextInputView: ExpoSwiftUI.View {
   @ObservedObject var props: TextInputProps
   @FocusState private var isFocused: Bool
