@@ -77,8 +77,9 @@ public class Blob: SharedObject {
     return Blob(blobParts: dataSlice, options: BlobOptions(type: typeString, endings: self.options.endings))
   }
 
-  func text() -> String {
-    return blobParts.reduce("") { $0 + $1.text() }
+  func text() async -> String {
+    let allBytes = await self.bytes()
+    return String(decoding: allBytes, as: UTF8.self)
   }
 
   func bytes() async -> [UInt8] {

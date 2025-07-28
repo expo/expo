@@ -44,8 +44,8 @@ public class ExpoBlob: Module {
         return blob.slice(start: relativeStart, end: relativeEnd, contentType: contentType ?? "")
       }
 
-      AsyncFunction("text") { (blob: Blob) in
-        blob.text()
+      AsyncFunction("text") { (blob: Blob) async -> String in
+        await blob.text()
       }
 
       AsyncFunction("bytes") { (blob: Blob) async -> Data in

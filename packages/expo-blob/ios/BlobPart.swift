@@ -7,17 +7,6 @@ enum BlobPart {
 }
 
 extension BlobPart {
-  func text() -> String {
-    switch self {
-      case .string(let str):
-        return str
-      case .data(let data):
-        return String(decoding: data, as: UTF8.self)
-      case .blob(let blob):
-        return blob.text()
-    }
-  }
-
   func size() -> Int {
     switch self {
     case .string(let str):
