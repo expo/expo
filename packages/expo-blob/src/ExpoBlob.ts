@@ -10,7 +10,7 @@ import {
 
 const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
 
-export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
+export class ExpoBlob extends NativeBlobModule.Blob {
   constructor(blobParts?: BlobPart[] | Iterable<any>, options?: BlobPropertyBag) {
     const inputMapping = (blobPart: BlobPart) => {
       if (blobPart instanceof ArrayBuffer) {

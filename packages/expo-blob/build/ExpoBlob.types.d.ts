@@ -26,7 +26,7 @@ export declare class ExpoBlob {
      * Returns a Promise that resolves with the entire contents of the Blob as a Uint8Array.
      * @returns Promise resolving to the Blob's binary data as a Uint8Array.
      */
-    bytes(): Promise<Uint8Array<ArrayBuffer>>;
+    bytes(): Promise<Uint8Array>;
     /**
      * Returns a Promise that resolves with the entire contents of the Blob as a UTF-8 string.
      * @returns Promise resolving to the Blob's text contents.
@@ -44,14 +44,22 @@ export declare class ExpoBlob {
      */
     arrayBuffer(): Promise<ArrayBuffer>;
 }
+/**
+ * @hidden
+ * @private
+ */
 export declare class NativeBlob extends SharedObject {
     readonly size: number;
     readonly type: string;
     constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
     slice(start?: number, end?: number, contentType?: string): ExpoBlob;
-    bytes(): Promise<Uint8Array<ArrayBuffer>>;
+    bytes(): Promise<Uint8Array>;
     text(): Promise<string>;
 }
+/**
+ * @hidden
+ * @private
+ */
 export declare class ExpoBlobModule extends NativeModule {
     Blob: typeof NativeBlob;
 }
