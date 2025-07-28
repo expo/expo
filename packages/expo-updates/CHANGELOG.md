@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed imports after upgrading to Metro 0.83
+
 ### 💡 Others
 
 - [Android] Cleanup state machine resources when the module is destroyed. ([#37193](https://github.com/expo/expo/pull/37193) by [@alanjhughes](https://github.com/alanjhughes))
