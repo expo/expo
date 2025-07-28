@@ -117,6 +117,27 @@ export type GoogleMapsPolygon = {
 /**
  * @platform android
  */
+export type GoogleMapsContentPadding = {
+    /**
+     * In LTR contexts `start` will be applied along the left edge. In RTL contexts, start will correspond to the right edge.
+     */
+    start?: number;
+    /**
+     * In LTR contexts `end` will be applied along the right edge. In RTL contexts, end will correspond to the left edge.
+     */
+    end?: number;
+    /**
+     * The padding on the top side of the map.
+     */
+    top?: number;
+    /**
+     * The padding on the bottom side of the map.
+     */
+    bottom?: number;
+};
+/**
+ * @platform android
+ */
 export type GoogleMapsUserLocation = {
     /**
      * User location coordinates.
@@ -290,6 +311,11 @@ export type GoogleMapsViewProps = {
      * User location, overrides default behavior.
      */
     userLocation?: GoogleMapsUserLocation;
+    /**
+     * The padding values used to signal that portions of the map around the edges may be obscured.
+     * The map will move the Google logo, etc. to avoid overlapping the padding.
+     */
+    contentPadding?: GoogleMapsContentPadding;
     /**
      * Lambda invoked when the map is loaded.
      */
