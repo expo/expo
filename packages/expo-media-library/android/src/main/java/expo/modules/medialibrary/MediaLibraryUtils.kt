@@ -114,9 +114,9 @@ object MediaLibraryUtils {
         }
       }
     } catch (e: SecurityException) {
-      throw UnableToDeleteException("Could not delete asset: need WRITE_EXTERNAL_STORAGE permission. $e")
+      throw UnableToDeleteException("Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e)
     } catch (e: Exception) {
-      throw UnableToDeleteException("Could not delete file. $e")
+      throw UnableToDeleteException("Could not delete file: ${e.message}", e)
     }
   }
 
