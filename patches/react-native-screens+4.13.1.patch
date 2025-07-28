@@ -18,10 +18,10 @@ index f3a2363..fa520de 100644
      : UINavigationController <RNSViewControllerDelegate, RNSBottomTabsSpecialEffectsSupporting>
  
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-index 56481ac..0567296 100644
+index 56481ac..4b65bba 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-@@ -571,59 +571,65 @@ RNS_IGNORE_SUPER_CALL_END
+@@ -571,59 +571,67 @@ RNS_IGNORE_SUPER_CALL_END
  
    UIViewController *firstModalToBeDismissed = changeRootController.presentedViewController;
  
