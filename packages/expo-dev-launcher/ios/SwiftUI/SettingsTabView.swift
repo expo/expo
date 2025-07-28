@@ -8,6 +8,11 @@ struct SettingsTabView: View {
   @State private var defaultPageSize: Int = 10
   @State private var showCacheClearedMessage = false
 
+  private let selectedGesturesInfoMessage = """
+  Selected gestures will toggle the developer menu while inside a preview.
+  The menu allows you to reload or return to home and exposes developer tools.
+  """
+
   private func createBuildInfoJSON() -> String {
     let buildInfoDict: [String: Any] = [
       "runtimeVersion": viewModel.buildInfo["runtimeVersion"] as? String ?? "",
@@ -34,7 +39,7 @@ struct SettingsTabView: View {
         gestures
 
         Section {
-          Text("Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools.")
+          Text(selectedGesturesInfoMessage)
             .font(.system(size: 13))
             .foregroundStyle(.secondary)
         }

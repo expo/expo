@@ -1,4 +1,5 @@
 import SwiftUI
+// swiftlint:disable closure_body_length
 
 struct UpdatesListView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -196,3 +197,4 @@ struct UpdatesListView: View {
 #Preview {
   UpdatesListView()
 }
+// swiftlint:enable closure_body_length

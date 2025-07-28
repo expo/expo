@@ -5,11 +5,9 @@ import React
 
 #if os(tvOS)
 protocol PresentationControllerDelegate: AnyObject {
-
 }
 #else
 protocol PresentationControllerDelegate: UISheetPresentationControllerDelegate {
-
 }
 #endif
 class DevMenuWindow: UIWindow, PresentationControllerDelegate {

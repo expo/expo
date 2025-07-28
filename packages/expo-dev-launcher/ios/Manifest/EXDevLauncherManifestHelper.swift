@@ -53,21 +53,23 @@ public class EXDevLauncherManifestHelper: NSObject {
     var rgbValue: UInt64 = 0
     Scanner(string: hexString).scanHexInt64(&rgbValue)
 
-    return UIColor(red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-                   green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-                   blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-                   alpha: 1.0)
+    return UIColor(
+      red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+      green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+      blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+      alpha: 1.0
+    )
   }
 
   @objc
   public static func exportManifestUserInterfaceStyle(_ userInterfaceStyle: String?) -> UIUserInterfaceStyle {
     switch userInterfaceStyle {
-      case "light":
-        return .light
-      case "dark":
-        return .dark
-      default:
-        return .unspecified
+    case "light":
+      return .light
+    case "dark":
+      return .dark
+    default:
+      return .unspecified
     }
   }
 }
