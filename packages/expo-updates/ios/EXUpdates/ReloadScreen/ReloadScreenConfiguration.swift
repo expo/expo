@@ -65,6 +65,7 @@ enum ImageResizeMode: String, Enumerable {
   case center
   case stretch
 
+#if os(iOS)
   var contentMode: UIView.ContentMode {
     switch self {
     case .contain:
@@ -77,6 +78,20 @@ enum ImageResizeMode: String, Enumerable {
       return .scaleToFill
     }
   }
+  #else
+  var contentMode: NSImageScaling {
+    switch self {
+    case .contain:
+      return .scaleProportionallyUpOrDown
+    case .cover:
+      return .scaleProportionallyDown
+    case .center:
+      return .scaleNone
+    case .stretch:
+      return .scaleAxesIndependently
+    }
+  }
+  #endif
 }
 
 enum SpinnerSize: String, Enumerable {
