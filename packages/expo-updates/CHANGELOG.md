@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed imports after upgrading to Metro 0.83
+- Fixed imports after upgrading to Metro 0.83 ([#38375](https://github.com/expo/expo/pull/38375) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
