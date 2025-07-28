@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import AVKit
+import ExpoModulesCore
 
 public final class VideoModule: Module {
   public func definition() -> ModuleDefinition {
@@ -39,8 +39,8 @@ public final class VideoModule: Module {
       Prop("nativeControls") { (view, nativeControls: Bool?) in
         view.playerViewController.showsPlaybackControls = nativeControls ?? true
         #if os(tvOS)
-        view.playerViewController.isSkipForwardEnabled = nativeControls ?? true
-        view.playerViewController.isSkipBackwardEnabled = nativeControls ?? true
+          view.playerViewController.isSkipForwardEnabled = nativeControls ?? true
+          view.playerViewController.isSkipBackwardEnabled = nativeControls ?? true
         #endif
       }
 
@@ -61,21 +61,24 @@ public final class VideoModule: Module {
 
       Prop("allowsFullscreen") { (view, allowsFullscreen: Bool?) in
         #if !os(tvOS)
-        view.playerViewController.setValue(allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
+          view.playerViewController.setValue(
+            allowsFullscreen ?? true, forKey: "allowsEnteringFullScreen")
         #endif
       }
 
-      Prop("fullscreenOptions") {(view, options: FullscreenOptions?) in
+      Prop("fullscreenOptions") { (view, options: FullscreenOptions?) in
         #if !os(tvOS)
-        view.playerViewController.fullscreenOrientation = options?.orientation.toUIInterfaceOrientationMask() ?? .all
-        view.playerViewController.autoExitOnRotate = options?.autoExitOnRotate ?? false
-        view.playerViewController.setValue(options?.enable ?? true, forKey: "allowsEnteringFullScreen")
+          view.playerViewController.fullscreenOrientation =
+            options?.orientation.toUIInterfaceOrientationMask() ?? .all
+          view.playerViewController.autoExitOnRotate = options?.autoExitOnRotate ?? false
+          view.playerViewController.setValue(
+            options?.enable ?? true, forKey: "allowsEnteringFullScreen")
         #endif
       }
 
       Prop("showsTimecodes") { (view, showsTimecodes: Bool?) in
         #if !os(tvOS)
-        view.playerViewController.showsTimecodes = showsTimecodes ?? true
+          view.playerViewController.showsTimecodes = showsTimecodes ?? true
         #endif
       }
 
@@ -87,28 +90,29 @@ public final class VideoModule: Module {
         view.allowPictureInPicture = allowsPictureInPicture ?? false
       }
 
-      Prop("startsPictureInPictureAutomatically") { (view, startsPictureInPictureAutomatically: Bool?) in
+      Prop("startsPictureInPictureAutomatically") {
+        (view, startsPictureInPictureAutomatically: Bool?) in
         #if !os(tvOS)
-        view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
+          view.startPictureInPictureAutomatically = startsPictureInPictureAutomatically ?? false
         #endif
       }
 
       Prop("allowsVideoFrameAnalysis") { (view, allowsVideoFrameAnalysis: Bool?) in
         #if !os(tvOS)
-        if #available(iOS 16.0, macCatalyst 18.0, *) {
-          let newValue = allowsVideoFrameAnalysis ?? true
+          if #available(iOS 16.0, macCatalyst 18.0, *) {
+            let newValue = allowsVideoFrameAnalysis ?? true
 
-          view.playerViewController.allowsVideoFrameAnalysis = newValue
+            view.playerViewController.allowsVideoFrameAnalysis = newValue
 
-          // Setting the `allowsVideoFrameAnalysis` to false after the scanning was already perofrmed doesn't update the UI.
-          // We can force the desired behaviour by quickly toggling the property. Setting it to true clears existing requests,
-          // which updates the UI, hiding the button, then setting it to false before it detects any text keeps it in the desired state.
-          // Tested in iOS 17.5
-          if !newValue {
-            view.playerViewController.allowsVideoFrameAnalysis = true
-            view.playerViewController.allowsVideoFrameAnalysis = false
+            // Setting the `allowsVideoFrameAnalysis` to false after the scanning was already perofrmed doesn't update the UI.
+            // We can force the desired behaviour by quickly toggling the property. Setting it to true clears existing requests,
+            // which updates the UI, hiding the button, then setting it to false before it detects any text keeps it in the desired state.
+            // Tested in iOS 17.5
+            if !newValue {
+              view.playerViewController.allowsVideoFrameAnalysis = true
+              view.playerViewController.allowsVideoFrameAnalysis = false
+            }
           }
-        }
         #endif
       }
 
@@ -152,7 +156,8 @@ public final class VideoModule: Module {
       Constructor { (source: VideoSource?, useSynchronousReplace: Bool?) -> VideoPlayer in
         let useSynchronousReplace = useSynchronousReplace ?? false
         let player = AVPlayer()
-        let videoPlayer = try VideoPlayer(player, initialSource: source, useSynchronousReplace: useSynchronousReplace)
+        let videoPlayer = try VideoPlayer(
+          player, initialSource: source, useSynchronousReplace: useSynchronousReplace)
         player.pause()
         return videoPlayer
       }
@@ -341,7 +346,9 @@ public final class VideoModule: Module {
         player.ref.seek(to: CMTime.zero)
       }
 
-      AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in
+      AsyncFunction("generateThumbnailsAsync") {
+        (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail]
+        in
         guard let times, !times.isEmpty else {
           return []
         }
@@ -354,6 +361,14 @@ public final class VideoModule: Module {
           times: times,
           options: options ?? .default
         )
+      }
+
+      AsyncFunction("setPipRestoreCallbacks") { (player: VideoPlayer, callbacks: [String: Any]) in
+        player.setPipRestoreCallbacks(callbacks)
+      }
+
+      AsyncFunction("clearPipRestoreCallbacks") { (player: VideoPlayer) in
+        player.clearPipRestoreCallbacks()
       }
     }
 

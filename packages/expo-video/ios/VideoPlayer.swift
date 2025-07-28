@@ -1,8 +1,8 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import AVFoundation
-import MediaPlayer
 import ExpoModulesCore
+import MediaPlayer
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   let videoSourceLoader = VideoSourceLoader()
@@ -23,10 +23,14 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   private(set) var isPlaying = false
   private(set) var status: PlayerStatus = .idle
 
+  // PIP restoration callback storage
+  private var pipRestoreCallbacks: [String: Any]?
+
   var playbackRate: Float = 1.0 {
     didSet {
       if oldValue != playbackRate {
-        let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
+        let payload = PlaybackRateChangedEventPayload(
+          playbackRate: playbackRate, oldPlaybackRate: oldValue)
         safeEmit(event: "playbackRateChange", payload: payload)
       }
       if #available(iOS 16.0, tvOS 16.0, *) {
@@ -146,12 +150,15 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   private(set) var availableVideoTracks: [VideoTrack] = []
   private(set) var currentVideoTrack: VideoTrack? {
     didSet {
-      let payload = VideoTrackChangedEventPayload(videoTrack: currentVideoTrack, oldVideoTrack: oldValue)
+      let payload = VideoTrackChangedEventPayload(
+        videoTrack: currentVideoTrack, oldVideoTrack: oldValue)
       safeEmit(event: "videoTrackChange", payload: payload)
     }
   }
 
-  convenience init(_ ref: AVPlayer, initialSource: VideoSource?, useSynchronousReplace: Bool = false) throws {
+  convenience init(
+    _ ref: AVPlayer, initialSource: VideoSource?, useSynchronousReplace: Bool = false
+  ) throws {
     self.init(ref)
 
     // While the replace task below is being created, the properties from the JS constructor will start getting applied
@@ -174,7 +181,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     VideoManager.shared.register(videoPlayer: self)
 
     // Disable automatic subtitle selection
-    let selectionCriteria = AVPlayerMediaSelectionCriteria(preferredLanguages: [], preferredMediaCharacteristics: [.legible])
+    let selectionCriteria = AVPlayerMediaSelectionCriteria(
+      preferredLanguages: [], preferredMediaCharacteristics: [.legible])
     ref.setMediaSelectionCriteria(selectionCriteria, forMediaCharacteristic: .legible)
   }
 
@@ -243,7 +251,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
     if let drm = videoSource.drm {
       try drm.type.assertIsSupported()
-      self.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
+      self.contentKeyManager.addContentKeyRequest(
+        videoSource: videoSource, asset: playerItem.urlAsset)
     }
 
     playerItem.audioTimePitchAlgorithm = self.preservesPitch ? .spectral : .varispeed
@@ -307,9 +316,12 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   // MARK: - VideoPlayerObserverDelegate
 
-  func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {
+  func onStatusChanged(
+    player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?
+  ) {
     let errorRecord = error != nil ? PlaybackError(message: error?.description) : nil
-    let payload = StatusChangedEventPayload(status: newStatus, oldStatus: oldStatus, error: errorRecord)
+    let payload = StatusChangedEventPayload(
+      status: newStatus, oldStatus: oldStatus, error: errorRecord)
     safeEmit(event: "statusChange", payload: payload)
     status = newStatus
   }
@@ -351,13 +363,16 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
-  func onItemChanged(player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?) {
+  func onItemChanged(
+    player: AVPlayer, oldVideoPlayerItem: VideoPlayerItem?, newVideoPlayerItem: VideoPlayerItem?
+  ) {
     let payload = SourceChangedEventPayload(
       source: newVideoPlayerItem?.videoSource,
       oldSource: oldVideoPlayerItem?.videoSource
     )
     safeEmit(event: "sourceChange", payload: payload)
-    newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+    newVideoPlayerItem?.preferredForwardBufferDuration =
+      bufferOptions.preferredForwardBufferDuration
   }
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
@@ -399,25 +414,34 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
-  func onSubtitleSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?) {
+  func onSubtitleSelectionChanged(
+    player: AVPlayer, playerItem: AVPlayerItem?, subtitleTrack: SubtitleTrack?
+  ) {
     let oldTrack = subtitles.currentSubtitleTrack
     subtitles.onNewSubtitleTrackSelected(subtitleTrack: subtitleTrack)
-    let payload = SubtitleTrackChangedEventPayload(subtitleTrack: subtitles.currentSubtitleTrack, oldSubtitleTrack: oldTrack)
+    let payload = SubtitleTrackChangedEventPayload(
+      subtitleTrack: subtitles.currentSubtitleTrack, oldSubtitleTrack: oldTrack)
     safeEmit(event: "subtitleTrackChange", payload: payload)
   }
 
-  func onAudioTrackSelectionChanged(player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?) {
+  func onAudioTrackSelectionChanged(
+    player: AVPlayer, playerItem: AVPlayerItem?, audioTrack: AudioTrack?
+  ) {
     let oldTrack = audioTracks.currentAudioTrack
     audioTracks.onNewAudioTrackSelected(audioTrack: audioTrack)
-    let payload = AudioTrackChangedEventPayload(audioTrack: audioTracks.currentAudioTrack, oldAudioTrack: oldTrack)
+    let payload = AudioTrackChangedEventPayload(
+      audioTrack: audioTracks.currentAudioTrack, oldAudioTrack: oldTrack)
     safeEmit(event: "audioTrackChange", payload: payload)
   }
 
-  func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?) {
+  func onVideoTrackChanged(player: AVPlayer, oldVideoTrack: VideoTrack?, newVideoTrack: VideoTrack?)
+  {
     currentVideoTrack = newVideoTrack
   }
 
-  func onIsExternalPlaybackActiveChanged(player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool) {
+  func onIsExternalPlaybackActiveChanged(
+    player: AVPlayer, oldIsExternalPlaybackActive: Bool?, newIsExternalPlaybackActive: Bool
+  ) {
     let payload = IsExternalPlaybackActiveEventPayload(
       isExternalPlaybackActive: newIsExternalPlaybackActive,
       oldIsExternalPlaybackActive: oldIsExternalPlaybackActive
@@ -439,5 +463,81 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   static func == (lhs: VideoPlayer, rhs: VideoPlayer) -> Bool {
     return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+  }
+
+  // MARK: - PIP Restoration Callbacks
+
+  func setPipRestoreCallbacks(_ callbacks: [String: Any]) {
+    self.pipRestoreCallbacks = callbacks
+  }
+
+  func clearPipRestoreCallbacks() {
+    self.pipRestoreCallbacks = nil
+  }
+
+  func getPipRestoreCallbacks() -> [String: Any]? {
+    return self.pipRestoreCallbacks
+  }
+
+  // Called by VideoView when PIP restoration is needed
+  func handlePipRestore(completion: @escaping (Bool) -> Void) {
+    guard let callbacks = pipRestoreCallbacks else {
+      completion(true)  // Default to allowing restoration if no callbacks set
+      return
+    }
+
+    // Create context for the callback
+    let playerId = String(describing: ObjectIdentifier(self))
+    let context: [String: Any] = [
+      "playerId": playerId,
+      "timestamp": Date().timeIntervalSince1970 * 1000,  // Convert to milliseconds
+      "currentTime": self.currentTime,
+      "isPlaying": self.isPlaying,
+      "metadata": [
+        "duration": self.ref.currentItem?.duration.seconds ?? 0
+      ],
+    ]
+
+    // Call the JavaScript onBeforePipRestore callback if it exists
+    if let onBeforePipRestore = callbacks["onBeforePipRestore"] {
+      // Emit event to JavaScript with context and handle response
+      self.emit(
+        event: "onBeforePipRestore",
+        arguments: [
+          "context": context,
+          "callbackId": UUID().uuidString,
+        ])
+
+      // For now, default to allowing restoration
+      // TODO: Implement proper async callback handling
+      completion(true)
+    } else {
+      completion(true)
+    }
+  }
+
+  func notifyPipRestoreCompleted(context: [String: Any]) {
+    guard let callbacks = pipRestoreCallbacks,
+      callbacks["onAfterPipRestore"] != nil
+    else {
+      return
+    }
+
+    self.emit(event: "onAfterPipRestore", arguments: ["context": context])
+  }
+
+  func notifyPipRestoreFailed(error: [String: Any], context: [String: Any]) {
+    guard let callbacks = pipRestoreCallbacks,
+      callbacks["onPipRestoreFailed"] != nil
+    else {
+      return
+    }
+
+    let errorPayload: [String: Any] = [
+      "error": error,
+      "context": context,
+    ]
+
+    self.emit(event: "onPipRestoreFailed", arguments: errorPayload)
   }
 }
