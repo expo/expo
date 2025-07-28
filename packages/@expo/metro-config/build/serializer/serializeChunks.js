@@ -101,7 +101,9 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
             entryChunk.requiredChunks.add(runtimeChunk);
             commonChunk.requiredChunks.add(runtimeChunk);
             // All premodules (including metro-runtime) should load first
-            runtimeChunk.preModules = entryChunk.preModules;
+            for (const preModule of preModules) {
+                runtimeChunk.preModules.add(preModule);
+            }
             entryChunk.preModules = new Set();
             chunks.add(runtimeChunk);
         }
