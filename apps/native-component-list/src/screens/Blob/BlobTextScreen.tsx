@@ -2,11 +2,11 @@ import { ExpoBlob as Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
-import HeadingText from '../../../components/HeadingText';
-import MonoText from '../../../components/MonoText';
-import { Page } from '../../../components/Page';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
+import { Page } from '../../components/Page';
 
-type BytesExampleData = {
+type TextExampleData = {
   key: string;
   title: string;
   code: string;
@@ -14,67 +14,65 @@ type BytesExampleData = {
   options?: any;
 };
 
-const bytesExamples: BytesExampleData[] = [
+const textExamples: TextExampleData[] = [
   {
-    key: 'simple-bytes',
-    title: 'Simple Bytes',
-    code: 'new ExpoBlob(["Hello World"]).bytes()',
-    blobParts: ['Hello World'],
+    key: 'simple-text',
+    title: 'Simple Text',
+    code: 'new ExpoBlob(["Hello", " ", "World"]).text()',
+    blobParts: ['Hello', ' ', 'World'],
     options: {
       type: 'text/plain',
     },
   },
   {
-    key: 'unicode-bytes',
-    title: 'Unicode Bytes',
-    code: 'new ExpoBlob(["Hello 🌍 世界"]).bytes()',
-    blobParts: ['Hello 🌍 世界'],
+    key: 'unicode-text',
+    title: 'Unicode Text',
+    code: 'new ExpoBlob(["Hello", " ", "🌍", " ", "世界"]).text()',
+    blobParts: ['Hello', ' ', '🌍', ' ', '世界'],
     options: {
       type: 'text/plain; charset=utf-8',
     },
   },
   {
-    key: 'mixed-bytes',
-    title: 'Mixed Content Bytes',
-    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).bytes()',
+    key: 'mixed-content',
+    title: 'Mixed Content',
+    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).text()',
     blobParts: ['Text', new Uint8Array([65, 66, 67]), 'More'],
     options: {
       type: 'text/plain',
     },
   },
   {
-    key: 'binary-bytes',
-    title: 'Binary Data Bytes',
-    code: 'new ExpoBlob([new Uint8Array([72, 101, 108, 108, 111])]).bytes()',
-    blobParts: [new Uint8Array([72, 101, 108, 108, 111])],
-    options: {
-      type: 'application/octet-stream',
-    },
-  },
-  {
-    key: 'json-bytes',
-    title: 'JSON Bytes',
-    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).bytes()',
+    key: 'json-content',
+    title: 'JSON Content',
+    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).text()',
     blobParts: [JSON.stringify({ name: 'John', age: 30 })],
     options: {
       type: 'application/json',
     },
   },
+  {
+    key: 'html-content',
+    title: 'HTML Content',
+    code: 'new ExpoBlob(["<h1>", "Hello", "</h1>"]).text()',
+    blobParts: ['<h1>', 'Hello', '</h1>'],
+    options: {
+      type: 'text/html',
+    },
+  },
 ];
 
-type BytesExampleItemProps = {
-  example: BytesExampleData;
+type TextExampleItemProps = {
+  example: TextExampleData;
   result: {
     size: number;
     type: string;
     text: string;
-    bytes: Uint8Array | null;
-    hexString: string;
   } | null;
-  onEvaluate: (example: BytesExampleData) => void;
+  onEvaluate: (example: TextExampleData) => void;
 };
 
-function BytesExampleItem({ example, result, onEvaluate }: BytesExampleItemProps) {
+function TextExampleItem({ example, result, onEvaluate }: TextExampleItemProps) {
   return (
     <View>
       <Text>{example.title}</Text>
@@ -86,9 +84,7 @@ function BytesExampleItem({ example, result, onEvaluate }: BytesExampleItemProps
             <MonoText containerStyle={styles.resultContainer}>
               <Text>Size: {result.size}</Text> {'\n'}
               <Text>Type: {result.type}</Text> {'\n'}
-              <Text>Text: {result.text}</Text> {'\n'}
-              <Text>Hex: {result.hexString}</Text> {'\n'}
-              <Text>Bytes: {result.bytes ? Array.from(result.bytes).join(', ') : 'null'}</Text>
+              <Text>Text: {result.text}</Text>
             </MonoText>
             <Button title="Re-evaluate" onPress={() => onEvaluate(example)} />
           </View>
@@ -98,43 +94,43 @@ function BytesExampleItem({ example, result, onEvaluate }: BytesExampleItemProps
   );
 }
 
-function uint8ArrayToHex(bytes: Uint8Array): string {
-  return Array.from(bytes)
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join(' ');
-}
-
-export default function BlobBytesScreen() {
+export default function BlobTextScreen() {
   const [results, setResults] = useState<{
     [key: string]: {
       size: number;
       type: string;
       text: string;
-      bytes: Uint8Array | null;
-      hexString: string;
     } | null;
   }>({});
 
-  const evaluateBytes = (example: BytesExampleData) => {
+  const evaluateText = (example: TextExampleData) => {
     try {
       const blob = new Blob(example.blobParts, example.options);
-
-      blob.text().then((text: string) => {
-        blob.bytes().then((bytes: Uint8Array) => {
+      blob
+        .text()
+        .then((text: string) => {
           setResults((prev) => ({
             ...prev,
             [example.key]: {
               size: blob.size,
               type: blob.type,
               text,
-              bytes,
-              hexString: uint8ArrayToHex(bytes),
+            },
+          }));
+        })
+        .catch((error) => {
+          console.error('Error reading text:', error);
+          setResults((prev) => ({
+            ...prev,
+            [example.key]: {
+              size: blob.size,
+              type: blob.type,
+              text: 'Error reading text',
             },
           }));
         });
-      });
     } catch (error) {
-      console.error('Error creating blob or reading bytes:', error);
+      console.error('Error creating blob:', error);
       setResults((prev) => ({
         ...prev,
         [example.key]: null,
@@ -146,18 +142,18 @@ export default function BlobBytesScreen() {
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View>
-          <HeadingText>Bytes Method</HeadingText>
-          <MonoText>bytes()</MonoText>
+          <HeadingText>Text Method</HeadingText>
+          <MonoText>text()</MonoText>
         </View>
         <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
-            {bytesExamples.map((example) => (
-              <BytesExampleItem
+            {textExamples.map((example) => (
+              <TextExampleItem
                 key={example.key}
                 example={example}
                 result={results[example.key]}
-                onEvaluate={evaluateBytes}
+                onEvaluate={evaluateText}
               />
             ))}
           </View>

@@ -7,7 +7,7 @@ export const BlobScreens = [
     route: 'expo-blob/constructor',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobConstructorScreen'));
+      return optionalRequire(() => require('./BlobConstructorScreen'));
     },
   },
   {
@@ -15,7 +15,7 @@ export const BlobScreens = [
     route: 'expo-blob/slice',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobSliceScreen'));
+      return optionalRequire(() => require('./BlobSliceScreen'));
     },
   },
   {
@@ -23,7 +23,7 @@ export const BlobScreens = [
     route: 'expo-blob/stream',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobStreamScreen'));
+      return optionalRequire(() => require('./BlobStreamScreen'));
     },
   },
   {
@@ -31,7 +31,7 @@ export const BlobScreens = [
     route: 'expo-blob/text',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobTextScreen'));
+      return optionalRequire(() => require('./BlobTextScreen'));
     },
   },
   {
@@ -39,7 +39,7 @@ export const BlobScreens = [
     route: 'expo-blob/array-buffer',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobArrayBufferScreen'));
+      return optionalRequire(() => require('./BlobArrayBufferScreen'));
     },
   },
   {
@@ -47,7 +47,7 @@ export const BlobScreens = [
     route: 'expo-blob/bytes',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobBytesScreen'));
+      return optionalRequire(() => require('./BlobBytesScreen'));
     },
   },
   {
@@ -55,7 +55,7 @@ export const BlobScreens = [
     route: 'expo-blob/performance',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-blob/BlobPerformanceTestScreen'));
+      return optionalRequire(() => require('./BlobPerformanceTestScreen'));
     },
   },
 ];

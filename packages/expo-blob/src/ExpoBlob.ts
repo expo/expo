@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo';
 
-import { Blob, ExpoBlobModule } from './ExpoBlob.types';
+import { Blob, BlobPart, ExpoBlobModule } from './ExpoBlob.types';
 import {
   DEFAULT_CHUNK_SIZE,
   isTypedArray,
@@ -11,28 +11,28 @@ import {
 const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
 
 export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
-  constructor(blobParts?: any[] | Iterable<any>, options?: BlobPropertyBag) {
-    const inputMapping = (v: any) => {
-      if (v instanceof ArrayBuffer) {
-        return new Uint8Array(v);
+  constructor(blobParts?: BlobPart[] | Iterable<any>, options?: BlobPropertyBag) {
+    const inputMapping = (blobPart: BlobPart) => {
+      if (blobPart instanceof ArrayBuffer) {
+        return new Uint8Array(blobPart);
       }
-      if (v instanceof ExpoBlob || isTypedArray(v)) {
-        return v;
+      if (blobPart instanceof ExpoBlob || isTypedArray(blobPart)) {
+        return blobPart;
       }
-      return String(v);
+      return String(blobPart);
     };
 
-    const bps: any[] = [];
+    const processedBlobParts: BlobPart[] = [];
 
     if (blobParts === undefined) {
       super([], preprocessOptions(options));
     } else if (blobParts === null || typeof blobParts !== 'object') {
       throw TypeError();
     } else {
-      for (const bp of blobParts) {
-        bps.push(inputMapping(bp));
+      for (const blobPart of blobParts) {
+        processedBlobParts.push(inputMapping(blobPart));
       }
-      super(bps, preprocessOptions(options));
+      super(processedBlobParts, preprocessOptions(options));
     }
   }
 

@@ -3,16 +3,16 @@ import { DEFAULT_CHUNK_SIZE, isTypedArray, normalizedContentType, preprocessOpti
 const NativeBlobModule = requireNativeModule('ExpoBlob');
 export class ExpoBlob extends NativeBlobModule.Blob {
     constructor(blobParts, options) {
-        const inputMapping = (v) => {
-            if (v instanceof ArrayBuffer) {
-                return new Uint8Array(v);
+        const inputMapping = (blobPart) => {
+            if (blobPart instanceof ArrayBuffer) {
+                return new Uint8Array(blobPart);
             }
-            if (v instanceof ExpoBlob || isTypedArray(v)) {
-                return v;
+            if (blobPart instanceof ExpoBlob || isTypedArray(blobPart)) {
+                return blobPart;
             }
-            return String(v);
+            return String(blobPart);
         };
-        const bps = [];
+        const processedBlobParts = [];
         if (blobParts === undefined) {
             super([], preprocessOptions(options));
         }
@@ -20,10 +20,10 @@ export class ExpoBlob extends NativeBlobModule.Blob {
             throw TypeError();
         }
         else {
-            for (const bp of blobParts) {
-                bps.push(inputMapping(bp));
+            for (const blobPart of blobParts) {
+                processedBlobParts.push(inputMapping(blobPart));
             }
-            super(bps, preprocessOptions(options));
+            super(processedBlobParts, preprocessOptions(options));
         }
     }
     slice(start, end, contentType) {

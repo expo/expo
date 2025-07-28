@@ -59,21 +59,21 @@ export const preprocessOptions = (options?: BlobPropertyBag): BlobPropertyBag | 
     throw TypeError();
   }
 
-  let e = options.endings;
-  let t = options.type;
-  if (e && typeof e === 'object') {
-    e = String(e);
+  let endings: string | undefined = options.endings;
+  let type: string | undefined = options.type;
+  if (endings && typeof endings === 'object') {
+    endings = String(endings);
   }
-  if (t && typeof t === 'object') {
-    t = String(t);
+  if (type && typeof type === 'object') {
+    type = String(type);
   }
-  if (e !== undefined && e !== 'native' && e !== 'transparent') {
+  if (endings !== undefined && endings !== 'native' && endings !== 'transparent') {
     throw TypeError();
   }
 
   return {
-    endings: e,
-    type: normalizedContentType(t),
+    endings,
+    type: normalizedContentType(type),
   };
 };
 
@@ -83,8 +83,9 @@ export const preprocessOptions = (options?: BlobPropertyBag): BlobPropertyBag | 
  * This value is not specified by the W3C File API specification or MDN documentation.
  * It is chosen as a widely adopted industry standard that balances performance
  * (by reducing the number of read operations) and memory usage (by avoiding excessively large buffers).
+ * This value is commonly used in Node.js streams and V8 engine implementations.
  *
- * @see https://w3c.github.io/FileAPI/
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob
+ * @see https://nodejs.org/api/stream.html#stream_buffering
+ * @see https://github.com/nodejs/node/blob/main/lib/internal/streams/state.js
  */
 export const DEFAULT_CHUNK_SIZE = 65_536;

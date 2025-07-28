@@ -40,9 +40,10 @@ export declare const preprocessOptions: (options?: BlobPropertyBag) => BlobPrope
  * This value is not specified by the W3C File API specification or MDN documentation.
  * It is chosen as a widely adopted industry standard that balances performance
  * (by reducing the number of read operations) and memory usage (by avoiding excessively large buffers).
+ * This value is commonly used in Node.js streams and V8 engine implementations.
  *
- * @see https://w3c.github.io/FileAPI/
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob
+ * @see https://nodejs.org/api/stream.html#stream_buffering
+ * @see https://github.com/nodejs/node/blob/main/lib/internal/streams/state.js
  */
 export declare const DEFAULT_CHUNK_SIZE = 65536;
 //# sourceMappingURL=utils.d.ts.map

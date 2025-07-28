@@ -2,9 +2,9 @@ import { ExpoBlob as Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
-import HeadingText from '../../../components/HeadingText';
-import MonoText from '../../../components/MonoText';
-import { Page } from '../../../components/Page';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
+import { Page } from '../../components/Page';
 
 type SliceExampleData = {
   key: string;

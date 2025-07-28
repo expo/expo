@@ -2,11 +2,11 @@ import { ExpoBlob as Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
-import HeadingText from '../../../components/HeadingText';
-import MonoText from '../../../components/MonoText';
-import { Page } from '../../../components/Page';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
+import { Page } from '../../components/Page';
 
-type ArrayBufferExampleData = {
+type BytesExampleData = {
   key: string;
   title: string;
   code: string;
@@ -14,47 +14,47 @@ type ArrayBufferExampleData = {
   options?: any;
 };
 
-const arrayBufferExamples: ArrayBufferExampleData[] = [
+const bytesExamples: BytesExampleData[] = [
   {
-    key: 'simple-arraybuffer',
-    title: 'Simple ArrayBuffer',
-    code: 'new ExpoBlob(["Hello World"]).arrayBuffer()',
+    key: 'simple-bytes',
+    title: 'Simple Bytes',
+    code: 'new ExpoBlob(["Hello World"]).bytes()',
     blobParts: ['Hello World'],
     options: {
       type: 'text/plain',
     },
   },
   {
-    key: 'unicode-arraybuffer',
-    title: 'Unicode ArrayBuffer',
-    code: 'new ExpoBlob(["Hello 🌍 世界"]).arrayBuffer()',
+    key: 'unicode-bytes',
+    title: 'Unicode Bytes',
+    code: 'new ExpoBlob(["Hello 🌍 世界"]).bytes()',
     blobParts: ['Hello 🌍 世界'],
     options: {
       type: 'text/plain; charset=utf-8',
     },
   },
   {
-    key: 'mixed-arraybuffer',
-    title: 'Mixed Content ArrayBuffer',
-    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).arrayBuffer()',
+    key: 'mixed-bytes',
+    title: 'Mixed Content Bytes',
+    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).bytes()',
     blobParts: ['Text', new Uint8Array([65, 66, 67]), 'More'],
     options: {
       type: 'text/plain',
     },
   },
   {
-    key: 'binary-arraybuffer',
-    title: 'Binary Data ArrayBuffer',
-    code: 'new ExpoBlob([new Uint8Array([72, 101, 108, 108, 111])]).arrayBuffer()',
+    key: 'binary-bytes',
+    title: 'Binary Data Bytes',
+    code: 'new ExpoBlob([new Uint8Array([72, 101, 108, 108, 111])]).bytes()',
     blobParts: [new Uint8Array([72, 101, 108, 108, 111])],
     options: {
       type: 'application/octet-stream',
     },
   },
   {
-    key: 'json-arraybuffer',
-    title: 'JSON ArrayBuffer',
-    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).arrayBuffer()',
+    key: 'json-bytes',
+    title: 'JSON Bytes',
+    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).bytes()',
     blobParts: [JSON.stringify({ name: 'John', age: 30 })],
     options: {
       type: 'application/json',
@@ -62,19 +62,19 @@ const arrayBufferExamples: ArrayBufferExampleData[] = [
   },
 ];
 
-type ArrayBufferExampleItemProps = {
-  example: ArrayBufferExampleData;
+type BytesExampleItemProps = {
+  example: BytesExampleData;
   result: {
     size: number;
     type: string;
     text: string;
-    arrayBuffer: ArrayBufferLike | null;
+    bytes: Uint8Array | null;
     hexString: string;
   } | null;
-  onEvaluate: (example: ArrayBufferExampleData) => void;
+  onEvaluate: (example: BytesExampleData) => void;
 };
 
-function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExampleItemProps) {
+function BytesExampleItem({ example, result, onEvaluate }: BytesExampleItemProps) {
   return (
     <View>
       <Text>{example.title}</Text>
@@ -87,7 +87,8 @@ function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExam
               <Text>Size: {result.size}</Text> {'\n'}
               <Text>Type: {result.type}</Text> {'\n'}
               <Text>Text: {result.text}</Text> {'\n'}
-              <Text>Hex: {result.hexString}</Text>
+              <Text>Hex: {result.hexString}</Text> {'\n'}
+              <Text>Bytes: {result.bytes ? Array.from(result.bytes).join(', ') : 'null'}</Text>
             </MonoText>
             <Button title="Re-evaluate" onPress={() => onEvaluate(example)} />
           </View>
@@ -97,44 +98,43 @@ function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExam
   );
 }
 
-function arrayBufferToHex(buffer: ArrayBufferLike): string {
-  const bytes = new Uint8Array(buffer);
+function uint8ArrayToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
     .map((byte) => byte.toString(16).padStart(2, '0'))
     .join(' ');
 }
 
-export default function BlobArrayBufferScreen() {
+export default function BlobBytesScreen() {
   const [results, setResults] = useState<{
     [key: string]: {
       size: number;
       type: string;
       text: string;
-      arrayBuffer: ArrayBufferLike | null;
+      bytes: Uint8Array | null;
       hexString: string;
     } | null;
   }>({});
 
-  const evaluateArrayBuffer = (example: ArrayBufferExampleData) => {
+  const evaluateBytes = (example: BytesExampleData) => {
     try {
       const blob = new Blob(example.blobParts, example.options);
 
       blob.text().then((text: string) => {
-        blob.arrayBuffer().then((arrayBuffer: ArrayBufferLike) => {
+        blob.bytes().then((bytes: Uint8Array) => {
           setResults((prev) => ({
             ...prev,
             [example.key]: {
               size: blob.size,
               type: blob.type,
               text,
-              arrayBuffer,
-              hexString: arrayBufferToHex(arrayBuffer),
+              bytes,
+              hexString: uint8ArrayToHex(bytes),
             },
           }));
         });
       });
     } catch (error) {
-      console.error('Error creating blob or reading arrayBuffer:', error);
+      console.error('Error creating blob or reading bytes:', error);
       setResults((prev) => ({
         ...prev,
         [example.key]: null,
@@ -146,18 +146,18 @@ export default function BlobArrayBufferScreen() {
     <Page>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View>
-          <HeadingText>ArrayBuffer Method</HeadingText>
-          <MonoText>arrayBuffer()</MonoText>
+          <HeadingText>Bytes Method</HeadingText>
+          <MonoText>bytes()</MonoText>
         </View>
         <View>
           <HeadingText>Examples:</HeadingText>
           <View style={styles.exmaplesContainer}>
-            {arrayBufferExamples.map((example) => (
-              <ArrayBufferExampleItem
+            {bytesExamples.map((example) => (
+              <BytesExampleItem
                 key={example.key}
                 example={example}
                 result={results[example.key]}
-                onEvaluate={evaluateArrayBuffer}
+                onEvaluate={evaluateBytes}
               />
             ))}
           </View>

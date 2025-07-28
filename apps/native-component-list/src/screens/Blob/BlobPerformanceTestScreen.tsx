@@ -3,9 +3,9 @@ import { ExpoBlob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
-import HeadingText from '../../../components/HeadingText';
-import MonoText from '../../../components/MonoText';
-import { Page } from '../../../components/Page';
+import HeadingText from '../../components/HeadingText';
+import MonoText from '../../components/MonoText';
+import { Page } from '../../components/Page';
 
 type PerformanceTestData = {
   key: string;
@@ -51,9 +51,7 @@ const performanceTest: PerformanceTestData[] = [
   {
     key: 'bmp-file-test',
     blobOperation: async () => {
-      const asset = Asset.fromModule(
-        require('../../../../assets/expo-blob/performance-test-2mb.bmp')
-      );
+      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-2mb.bmp'));
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
@@ -67,9 +65,7 @@ const performanceTest: PerformanceTestData[] = [
       return T1 - T0;
     },
     expoBlobOperation: async () => {
-      const asset = Asset.fromModule(
-        require('../../../../assets/expo-blob/performance-test-2mb.bmp')
-      );
+      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-2mb.bmp'));
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
@@ -88,9 +84,7 @@ const performanceTest: PerformanceTestData[] = [
   {
     key: 'audio-file-test',
     blobOperation: async () => {
-      const asset = Asset.fromModule(
-        require('../../../../assets/expo-blob/performance-test-1mb.mp3')
-      );
+      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-1mb.mp3'));
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
@@ -104,9 +98,7 @@ const performanceTest: PerformanceTestData[] = [
       return T1 - T0;
     },
     expoBlobOperation: async () => {
-      const asset = Asset.fromModule(
-        require('../../../../assets/expo-blob/performance-test-1mb.mp3')
-      );
+      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-1mb.mp3'));
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
@@ -125,9 +117,7 @@ const performanceTest: PerformanceTestData[] = [
   {
     key: 'video-file-test',
     blobOperation: async () => {
-      const asset = Asset.fromModule(
-        require('../../../../assets/expo-blob/performance-test-1mb.mp4')
-      );
+      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-1mb.mp4'));
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);
@@ -141,9 +131,7 @@ const performanceTest: PerformanceTestData[] = [
       return T1 - T0;
     },
     expoBlobOperation: async () => {
-      const asset = Asset.fromModule(
-        require('../../../../assets/expo-blob/performance-test-1mb.mp4')
-      );
+      const asset = Asset.fromModule(require('../../../assets/expo-blob/performance-test-1mb.mp4'));
       await asset.downloadAsync();
       const uri = asset.localUri || asset.uri;
       const response = await fetch(uri);

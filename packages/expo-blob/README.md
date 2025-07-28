@@ -2,20 +2,27 @@
 
 A Expo package that provides a Blob implementation for handling binary data, similar to the web Blob API.
 
-## Features
+# Installation in managed Expo projects
 
-- **Binary Data Handling**: Create and manipulate binary data objects
-- **Cross-Platform**: Works on iOS, Android, and Web
-- **Web API Compatible**: Follows the standard Blob API specification
-- **TypeScript Support**: Full TypeScript definitions included
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/blob/).
 
-## Installation
+# Installation in bare React Native projects
 
-This package is part of the Expo SDK and is automatically included when you use Expo. If you're using a bare React Native project, you can install it manually:
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
+
+### Add the package to your npm dependencies
 
 ```bash
 npx expo install expo-blob
 ```
+
+### Configure for Android
+
+No additional set up necessary.
+
+### Configure for iOS
+
+Run `npx pod-install` after installing the npm package.
 
 ## Usage
 
@@ -136,16 +143,6 @@ new Blob(blobParts?: BlobPart[], options?: BlobPropertyBag)
 - `arrayBuffer()`: Returns a Promise that resolves with the blob's content as an ArrayBuffer
 - `stream()`: Returns a ReadableStream for streaming the blob's content
 
-## Platform Support
+# Contributing
 
-- ✅ iOS
-- ✅ Android
-- ✅ Web
-
-## Contributing
-
-This package is part of the Expo SDK. To contribute, please see the [Expo contributing guide](https://github.com/expo/expo/blob/main/CONTRIBUTING.md).
-
-## License
-
-MIT
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
