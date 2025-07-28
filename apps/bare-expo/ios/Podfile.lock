@@ -3620,9 +3620,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - SDWebImage (5.21.1):
-    - SDWebImage/Core (= 5.21.1)
-  - SDWebImage/Core (5.21.1)
+  - SDWebImage (5.21.0):
+    - SDWebImage/Core (= 5.21.0)
+  - SDWebImage/Core (5.21.0)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -4267,7 +4267,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 4c8515fc532ea0926817c5b4fdc6b9a19b42363e
   expo-dev-menu: 547f393e5fbcd62bb2f8357998af38d697fa1b98
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
-  ExpoAppIntegrity: 4730a3328b6261297db919772d6f08af72850bee
+  ExpoAppIntegrity: 2bba1c610a4757ecee7b2f40e38688f79ed2267e
   ExpoAppleAuthentication: 69a48d4633024124a33fda650dba706c216d6c76
   ExpoAsset: b5bfc6425d1e9a09e8e1368646b98fe5ae7ed074
   ExpoAudio: f6bcc6868e643e6fa74b6e20fd7d20ecc89b4e28
@@ -4422,13 +4422,13 @@ SPEC CHECKSUMS:
   RNReanimated: 9afbfc6ca21aea3291cc058334b53b6069a2808b
   RNScreens: 9ad148de25aabec3bd8aa81d1709ad70f7fec7cc
   RNSVG: c73af7848d94ca3e8136a5191d055e3c1d6fedab
-  SDWebImage: f29024626962457f3470184232766516dee8dfea
+  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   UMAppLoader: 55159b69750129faa7a51c493cb8ea55a7b64eb9
-  Yoga: 703055a9f39562521cdb8657162dfd80f8c174c3
+  Yoga: daa1e4de4b971b977b23bc842aaa3e135324f1f3
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: a4b563d9d9c73e29b619314cb8136ce02bea61e0
