@@ -11,9 +11,7 @@ class BlobModule : Module() {
 
     Class(Blob::class) {
       Constructor { blobParts: List<BlobPart>?, options: BlobOptionsBag? ->
-        val type = options?.type ?: DEFAULT_TYPE
-        val endings = options?.endings ?: EndingType.TRANSPARENT
-        Blob((blobParts ?: listOf()).internal(endings == EndingType.NATIVE), type)
+        makeBlob(blobParts, options ?: BlobOptionsBag())
       }
 
       Property("size") { blob: Blob ->

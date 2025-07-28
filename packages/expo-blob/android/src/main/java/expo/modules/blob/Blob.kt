@@ -1,6 +1,5 @@
 package expo.modules.blob
 
-import android.util.Log
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -8,30 +7,29 @@ import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.EitherOfThree
 import expo.modules.kotlin.types.Enumerable
 import java.io.ByteArrayOutputStream
+import kotlin.math.max
+import kotlin.math.min
 
-class Blob() : SharedObject() {
-  var blobParts: List<InternalBlobPart> = listOf()
-  var type: String = ""
+internal const val DEFAULT_TYPE = ""
+
+class Blob(
+  var blobParts: List<InternalBlobPart> = listOf(),
+  var type: String = DEFAULT_TYPE,
+) : SharedObject() {
+
   val size: Int by lazy {
-    var size = 0
-    for (bp in blobParts) {
-      size += bp.size()
-    }
-    return@lazy size
+    blobParts.sumOf{ it.size() }
   }
-
-  constructor(blobParts: List<InternalBlobPart>, type: String) : this() {
-    this.blobParts = blobParts
-    this.type = if (validType(type)) type.lowercase() else ""
+  init {
+    type = if (validType(type)) type.lowercase() else DEFAULT_TYPE
   }
-
   public override fun getAdditionalMemoryPressure(): Int {
     return size
   }
 
   fun bytesToStream(byteStream: ByteArrayOutputStream) {
-    for (bp in blobParts) {
-      bp.bytesToStream(byteStream)
+    for (blobPart in blobParts) {
+      blobPart.bytesToStream(byteStream)
     }
   }
 
@@ -42,22 +40,16 @@ class Blob() : SharedObject() {
   }
 
   private fun InternalBlobPart.offsetSlice(start: Int, end: Int, offset: Int): InternalBlobPart {
-    var s: Int = start - offset
-    var e: Int = end - offset
-    if (s <= 0 && e >= size()) {
+    var startIndex: Int = max(start - offset, 0)
+    var endIndex: Int = min(end - offset, size())
+    if (startIndex == 0 && endIndex == size()) {
       return this
     }
-    if (s < 0) {
-      s = 0
-    }
-    if (e > this.size()) {
-      e = this.size()
-    }
     return when (this) {
-      is InternalBlobPart.StringPart -> InternalBlobPart.StringPart(string.substring(s, e))
-      is InternalBlobPart.BlobPart -> InternalBlobPart.BlobPart(blob.slice(s, e, ""))
-      is InternalBlobPart.BufferPart -> InternalBlobPart.BufferPart(
-        buffer.slice(s..<e).toByteArray()
+      is InternalBlobPart.StringWrapper -> InternalBlobPart.StringWrapper(string.substring(startIndex, endIndex))
+      is InternalBlobPart.BlobWrapper -> InternalBlobPart.BlobWrapper(blob.slice(startIndex, endIndex, ""))
+      is InternalBlobPart.BufferWrapper -> InternalBlobPart.BufferWrapper(
+        buffer.slice(startIndex..<endIndex).toByteArray()
       )
     }
   }
@@ -71,17 +63,16 @@ class Blob() : SharedObject() {
     }
     var i: Int = 0
     val bps: MutableList<InternalBlobPart> = mutableListOf()
-
-    for (bp in blobParts) {
-      if (i + bp.size() <= start) {
-        i += bp.size()
+    for (blobPart in blobParts) {
+      if (i + blobPart.size() <= start) {
+        i += blobPart.size()
         continue
       }
       if (i >= end) {
         break
       }
-      bps.add(bp.offsetSlice(start, end, i))
-      i += bp.size()
+      bps.add(blobPart.offsetSlice(start, end, i))
+      i += blobPart.size()
     }
 
     return Blob(bps, contentType)
@@ -89,8 +80,8 @@ class Blob() : SharedObject() {
 }
 
 private fun validType(type: String): Boolean {
-  for (c in type) {
-    if (c.code < 0x20 || c.code > 0x7E) {
+  for (char in type) {
+    if (char.code < 0x20 || char.code > 0x7E) {
       return false
     }
   }
@@ -100,77 +91,77 @@ private fun validType(type: String): Boolean {
 typealias BlobPart = EitherOfThree<String, Blob, TypedArray>
 
 private fun TypedArray.bytes(): ByteArray {
-  val ba = ByteArray(this.byteLength)
+  val byteArray = ByteArray(this.byteLength)
 
   for (i in 0..<this.byteLength) {
-    ba[i] = this.readByte(i)
+    byteArray[i] = this.readByte(i)
   }
 
-  return ba
+  return byteArray
 }
 
-const val CR = '\r'
-const val LF = '\n'
 private fun String.toNativeNewlines(): String {
-  var i = 0
-  var str = ""
-
-  while (i < this.length) {
-    if (this[i] == CR) {
-      str += LF
-      i += 1
-      if (i < this.length && this[i] == LF) {
-        i += 1
-      }
-      continue
+  val result = StringBuilder(length)
+  var prevCR = false
+  for (char in this) {
+    if (char == '\r') {
+      result.append('\n')
+      prevCR = true
+      continue;
     }
-    str += this[i]
-    i += 1
+    if (!prevCR || char != '\n') {
+      result.append(char)
+    }
+    prevCR = false
   }
-  return str
+  return result.toString()
 }
 
 internal fun List<BlobPart>.internal(nativeNewlines: Boolean): List<InternalBlobPart> {
-  return this.map { bp: BlobPart ->
-    if (bp.`is`(String::class)) {
-      bp.get(String::class).let {
+  return this.map { blobPart: BlobPart ->
+    if (blobPart.`is`(String::class)) {
+      blobPart.get(String::class).let {
         val str = if (nativeNewlines) {
           it.toNativeNewlines()
         } else {
           it
         }
-        InternalBlobPart.StringPart(str)
+        InternalBlobPart.StringWrapper(str)
       }
-    } else if (bp.`is`(Blob::class)) {
-      bp.get(Blob::class).let {
-        InternalBlobPart.BlobPart(it)
+    } else if (blobPart.`is`(Blob::class)) {
+      blobPart.get(Blob::class).let {
+        InternalBlobPart.BlobWrapper(it)
       }
     } else {
-      bp.get(TypedArray::class).let {
-        InternalBlobPart.BufferPart(it.bytes())
+      blobPart.get(TypedArray::class).let {
+        InternalBlobPart.BufferWrapper(it.bytes())
       }
     }
   }
 }
 
+internal fun makeBlob(blobParts: List<BlobPart>?, options: BlobOptionsBag = BlobOptionsBag()): Blob {
+  return Blob((blobParts ?: listOf()).internal(options.endings == EndingType.NATIVE), options.type)
+}
+
 sealed class InternalBlobPart() {
-  data class StringPart(val string: String) : InternalBlobPart()
-  data class BlobPart(val blob: Blob) : InternalBlobPart()
-  data class BufferPart(val buffer: ByteArray) : InternalBlobPart()
+  data class StringWrapper(val string: String) : InternalBlobPart()
+  data class BlobWrapper(val blob: Blob) : InternalBlobPart()
+  data class BufferWrapper(val buffer: ByteArray) : InternalBlobPart()
 
   fun size(): Int {
     return when (this) {
-      is StringPart -> string.toByteArray().size
-      is BlobPart -> blob.size
-      is BufferPart -> buffer.size
+      is StringWrapper -> string.toByteArray().size
+      is BlobWrapper -> blob.size
+      is BufferWrapper -> buffer.size
     }
   }
 
   fun bytesToStream(byteStream: ByteArrayOutputStream) {
     when (this) {
-      is StringPart -> byteStream.write(string.toByteArray())
-      is BlobPart -> blob.bytesToStream(byteStream)
-      is BufferPart -> byteStream.write(buffer)
+      is StringWrapper -> byteStream.write(string.toByteArray())
+      is BlobWrapper -> blob.bytesToStream(byteStream)
+      is BufferWrapper -> byteStream.write(buffer)
     }
   }
 }
@@ -180,11 +171,9 @@ enum class EndingType(val str: String = "transparent") : Enumerable {
   NATIVE("native")
 }
 
-internal const val DEFAULT_TYPE = ""
-
 class BlobOptionsBag : Record {
   @Field
-  val type: String = ""
+  val type: String = DEFAULT_TYPE
 
   @Field
   val endings: EndingType = EndingType.TRANSPARENT
