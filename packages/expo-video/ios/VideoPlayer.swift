@@ -25,6 +25,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   // PIP restoration callback storage
   private var pipRestoreCallbacks: [String: Any]?
+  private var pendingPipRestoreCallbacks: [String: (Bool) -> Void] = [:]
 
   var playbackRate: Float = 1.0 {
     didSet {
@@ -479,41 +480,118 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     return self.pipRestoreCallbacks
   }
 
-  // Called by VideoView when PIP restoration is needed
+    // Called by VideoView when PIP restoration is needed
   func handlePipRestore(completion: @escaping (Bool) -> Void) {
     guard let callbacks = pipRestoreCallbacks else {
-      completion(true)  // Default to allowing restoration if no callbacks set
+      completion(true) // Default to allowing restoration if no callbacks set
       return
     }
+
+    // Create unique callback ID for this restoration request
+    let callbackId = UUID().uuidString
+    
+    // Store the completion handler for later use
+    pendingPipRestoreCallbacks[callbackId] = completion
 
     // Create context for the callback
     let playerId = String(describing: ObjectIdentifier(self))
     let context: [String: Any] = [
       "playerId": playerId,
-      "timestamp": Date().timeIntervalSince1970 * 1000,  // Convert to milliseconds
+      "timestamp": Date().timeIntervalSince1970 * 1000, // Convert to milliseconds
       "currentTime": self.currentTime,
       "isPlaying": self.isPlaying,
       "metadata": [
         "duration": self.ref.currentItem?.duration.seconds ?? 0
-      ],
+      ]
     ]
 
     // Call the JavaScript onBeforePipRestore callback if it exists
-    if let onBeforePipRestore = callbacks["onBeforePipRestore"] {
-      // Emit event to JavaScript with context and handle response
-      self.emit(
-        event: "onBeforePipRestore",
-        arguments: [
-          "context": context,
-          "callbackId": UUID().uuidString,
-        ])
-
-      // For now, default to allowing restoration
-      // TODO: Implement proper async callback handling
-      completion(true)
+    if callbacks["onBeforePipRestore"] != nil {
+      // Emit event to JavaScript with context and callbackId
+      self.emit(event: "onBeforePipRestore", arguments: [
+        "context": context,
+        "callbackId": callbackId
+      ])
+      
+      // Set a timeout to prevent hanging forever
+      DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) { [weak self] in
+        self?.timeoutPipRestoreCallback(callbackId: callbackId)
+      }
     } else {
+      // No callback registered, allow restoration immediately
+      pendingPipRestoreCallbacks.removeValue(forKey: callbackId)
       completion(true)
     }
+  }
+
+  // Called from JavaScript via AsyncFunction when decision is made
+  func handlePipRestoreResponse(callbackId: String, decision: [String: Any]) {
+    guard let completion = pendingPipRestoreCallbacks.removeValue(forKey: callbackId) else {
+      // Callback already handled or timed out
+      return
+    }
+
+    let allowRestore = decision["allowRestore"] as? Bool ?? true
+    let delay = decision["delay"] as? Double ?? 0
+
+    if delay > 0 {
+      // Honor the delay before calling completion
+      DispatchQueue.main.asyncAfter(deadline: .now() + delay / 1000.0) {
+        completion(allowRestore)
+      }
+    } else {
+      // No delay, call completion immediately
+      completion(allowRestore)
+    }
+
+    // Notify about the restoration result
+    let playerId = String(describing: ObjectIdentifier(self))
+    let context: [String: Any] = [
+      "playerId": playerId,
+      "timestamp": Date().timeIntervalSince1970 * 1000,
+      "currentTime": self.currentTime,
+      "isPlaying": self.isPlaying
+    ]
+
+    if allowRestore {
+      DispatchQueue.main.asyncAfter(deadline: .now() + (delay / 1000.0) + 0.1) {
+        self.notifyPipRestoreCompleted(context: context)
+      }
+    } else {
+      let error: [String: Any] = [
+        "code": "RESTORE_REJECTED",
+        "message": "PIP restoration was rejected by callback"
+      ]
+      self.notifyPipRestoreFailed(error: error, context: context)
+    }
+  }
+
+  // Handle timeout for callbacks that don't respond
+  private func timeoutPipRestoreCallback(callbackId: String) {
+    guard let completion = pendingPipRestoreCallbacks.removeValue(forKey: callbackId) else {
+      return // Already handled
+    }
+
+    print("PIP restore callback timed out for callbackId: \(callbackId)")
+    
+    // Default to allowing restoration on timeout
+    completion(true)
+
+    // Notify about timeout error
+    let playerId = String(describing: ObjectIdentifier(self))
+    let context: [String: Any] = [
+      "playerId": playerId,
+      "timestamp": Date().timeIntervalSince1970 * 1000,
+      "currentTime": self.currentTime,
+      "isPlaying": self.isPlaying
+    ]
+
+    let error: [String: Any] = [
+      "code": "CALLBACK_TIMEOUT",
+      "message": "PIP restoration callback timed out after 10 seconds"
+    ]
+
+    self.notifyPipRestoreFailed(error: error, context: context)
   }
 
   func notifyPipRestoreCompleted(context: [String: Any]) {

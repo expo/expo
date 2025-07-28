@@ -17,6 +17,41 @@ NativeVideoModule.VideoPlayer.prototype.replaceAsync = function (source) {
 NativeVideoModule.VideoPlayer.prototype.setPipRestoreCallbacks = function (callbacks) {
     // Store callbacks on the instance for JavaScript-side access
     this._pipRestoreCallbacks = callbacks;
+    // Set up event listeners for PIP restoration events
+    this.addListener('onBeforePipRestore', async (event) => {
+        const { context, callbackId } = event;
+        if (callbacks.onBeforePipRestore) {
+            try {
+                const decision = await callbacks.onBeforePipRestore(context);
+                // Send response back to native
+                const nativeModule = NativeVideoModule;
+                if (nativeModule.respondToPipRestore) {
+                    nativeModule.respondToPipRestore(this, callbackId, decision);
+                }
+            }
+            catch (error) {
+                console.error('Error in onBeforePipRestore callback:', error);
+                // Send rejection response on error
+                const nativeModule = NativeVideoModule;
+                if (nativeModule.respondToPipRestore) {
+                    nativeModule.respondToPipRestore(this, callbackId, {
+                        allowRestore: false,
+                        metadata: { error: error.message },
+                    });
+                }
+            }
+        }
+    });
+    this.addListener('onAfterPipRestore', (event) => {
+        if (callbacks.onAfterPipRestore) {
+            callbacks.onAfterPipRestore(event.context);
+        }
+    });
+    this.addListener('onPipRestoreFailed', (event) => {
+        if (callbacks.onPipRestoreFailed) {
+            callbacks.onPipRestoreFailed(event.error);
+        }
+    });
     // Call native method to register callbacks if platform supports it
     const nativeModule = NativeVideoModule;
     if (nativeModule.setPipRestoreCallbacks) {

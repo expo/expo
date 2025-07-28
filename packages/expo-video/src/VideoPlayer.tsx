@@ -1,7 +1,17 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
 import NativeVideoModule from './NativeVideoModule';
-import { VideoSource, VideoPlayer, PipRestoreCallbacks } from './VideoPlayer.types';
+import {
+  VideoSource,
+  VideoPlayer,
+  PipRestoreCallbacks,
+  PipRestoreDecision,
+} from './VideoPlayer.types';
+import type {
+  PipRestoreRequestEventPayload,
+  PipRestoreCompletedEventPayload,
+  PipRestoreFailedEventPayload,
+} from './VideoPlayerEvents.types';
 import resolveAssetSource from './resolveAssetSource';
 
 // Type extensions for PIP restoration methods
@@ -12,6 +22,11 @@ interface VideoPlayerWithPipCallbacks extends VideoPlayer {
 interface NativeVideoModuleWithPipMethods {
   setPipRestoreCallbacks?: (player: VideoPlayer, callbacks: PipRestoreCallbacks) => void;
   clearPipRestoreCallbacks?: (player: VideoPlayer) => void;
+  respondToPipRestore?: (
+    player: VideoPlayer,
+    callbackId: string,
+    decision: PipRestoreDecision
+  ) => void;
 }
 
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
@@ -41,6 +56,48 @@ NativeVideoModule.VideoPlayer.prototype.setPipRestoreCallbacks = function (
 ) {
   // Store callbacks on the instance for JavaScript-side access
   this._pipRestoreCallbacks = callbacks;
+
+  // Set up event listeners for PIP restoration events
+  this.addListener('onBeforePipRestore', async (event: PipRestoreRequestEventPayload) => {
+    const { context, callbackId } = event;
+
+    if (callbacks.onBeforePipRestore) {
+      try {
+        const decision = await callbacks.onBeforePipRestore(context);
+
+        // Send response back to native
+        const nativeModule = NativeVideoModule as typeof NativeVideoModule &
+          NativeVideoModuleWithPipMethods;
+        if (nativeModule.respondToPipRestore) {
+          nativeModule.respondToPipRestore(this, callbackId, decision);
+        }
+      } catch (error) {
+        console.error('Error in onBeforePipRestore callback:', error);
+
+        // Send rejection response on error
+        const nativeModule = NativeVideoModule as typeof NativeVideoModule &
+          NativeVideoModuleWithPipMethods;
+        if (nativeModule.respondToPipRestore) {
+          nativeModule.respondToPipRestore(this, callbackId, {
+            allowRestore: false,
+            metadata: { error: (error as Error).message },
+          });
+        }
+      }
+    }
+  });
+
+  this.addListener('onAfterPipRestore', (event: PipRestoreCompletedEventPayload) => {
+    if (callbacks.onAfterPipRestore) {
+      callbacks.onAfterPipRestore(event.context);
+    }
+  });
+
+  this.addListener('onPipRestoreFailed', (event: PipRestoreFailedEventPayload) => {
+    if (callbacks.onPipRestoreFailed) {
+      callbacks.onPipRestoreFailed(event.error);
+    }
+  });
 
   // Call native method to register callbacks if platform supports it
   const nativeModule = NativeVideoModule as typeof NativeVideoModule &

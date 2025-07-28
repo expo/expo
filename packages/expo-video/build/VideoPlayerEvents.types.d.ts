@@ -66,6 +66,25 @@ export type VideoPlayerEvents = {
      * @platform ios
      */
     isExternalPlaybackActiveChange(payload: IsExternalPlaybackActiveChangeEventPayload): void;
+    /**
+     * Handler for an event emitted when PIP restoration is requested by the system.
+     * The callback should return a decision about whether to allow restoration.
+     *
+     * @platform ios
+     */
+    onBeforePipRestore(payload: PipRestoreRequestEventPayload): void;
+    /**
+     * Handler for an event emitted when PIP restoration has completed successfully.
+     *
+     * @platform ios
+     */
+    onAfterPipRestore(payload: PipRestoreCompletedEventPayload): void;
+    /**
+     * Handler for an event emitted when PIP restoration fails.
+     *
+     * @platform ios
+     */
+    onPipRestoreFailed(payload: PipRestoreFailedEventPayload): void;
 };
 /**
  * Data delivered with the [`statusChange`](#videoplayerevents) event.
@@ -273,6 +292,61 @@ export type IsExternalPlaybackActiveChangeEventPayload = {
      * The previous external playback status.
      */
     oldIsExternalPlaybackActive?: boolean;
+};
+/**
+ * Data delivered with PIP restoration request events.
+ */
+export type PipRestoreRequestEventPayload = {
+    /**
+     * Context information about the restoration request.
+     */
+    context: {
+        playerId: string;
+        timestamp: number;
+        currentTime: number;
+        isPlaying: boolean;
+        metadata?: {
+            title?: string;
+            duration?: number;
+        };
+    };
+    /**
+     * Unique identifier for this restoration request.
+     */
+    callbackId: string;
+};
+/**
+ * Data delivered with PIP restoration completed events.
+ */
+export type PipRestoreCompletedEventPayload = {
+    /**
+     * Context information about the completed restoration.
+     */
+    context: {
+        playerId: string;
+        timestamp: number;
+        currentTime: number;
+        isPlaying: boolean;
+    };
+};
+/**
+ * Data delivered with PIP restoration failed events.
+ */
+export type PipRestoreFailedEventPayload = {
+    /**
+     * Error information about the failed restoration.
+     */
+    error: {
+        code: string;
+        message: string;
+        context: {
+            playerId: string;
+            timestamp: number;
+            currentTime: number;
+            isPlaying: boolean;
+        };
+        nativeError?: unknown;
+    };
 };
 export {};
 //# sourceMappingURL=VideoPlayerEvents.types.d.ts.map

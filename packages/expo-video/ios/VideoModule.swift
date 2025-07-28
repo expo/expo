@@ -370,6 +370,10 @@ public final class VideoModule: Module {
       AsyncFunction("clearPipRestoreCallbacks") { (player: VideoPlayer) in
         player.clearPipRestoreCallbacks()
       }
+
+      AsyncFunction("respondToPipRestore") { (player: VideoPlayer, callbackId: String, decision: [String: Any]) in
+        player.handlePipRestoreResponse(callbackId: callbackId, decision: decision)
+      }
     }
 
     Class(VideoThumbnail.self) {
