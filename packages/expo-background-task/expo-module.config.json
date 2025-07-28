@@ -8,13 +8,13 @@
     "modules": [ "expo.modules.backgroundtask.BackgroundTaskModule" ]
   },
   "devtools": {
-    "cli": {
+    "cliExtensions": {
       "description": "Expo: manage background tasks",
       "commands": [
-        { "name": "list", "caption": "List registered background tasks" },
-        { "name": "test", "caption": "Trigger background tasks" }
+        { "name": "list", "title": "List registered background tasks", "environments": [ "cli" ] },
+        { "name": "test", "title": "Trigger background tasks", "environments": [ "cli" ] }
       ],
-      "main": "cliext/build/index.js"
+      "entryPoint": "cliext/build/index.js"
     }
   }
 }
