@@ -15,25 +15,41 @@ extension Color: Convertible {
     throw Conversions.ConvertingException<Color>(value)
   }
     
-  public static func convert(_ hexString: String, alpha: Double = 1.0) -> Color? {
-      var hex = hexString.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+    public static func convert(_ hexString: String) -> Color? {
+        var hex = hexString.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
 
-      if hex.hasPrefix("#") {
-        hex.remove(at: hex.startIndex)
-      }
-      
-      guard hex.count == 6, let hexNumber = UInt(hex, radix: 16) else {
-        return nil
-      }
+        if hex.hasPrefix("#") {
+            hex.remove(at: hex.startIndex)
+        }
 
-      return Color(
-        .sRGB,
-        red: Double((hexNumber >> 16) & 0xff) / 255,
-        green: Double((hexNumber >> 8) & 0xff) / 255,
-        blue: Double((hexNumber >> 0) & 0xff) / 255,
-        opacity: alpha
-      )
-  }
+        let hexNumber: UInt64?
+        var red: Double = 0.0
+        var green: Double = 0.0
+        var blue: Double = 0.0
+        var alpha: Double = 1.0  // Valor padrão
+
+        switch hex.count {
+        case 6:
+            hexNumber = UInt64(hex, radix: 16)
+            if let number = hexNumber {
+                red   = Double((number >> 16) & 0xFF) / 255.0
+                green = Double((number >> 8)  & 0xFF) / 255.0
+                blue  = Double(number & 0xFF) / 255.0
+            }
+        case 8:
+            hexNumber = UInt64(hex, radix: 16)
+            if let number = hexNumber {
+                red   = Double((number >> 24) & 0xFF) / 255.0
+                green = Double((number >> 16) & 0xFF) / 255.0
+                blue  = Double((number >> 8)  & 0xFF) / 255.0
+                alpha = Double(number & 0xFF) / 255.0
+            }
+        default:
+            return nil
+        }
+
+        return Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
+    }
 
   private static func colorFromName(_ name: String) -> Color? {
     switch name {
