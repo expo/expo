@@ -7,7 +7,7 @@ This example demonstrates how to use the new PIP restoration hooks that solve iO
 ```tsx
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { createVideoPlayer, VideoView } from 'expo-video-pip-hooks';
+import { createVideoPlayer, VideoView } from '@benjipt/expo-video-pip-hooks';
 import { useNavigation } from '@react-navigation/native';
 
 function VideoScreen() {
@@ -82,7 +82,7 @@ export default VideoScreen;
 ```tsx
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { createVideoPlayer, VideoView } from 'expo-video-pip-hooks';
+import { createVideoPlayer, VideoView } from '@benjipt/expo-video-pip-hooks';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 function VideoScreen({ route }) {
@@ -114,7 +114,7 @@ function VideoScreen({ route }) {
 
         return {
           allowRestore: true,
-          delay: 500, // Allow time for navigation
+          delay: 500, // optional delay
           metadata: { 
             navigationRequired: true,
             originalTime: context.currentTime 

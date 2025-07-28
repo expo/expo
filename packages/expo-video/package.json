@@ -1,7 +1,7 @@
 {
-  "name": "expo-video",
-  "title": "Expo Video",
-  "version": "2.2.2",
+  "name": "@benjipt/expo-video-pip-hooks",
+  "title": "Expo Video with PIP Restoration Hooks",
+  "version": "2.2.2-pip-hooks.1",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -18,17 +18,23 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/video/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git",
+    "url": "https://github.com/benjipt/expo.git",
     "directory": "packages/expo-video"
   },
   "keywords": [
     "react-native",
     "expo",
     "video",
-    "player"
+    "player",
+    "picture-in-picture",
+    "pip",
+    "restoration"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^4.1.7"
