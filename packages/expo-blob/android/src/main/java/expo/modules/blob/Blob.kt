@@ -25,25 +25,24 @@ class Blob() : SharedObject() {
         this.type = if(validType(type)) type.lowercase() else ""
     }
 
-    fun text(): String {
-        var str = ""
+    fun bytesToStream(byteStream: ByteArrayOutputStream) {
         for (bp in blobParts) {
-            str += bp.text()
+            bp.bytesToStream(byteStream)
         }
-        return str
     }
 
     fun bytes(): ByteArray {
-        val stream = ByteArrayOutputStream()
-        for (bp in blobParts) {
-            stream.write(bp.bytes())
-        }
-        return stream.toByteArray()
+        val byteStream = ByteArrayOutputStream(size)
+        bytesToStream(byteStream)
+        return byteStream.toByteArray()
     }
 
     private fun InternalBlobPart.offsetSlice(start: Int, end: Int, offset: Int): InternalBlobPart {
         var s: Int = start - offset
         var e: Int = end - offset
+        if (s <= 0 && e >= size()) {
+          return this
+        }
         if (s < 0) {
             s = 0
         }
@@ -60,6 +59,9 @@ class Blob() : SharedObject() {
     }
 
     fun slice(start: Int, end: Int, contentType: String): Blob {
+        if(start <= 0 && end >= size) {
+            return Blob(blobParts, contentType)
+        }
         if (start >= end) {
           return Blob(listOf(), contentType)
         }
@@ -95,7 +97,7 @@ private fun validType(type : String): Boolean {
 typealias BlobPart = EitherOfThree<String, Blob, TypedArray>
 
 private fun TypedArray.bytes(): ByteArray {
-    var ba = ByteArray(this.byteLength)
+    val ba = ByteArray(this.byteLength)
 
     for (i in 0..<this.byteLength) {
         ba[i] = this.readByte(i)
@@ -161,19 +163,11 @@ sealed class InternalBlobPart() {
         }
     }
 
-    fun text(): String {
-        return when (this) {
-            is StringPart -> string
-            is BlobPart -> blob.text()
-            is BufferPart -> buffer.decodeToString()
-        }
-    }
-
-    fun bytes(): ByteArray {
-        return when (this) {
-            is StringPart -> string.toByteArray()
-            is BlobPart -> blob.bytes()
-            is BufferPart -> buffer
+    fun bytesToStream(byteStream: ByteArrayOutputStream) {
+        when (this) {
+            is StringPart -> byteStream.write(string.toByteArray())
+            is BlobPart -> blob.bytesToStream(byteStream)
+            is BufferPart -> byteStream.write(buffer)
         }
     }
 }

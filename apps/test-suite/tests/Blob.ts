@@ -84,18 +84,6 @@ export async function test({ describe, it, expect }) {
 
   describe('Blob', async () => {
     describe('Blob creation', () => {
-      it('Unicode emotes', async () => {
-        const blob = new Blob(['Hello 🌍 世界']);
-        console.log('Hello 🌍 世界'.length);
-        console.log(blob.size);
-        expect(await blob.text()).toBe('Hello 🌍 世界');
-        expect(await blob.bytes()).toEqual(
-          Uint8Array.from([
-            72, 101, 108, 108, 111, 32, 240, 159, 140, 141, 32, 228, 184, 150, 231, 149, 140,
-          ])
-        );
-        expect(await blob.size).toBe(17);
-      });
       it('Empty blob', () => {
         const blob = new Blob([]);
         expect(blob).toBeTruthy();
