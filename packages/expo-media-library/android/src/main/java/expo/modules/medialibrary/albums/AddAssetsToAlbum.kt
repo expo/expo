@@ -16,7 +16,7 @@ suspend fun addAssetsToAlbum(
   assetIds: Array<String>,
   albumId: String,
   copyToAlbum: Boolean
-): Boolean = withContext(Dispatchers.IO){
+): Boolean = withContext(Dispatchers.IO) {
   val strategy = if (copyToAlbum) {
     AssetFileStrategy.copyStrategy
   } else {

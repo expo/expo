@@ -10,13 +10,11 @@ import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before

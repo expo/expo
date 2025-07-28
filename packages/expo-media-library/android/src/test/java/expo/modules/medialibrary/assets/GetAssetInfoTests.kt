@@ -22,7 +22,6 @@ import junit.framework.ComparisonFailure
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test

@@ -269,7 +269,7 @@ object MediaLibraryUtils {
   suspend fun scanFile(
     context: Context,
     paths: Array<String>,
-    mimeTypes: Array<String>?,
+    mimeTypes: Array<String>?
   ) = withContext(Dispatchers.IO) {
     suspendCoroutine { complete ->
       MediaScannerConnection.scanFile(context, paths, mimeTypes) { path: String, uri: Uri? ->

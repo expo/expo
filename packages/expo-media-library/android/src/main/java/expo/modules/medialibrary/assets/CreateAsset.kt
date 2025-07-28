@@ -3,7 +3,6 @@ package expo.modules.medialibrary.assets
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -18,7 +17,6 @@ import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.UnableToLoadPermissionException
 import expo.modules.medialibrary.UnableToSaveException
 import expo.modules.medialibrary.albums.getAlbumFileOrNull
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
