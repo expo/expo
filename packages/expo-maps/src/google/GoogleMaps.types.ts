@@ -7,6 +7,21 @@ import { CameraPosition, Coordinates } from '../shared.types';
 /**
  * @platform android
  */
+export type GoogleMapsAnchor = {
+  /**
+   * The normalized horizontal anchor point from 0.0 (left edge) to 1.0 (right edge).
+   */
+  x: number;
+
+  /**
+   * The normalized vertical anchor point from 0.0 (top edge) to 1.0 (bottom edge).
+   */
+  y: number;
+};
+
+/**
+ * @platform android
+ */
 export type GoogleMapsMarker = {
   /**
    * The unique identifier for the marker. This can be used to identify the clicked marker in the `onMarkerClick` event.
@@ -24,7 +39,7 @@ export type GoogleMapsMarker = {
   title?: string;
 
   /**
-   * The snippet of the marker, Displayed in the callout when the marker is clicked.
+   * The snippet of the marker, displayed in the callout when the marker is clicked.
    */
   snippet?: string;
 
@@ -42,6 +57,16 @@ export type GoogleMapsMarker = {
    * The custom icon to display for the marker.
    */
   icon?: SharedRefType<'image'>;
+
+  /**
+   * The anchor used to position the anchor relative to its coordinates. Defaults to the bottom-center of the icon.
+   */
+  anchor?: GoogleMapsAnchor;
+
+  /**
+   * The z-index to use for the marker. Defaults to 0.
+   */
+  zIndex?: number;
 };
 
 /**

@@ -173,6 +173,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
           title = marker.title,
           snippet = marker.snippet,
           draggable = marker.draggable,
+          anchor = marker.anchor.toOffset(),
+          zIndex = marker.zIndex,
           icon = icon,
           onClick = {
             onMarkerClick(
