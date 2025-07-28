@@ -9,10 +9,16 @@ import androidx.annotation.RequiresApi
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.AssetFile
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.R)
-fun migrateAlbum(context: Context, assetFiles: List<AssetFile>, albumDirName: String) {
+suspend fun migrateAlbum(
+  context: Context,
+  assetFiles: List<AssetFile>,
+  albumDirName: String
+) = withContext(Dispatchers.IO) {
   // Previously, users were able to save different assets type in the same directory.
   // But now, it's not always possible.
   // If album contains movies or pictures, we can move it to Environment.DIRECTORY_PICTURES.

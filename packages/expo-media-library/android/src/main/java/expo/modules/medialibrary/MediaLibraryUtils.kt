@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -11,10 +12,15 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object MediaLibraryUtils {
   class AssetFile(pathname: String, val assetId: String, val mimeType: String) : File(pathname)
@@ -74,7 +80,11 @@ object MediaLibraryUtils {
     }
   }
 
-  fun deleteAssets(context: Context, selection: String?, selectionArgs: Array<out String?>?) {
+  suspend fun deleteAssets(
+    context: Context,
+    selection: String?,
+    selectionArgs: Array<out String?>?
+  ) = withContext(Dispatchers.IO) {
     val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
     try {
       context.contentResolver.query(
@@ -88,6 +98,9 @@ object MediaLibraryUtils {
           throw AssetFileException("Could not delete assets. Cursor is null.")
         } else {
           while (filesToDelete.moveToNext()) {
+            // Interrupting file deletion when scope is closed is desired, as
+            // user might want to stop this process in the meantime
+            coroutineContext.ensureActive()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
               val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
               val id = filesToDelete.getLong(columnId)
@@ -251,4 +264,11 @@ object MediaLibraryUtils {
    */
   fun hasManifestPermission(context: Context, permission: String): Boolean =
     getManifestPermissions(context).contains(permission)
+
+  suspend fun scanFile(context: Context, paths: Array<String>, mimeTypes: Array<String>?) =
+    suspendCoroutine { complete ->
+      MediaScannerConnection.scanFile(context, paths, mimeTypes) { path: String, uri: Uri? ->
+        complete.resume(Pair(path, uri))
+      }
+    }
 }
