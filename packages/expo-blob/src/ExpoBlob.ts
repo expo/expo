@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo';
 
-import { Blob, BlobPart, ExpoBlobModule } from './ExpoBlob.types';
+import { BlobPart, ExpoBlobModule } from './ExpoBlob.types';
 import {
   DEFAULT_CHUNK_SIZE,
   isTypedArray,
@@ -40,7 +40,7 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
     const normalizedType = normalizedContentType(contentType);
     const slicedBlob = super.slice(start, end, normalizedType);
     Object.setPrototypeOf(slicedBlob, ExpoBlob.prototype);
-    return slicedBlob;
+    return slicedBlob as ExpoBlob;
   }
 
   stream(): ReadableStream {
@@ -81,11 +81,12 @@ export class ExpoBlob extends NativeBlobModule.Blob implements Blob {
     });
   }
 
-  async arrayBuffer(): Promise<ArrayBufferLike> {
+  async arrayBuffer(): Promise<ArrayBuffer> {
     return super
       .bytes()
-      .then((bytes: Uint8Array) =>
-        bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+      .then(
+        (bytes: Uint8Array) =>
+          bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
       );
   }
 

@@ -1,2 +1,2 @@
 export * from './ExpoBlob';
-export * from './ExpoBlob.types';
+export type { BlobPart } from './ExpoBlob.types';
