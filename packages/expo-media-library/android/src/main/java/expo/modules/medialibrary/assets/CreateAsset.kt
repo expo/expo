@@ -19,10 +19,14 @@ import expo.modules.medialibrary.UnableToLoadPermissionException
 import expo.modules.medialibrary.UnableToSaveException
 import expo.modules.medialibrary.albums.getAlbumFileOrNull
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.coroutines.coroutineContext
 
 /**
  * Creates an asset entry in the provided albumFile.
@@ -75,8 +79,10 @@ class CreateAssetWithAlbumFile(
    */
   @RequiresApi(api = Build.VERSION_CODES.Q)
   @Throws(IOException::class)
-  private fun writeFileContentsToAsset(localFile: File, assetUri: Uri) {
+  private suspend fun writeFileContentsToAsset(localFile: File, assetUri: Uri) = withContext(Dispatchers.IO) {
     val contentResolver = context.contentResolver
+
+    coroutineContext.ensureActive()
     FileInputStream(localFile).channel.use { input ->
       (contentResolver.openOutputStream(assetUri) as FileOutputStream).channel.use { output ->
         val transferred = input.transferTo(0, input.size(), output)
@@ -99,18 +105,19 @@ class CreateAssetWithAlbumFile(
    */
   @RequiresApi(api = Build.VERSION_CODES.R)
   @Throws(IOException::class)
-  private fun createAssetUsingContentResolver(): ArrayList<Bundle>? {
+  private suspend fun createAssetUsingContentResolver(): ArrayList<Bundle>? = withContext(Dispatchers.IO) {
     val assetUri = createContentResolverAssetEntry().ifNull {
       throw ContentEntryException()
     }
     writeFileContentsToAsset(File(mUri.path!!), assetUri)
+    coroutineContext.ensureActive()
 
     if (resolveWithAdditionalData) {
       val selection = "${MediaStore.MediaColumns._ID}=?"
       val args = arrayOf(ContentUris.parseId(assetUri).toString())
-      return queryAssetInfo(context, selection, args, false)
+      return@withContext queryAssetInfo(context, selection, args, false)
     } else {
-      return null
+      return@withContext null
     }
   }
 
@@ -136,34 +143,25 @@ class CreateAssetWithAlbumFile(
     if (!isFileExtensionPresent) {
       throw AssetFileException("Could not get the file's extension.")
     }
-
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         return createAssetUsingContentResolver()
       }
-
       val asset = createAssetFileLegacy(albumFile)
-      val result = CompletableDeferred<ArrayList<Bundle>?>()
+      coroutineContext.ensureActive()
 
-      MediaScannerConnection.scanFile(
-        context,
-        arrayOf(asset.path),
-        null
-      ) { path: String, uri: Uri? ->
-        if (uri == null) {
-          result.completeExceptionally(AssetException())
-          return@scanFile
-        }
-        if (resolveWithAdditionalData) {
-          val selection = MediaStore.Images.Media.DATA + "=?"
-          val args = arrayOf(path)
-          val info = queryAssetInfo(context, selection, args, false)
-          result.complete(info)
-        } else {
-          result.complete(null)
-        }
+      val (path, uri) = MediaLibraryUtils.scanFile(context, arrayOf(asset.path), null)
+      coroutineContext.ensureActive()
+
+      if (uri == null) {
+        throw AssetException()
       }
-      return result.await()
+      if (resolveWithAdditionalData) {
+        val selection = MediaStore.Images.Media.DATA + "=?"
+        val args = arrayOf(path)
+        return queryAssetInfo(context, selection, args, false)
+      }
+      return null
     } catch (e: IOException) {
       throw IOException("Unable to copy file into external storage.", e)
     } catch (e: SecurityException) {
