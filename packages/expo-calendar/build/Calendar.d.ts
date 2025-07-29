@@ -1,13 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import ExpoCalendar from './ExpoCalendar';
 export { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
-export declare class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
-    constructor(id: string);
-}
-export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
-    constructor(id: string);
-    listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[];
-}
 /**
  * @platform ios
  */
@@ -1083,4 +1075,5 @@ export declare enum ReminderStatus {
     COMPLETED = "completed",
     INCOMPLETE = "incomplete"
 }
+export declare function stringifyIfDate<T extends Date>(date: Date | T): string | T;
 //# sourceMappingURL=Calendar.d.ts.map

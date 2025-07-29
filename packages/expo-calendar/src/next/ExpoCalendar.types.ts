@@ -1,4 +1,4 @@
-import { Source } from './Calendar';
+import { Source } from '../Calendar';
 
 export declare class CustomExpoCalendar {
   constructor(id: string);
@@ -28,4 +28,12 @@ export declare class CustomExpoCalendarEvent {
   readonly endDate: Date;
   readonly notes: string;
   readonly location: string;
+}
+
+export function getDefaultCalendar(): CustomExpoCalendar {
+  return new CustomExpoCalendar('default');
+}
+
+export function getAllCalendars(entityType?: string): CustomExpoCalendar[] {
+  return [new CustomExpoCalendar('default')];
 }

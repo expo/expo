@@ -1,5 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
+import { ExportExpoCalendar, ExportExpoCalendarEvent } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -9,7 +10,6 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 import { optionalRequire } from '../navigation/routeBuilder';
-import { ConstantItem } from '../../../expo-go/src/components/ConstantItem';
 
 export const CalendarsScreens = [
   {
@@ -62,18 +62,41 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
-
   const getDefaultCalendar = async () => {
-    const allCalendars = await Calendar.getCalendarsAsync();
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    
-    const customCalendar = new Calendar.ExportExpoCalendar(allCalendars[0].id);
-    console.log('!!!customCalendar', customCalendar);
-    
-    const events = customCalendar.listEvents(oneWeekAgo, oneWeekFromNow);
-    console.log('!!!events', events.map((event) => event.title));
-  }
+    try {
+      console.log('=== Testing expo-calendar/next API ===');
+
+      // Test date range (one week ago to one week from now)
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+      // 1. Get default calendar using new API
+      console.log('1. Getting default calendar...');
+      const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+      console.log('Default calendar:', {
+        id: defaultCalendar.id,
+        title: defaultCalendar.title,
+        color: defaultCalendar.color,
+        allowsModifications: defaultCalendar.allowsModifications,
+      });
+
+      // 2. Get all calendars using new API
+      console.log('2. Getting all calendars...');
+      const allCalendars = await Calendar.getCalendarsAsync();
+      console.log(
+        `Found ${allCalendars.length} calendars:`,
+        allCalendars.map((cal) => cal.title)
+      );
+
+      const calendar = new ExportExpoCalendar(defaultCalendar.id);
+      const events = calendar.listEvents(oneWeekAgo, oneWeekFromNow);
+      console.log('Events:', calendar.title, events.length);
+      Alert.alert('Success!', 'Check console for expo-calendar/next API demo results');
+    } catch (error) {
+      console.error('Error testing expo-calendar/next:', error);
+      Alert.alert('Error', `Failed to test expo-calendar/next: ${error.message}`);
+    }
+  };
 
   const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
 
@@ -154,22 +177,22 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     ]);
   };
 
-//   if (calendars.length) {
-//     return (
-//       <ScrollView style={styles.container}>
-//         <Button onPress={addCalendar} title="Add New Calendar" />
-//         {calendars.map((calendar) => (
-//           <CalendarRow
-//             calendar={calendar}
-//             key={calendar.id}
-//             navigation={navigation}
-//             updateCalendar={updateCalendar}
-//             deleteCalendar={deleteCalendar}
-//           />
-//         ))}
-//       </ScrollView>
-//     );
-//   }
+  //   if (calendars.length) {
+  //     return (
+  //       <ScrollView style={styles.container}>
+  //         <Button onPress={addCalendar} title="Add New Calendar" />
+  //         {calendars.map((calendar) => (
+  //           <CalendarRow
+  //             calendar={calendar}
+  //             key={calendar.id}
+  //             navigation={navigation}
+  //             updateCalendar={updateCalendar}
+  //             deleteCalendar={deleteCalendar}
+  //           />
+  //         ))}
+  //       </ScrollView>
+  //     );
+  //   }
 
   return (
     <View style={styles.container}>

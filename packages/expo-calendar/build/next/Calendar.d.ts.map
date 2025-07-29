@@ -1,0 +1,1 @@
+{"version":3,"file":"Calendar.d.ts","sourceRoot":"","sources":["../../src/next/Calendar.ts"],"names":[],"mappings":"AACA,OAAO,YAAY,MAAM,gBAAgB,CAAC;AAE1C,qBAAa,uBAAwB,SAAQ,YAAY,CAAC,uBAAuB;gBACnE,EAAE,EAAE,MAAM;CAGvB;AAED,qBAAa,kBAAmB,SAAQ,YAAY,CAAC,kBAAkB;gBACzD,EAAE,EAAE,MAAM;IAIb,UAAU,CAAC,SAAS,EAAE,IAAI,EAAE,OAAO,EAAE,IAAI,GAAG,uBAAuB,EAAE;CAU/E"}
