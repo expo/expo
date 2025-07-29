@@ -203,6 +203,7 @@ export type UseUpdatesReturnType = {
   /**
    * If `isDownloading` is true, this will be a number from 0 to 1 representing the progress of the download.
    * A value of 0 means the download has just started, and a value of 1 means it is complete.
+   * This value will update more continuously if the server provides a `Content-Length` header for the asset requests.
    */
   downloadProgress?: number;
 };
