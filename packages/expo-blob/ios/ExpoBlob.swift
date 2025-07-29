@@ -8,7 +8,7 @@ public class ExpoBlob: Module {
     Class(Blob.self) {
       Constructor { (blobParts: [EitherOfThree<String, Blob, TypedArray>]?, options: BlobOptions?) in
         let endings = options?.endings ?? .transparent
-        let blobPartsProcessed = proccessBlobParts(blobParts, endings: endings)
+        let blobPartsProcessed = processBlobParts(blobParts, endings: endings)
         return Blob(blobParts: blobPartsProcessed, options: options ?? BlobOptions())
       }
 

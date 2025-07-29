@@ -62,9 +62,7 @@ public class Blob: SharedObject {
         case .string(let str):
           let utf8 = Array(str.utf8)
           let subUtf8 = Array(utf8[partStart..<partEnd])
-          if let subStr = String(bytes: subUtf8, encoding: .utf8) {
-            dataSlice.append(.string(subStr))
-          }
+          dataSlice.append(.data(Data(subUtf8)))
         case .data(let data):
           let subData = data.subdata(in: partStart..<partEnd)
           dataSlice.append(.data(subData))

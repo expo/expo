@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-func proccessBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, endings: EndingType) -> [BlobPart] {
+func processBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, endings: EndingType) -> [BlobPart] {
   return blobParts?.map { part in
     if let part: String = part.get() {
       let str = (endings == .native) ? toNativeNewlines(part) : part
@@ -18,8 +18,20 @@ func proccessBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, 
 }
 
 func toNativeNewlines(_ str: String) -> String {
+  var result = ""
   let nativeEnding = "\n"
-  var s = str.replacingOccurrences(of: "\r\n", with: nativeEnding)
-  s = s.replacingOccurrences(of: "\r", with: nativeEnding)
-  return s
+  
+  for char in str {
+    if char == "\r\n" {
+      result.append(nativeEnding)
+    } else if char == "\r" {
+      result.append(nativeEnding)
+    } else if char == "\n" {
+      result.append(char)
+    } else {
+      result.append(char)
+    }
+  }
+  
+  return result
 }
