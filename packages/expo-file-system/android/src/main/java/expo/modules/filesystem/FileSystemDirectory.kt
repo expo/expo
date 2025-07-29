@@ -1,7 +1,6 @@
 package expo.modules.filesystem
 
 import android.net.Uri
-import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 
 class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
