@@ -5,6 +5,7 @@ import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
+import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
@@ -187,7 +188,7 @@ export const createMutateResolutionError =
 
       if (
         stackOrigin &&
-        stackOrigin.startsWith(projectRoot) &&
+        isPathInside(stackOrigin, projectRoot) &&
         !stackOrigin.includes('node_modules')
       ) {
         // The best stack to show to users is the one leading from the project code.
@@ -199,7 +200,7 @@ export const createMutateResolutionError =
       if (
         // Has to be after the project root check
         stackOrigin &&
-        stackOrigin.startsWith(root) &&
+        isPathInside(stackOrigin, root) &&
         !stackOrigin.includes('node_modules')
       ) {
         // The best stack to show to users is the one leading from the monorepo code.
