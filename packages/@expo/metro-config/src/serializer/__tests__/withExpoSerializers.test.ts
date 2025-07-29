@@ -1075,90 +1075,108 @@ describe('serializes', () => {
     });
   });
 
-  // NOTE: This has been disabled pending a shared runtime chunk.
-  it(`dedupes shared module in async imports`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `
-          import('./math');
-          import('./shapes');
+  it(`dedupes deps into common and runtime modules in async imports`, async () => {
+    const artifacts = await serializeSplitAsync(
+      {
+        'index.js': `
+          import('./a');
+          import('./b');
+          import('./c');
         `,
-      'math.js': `
-        import './colors';
-          export const add = 'add';
+        'a.js': `
+          import './d';
+          import './e';
+          export const a = 'a';
         `,
-      'shapes.js': `
-      import './colors';
-          export const square = 'square';
+        'b.js': `
+          import './d';
+          export const b = 'b';
         `,
-      'colors.js': `
-          export const orange = 'orange';
+        'c.js': `
+        import './e';
+        export const c = 'c';
+      `,
+        'd.js': `
+          export const d = 'd';
         `,
-    });
+        'e.js': `
+        export const e = 'e';
+      `,
+      },
+      undefined, // microBundleOptions
+      undefined, // processors
+      undefined, // serializerConfigOptions
+      {
+        __premodule__: `
+          console.log('PRE_MODULE_TEST');
+        `,
+      }
+    );
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-6deb415e9765e2f7033a805e8c5f20ee.js",
-        "_expo/static/js/web/math-751c65eacf161e04a1cff839cdf43b51.js",
-        "_expo/static/js/web/shapes-3d697f5eb8b842d8141b9a849a473086.js",
+        "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
+        "_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js",
+        "_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js",
+        "_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js",
+        "_expo/static/js/web/__common-f00c61b44236e82179327dcfbabec508.js",
+        "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
       ]
     `);
 
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-6deb415e9765e2f7033a805e8c5f20ee.js",
+          "filename": "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
             "modulePaths": [
               "/app/index.js",
               "/app/expo-mock/async-require",
-              "/app/colors.js",
             ],
             "paths": {
               "/app/index.js": {
-                "/app/math.js": "/_expo/static/js/web/math-751c65eacf161e04a1cff839cdf43b51.js",
-                "/app/shapes.js": "/_expo/static/js/web/shapes-3d697f5eb8b842d8141b9a849a473086.js",
+                "/app/a.js": "/_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js",
+                "/app/b.js": "/_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js",
+                "/app/c.js": "/_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js",
               },
             },
             "reactClientReferences": [],
             "reactServerReferences": [],
-            "requires": [],
+            "requires": [
+              "_expo/static/js/web/__common-f00c61b44236e82179327dcfbabec508.js",
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[0], _dependencyMap.paths);
         _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[2], _dependencyMap.paths);
-      },"/app/index.js",{"0":"/app/math.js","1":"/app/expo-mock/async-require","2":"/app/shapes.js","paths":{"/app/math.js":"/_expo/static/js/web/math-751c65eacf161e04a1cff839cdf43b51.js","/app/shapes.js":"/_expo/static/js/web/shapes-3d697f5eb8b842d8141b9a849a473086.js"}});
+        _$$_REQUIRE(_dependencyMap[1])(_dependencyMap[3], _dependencyMap.paths);
+      },"/app/index.js",{"0":"/app/a.js","1":"/app/expo-mock/async-require","2":"/app/b.js","3":"/app/c.js","paths":{"/app/a.js":"/_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js","/app/b.js":"/_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js","/app/c.js":"/_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js"}});
       __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
-      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-        "use strict";
-
-        Object.defineProperty(exports, '__esModule', {
-          value: true
-        });
-        const orange = 'orange';
-        exports.orange = orange;
-      },"/app/colors.js",[]);
       TEST_RUN_MODULE("/app/index.js");",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/math-751c65eacf161e04a1cff839cdf43b51.js",
+          "filename": "_expo/static/js/web/a-5dd0b55bf95fcc6127b5e1fb0db14d8b.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
-              "/app/math.js",
+              "/app/a.js",
             ],
             "paths": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
-            "requires": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
           },
-          "originFilename": "math.js",
+          "originFilename": "a.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
@@ -1166,25 +1184,28 @@ describe('serializes', () => {
           value: true
         });
         _$$_REQUIRE(_dependencyMap[0]);
-        const add = 'add';
-        exports.add = add;
-      },"/app/math.js",["/app/colors.js"]);",
+        _$$_REQUIRE(_dependencyMap[1]);
+        const a = 'a';
+        exports.a = a;
+      },"/app/a.js",["/app/d.js","/app/e.js"]);",
           "type": "js",
         },
         {
-          "filename": "_expo/static/js/web/shapes-3d697f5eb8b842d8141b9a849a473086.js",
+          "filename": "_expo/static/js/web/b-5e1fcd4e30b82b5f22f834bc2d5bbb57.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
             "modulePaths": [
-              "/app/shapes.js",
+              "/app/b.js",
             ],
             "paths": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
-            "requires": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
           },
-          "originFilename": "shapes.js",
+          "originFilename": "b.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";
 
@@ -1192,20 +1213,103 @@ describe('serializes', () => {
           value: true
         });
         _$$_REQUIRE(_dependencyMap[0]);
-        const square = 'square';
-        exports.square = square;
-      },"/app/shapes.js",["/app/colors.js"]);",
+        const b = 'b';
+        exports.b = b;
+      },"/app/b.js",["/app/d.js"]);",
+          "type": "js",
+        },
+        {
+          "filename": "_expo/static/js/web/c-d7e1c531872ed205c63163fe1919d971.js",
+          "metadata": {
+            "expoDomComponentReferences": [],
+            "isAsync": true,
+            "modulePaths": [
+              "/app/c.js",
+            ],
+            "paths": {},
+            "reactClientReferences": [],
+            "reactServerReferences": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
+          },
+          "originFilename": "c.js",
+          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        _$$_REQUIRE(_dependencyMap[0]);
+        const c = 'c';
+        exports.c = c;
+      },"/app/c.js",["/app/e.js"]);",
+          "type": "js",
+        },
+        {
+          "filename": "_expo/static/js/web/__common-f00c61b44236e82179327dcfbabec508.js",
+          "metadata": {
+            "expoDomComponentReferences": [],
+            "isAsync": false,
+            "modulePaths": [
+              "/app/d.js",
+              "/app/e.js",
+            ],
+            "paths": {},
+            "reactClientReferences": [],
+            "reactServerReferences": [],
+            "requires": [
+              "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+            ],
+          },
+          "originFilename": "../__common.js",
+          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        const d = 'd';
+        exports.d = d;
+      },"/app/d.js",[]);
+      __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        "use strict";
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        });
+        const e = 'e';
+        exports.e = e;
+      },"/app/e.js",[]);",
+          "type": "js",
+        },
+        {
+          "filename": "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
+          "metadata": {
+            "expoDomComponentReferences": [],
+            "isAsync": false,
+            "modulePaths": [],
+            "paths": {},
+            "reactClientReferences": [],
+            "reactServerReferences": [],
+            "requires": [],
+          },
+          "originFilename": "../__expo-metro-runtime.js",
+          "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+        console.log('PRE_MODULE_TEST');
+      },"/app/__premodule__",[]);",
           "type": "js",
         },
       ]
     `);
 
     // Split bundle
-    expect(artifacts.length).toBe(3);
+    expect(artifacts.length).toBe(6);
+    expect(artifacts[0].source).not.toMatch(/PRE_MODULE_TEST/);
     expect(artifacts[1].metadata).toEqual({
       isAsync: true,
-      modulePaths: ['/app/math.js'],
-      requires: [],
+      modulePaths: ['/app/a.js'],
+      requires: [expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/)],
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
@@ -1213,26 +1317,43 @@ describe('serializes', () => {
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
-      modulePaths: ['/app/shapes.js'],
-      requires: [],
+      modulePaths: ['/app/b.js'],
+      requires: [expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/)],
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
     });
 
-    // // The shared sync import is deduped and added to a common chunk.
-    // // This will be loaded in the index.html before the other bundles.
-    // expect(artifacts[3].filename).toEqual(
-    //   expect.stringMatching(/_expo\/static\/js\/web\/colors-.*\.js/)
-    // );
-    // expect(artifacts[3].metadata).toEqual({
-    //   isAsync: false,
-    //   modulePaths: ['/app/colors.js'],
-    //   requires: [],
-    // });
-    // // Ensure the dedupe chunk isn't run, just loaded.
-    // expect(artifacts[3].source).not.toMatch(/TEST_RUN_MODULE/);
+    expect(artifacts[4].filename).toEqual(
+      expect.stringMatching(/_expo\/static\/js\/web\/__common-.*\.js/)
+    );
+    expect(artifacts[4].metadata).toEqual({
+      isAsync: false,
+      modulePaths: ['/app/d.js', '/app/e.js'],
+      requires: [expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/)],
+      paths: {},
+      expoDomComponentReferences: [],
+      reactClientReferences: [],
+      reactServerReferences: [],
+    });
+    // Ensure the common chunk isn't run, just loaded.
+    expect(artifacts[4].source).not.toMatch(/TEST_RUN_MODULE/);
+    expect(artifacts[4].source).not.toMatch(/PRE_MODULE_TEST/);
+
+    expect(artifacts[5].filename).toEqual(
+      expect.stringMatching(/_expo\/static\/js\/web\/__expo-metro-runtime-.*\.js/)
+    );
+    expect(artifacts[5].metadata).toEqual({
+      isAsync: false,
+      requires: [], // No requires in the runtime chunk.
+      modulePaths: [],
+      paths: {},
+      expoDomComponentReferences: [],
+      reactClientReferences: [],
+      reactServerReferences: [],
+    });
+    expect(artifacts[5].source).toMatch(/PRE_MODULE_TEST/);
   });
 
   it(`supports caching a shared chunk that doesn't change between runs`, async () => {
