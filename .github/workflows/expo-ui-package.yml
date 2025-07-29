@@ -2,11 +2,6 @@ name: Expo UI package
 
 on:
   workflow_dispatch:
-  push:
-    branches: ['sdk-53-mauricio']
-    paths:
-      - .github/workflows/expo-ui-package.yml
-      - packages/expo-ui
   pull_request:
     types:
       - opened
@@ -38,10 +33,10 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Configure .npmrc
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_WRITE_TOKEN: ${{ secrets.PACKAGE_WRITE_TOKEN }}
         run: |
           echo "@silvasmvs:registry=https://npm.pkg.github.com" > ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=$PACKAGE_WRITE_TOKEN" >> ~/.npmrc
       - name: 🧐 Build expo ui package
         run: |
           cd packages/expo-ui
@@ -51,3 +46,4 @@ jobs:
           echo "Publishing library"
           cd packages/expo-ui
           yarn publish --non-interactive
+ 
