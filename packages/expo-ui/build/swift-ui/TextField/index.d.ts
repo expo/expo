@@ -1,3 +1,4 @@
+import { Ref } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { ViewEvent } from '../../types';
 /**
@@ -20,7 +21,14 @@ import { ViewEvent } from '../../types';
  * @default default
  */
 export type TextFieldKeyboardType = 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'ascii-capable' | 'numbers-and-punctuation' | 'url' | 'name-phone-pad' | 'decimal-pad' | 'twitter' | 'web-search' | 'ascii-capable-number-pad';
+/**
+ * Can be used for imperatively setting text on the TextField component.
+ */
+export type TextFieldRef = {
+    setText: (newText: string) => Promise<void>;
+};
 export type TextFieldProps = {
+    ref?: Ref<TextFieldRef>;
     /**
      * Initial value that the TextField displays when being mounted. As the TextField is an uncontrolled component, change the key prop if you need to change the text value.
      */
