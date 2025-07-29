@@ -4,7 +4,8 @@ const devtools_1 = require("expo/devtools");
 const PLUGIN_NAME = 'expo-backgroundtask-devtools-plugin';
 const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
 const TRIGGER_TASKS = 'triggerBackgroundTasks';
-(0, devtools_1.cliExtension)(async (command, _args, apps) => {
+(0, devtools_1.cliExtension)(async (command, _args, metroServerOrigin) => {
+    const apps = await (0, devtools_1.queryAllInspectorAppsAsync)(metroServerOrigin);
     if (apps.length === 0) {
         throw new Error('No apps connected to the dev server. Please connect an app to use this command.');
     }

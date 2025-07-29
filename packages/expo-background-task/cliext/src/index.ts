@@ -1,11 +1,12 @@
-import { cliExtension, sendMessageAsync } from 'expo/devtools';
+import { cliExtension, queryAllInspectorAppsAsync, sendMessageAsync } from 'expo/devtools';
 
 const PLUGIN_NAME = 'expo-backgroundtask-devtools-plugin';
 const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
 const TRIGGER_TASKS = 'triggerBackgroundTasks';
 
 cliExtension<{ list: Record<string, never>; test: Record<string, never> }>(
-  async (command, _args, apps) => {
+  async (command, _args, metroServerOrigin) => {
+    const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
     if (apps.length === 0) {
       throw new Error(
         'No apps connected to the dev server. Please connect an app to use this command.'
