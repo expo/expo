@@ -22,7 +22,7 @@ func processBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, e
 func toNativeNewlines(_ str: String) -> String {
   var result = ""
   let nativeEnding = "\n"
-  
+
   for char in str {
     if char == "\r\n" {
       result.append(nativeEnding)
@@ -34,6 +34,6 @@ func toNativeNewlines(_ str: String) -> String {
       result.append(char)
     }
   }
-  
+
   return result
 }
