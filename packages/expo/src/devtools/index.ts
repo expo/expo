@@ -10,6 +10,11 @@ export type { DevToolsPluginClientOptions };
 export type { EventSubscription } from './DevToolsPluginClient';
 export { setEnableLogging } from './logger';
 
+export { startDevToolsPluginListenerAsync } from './CliExtensionMessages';
+export { sendMessageAsync } from './CliExtensionSendMessageAsync';
+export { cliExtension } from './CliExtension';
+export { queryAllInspectorAppsAsync } from './CliJsInspector';
+
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */
