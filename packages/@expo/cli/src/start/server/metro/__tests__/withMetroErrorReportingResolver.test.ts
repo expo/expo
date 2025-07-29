@@ -26,7 +26,7 @@ it('adds import stack to error', () => {
           'ios', // platform
           new Map([
             [
-              '/project/a.js', // origin module
+              '/project/a.js',
               new Set([
                 {
                   path: '/project/b.js',
@@ -35,7 +35,7 @@ it('adds import stack to error', () => {
               ]),
             ],
             [
-              '/project/b.js', // origin module
+              '/project/b.js',
               new Set([
                 {
                   path: '/project/c.js',
@@ -55,16 +55,13 @@ it('adds import stack to error', () => {
 
   const mutateResolutionError = createMutateResolutionError(config, depGraph);
 
-  // Create a mock error and context
   const error = new Error('Module not found');
   const context = {
     originModulePath: '/project/b.js',
   } as ResolutionContext;
 
-  // Call the function
   const result = mutateResolutionError(error, context, 'c', 'ios');
 
-  // Check that the import stack was added
   expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
     "Import stack:
 
@@ -94,7 +91,7 @@ it('adds import stack with circular dependencies to error', () => {
           'ios', // platform
           new Map([
             [
-              '/project/foo.js', // origin module
+              '/project/foo.js',
               new Set([
                 {
                   path: '/project/bar.js',
@@ -103,7 +100,7 @@ it('adds import stack with circular dependencies to error', () => {
               ]),
             ],
             [
-              '/project/bar.js', // origin module
+              '/project/bar.js',
               new Set([
                 {
                   path: '/project/foo.js',
@@ -119,16 +116,13 @@ it('adds import stack with circular dependencies to error', () => {
 
   const mutateResolutionError = createMutateResolutionError(config, depGraph);
 
-  // Create a mock error and context
   const error = new Error('Module not found');
   const context = {
     originModulePath: '/project/bar.js',
   } as ResolutionContext;
 
-  // Call the function
   const result = mutateResolutionError(error, context, 'foo', 'ios');
 
-  // Check that the import stack was added with circular dependency warning
   expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
     "Import stack:
 
@@ -162,7 +156,7 @@ it('adds import stack with stack depth limit to error', () => {
           'ios', // platform
           new Map([
             [
-              '/project/a.js', // origin module
+              '/project/a.js',
               new Set([
                 {
                   path: '/project/b.js',
@@ -171,7 +165,7 @@ it('adds import stack with stack depth limit to error', () => {
               ]),
             ],
             [
-              '/project/b.js', // origin module
+              '/project/b.js',
               new Set([
                 {
                   path: '/project/c.js',
@@ -180,7 +174,7 @@ it('adds import stack with stack depth limit to error', () => {
               ]),
             ],
             [
-              '/project/c.js', // origin module
+              '/project/c.js',
               new Set([
                 {
                   path: '/project/d.js',
@@ -200,16 +194,13 @@ it('adds import stack with stack depth limit to error', () => {
 
   const mutateResolutionError = createMutateResolutionError(config, depGraph, 2);
 
-  // Create a mock error and context
   const error = new Error('Module not found');
   const context = {
     originModulePath: '/project/d.js',
   } as ResolutionContext;
 
-  // Call the function
   const result = mutateResolutionError(error, context, 'missing', 'ios');
 
-  // Check that the import stack was added with depth limit warning
   expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
     "Import stack:
 
@@ -240,7 +231,7 @@ it('adds import stack with stack count limit to error', () => {
           'ios', // platform
           new Map([
             [
-              '/project/node_modules/a.js', // origin module
+              '/project/node_modules/a.js',
               new Set([
                 {
                   path: '/project/b.js',
@@ -249,7 +240,7 @@ it('adds import stack with stack count limit to error', () => {
               ]),
             ],
             [
-              '/project/a.js', // origin module
+              '/project/a.js',
               new Set([
                 {
                   path: '/project/b.js',
@@ -258,7 +249,7 @@ it('adds import stack with stack count limit to error', () => {
               ]),
             ],
             [
-              '/project/b.js', // origin module
+              '/project/b.js',
               new Set([
                 {
                   path: '/project/c.js',
@@ -278,16 +269,13 @@ it('adds import stack with stack count limit to error', () => {
 
   const mutateResolutionError = createMutateResolutionError(config, depGraph, undefined, 2); // count limit of 2
 
-  // Create a mock error and context
   const error = new Error('Module not found');
   const context = {
     originModulePath: '/project/b.js',
   } as ResolutionContext;
 
-  // Call the function
   const result = mutateResolutionError(error, context, 'c', 'ios');
 
-  // Check that the import stack was added with count limit indicator
   expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
     "Import stack (2):
 
@@ -317,7 +305,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
           new Map([
             // Node modules stack
             [
-              '/project/node_modules/lib.js', // origin module
+              '/project/node_modules/lib.js',
               new Set([
                 {
                   path: '/project/utils.js',
@@ -327,7 +315,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
             ],
             // Circular dependency stack
             [
-              '/project/circular1.js', // origin module
+              '/project/circular1.js',
               new Set([
                 {
                   path: '/project/circular2.js',
@@ -336,7 +324,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
               ]),
             ],
             [
-              '/project/circular2.js', // origin module
+              '/project/circular2.js',
               new Set([
                 {
                   path: '/project/circular1.js',
@@ -350,7 +338,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
             ],
             // Deep stack that would hit depth limit
             [
-              '/project/deep1.js', // origin module
+              '/project/deep1.js',
               new Set([
                 {
                   path: '/project/deep2.js',
@@ -359,7 +347,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
               ]),
             ],
             [
-              '/project/deep2.js', // origin module
+              '/project/deep2.js',
               new Set([
                 {
                   path: '/project/deep3.js',
@@ -368,7 +356,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
               ]),
             ],
             [
-              '/project/deep3.js', // origin module
+              '/project/deep3.js',
               new Set([
                 {
                   path: '/project/deep4.js',
@@ -377,7 +365,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
               ]),
             ],
             [
-              '/project/deep4.js', // origin module
+              '/project/deep4.js',
               new Set([
                 {
                   path: '/project/utils.js',
@@ -387,7 +375,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
             ],
             // preferred project
             [
-              '/project/app.js', // origin module
+              '/project/app.js',
               new Set([
                 {
                   path: '/project/utils.js',
@@ -417,10 +405,8 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
     originModulePath: '/project/utils.js',
   } as ResolutionContext;
 
-  // Call the function
   const result = mutateResolutionError(error, context, 'missing', 'ios');
 
-  // Should prioritize the clean project stack over others
   expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
     "Import stack:
 
@@ -450,7 +436,7 @@ it('prioritizes projectRoot stack over server root stack', () => {
           new Map([
             // Server root stack
             [
-              '/server-root/lib.js', // origin module
+              '/server-root/lib.js',
               new Set([
                 {
                   path: '/server-root/project/utils.js',
@@ -460,7 +446,7 @@ it('prioritizes projectRoot stack over server root stack', () => {
             ],
             // Project root stack (should be preferred)
             [
-              '/server-root/project/app.js', // origin module
+              '/server-root/project/app.js',
               new Set([
                 {
                   path: '/server-root/project/utils.js',
@@ -490,10 +476,8 @@ it('prioritizes projectRoot stack over server root stack', () => {
     originModulePath: '/server-root/project/utils.js',
   } as ResolutionContext;
 
-  // Call the function
   const result = mutateResolutionError(error, context, 'missing', 'ios');
 
-  // Should prioritize the project root stack over server root stack
   expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
     "Import stack:
 
