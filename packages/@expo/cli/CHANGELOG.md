@@ -27,7 +27,7 @@
 
 ### 💡 Others
 
-- Extend list of blocked internal imports for react-native-web.
+- Extend list of blocked internal imports for react-native-web. ([#38381](https://github.com/expo/expo/pull/38381) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix typos. ([#38264](https://github.com/expo/expo/pull/38264) by [@EvanBacon](https://github.com/EvanBacon))
 - add modal component ([#37365](https://github.com/expo/expo/pull/37365) by [@Ubax](https://github.com/Ubax))
 - Use Vaul for modals and sheets on web with a custom stack ([#37767](https://github.com/expo/expo/pull/37767) by [@hirbod](https://github.com/hirbod))
