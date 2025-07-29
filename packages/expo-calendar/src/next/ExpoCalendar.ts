@@ -5,7 +5,7 @@ import {
   CustomExpoCalendarAttendee,
   CustomExpoCalendarEvent,
 } from './ExpoCalendar.types';
-import { EntityTypes } from '../Calendar';
+import { Calendar, EntityTypes } from '../Calendar';
 
 declare class ExpoCalendarNextModule extends NativeModule {
   CustomExpoCalendar: typeof CustomExpoCalendar;
@@ -13,6 +13,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
   CustomExpoCalendarAttendee: typeof CustomExpoCalendarAttendee;
   getDefaultCalendarId(): string;
   getCalendarsIds(type?: EntityTypes): string[];
+  createCalendar(details: Partial<Calendar>): string;
 }
 
 // TODO: Support Expo Go

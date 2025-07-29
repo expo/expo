@@ -100,6 +100,10 @@ public final class CalendarNextModule: Module {
                 try eventStore.save(calendarEvent, span: span, commit: true)
                 return calendarEvent.calendarItemIdentifier
             }
+
+            Function("delete") { (calendar: CustomExpoCalendar) in
+                try calendar.delete()
+            }
         }
         
         Class(CustomExpoCalendarEvent.self) {

@@ -74,11 +74,19 @@ internal final class CustomExpoCalendar: SharedObject {
             }
             calendarEvent.calendar = calendar
         }
-        
+
         calendarEvent.title = event.title
         calendarEvent.location = event.location
         calendarEvent.notes = event.notes
         calendarEvent.isAllDay = event.allDay
         calendarEvent.availability = getAvailability(availability: event.availability)
+    }
+
+    func delete() throws {
+        guard let calendar = self.calendar else {
+            return
+        }
+        try eventStore.removeCalendar(calendar, commit: true)
+        self.calendar = nil
     }
 }

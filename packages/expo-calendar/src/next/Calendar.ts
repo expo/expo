@@ -1,4 +1,7 @@
+import { UnavailabilityError } from 'expo-modules-core';
+
 import {
+  Calendar,
   EntityTypes,
   Event,
   RecurringEventOptions,
@@ -34,3 +37,11 @@ export const getDefaultCalendarNext = () =>
 
 export const getCalendarsNext = (type?: EntityTypes) =>
   ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
+
+export function createCalendar(details: Partial<Calendar> = {}): string {
+  if (!ExpoCalendar.createCalendar) {
+    throw new UnavailabilityError('Calendar', 'createCalendar');
+  }
+  // TODO: Implement it
+  throw new UnavailabilityError('Calendar', 'createCalendar');
+}

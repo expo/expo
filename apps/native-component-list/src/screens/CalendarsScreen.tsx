@@ -135,7 +135,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
         text: 'OK',
         async onPress() {
           try {
-            await Calendar.deleteCalendarAsync(calendar.id);
+            calendar.delete();
             Alert.alert('Calendar deleted successfully');
             findCalendars();
           } catch (e) {

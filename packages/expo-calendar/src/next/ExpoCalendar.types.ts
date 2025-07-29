@@ -25,6 +25,8 @@ export declare class CustomExpoCalendar {
   listEvents(startDate: Date, endDate: Date): CustomExpoCalendarEvent[];
 
   createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
+
+  delete(): void;
 }
 
 export declare class CustomExpoCalendarEvent {
@@ -39,6 +41,9 @@ export declare class CustomExpoCalendarEvent {
   readonly location: string;
 
   getAttendees(): CustomExpoCalendarAttendee[];
+
+  // TODO: Add delete method
+  delete(): void;
 }
 
 export declare class CustomExpoCalendarAttendee {

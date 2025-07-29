@@ -1,14 +1,9 @@
-import { stringifyDateValues, stringifyIfDate } from '../Calendar';
+import { UnavailabilityError } from 'expo-modules-core';
+import { stringifyDateValues, stringifyIfDate, } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
-    constructor(id) {
-        super(id);
-    }
 }
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
-    constructor(id) {
-        super(id);
-    }
     createEvent(details, options) {
         return super.createEvent(stringifyDateValues(details), options);
     }
@@ -25,4 +20,11 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
 }
 export const getDefaultCalendarNext = () => new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
 export const getCalendarsNext = (type) => ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
+export function createCalendar(details = {}) {
+    if (!ExpoCalendar.createCalendar) {
+        throw new UnavailabilityError('Calendar', 'createCalendar');
+    }
+    // TODO: Implement it
+    throw new UnavailabilityError('Calendar', 'createCalendar');
+}
 //# sourceMappingURL=Calendar.js.map

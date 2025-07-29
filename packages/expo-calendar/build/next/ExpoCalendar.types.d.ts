@@ -13,6 +13,7 @@ export declare class CustomExpoCalendar {
      */
     listEvents(startDate: Date, endDate: Date): CustomExpoCalendarEvent[];
     createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
+    delete(): void;
 }
 export declare class CustomExpoCalendarEvent {
     constructor(id: string);
@@ -23,6 +24,7 @@ export declare class CustomExpoCalendarEvent {
     readonly notes: string;
     readonly location: string;
     getAttendees(): CustomExpoCalendarAttendee[];
+    delete(): void;
 }
 export declare class CustomExpoCalendarAttendee {
     constructor(id: string);
