@@ -11,11 +11,11 @@ public class ReloadScreenManager: Reloadable {
     NotificationCenter.default.addObserver(self, selector: #selector(hide), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
   }
 
-  func setConfiguration(_ options: ReloadScreenOptions?) {
+  public func setConfiguration(_ options: ReloadScreenOptions?) {
     currentConfiguration = ReloadScreenConfiguration(options: options)
   }
 
-  func show() {
+  public func show() {
     if isShowing {
       return
     }
@@ -29,7 +29,7 @@ public class ReloadScreenManager: Reloadable {
   }
 
   @objc
-  func hide() {
+  public func hide() {
     if !isShowing {
       return
     }
