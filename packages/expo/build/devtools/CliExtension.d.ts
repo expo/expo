@@ -1,4 +1,4 @@
-import type { ExpoCliExtensionCommandSchema, ExpoCliExtensionExecutor, ExpoCliExtensionParameters } from './cliextension.types';
+import type { ExpoCliExtensionCommandSchema, ExpoCliExtensionExecutor, ExpoCliExtensionParameters } from './CliExtension.types';
 /**
  * Executes an Expo CLI extension command with the provided executor function.
  * This function retrieves the command, arguments, and connected applications,

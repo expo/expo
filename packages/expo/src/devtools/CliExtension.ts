@@ -6,7 +6,7 @@ import type {
   ExpoCliExtensionCommandSchema,
   ExpoCliExtensionExecutor,
   ExpoCliExtensionParameters,
-} from './cliextension.types';
+} from './CliExtension.types';
 
 /**
  * Executes an Expo CLI extension command with the provided executor function.
@@ -19,9 +19,9 @@ import type {
 export async function cliExtension<T extends ExpoCliExtensionCommandSchema>(
   executor: ExpoCliExtensionExecutor<T>
 ) {
-  const { apps, args, command } = getExpoCliPluginParameters<T>(process.argv);
+  const { metroServerOrigin, args, command } = getExpoCliPluginParameters<T>(process.argv);
   try {
-    const results = await executor(command, args, apps);
+    const results = await executor(command, args, metroServerOrigin);
     if (results) {
       console.log(JSON.stringify(results, null, 2));
     }
@@ -40,8 +40,8 @@ export const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSche
 ): ExpoCliExtensionParameters<T> => {
   // Extract command, args, and apps from process arguments
   const command = argv[2]?.toLowerCase();
-  const argsString = argv[3] ?? '{}';
-  const appsString = argv[4] ?? '[]';
+  const metroServerOrigin = argv[3] ?? '';
+  const argsString = argv[4] ?? '{}';
 
   // Verify command exists
   if (!command) {
@@ -49,7 +49,10 @@ export const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSche
   }
 
   let args: T['args'] = {} as T['args'];
-  let apps: ExpoCliExtensionAppInfo[];
+
+  if (!metroServerOrigin || typeof metroServerOrigin !== 'string') {
+    throw new Error('Invalid metroServerOrigin parameter. It must be a non-empty string.');
+  }
 
   try {
     args = JSON.parse(argsString);
@@ -63,21 +66,9 @@ export const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSche
     throw new Error('Expected object for args parameter, got ' + JSON.stringify(args));
   }
 
-  try {
-    apps = JSON.parse(appsString);
-  } catch (error) {
-    throw new Error(
-      `Invalid apps JSON: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-
-  if (!Array.isArray(apps)) {
-    throw new Error('Apps parameter must be an array.');
-  }
-
   return {
     command,
     args,
-    apps,
-  } as ExpoCliExtensionParameters<T>;
+    metroServerOrigin,
+  };
 };

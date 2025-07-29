@@ -1,4 +1,4 @@
-import { ExpoCliExtensionAppInfo } from './cliextension.types';
+import { ExpoCliExtensionAppInfo } from './CliExtension.types';
 
 export class SendMessageError extends Error {
   constructor(

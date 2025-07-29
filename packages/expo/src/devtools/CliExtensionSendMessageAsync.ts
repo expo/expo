@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { Data } from 'ws';
 
+import { ExpoCliExtensionAppInfo } from './CliExtension.types';
 import { SendMessageError, formatDeviceIdentifier, getDeviceIdentifier } from './CliExtensionUtils';
-import { ExpoCliExtensionAppInfo } from './cliextension.types';
 
 /**
  * Sends out a message to the WebSocket server using a broadcast channel and waits for a response.

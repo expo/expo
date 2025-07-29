@@ -1,4 +1,4 @@
-import { ExpoCliExtensionAppInfo } from './cliextension.types';
+import { ExpoCliExtensionAppInfo } from './CliExtension.types';
 /**
  * Sends out a message to the WebSocket server using a broadcast channel and waits for a response.
  * If the connection times out or an error occurs, it rejects the promise with an error.

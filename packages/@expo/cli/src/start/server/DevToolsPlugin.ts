@@ -79,15 +79,15 @@ export class DevToolsPlugin {
       if (!this._executor) {
         this._executor = async ({
           command,
-          args,
           metroServerOrigin,
+          args,
         }: DevToolsPluginCliExecutorArguments) => {
           return new Promise<string>(async (resolve, reject) => {
             // Set up the command and its arguments
             const tool = path.join(this.plugin.packageRoot, this.plugin.cliExtensions!.entryPoint);
             const child = this.spawnFunc(
               'node',
-              [tool, command, `'${JSON.stringify(args)}'`, `'${metroServerOrigin}'`],
+              [tool, command, `'${metroServerOrigin}'`, `'${JSON.stringify(args)}'`],
               {
                 cwd: this.projectRoot,
                 shell: true,

@@ -80,9 +80,9 @@ export type ExpoCliExtensionCommands<T extends ExpoCliExtensionCommandSchema> = 
 export type ExpoCliExtensionParameters<T extends ExpoCliExtensionCommandSchema> =
   ExpoCliExtensionCommands<T> & {
     /**
-     * A list of connected Expo applications. Each application is represented by an `ExpoCliApplication` object,
+     * The origin URL of the Metro server.
      */
-    apps: ExpoCliExtensionAppInfo[];
+    metroServerOrigin: string;
   };
 
 /**

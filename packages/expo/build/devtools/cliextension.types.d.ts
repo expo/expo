@@ -76,9 +76,9 @@ export type ExpoCliExtensionCommands<T extends ExpoCliExtensionCommandSchema> = 
  */
 export type ExpoCliExtensionParameters<T extends ExpoCliExtensionCommandSchema> = ExpoCliExtensionCommands<T> & {
     /**
-     * A list of connected Expo applications. Each application is represented by an `ExpoCliApplication` object,
+     * The origin URL of the Metro server.
      */
-    apps: ExpoCliExtensionAppInfo[];
+    metroServerOrigin: string;
 };
 /**
  * Executor function type that ensures type safety between command and args.
@@ -140,4 +140,4 @@ export type ExpoCliOutputElement = {
  * @returns Either a structured array of output elements or void (if the tool logs directly to the console)
  */
 export type ExpoCliOutput = ExpoCliOutputElement[] | void;
-//# sourceMappingURL=cliextension.types.d.ts.map
+//# sourceMappingURL=CliExtension.types.d.ts.map
