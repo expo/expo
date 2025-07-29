@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -85,7 +84,6 @@ fun BranchScreen(
     }
 
     LaunchedEffect(reachedBottom, isLoading) {
-      Log.e("BranchScreen", "Reached bottom: $reachedBottom, isLoading: $isLoading")
       if (reachedBottom && !isLoading) {
         onAction(BranchAction.LoadMoreUpdates)
       }
