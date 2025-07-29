@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Native Bottom Tabs Navigation renders tabs correctly for two elements 1`] = `
+<div
+  aria-label="Main"
+  aria-orientation="horizontal"
+  class=""
+  data-orientation="horizontal"
+  role="tablist"
+  style="outline: none;"
+  tabindex="0"
+>
+  <button
+    aria-controls="radix-«r0»-content-index"
+    aria-selected="true"
+    class=""
+    data-orientation="horizontal"
+    data-radix-collection-item=""
+    data-state="active"
+    id="radix-«r0»-trigger-index"
+    role="tab"
+    tabindex="-1"
+    type="button"
+  >
+    <span>
+      Index
+    </span>
+  </button>
+  <button
+    aria-controls="radix-«r0»-content-about"
+    aria-selected="false"
+    class=""
+    data-orientation="horizontal"
+    data-radix-collection-item=""
+    data-state="inactive"
+    id="radix-«r0»-trigger-about"
+    role="tab"
+    tabindex="-1"
+    type="button"
+  >
+    <span>
+      About
+    </span>
+  </button>
+</div>
+`;
