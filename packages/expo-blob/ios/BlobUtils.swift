@@ -10,6 +10,8 @@ func processBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, e
       return .blob(part)
     }
     if let part: TypedArray = part.get() {
+      // TODO: Consider optimization to avoid copying TypedArray data while preventing early GC
+      // This would require careful lifetime management and architectural changes
       let copiedData = Data(bytes: part.rawPointer, count: part.byteLength)
       return .data(copiedData)
     }

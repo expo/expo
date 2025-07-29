@@ -42,8 +42,7 @@ export declare const preprocessOptions: (options?: BlobPropertyBag) => BlobPrope
  * (by reducing the number of read operations) and memory usage (by avoiding excessively large buffers).
  * This value is commonly used in Node.js streams and V8 engine implementations.
  *
- * @see https://nodejs.org/api/stream.html#stream_buffering
- * @see https://github.com/nodejs/node/blob/1abff073921bcb0631602032aef0135bccfaee0d/lib/internal/streams/state.js#L12
+ * @see https://github.com/nodejs/node/commit/1abff073921bcb0631602032aef0135bccfaee0d#diff-b290649355ee6b2639720a644520e93878144584f931f60f06d5c15eecd9067fR12
  */
 export declare const DEFAULT_CHUNK_SIZE = 65536;
 //# sourceMappingURL=utils.d.ts.map
