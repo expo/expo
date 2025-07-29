@@ -24,7 +24,6 @@ public final class FileSystemLegacyModule: Module {
     return appContext?.config.cacheDirectory
   }
 
-  // swiftlint:disable:next cyclomatic_complexity
   public func definition() -> ModuleDefinition {
     Name("ExponentFileSystem")
 

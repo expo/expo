@@ -48,6 +48,7 @@ public final class FileSystemModule: Module {
       return availableDiskSpace
     }
 
+    // swiftlint:disable:next closure_body_length
     AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptionsNext?, promise: Promise) in
       try to.validatePermission(.write)
 
@@ -114,6 +115,7 @@ public final class FileSystemModule: Module {
       return output
     }
 
+    // swiftlint:disable:next closure_body_length
     Class(FileSystemFile.self) {
       Constructor { (url: URL) in
         return FileSystemFile(url: url.standardizedFileURL)
@@ -235,6 +237,7 @@ public final class FileSystemModule: Module {
       }
     }
 
+    // swiftlint:disable:next closure_body_length
     Class(FileSystemDirectory.self) {
       Constructor { (url: URL) in
         return FileSystemDirectory(url: url.standardizedFileURL)
