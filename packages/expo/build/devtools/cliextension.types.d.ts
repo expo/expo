@@ -84,7 +84,7 @@ export type ExpoCliExtensionParameters<T extends ExpoCliExtensionCommandSchema> 
  * Executor function type that ensures type safety between command and args.
  * The args will automatically include the source property.
  */
-export type ExpoCliExtensionExecutor<T extends ExpoCliExtensionCommandSchema> = <K extends keyof T>(command: K, args: ExpoCliExtensionArgs<T>[K], apps: ExpoCliExtensionAppInfo[]) => Promise<ExpoCliOutput>;
+export type ExpoCliExtensionExecutor<T extends ExpoCliExtensionCommandSchema> = <K extends keyof T>(command: K, args: ExpoCliExtensionArgs<T>[K], metroServerOrigin: string) => Promise<ExpoCliOutput>;
 /**
  * Helper type for commands that don't require additional arguments beyond the base source argument.
  */

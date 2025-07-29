@@ -92,7 +92,7 @@ export type ExpoCliExtensionParameters<T extends ExpoCliExtensionCommandSchema> 
 export type ExpoCliExtensionExecutor<T extends ExpoCliExtensionCommandSchema> = <K extends keyof T>(
   command: K,
   args: ExpoCliExtensionArgs<T>[K],
-  apps: ExpoCliExtensionAppInfo[]
+  metroServerOrigin: string
 ) => Promise<ExpoCliOutput>;
 
 /**
