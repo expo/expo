@@ -11,7 +11,6 @@ internal final class CustomExpoCalendar: SharedObject {
     init(id: String) {
         super.init()
         self.calendar = eventStore.calendar(withIdentifier: id)
-        print("CustomExpoCalendar initialized with id: \(calendar.map(\.title) ?? "No title")")
     }
 
     init(calendar: EKCalendar) {

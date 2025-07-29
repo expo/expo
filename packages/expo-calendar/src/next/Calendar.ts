@@ -1,17 +1,15 @@
-import { EntityTypes, Event, RecurringEventOptions, stringifyDateValues, stringifyIfDate } from '../Calendar';
+import {
+  EntityTypes,
+  Event,
+  RecurringEventOptions,
+  stringifyDateValues,
+  stringifyIfDate,
+} from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 
-export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
-  constructor(id: string) {
-    super(id);
-  }
-}
+export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {}
 
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
-  constructor(id: string) {
-    super(id);
-  }
-
   override createEvent(
     details: Partial<Event>,
     options: RecurringEventOptions

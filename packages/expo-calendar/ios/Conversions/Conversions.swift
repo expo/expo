@@ -247,8 +247,8 @@ func serialize(alarms: [EKAlarm], with formatter: DateFormatter) -> [[String: An
         proximity = "None"
       }
       serializedAlarm["structuredLocation"] = [
-        "title": structuredLocation.title ?? "",
-        "proximity": proximity ?? "unknown",
+        "title": structuredLocation.title,
+        "proximity": proximity,
         "radius": structuredLocation.radius,
         "coord": [
           "latitude": structuredLocation.geoLocation?.coordinate.latitude,
