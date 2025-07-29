@@ -97,5 +97,5 @@ public class ReloadScreenManager: Reloadable {
   }
 }
 #else
-typealias ReloadScreenManager = ReloadScreeenManagerMacOS
+typealias ReloadScreenManager = ReloadScreenManagerMacOS
 #endif
