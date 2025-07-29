@@ -8,7 +8,7 @@ import type {
   FileSystemNetworkTaskProgressCallback,
   UploadProgressData,
   UploadTask,
-} from 'expo-file-system';
+} from 'expo-file-system/legacy';
 import React from 'react';
 import { Alert, ScrollView, Text, Platform } from 'react-native';
 
