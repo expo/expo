@@ -39,7 +39,7 @@
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
     "@shopify/flash-list": "1.8.3",
-    "@shopify/react-native-skia": "v2.0.0-next.4",
+    "@shopify/react-native-skia": "2.1.1",
     "@stripe/stripe-react-native": "0.50.1",
     "date-fns": "^2.28.0",
     "dedent": "^0.7.0",
