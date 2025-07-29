@@ -1,7 +1,7 @@
 #if os(macOS)
 import AppKit
 
-public class ReloadScreenManager: Reloadable {
+public class ReloadScreenManagerMacOS: Reloadable {
   private var currentConfiguration: ReloadScreenConfiguration?
   private var currentReloadScreen: ReloadScreenView?
   private var overlayWindow: NSWindow?
@@ -11,7 +11,7 @@ public class ReloadScreenManager: Reloadable {
     NotificationCenter.default.addObserver(self, selector: #selector(hide), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
   }
 
-  func setConfiguration(_ options: ReloadScreenOptions?) {
+  public func setConfiguration(_ options: ReloadScreenOptions?) {
     currentConfiguration = ReloadScreenConfiguration(options: options)
   }
 
