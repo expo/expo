@@ -28,11 +28,8 @@ import {
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
-import {
-  withMetroErrorReportingResolver,
-  withMetroMutatedResolverContext,
-  withMetroResolvers,
-} from './withMetroResolvers';
+import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
+import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
