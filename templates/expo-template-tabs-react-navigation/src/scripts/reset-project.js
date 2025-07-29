@@ -52,7 +52,7 @@ export const Navigation = createStaticNavigation(RootStack);
 const appContent = `import 'react-native-gesture-handler';
 import { Navigation } from './navigation';
 
-export default function App() {
+export function App() {
   return <Navigation />;
 }
 `;
