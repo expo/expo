@@ -143,7 +143,7 @@ public protocol AppControllerInterface {
   @objc func start()
 }
 
-protocol InternalAppControllerInterface: AppControllerInterface {
+public protocol InternalAppControllerInterface: AppControllerInterface {
   var updatesDirectory: URL? { get }
 
   var reloadScreenManager: Reloadable? { get }
