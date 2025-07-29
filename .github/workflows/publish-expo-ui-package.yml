@@ -1,0 +1,48 @@
+name: Expo UI - Publish
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+    paths:
+      - .github/workflows/expo-ui-package.yml
+      - packages/expo-ui
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-packages:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Configure .npmrc
+        env:
+          PACKAGE_WRITE_TOKEN: ${{ secrets.PACKAGE_WRITE_TOKEN }}
+        run: |
+          echo "@silvasmvs:registry=https://npm.pkg.github.com" > ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=$PACKAGE_WRITE_TOKEN" >> ~/.npmrc
+      - name: 🧐 Build expo ui package
+        run: |
+          cd packages/expo-ui
+          EXPO_NONINTERACTIVE=1 yarn build
+      - name: 🚀 Publish
+        run: |
+          echo "Publishing library"
+          cd packages/expo-ui
+          yarn publish --non-interactive
