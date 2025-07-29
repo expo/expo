@@ -18,7 +18,7 @@ const arrayBufferExamples: ArrayBufferExampleData[] = [
   {
     key: 'simple-arraybuffer',
     title: 'Simple ArrayBuffer',
-    code: 'new ExpoBlob(["Hello World"]).arrayBuffer()',
+    code: 'new Blob(["Hello World"]).arrayBuffer()',
     blobParts: ['Hello World'],
     options: {
       type: 'text/plain',
@@ -27,7 +27,7 @@ const arrayBufferExamples: ArrayBufferExampleData[] = [
   {
     key: 'unicode-arraybuffer',
     title: 'Unicode ArrayBuffer',
-    code: 'new ExpoBlob(["Hello 🌍 世界"]).arrayBuffer()',
+    code: 'new Blob(["Hello 🌍 世界"]).arrayBuffer()',
     blobParts: ['Hello 🌍 世界'],
     options: {
       type: 'text/plain; charset=utf-8',
@@ -36,7 +36,7 @@ const arrayBufferExamples: ArrayBufferExampleData[] = [
   {
     key: 'mixed-arraybuffer',
     title: 'Mixed Content ArrayBuffer',
-    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).arrayBuffer()',
+    code: 'new Blob(["Text", new Uint8Array([65, 66, 67]), "More"]).arrayBuffer()',
     blobParts: ['Text', new Uint8Array([65, 66, 67]), 'More'],
     options: {
       type: 'text/plain',
@@ -45,7 +45,7 @@ const arrayBufferExamples: ArrayBufferExampleData[] = [
   {
     key: 'binary-arraybuffer',
     title: 'Binary Data ArrayBuffer',
-    code: 'new ExpoBlob([new Uint8Array([72, 101, 108, 108, 111])]).arrayBuffer()',
+    code: 'new Blob([new Uint8Array([72, 101, 108, 108, 111])]).arrayBuffer()',
     blobParts: [new Uint8Array([72, 101, 108, 108, 111])],
     options: {
       type: 'application/octet-stream',
@@ -54,7 +54,7 @@ const arrayBufferExamples: ArrayBufferExampleData[] = [
   {
     key: 'json-arraybuffer',
     title: 'JSON ArrayBuffer',
-    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).arrayBuffer()',
+    code: 'new Blob([JSON.stringify({name: "John", age: 30})]).arrayBuffer()',
     blobParts: [JSON.stringify({ name: 'John', age: 30 })],
     options: {
       type: 'application/json',
