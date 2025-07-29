@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, SafeAreaView, View, StyleSheet, Text } from 'react-native';
+import { Pressable, View, StyleSheet, Text } from 'react-native';
 import Animated, {
   interpolate,
   SharedValue,
