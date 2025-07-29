@@ -66,7 +66,7 @@
     "react-native": "0.80.1",
     "react-native-edge-to-edge": "~1.6.1",
     "react-native-gesture-handler": "~2.26.0",
-    "react-native-keyboard-controller": "^1.17.5",
+    "react-native-keyboard-controller": "^1.18.2",
     "react-native-pager-view": "6.8.1",
     "react-native-worklets": "0.4.0",
     "react-native-reanimated": "4.0.1",
