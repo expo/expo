@@ -99,7 +99,7 @@ private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.Request
     }
   }
 
-  @MainActor private func createURLSession() -> URLSession {
+  private func createURLSession() -> URLSession {
     let config: URLSessionConfiguration
     if let urlSessionConfigurationProvider, let concreteConfig = urlSessionConfigurationProvider() {
       config = concreteConfig

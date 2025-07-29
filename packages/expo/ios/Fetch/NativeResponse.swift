@@ -20,7 +20,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
       }
     }
   }
-  private typealias StateChangeListener = @Sendable (ResponseState) -> Bool
+  private typealias StateChangeListener = (ResponseState) -> Bool
   private var stateChangeOnceListeners: [StateChangeListener] = []
 
   private(set) var responseInit: NativeResponseInit?
