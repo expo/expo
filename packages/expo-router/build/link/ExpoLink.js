@@ -59,6 +59,6 @@ function ExpoLink(props) {
     return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} children={children}/>;
 }
 function isLinkWithPreview(props) {
-    return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) && child.type === LinkWithPreview_1.LinkPreview);
+    return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) && (child.type === LinkWithPreview_1.LinkPreview || child.type === LinkWithPreview_1.LinkMenu));
 }
 //# sourceMappingURL=ExpoLink.js.map

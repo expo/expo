@@ -88,7 +88,7 @@ function LinkWithPreview({ children, ...rest }) {
     const triggerElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkTrigger), [children]);
     const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, exports.LinkMenu), [children]);
     const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, LinkPreview), [children]);
-    if (previewElement && !triggerElement) {
+    if ((previewElement || menuElement) && !triggerElement) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
         }
@@ -100,7 +100,7 @@ function LinkWithPreview({ children, ...rest }) {
     const actionsHandlers = react_1.default.useMemo(() => menuElement
         ? convertActionsToActionsHandlers(convertChildrenArrayToActions([menuElement]))
         : {}, [menuElement]);
-    const preview = react_1.default.useMemo(() => previewElement ?? <LinkPreview />, [previewElement, rest.href]);
+    const preview = react_1.default.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
     if ((0, url_1.shouldLinkExternally)(String(rest.href)) || rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;

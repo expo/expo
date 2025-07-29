@@ -40,8 +40,8 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let triggerView = childComponentView as? NativeLinkPreviewTrigger {
       trigger = triggerView
-      if let interaction = self.interaction, self.preview != nil {
-        trigger?.addInteraction(interaction)
+      if let interaction = self.interaction {
+        triggerView.addInteraction(interaction)
       }
       super.mountChildComponentView(childComponentView, index: index)
     } else if let previewView = childComponentView as? NativeLinkPreviewContentView {
@@ -154,9 +154,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate, LinkPre
 
   // MARK: - Context Menu Helpers
 
-  private func createPreviewViewController() -> UIViewController {
+  private func createPreviewViewController() -> UIViewController? {
     guard let preview = preview else {
-      return UIViewController()
+      return nil
     }
 
     let vc = PreviewViewController(linkPreviewNativePreview: preview)
