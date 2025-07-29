@@ -7,7 +7,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
     CustomExpoCalendarAttendee: typeof CustomExpoCalendarAttendee;
     getDefaultCalendarId(): string;
     getCalendarsIds(type?: EntityTypes): string[];
-    createCalendar(details: Partial<Calendar>): string;
+    createCalendarNext(details: Partial<Calendar>): CustomExpoCalendar;
 }
 declare const _default: ExpoCalendarNextModule;
 export default _default;

@@ -1,4 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
+import { processColor } from 'react-native';
 
 import {
   Calendar,
@@ -12,7 +13,7 @@ import ExpoCalendar from './ExpoCalendar';
 
 export class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {}
 
-export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent { }
+export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {}
 
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
   override createEvent(
@@ -47,10 +48,13 @@ export function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[] {
   return ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
 }
 
-export function createCalendar(details: Partial<Calendar> = {}): string {
-  if (!ExpoCalendar.createCalendar) {
-    throw new UnavailabilityError('Calendar', 'createCalendar');
+export async function createCalendarNext(
+  details: Partial<Calendar> = {}
+): Promise<ExportExpoCalendar> {
+  if (!ExpoCalendar.createCalendarNext) {
+    throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
-  // TODO: Implement it
-  throw new UnavailabilityError('Calendar', 'createCalendar');
+  const color = details.color ? processColor(details.color) : undefined;
+  const newDetails = { ...details, id: undefined, color };
+  return ExpoCalendar.createCalendarNext(newDetails);
 }

@@ -10,5 +10,5 @@ export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar 
 }
 export declare function getDefaultCalendarNext(): ExportExpoCalendar;
 export declare function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[];
-export declare function createCalendar(details?: Partial<Calendar>): string;
+export declare function createCalendarNext(details?: Partial<Calendar>): Promise<ExportExpoCalendar>;
 //# sourceMappingURL=Calendar.d.ts.map

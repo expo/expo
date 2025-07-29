@@ -48,6 +48,32 @@ public final class CalendarNextModule: Module {
 
           return calendars.map { $0.calendarIdentifier }
         }
+
+        Function("createCalendarNext") { (details: CalendarRecord) throws -> CustomExpoCalendar in
+            let calendar: EKCalendar
+            switch details.entityType {
+                case .event:
+                    calendar = EKCalendar(for: .event, eventStore: eventStore)
+                case .reminder:
+                    calendar = EKCalendar(for: .reminder, eventStore: eventStore)
+                case .none:
+                    throw EntityNotSupportedException(details.entityType?.rawValue)
+            }
+
+            if let sourceId = details.sourceId {
+              calendar.source = eventStore.source(withIdentifier: sourceId)
+            } else {
+              calendar.source = details.entityType == .event ?
+              eventStore.defaultCalendarForNewEvents?.source :
+              eventStore.defaultCalendarForNewReminders()?.source
+            }
+
+            calendar.title = details.title
+            calendar.cgColor = EXUtilities.uiColor(details.color)?.cgColor
+
+            try eventStore.saveCalendar(calendar, commit: true)
+            return CustomExpoCalendar(calendar: calendar)
+        }
         
         Class(CustomExpoCalendar.self) {
             Constructor { (id: String) in

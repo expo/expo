@@ -13,7 +13,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
   CustomExpoCalendarAttendee: typeof CustomExpoCalendarAttendee;
   getDefaultCalendarId(): string;
   getCalendarsIds(type?: EntityTypes): string[];
-  createCalendar(details: Partial<Calendar>): string;
+  createCalendarNext(details: Partial<Calendar>): CustomExpoCalendar;
 }
 
 // TODO: Support Expo Go
