@@ -26,7 +26,6 @@ internal class CreateAlbum(
       val albumCreator = files[0]
       val album = createAlbumFile(albumCreator.mimeType, albumName)
       val newFile = mStrategy.apply(albumCreator, album, context)
-
       val result = CompletableDeferred<Bundle?>()
 
       MediaScannerConnection.scanFile(

@@ -13,15 +13,15 @@ import androidx.activity.result.contract.ActivityResultContracts.StartIntentSend
 import androidx.annotation.RequiresApi
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
+import expo.modules.kotlin.exception.Exceptions
 import java.io.Serializable
 
 class DeleteContract(
   private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<DeleteContractInput, Boolean> {
-  private val contentResolver: ContentResolver
-    get() = requireNotNull(appContextProvider.appContext.reactContext) {
-      "React Application Context is null"
-    }.contentResolver
+  private val contentResolver: ContentResolver get() =
+    appContextProvider.appContext.reactContext?.contentResolver
+      ?: throw Exceptions.ReactContextLost()
 
   @RequiresApi(Build.VERSION_CODES.R)
   override fun createIntent(context: Context, input: DeleteContractInput): Intent {
