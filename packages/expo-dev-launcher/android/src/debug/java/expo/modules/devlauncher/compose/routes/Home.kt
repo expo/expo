@@ -9,10 +9,6 @@ import expo.modules.devlauncher.compose.DefaultScreenContainer
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeViewModel
 import expo.modules.devlauncher.compose.screens.HomeScreen
-import kotlinx.serialization.Serializable
-
-@Serializable
-object Home
 
 @Composable
 fun HomeRoute(
@@ -22,7 +18,7 @@ fun HomeRoute(
   DefaultScreenContainer {
     val viewModel = viewModel<HomeViewModel>()
     val context = LocalContext.current
-    
+
     HomeScreen(
       state = viewModel.state,
       onAction = { action ->
