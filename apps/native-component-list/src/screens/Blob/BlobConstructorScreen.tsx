@@ -17,7 +17,7 @@ type ExampleData = {
 const examples: ExampleData[] = [
   {
     key: 'nested',
-    title: 'Neasted Array',
+    title: 'Nested Array',
     code: 'new ExpoBlob(["a", "bbb", "d", ["edf", ["aaaa"]]])',
     blobParts: ['a', 'bbb', 'd', ['edf', ['aaaa']]],
   },

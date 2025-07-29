@@ -123,6 +123,16 @@ export async function test({ describe, it, expect }) {
         );
         expect(await blob.size).toBe(17);
       });
+      it('Slicing emotes', async () => {
+        const str = 'a🌍b'; // 'a' (1 byte) + '🌍' (4 bytes) + 'b' (1 byte) = 6 UTF-8 bytes
+        const blob = new Blob([str]);
+
+        // Slice at byte position 3 (middle of emoji)
+        const slice = blob.slice(0, 3);
+        const bytes = await slice.bytes();
+        expect(slice.size).toBe(3);
+        expect(bytes).toEqual(new TextEncoder().encode(str).slice(0, 3));
+      });
       describe('large slice start and end', async () => {
         it('large positive start', async () => {
           const blob = new Blob(['PASS']);
@@ -331,10 +341,11 @@ export async function test({ describe, it, expect }) {
         expect(() => {
           // @ts-ignore
           Blob();
-        }).toThrow();
+        }).toThrowError(TypeError);
       });
       it('Blob constructor without brackets', () => {
-        const blob = new Blob();
+        // prettier-ignore
+        const blob = new Blob
         expect(blob instanceof Blob).toBeTruthy();
         expect(blob.size).toBe(0);
         expect(blob.type).toBe('');
@@ -883,7 +894,7 @@ export async function test({ describe, it, expect }) {
           it('Passing ' + JSON.stringify(arg) + ' for options should throw', () => {
             expect(() => {
               new Blob([], arg);
-            }).toThrow(TypeError());
+            }).toThrowError(TypeError);
           });
         });
       });

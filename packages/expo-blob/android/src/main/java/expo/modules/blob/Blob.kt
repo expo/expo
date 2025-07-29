@@ -48,7 +48,7 @@ class Blob(
       return this
     }
     return when (this) {
-      is InternalBlobPart.StringWrapper -> InternalBlobPart.StringWrapper(string.substring(startIndex, endIndex))
+      is InternalBlobPart.StringWrapper -> InternalBlobPart.BufferWrapper(string.toByteArray().slice(startIndex..<endIndex).toByteArray())
       is InternalBlobPart.BlobWrapper -> InternalBlobPart.BlobWrapper(blob.slice(startIndex, endIndex, ""))
       is InternalBlobPart.BufferWrapper -> InternalBlobPart.BufferWrapper(
         buffer.slice(startIndex..<endIndex).toByteArray()

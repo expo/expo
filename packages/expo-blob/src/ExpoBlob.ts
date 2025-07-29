@@ -12,6 +12,10 @@ const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
 
 export class ExpoBlob extends NativeBlobModule.Blob {
   constructor(blobParts?: BlobPart[] | Iterable<any>, options?: BlobPropertyBag) {
+    if (!new.target) {
+      throw new TypeError("ExpoBlob constructor requires 'new' operator");
+    }
+
     const inputMapping = (blobPart: BlobPart) => {
       if (blobPart instanceof ArrayBuffer) {
         return new Uint8Array(blobPart);
@@ -27,7 +31,9 @@ export class ExpoBlob extends NativeBlobModule.Blob {
     if (blobParts === undefined) {
       super([], preprocessOptions(options));
     } else if (blobParts === null || typeof blobParts !== 'object') {
-      throw TypeError();
+      throw TypeError(
+        'ExpoBlob constructor requires blobParts to be a non-null object or undefined'
+      );
     } else {
       for (const blobPart of blobParts) {
         processedBlobParts.push(inputMapping(blobPart));

@@ -3,6 +3,9 @@ import { DEFAULT_CHUNK_SIZE, isTypedArray, normalizedContentType, preprocessOpti
 const NativeBlobModule = requireNativeModule('ExpoBlob');
 export class ExpoBlob extends NativeBlobModule.Blob {
     constructor(blobParts, options) {
+        if (!new.target) {
+            throw new TypeError("ExpoBlob constructor requires 'new' operator");
+        }
         const inputMapping = (blobPart) => {
             if (blobPart instanceof ArrayBuffer) {
                 return new Uint8Array(blobPart);
@@ -17,7 +20,7 @@ export class ExpoBlob extends NativeBlobModule.Blob {
             super([], preprocessOptions(options));
         }
         else if (blobParts === null || typeof blobParts !== 'object') {
-            throw TypeError();
+            throw TypeError('ExpoBlob constructor requires blobParts to be a non-null object or undefined');
         }
         else {
             for (const blobPart of blobParts) {

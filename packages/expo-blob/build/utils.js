@@ -54,7 +54,7 @@ export const preprocessOptions = (options) => {
     if (!options)
         return options;
     if (!(options instanceof Object)) {
-        throw TypeError();
+        throw TypeError("The 'options' argument must be a dictionary. Received type " + typeof options);
     }
     let endings = options.endings;
     let type = options.type;
@@ -65,7 +65,9 @@ export const preprocessOptions = (options) => {
         type = String(type);
     }
     if (endings !== undefined && endings !== 'native' && endings !== 'transparent') {
-        throw TypeError();
+        throw TypeError("Provided '" +
+            endings +
+            "' endings value is not a valid enum value of EndingType, try 'native' or 'transparent'");
     }
     return {
         endings,
