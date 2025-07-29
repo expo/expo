@@ -143,7 +143,7 @@ public protocol AppControllerInterface {
   @objc func start()
 }
 
-protocol InternalAppControllerInterface: AppControllerInterface {
+public protocol InternalAppControllerInterface: AppControllerInterface {
   var updatesDirectory: URL? { get }
 
   var reloadScreenManager: Reloadable? { get }
@@ -201,7 +201,7 @@ public class AppController: NSObject {
     return _sharedInstance != nil
   }
   private static var _sharedInstance: InternalAppControllerInterface?
-  static var sharedInstance: InternalAppControllerInterface {
+  public static var sharedInstance: InternalAppControllerInterface {
     assert(_sharedInstance != nil, "AppController.sharedInstace was called before the module was initialized")
     return _sharedInstance!
   }

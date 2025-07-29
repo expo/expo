@@ -7,7 +7,9 @@ private let defaultSpinnerColor = UIColor.systemBlue
 private let defaultSpinnerSize = SpinnerSize.medium
 private let defaultImageResizeMode = ImageResizeMode.contain
 
-internal struct ReloadScreenOptions: Record {
+public struct ReloadScreenOptions: Record {
+  public init() {}
+
   @Field var backgroundColor: UIColor = .white
   @Field var image: ReloadScreenImageSource?
   @Field var imageResizeMode: ImageResizeMode = .contain
