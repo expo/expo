@@ -1,4 +1,4 @@
-import { Source } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source } from '../Calendar';
 export declare class CustomExpoCalendar {
     constructor(id: string);
     id: string;
@@ -21,7 +21,17 @@ export declare class CustomExpoCalendarEvent {
     readonly endDate: Date;
     readonly notes: string;
     readonly location: string;
+    getAttendees(): CustomExpoCalendarAttendee[];
 }
-export declare function getDefaultCalendar(): CustomExpoCalendar;
-export declare function getAllCalendars(entityType?: string): CustomExpoCalendar[];
+export declare class CustomExpoCalendarAttendee {
+    constructor(id: string);
+    id?: string;
+    name: string;
+    isCurrentUser: boolean;
+    role: AttendeeRole;
+    status: AttendeeStatus;
+    type: AttendeeType;
+    url?: string;
+    email?: string;
+}
 //# sourceMappingURL=ExpoCalendar.types.d.ts.map

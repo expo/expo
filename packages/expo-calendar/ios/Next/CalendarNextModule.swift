@@ -69,6 +69,36 @@ public final class CalendarNextModule: Module {
           guard let endDate = event.event?.endDate else { return nil }
           return dateFormatter.string(from: endDate)
         }
+
+        Function("getAttendees") { (event: CustomExpoCalendarEvent) in
+          event.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
+        }
+      }
+
+      Class(CustomExpoCalendarAttendee.self) {
+          Property("name") { (attendee: CustomExpoCalendarAttendee) in
+              attendee.attendee.name ?? ""
+          }
+
+          Property("isCurrentUser") { (attendee: CustomExpoCalendarAttendee) in
+            attendee.attendee.isCurrentUser
+          }
+
+          Property("role") { (attendee: CustomExpoCalendarAttendee) in
+            participantToString(role: attendee.attendee.participantRole)
+          }
+
+          Property("status") { (attendee: CustomExpoCalendarAttendee) in
+            participantStatusToString(status: attendee.attendee.participantStatus)
+          }
+
+          Property("type") { (attendee: CustomExpoCalendarAttendee) in
+            participantTypeToString(type: attendee.attendee.participantType)
+          }
+
+          Property("url") { (attendee: CustomExpoCalendarAttendee) in
+            attendee.attendee.url.absoluteString.removingPercentEncoding
+          }
       }
   }
 }

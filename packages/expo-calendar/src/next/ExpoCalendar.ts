@@ -1,11 +1,15 @@
 import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import { CustomExpoCalendar, CustomExpoCalendarEvent } from './ExpoCalendar.types';
+import {
+  CustomExpoCalendar,
+  CustomExpoCalendarAttendee,
+  CustomExpoCalendarEvent,
+} from './ExpoCalendar.types';
 
 declare class ExpoCalendarNextModule extends NativeModule {
   CustomExpoCalendar: typeof CustomExpoCalendar;
   CustomExpoCalendarEvent: typeof CustomExpoCalendarEvent;
-  //   Attendee: typeof CustomExpoCalendarAttendee;
+  CustomExpoCalendarAttendee: typeof CustomExpoCalendarAttendee;
   getDefaultCalendar(): CustomExpoCalendar;
   getAllCalendars(entityType?: string): CustomExpoCalendar[];
   //   requestPermissions(): Promise<any>;
@@ -14,4 +18,3 @@ declare class ExpoCalendarNextModule extends NativeModule {
 
 // TODO: Support Expo Go
 export default requireNativeModule<ExpoCalendarNextModule>('CalendarNext');
-

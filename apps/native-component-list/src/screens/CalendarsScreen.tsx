@@ -88,9 +88,15 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
         allCalendars.map((cal) => cal.title)
       );
 
-      const calendar = new ExportExpoCalendar(defaultCalendar.id);
+      const calendar = new ExportExpoCalendar(allCalendars[5].id);
       const events = calendar.listEvents(oneWeekAgo, oneWeekFromNow);
       console.log('Events:', calendar.title, events.length);
+
+      for (const event of events) {
+        const attendees = event.getAttendees();
+        console.log('Attendees of event:', event.title, attendees);
+      }
+
       Alert.alert('Success!', 'Check console for expo-calendar/next API demo results');
     } catch (error) {
       console.error('Error testing expo-calendar/next:', error);

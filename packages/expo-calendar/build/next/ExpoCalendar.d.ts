@@ -1,8 +1,9 @@
 import { NativeModule } from 'expo-modules-core';
-import { CustomExpoCalendar, CustomExpoCalendarEvent } from './ExpoCalendar.types';
+import { CustomExpoCalendar, CustomExpoCalendarAttendee, CustomExpoCalendarEvent } from './ExpoCalendar.types';
 declare class ExpoCalendarNextModule extends NativeModule {
     CustomExpoCalendar: typeof CustomExpoCalendar;
     CustomExpoCalendarEvent: typeof CustomExpoCalendarEvent;
+    CustomExpoCalendarAttendee: typeof CustomExpoCalendarAttendee;
     getDefaultCalendar(): CustomExpoCalendar;
     getAllCalendars(entityType?: string): CustomExpoCalendar[];
 }
