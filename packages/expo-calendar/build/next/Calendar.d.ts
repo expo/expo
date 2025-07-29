@@ -1,5 +1,7 @@
 import { Calendar, EntityTypes, Event, RecurringEventOptions } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
+export declare class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {
+}
 export declare class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
 }
 export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {

@@ -44,7 +44,6 @@ export declare class CustomExpoCalendarEvent {
     delete(recurringEventOptions: RecurringEventOptions): void;
 }
 export declare class CustomExpoCalendarAttendee {
-    constructor(id: string);
     id?: string;
     name: string;
     isCurrentUser: boolean;

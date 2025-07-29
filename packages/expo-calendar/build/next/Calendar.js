@@ -1,6 +1,8 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { stringifyDateValues, stringifyIfDate, } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
+export class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {
+}
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
 }
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {

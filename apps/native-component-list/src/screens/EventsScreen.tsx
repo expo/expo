@@ -40,6 +40,7 @@ const EventRow: React.FunctionComponent<{
 
 interface State {
   events: ExportExpoCalendarEvent[];
+  calendar: ExportExpoCalendar | null;
 }
 
 type Links = {
@@ -75,6 +76,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   readonly state: State = {
+    calendar: null,
     events: [],
   };
 
@@ -85,6 +87,7 @@ export default class EventsScreen extends React.Component<Props, State> {
       const calendar = new ExportExpoCalendar(id);
       if (calendar) {
         this._findEvents(calendar);
+        this.setState({ calendar });
       }
     }
   }
@@ -164,7 +167,9 @@ export default class EventsScreen extends React.Component<Props, State> {
         instanceStartDate: event.recurrenceRule ? event.startDate : undefined,
       });
       Alert.alert('Event deleted successfully');
-      //   this._findEvents(event.calendarId);
+      if (this.state.calendar) {
+        this._findEvents(this.state.calendar);
+      }
     } catch (e) {
       Alert.alert('Event not deleted successfully', e.message);
     }
