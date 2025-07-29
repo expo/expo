@@ -16,8 +16,7 @@ internal class DeleteAlbums(
     val selectionVideos = "${MediaStore.Video.Media.BUCKET_ID} IN (${queryPlaceholdersFor(mAlbumIds)})"
     val selectionArgs = mAlbumIds
 
-    MediaLibraryUtils.deleteAssets(context, selectionImages, selectionArgs)
-    MediaLibraryUtils.deleteAssets(context, selectionVideos, selectionArgs)
-    return true
+    return MediaLibraryUtils.deleteAssets(context, selectionImages, selectionArgs) &&
+      MediaLibraryUtils.deleteAssets(context, selectionVideos, selectionArgs)
   }
 }

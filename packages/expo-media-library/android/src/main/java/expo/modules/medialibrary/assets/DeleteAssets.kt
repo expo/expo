@@ -12,7 +12,6 @@ internal class DeleteAssets(
     val selection = "${MediaStore.Images.Media._ID} IN (${assetIds.joinToString(separator = ",")} )"
     val selectionArgs: Array<String>? = null
 
-    MediaLibraryUtils.deleteAssets(context, selection, selectionArgs)
-    return true
+    return MediaLibraryUtils.deleteAssets(context, selection, selectionArgs)
   }
 }

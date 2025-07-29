@@ -74,7 +74,7 @@ object MediaLibraryUtils {
     }
   }
 
-  fun deleteAssets(context: Context, selection: String?, selectionArgs: Array<out String?>?) {
+  fun deleteAssets(context: Context, selection: String?, selectionArgs: Array<out String?>?): Boolean {
     val projection = arrayOf(MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA)
     try {
       context.contentResolver.query(
@@ -86,32 +86,32 @@ object MediaLibraryUtils {
       ).use { filesToDelete ->
         if (filesToDelete == null) {
           throw AssetFileException("Could not delete assets. Cursor is null.")
-        } else {
-          while (filesToDelete.moveToNext()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-              val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
-              val id = filesToDelete.getLong(columnId)
-              val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
-              val rowsDeleted = context.contentResolver.delete(assetUri, null)
-              if (rowsDeleted == 0) {
-                throw AssetFileException("Could not delete file.")
-              }
+        }
+        while (filesToDelete.moveToNext()) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
+            val id = filesToDelete.getLong(columnId)
+            val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
+            val rowsDeleted = context.contentResolver.delete(assetUri, null)
+            if (rowsDeleted == 0) {
+              throw AssetFileException("Could not delete file.")
+            }
+          } else {
+            val dataColumnIndex = filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA)
+            val filePath = filesToDelete.getString(dataColumnIndex)
+            val file = File(filePath)
+            if (file.delete()) {
+              context.contentResolver.delete(
+                EXTERNAL_CONTENT_URI,
+                "${MediaStore.MediaColumns.DATA}=?",
+                arrayOf(filePath)
+              )
             } else {
-              val dataColumnIndex = filesToDelete.getColumnIndex(MediaStore.MediaColumns.DATA)
-              val filePath = filesToDelete.getString(dataColumnIndex)
-              val file = File(filePath)
-              if (file.delete()) {
-                context.contentResolver.delete(
-                  EXTERNAL_CONTENT_URI,
-                  "${MediaStore.MediaColumns.DATA}=?",
-                  arrayOf(filePath)
-                )
-              } else {
-                throw AssetFileException("Could not delete file.")
-              }
+              throw AssetFileException("Could not delete file.")
             }
           }
         }
+        return true
       }
     } catch (e: SecurityException) {
       throw UnableToDeleteException("Could not delete asset: need WRITE_EXTERNAL_STORAGE permission.", e)
