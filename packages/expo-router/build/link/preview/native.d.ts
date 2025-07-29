@@ -2,19 +2,20 @@ import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
     title: string;
     icon?: string;
-    id: string;
     children?: React.ReactNode;
+    disabled?: boolean;
+    destructive?: boolean;
+    displayAsPalette?: boolean;
+    displayInline?: boolean;
+    isOn?: boolean;
+    keepPresented?: boolean;
+    onSelected: () => void;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export type NativeLinkPreviewTriggerProps = ViewProps;
 export declare function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps): import("react").JSX.Element | null;
 export interface NativeLinkPreviewProps extends ViewProps {
     nextScreenId: string | undefined;
-    onActionSelected?: (event: {
-        nativeEvent: {
-            id: string;
-        };
-    }) => void;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
     onPreviewWillClose?: () => void;

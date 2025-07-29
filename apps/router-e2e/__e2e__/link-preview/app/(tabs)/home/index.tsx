@@ -16,6 +16,10 @@ const HomeIndex = () => {
     return () => clearInterval(interval);
   }, []);
   const { width } = useWindowDimensions();
+  const [palette, setPalette] = useState<string>('1');
+  const [submenu, setSubmenu] = useState<string>('1');
+
+  console.log(palette);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fdd', paddingTop: top }}>
@@ -134,6 +138,7 @@ const HomeIndex = () => {
           <Link.MenuAction
             title="Copy"
             icon="doc.on.doc"
+            disabled
             onPress={() => {
               console.log('Copy Pressed');
             }}
@@ -141,21 +146,62 @@ const HomeIndex = () => {
           <Link.MenuAction
             title="Delete"
             icon="trash"
+            destructive
             onPress={() => {
               console.log('Delete Pressed');
             }}
           />
+          <Link.Menu title="Single" displayAsPalette displayInline>
+            <Link.MenuAction
+              title="1"
+              onPress={() => setPalette('1')}
+              isOn={palette === '1'}
+              dangerouslyKeepPresented
+            />
+            <Link.MenuAction
+              title="2"
+              onPress={() => setPalette('2')}
+              isOn={palette === '2'}
+              dangerouslyKeepPresented
+            />
+            <Link.MenuAction
+              title="3"
+              onPress={() => setPalette('3')}
+              isOn={palette === '3'}
+              dangerouslyKeepPresented
+            />
+            <Link.MenuAction
+              title="4"
+              onPress={() => setPalette('4')}
+              isOn={palette === '4'}
+              dangerouslyKeepPresented
+            />
+            <Link.MenuAction
+              title="5"
+              onPress={() => setPalette('5')}
+              isOn={palette === '5'}
+              dangerouslyKeepPresented
+            />
+            <Link.MenuAction
+              title="6"
+              onPress={() => setPalette('6')}
+              isOn={palette === '6'}
+              dangerouslyKeepPresented
+            />
+          </Link.Menu>
           <Link.Menu title="More" icon="ellipsis">
             <Link.MenuAction
               title="Submenu Item 1"
+              isOn={submenu === '1'}
               onPress={() => {
-                console.log('Submenu Item 1 Pressed');
+                setSubmenu('1');
               }}
             />
             <Link.MenuAction
               title="Submenu Item 2"
+              isOn={submenu === '2'}
               onPress={() => {
-                console.log('Submenu Item 2 Pressed');
+                setSubmenu('2');
               }}
             />
           </Link.Menu>
