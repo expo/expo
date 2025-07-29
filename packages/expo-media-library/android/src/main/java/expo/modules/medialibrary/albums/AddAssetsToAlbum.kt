@@ -3,18 +3,17 @@ package expo.modules.medialibrary.albums
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.os.Build
-import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.PermissionsException
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.CompletableDeferred
 
 internal class AddAssetsToAlbum(
   private val context: Context,
   private val assetIds: Array<String>,
   private val albumId: String,
-  copyToAlbum: Boolean,
-  private val promise: Promise
+  copyToAlbum: Boolean
 ) {
   private val strategy = if (copyToAlbum) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
@@ -24,7 +23,7 @@ internal class AddAssetsToAlbum(
       return getAlbumFile(context, albumId)
     }
 
-  fun execute() {
+  suspend fun execute(): Boolean {
     val assets = MediaLibraryUtils.getAssetsById(context, *assetIds)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !album.canWrite()) {
@@ -39,10 +38,13 @@ internal class AddAssetsToAlbum(
     }
 
     val atomicInteger = AtomicInteger(paths.size)
+
+    val result = CompletableDeferred<Boolean>()
     MediaScannerConnection.scanFile(context, paths.toTypedArray(), null) { _, _ ->
       if (atomicInteger.decrementAndGet() == 0) {
-        promise.resolve(true)
+        result.complete(true)
       }
     }
+    return result.await()
   }
 }
