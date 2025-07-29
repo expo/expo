@@ -1,5 +1,5 @@
 import React, { ComponentProps, PropsWithChildren } from 'react';
-import { type NativeTabsViewProps } from './NativeTabsView';
+import { type NativeTabsViewProps } from './types';
 import { Tab } from './TabOptions';
 export interface NativeTabsNavigatorProps extends PropsWithChildren<Omit<NativeTabsViewProps, 'builder'>> {
     backBehavior?: 'none' | 'initialRoute' | 'history';
