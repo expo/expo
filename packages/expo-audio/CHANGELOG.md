@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add support for `recordForDuration`.
+- [Android] Add support for `recordForDuration`. ([#38405](https://github.com/expo/expo/pull/38405) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
