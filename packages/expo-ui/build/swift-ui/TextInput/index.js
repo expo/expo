@@ -11,6 +11,12 @@ function transformTextInputProps(props) {
         onValueChanged: (event) => {
             props.onChangeText?.(event.nativeEvent.value);
         },
+        onTextFieldFocus: () => {
+            props.onTextFieldFocus?.();
+        },
+        onTextFieldBlur: () => {
+            props.onTextFieldBlur?.();
+        }
     };
 }
 /**
