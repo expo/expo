@@ -25,13 +25,13 @@ type MenuItemWithSubmenu = MoreToolMenuItem & {
 type InteractiveMenuItemExecutor = (
   plugin: DevToolsPlugin,
   cmd: DevToolsPluginCliCommand,
-  apps: MetroInspectorProxyApp[]
+  metroServerOrigin: string
 ) => Promise<void>;
 
 export const createDevToolsMenuItems = (
   plugins: DevToolsPlugin[],
   defaultServerUrl: string,
-  getInspectorApps: () => Promise<MetroInspectorProxyApp[]>,
+  metroServerOrigin: string,
   cliExtensionExecutor: InteractiveMenuItemExecutor = defaultCliExtensionExecutor
 ): MenuItemWithSubmenu[] => {
   return plugins
@@ -52,8 +52,7 @@ export const createDevToolsMenuItems = (
           ...commands.map((descriptor) => ({
             title: descriptor.title,
             value: descriptor.name,
-            action: async () =>
-              await cliExtensionExecutor(plugin, descriptor, await getInspectorApps()),
+            action: async () => await cliExtensionExecutor(plugin, descriptor, metroServerOrigin),
           })),
         ];
         return {
@@ -73,7 +72,7 @@ export const createDevToolsMenuItems = (
       } else if (plugin.webpageEndpoint) {
         return devtoolFactory(plugin, defaultServerUrl);
       } else if (plugin.cliExtensions && commands.length > 0) {
-        return cliFactory(plugin, getInspectorApps);
+        return cliFactory(plugin, metroServerOrigin);
       }
       return null;
     })
@@ -100,7 +99,7 @@ const devtoolFactory = (
 
 const cliFactory = (
   plugin: DevToolsPlugin,
-  getInspectorApps: () => Promise<MetroInspectorProxyApp[]>
+  metroServerOrigin: string
 ): MenuItemWithSubmenu | null => {
   const cliExtensionsConfig = plugin.cliExtensions;
   const commands = (cliExtensionsConfig?.commands ?? []).filter((p) =>
@@ -127,7 +126,7 @@ const cliFactory = (
         if (cmd == null) {
           Log.warn(`No command found for ${plugin.packageName}`);
         } else {
-          await defaultCliExtensionExecutor(plugin, cmd, await getInspectorApps());
+          await defaultCliExtensionExecutor(plugin, cmd, metroServerOrigin);
         }
       } catch (error: any) {
         // Handle aborting prompt
@@ -144,7 +143,7 @@ const defaultCliExtensionExecutor: InteractiveMenuItemExecutor = async (
     title: string;
     parameters?: DevToolsPluginCliCommandParameter[];
   },
-  apps: MetroInspectorProxyApp[]
+  metroServerOrigin: string
 ) => {
   const cliExtensionsConfig = plugin.cliExtensions;
   if (cliExtensionsConfig == null) {
@@ -178,7 +177,7 @@ const defaultCliExtensionExecutor: InteractiveMenuItemExecutor = async (
   try {
     const results = await plugin.executor({
       command: cmd.name,
-      apps,
+      metroServerOrigin,
       args: { ...args, source: 'cli' },
     });
     let resultsString = '\n';

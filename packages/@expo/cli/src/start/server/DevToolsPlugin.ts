@@ -2,7 +2,6 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 import { DevToolsPluginEndpoint } from './DevToolsPluginManager';
-import { MetroInspectorProxyApp } from './middleware/inspector/JsInspector';
 
 const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds
 
@@ -21,8 +20,8 @@ export interface DevToolsPluginCliCommand {
 
 export interface DevToolsPluginCliExecutorArguments {
   command: string;
-  args?: Record<string, string | number | boolean>; // Parameters for the command
-  apps?: MetroInspectorProxyApp[]; // Optional apps to communicate with
+  args?: Record<string, string | number | boolean>;
+  metroServerOrigin: string;
 }
 
 export interface AutolinkingPlugin {
@@ -78,13 +77,17 @@ export class DevToolsPlugin {
     | undefined {
     if (this.plugin.cliExtensions?.entryPoint) {
       if (!this._executor) {
-        this._executor = async ({ command, args, apps }: DevToolsPluginCliExecutorArguments) => {
+        this._executor = async ({
+          command,
+          args,
+          metroServerOrigin,
+        }: DevToolsPluginCliExecutorArguments) => {
           return new Promise<string>(async (resolve, reject) => {
             // Set up the command and its arguments
             const tool = path.join(this.plugin.packageRoot, this.plugin.cliExtensions!.entryPoint);
             const child = this.spawnFunc(
               'node',
-              [tool, command, `'${JSON.stringify(args)}'`, `'${JSON.stringify(apps)}'`],
+              [tool, command, `'${JSON.stringify(args)}'`, `'${metroServerOrigin}'`],
               {
                 cwd: this.projectRoot,
                 shell: true,

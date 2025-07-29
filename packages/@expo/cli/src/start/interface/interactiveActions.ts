@@ -142,17 +142,12 @@ export class DevServerManagerActions {
         .getUrlCreator()
         .constructUrl({ scheme: 'http' });
 
-      const getInspectorApps = async () => {
-        const metroServerOrigin = this.devServerManager
-          .getDefaultDevServer()
-          .getJsInspectorBaseUrl();
-        return await queryAllInspectorAppsAsync(metroServerOrigin);
-      };
+      const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
 
       const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
       const menuItems = [
         ...defaultMenuItems,
-        ...createDevToolsMenuItems(plugins, defaultServerUrl, getInspectorApps),
+        ...createDevToolsMenuItems(plugins, defaultServerUrl, metroServerOrigin),
       ];
 
       const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
