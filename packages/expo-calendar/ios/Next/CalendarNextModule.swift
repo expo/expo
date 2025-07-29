@@ -209,7 +209,7 @@ public final class CalendarNextModule: Module {
                 event.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
             }
         }
-        
+
         Class(CustomExpoCalendarAttendee.self) {
             Property("name") { (attendee: CustomExpoCalendarAttendee) in
                 attendee.attendee.name ?? ""

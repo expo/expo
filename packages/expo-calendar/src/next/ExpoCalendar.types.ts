@@ -67,7 +67,7 @@ export declare class CustomExpoCalendarEvent {
   getAttendees(): CustomExpoCalendarAttendee[];
 
   // TODO: Add delete method
-  delete(): void;
+  delete(recurringEventOptions: RecurringEventOptions): void;
 }
 
 export declare class CustomExpoCalendarAttendee {

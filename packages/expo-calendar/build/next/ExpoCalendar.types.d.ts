@@ -41,7 +41,7 @@ export declare class CustomExpoCalendarEvent {
     organizer?: Organizer;
     originalId?: string;
     getAttendees(): CustomExpoCalendarAttendee[];
-    delete(): void;
+    delete(recurringEventOptions: RecurringEventOptions): void;
 }
 export declare class CustomExpoCalendarAttendee {
     constructor(id: string);
