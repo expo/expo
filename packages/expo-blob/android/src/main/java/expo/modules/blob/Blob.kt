@@ -13,15 +13,17 @@ import kotlin.math.min
 internal const val DEFAULT_TYPE = ""
 
 class Blob(
-  var blobParts: List<InternalBlobPart> = listOf(),
-  var type: String = DEFAULT_TYPE,
+  val blobParts: List<InternalBlobPart> = listOf(),
+   rawType: String = DEFAULT_TYPE,
 ) : SharedObject() {
 
   val size: Int by lazy {
     blobParts.sumOf{ it.size() }
   }
-  init {
-    type = if (validType(type)) type.lowercase() else DEFAULT_TYPE
+  val type = if (validType(rawType)) {
+    rawType.lowercase()
+  } else {
+    DEFAULT_TYPE
   }
   public override fun getAdditionalMemoryPressure(): Int {
     return size
@@ -40,8 +42,8 @@ class Blob(
   }
 
   private fun InternalBlobPart.offsetSlice(start: Int, end: Int, offset: Int): InternalBlobPart {
-    var startIndex: Int = max(start - offset, 0)
-    var endIndex: Int = min(end - offset, size())
+    val startIndex: Int = max(start - offset, 0)
+    val endIndex: Int = min(end - offset, size())
     if (startIndex == 0 && endIndex == size()) {
       return this
     }
@@ -61,7 +63,7 @@ class Blob(
     if (start >= end) {
       return Blob(listOf(), contentType)
     }
-    var i: Int = 0
+    var i = 0
     val bps: MutableList<InternalBlobPart> = mutableListOf()
     for (blobPart in blobParts) {
       if (i + blobPart.size() <= start) {
@@ -107,7 +109,7 @@ private fun String.toNativeNewlines(): String {
     if (char == '\r') {
       result.append('\n')
       prevCR = true
-      continue;
+      continue
     }
     if (!prevCR || char != '\n') {
       result.append(char)
@@ -144,7 +146,7 @@ internal fun makeBlob(blobParts: List<BlobPart>?, options: BlobOptionsBag = Blob
   return Blob((blobParts ?: listOf()).internal(options.endings == EndingType.NATIVE), options.type)
 }
 
-sealed class InternalBlobPart() {
+sealed class InternalBlobPart {
   data class StringWrapper(val string: String) : InternalBlobPart()
   data class BlobWrapper(val blob: Blob) : InternalBlobPart()
   data class BufferWrapper(val buffer: ByteArray) : InternalBlobPart()
