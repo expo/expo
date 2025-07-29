@@ -1,4 +1,11 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source } from '../Calendar';
+import {
+  AttendeeRole,
+  AttendeeStatus,
+  AttendeeType,
+  Source,
+  Event,
+  RecurringEventOptions,
+} from '../Calendar';
 
 export declare class CustomExpoCalendar {
   constructor(id: string);
@@ -16,6 +23,8 @@ export declare class CustomExpoCalendar {
    * Lists the event ids of the calendar.
    */
   listEvents(startDate: Date, endDate: Date): CustomExpoCalendarEvent[];
+
+  createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
 }
 
 export declare class CustomExpoCalendarEvent {

@@ -1,4 +1,4 @@
-import { stringifyIfDate } from '../Calendar';
+import { stringifyDateValues, stringifyIfDate } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
     constructor(id) {
@@ -8,6 +8,9 @@ export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEven
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
     constructor(id) {
         super(id);
+    }
+    createEvent(details, options) {
+        return super.createEvent(stringifyDateValues(details), options);
     }
     listEvents(startDate, endDate) {
         if (!startDate) {
@@ -20,4 +23,6 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
         return result.map((id) => new ExportExpoCalendarEvent(id));
     }
 }
+export const getDefaultCalendarNext = () => new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
+export const getCalendarsNext = () => ExpoCalendar.getCalendarsIds().map((id) => new ExportExpoCalendar(id));
 //# sourceMappingURL=Calendar.js.map

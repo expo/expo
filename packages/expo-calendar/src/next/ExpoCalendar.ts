@@ -10,8 +10,10 @@ declare class ExpoCalendarNextModule extends NativeModule {
   CustomExpoCalendar: typeof CustomExpoCalendar;
   CustomExpoCalendarEvent: typeof CustomExpoCalendarEvent;
   CustomExpoCalendarAttendee: typeof CustomExpoCalendarAttendee;
-  getDefaultCalendar(): CustomExpoCalendar;
-  getAllCalendars(entityType?: string): CustomExpoCalendar[];
+  getDefaultCalendarId(): string;
+  getCalendarsIds(): string[];
+  //   getAllCalendars(entityType?: string): CustomExpoCalendar[];
+//   createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
   //   requestPermissions(): Promise<any>;
   //   getPermissions(): Promise<any>;
 }

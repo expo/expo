@@ -1649,7 +1649,7 @@ type StringifyDates<T extends Record<string, any>> = {
   [K in keyof T]: T[K] extends Date ? string : T[K];
 };
 
-function stringifyDateValues<T extends Record<string, any>>(obj: T): StringifyDates<T> {
+export function stringifyDateValues<T extends Record<string, any>>(obj: T): StringifyDates<T> {
   if (typeof obj !== 'object' || obj === null) return obj;
   return Object.keys(obj).reduce((acc, key) => {
     const value = obj[key];

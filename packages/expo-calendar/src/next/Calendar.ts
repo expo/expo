@@ -1,4 +1,4 @@
-import { stringifyIfDate } from '../Calendar';
+import { Event, RecurringEventOptions, stringifyDateValues, stringifyIfDate } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
@@ -12,6 +12,13 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
     super(id);
   }
 
+  override createEvent(
+    details: Partial<Event>,
+    options: RecurringEventOptions
+  ): ExportExpoCalendarEvent {
+    return super.createEvent(stringifyDateValues(details), options);
+  }
+
   override listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[] {
     if (!startDate) {
       throw new Error('listEvents must be called with a startDate (date) to search for events');
@@ -23,3 +30,9 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
     return result.map((id) => new ExportExpoCalendarEvent(id));
   }
 }
+
+export const getDefaultCalendarNext = () =>
+  new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
+
+export const getCalendarsNext = () =>
+  ExpoCalendar.getCalendarsIds().map((id) => new ExportExpoCalendar(id));

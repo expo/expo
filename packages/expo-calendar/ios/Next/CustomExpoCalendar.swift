@@ -3,15 +3,22 @@ import ExpoModulesCore
 import EventKit
 
 internal final class CustomExpoCalendar: SharedObject {
-    var eventStore: EKEventStore
+    private var eventStore: EKEventStore {
+      return CalendarModule.sharedEventStore
+    }
     var calendar: EKCalendar?
 
     init(id: String) {
-        self.eventStore = EKEventStore()
-        self.calendar = self.eventStore.calendar(withIdentifier: id)
-        print("CustomExpoCalendar initialized with id: \(self.calendar.map(\.title) ?? "No title")")
+        super.init()
+        self.calendar = eventStore.calendar(withIdentifier: id)
+        print("CustomExpoCalendar initialized with id: \(calendar.map(\.title) ?? "No title")")
     }
 
+    init(calendar: EKCalendar) {
+        super.init()
+        self.calendar = calendar
+    }
+    
     // Internal only function
     func listEventsAsIds(startDate: Date, endDate: Date) -> [String] {
         guard let calendar = self.calendar else {
@@ -23,5 +30,56 @@ internal final class CustomExpoCalendar: SharedObject {
         }
         let eventIds = events.map { $0.calendarItemIdentifier }
         return eventIds
+    }
+    
+    func getEvent(from event: Event) throws -> EKEvent {
+        let calendarEvent = EKEvent(eventStore: eventStore)
+        calendarEvent.calendar = self.calendar
+        calendarEvent.title = event.title
+        calendarEvent.location = event.location
+        calendarEvent.notes = event.notes
+        return calendarEvent
+    }
+    
+    func initializeEvent(calendarEvent: EKEvent, event: Event) throws {
+        if let timeZone = event.timeZone {
+            if let tz = TimeZone(identifier: timeZone) {
+                calendarEvent.timeZone = tz
+            } else {
+                throw InvalidTimeZoneException(timeZone)
+            }
+        }
+        
+        calendarEvent.alarms = createCalendarEventAlarms(alarms: event.alarms)
+        if let rule = event.recurrenceRule {
+            let newRule = createRecurrenceRule(rule: rule)
+            if let newRule {
+                calendarEvent.recurrenceRules = [newRule]
+            }
+        }
+        
+        if let url = event.url {
+            calendarEvent.url = URL(string: url)
+        }
+        
+        if let startDate = event.startDate {
+            calendarEvent.startDate = parse(date: startDate)
+        }
+        if let endDate = event.endDate {
+            calendarEvent.endDate = parse(date: endDate)
+        }
+        
+        if let calendarId = event.calendarId {
+            guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
+                throw CalendarIdNotFoundException(calendarId)
+            }
+            calendarEvent.calendar = calendar
+        }
+        
+        calendarEvent.title = event.title
+        calendarEvent.location = event.location
+        calendarEvent.notes = event.notes
+        calendarEvent.isAllDay = event.allDay
+        calendarEvent.availability = getAvailability(availability: event.availability)
     }
 }

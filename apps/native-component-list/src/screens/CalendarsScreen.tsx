@@ -1,6 +1,11 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { ExportExpoCalendar, ExportExpoCalendarEvent } from 'expo-calendar/next';
+import {
+  ExportExpoCalendar,
+  ExportExpoCalendarEvent,
+  getCalendarsNext,
+  getDefaultCalendarNext,
+} from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -70,34 +75,16 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
       const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-      // 1. Get default calendar using new API
-      console.log('1. Getting default calendar...');
-      const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-      console.log('Default calendar:', {
-        id: defaultCalendar.id,
-        title: defaultCalendar.title,
-        color: defaultCalendar.color,
-        allowsModifications: defaultCalendar.allowsModifications,
-      });
-
-      // 2. Get all calendars using new API
-      console.log('2. Getting all calendars...');
-      const allCalendars = await Calendar.getCalendarsAsync();
-      console.log(
-        `Found ${allCalendars.length} calendars:`,
-        allCalendars.map((cal) => cal.title)
-      );
-
-      const calendar = new ExportExpoCalendar(allCalendars[5].id);
+      const calendarsNext = getCalendarsNext();
+      const calendar = calendarsNext[5];
       const events = calendar.listEvents(oneWeekAgo, oneWeekFromNow);
+
       console.log('Events:', calendar.title, events.length);
 
       for (const event of events) {
         const attendees = event.getAttendees();
-        console.log('Attendees of event:', event.title, attendees);
+        console.log('Attendees of event:', event.title, attendees.map((a) => a.name));
       }
-
-      Alert.alert('Success!', 'Check console for expo-calendar/next API demo results');
     } catch (error) {
       console.error('Error testing expo-calendar/next:', error);
       Alert.alert('Error', `Failed to test expo-calendar/next: ${error.message}`);
@@ -183,6 +170,23 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     ]);
   };
 
+  const addEvent = async () => {
+    const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+    console.log('defaultCalendar', defaultCalendar);
+    const calendar = new ExportExpoCalendar(defaultCalendar.id);
+    console.log('calendar', calendar);
+    const endDate = new Date(Date.now() + 1000 * 60 * 60 * 24);
+    const event = calendar.createEvent(
+      {
+        title: 'Test',
+        startDate: new Date(),
+        endDate,
+      },
+      {}
+    );
+    console.log('Event added:', event);
+  };
+
   //   if (calendars.length) {
   //     return (
   //       <ScrollView style={styles.container}>
@@ -204,6 +208,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     <View style={styles.container}>
       <Button onPress={findCalendars} title="Find my Calendars" />
       <Button onPress={getDefaultCalendar} title="Get Default Calendar" />
+      <Button onPress={addEvent} title="Add Event" />
     </View>
   );
 }
