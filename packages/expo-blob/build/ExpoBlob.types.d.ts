@@ -5,7 +5,7 @@ export declare class ExpoBlob {
      */
     readonly size: number;
     /**
-     * The MIME type of the Blob.
+     * The MIME type of the Blob, or the empty string if the type cannot be determined.
      */
     readonly type: string;
     /**
@@ -16,8 +16,8 @@ export declare class ExpoBlob {
     constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
     /**
      * Returns a new Blob object containing the data in the specified range of bytes of the source Blob.
-     * @param start The starting byte index (inclusive).
-     * @param end The ending byte index (exclusive).
+     * @param start The starting byte index (inclusive) represented as a signed 32 bit integer (up to 2^31 - 1).
+     * @param end The ending byte index (exclusive) represented as a signed 32 bit integer (up to 2^31 - 1).
      * @param contentType The MIME type of the new Blob. If not provided, defaults to an empty string.
      * @returns A new Blob object containing the specified bytes.
      */

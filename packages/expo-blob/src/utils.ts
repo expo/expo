@@ -90,6 +90,6 @@ export const preprocessOptions = (options?: BlobPropertyBag): BlobPropertyBag | 
  * This value is commonly used in Node.js streams and V8 engine implementations.
  *
  * @see https://nodejs.org/api/stream.html#stream_buffering
- * @see https://github.com/nodejs/node/blob/main/lib/internal/streams/state.js
+ * @see https://github.com/nodejs/node/blob/1abff073921bcb0631602032aef0135bccfaee0d/lib/internal/streams/state.js#L12
  */
 export const DEFAULT_CHUNK_SIZE = 65_536;

@@ -48,7 +48,7 @@ class Blob(
       return this
     }
     return when (this) {
-      is InternalBlobPart.StringWrapper -> InternalBlobPart.BufferWrapper(string.toByteArray().slice(startIndex..<endIndex).toByteArray())
+      is InternalBlobPart.StringWrapper -> InternalBlobPart.BufferWrapper(cachedBytes.slice(startIndex..<endIndex).toByteArray())
       is InternalBlobPart.BlobWrapper -> InternalBlobPart.BlobWrapper(blob.slice(startIndex, endIndex, ""))
       is InternalBlobPart.BufferWrapper -> InternalBlobPart.BufferWrapper(
         buffer.slice(startIndex..<endIndex).toByteArray()
@@ -147,13 +147,17 @@ internal fun makeBlob(blobParts: List<BlobPart>?, options: BlobOptionsBag = Blob
 }
 
 sealed class InternalBlobPart {
-  data class StringWrapper(val string: String) : InternalBlobPart()
+  class StringWrapper(string: String) : InternalBlobPart() {
+    val cachedBytes: ByteArray by lazy {
+      string.toByteArray()
+    }
+  }
   data class BlobWrapper(val blob: Blob) : InternalBlobPart()
   data class BufferWrapper(val buffer: ByteArray) : InternalBlobPart()
 
   fun size(): Int {
     return when (this) {
-      is StringWrapper -> string.toByteArray().size
+      is StringWrapper -> cachedBytes.size
       is BlobWrapper -> blob.size
       is BufferWrapper -> buffer.size
     }
@@ -161,7 +165,7 @@ sealed class InternalBlobPart {
 
   fun bytesToStream(byteStream: ByteArrayOutputStream) {
     when (this) {
-      is StringWrapper -> byteStream.write(string.toByteArray())
+      is StringWrapper -> byteStream.write(cachedBytes)
       is BlobWrapper -> blob.bytesToStream(byteStream)
       is BufferWrapper -> byteStream.write(buffer)
     }

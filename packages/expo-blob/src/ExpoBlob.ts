@@ -8,23 +8,22 @@ import {
   preprocessOptions,
 } from './utils';
 
-const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
+const inputMapping = (blobPart: BlobPart) => {
+  if (blobPart instanceof ArrayBuffer) {
+    return new Uint8Array(blobPart);
+  }
+  if (blobPart instanceof ExpoBlob || isTypedArray(blobPart)) {
+    return blobPart;
+  }
+  return String(blobPart);
+};
 
+const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
 export class ExpoBlob extends NativeBlobModule.Blob {
-  constructor(blobParts?: BlobPart[] | Iterable<any>, options?: BlobPropertyBag) {
+  constructor(blobParts?: BlobPart[] | Iterable<BlobPart>, options?: BlobPropertyBag) {
     if (!new.target) {
       throw new TypeError("ExpoBlob constructor requires 'new' operator");
     }
-
-    const inputMapping = (blobPart: BlobPart) => {
-      if (blobPart instanceof ArrayBuffer) {
-        return new Uint8Array(blobPart);
-      }
-      if (blobPart instanceof ExpoBlob || isTypedArray(blobPart)) {
-        return blobPart;
-      }
-      return String(blobPart);
-    };
 
     const processedBlobParts: BlobPart[] = [];
 
@@ -51,49 +50,55 @@ export class ExpoBlob extends NativeBlobModule.Blob {
 
   stream(): ReadableStream {
     const self = this;
+    let getBlobBytes: (() => Promise<Uint8Array>) | null = this.bytes.bind(this);
     let offset = 0;
-    let bytesPromise: Promise<Uint8Array> | null = null;
+    let cachedBytes: Uint8Array | null = null;
 
     return new ReadableStream({
       type: 'bytes',
       async pull(controller: any) {
-        if (!bytesPromise) {
-          bytesPromise = self.bytes();
+        if (!cachedBytes) {
+          if (!getBlobBytes) {
+            throw new Error('Cannot read from a closed stream');
+          }
+          cachedBytes = await getBlobBytes();
+          getBlobBytes = null;
         }
-        const bytes = await bytesPromise;
-        if (offset >= bytes.length) {
+
+        if (offset >= cachedBytes.length) {
           controller.close();
+          cachedBytes = null;
           return;
         }
 
         if (controller.byobRequest?.view) {
           const view = controller.byobRequest.view;
-          const end = Math.min(offset + view.byteLength, bytes.length);
-          const chunk = bytes.subarray(offset, end);
+          const end = Math.min(offset + view.byteLength, cachedBytes.length);
+          const chunk = cachedBytes.subarray(offset, end);
           view.set(chunk, 0);
           controller.byobRequest.respond(chunk.length);
           offset = end;
-          if (offset >= bytes.length) {
+          if (offset >= cachedBytes.length) {
             controller.close();
+            cachedBytes = null;
           }
           return;
         }
 
         const chunkSize = DEFAULT_CHUNK_SIZE;
-        const end = Math.min(offset + chunkSize, bytes.length);
-        controller.enqueue(bytes.subarray(offset, end));
+        const end = Math.min(offset + chunkSize, cachedBytes.length);
+        controller.enqueue(cachedBytes.subarray(offset, end));
         offset = end;
       },
     });
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    return super
-      .bytes()
-      .then(
-        (bytes: Uint8Array) =>
-          bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
-      );
+    return super.bytes().then(
+      (bytes: Uint8Array) =>
+        // The Blob spec requires we always return a new ArrayBuffer even when its bounds match the TypedArray's
+        bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
+    );
   }
 
   toString(): string {

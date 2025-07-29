@@ -159,21 +159,6 @@ type ArrayBufferExampleItemProps = {
 };
 
 function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExampleItemProps) {
-  let comparison = null;
-  if (result) {
-    const { blobTime, expoBlobTime } = result;
-    if (blobTime < expoBlobTime) {
-      const diff = expoBlobTime - blobTime;
-      const percent = (100 * diff) / expoBlobTime;
-      comparison = `Blob is ${percent.toFixed(6)}% (${diff.toFixed(6)} ms) faster`;
-    } else if (expoBlobTime < blobTime) {
-      const diff = blobTime - expoBlobTime;
-      const percent = (100 * diff) / blobTime;
-      comparison = `ExpoBlob is ${percent.toFixed(6)}% (${diff.toFixed(6)} ms) faster`;
-    } else {
-      comparison = 'Both are equally fast';
-    }
-  }
   return (
     <View>
       <Text>{example.title}</Text>
@@ -184,7 +169,6 @@ function ArrayBufferExampleItem({ example, result, onEvaluate }: ArrayBufferExam
             <MonoText containerStyle={styles.resultContainer}>
               <Text>Blob time: {result.blobTime.toFixed(6)} ms</Text> {'\n'}
               <Text>Expo Blob time: {result.expoBlobTime.toFixed(6)} ms</Text> {'\n'}
-              <Text>{comparison}</Text>
             </MonoText>
             <Button title="Re-evaluate" onPress={() => onEvaluate(example)} />
           </View>
