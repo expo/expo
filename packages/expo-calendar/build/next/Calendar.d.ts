@@ -6,7 +6,7 @@ export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar 
     createEvent(details: Partial<Event>, options: RecurringEventOptions): ExportExpoCalendarEvent;
     listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[];
 }
-export declare const getDefaultCalendarNext: () => ExportExpoCalendar;
-export declare const getCalendarsNext: (type?: EntityTypes) => ExportExpoCalendar[];
+export declare function getDefaultCalendarNext(): ExportExpoCalendar;
+export declare function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[];
 export declare function createCalendar(details?: Partial<Calendar>): string;
 //# sourceMappingURL=Calendar.d.ts.map

@@ -30,7 +30,7 @@ export type RecurringEventOptions = {
   instanceStartDate?: string | Date;
 };
 
-type Organizer = {
+export type Organizer = {
   isCurrentUser: boolean;
   name?: string;
   role: string;

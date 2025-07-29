@@ -19,7 +19,7 @@ internal final class CustomExpoCalendar: SharedObject {
     }
     
     // Internal only function
-    func listEventsAsIds(startDate: Date, endDate: Date) -> [String] {
+    func listEvents(startDate: Date, endDate: Date) -> [CustomExpoCalendarEvent] {
         guard let calendar = self.calendar else {
             return []
         }
@@ -27,8 +27,8 @@ internal final class CustomExpoCalendar: SharedObject {
         let events = self.eventStore.events(matching: predicate).sorted {
             $0.startDate.compare($1.startDate) == .orderedAscending
         }
-        let eventIds = events.map { $0.calendarItemIdentifier }
-        return eventIds
+        let customEvents = events.map { CustomExpoCalendarEvent(event: $0) }
+        return customEvents
     }
     
     func getEvent(from event: Event) throws -> EKEvent {

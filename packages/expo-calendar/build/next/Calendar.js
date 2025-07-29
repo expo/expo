@@ -14,12 +14,21 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
         if (!endDate) {
             throw new Error('listEvents must be called with an endDate (date) to search for events');
         }
-        const result = this.listEventsAsIds(stringifyIfDate(startDate), stringifyIfDate(endDate));
-        return result.map((id) => new ExportExpoCalendarEvent(id));
+        return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
     }
 }
-export const getDefaultCalendarNext = () => new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
-export const getCalendarsNext = (type) => ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
+export function getDefaultCalendarNext() {
+    if (!ExpoCalendar.getDefaultCalendarId) {
+        throw new UnavailabilityError('Calendar', 'getDefaultCalendarId');
+    }
+    return new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
+}
+export function getCalendarsNext(type) {
+    if (!ExpoCalendar.getCalendarsIds) {
+        throw new UnavailabilityError('Calendar', 'getCalendarsIds');
+    }
+    return ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
+}
 export function createCalendar(details = {}) {
     if (!ExpoCalendar.createCalendar) {
         throw new UnavailabilityError('Calendar', 'createCalendar');

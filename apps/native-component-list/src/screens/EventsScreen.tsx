@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import { CustomExpoCalendar, ExportExpoCalendar } from 'expo-calendar/next';
 
 const EventRow: React.FunctionComponent<{
   event: Calendar.Event;
@@ -81,18 +82,19 @@ export default class EventsScreen extends React.Component<Props, State> {
     const { params } = this.props.route;
     if (params) {
       const { id } = params.calendar;
-      if (id) {
-        this._findEvents(id);
+      const calendar = new ExportExpoCalendar(id);
+      if (calendar) {
+        this._findEvents(calendar);
       }
     }
   }
 
-  _findEvents = async (id: string) => {
+  _findEvents = async (calendar: ExportExpoCalendar) => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
-    const events = await Calendar.getEventsAsync([id], yesterday, nextYear);
+    const events = calendar.listEvents(yesterday, nextYear);
     this.setState({ events });
   };
 
