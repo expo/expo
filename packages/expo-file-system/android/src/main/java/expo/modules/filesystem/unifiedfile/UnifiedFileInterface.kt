@@ -1,4 +1,4 @@
-package expo.modules.filesystem.next.unifiedfile
+package expo.modules.filesystem.unifiedfile
 
 import android.net.Uri
 

@@ -1,4 +1,4 @@
-package expo.modules.filesystem
+package expo.modules.filesystem.legacy
 
 import android.content.Context
 import expo.modules.core.BasePackage

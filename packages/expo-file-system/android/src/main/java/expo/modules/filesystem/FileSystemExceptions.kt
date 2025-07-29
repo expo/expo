@@ -1,4 +1,4 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.CodedException
 

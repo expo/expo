@@ -1,4 +1,4 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 
 import android.net.Uri
 import expo.modules.filesystem.slashifyFilePath

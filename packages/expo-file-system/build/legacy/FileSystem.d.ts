@@ -127,7 +127,7 @@ export declare function downloadAsync(uri: string, fileUri: string, options?: Do
  * **Client**
  *
  * ```js
- * import * as FileSystem from 'expo-file-system';
+ * import * as FileSystem from 'expo-file-system/legacy';
  *
  * try {
  *   const response = await FileSystem.uploadAsync(`http://192.168.0.1:1234/binary-upload`, fileUri, {
@@ -246,7 +246,7 @@ export declare class DownloadResumable extends FileSystemCancellableNetworkTask<
  *
  * ```ts
  * import * as MediaLibrary from 'expo-media-library';
- * import * as FileSystem from 'expo-file-system';
+ * import * as FileSystem from 'expo-file-system/legacy';
  * const { StorageAccessFramework } = FileSystem;
  *
  * async function migrateAlbum(albumName: string) {

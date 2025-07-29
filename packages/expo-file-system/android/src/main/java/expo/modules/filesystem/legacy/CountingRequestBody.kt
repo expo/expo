@@ -1,4 +1,4 @@
-package expo.modules.filesystem
+package expo.modules.filesystem.legacy
 
 import okhttp3.RequestBody
 import okio.Buffer

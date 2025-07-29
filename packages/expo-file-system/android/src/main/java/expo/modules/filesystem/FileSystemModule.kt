@@ -1,9 +1,8 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
-import expo.modules.filesystem.InfoOptions
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
@@ -20,13 +19,13 @@ import java.io.FileOutputStream
 import java.net.URI
 import java.util.EnumSet
 
-class FileSystemNextModule : Module() {
+class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
-    Name("FileSystemNext")
+    Name("FileSystem")
 
     Constants(
       "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
@@ -42,7 +41,7 @@ class FileSystemNextModule : Module() {
       File(context.filesDir.path).freeSpace
     }
 
-    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptionsNext? ->
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions? ->
       to.validatePermission(Permission.WRITE)
       val requestBuilder = Request.Builder().url(url.toURL())
 

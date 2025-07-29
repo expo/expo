@@ -2,11 +2,11 @@
 import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import * as FS from 'expo-file-system';
-import { File, Directory, Paths } from 'expo-file-system/next';
+import { File, Directory, Paths } from 'expo-file-system';
+import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
-export const name = 'FileSystem@next';
+export const name = 'FileSystem';
 
 export async function test({ describe, expect, it, ...t }) {
   const testDirectory = FS.documentDirectory + 'tests/';
@@ -20,7 +20,7 @@ export async function test({ describe, expect, it, ...t }) {
       await FS.deleteAsync(testDirectory);
     } catch {}
   });
-  describe('FileSystem (Next)', () => {
+  describe('FileSystem', () => {
     if (Constants.appOwnership === 'expo') {
       describe('managed workflow', () => {
         it('throws exceptions on constructors', () => {

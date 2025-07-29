@@ -1,10 +1,10 @@
-package expo.modules.filesystem
+package expo.modules.filesystem.legacy
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 
-data class InfoOptions(
+data class InfoOptionsLegacy(
   @Field
   val md5: Boolean?
 ) : Record
@@ -50,7 +50,7 @@ data class RelocatingOptions(
   val to: String
 ) : Record
 
-data class DownloadOptions(
+data class DownloadOptionsLegacy(
   @Field
   val md5: Boolean = false,
   @Field

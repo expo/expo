@@ -1,19 +1,31 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 
 import android.net.Uri
 import android.os.Build
 import androidx.core.net.toUri
-import expo.modules.filesystem.next.unifiedfile.JavaFile
-import expo.modules.filesystem.next.unifiedfile.SAFDocumentFile
-import expo.modules.filesystem.next.unifiedfile.UnifiedFileInterface
+import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.SAFDocumentFile
+import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
 import java.util.EnumSet
+import java.util.regex.Pattern
 import kotlin.io.path.moveTo
 
 val Uri.isContentUri get(): Boolean {
   return scheme == "content"
+}
+
+fun slashifyFilePath(path: String?): String? {
+  return if (path == null) {
+    null
+  } else if (path.startsWith("file:///")) {
+    path
+  } else {
+    // Ensure leading schema with a triple slash
+    Pattern.compile("^file:/*").matcher(path).replaceAll("file:///")
+  }
 }
 
 abstract class FileSystemPath(var uri: Uri) : SharedObject() {

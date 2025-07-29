@@ -1,4 +1,4 @@
-package expo.modules.filesystem
+package expo.modules.filesystem.legacy
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -59,7 +59,7 @@ import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import kotlin.math.pow
 
-private val TAG = FileSystemModule::class.java.simpleName
+private val TAG = FileSystemLegacyModule::class.java.simpleName
 private const val EXDownloadProgressEventName = "expo-file-system.downloadProgress"
 private const val EXUploadProgressEventName = "expo-file-system.uploadProgress"
 private const val MIN_EVENT_DT_MS: Long = 100
@@ -77,7 +77,7 @@ fun slashifyFilePath(path: String?): String? {
 }
 
 // The class needs to be 'open', because it's inherited in expoview
-open class FileSystemModule : Module() {
+open class FileSystemLegacyModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
   private var client: OkHttpClient? = null
@@ -109,7 +109,7 @@ open class FileSystemModule : Module() {
       }
     }
 
-    AsyncFunction("getInfoAsync") { _uriStr: String, options: InfoOptions ->
+    AsyncFunction("getInfoAsync") { _uriStr: String, options: InfoOptionsLegacy ->
       var uriStr = slashifyFilePath(_uriStr)
 
       val uri = Uri.parse(uriStr)
@@ -556,7 +556,7 @@ open class FileSystemModule : Module() {
       })
     }
 
-    AsyncFunction("downloadAsync") { url: String, uriStr: String?, options: DownloadOptions, promise: Promise ->
+    AsyncFunction("downloadAsync") { url: String, uriStr: String?, options: DownloadOptionsLegacy, promise: Promise ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       uri.checkIfFileDirExists()
@@ -623,7 +623,7 @@ open class FileSystemModule : Module() {
       taskHandler?.call?.cancel()
     }
 
-    AsyncFunction("downloadResumableStartAsync") { url: String, fileUriStr: String, uuid: String, options: DownloadOptions, resumeData: String?, promise: Promise ->
+    AsyncFunction("downloadResumableStartAsync") { url: String, fileUriStr: String, uuid: String, options: DownloadOptionsLegacy, resumeData: String?, promise: Promise ->
       val fileUri = Uri.parse(slashifyFilePath(fileUriStr))
       fileUri.checkIfFileDirExists()
       if (fileUri.scheme != "file") {
@@ -912,7 +912,7 @@ open class FileSystemModule : Module() {
   }
 
   private data class DownloadResumableTaskParams(
-    val options: DownloadOptions,
+    val options: DownloadOptionsLegacy,
     val call: Call,
     val file: File,
     val isResume: Boolean,

@@ -2,13 +2,13 @@
 
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import * as FS from 'expo-file-system';
+import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'expo-modules-core';
 
-export const name = 'FileSystem';
+export const name = 'FileSystem@legacy';
 
 export async function test({ describe, expect, it, ...t }) {
-  describe('FileSystem', () => {
+  describe('FileSystem (legacy)', () => {
     const throws = async (run) => {
       let error = null;
       try {

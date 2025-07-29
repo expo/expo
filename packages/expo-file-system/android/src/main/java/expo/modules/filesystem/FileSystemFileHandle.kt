@@ -1,4 +1,4 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 
 import expo.modules.kotlin.sharedobjects.SharedRef
 import java.io.RandomAccessFile

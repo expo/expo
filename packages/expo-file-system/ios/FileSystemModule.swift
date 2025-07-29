@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 @available(iOS 14, tvOS 14, *)
-public final class FileSystemNextModule: Module {
+public final class FileSystemModule: Module {
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
   }
@@ -29,7 +29,7 @@ public final class FileSystemNextModule: Module {
   }
 
   public func definition() -> ModuleDefinition {
-    Name("FileSystemNext")
+    Name("FileSystem")
 
     Constants {
       return [
@@ -191,7 +191,7 @@ public final class FileSystemNextModule: Module {
       }
 
       Property("exists") { file in
-        return (try? file.exists) ?? false
+        return file.exists
       }
 
       Function("create") { (file, options: CreateOptions?) in

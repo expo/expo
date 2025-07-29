@@ -37,7 +37,7 @@ struct MakeDirectoryOptions: Record {
   @Field var intermediates: Bool = false
 }
 
-struct DownloadOptions: Record {
+struct DownloadOptionsLegacy: Record {
   @Field var md5: Bool = false
   @Field var cache: Bool = false
   @Field var headers: [String: String]?

@@ -1,9 +1,7 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
-import expo.modules.filesystem.InfoOptions
-import expo.modules.filesystem.slashifyFilePath
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray

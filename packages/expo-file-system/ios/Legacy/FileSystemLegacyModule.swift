@@ -6,7 +6,7 @@ import Photos
 private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
 
-public final class FileSystemModule: Module {
+public final class FileSystemLegacyModule: Module {
   private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(
     sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
   )
@@ -140,7 +140,7 @@ public final class FileSystemModule: Module {
       return try FileManager.default.contentsOfDirectory(atPath: url.path)
     }
 
-    AsyncFunction("downloadAsync") { (sourceUrl: URL, localUrl: URL, options: DownloadOptions, promise: Promise) in
+    AsyncFunction("downloadAsync") { (sourceUrl: URL, localUrl: URL, options: DownloadOptionsLegacy, promise: Promise) in
       try ensureFileDirectoryExists(localUrl)
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 
@@ -204,7 +204,7 @@ public final class FileSystemModule: Module {
     }
 
     // swiftlint:disable:next line_length closure_body_length
-    AsyncFunction("downloadResumableStartAsync") { (sourceUrl: URL, localUrl: URL, uuid: String, options: DownloadOptions, resumeDataString: String?, promise: Promise) in
+    AsyncFunction("downloadResumableStartAsync") { (sourceUrl: URL, localUrl: URL, uuid: String, options: DownloadOptionsLegacy, resumeDataString: String?, promise: Promise) in
       try ensureFileDirectoryExists(localUrl)
       try ensurePathPermission(appContext, path: localUrl.path, flag: .write)
 

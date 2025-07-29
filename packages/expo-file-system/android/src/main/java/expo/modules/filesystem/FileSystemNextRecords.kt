@@ -1,7 +1,12 @@
-package expo.modules.filesystem.next
+package expo.modules.filesystem
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+
+data class InfoOptions(
+  @Field
+  val md5: Boolean?
+) : Record
 
 data class CreateOptions(
   @Field
@@ -10,7 +15,7 @@ data class CreateOptions(
   val overwrite: Boolean = false
 ) : Record
 
-data class DownloadOptionsNext(
+data class DownloadOptions(
   @Field
   val headers: Map<String, String> = emptyMap()
 ) : Record
