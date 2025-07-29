@@ -139,6 +139,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
     let initialState;
     const routeNode = (0, getRoutes_1.getRoutes)(context, {
         ...config,
+        skipGenerated: true,
         ignoreEntryPoints: true,
         platform: react_native_1.Platform.OS,
         preserveRedirectAndRewrites: true,
@@ -159,6 +160,9 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             metaOnly: linkingConfigOptions.metaOnly,
             serverUrl,
             redirects,
+            skipGenerated: config?.skipGenerated ?? false,
+            sitemap: config?.sitemap ?? true,
+            notFound: config?.notFound ?? true,
         });
         rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
         // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`

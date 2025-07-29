@@ -4,8 +4,45 @@ import { UrlObject } from './global-state/routeInfo';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath } from './link/linking';
 import { RequireContext } from './types';
-export declare function getNavigationConfig(routes: RouteNode, metaOnly?: boolean): {
+export declare function getNavigationConfig(routes: RouteNode, metaOnly: boolean, { sitemap, notFound }: {
+    sitemap: boolean;
+    notFound: boolean;
+}): {
     screens: {
+        "+not-found"?: undefined;
+        _sitemap?: undefined;
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("./getReactNavigationConfig").Screen>;
+            path: string;
+        };
+    } | {
+        "+not-found": {
+            path: string;
+        };
+        _sitemap?: undefined;
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("./getReactNavigationConfig").Screen>;
+            path: string;
+        };
+    } | {
+        "+not-found"?: undefined;
+        _sitemap: {
+            path: string;
+        };
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("./getReactNavigationConfig").Screen>;
+            path: string;
+        };
+    } | {
+        "+not-found": {
+            path: string;
+        };
+        _sitemap: {
+            path: string;
+        };
         __root: {
             initialRouteName: undefined;
             screens: Record<string, import("./getReactNavigationConfig").Screen>;
@@ -23,5 +60,11 @@ export type LinkingConfigOptions = {
     getInitialURL?: typeof getInitialURL;
     redirects?: StoreRedirects[];
 };
-export declare function getLinkingConfig(routes: RouteNode, context: RequireContext, getRouteInfo: () => UrlObject, { metaOnly, serverUrl, redirects }?: LinkingConfigOptions): ExpoLinkingOptions;
+interface RouterOptions {
+    skipGenerated: boolean;
+    sitemap: boolean;
+    notFound: boolean;
+}
+export declare function getLinkingConfig(routes: RouteNode, context: RequireContext, getRouteInfo: () => UrlObject, { metaOnly, serverUrl, redirects, skipGenerated, sitemap, notFound, }: LinkingConfigOptions & RouterOptions): ExpoLinkingOptions;
+export {};
 //# sourceMappingURL=getLinkingConfig.d.ts.map

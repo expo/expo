@@ -10,7 +10,7 @@ import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } 
 import { StatusBar, useColorScheme, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { INTERNAL_SLOT_NAME } from './constants';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import { ExpoLinkingOptions } from './getLinkingConfig';
@@ -23,7 +23,9 @@ import { ModalContextProvider } from './modal/ModalContext';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
+import { Unmatched } from './views/Unmatched';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -174,11 +176,17 @@ function ContextNavigator({
 
 function Content() {
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    children: <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+    children: [
+      <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+      <Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />,
+      <Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />,
+    ],
     id: INTERNAL_SLOT_NAME,
   });
 
-  return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
+  return (
+    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+  );
 }
 
 let onUnhandledAction: (action: NavigationAction) => void;

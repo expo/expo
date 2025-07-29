@@ -2,7 +2,7 @@ import { getActionFromState, LinkingOptions } from '@react-navigation/native';
 import { Platform } from 'expo-modules-core';
 
 import { RouteNode } from './Route';
-import { INTERNAL_SLOT_NAME } from './constants';
+import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { Options, State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { applyRedirects } from './getRoutesRedirects';
@@ -11,13 +11,33 @@ import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
 import { NativeIntent, RequireContext } from './types';
 
-export function getNavigationConfig(routes: RouteNode, metaOnly: boolean = true) {
+function isSitemapInConfig(config: ReturnType<typeof getReactNavigationConfig>) {
+  return Object.values(config.screens).some((screenConfig) =>
+    typeof screenConfig === 'string'
+      ? screenConfig === '_sitemap'
+      : screenConfig.path === '_sitemap'
+  );
+}
+
+export function getNavigationConfig(
+  routes: RouteNode,
+  metaOnly: boolean,
+  { sitemap, notFound }: { sitemap: boolean; notFound: boolean }
+) {
+  const config = getReactNavigationConfig(routes, metaOnly);
+  const sitemapRoute =
+    isSitemapInConfig(config) || sitemap === false
+      ? {}
+      : { [SITEMAP_ROUTE_NAME]: { path: '/_sitemap' } };
+  const notFoundRoute = notFound === false ? {} : { [NOT_FOUND_ROUTE_NAME]: { path: '*' } };
   return {
     screens: {
       [INTERNAL_SLOT_NAME]: {
         path: '',
-        ...getReactNavigationConfig(routes, metaOnly),
+        ...config,
       },
+      ...sitemapRoute,
+      ...notFoundRoute,
     },
   };
 }
@@ -34,11 +54,24 @@ export type LinkingConfigOptions = {
   redirects?: StoreRedirects[];
 };
 
+interface RouterOptions {
+  skipGenerated: boolean;
+  sitemap: boolean;
+  notFound: boolean;
+}
+
 export function getLinkingConfig(
   routes: RouteNode,
   context: RequireContext,
   getRouteInfo: () => UrlObject,
-  { metaOnly = true, serverUrl, redirects }: LinkingConfigOptions = {}
+  {
+    metaOnly = true,
+    serverUrl,
+    redirects,
+    skipGenerated,
+    sitemap,
+    notFound,
+  }: LinkingConfigOptions & RouterOptions
 ): ExpoLinkingOptions {
   // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
   let hasCachedInitialUrl = false;
@@ -51,7 +84,10 @@ export function getLinkingConfig(
     ? context(nativeLinkingKey)
     : undefined;
 
-  const config = getNavigationConfig(routes, metaOnly);
+  const config = getNavigationConfig(routes, metaOnly, {
+    sitemap: skipGenerated ? false : sitemap,
+    notFound: skipGenerated ? false : notFound,
+  });
 
   return {
     prefixes: [],
