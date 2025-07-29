@@ -24,5 +24,5 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
     }
 }
 export const getDefaultCalendarNext = () => new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
-export const getCalendarsNext = () => ExpoCalendar.getCalendarsIds().map((id) => new ExportExpoCalendar(id));
+export const getCalendarsNext = (type) => ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
 //# sourceMappingURL=Calendar.js.map

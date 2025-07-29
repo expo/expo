@@ -6,10 +6,10 @@ public final class CalendarNextModule: Module {
         // Use sharedEventStore, there were problems when accessing two different stores.
         return CalendarModule.sharedEventStore
     }
-    
+
     public func definition() -> ModuleDefinition {
         Name("CalendarNext")
-        
+
         OnCreate {
             self.appContext?.permissions?.register([
                 CalendarPermissionsRequester(eventStore: eventStore),

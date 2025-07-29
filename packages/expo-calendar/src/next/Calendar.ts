@@ -1,4 +1,4 @@
-import { Event, RecurringEventOptions, stringifyDateValues, stringifyIfDate } from '../Calendar';
+import { EntityTypes, Event, RecurringEventOptions, stringifyDateValues, stringifyIfDate } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
@@ -34,5 +34,5 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
 export const getDefaultCalendarNext = () =>
   new ExportExpoCalendar(ExpoCalendar.getDefaultCalendarId());
 
-export const getCalendarsNext = () =>
-  ExpoCalendar.getCalendarsIds().map((id) => new ExportExpoCalendar(id));
+export const getCalendarsNext = (type?: EntityTypes) =>
+  ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));

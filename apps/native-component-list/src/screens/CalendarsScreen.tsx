@@ -67,30 +67,6 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
-  const getDefaultCalendar = async () => {
-    try {
-      console.log('=== Testing expo-calendar/next API ===');
-
-      // Test date range (one week ago to one week from now)
-      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-      const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-      const calendarsNext = getCalendarsNext();
-      const calendar = calendarsNext[5];
-      const events = calendar.listEvents(oneWeekAgo, oneWeekFromNow);
-
-      console.log('Events:', calendar.title, events.length);
-
-      for (const event of events) {
-        const attendees = event.getAttendees();
-        console.log('Attendees of event:', event.title, attendees.map((a) => a.name));
-      }
-    } catch (error) {
-      console.error('Error testing expo-calendar/next:', error);
-      Alert.alert('Error', `Failed to test expo-calendar/next: ${error.message}`);
-    }
-  };
-
   const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
 
   const findCalendars = async () => {
@@ -98,9 +74,9 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     const reminderGranted =
       Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
     if (calendarGranted && reminderGranted) {
-      const eventCalendars = (await Calendar.getCalendarsAsync('event')) as unknown as any[];
+      const eventCalendars = getCalendarsNext(Calendar.EntityTypes.EVENT) as unknown as any[];
       const reminderCalendars = (
-        Platform.OS === 'ios' ? await Calendar.getCalendarsAsync('reminder') : []
+        Platform.OS === 'ios' ? getCalendarsNext(Calendar.EntityTypes.REMINDER) : []
       ) as any[];
       setCalendars([...eventCalendars, ...reminderCalendars]);
     }
@@ -170,45 +146,26 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     ]);
   };
 
-  const addEvent = async () => {
-    const defaultCalendar = await Calendar.getDefaultCalendarAsync();
-    console.log('defaultCalendar', defaultCalendar);
-    const calendar = new ExportExpoCalendar(defaultCalendar.id);
-    console.log('calendar', calendar);
-    const endDate = new Date(Date.now() + 1000 * 60 * 60 * 24);
-    const event = calendar.createEvent(
-      {
-        title: 'Test',
-        startDate: new Date(),
-        endDate,
-      },
-      {}
+  if (calendars.length) {
+    return (
+      <ScrollView style={styles.container}>
+        <Button onPress={addCalendar} title="Add New Calendar" />
+        {calendars.map((calendar) => (
+          <CalendarRow
+            calendar={calendar}
+            key={calendar.id}
+            navigation={navigation}
+            updateCalendar={updateCalendar}
+            deleteCalendar={deleteCalendar}
+          />
+        ))}
+      </ScrollView>
     );
-    console.log('Event added:', event);
-  };
-
-  //   if (calendars.length) {
-  //     return (
-  //       <ScrollView style={styles.container}>
-  //         <Button onPress={addCalendar} title="Add New Calendar" />
-  //         {calendars.map((calendar) => (
-  //           <CalendarRow
-  //             calendar={calendar}
-  //             key={calendar.id}
-  //             navigation={navigation}
-  //             updateCalendar={updateCalendar}
-  //             deleteCalendar={deleteCalendar}
-  //           />
-  //         ))}
-  //       </ScrollView>
-  //     );
-  //   }
+  }
 
   return (
     <View style={styles.container}>
       <Button onPress={findCalendars} title="Find my Calendars" />
-      <Button onPress={getDefaultCalendar} title="Get Default Calendar" />
-      <Button onPress={addEvent} title="Add Event" />
     </View>
   );
 }
