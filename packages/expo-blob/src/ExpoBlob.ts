@@ -53,7 +53,7 @@ export class Blob extends NativeBlobModule.Blob {
 
     return new ReadableStream({
       type: 'bytes',
-      async pull(controller: any) {
+      async pull(controller: ReadableByteStreamController) {
         if (!cachedBytes) {
           if (!getBlobBytes) {
             throw new Error('Cannot read from a closed stream');
@@ -69,7 +69,11 @@ export class Blob extends NativeBlobModule.Blob {
         }
 
         if (controller.byobRequest?.view) {
-          const view = controller.byobRequest.view;
+          const view: Uint8Array = new Uint8Array(
+            controller.byobRequest.view.buffer,
+            controller.byobRequest.view.byteOffset,
+            controller.byobRequest.view.byteLength
+          );
           const end = Math.min(offset + view.byteLength, cachedBytes.length);
           const chunk = cachedBytes.subarray(offset, end);
           view.set(chunk, 0);

@@ -55,7 +55,7 @@ export class Blob extends NativeBlobModule.Blob {
                     return;
                 }
                 if (controller.byobRequest?.view) {
-                    const view = controller.byobRequest.view;
+                    const view = new Uint8Array(controller.byobRequest.view.buffer, controller.byobRequest.view.byteOffset, controller.byobRequest.view.byteLength);
                     const end = Math.min(offset + view.byteLength, cachedBytes.length);
                     const chunk = cachedBytes.subarray(offset, end);
                     view.set(chunk, 0);
