@@ -1,20 +1,13 @@
+import { spawn } from 'child_process';
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { AutolinkingPlugin, DevToolsPlugin } from './DevToolsPlugin';
+
 const debug = require('debug')('expo:start:server:devtools');
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
-
-interface AutolinkingPlugin {
-  packageName: string;
-  packageRoot: string;
-  webpageRoot: string;
-}
-
-export interface DevToolsPlugin extends AutolinkingPlugin {
-  webpageEndpoint: string;
-}
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;
@@ -25,11 +18,9 @@ export default class DevToolsPluginManager {
     if (this.plugins) {
       return this.plugins;
     }
-    const plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot)).map((plugin) => ({
-      ...plugin,
-      webpageEndpoint: `${DevToolsPluginEndpoint}/${plugin.packageName}`,
-    }));
-    this.plugins = plugins;
+    this.plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot)).map(
+      (plugin) => new DevToolsPlugin(plugin, this.projectRoot)
+    );
     return this.plugins;
   }
 

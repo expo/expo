@@ -8,11 +8,13 @@
 
 ### 🎉 New features
 
+- Added support for cli extensions in expo modules ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
 - Enable async require by default. ([#36405](https://github.com/expo/expo/pull/36405) by [@EvanBacon](https://github.com/EvanBacon))
 - Support JSON output for install check. ([#37318](https://github.com/expo/expo/pull/37318) by [@betomoedano](https://github.com/betomoedano))
 - Add `EXPO_USE_STICKY_RESOLVER` to enable experimental sticky resolution to native modules ([#37201](https://github.com/expo/expo/pull/37201) by [@kitten](https://github.com/kitten))
 - Support external URLs with static redirects ([#38041](https://github.com/expo/expo/pull/38041) by [@hassankhan](https://github.com/hassankhan))
 - Add `EXPO_UNSTABLE_LIVE_BINDINGS` to allow developer to disable live binding in `experimentalImportSupport`. ([#38135](https://github.com/expo/expo/pull/38135) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Added support for cli extensions in the interactive devtools menu. ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 

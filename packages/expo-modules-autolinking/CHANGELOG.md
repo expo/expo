@@ -6,8 +6,10 @@
 
 ### 🎉 New features
 
+- Added support for cli extensions in expo modules autolinking. ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
 - Add `--source-dir` option ([#38218](https://github.com/expo/expo/pull/38218) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add `:projectRoot` option to `use_expo_modules!` ([#38210](https://github.com/expo/expo/pull/38210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for cli extensions in the interactive devtools menu. ([#38091](https://github.com/expo/expo/pull/38091) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
