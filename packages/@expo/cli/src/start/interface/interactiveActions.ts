@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { BLT, StartOptions, printHelp, printItem, printQRCode, printUsage } from './commandsTable';
-import { MoreToolMenuItem, createDevToolsMenuItems } from './createDevtoolMenuItems';
+import { MoreToolMenuItem, createDevToolsMenuItems } from './createDevToolsMenuItems';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
