@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
 export const unstable_settings = {
   initialRouteName: 'orange',
@@ -20,7 +21,14 @@ export default function Layout() {
           title: 'Face Gallery',
         }}
       />
-      <Stack.Screen name="[face]" />
+      <Stack.Screen
+        name="[face]"
+        options={
+          Platform.OS === 'ios'
+            ? {}
+            : { headerTransparent: false, headerStyle: { backgroundColor: undefined } }
+        }
+      />
     </Stack>
   );
 }

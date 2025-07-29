@@ -13,7 +13,7 @@ import React, {
 
 import { useContextKey } from '../Route';
 import { PickPartial } from '../types';
-import { convertTabPropsToOptions, isTab, Tab } from '../ui/NativeBottomTabs/TabOptions';
+import { convertTabPropsToOptions, isTab } from '../ui/NativeBottomTabs/TabOptions';
 import { useSortedScreens, ScreenProps } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
@@ -40,14 +40,7 @@ export function useFilterScreenChildren(
         if (exclude) {
           protectedScreens.add(child.props.name);
         } else {
-          if (child.type === Tab) {
-            screens.push({
-              ...child.props,
-              options: convertTabPropsToOptions(child.props),
-            });
-          } else {
-            screens.push(child.props);
-          }
+          screens.push(child.props);
         }
         return;
       }
@@ -143,11 +136,7 @@ export function withLayoutContext<
   T extends ComponentType<any>,
   TState extends NavigationState,
   TEventMap extends EventMapBase,
->(
-  Nav: T,
-  processor?: (options: ScreenProps[]) => ScreenProps[],
-  preserveOnlyUserDefined: boolean = false
-) {
+>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
@@ -158,7 +147,7 @@ export function withLayoutContext<
 
       const processed = processor ? processor(screens ?? []) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens, preserveOnlyUserDefined);
+      const sorted = useSortedScreens(processed ?? [], protectedScreens);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {

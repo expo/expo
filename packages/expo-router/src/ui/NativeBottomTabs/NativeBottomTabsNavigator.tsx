@@ -7,20 +7,25 @@ import {
   useNavigationBuilder,
 } from '@react-navigation/native';
 import React, { ComponentProps, PropsWithChildren } from 'react';
-import { enableFreeze } from 'react-native-screens';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabOptions, NativeTabsView, type NativeTabsViewProps } from './NativeTabsView';
 import { withLayoutContext } from '../..';
-import { BottomTabAccessoryProvider } from './NativeTabsViewContext';
 import { Tab } from './TabOptions';
 
-enableFreeze(true);
+export interface NativeTabsNavigatorProps
+  extends PropsWithChildren<Omit<NativeTabsViewProps, 'builder'>> {
+  backBehavior?: 'none' | 'initialRoute' | 'history';
+}
+
+// In Jetpack Compose, the default back behavior is to go back to the initial route.
+const defaultBackBehavior = 'initialRoute';
 
 function NativeTabsNavigator({
   children,
+  backBehavior = defaultBackBehavior,
   ...rest
-}: PropsWithChildren<Omit<NativeTabsViewProps, 'builder'>>) {
+}: NativeTabsNavigatorProps) {
   const builder = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
@@ -29,13 +34,10 @@ function NativeTabsNavigator({
     Record<string, any>
   >(NativeBottomTabsRouter, {
     children,
+    backBehavior,
   });
 
-  return (
-    <BottomTabAccessoryProvider>
-      <NativeTabsView builder={builder} {...rest} />
-    </BottomTabAccessoryProvider>
-  );
+  return <NativeTabsView builder={builder} {...rest} />;
 }
 
 export const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
@@ -44,8 +46,7 @@ const NTN = withLayoutContext<NativeTabOptions, typeof NativeTabsNavigator, Navi
   createNativeTabNavigator().Navigator,
   (screens) => {
     return screens;
-  },
-  true
+  }
 );
 
 export const NativeTabs = Object.assign(

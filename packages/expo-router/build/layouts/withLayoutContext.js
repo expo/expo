@@ -52,15 +52,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                     protectedScreens.add(child.props.name);
                 }
                 else {
-                    if (child.type === TabOptions_1.Tab) {
-                        screens.push({
-                            ...child.props,
-                            options: (0, TabOptions_1.convertTabPropsToOptions)(child.props),
-                        });
-                    }
-                    else {
-                        screens.push(child.props);
-                    }
+                    screens.push(child.props);
                 }
                 return;
             }
@@ -140,14 +132,14 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
  * }
  * ```
  */
-function withLayoutContext(Nav, processor, preserveOnlyUserDefined = false) {
+function withLayoutContext(Nav, processor) {
     return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();
         const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
         });
         const processed = processor ? processor(screens ?? []) : screens;
-        const sorted = (0, useScreens_1.useSortedScreens)(processed ?? [], protectedScreens, preserveOnlyUserDefined);
+        const sorted = (0, useScreens_1.useSortedScreens)(processed ?? [], protectedScreens);
         // Prevent throwing an error when there are no screens.
         if (!sorted.length) {
             return null;

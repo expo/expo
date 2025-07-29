@@ -1,11 +1,8 @@
-// import type { ColorValue } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 import type { ImageSourcePropType } from 'react-native';
-
-// TODO: Replicate the headless tabs API
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 interface TitleProps {
-  children: string;
+  children?: string;
 }
 
 export function Title(props: TitleProps) {
@@ -40,9 +37,6 @@ export function Icon(props: IconProps) {
 
 interface BadgeProps {
   children?: string;
-  // style?: {
-  //   backgroundColor?: ColorValue;
-  // };
 }
 
 export function Badge(props: BadgeProps) {

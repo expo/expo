@@ -1,13 +1,14 @@
-import type { JSXElementConstructor, PropsWithChildren, ReactElement, ReactNode } from 'react';
-import React, { isValidElement } from 'react';
+import type { PropsWithChildren, ReactElement, ReactNode } from 'react';
+import { isValidElement } from 'react';
 
 import type { NativeTabOptions } from './NativeTabsView';
 import { AndroidIcon, Badge, Icon, IOSIcon, Title } from './NavigatorElements';
+import { filterAllowedChildrenElements, isChildOfType } from './utils';
 
 export type TabProps = PropsWithChildren<{
   name: string;
   hidden?: boolean;
-  options?: NativeTabOptions;
+  options?: Omit<NativeTabOptions, 'hidden' | 'specialEffects'>;
   popToRoot?: boolean;
   disableScrollToTop?: boolean;
 }>;
@@ -55,6 +56,10 @@ export function convertTabPropsToOptions({
         const icon: NativeTabOptions['icon'] = {
           imageSource: child.props.src,
         };
+        if (acc.icon && 'sfSymbolName' in acc.icon) {
+          // This is forbidden by screens
+          throw new Error('You can only use one type of icon (Icon or IOSIcon) for a single tab');
+        }
         if ('useAsSelected' in child.props && child.props.useAsSelected) {
           acc.selectedIcon = icon;
         } else {
@@ -64,13 +69,16 @@ export function convertTabPropsToOptions({
         const icon: NativeTabOptions['icon'] = {
           sfSymbolName: child.props.name,
         };
+        if (acc.icon && 'imageSource' in acc.icon) {
+          // This is forbidden by screens
+          throw new Error('You can only use one type of icon (Icon or IOSIcon) for a single tab');
+        }
         if ('useAsSelected' in child.props && child.props.useAsSelected) {
           acc.selectedIcon = icon;
         } else {
-          console.log('Icon', icon);
           acc.icon = icon;
         }
-      } else if (isChildOfType(child, AndroidIcon)) {
+      } else if (isChildOfType(child, AndroidIcon) && process.env.EXPO_OS === 'android') {
         acc.iconResourceName = child.props.name;
       }
       return acc;
@@ -111,23 +119,4 @@ export function isTab(
   }
 
   return false;
-}
-
-function filterAllowedChildrenElements<Components extends JSXElementConstructor<any>[]>(
-  children: ReactNode | ReactNode[],
-  components: Components
-): React.ReactElement<React.ComponentProps<Components[number]>, Components[number]>[] {
-  return React.Children.toArray(children).filter(
-    (
-      child
-    ): child is React.ReactElement<React.ComponentProps<Components[number]>, Components[number]> =>
-      React.isValidElement(child) && components.includes(child.type as (props: any) => ReactNode)
-  );
-}
-
-function isChildOfType<T extends JSXElementConstructor<any>>(
-  child: ReactNode,
-  type: T
-): child is React.ReactElement<React.ComponentProps<T>, T> {
-  return React.isValidElement(child) && child.type === type;
 }

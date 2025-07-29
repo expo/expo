@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 const colors = [
   '#1e3a8a',
@@ -28,7 +28,7 @@ export default function Index() {
         alignItems: 'center',
         padding: 32,
       }}>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
         {faces.map((face) => (
           <Link
             key={face.id}

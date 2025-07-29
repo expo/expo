@@ -1,7 +1,7 @@
-import type { SFSymbol } from 'sf-symbols-typescript';
 import type { ImageSourcePropType } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 interface TitleProps {
-    children: string;
+    children?: string;
 }
 export declare function Title(props: TitleProps): null;
 interface IOSIconProps {

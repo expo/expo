@@ -5,10 +5,11 @@ import {
   TabActionType,
   TabNavigationState,
   TabRouter,
+  type TabRouterOptions,
 } from '@react-navigation/native';
 
-export function NativeBottomTabsRouter(options: any) {
-  const tabRouter = TabRouter(options);
+export function NativeBottomTabsRouter(options: TabRouterOptions) {
+  const tabRouter = TabRouter({ ...options });
 
   const nativeTabRouter: Router<
     TabNavigationState<ParamListBase>,
