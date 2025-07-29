@@ -1,4 +1,4 @@
-import { ExpoBlob as Blob } from 'expo-blob';
+import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
@@ -18,7 +18,7 @@ const bytesExamples: BytesExampleData[] = [
   {
     key: 'simple-bytes',
     title: 'Simple Bytes',
-    code: 'new ExpoBlob(["Hello World"]).bytes()',
+    code: 'new Blob(["Hello World"]).bytes()',
     blobParts: ['Hello World'],
     options: {
       type: 'text/plain',
@@ -27,7 +27,7 @@ const bytesExamples: BytesExampleData[] = [
   {
     key: 'unicode-bytes',
     title: 'Unicode Bytes',
-    code: 'new ExpoBlob(["Hello 🌍 世界"]).bytes()',
+    code: 'new Blob(["Hello 🌍 世界"]).bytes()',
     blobParts: ['Hello 🌍 世界'],
     options: {
       type: 'text/plain; charset=utf-8',
@@ -36,7 +36,7 @@ const bytesExamples: BytesExampleData[] = [
   {
     key: 'mixed-bytes',
     title: 'Mixed Content Bytes',
-    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).bytes()',
+    code: 'new Blob(["Text", new Uint8Array([65, 66, 67]), "More"]).bytes()',
     blobParts: ['Text', new Uint8Array([65, 66, 67]), 'More'],
     options: {
       type: 'text/plain',
@@ -45,7 +45,7 @@ const bytesExamples: BytesExampleData[] = [
   {
     key: 'binary-bytes',
     title: 'Binary Data Bytes',
-    code: 'new ExpoBlob([new Uint8Array([72, 101, 108, 108, 111])]).bytes()',
+    code: 'new Blob([new Uint8Array([72, 101, 108, 108, 111])]).bytes()',
     blobParts: [new Uint8Array([72, 101, 108, 108, 111])],
     options: {
       type: 'application/octet-stream',
@@ -54,7 +54,7 @@ const bytesExamples: BytesExampleData[] = [
   {
     key: 'json-bytes',
     title: 'JSON Bytes',
-    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).bytes()',
+    code: 'new Blob([JSON.stringify({name: "John", age: 30})]).bytes()',
     blobParts: [JSON.stringify({ name: 'John', age: 30 })],
     options: {
       type: 'application/json',

@@ -1,5 +1,5 @@
 import { NativeModule, SharedObject } from 'expo';
-export declare class ExpoBlob {
+export declare class Blob {
     /**
      * The size of the Blob in bytes.
      */
@@ -21,7 +21,7 @@ export declare class ExpoBlob {
      * @param contentType The MIME type of the new Blob. If not provided, defaults to an empty string.
      * @returns A new Blob object containing the specified bytes.
      */
-    slice(start?: number, end?: number, contentType?: string): ExpoBlob;
+    slice(start?: number, end?: number, contentType?: string): Blob;
     /**
      * Returns a Promise that resolves with the entire contents of the Blob as a Uint8Array.
      * @returns Promise resolving to the Blob's binary data as a Uint8Array.
@@ -52,7 +52,7 @@ export declare class NativeBlob extends SharedObject {
     readonly size: number;
     readonly type: string;
     constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
-    slice(start?: number, end?: number, contentType?: string): ExpoBlob;
+    slice(start?: number, end?: number, contentType?: string): Blob;
     bytes(): Promise<Uint8Array>;
     text(): Promise<string>;
 }

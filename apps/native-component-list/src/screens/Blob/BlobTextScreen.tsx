@@ -1,4 +1,4 @@
-import { ExpoBlob as Blob } from 'expo-blob';
+import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
@@ -18,7 +18,7 @@ const textExamples: TextExampleData[] = [
   {
     key: 'simple-text',
     title: 'Simple Text',
-    code: 'new ExpoBlob(["Hello", " ", "World"]).text()',
+    code: 'new Blob(["Hello", " ", "World"]).text()',
     blobParts: ['Hello', ' ', 'World'],
     options: {
       type: 'text/plain',
@@ -27,7 +27,7 @@ const textExamples: TextExampleData[] = [
   {
     key: 'unicode-text',
     title: 'Unicode Text',
-    code: 'new ExpoBlob(["Hello", " ", "🌍", " ", "世界"]).text()',
+    code: 'new Blob(["Hello", " ", "🌍", " ", "世界"]).text()',
     blobParts: ['Hello', ' ', '🌍', ' ', '世界'],
     options: {
       type: 'text/plain; charset=utf-8',
@@ -36,7 +36,7 @@ const textExamples: TextExampleData[] = [
   {
     key: 'mixed-content',
     title: 'Mixed Content',
-    code: 'new ExpoBlob(["Text", new Uint8Array([65, 66, 67]), "More"]).text()',
+    code: 'new Blob(["Text", new Uint8Array([65, 66, 67]), "More"]).text()',
     blobParts: ['Text', new Uint8Array([65, 66, 67]), 'More'],
     options: {
       type: 'text/plain',
@@ -45,7 +45,7 @@ const textExamples: TextExampleData[] = [
   {
     key: 'json-content',
     title: 'JSON Content',
-    code: 'new ExpoBlob([JSON.stringify({name: "John", age: 30})]).text()',
+    code: 'new Blob([JSON.stringify({name: "John", age: 30})]).text()',
     blobParts: [JSON.stringify({ name: 'John', age: 30 })],
     options: {
       type: 'application/json',
@@ -54,7 +54,7 @@ const textExamples: TextExampleData[] = [
   {
     key: 'html-content',
     title: 'HTML Content',
-    code: 'new ExpoBlob(["<h1>", "Hello", "</h1>"]).text()',
+    code: 'new Blob(["<h1>", "Hello", "</h1>"]).text()',
     blobParts: ['<h1>', 'Hello', '</h1>'],
     options: {
       type: 'text/html',

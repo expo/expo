@@ -1,4 +1,4 @@
-import { ExpoBlob as Blob } from 'expo-blob';
+import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 

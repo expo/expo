@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import { ExpoBlob } from 'expo-blob';
+import { Blob as ExpoBlob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 

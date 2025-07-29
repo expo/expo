@@ -12,17 +12,17 @@ const inputMapping = (blobPart: BlobPart) => {
   if (blobPart instanceof ArrayBuffer) {
     return new Uint8Array(blobPart);
   }
-  if (blobPart instanceof ExpoBlob || isTypedArray(blobPart)) {
+  if (blobPart instanceof Blob || isTypedArray(blobPart)) {
     return blobPart;
   }
   return String(blobPart);
 };
 
 const NativeBlobModule = requireNativeModule<ExpoBlobModule>('ExpoBlob');
-export class ExpoBlob extends NativeBlobModule.Blob {
+export class Blob extends NativeBlobModule.Blob {
   constructor(blobParts?: BlobPart[] | Iterable<BlobPart>, options?: BlobPropertyBag) {
     if (!new.target) {
-      throw new TypeError("ExpoBlob constructor requires 'new' operator");
+      throw new TypeError("Blob constructor requires 'new' operator");
     }
 
     const processedBlobParts: BlobPart[] = [];
@@ -30,9 +30,7 @@ export class ExpoBlob extends NativeBlobModule.Blob {
     if (blobParts === undefined) {
       super([], preprocessOptions(options));
     } else if (blobParts === null || typeof blobParts !== 'object') {
-      throw TypeError(
-        'ExpoBlob constructor requires blobParts to be a non-null object or undefined'
-      );
+      throw TypeError('Blob constructor requires blobParts to be a non-null object or undefined');
     } else {
       for (const blobPart of blobParts) {
         processedBlobParts.push(inputMapping(blobPart));
@@ -41,15 +39,14 @@ export class ExpoBlob extends NativeBlobModule.Blob {
     }
   }
 
-  slice(start?: number, end?: number, contentType?: string): ExpoBlob {
+  slice(start?: number, end?: number, contentType?: string): Blob {
     const normalizedType = normalizedContentType(contentType);
     const slicedBlob = super.slice(start, end, normalizedType);
-    Object.setPrototypeOf(slicedBlob, ExpoBlob.prototype);
-    return slicedBlob as ExpoBlob;
+    Object.setPrototypeOf(slicedBlob, Blob.prototype);
+    return slicedBlob as Blob;
   }
 
   stream(): ReadableStream {
-    const self = this;
     let getBlobBytes: (() => Promise<Uint8Array>) | null = this.bytes.bind(this);
     let offset = 0;
     let cachedBytes: Uint8Array | null = null;

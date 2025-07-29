@@ -4,23 +4,23 @@ const inputMapping = (blobPart) => {
     if (blobPart instanceof ArrayBuffer) {
         return new Uint8Array(blobPart);
     }
-    if (blobPart instanceof ExpoBlob || isTypedArray(blobPart)) {
+    if (blobPart instanceof Blob || isTypedArray(blobPart)) {
         return blobPart;
     }
     return String(blobPart);
 };
 const NativeBlobModule = requireNativeModule('ExpoBlob');
-export class ExpoBlob extends NativeBlobModule.Blob {
+export class Blob extends NativeBlobModule.Blob {
     constructor(blobParts, options) {
         if (!new.target) {
-            throw new TypeError("ExpoBlob constructor requires 'new' operator");
+            throw new TypeError("Blob constructor requires 'new' operator");
         }
         const processedBlobParts = [];
         if (blobParts === undefined) {
             super([], preprocessOptions(options));
         }
         else if (blobParts === null || typeof blobParts !== 'object') {
-            throw TypeError('ExpoBlob constructor requires blobParts to be a non-null object or undefined');
+            throw TypeError('Blob constructor requires blobParts to be a non-null object or undefined');
         }
         else {
             for (const blobPart of blobParts) {
@@ -32,11 +32,10 @@ export class ExpoBlob extends NativeBlobModule.Blob {
     slice(start, end, contentType) {
         const normalizedType = normalizedContentType(contentType);
         const slicedBlob = super.slice(start, end, normalizedType);
-        Object.setPrototypeOf(slicedBlob, ExpoBlob.prototype);
+        Object.setPrototypeOf(slicedBlob, Blob.prototype);
         return slicedBlob;
     }
     stream() {
-        const self = this;
         let getBlobBytes = this.bytes.bind(this);
         let offset = 0;
         let cachedBytes = null;

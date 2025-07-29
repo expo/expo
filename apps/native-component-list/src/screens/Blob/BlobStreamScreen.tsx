@@ -1,4 +1,4 @@
-import { ExpoBlob as Blob } from 'expo-blob';
+import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
@@ -20,7 +20,7 @@ const streamExamples: StreamExampleData[] = [
   {
     key: 'basic-stream',
     title: 'Basic Stream Example',
-    code: 'new ExpoBlob(["aaa", "bbbb"]).slice(0, 5).stream()',
+    code: 'new Blob(["aaa", "bbbb"]).slice(0, 5).stream()',
     blobParts: ['aaa', 'bbbb'],
     options: {
       type: 'test/plain',

@@ -1,4 +1,4 @@
-import { ExpoBlob as Blob } from 'expo-blob';
+import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
@@ -21,7 +21,7 @@ const sliceExamples: SliceExampleData[] = [
   {
     key: 'basic-slice',
     title: 'Basic Blob',
-    code: 'new ExpoBlob(["squiggle"]).slice(0, 3, "text/plain")',
+    code: 'new Blob(["squiggle"]).slice(0, 3, "text/plain")',
     blobParts: [new Blob(['squiggle'])],
     options: {
       type: 'text/plain',
@@ -34,7 +34,7 @@ const sliceExamples: SliceExampleData[] = [
   {
     key: 'mixed-blob-slice',
     title: 'Mixed Blob',
-    code: 'new ExpoBlob([new Uint8Array(..., 3, 5), "squiggle", "foo"]).slice(0, 8, "text/plain")',
+    code: 'new Blob([new Uint8Array(..., 3, 5), "squiggle", "foo"]).slice(0, 8, "text/plain")',
     blobParts: (() => {
       const arrayBuffer = new ArrayBuffer(16);
       const int8View = new Int8Array(arrayBuffer);

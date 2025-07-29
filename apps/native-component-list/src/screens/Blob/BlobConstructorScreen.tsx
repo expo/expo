@@ -1,4 +1,4 @@
-import { ExpoBlob as Blob } from 'expo-blob';
+import { Blob } from 'expo-blob';
 import { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 
@@ -18,19 +18,19 @@ const examples: ExampleData[] = [
   {
     key: 'nested',
     title: 'Nested Array',
-    code: 'new ExpoBlob(["a", "bbb", "d", ["edf", ["aaaa"]]])',
+    code: 'new Blob(["a", "bbb", "d", ["edf", ["aaaa"]]])',
     blobParts: ['a', 'bbb', 'd', ['edf', ['aaaa']]],
   },
   {
     key: 'mixed',
     title: 'Mixed Types Array',
-    code: 'new ExpoBlob(["a", "bbb", new Uint8Array([64, 65, 66])])',
+    code: 'new Blob(["a", "bbb", new Uint8Array([64, 65, 66])])',
     blobParts: ['a', 'bbb', new Uint8Array([64, 65, 66])],
   },
   {
     key: 'blobs',
     title: 'Blobs Array',
-    code: 'new ExpoBlob([new ExpoBlob(["aaa"]), new ExpoBlob(["bbb"])])',
+    code: 'new Blob([new Blob(["aaa"]), new Blob(["bbb"])])',
     blobParts: [new Blob(['aaa']), new Blob(['bbb'])],
   },
 ];
@@ -107,9 +107,7 @@ export default function BlobConstructorScreen() {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View>
           <HeadingText>Blob Constructor</HeadingText>
-          <MonoText>
-            new ExpoBlob(blobParts?: BlobPart[], {'\n  '}options?: BlobPropertyBag)
-          </MonoText>
+          <MonoText>new Blob(blobParts?: BlobPart[], {'\n  '}options?: BlobPropertyBag)</MonoText>
         </View>
         <View>
           <HeadingText>Examples:</HeadingText>

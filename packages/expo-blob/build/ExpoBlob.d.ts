@@ -1,8 +1,8 @@
 import { BlobPart, ExpoBlobModule } from './ExpoBlob.types';
 declare const NativeBlobModule: ExpoBlobModule;
-export declare class ExpoBlob extends NativeBlobModule.Blob {
+export declare class Blob extends NativeBlobModule.Blob {
     constructor(blobParts?: BlobPart[] | Iterable<BlobPart>, options?: BlobPropertyBag);
-    slice(start?: number, end?: number, contentType?: string): ExpoBlob;
+    slice(start?: number, end?: number, contentType?: string): Blob;
     stream(): ReadableStream;
     arrayBuffer(): Promise<ArrayBuffer>;
     toString(): string;
