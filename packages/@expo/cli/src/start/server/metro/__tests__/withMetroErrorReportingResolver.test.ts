@@ -76,3 +76,432 @@ it('adds import stack to error', () => {
     "
   `);
 });
+
+it('adds import stack with circular dependencies to error', () => {
+  const config = {
+    projectRoot: '/project',
+    server: {
+      unstable_serverRoot: '/project',
+    },
+  } as MetroConfig;
+
+  // Create a circular dependency graph: foo.js -> bar.js -> foo.js
+  const depGraph: DepGraph = new Map([
+    [
+      '{}', // custom options (empty object serialized)
+      new Map([
+        [
+          'ios', // platform
+          new Map([
+            [
+              '/project/foo.js', // origin module
+              new Set([
+                {
+                  path: '/project/bar.js',
+                  request: 'bar',
+                },
+              ]),
+            ],
+            [
+              '/project/bar.js', // origin module
+              new Set([
+                {
+                  path: '/project/foo.js',
+                  request: 'foo',
+                },
+              ]),
+            ],
+          ]),
+        ],
+      ]),
+    ],
+  ]);
+
+  const mutateResolutionError = createMutateResolutionError(config, depGraph);
+
+  // Create a mock error and context
+  const error = new Error('Module not found');
+  const context = {
+    originModulePath: '/project/bar.js',
+  } as ResolutionContext;
+
+  // Call the function
+  const result = mutateResolutionError(error, context, 'foo', 'ios');
+
+  // Check that the import stack was added with circular dependency warning
+  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+    "Import stack:
+
+     bar.js
+     | import "foo"
+
+     foo.js
+     | import "bar"
+
+     bar.js
+     | import "foo"
+               ^ The import above creates circular dependency.
+    "
+  `);
+});
+
+it('adds import stack with stack depth limit to error', () => {
+  const config = {
+    projectRoot: '/project',
+    server: {
+      unstable_serverRoot: '/project',
+    },
+  } as MetroConfig;
+
+  // Create a deep dependency graph: a.js -> b.js -> c.js -> d.js
+  const depGraph: DepGraph = new Map([
+    [
+      '{}', // custom options (empty object serialized)
+      new Map([
+        [
+          'ios', // platform
+          new Map([
+            [
+              '/project/a.js', // origin module
+              new Set([
+                {
+                  path: '/project/b.js',
+                  request: 'b',
+                },
+              ]),
+            ],
+            [
+              '/project/b.js', // origin module
+              new Set([
+                {
+                  path: '/project/c.js',
+                  request: 'c',
+                },
+              ]),
+            ],
+            [
+              '/project/c.js', // origin module
+              new Set([
+                {
+                  path: '/project/d.js',
+                  request: 'd',
+                },
+              ]),
+            ],
+            [
+              '/project/d.js', // unresolved module
+              new Set<{ path: string; request: string }>(),
+            ],
+          ]),
+        ],
+      ]),
+    ],
+  ]);
+
+  const mutateResolutionError = createMutateResolutionError(config, depGraph, 2);
+
+  // Create a mock error and context
+  const error = new Error('Module not found');
+  const context = {
+    originModulePath: '/project/d.js',
+  } as ResolutionContext;
+
+  // Call the function
+  const result = mutateResolutionError(error, context, 'missing', 'ios');
+
+  // Check that the import stack was added with depth limit warning
+  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+    "Import stack:
+
+     d.js
+     | import "missing"
+
+     c.js
+     | import "d"
+
+     Depth limit reached. The actual stack is longer than what you can see above.
+    "
+  `);
+});
+
+it('adds import stack with stack count limit to error', () => {
+  const config = {
+    projectRoot: '/project',
+    server: {
+      unstable_serverRoot: '/project',
+    },
+  } as MetroConfig;
+
+  const depGraph: DepGraph = new Map([
+    [
+      '{}', // custom options (empty object serialized)
+      new Map([
+        [
+          'ios', // platform
+          new Map([
+            [
+              '/project/node_modules/a.js', // origin module
+              new Set([
+                {
+                  path: '/project/b.js',
+                  request: 'b',
+                },
+              ]),
+            ],
+            [
+              '/project/a.js', // origin module
+              new Set([
+                {
+                  path: '/project/b.js',
+                  request: 'b',
+                },
+              ]),
+            ],
+            [
+              '/project/b.js', // origin module
+              new Set([
+                {
+                  path: '/project/c.js',
+                  request: 'c',
+                },
+              ]),
+            ],
+            [
+              '/project/c.js', // unresolved module
+              new Set<{ path: string; request: string }>(),
+            ],
+          ]),
+        ],
+      ]),
+    ],
+  ]);
+
+  const mutateResolutionError = createMutateResolutionError(config, depGraph, undefined, 2); // count limit of 2
+
+  // Create a mock error and context
+  const error = new Error('Module not found');
+  const context = {
+    originModulePath: '/project/b.js',
+  } as ResolutionContext;
+
+  // Call the function
+  const result = mutateResolutionError(error, context, 'c', 'ios');
+
+  // Check that the import stack was added with count limit indicator
+  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+    "Import stack (2):
+
+     b.js
+     | import "c"
+
+     node_modules/a.js
+     | import "b"
+    "
+  `);
+});
+
+it('prioritizes project stack over node_modules, circular deps, and depth limited stacks', () => {
+  const config = {
+    projectRoot: '/project',
+    server: {
+      unstable_serverRoot: '/project',
+    },
+  } as MetroConfig;
+
+  const depGraph: DepGraph = new Map([
+    [
+      '{}', // custom options (empty object serialized)
+      new Map([
+        [
+          'ios', // platform
+          new Map([
+            // Node modules stack
+            [
+              '/project/node_modules/lib.js', // origin module
+              new Set([
+                {
+                  path: '/project/utils.js',
+                  request: 'utils',
+                },
+              ]),
+            ],
+            // Circular dependency stack
+            [
+              '/project/circular1.js', // origin module
+              new Set([
+                {
+                  path: '/project/circular2.js',
+                  request: 'circular2',
+                },
+              ]),
+            ],
+            [
+              '/project/circular2.js', // origin module
+              new Set([
+                {
+                  path: '/project/circular1.js',
+                  request: 'circular1',
+                },
+                {
+                  path: '/project/utils.js',
+                  request: 'utils',
+                },
+              ]),
+            ],
+            // Deep stack that would hit depth limit
+            [
+              '/project/deep1.js', // origin module
+              new Set([
+                {
+                  path: '/project/deep2.js',
+                  request: 'deep2',
+                },
+              ]),
+            ],
+            [
+              '/project/deep2.js', // origin module
+              new Set([
+                {
+                  path: '/project/deep3.js',
+                  request: 'deep3',
+                },
+              ]),
+            ],
+            [
+              '/project/deep3.js', // origin module
+              new Set([
+                {
+                  path: '/project/deep4.js',
+                  request: 'deep4',
+                },
+              ]),
+            ],
+            [
+              '/project/deep4.js', // origin module
+              new Set([
+                {
+                  path: '/project/utils.js',
+                  request: 'utils',
+                },
+              ]),
+            ],
+            // preferred project
+            [
+              '/project/app.js', // origin module
+              new Set([
+                {
+                  path: '/project/utils.js',
+                  request: 'utils',
+                },
+              ]),
+            ],
+            [
+              '/project/utils.js',
+              new Set([
+                {
+                  path: '/project/missing.js',
+                  request: 'missing',
+                },
+              ]),
+            ],
+          ]),
+        ],
+      ]),
+    ],
+  ]);
+
+  const mutateResolutionError = createMutateResolutionError(config, depGraph, 3);
+
+  const error = new Error('Module not found');
+  const context = {
+    originModulePath: '/project/utils.js',
+  } as ResolutionContext;
+
+  // Call the function
+  const result = mutateResolutionError(error, context, 'missing', 'ios');
+
+  // Should prioritize the clean project stack over others
+  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+    "Import stack:
+
+     utils.js
+     | import "missing"
+
+     app.js
+     | import "utils"
+    "
+  `);
+});
+
+it('prioritizes projectRoot stack over server root stack', () => {
+  const config = {
+    projectRoot: '/server-root/project',
+    server: {
+      unstable_serverRoot: '/server-root',
+    },
+  } as MetroConfig;
+
+  const depGraph: DepGraph = new Map([
+    [
+      '{}', // custom options (empty object serialized)
+      new Map([
+        [
+          'ios', // platform
+          new Map([
+            // Server root stack
+            [
+              '/server-root/lib.js', // origin module
+              new Set([
+                {
+                  path: '/server-root/project/utils.js',
+                  request: 'utils',
+                },
+              ]),
+            ],
+            // Project root stack (should be preferred)
+            [
+              '/server-root/project/app.js', // origin module
+              new Set([
+                {
+                  path: '/server-root/project/utils.js',
+                  request: 'utils',
+                },
+              ]),
+            ],
+            [
+              '/server-root/project/utils.js',
+              new Set([
+                {
+                  path: '/server-root/project/missing.js',
+                  request: 'missing',
+                },
+              ]),
+            ],
+          ]),
+        ],
+      ]),
+    ],
+  ]);
+
+  const mutateResolutionError = createMutateResolutionError(config, depGraph);
+
+  const error = new Error('Module not found');
+  const context = {
+    originModulePath: '/server-root/project/utils.js',
+  } as ResolutionContext;
+
+  // Call the function
+  const result = mutateResolutionError(error, context, 'missing', 'ios');
+
+  // Should prioritize the project root stack over server root stack
+  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+    "Import stack:
+
+     project/utils.js
+     | import "missing"
+
+     project/app.js
+     | import "utils"
+    "
+  `);
+});

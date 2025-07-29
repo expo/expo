@@ -9,6 +9,10 @@ import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
 
+// TODO: Do we need to expose this?
+const STACK_DEPTH_LIMIT = 35;
+const STACK_COUNT_LIMIT = 2_000;
+
 export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfig {
   if (!env.EXPO_METRO_UNSTABLE_ERRORS) {
     return config;
@@ -90,7 +94,12 @@ function optionsKeyForContext(context: ResolutionContext) {
 }
 
 export const createMutateResolutionError =
-  (config: MetroConfig, depGraph: DepGraph) =>
+  (
+    config: MetroConfig,
+    depGraph: DepGraph,
+    stackDepthLimit = STACK_DEPTH_LIMIT,
+    stackCountLimit = STACK_COUNT_LIMIT
+  ) =>
   (error: Error, context: ResolutionContext, moduleName: string, platform: string | null) => {
     const inputPlatform = platform ?? 'null';
 
@@ -141,7 +150,6 @@ export const createMutateResolutionError =
       frames: Frame[];
     };
 
-    const stackCountLimit = 2_000;
     let stackCounter = 0;
     let inverseStack: Stack | undefined;
     /** @returns boolean - done */
@@ -258,15 +266,14 @@ export const createMutateResolutionError =
 
     recurseBackWithLimit(
       { origin: context.originModulePath, request: moduleName },
-      // TODO: Do we need to expose this?
-      35
+      stackDepthLimit
     );
 
     debug('Number of explored stacks:', stackCounter);
 
     if (inverseStack && inverseStack.frames.length > 0) {
       const formattedImport = chalk`{gray  |} {cyan import} `;
-      const importMessagePadding = ' '.repeat(stripVTControlCharacters(formattedImport).length);
+      const importMessagePadding = ' '.repeat(stripVTControlCharacters(formattedImport).length + 1);
 
       debug('Found inverse graph:', JSON.stringify(inverseStack, null, 2));
 
@@ -316,7 +323,7 @@ export const createMutateResolutionError =
       }
 
       if (inverseStack.limited) {
-        extraMessage += chalk`\n {bold {yellow Depth limit reached. The actual stack is longer than what you can see above.}}`;
+        extraMessage += chalk`\n\n {bold {yellow Depth limit reached. The actual stack is longer than what you can see above.}}`;
       }
 
       extraMessage += '\n';
