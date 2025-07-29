@@ -360,12 +360,14 @@ export interface PluginConfigTypeIos {
   privacyManifestAggregationEnabled?: boolean;
 
   /**
-   * Enables support for prebuilt React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-   * This feature is available from React Native 0.80.
-   * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` in the Podfile to use prebuilt third-party dependencies.
+   * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+   * This feature is available from React Native 0.80 and later.
+   * From React Native 0.81, this setting will also use a precompiled React Native Core (`React.xcframework`).
+   * When set to `false`, it will set `ENV['RCT_USE_RN_DEP'] = '1'` and `ENV['RCT_USE_PREBUILT_RNCORE'] = '1'` in the Podfile
+   * to use precompiled binaries.
    *
    * @default true
-   * @see React Native documentation on [prebuilt dependencies](https://reactnative.dev/blog/2025/06/12/react-native-0.80#experimental---react-native-ios-dependencies-are-now-prebuilt) for more information.
+   * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
    * @experimental
    */
   buildFromSource?: boolean;
