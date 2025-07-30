@@ -1,0 +1,59 @@
+{
+  "name": "create-expo-brownfield",
+  "version": "0.0.1",
+  "description": "The script to create the Expo module",
+  "main": "build/create-expo-brownfield.js",
+  "types": "build/create-expo-brownfield.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "expo-module": "expo-module"
+  },
+  "bin": {
+    "create-expo-brownfield": "./bin/create-expo-brownfield"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/create-expo-brownfield"
+  },
+  "keywords": [
+    "expo",
+    "module",
+    "modules",
+    "library",
+    "react",
+    "native"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "dependencies": {
+    "@expo/config": "~11.0.10",
+    "@expo/json-file": "^9.1.4",
+    "@expo/rudder-sdk-node": "^1.1.1",
+    "@expo/spawn-async": "^1.7.2",
+    "chalk": "^4.1.2",
+    "commander": "^8.3.0",
+    "cross-spawn": "^7.0.5",
+    "debug": "^4.3.4",
+    "download-tarball": "^2.0.0",
+    "ejs": "^3.1.10",
+    "find-up": "^5.0.0",
+    "getenv": "^2.0.0",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2",
+    "validate-npm-package-name": "^5.0.1"
+  },
+  "devDependencies": {
+    "@octokit/types": "^13.5.0",
+    "@types/ejs": "^3.1.5",
+    "@types/find-up": "^4.0.0",
+    "@types/prompts": "^2.4.9",
+    "expo-module-scripts": "^4.1.7"
+  }
+}

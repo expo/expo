@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const Debug = require('debug');
+const { boolish } = require('getenv');
+
+if (boolish('EXPO_DEBUG', false)) {
+  Debug.enable('create-expo-brownfield:*');
+} else if (Debug.enabled('create-expo-brownfield:')) {
+  process.env.EXPO_DEBUG = '1';
+}
+
+require('../build/create-expo-brownfield.js');
