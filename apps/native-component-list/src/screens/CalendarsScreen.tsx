@@ -1,11 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import {
-  ExportExpoCalendar,
-  ExportExpoCalendarEvent,
-  getCalendarsNext,
-  getDefaultCalendarNext,
-} from 'expo-calendar/next';
+import { createCalendarNext, getCalendarsNext } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -104,8 +99,8 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
     };
     try {
-      await Calendar.createCalendarAsync(newCalendar);
-      Alert.alert('Calendar saved successfully');
+      const calendar = createCalendarNext(newCalendar);
+      Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e) {
       Alert.alert('Calendar not saved successfully', e.message);

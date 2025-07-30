@@ -48,13 +48,13 @@ export function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[] {
   return ExpoCalendar.getCalendarsIds(type).map((id) => new ExportExpoCalendar(id));
 }
 
-export async function createCalendarNext(
-  details: Partial<Calendar> = {}
-): Promise<ExportExpoCalendar> {
+export function createCalendarNext(details: Partial<Calendar> = {}): ExportExpoCalendar {
   if (!ExpoCalendar.createCalendarNext) {
     throw new UnavailabilityError('Calendar', 'createCalendarNext');
   }
   const color = details.color ? processColor(details.color) : undefined;
   const newDetails = { ...details, id: undefined, color };
-  return ExpoCalendar.createCalendarNext(newDetails);
+  const createdCalendar = ExpoCalendar.createCalendarNext(newDetails);
+  Object.setPrototypeOf(createdCalendar, ExportExpoCalendar.prototype);
+  return createdCalendar;
 }

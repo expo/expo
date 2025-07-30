@@ -7,10 +7,10 @@ public final class CalendarNextModule: Module {
         // Use sharedEventStore, there were problems when accessing two different stores.
         return CalendarModule.sharedEventStore
     }
-
+    
     public func definition() -> ModuleDefinition {
         Name("CalendarNext")
-
+        
         OnCreate {
             self.appContext?.permissions?.register([
                 CalendarPermissionsRequester(eventStore: eventStore),
@@ -18,7 +18,7 @@ public final class CalendarNextModule: Module {
             ])
             // initializePermittedEntities()
         }
-
+        
         Function("getDefaultCalendarId") { () -> String in
             // try checkCalendarPermissions()
             guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
@@ -26,51 +26,51 @@ public final class CalendarNextModule: Module {
             }
             return defaultCalendar.calendarIdentifier
         }
-
+        
         Function("getCalendarsIds") { (type: CalendarEntity?) -> [String] in
-          var calendars: [EKCalendar]
-          if type == nil {
-            // try checkCalendarPermissions()
-            // try checkRemindersPermissions()
-
-            let eventCalendars = eventStore.calendars(for: .event)
-            let reminderCalendars = eventStore.calendars(for: .reminder)
-            calendars = eventCalendars + reminderCalendars
-          } else if type == .event {
-            // try checkCalendarPermissions()
-            calendars = eventStore.calendars(for: .event)
-          } else if type == .reminder {
-            // try checkRemindersPermissions()
-            calendars = eventStore.calendars(for: .reminder)
-          } else {
-            throw InvalidCalendarEntityException(type?.rawValue)
-          }
-
-          return calendars.map { $0.calendarIdentifier }
+            var calendars: [EKCalendar]
+            if type == nil {
+                // try checkCalendarPermissions()
+                // try checkRemindersPermissions()
+                
+                let eventCalendars = eventStore.calendars(for: .event)
+                let reminderCalendars = eventStore.calendars(for: .reminder)
+                calendars = eventCalendars + reminderCalendars
+            } else if type == .event {
+                // try checkCalendarPermissions()
+                calendars = eventStore.calendars(for: .event)
+            } else if type == .reminder {
+                // try checkRemindersPermissions()
+                calendars = eventStore.calendars(for: .reminder)
+            } else {
+                throw InvalidCalendarEntityException(type?.rawValue)
+            }
+            
+            return calendars.map { $0.calendarIdentifier }
         }
-
+        
         Function("createCalendarNext") { (details: CalendarRecord) throws -> CustomExpoCalendar in
             let calendar: EKCalendar
             switch details.entityType {
-                case .event:
-                    calendar = EKCalendar(for: .event, eventStore: eventStore)
-                case .reminder:
-                    calendar = EKCalendar(for: .reminder, eventStore: eventStore)
-                case .none:
-                    throw EntityNotSupportedException(details.entityType?.rawValue)
+            case .event:
+                calendar = EKCalendar(for: .event, eventStore: eventStore)
+            case .reminder:
+                calendar = EKCalendar(for: .reminder, eventStore: eventStore)
+            case .none:
+                throw EntityNotSupportedException(details.entityType?.rawValue)
             }
-
+            
             if let sourceId = details.sourceId {
-              calendar.source = eventStore.source(withIdentifier: sourceId)
+                calendar.source = eventStore.source(withIdentifier: sourceId)
             } else {
-              calendar.source = details.entityType == .event ?
-              eventStore.defaultCalendarForNewEvents?.source :
-              eventStore.defaultCalendarForNewReminders()?.source
+                calendar.source = details.entityType == .event ?
+                eventStore.defaultCalendarForNewEvents?.source :
+                eventStore.defaultCalendarForNewReminders()?.source
             }
-
+            
             calendar.title = details.title
             calendar.cgColor = EXUtilities.uiColor(details.color)?.cgColor
-
+            
             try eventStore.saveCalendar(calendar, commit: true)
             return CustomExpoCalendar(calendar: calendar)
         }
@@ -88,41 +88,44 @@ public final class CalendarNextModule: Module {
                 calendar.calendar?.title ?? ""
             }
             
-            Property("source") { (calendar: CustomExpoCalendar) in
-                guard let calendar = calendar.calendar else { return [:] }
+            Property("source") { (expoCalendar: CustomExpoCalendar) in
+                guard let calendar = expoCalendar.calendar else { return [:] }
                 return serialize(ekSource: calendar.source)
             }
-
-            Property("sourceId") { (calendar: CustomExpoCalendar) in
-                guard let calendar = calendar.calendar else { return "" }
+            
+            Property("sourceId") { (expoCalendar: CustomExpoCalendar) in
+                guard let calendar = expoCalendar.calendar else { return "" }
                 return calendar.source.sourceIdentifier
             }
             
-            Property("type") { (calendar: CustomExpoCalendar) in
-                guard let calendar = calendar.calendar else { return "" }
+            Property("type") { (expoCalendar: CustomExpoCalendar) -> String in
+                guard let calendar = expoCalendar.calendar else { return "" }
                 return calendarTypeToString(type: calendar.type, source: calendar.source.sourceType)
             }
-
-            // Property("color") { (calendar: CustomExpoCalendar) in
-            //     guard let cgColor = calendar.color else { return "" }
-            //     return EXUtilities.hexString(with: cgColor) ?? ""
-            // }
-
-            Property("entityType") { (calendar: CustomExpoCalendar) in
-                guard let calendar = calendar.calendar else { return "" }
+            
+            Property("color") { (expoCalendar: CustomExpoCalendar) -> String in
+                guard let cgColor = expoCalendar.calendar?.cgColor else { return "" }
+                return EXUtilities.hexString(with: cgColor)
+            }
+            
+            Property("entityType") { (expoCalendar: CustomExpoCalendar) -> String in
+                guard let calendar = expoCalendar.calendar else { return "" }
                 return entity(type: calendar.allowedEntityTypes) ?? ""
             }
             
-            Property("allowsModifications") { (calendar: CustomExpoCalendar) in
-                calendar.calendar?.allowsContentModifications ?? false
+            Property("allowsModifications") { (expoCalendar: CustomExpoCalendar) -> Bool in
+                guard let calendar = expoCalendar.calendar else {
+                    return false
+                }
+                return calendar.allowsContentModifications
             }
             
-            Property("allowedAvailabilities") { (calendar: CustomExpoCalendar) in
+            Property("allowedAvailabilities") { (calendar: CustomExpoCalendar) -> [String] in
                 guard let calendar = calendar.calendar else { return [] }
                 return calendarSupportedAvailabilities(fromMask: calendar.supportedEventAvailabilities)
             }
             
-            Function("listEvents") { (calendar: CustomExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) in
+            Function("listEvents") { (calendar: CustomExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) throws in
                 //   try checkCalendarPermissions()
                 
                 guard let startDate = parse(date: startDateStr),
@@ -130,7 +133,7 @@ public final class CalendarNextModule: Module {
                     throw InvalidDateFormatException()
                 }
                 
-                return calendar.listEvents(startDate: startDate, endDate: endDate)
+                return try calendar.listEvents(startDate: startDate, endDate: endDate)
             }
             
             Function("createEvent") { (calendar: CustomExpoCalendar, event: Event, options: RecurringEventOptions) -> String in
@@ -142,7 +145,7 @@ public final class CalendarNextModule: Module {
                 try eventStore.save(calendarEvent, span: span, commit: true)
                 return calendarEvent.calendarItemIdentifier
             }
-
+            
             Function("delete") { (calendar: CustomExpoCalendar) in
                 try calendar.delete()
             }
@@ -152,7 +155,7 @@ public final class CalendarNextModule: Module {
             Property("id") { (event: CustomExpoCalendarEvent) in
                 event.event?.calendarItemIdentifier ?? ""
             }
-
+            
             Property("calendarId") { (event: CustomExpoCalendarEvent) in
                 event.event?.calendar.calendarIdentifier ?? ""
             }
@@ -160,7 +163,7 @@ public final class CalendarNextModule: Module {
             Property("title") { (event: CustomExpoCalendarEvent) in
                 event.event?.title ?? ""
             }
-
+            
             Property("location") { (event: CustomExpoCalendarEvent) in
                 event.event?.location ?? ""
             }
@@ -172,7 +175,7 @@ public final class CalendarNextModule: Module {
             Property("lastModifiedDate") { (event: CustomExpoCalendarEvent) in
                 dateFormatter.string(from: event.event?.lastModifiedDate ?? Date())
             }
-
+            
             Property("timeZone") { (event: CustomExpoCalendarEvent) in
                 event.event?.timeZone?.localizedName(for: .shortStandard, locale: .current) ?? ""
             }
@@ -180,16 +183,16 @@ public final class CalendarNextModule: Module {
             Property("url") { (event: CustomExpoCalendarEvent) in
                 event.event?.url?.absoluteString.removingPercentEncoding ?? ""
             }
-
+            
             Property("notes") { (event: CustomExpoCalendarEvent) in
                 event.event?.notes ?? ""
             }
-
-//            Property("alarms") { (event: CustomExpoCalendarEvent) in
-//                let alarms = event.event?.alarms ?? []
-//                serialize(alarms: alarms, with: dateFormatter)
-//            }
-
+            
+            //            Property("alarms") { (event: CustomExpoCalendarEvent) in
+            //                let alarms = event.event?.alarms ?? []
+            //                serialize(alarms: alarms, with: dateFormatter)
+            //            }
+            
             // Property("recurrenceRule") { (event: CustomExpoCalendarEvent) in
             //     event.event?.recurrenceRule ?? nil
             // }
@@ -212,30 +215,30 @@ public final class CalendarNextModule: Module {
             Property("isDetached") { (event: CustomExpoCalendarEvent) in
                 event.event?.isDetached ?? false
             }
-
+            
             Property("allDay") { (event: CustomExpoCalendarEvent) in
                 event.event?.isAllDay ?? false
             }
-
+            
             Property("availability") { (event: CustomExpoCalendarEvent) in
                 guard let availability = event.event?.availability else { return "" }
                 return eventAvailabilityToString(availability)
             }
-
+            
             Property("status") { (event: CustomExpoCalendarEvent) in
                 eventStatusToString(event.event?.status ?? .none)
             }
-
+            
             Property("organizer") { (event: CustomExpoCalendarEvent) -> [String: Any?]? in
                 guard let organizer = event.event?.organizer else { return nil }
                 return serialize(attendee: organizer)
             }
-
+            
             Function("getAttendees") { (event: CustomExpoCalendarEvent) in
                 event.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
             }
         }
-
+        
         Class(CustomExpoCalendarAttendee.self) {
             Property("name") { (attendee: CustomExpoCalendarAttendee) in
                 attendee.attendee.name ?? ""

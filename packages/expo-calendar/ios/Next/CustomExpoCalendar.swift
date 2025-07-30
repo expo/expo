@@ -18,10 +18,9 @@ internal final class CustomExpoCalendar: SharedObject {
         self.calendar = calendar
     }
     
-    // Internal only function
-    func listEvents(startDate: Date, endDate: Date) -> [CustomExpoCalendarEvent] {
+    func listEvents(startDate: Date, endDate: Date) throws -> [CustomExpoCalendarEvent] {
         guard let calendar = self.calendar else {
-            return []
+            throw CalendarNoLongerExistsException()
         }
         let predicate = self.eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
         let events = self.eventStore.events(matching: predicate).sorted {
@@ -84,7 +83,7 @@ internal final class CustomExpoCalendar: SharedObject {
 
     func delete() throws {
         guard let calendar = self.calendar else {
-            return
+            throw CalendarNoLongerExistsException()
         }
         try eventStore.removeCalendar(calendar, commit: true)
         self.calendar = nil
