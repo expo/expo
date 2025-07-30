@@ -135,14 +135,12 @@ public final class CalendarNextModule: Module {
                 
                 return try calendar.listEvents(startDate: startDate, endDate: endDate)
             }
-
+            
             AsyncFunction("listReminders") { (calendar: CustomExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>, status: String?, promise: Promise) throws in
                 guard let startDate = parse(date: startDateStr),
                       let endDate = parse(date: endDateStr) else {
                     throw InvalidDateFormatException()
                 }
-                
-                print("listReminders")l
                 
                 return calendar.listReminders(startDate: startDate, endDate: endDate, status: status, promise: promise)
             }
@@ -249,17 +247,69 @@ public final class CalendarNextModule: Module {
                 event.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
             }
         }
-
+        
         Class(CustomExpoCalendarReminder.self) {
             Property("id") { (reminder: CustomExpoCalendarReminder) in
                 reminder.reminder?.calendarItemIdentifier ?? ""
             }
-
+            
+            Property("calendarId") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.calendar.calendarIdentifier ?? ""
+            }
+            
             Property("title") { (reminder: CustomExpoCalendarReminder) in
                 reminder.reminder?.title ?? ""
             }
+            
+            Property("location") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.location ?? ""
+            }
+            
+            Property("creationDate") { (reminder: CustomExpoCalendarReminder) in
+                dateFormatter.string(from: reminder.reminder?.creationDate ?? Date())
+            }
+            
+            Property("lastModifiedDate") { (reminder: CustomExpoCalendarReminder) in
+                dateFormatter.string(from: reminder.reminder?.lastModifiedDate ?? Date())
+            }
+            
+            Property("timeZone") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.timeZone?.localizedName(for: .shortStandard, locale: .current) ?? ""
+            }
+            
+            Property("url") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.url?.absoluteString.removingPercentEncoding ?? ""
+            }
+            
+            Property("notes") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.notes ?? ""
+            }
+            
+            Property("alarms") { (reminder: CustomExpoCalendarReminder) in
+                serialize(alarms: reminder.reminder?.alarms ?? [], with: dateFormatter)
+            }
+            
+            // Property("recurrenceRule") { (reminder: CustomExpoCalendarReminder) in
+            //     reminder.reminder?.recurrenceRule ?? nil
+            // }
+            
+            //           Property("startDate") { (reminder: CustomExpoCalendarReminder) in
+            //               dateFormatter.string(from: reminder.reminder?.calendar.startDate ?? Date())
+            //           }
+            
+            //            Property("dueDate") { (reminder: CustomExpoCalendarReminder) in
+            //                dateFormatter.string(from: reminder.reminder?.dueDate ?? Date())
+            //            }
+            
+            Property("completed") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.isCompleted ?? false
+            }
+            
+            Property("completionDate") { (reminder: CustomExpoCalendarReminder) in
+                dateFormatter.string(from: reminder.reminder?.completionDate ?? Date())
+            }
         }
-
+        
         Class(CustomExpoCalendarAttendee.self) {
             Property("name") { (attendee: CustomExpoCalendarAttendee) in
                 attendee.attendee.name ?? ""
@@ -289,24 +339,24 @@ public final class CalendarNextModule: Module {
     
     // TODO: Clean up, this is copied from CalendarModule
     private func createPredicate(for calendars: [EKCalendar], start startDate: Date?, end endDate: Date?, status: String?) throws -> NSPredicate {
-      guard let status else {
-        return eventStore.predicateForReminders(in: calendars)
-      }
-      switch status {
-      case "incomplete":
-        return eventStore.predicateForIncompleteReminders(
-          withDueDateStarting: startDate,
-          ending: endDate,
-          calendars: calendars
-        )
-      case "completed":
-        return eventStore.predicateForCompletedReminders(
-          withCompletionDateStarting: startDate,
-          ending: endDate,
-          calendars: calendars
-        )
-      default:
-        throw InvalidStatusExceptions(status)
-      }
+        guard let status else {
+            return eventStore.predicateForReminders(in: calendars)
+        }
+        switch status {
+        case "incomplete":
+            return eventStore.predicateForIncompleteReminders(
+                withDueDateStarting: startDate,
+                ending: endDate,
+                calendars: calendars
+            )
+        case "completed":
+            return eventStore.predicateForCompletedReminders(
+                withCompletionDateStarting: startDate,
+                ending: endDate,
+                calendars: calendars
+            )
+        default:
+            throw InvalidStatusExceptions(status)
+        }
     }
 }

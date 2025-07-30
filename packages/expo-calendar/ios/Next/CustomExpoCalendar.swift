@@ -4,15 +4,15 @@ import EventKit
 
 internal final class CustomExpoCalendar: SharedObject {
     private var eventStore: EKEventStore {
-      return CalendarModule.sharedEventStore
+        return CalendarModule.sharedEventStore
     }
     var calendar: EKCalendar?
-
+    
     init(id: String) {
         super.init()
         self.calendar = eventStore.calendar(withIdentifier: id)
     }
-
+    
     init(calendar: EKCalendar) {
         super.init()
         self.calendar = calendar
@@ -29,7 +29,7 @@ internal final class CustomExpoCalendar: SharedObject {
         let customEvents = events.map { CustomExpoCalendarEvent(event: $0) }
         return customEvents
     }
-
+    
     func listReminders(startDate: Date, endDate: Date, status: String?, promise: Promise) {
         guard let calendar = self.calendar else {
             promise.reject(CalendarNoLongerExistsException())
@@ -37,22 +37,22 @@ internal final class CustomExpoCalendar: SharedObject {
         }
         //   try checkRemindersPermissions()
         let reminderCalendars: [EKCalendar] = [calendar]
-
+        
         do {
             let predicate = try createPredicate(for: reminderCalendars, start: startDate, end: endDate, status: status)
-
+            
             eventStore.fetchReminders(matching: predicate) { [promise] reminders in
-              if let reminders {
-                promise.resolve(serialize(reminders: reminders))
-              } else {
-                promise.resolve([])
-              }
+                if let reminders {
+                    promise.resolve(reminders.map { CustomExpoCalendarReminder(reminder: $0) })
+                } else {
+                    promise.resolve([])
+                }
             }
         } catch {
             promise.reject(error)
         }
     }
-
+    
     func getEvent(from event: Event) throws -> EKEvent {
         let calendarEvent = EKEvent(eventStore: eventStore)
         calendarEvent.calendar = self.calendar
@@ -97,14 +97,14 @@ internal final class CustomExpoCalendar: SharedObject {
             }
             calendarEvent.calendar = calendar
         }
-
+        
         calendarEvent.title = event.title
         calendarEvent.location = event.location
         calendarEvent.notes = event.notes
         calendarEvent.isAllDay = event.allDay
         calendarEvent.availability = getAvailability(availability: event.availability)
     }
-
+    
     func delete() throws {
         guard let calendar = self.calendar else {
             throw CalendarNoLongerExistsException()
@@ -114,24 +114,24 @@ internal final class CustomExpoCalendar: SharedObject {
     }
     
     private func createPredicate(for calendars: [EKCalendar], start startDate: Date?, end endDate: Date?, status: String?) throws -> NSPredicate {
-      guard let status else {
-        return eventStore.predicateForReminders(in: calendars)
-      }
-      switch status {
-      case "incomplete":
-        return eventStore.predicateForIncompleteReminders(
-          withDueDateStarting: startDate,
-          ending: endDate,
-          calendars: calendars
-        )
-      case "completed":
-        return eventStore.predicateForCompletedReminders(
-          withCompletionDateStarting: startDate,
-          ending: endDate,
-          calendars: calendars
-        )
-      default:
-        throw InvalidStatusExceptions(status)
-      }
+        guard let status else {
+            return eventStore.predicateForReminders(in: calendars)
+        }
+        switch status {
+        case "incomplete":
+            return eventStore.predicateForIncompleteReminders(
+                withDueDateStarting: startDate,
+                ending: endDate,
+                calendars: calendars
+            )
+        case "completed":
+            return eventStore.predicateForCompletedReminders(
+                withCompletionDateStarting: startDate,
+                ending: endDate,
+                calendars: calendars
+            )
+        default:
+            throw InvalidStatusExceptions(status)
+        }
     }
 }
