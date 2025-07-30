@@ -12,6 +12,7 @@ import {
   ChangelogEntry,
   ChangeType,
   UNPUBLISHED_VERSION_NAME,
+  VERSION_EMPTY_PARAGRAPH_TEXT,
 } from '../Changelogs';
 import { EXPO_DIR } from '../Constants';
 import { stripNonAsciiChars, formatChangelogEntry } from '../Formatter';
@@ -228,7 +229,7 @@ async function cutOffMainChangelogAsync(
 ): Promise<void> {
   logger.info(`\n✂️  Cutting off changelog for SDK ${chalk.cyan(nextVersion)}...`);
 
-  await mainChangelog.cutOffAsync(nextVersion, [
+  await mainChangelog.cutOffAsync(nextVersion, VERSION_EMPTY_PARAGRAPH_TEXT, [
     ChangeType.LIBRARY_UPGRADES,
     ChangeType.BREAKING_CHANGES,
     ChangeType.NEW_FEATURES,

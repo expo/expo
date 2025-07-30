@@ -160,7 +160,7 @@ export enum ReleaseType {
 }
 
 /**
- * Object containing git logs. `null` if logs couldn't be resolved due to corrupted package data.
+ * Object containing git logs. `null` if logs couldn't be resolved due to corrupted package data, or when local package version is above what's on npm.
  */
 export type PackageGitLogs = null | {
   commits: GitLog[];

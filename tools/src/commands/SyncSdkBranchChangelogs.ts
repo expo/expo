@@ -84,6 +84,7 @@ async function syncChangelogAsync(pkg: Package, sourceBranch: string) {
     semver.gt(v1, v2) ? 1 : -1
   )) {
     const groupData = changes.versions[version];
+    debugger;
     if (Object.keys(groupData).length === 0) {
       const result = await targetChangelog.insertEmptyPublishedVersionAsync(
         version,

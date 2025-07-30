@@ -18,7 +18,7 @@ export type ChangelogEntry = {
    */
   pullRequests?: number[];
   /**
-   * GitHub's user names of someones who made this change.
+   * GitHub usernames of someone who's made this change.
    */
   authors?: string[];
 };
@@ -87,7 +87,7 @@ export enum ChangeType {
 export const UNPUBLISHED_VERSION_NAME = 'Unpublished';
 
 export const VERSION_EMPTY_PARAGRAPH_TEXT =
-  '_This version does not introduce any user-facing changes._\n';
+  '_This version does not introduce any user-facing changes. Usually, this means that internal dependency versions were updated, necessitating this release._\n';
 
 /**
  * Depth of headings that mean the version containing following changes.
@@ -466,6 +466,7 @@ export class Changelog {
    */
   async cutOffAsync(
     version: string,
+    emptyVersionText: string,
     types: string[] = [
       ChangeType.BREAKING_CHANGES,
       ChangeType.NEW_FEATURES,
@@ -502,9 +503,10 @@ export class Changelog {
       // `i` stayed the same after removing empty change type sections, so the entire version is empty.
       // Let's put an information that this version doesn't contain any user-facing changes.
       if (i === firstVersionHeadingIndex + 1) {
+        debugger;
         tokens.splice(i, 0, {
           type: Markdown.TokenType.PARAGRAPH,
-          text: VERSION_EMPTY_PARAGRAPH_TEXT,
+          text: emptyVersionText,
         });
       }
     }

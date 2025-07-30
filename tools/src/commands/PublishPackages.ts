@@ -123,6 +123,11 @@ ${chalk.gray('>')} ${chalk.italic.cyan('et publish expo-gl expo-auth-session')}`
 async function main(packageNames: string[], options: CommandOptions): Promise<void> {
   // Commander doesn't put arguments to options object, let's add it for convenience. In fact, this is an option.
   options.packageNames = packageNames;
+  if (options.dry) {
+    logger.warn(
+      `⚠️  Running in dry mode, no changes will be pushed to remote repo and no packages will be published.`
+    );
+  }
 
   const tasks = tasksForOptions(options);
   const taskRunner = new TaskRunner<TaskArgs, PublishBackupData>({
