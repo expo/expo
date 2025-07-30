@@ -38,7 +38,9 @@ class UpdateEntity(
   @field:ColumnInfo(name = "commit_time") var commitTime: Date,
   @field:ColumnInfo(name = "runtime_version") var runtimeVersion: String,
   @field:ColumnInfo(name = "scope_key") var scopeKey: String,
-  @field:ColumnInfo(name = "manifest") var manifest: JSONObject
+  @field:ColumnInfo(name = "manifest") var manifest: JSONObject,
+  @field:ColumnInfo(name = "url") var url: Uri?,
+  @field:ColumnInfo(name = "headers") var requestHeaders: Map<String, String>?
 ) {
   @ColumnInfo(name = "launch_asset_id")
   var launchAssetId: Long? = null
@@ -60,12 +62,6 @@ class UpdateEntity(
 
   @ColumnInfo(name = "failed_launch_count", defaultValue = "0")
   var failedLaunchCount = 0
-
-  @ColumnInfo(name = "url")
-  var url: Uri? = null
-
-  @ColumnInfo(name = "headers")
-  var requestHeaders: Map<String, String>? = null
 
   fun debugInfo(): String = JSONObject(mapOf("id" to id.toString(), "status" to status.name)).toString()
 }
