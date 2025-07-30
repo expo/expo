@@ -3644,7 +3644,6 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
-    - React-hermes
     - React-ImageManager
     - React-jsi
     - React-NativeModulesApple
@@ -3674,7 +3673,6 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
-    - React-hermes
     - React-ImageManager
     - React-jsi
     - React-NativeModulesApple
@@ -3704,7 +3702,6 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
-    - React-hermes
     - React-ImageManager
     - React-jsi
     - React-NativeModulesApple
@@ -4486,10 +4483,10 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 3509d6a7d32ed14b91300854123965025f749fea
   react-native-keyboard-controller: ec2106f8f3f072c6e5d134259688ec1ed9c52e42
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: e17f0602f115f6a6a8953e58f2182dbe8eeb0bd5
+  react-native-pager-view: 5aa9fb30444ca4bbe382991b6783cc014ed5ca07
   react-native-safe-area-context: 8f42f887d6b7aabe67548e6f1128e194d609107e
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
-  react-native-slider: b2749d7c738b390adcabe53cc10aae68dc86a4ce
+  react-native-slider: fe0add239ded49237c81fe25f3ad84adb3ce49c7
   react-native-view-shot: aac285cd08144be29c19ab659930172836f0067f
   react-native-webview: e4f8de3b6ffb095d45e27da677b403f4b9c57df2
   React-NativeModulesApple: 009989614b0619613138091469ae3bce6e4641ba
@@ -4525,12 +4522,13 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 302f2fac014fd450046c120567ca364632da682b
   RNCMaskedView: 63268de1986a098b5f4d1fb5b1bc1e97fade0aee
   RNCPicker: 6da395ee9db8d67a38c6102d4128b5a0b9ec0e21
-  RNDateTimePicker: ecb2a12d1dfe1667f2963850ec9327c3c06cdb1c
+  RNDateTimePicker: 5e3503a3a82a9710b0269fa6617e27f7896509bd
   RNFlashList: 3b0c6a34ba86318f897ff55ff7482b7e8ae18996
   RNGestureHandler: f47ece8192844e594954cd8477b15a0e1a9fd874
-  RNReanimated: dfb261e610f5093d541acfcc99e3670b77eda44e
+  RNReanimated: bc92d92315bde5372395f9f9b96e44bde14ea612
   RNScreens: c0f1e602f1c663c721a8faf7a10f48b9823e45f5
   RNSVG: 99882257fbebbfd40adb30890002babf82077f3c
+  RNWorklets: cdcb3e4f5e9aea5b946974d0f95e40d01d651033
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
