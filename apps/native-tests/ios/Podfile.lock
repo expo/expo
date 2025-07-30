@@ -2989,22 +2989,22 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
-  EASClient: 81d62c389f7385bee733cd028f3aeb0b700bc900
+  EASClient: cca4fa0bf58b32a99476e9d9f80cbeebcb57df90
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
-  EXManifests: 18dc175e0df41ce726d456dc13489e60e6a742a3
+  EXManifests: bf76658edfbfa3e3fb67f940ade98d7803490789
   EXNotifications: f0f1c97d04f06c51ea073d7b2396431e5611c1ea
   expo-dev-launcher: 4c8515fc532ea0926817c5b4fdc6b9a19b42363e
   expo-dev-menu: 547f393e5fbcd62bb2f8357998af38d697fa1b98
   expo-dev-menu-interface: 609c35ae8b97479cdd4c9e23c8cf6adc44beea0e
-  ExpoClipboard: c187b3101e5f38cce4c6321788e0047f1c29e152
-  ExpoFileSystem: 3a98ca2a6f13674ecfd97327d1b44a8ace444cbd
-  ExpoImage: 23fd11d3f2c4b04dc0b5e97fb41e9ead278bd0c8
+  ExpoClipboard: 77842a5542aa7ad5dcd9cc03d34442b1b2d857ea
+  ExpoFileSystem: 3ee0f53b719c928eb179fc67467f89ffce4472ed
+  ExpoImage: 736d4bf4e14437d0e0c7dafdd3aa169c17d447a7
   ExpoMediaLibrary: ad61cd80ca07da02be3d676e3d9b04b311a82c2c
-  ExpoModulesCore: 0b7a0299baa6c8de3b9331869d61df3e7c2f5e0f
-  ExpoModulesTestCore: c87ba2da38070e3483a3049453a4dc898b972eb2
+  ExpoModulesCore: 07e528408e8a9c8328788b80e88c50ab3fada70a
+  ExpoModulesTestCore: eb1c0976fd260b9b56f1224c4508522e3acd3e03
   EXStructuredHeaders: 1c799cb91e8057e0671610635e5b2109fa295114
-  EXUpdates: 4050ade8f457ff720be67180430f85a4e5d95e2a
-  EXUpdatesInterface: b941371be742ef272f2fa7d6f46ee9fdf8c73c60
+  EXUpdates: 90ae8de78856383eec69dba4b30149e195a9f2bd
+  EXUpdatesInterface: d6c802a2d1d11867523d03a95397957f9ba3d1c7
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 09f03e4b6f42f955734b64a118f86509cc719427
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
@@ -3088,6 +3088,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: daa1e4de4b971b977b23bc842aaa3e135324f1f3
 
-PODFILE CHECKSUM: 870fa397ae4619d927d79738cdc4b86a76b46e38
+PODFILE CHECKSUM: 8ddd2ccfffc69dcd923b5d018edcbb077e9960a2
 
 COCOAPODS: 1.16.2

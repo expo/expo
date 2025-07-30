@@ -132,7 +132,7 @@ function useSegments() {
  *   // pathname = "/profile/baconbrix"
  *   const pathname = usePathname();
  *
- *   return <Text>User: {user}</Text>;
+ *   return <Text>Pathname: {pathname}</Text>;
  * }
  * ```
  */

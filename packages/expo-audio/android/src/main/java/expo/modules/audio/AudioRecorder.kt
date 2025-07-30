@@ -15,10 +15,14 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.util.UUID
 import kotlin.math.log10
+import androidx.core.net.toUri
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
 
@@ -39,6 +43,7 @@ class AudioRecorder(
   var startTime = 0L
   var isRecording = false
   var isPaused = false
+  private var recordingTimerJob: Job? = null
 
   private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
@@ -76,6 +81,21 @@ class AudioRecorder(
     isPaused = false
   }
 
+  fun recordForDuration(seconds: Double) {
+    recordingTimerJob?.cancel()
+    record()
+
+    recordingTimerJob = appContext?.mainQueue?.launch {
+      delay((seconds * 1000).toLong())
+      // Stop recording regardless of current state
+      // This matches the iOS behaviour where the timer continues regardless of if
+      // the recording was paused.
+      if (isRecording || isPaused) {
+        stopRecording()
+      }
+    }
+  }
+
   fun pauseRecording() {
     recorder?.pause()
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
@@ -93,6 +113,9 @@ class AudioRecorder(
   }
 
   private fun reset() {
+    recordingTimerJob?.cancel()
+    recordingTimerJob = null
+
     recorder?.release()
     recorder = null
     isRecording = false
@@ -219,7 +242,7 @@ class AudioRecorder(
             "isFinished" to true,
             "hasError" to true,
             "error" to null,
-            "url" to Uri.parse(filePath).toString()
+            "url" to filePath?.toUri().toString()
           )
         )
       }

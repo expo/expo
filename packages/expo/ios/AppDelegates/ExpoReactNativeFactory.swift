@@ -2,7 +2,7 @@
 
 import React_RCTAppDelegate
 
-public class ExpoReactNativeFactory: RCTReactNativeFactory {
+@MainActor public class ExpoReactNativeFactory: RCTReactNativeFactory {
   private let reactDelegate = ExpoReactDelegate(handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers)
 
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {

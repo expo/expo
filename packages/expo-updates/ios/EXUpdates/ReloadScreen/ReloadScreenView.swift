@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if os(iOS) || os(tvOS)
 import UIKit
 
 public class ReloadScreenView: UIView {
@@ -88,7 +89,7 @@ public class ReloadScreenView: UIView {
 
   private func addSpinner(configuration: SpinnerConfiguration) {
     activityIndicator = UIActivityIndicatorView()
-    guard let activityIndicator = activityIndicator else {
+    guard let activityIndicator else {
       return
     }
     activityIndicator.style = switch configuration.size {
@@ -169,3 +170,6 @@ public class ReloadScreenView: UIView {
     }
   }
 }
+#else
+typealias ReloadScreenView = ReloadScreenViewMacOS
+#endif

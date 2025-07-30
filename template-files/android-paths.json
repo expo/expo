@@ -1,6 +1,8 @@
 {
   "paths": {
     "AndroidManifest.xml": "apps/expo-go/android/app/src/main/AndroidManifest.xml",
+    "mobile/AndroidManifest.xml": "apps/expo-go/android/app/src/mobile/AndroidManifest.xml",
+    "quest/AndroidManifest.xml": "apps/expo-go/android/app/src/quest/AndroidManifest.xml",
     "google-services.json": "apps/expo-go/android/app/google-services.json"
   }
 }

@@ -10,19 +10,23 @@ final class SecureFieldProps: ExpoSwiftUI.ViewProps {
 
 struct SecureFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SecureFieldProps
-  @State private var value: String = ""
+  @ObservedObject var textManager: TextFieldManager = TextFieldManager()
 
   init(props: SecureFieldProps) {
     self.props = props
   }
 
+  func setText(_ text: String) {
+    textManager.text = text
+  }
+
   var body: some View {
     SecureField(
       props.placeholder,
-      text: $value
+      text: $textManager.text
     ).fixedSize(horizontal: false, vertical: true)
-      .onAppear { value = props.defaultValue }
-      .onChange(of: value) { newValue in
+      .onAppear { textManager.text = props.defaultValue }
+      .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
       }
       .keyboardType(getKeyboardType(props.keyboardType))

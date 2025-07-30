@@ -68,6 +68,7 @@ export default function App() {
     isDownloading,
     isRestarting,
     restartCount,
+    downloadProgress,
   } = Updates.useUpdates();
 
   React.useEffect(() => {
@@ -241,6 +242,7 @@ export default function App() {
       />
       <TestValue testID="state.isRestarting" value={`${isRestarting}`} />
       <TestValue testID="state.restartCount" value={`${restartCount}`} />
+      <TestValue testID="state.downloadProgress" value={`${downloadProgress}`} />
 
       <Text>Log messages</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>

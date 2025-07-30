@@ -16,6 +16,7 @@
 - [web] Use web modal in `Modal` ([#37732](https://github.com/expo/expo/pull/37732) by [@Ubax](https://github.com/Ubax))
 - Support external URLs with static redirects ([#38041](https://github.com/expo/expo/pull/38041) by [@hassankhan](https://github.com/hassankhan))
 - Add closeOnNavigation prop to modal ([#38198](https://github.com/expo/expo/pull/38198) by [@Ubax](https://github.com/Ubax))
+- Add `location.origin`, Expo SDK version and Hermes version to sitemap UI ([#38201](https://github.com/expo/expo/pull/38201) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
@@ -32,6 +33,8 @@
 - Fix children update in modal ([#38064](https://github.com/expo/expo/pull/38064) by [@Ubax](https://github.com/Ubax))
 - Add static rewrites support to export and server-side handling ([#37930](https://github.com/expo/expo/pull/37930) by [@hassankhan](https://github.com/hassankhan))
 - Fix old arch build with LinkPreview code ([#38305](https://github.com/expo/expo/pull/38305) by [@Ubax](https://github.com/Ubax))
+- [iOS] Add compiler flags for new arch to expo router ([#38397](https://github.com/expo/expo/pull/38397) by [@Ubax](https://github.com/Ubax))
+- Fix modal with detents fixToContents on Android ([#38440](https://github.com/expo/expo/pull/38440) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
