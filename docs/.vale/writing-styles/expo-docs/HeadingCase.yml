@@ -26,9 +26,9 @@ exceptions:
   - '.*AndroidManifest.*'
   - '.*Android Studio.*'
   - '.*APNs.*'
-  - '.*App.*'
   - '.*App Links.*'
   - '.*AppDelegate.*'
+  - '.*App Store.*'
   - '.*App Store Connect.*'
   - '.*Apple.*'
   - '.*Apple App Store.*'
@@ -45,7 +45,6 @@ exceptions:
   - '.*AWS Amplify Console.*'
   - '.*AWS.*'
   - '.*Babel.*'
-  - '.*Build.*'
   - '.*babel\.config\.js.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
@@ -54,27 +53,17 @@ exceptions:
   - '.*Chrome.*'
   - '.*CLI.*'
   - '.*Classic Updates.*'
-  - '.*Client.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
   - '.*Command Line Tools.*'
-  - '.*Config.*'
   - '.*Config Plugin.*'
-  - '.*Context.*'
-  - '.*Continuous.*'
   - '.*CORS.*'
   - '.*CRUD.*'
   - '.*credentials\.json.*'
-  - '.*Debug.*'
-  - '.*Debugger.*'
-  - '.*Debugging.*'
-  - '.*Detox.*'
-  - '.*Dev.*'
   - '.*DevTools.*'
   - '.*Developer Console.*'
   - '.*Developer Mode.*'
-  - '.*Dynamic.*'
   - '.*detach.*'
   - '.*DNS.*'
   - '.*E2E.*'
@@ -85,9 +74,6 @@ exceptions:
   - '.*EAS Update.*'
   - '.*EAS Insights.*'
   - '.*Element Inspector.*'
-  - '.*Emulator.*'
-  - '.*Enums.*'
-  - '.*Environment Variable.*'
   - '.*Environment Variables.*'
   - '.*ESLint.*'
   - '.*Expo.*'
@@ -100,7 +86,6 @@ exceptions:
   - '.*Fastlane.*'
   - '.*Firebase.*'
   - '.*FileSystem.*'
-  - '.*Files.*'
   - '.*Flipper.*'
   - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
@@ -109,10 +94,8 @@ exceptions:
   - '.*FYI.*'
   - '.*fingerprintignore.*'
   - '.*fingerprint.config.js.*'
-  - '.*Generation.*'
   - '.*GitHub.*'
   - '.*GitHub Pages.*'
-  - '.*Go.*'
   - '.*Google.*'
   - '.*Google Developer.*'
   - '.*Google Font.*'
@@ -123,14 +106,12 @@ exceptions:
   - '.*gitignore.*'
   - '.*Play Store.*'
   - '.*Gradle.*'
-  - '.*Group.*'
   - '.*Gymfile.*'
-  - '.*Head.*'
+  - '.*Headless.*Background.*'
   - '.*Hermes.*'
   - '.*HTML.*'
   - '.*HTTP.*'
   - '.*HTTPS.*'
-  - '.*I.*'
   - '.*Info\.plist.*'
   - '.*JSON.*'
   - '.*JavaScript.*'
@@ -141,39 +122,23 @@ exceptions:
   - '.*Kotlin.*'
   - '.*layout.*'
   - '.*Legend-State.*'
-  - '.*Library.*'
-  - '.*Link.*'
+  - '.*Link component.*'
   - '.*Linking.*'
-  - '.*Location.*'
-  - '.*Meta.*'
-  - '.*Metro.*'
-  - '.*Mods.*'
-  - '.*Module.*'
-  - '.*Modules.*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
   - '.*Netlify.*'
-  - '.*Native.*'
   - '.*Node\.js.*'
+  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
-  - '.*Node.*'
+  - '.*Notification Message.*'
   - '.*npm.*'
   - '.*OTA.*'
   - '.*OTF.*'
-  - '.*Organizations.*'
-  - '.*Optional.*'
-  - '.*Package.*'
-  - '.*Personal Accounts.*'
-  - '.*Performance Monitor.*'
-  - '.*Plugins.*'
-  - '.*Podfile.*'
   - '.*PostCSS.*'
-  - '.*PR.*'
   - '.*PRAGMA.*'
-  - '.*Props.*'
   - '.*Prebuild.*'
   - '.*Privacy Shield.*'
   - '.*Push Notification.*'
@@ -188,41 +153,27 @@ exceptions:
   - '.*Reanimated.*'
   - '.*Remote Debugging.*'
   - '.*REST API.*'
-  - '.*Route.*'
   - '.*Remote JS.*'
-  - '.*Render.*'
-  - '.*Rendering.*'
-  - '.*Route.*'
-  - '.*Routes.*'
   - '.*Router.*'
   - ".*Router's.*"
-  - '.*RTL.*'
-  - '.*Runtime.*'
   - '.*SAF.*'
   - '.*SASS.*'
   - '.*SDK.*'
-  - '.*Search.*'
   - '.*SecureStore.*'
   - '.*Sentry.*'
   - '.*Server-side.*'
   - '.*Sierra.*'
-  - '.*Simulator.*'
   - '.*SLAs.*'
   - '.*Smart Banner.*'
   - '.*Smart App Banners.*'
   - '.*SMS.*'
   - '.*Software Mansion.*'
-  - '.*Splash.*'
-  - '.*Screen.*'
-  - '.*Snack.*'
   - '.*SQLite.*'
   - '.*SQLCipher.*'
-  - '.*Static.*'
   - '.*Statically-typed.*'
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
-  - '.*Submit.*'
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
@@ -233,7 +184,6 @@ exceptions:
   - '.*TV.*'
   - '.*TypeScript.*'
   - '.*TypeScript module.*'
-  - '.*Update.*'
   - '.*Watchman.*'
   - '.*UI.*'
   - '.*USB.*'
@@ -241,20 +191,29 @@ exceptions:
   - '.*URL.*'
   - '.*URLs.*'
   - '.*V8.*'
-  - '.*Vercel.*'
   - '.*VS Code.*'
-  - '.*Web.*'
   - '.*WebGL.*'
   - '.*WebView.*'
-  - '.*Workflow.*'
   - '.*Wix.*'
   - '.*webpack.*'
   - '.*Xcode.*'
   - '.*XDE.*'
   - '.*Yarn.*'
   - '.*YAML.*'
-  # PascalCase for SDK references
-  - '^[A-Z][a-z]+(?:[A-Z][a-z]+)*$'
+  # Pattern-based exceptions for remaining warnings
+  - '.*Can I pay.*'
+  - '.*Android.*Bundle.*'
+  - '.*Android.*Package.*'
+  - '.*iOS.*Simulator.*'
+  - '.*Help.*published.*'
+  - '.*develop.*apps.*Windows.*'
+  - '.*Generate.*Android.*'
+  # PascalCase for React component names that end with common component suffixes
+  - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
+  # Standalone common UI component names
+  - '^(?:BottomSheet|CircularProgress|LinearProgress|DateTimePicker|ContextMenu|ColorPicker)(?:\s*\([^)]+\))?$'
+  # Component, service and product names that are proper nouns
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)
@@ -267,3 +226,55 @@ exceptions:
   - index.tsx files
   - registerRootComponent
   - browserslist
+  - ID
+  - IP
+  - SSR
+  - ECONNREFUSED
+  - ES Module
+  - Jetpack Compose
+  - (Background)
+  - Dynamic Route
+  - Config Mods
+  - Convertibles
+  - (Optional)
+  - Flat config
+  - Server Components
+  - (Deprecated)
+  - Organization
+  - Content
+  - Docs
+  - DocSearch
+  - Snack
+  - TypeDoc
+  - Code
+  - Prose
+  - Background Location
+  - Headless Background
+  - Start Packager
+  - CI
+  - CD
+  - Dynamic Routes
+  - Protected Routes
+  - Metro
+  - Component
+  - Metro
+  - Privacy
+  - Podfile
+  - Orbit
+  - Webpack
+  - Remote and Local
+  - Server Functions
+  - New Android Builds Infrastructure
+  - Build
+  - Maestro
+  - Maestro Cloud
+  - Require Approval
+  - Asset Caching
+  - Getting Started
+  - Keyboard Controller
+  - PR
+  - Apollo Client
+  - Environment Variable
+  - App Store
+  - Secure Context in DOM
+  - Enterprise Support
