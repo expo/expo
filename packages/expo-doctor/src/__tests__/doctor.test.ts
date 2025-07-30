@@ -92,24 +92,24 @@ describe(resolveChecksInScope, () => {
   });
 
   describe('VectorIconsCheck SDK version filtering', () => {
-    it('includes VectorIconsCheck for SDK 53 and above', async () => {
+    it('includes VectorIconsCheck for SDK 56 and above', async () => {
       const checks = resolveChecksInScope(
         {
           name: 'foo',
           slug: 'foo',
-          sdkVersion: '54.0.0',
+          sdkVersion: '56.0.0',
         },
         {}
       );
       expect(checks.find((check) => check instanceof VectorIconsCheck)).not.toBeUndefined();
     });
 
-    it('excludes VectorIconsCheck for SDK 52 and below', async () => {
+    it('excludes VectorIconsCheck for SDK 55 and below', async () => {
       const checks = resolveChecksInScope(
         {
           name: 'foo',
           slug: 'foo',
-          sdkVersion: '52.0.0',
+          sdkVersion: '55.0.0',
         },
         {}
       );
