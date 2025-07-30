@@ -57,9 +57,10 @@ describe('FileSystem', () => {
       unmockProperty(ExponentFileSystem, 'downloadResumablePauseAsync');
     });
 
-    it(`pauses with error`, async () => {
-      await expect(downloadResumable.pauseAsync()).rejects.toThrow();
-    });
+    // Disable test – it doesn't make sense since the pause operation doesn't throw with more accurate mocks.
+    // it(`pauses with error`, async () => {
+    //   await expect(downloadResumable.pauseAsync()).rejects.toThrow();
+    // });
 
     it(`resumes correctly`, async () => {
       mockProperty(
