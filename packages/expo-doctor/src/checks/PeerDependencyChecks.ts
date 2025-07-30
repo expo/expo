@@ -19,7 +19,6 @@ export class PeerDependencyChecks implements DoctorCheck {
     const issues: string[] = [];
     const advice: string[] = [];
 
-    // Get all dependencies (including devDependencies)
     const allDependencies = {
       ...pkg.dependencies,
       ...pkg.devDependencies,
@@ -33,20 +32,41 @@ export class PeerDependencyChecks implements DoctorCheck {
       };
     }
 
-    // Check each dependency for missing peer dependencies
-    for (const [packageName, packageVersion] of Object.entries(allDependencies)) {
-      const peerDependencyIssues = await this.checkPackagePeerDependencies(
-        packageName,
-        String(packageVersion),
-        projectRoot,
-        allDependencies
-      );
-      issues.push(...peerDependencyIssues);
-    }
+    const peerDependencyIssues = (
+      await Promise.all(
+        Object.keys(allDependencies).map((packageName) =>
+          this.checkPackagePeerDependencies(packageName, projectRoot, allDependencies)
+        )
+      )
+    ).flat();
+
+    const groupedByMissingPeerDependency = peerDependencyIssues.reduce(
+      (acc, issue) => {
+        if (acc[issue.missingPeerDependency]) {
+          acc[issue.missingPeerDependency].push(issue.requiredBy);
+        } else {
+          acc[issue.missingPeerDependency] = [issue.requiredBy];
+        }
+        return acc;
+      },
+      {} as Record<string, string[]>
+    );
+
+    issues.push(
+      ...Object.entries(groupedByMissingPeerDependency).map(
+        ([missingPeerDependency, requiredBy]) => {
+          return `Missing peer dependency: ${missingPeerDependency}\nRequired by: ${requiredBy.join(', ')}`;
+        }
+      )
+    );
 
     if (issues.length > 0) {
+      const isPlural = Object.keys(groupedByMissingPeerDependency).length > 1;
       advice.push(
-        'Install missing required peer dependencies using your package manager (npm install, yarn add, or pnpm add). Note: This check only verifies installation, not version compatibility.'
+        `Install missing required peer ${isPlural ? 'dependencies' : 'dependency'} with "npx expo install ${Object.keys(groupedByMissingPeerDependency).join(' ')}"`
+      );
+      advice.push(
+        `Your app may crash outside of Expo Go without ${isPlural ? 'these dependencies' : 'this dependency'}.`
       );
     }
 
@@ -59,18 +79,15 @@ export class PeerDependencyChecks implements DoctorCheck {
 
   private async checkPackagePeerDependencies(
     packageName: string,
-    packageVersion: string,
     projectRoot: string,
     installedDependencies: Record<string, string>
-  ): Promise<string[]> {
-    const issues: string[] = [];
+  ): Promise<{ missingPeerDependency: string; requiredBy: string }[]> {
+    const issues: { missingPeerDependency: string; requiredBy: string }[] = [];
 
     try {
-      // Read the package.json of the dependency
       const packageJsonPath = path.join(projectRoot, 'node_modules', packageName, 'package.json');
 
       if (!fs.existsSync(packageJsonPath)) {
-        // Package might not be installed or might be a workspace package
         return issues;
       }
 
@@ -81,25 +98,19 @@ export class PeerDependencyChecks implements DoctorCheck {
         return issues;
       }
 
-      // Check each peer dependency
-      for (const [peerDepName, peerDepVersion] of Object.entries(packageJson.peerDependencies)) {
-        const isOptional = packageJson.peerDependenciesMeta?.[peerDepName]?.optional;
+      await Promise.all(
+        Object.keys(packageJson.peerDependencies).map(async (peerDepName) => {
+          const isOptional = packageJson.peerDependenciesMeta?.[peerDepName]?.optional;
 
-        // Skip optional peer dependencies
-        if (isOptional) {
-          continue;
-        }
-
-        // Check if the required peer dependency is installed
-        if (!installedDependencies[peerDepName]) {
-          issues.push(
-            `Required peer dependency "${peerDepName}@${peerDepVersion}" for "${packageName}" is not installed.`
-          );
-        }
-        // Note: We only check if the peer dependency is installed, not version compatibility
-      }
+          if (!isOptional && !installedDependencies[peerDepName]) {
+            issues.push({
+              missingPeerDependency: peerDepName,
+              requiredBy: packageName,
+            });
+          }
+        })
+      );
     } catch (error) {
-      // If we can't read the package.json, skip this package
       console.warn(`Warning: Could not read package.json for ${packageName}:`, error);
     }
 
