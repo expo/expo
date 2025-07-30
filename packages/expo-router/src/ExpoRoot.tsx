@@ -17,6 +17,7 @@ import { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
 import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
+import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { ImperativeApiEmitter } from './imperative-api';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { ModalContextProvider } from './modal/ModalContext';
@@ -175,12 +176,15 @@ function ContextNavigator({
 }
 
 function Content() {
+  const children = [<Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
+  if (shouldAppendNotFound()) {
+    children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
+  }
+  if (shouldAppendSitemap()) {
+    children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
+  }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
-    children: [
-      <Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
-      <Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />,
-      <Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />,
-    ],
+    children,
     id: INTERNAL_SLOT_NAME,
   });
 
