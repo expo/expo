@@ -1,11 +1,10 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { processColor } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
 import {
   Calendar,
   EntityTypes,
   Event,
-  RecurringEventOptions,
   ReminderStatus,
   stringifyDateValues,
   stringifyIfDate,
@@ -17,12 +16,10 @@ export class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarA
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {}
 
 export class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarReminder {}
+
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
-  override createEvent(
-    details: Partial<Event>,
-    options: RecurringEventOptions
-  ): ExportExpoCalendarEvent {
-    return super.createEvent(stringifyDateValues(details), options);
+  override createEvent(details: Partial<Event>): ExportExpoCalendarEvent {
+    return super.createEvent(stringifyDateValues(details));
   }
 
   override listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[] {
@@ -55,6 +52,29 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
       stringifyIfDate(endDate),
       status || null
     );
+  }
+
+  override update(details: Partial<Calendar>): void {
+    const color = details.color ? processColor(details.color) : undefined;
+
+    if (Platform.OS === 'android') {
+      // TODO: Implement
+    } else {
+      if (
+        details.hasOwnProperty('source') ||
+        details.hasOwnProperty('type') ||
+        details.hasOwnProperty('entityType') ||
+        details.hasOwnProperty('allowsModifications') ||
+        details.hasOwnProperty('allowedAvailabilities')
+      ) {
+        console.warn(
+          'ExportExpoCalendar.update was called with one or more read-only properties, which will not be updated'
+        );
+      }
+    }
+
+    const newDetails = { ...details, color };
+    super.update(newDetails);
   }
 }
 

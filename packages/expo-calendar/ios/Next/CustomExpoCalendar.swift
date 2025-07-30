@@ -105,6 +105,21 @@ internal final class CustomExpoCalendar: SharedObject {
         calendarEvent.availability = getAvailability(availability: event.availability)
     }
     
+    func update(calendarRecord: CalendarRecord) throws {
+        guard let calendar = self.calendar else {
+            throw CalendarNoLongerExistsException()
+        }
+        
+        if calendar.isImmutable == true {
+            throw CalendarNotSavedException(calendarRecord.title)
+        }
+        
+        calendar.title = calendarRecord.title
+        calendar.cgColor = EXUtilities.uiColor(calendarRecord.color)?.cgColor
+        
+        try eventStore.saveCalendar(calendar, commit: true)
+    }
+    
     func delete() throws {
         guard let calendar = self.calendar else {
             throw CalendarNoLongerExistsException()

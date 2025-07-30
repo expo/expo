@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { processColor } from 'react-native';
+import { Platform, processColor } from 'react-native';
 import { stringifyDateValues, stringifyIfDate, } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 export class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {
@@ -9,8 +9,8 @@ export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEven
 export class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarReminder {
 }
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
-    createEvent(details, options) {
-        return super.createEvent(stringifyDateValues(details), options);
+    createEvent(details) {
+        return super.createEvent(stringifyDateValues(details));
     }
     listEvents(startDate, endDate) {
         if (!startDate) {
@@ -29,6 +29,23 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
             throw new Error('listReminders must be called with an endDate (date) to search for reminders');
         }
         return super.listReminders(stringifyIfDate(startDate), stringifyIfDate(endDate), status || null);
+    }
+    update(details) {
+        const color = details.color ? processColor(details.color) : undefined;
+        if (Platform.OS === 'android') {
+            // TODO: Implement
+        }
+        else {
+            if (details.hasOwnProperty('source') ||
+                details.hasOwnProperty('type') ||
+                details.hasOwnProperty('entityType') ||
+                details.hasOwnProperty('allowsModifications') ||
+                details.hasOwnProperty('allowedAvailabilities')) {
+                console.warn('ExportExpoCalendar.update was called with one or more read-only properties, which will not be updated');
+            }
+        }
+        const newDetails = { ...details, color };
+        super.update(newDetails);
     }
 }
 export function getDefaultCalendarNext() {

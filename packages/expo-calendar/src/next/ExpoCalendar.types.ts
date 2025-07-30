@@ -13,6 +13,7 @@ import {
   EventStatus,
   Organizer,
   ReminderStatus,
+  Calendar,
 } from '../Calendar';
 
 export declare class CustomExpoCalendar {
@@ -43,7 +44,9 @@ export declare class CustomExpoCalendar {
     status?: ReminderStatus | null,
   ): Promise<CustomExpoCalendarReminder[]>;
 
-  createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
+  createEvent(details: Partial<Event>): CustomExpoCalendarEvent;
+
+  update(details: Partial<Calendar>): void;
 
   delete(): void;
 }

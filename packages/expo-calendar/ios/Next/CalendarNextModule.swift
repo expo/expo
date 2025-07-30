@@ -159,6 +159,10 @@ public final class CalendarNextModule: Module {
                 return calendarEvent.calendarItemIdentifier
             }
             
+            Function("update") { (calendar: CustomExpoCalendar, calendarRecord: CalendarRecord) throws in
+                try calendar.update(calendarRecord: calendarRecord)
+            }
+            
             Function("delete") { (calendar: CustomExpoCalendar) in
                 try calendar.delete()
             }

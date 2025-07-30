@@ -1,4 +1,4 @@
-import { Calendar, EntityTypes, Event, RecurringEventOptions, ReminderStatus } from '../Calendar';
+import { Calendar, EntityTypes, Event, ReminderStatus } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 export declare class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {
 }
@@ -7,9 +7,10 @@ export declare class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCale
 export declare class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarReminder {
 }
 export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
-    createEvent(details: Partial<Event>, options: RecurringEventOptions): ExportExpoCalendarEvent;
+    createEvent(details: Partial<Event>): ExportExpoCalendarEvent;
     listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[];
     listReminders(startDate: Date, endDate: Date, status?: ReminderStatus | null): Promise<ExportExpoCalendarReminder[]>;
+    update(details: Partial<Calendar>): void;
 }
 export declare function getDefaultCalendarNext(): ExportExpoCalendar;
 export declare function getCalendarsNext(type?: EntityTypes): ExportExpoCalendar[];

@@ -1,6 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { createCalendarNext, getCalendarsNext } from 'expo-calendar/next';
+import { createCalendarNext, ExportExpoCalendar, getCalendarsNext } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -29,9 +29,9 @@ type StackNavigation = StackNavigationProp<{
 
 const CalendarRow = (props: {
   navigation: StackNavigation;
-  calendar: Calendar.Calendar;
-  updateCalendar: (calendarId: string) => void;
-  deleteCalendar: (calendar: any) => void;
+  calendar: ExportExpoCalendar;
+  updateCalendar: (calendar: ExportExpoCalendar) => void;
+  deleteCalendar: (calendar: ExportExpoCalendar) => void;
 }) => {
   const { calendar } = props;
   const calendarTypeName =
@@ -45,7 +45,7 @@ const CalendarRow = (props: {
         title={`View ${calendarTypeName}`}
       />
       <ListButton
-        onPress={() => props.updateCalendar(calendar.id)}
+        onPress={() => props.updateCalendar(calendar)}
         title="Update Calendar"
         disabled={!calendar.allowsModifications}
       />
@@ -62,7 +62,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
-  const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
+  const [calendars, setCalendars] = useState<ExportExpoCalendar[]>([]);
 
   const findCalendars = async () => {
     const calendarGranted = (await askForCalendarPermissions()).granted;
@@ -107,12 +107,12 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
     }
   };
 
-  const updateCalendar = async (calendarId: string) => {
+  const updateCalendar = async (calendar: any) => {
     const newCalendar = {
-      title: 'cool updated calendar',
+      title: 'cool updated calendar' + new Date().toISOString(),
     };
     try {
-      await Calendar.updateCalendarAsync(calendarId, newCalendar);
+      calendar.update(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
     } catch (e) {
