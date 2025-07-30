@@ -149,7 +149,7 @@ export type GoogleMapsContentPadding = {
   start?: number;
 
   /**
-   * In LTR contexts `end` will be applied along the right edge. In RTL contexts, end will correspond to the left edge.
+   * In LTR contexts, `end` will be applied along the right edge. In RTL contexts, `end` will correspond to the left edge.
    */
   end?: number;
 
