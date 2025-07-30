@@ -5224,10 +5224,10 @@ babel-plugin-react-compiler@^19.1.0-rc.2:
   dependencies:
     "@babel/types" "^7.26.0"
 
-babel-plugin-react-native-web@~0.19.13:
-  version "0.19.13"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.19.13.tgz#bf919bd6f18c4689dd1a528a82bda507363b953d"
-  integrity sha512-4hHoto6xaN23LCyZgL9LJZc3olmAxd7b6jDzlZnKXAh4rRAbZRKNBJoOOdp46OBqgy+K0t0guTj5/mhA8inymQ==
+babel-plugin-react-native-web@~0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.21.0.tgz#d95f0483e79afbe6086d4ec074b5775521ba2083"
+  integrity sha512-9xzzNIQm/zHFNp8P45PtrPca1HMvIz0JeBnxqQ2YbLr8ltxP6ns+5x0q70LbRmnz4VhsglRDpnMguqIxUOzflg==
 
 babel-plugin-syntax-hermes-parser@0.28.1:
   version "0.28.1"
@@ -13577,10 +13577,10 @@ react-native-view-shot@4.0.3:
   dependencies:
     html2canvas "^1.4.1"
 
-react-native-web@~0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.20.0.tgz#3fb0591999ed4b54d7822a2785547415e8a5c031"
-  integrity sha512-OOSgrw+aON6R3hRosCau/xVxdLzbjEcsLysYedka0ZON4ZZe6n9xgeN9ZkoejhARM36oTlUgHIQqxGutEJ9Wxg==
+react-native-web@~0.21.0:
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.21.0.tgz#90c122f94f9c907235235a1f18c0e541a4c30c67"
+  integrity sha512-S0mtV7wMPeet1kCRnrEmo1bTUJeFsKebleCbRwbBRBUg/BWS64bfsnnm+ArC+QtjlbZFSZmtvv8imzOIuOOa3Q==
   dependencies:
     "@babel/runtime" "^7.18.6"
     "@react-native/normalize-colors" "^0.74.1"
