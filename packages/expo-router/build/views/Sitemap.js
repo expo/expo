@@ -7,6 +7,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNavOptions = getNavOptions;
 exports.Sitemap = Sitemap;
+const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -56,6 +57,7 @@ function Sitemap() {
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child}/>
           </react_native_1.View>))}
+        <SystemInfo />
       </react_native_1.ScrollView>
     </react_native_1.View>);
 }
@@ -124,6 +126,37 @@ function ArrowIcon({ rotation = 0 }) {
                 transform: [{ rotate: `${rotation}deg` }],
             },
         ]} source={require('expo-router/assets/arrow_down.png')}/>);
+}
+function SystemInfo() {
+    const getHermesVersion = () => {
+        if (global.HermesInternal) {
+            const runtimeProps = global.HermesInternal.getRuntimeProperties?.();
+            if (runtimeProps) {
+                return runtimeProps['OSS Release Version'] || 'Unknown';
+            }
+        }
+        return null;
+    };
+    const locationOrigin = window.location.origin;
+    const expoSdkVersion = expo_constants_1.default.expoConfig?.sdkVersion || 'Unknown';
+    const hermesVersion = getHermesVersion();
+    return (<react_native_1.View testID="sitemap-system-info" style={styles.systemInfoContainer}>
+      <react_native_1.Text style={styles.systemInfoTitle}>System Information</react_native_1.Text>
+      {locationOrigin && (<react_native_1.View style={styles.systemInfoItem}>
+          <react_native_1.Text style={styles.systemInfoLabel}>Location origin:</react_native_1.Text>
+          <react_native_1.Text style={styles.systemInfoValue}>{locationOrigin}</react_native_1.Text>
+        </react_native_1.View>)}
+      <react_native_1.View style={styles.systemInfoItem}>
+        <react_native_1.Text style={styles.systemInfoLabel}>Expo SDK version:</react_native_1.Text>
+        <react_native_1.Text style={styles.systemInfoValue}>{expoSdkVersion}</react_native_1.Text>
+      </react_native_1.View>
+      {hermesVersion && (<react_native_1.View style={styles.systemInfoItem}>
+          <react_native_1.Text style={styles.systemInfoLabel}>Hermes version:</react_native_1.Text>
+          <react_native_1.Text style={styles.systemInfoValue} numberOfLines={1} ellipsizeMode="tail">
+            {hermesVersion}
+          </react_native_1.Text>
+        </react_native_1.View>)}
+    </react_native_1.View>);
 }
 const styles = react_native_1.StyleSheet.create({
     container: {
@@ -205,6 +238,38 @@ const styles = react_native_1.StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    systemInfoContainer: {
+        borderWidth: 1,
+        borderColor: '#313538',
+        backgroundColor: '#151718',
+        borderRadius: 12,
+        padding: INDENT,
+        marginTop: 24,
+    },
+    systemInfoTitle: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 12,
+    },
+    systemInfoItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 8,
+    },
+    systemInfoLabel: {
+        color: 'white',
+        fontSize: 16,
+        opacity: 0.7,
+    },
+    systemInfoValue: {
+        color: 'white',
+        fontSize: 16,
+        flex: 1,
+        textAlign: 'right',
+        marginLeft: 12,
     },
 });
 //# sourceMappingURL=Sitemap.js.map

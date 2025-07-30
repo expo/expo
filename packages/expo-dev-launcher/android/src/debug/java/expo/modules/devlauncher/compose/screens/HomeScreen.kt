@@ -140,8 +140,6 @@ fun HomeScreen(
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
       AppHeader(
-        appName = state.appName,
-        currentAccount = state.currentAccount,
         onProfileClick = onProfileClick
       )
     }

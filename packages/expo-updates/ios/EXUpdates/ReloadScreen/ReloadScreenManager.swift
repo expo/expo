@@ -1,8 +1,7 @@
-// Copyright 2018-present 650 Industries. All rights reserved.
+#if os(iOS) || os(tvOS)
+import UIKit
 
-import ExpoModulesCore
-
-public class ReloadScreenManager {
+public class ReloadScreenManager: Reloadable {
   private var currentConfiguration: ReloadScreenConfiguration?
   private var currentReloadScreen: ReloadScreenView?
   private var overlayWindow: UIWindow?
@@ -12,11 +11,11 @@ public class ReloadScreenManager {
     NotificationCenter.default.addObserver(self, selector: #selector(hide), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
   }
 
-  func setConfiguration(_ options: ReloadScreenOptions?) {
+  public func setConfiguration(_ options: ReloadScreenOptions?) {
     currentConfiguration = ReloadScreenConfiguration(options: options)
   }
 
-  func show() {
+  public func show() {
     if isShowing {
       return
     }
@@ -30,7 +29,7 @@ public class ReloadScreenManager {
   }
 
   @objc
-  func hide() {
+  public func hide() {
     if !isShowing {
       return
     }
@@ -97,3 +96,6 @@ public class ReloadScreenManager {
     NotificationCenter.default.removeObserver(self)
   }
 }
+#else
+typealias ReloadScreenManager = ReloadScreenManagerMacOS
+#endif

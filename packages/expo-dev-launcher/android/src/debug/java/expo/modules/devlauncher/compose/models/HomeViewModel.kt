@@ -10,15 +10,11 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
-import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ErrorRegistryService
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
-import expo.modules.devlauncher.services.SessionService
-import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -33,29 +29,20 @@ sealed interface HomeAction {
 }
 
 data class HomeState(
-  val appName: String = "Unknown App",
   val runningPackagers: Set<PackagerInfo> = emptySet(),
   val isFetchingPackagers: Boolean = false,
-  val currentAccount: MeQuery.Account? = null,
   val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
   val crashReport: DevLauncherErrorInstance? = null
 )
 
 class HomeViewModel() : ViewModel() {
   val devLauncherController = inject<DevLauncherController>()
-  val sessionService = inject<SessionService>()
   val packagerService = inject<PackagerService>()
-  val appService = inject<AppService>()
   val errorRegistryService = inject<ErrorRegistryService>()
 
   private var _state = mutableStateOf(
     HomeState(
-      appName = appService.applicationInfo.appName,
       runningPackagers = packagerService.runningPackagers.value,
-      currentAccount = when (val userState = sessionService.user.value) {
-        UserState.Fetching, UserState.LoggedOut -> null
-        is UserState.LoggedIn -> userState.selectedAccount
-      },
       recentlyOpenedApps = devLauncherController.getRecentlyOpenedApps(),
       crashReport = errorRegistryService.consumeException()
     )
@@ -73,18 +60,6 @@ class HomeViewModel() : ViewModel() {
         )
       }
       .launchIn(viewModelScope)
-
-    sessionService.user.onEach { newUser ->
-      when (newUser) {
-        UserState.Fetching, UserState.LoggedOut -> _state.value = _state.value.copy(
-          currentAccount = null
-        )
-
-        is UserState.LoggedIn -> _state.value = _state.value.copy(
-          currentAccount = newUser.selectedAccount
-        )
-      }
-    }.launchIn(viewModelScope)
 
     packagerService.isLoading.onEach { isLoading ->
       _state.value = _state.value.copy(

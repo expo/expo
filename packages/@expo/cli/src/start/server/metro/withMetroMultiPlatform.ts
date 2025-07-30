@@ -646,8 +646,17 @@ export function withExtendedResolver(
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
-          // // Disallow importing confusing native modules on web
-          if (moduleName.includes('react-native/Libraries/Utilities/codegenNativeCommands')) {
+          // Disallow importing confusing native modules on web
+          if (
+            [
+              'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
+              'react-native/Libraries/Utilities/codegenNativeCommands',
+              'react-native/Libraries/Utilities/codegenNativeComponent',
+            ].some((matcher) =>
+              // Support absolute and modules with .js extensions.
+              moduleName.includes(matcher)
+            )
+          ) {
             throw new FailedToResolvePathError(
               `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
             );

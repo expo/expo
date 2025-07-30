@@ -16,6 +16,7 @@
 - [web] Use web modal in `Modal` ([#37732](https://github.com/expo/expo/pull/37732) by [@Ubax](https://github.com/Ubax))
 - Support external URLs with static redirects ([#38041](https://github.com/expo/expo/pull/38041) by [@hassankhan](https://github.com/hassankhan))
 - Add closeOnNavigation prop to modal ([#38198](https://github.com/expo/expo/pull/38198) by [@Ubax](https://github.com/Ubax))
+- Add `location.origin`, Expo SDK version and Hermes version to sitemap UI ([#38201](https://github.com/expo/expo/pull/38201) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
