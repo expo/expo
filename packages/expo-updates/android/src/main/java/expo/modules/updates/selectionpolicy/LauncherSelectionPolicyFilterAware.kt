@@ -23,6 +23,8 @@ class LauncherSelectionPolicyFilterAware(
       .filter { runtimeVersion == it.runtimeVersion && SelectionPolicies.matchesFilters(it, filters) }
       .let { candidates ->
         if (config.hasUpdatesOverride) {
+          // For overridden updates, filter out any with a null `update.url`.
+          // This prevents launching the embedded update; launch the remote overridden update instead.
           candidates.filter {
             it.url == config.updateUrl && it.requestHeaders == config.requestHeaders
           }

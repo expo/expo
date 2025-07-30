@@ -34,12 +34,17 @@ class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration)
       return true
     }
 
-    if (config.hasUpdatesOverride) {
-      return newUpdate.id != launchedUpdate.id &&
-        newUpdate.url == config.updateUrl &&
-        newUpdate.requestHeaders == config.requestHeaders
+    if (newUpdate.url != null && newUpdate.url != config.updateUrl) {
+      return false
     }
-
+    if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config.requestHeaders) {
+      return false
+    }
+    if (config.hasUpdatesOverride) {
+      // For overridden update, check only id, not commitTime.
+      // This excludes embedded update that might have a newer commitTime than the remote update.
+      return newUpdate.id != launchedUpdate.id
+    }
     return newUpdate.commitTime.after(launchedUpdate.commitTime)
   }
 
