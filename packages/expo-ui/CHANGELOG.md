@@ -16,6 +16,7 @@
 - [iOS] Add `testID` property to views. ([#37919](https://github.com/expo/expo/pull/37919) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Add `SecureField` component. ([#37642](https://github.com/expo/expo/pull/37642) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Add `AlertDialog` component. ([#38266](https://github.com/expo/expo/pull/38266) by [@mateoguzmana](https://github.com/mateoguzmana))
+- [Android] Add `Snackbar` component. ([#38421](https://github.com/expo/expo/pull/38421) by [@mateoguzmana](https://github.com/mateoguzmana))
 
 ### 🐛 Bug fixes
 
