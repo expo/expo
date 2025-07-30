@@ -67,6 +67,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Snackbar component',
+    route: 'ui/snackbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SnackbarScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
