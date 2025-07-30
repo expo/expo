@@ -49,7 +49,16 @@
     "expo-module-scripts": "^4.1.7",
     "ws": "^8.18.0"
   },
-  "publishConfig": {
-    "access": "public"
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
   }
 }
