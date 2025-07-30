@@ -3,6 +3,7 @@ import ExpoModulesCore
 import EventKit
 
 public final class CalendarNextModule: Module {
+    private var permittedEntities: EKEntityMask = .event
     private var eventStore: EKEventStore {
         // Use sharedEventStore, there were problems when accessing two different stores.
         return CalendarModule.sharedEventStore
@@ -16,11 +17,11 @@ public final class CalendarNextModule: Module {
                 CalendarPermissionsRequester(eventStore: eventStore),
                 RemindersPermissionRequester(eventStore: eventStore)
             ])
-            // initializePermittedEntities()
+            initializePermittedEntities()
         }
         
         Function("getDefaultCalendarId") { () -> String in
-            // try checkCalendarPermissions()
+            try checkCalendarPermissions()
             guard let defaultCalendar = eventStore.defaultCalendarForNewEvents else {
                 throw DefaultCalendarNotFoundException()
             }
@@ -30,17 +31,17 @@ public final class CalendarNextModule: Module {
         Function("getCalendarsIds") { (type: CalendarEntity?) -> [String] in
             var calendars: [EKCalendar]
             if type == nil {
-                // try checkCalendarPermissions()
-                // try checkRemindersPermissions()
+                try checkCalendarPermissions()
+                try checkRemindersPermissions()
                 
                 let eventCalendars = eventStore.calendars(for: .event)
                 let reminderCalendars = eventStore.calendars(for: .reminder)
                 calendars = eventCalendars + reminderCalendars
             } else if type == .event {
-                // try checkCalendarPermissions()
+                try checkCalendarPermissions()
                 calendars = eventStore.calendars(for: .event)
             } else if type == .reminder {
-                // try checkRemindersPermissions()
+                try checkRemindersPermissions()
                 calendars = eventStore.calendars(for: .reminder)
             } else {
                 throw InvalidCalendarEntityException(type?.rawValue)
@@ -126,7 +127,7 @@ public final class CalendarNextModule: Module {
             }
             
             Function("listEvents") { (calendar: CustomExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>) throws in
-                //   try checkCalendarPermissions()
+                try checkCalendarPermissions()
                 
                 guard let startDate = parse(date: startDateStr),
                       let endDate = parse(date: endDateStr) else {
@@ -137,6 +138,8 @@ public final class CalendarNextModule: Module {
             }
             
             AsyncFunction("listReminders") { (calendar: CustomExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>, status: String?, promise: Promise) throws in
+                try checkRemindersPermissions()
+                
                 guard let startDate = parse(date: startDateStr),
                       let endDate = parse(date: endDateStr) else {
                     throw InvalidDateFormatException()
@@ -146,7 +149,8 @@ public final class CalendarNextModule: Module {
             }
             
             Function("createEvent") { (calendar: CustomExpoCalendar, event: Event, options: RecurringEventOptions) -> String in
-                // try checkCalendarPermissions()
+                try checkCalendarPermissions()
+                
                 let calendarEvent = try calendar.getEvent(from: event)
                 try calendar.initializeEvent(calendarEvent: calendarEvent, event: event)
                 let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
@@ -243,8 +247,12 @@ public final class CalendarNextModule: Module {
                 return serialize(attendee: organizer)
             }
             
-            Function("getAttendees") { (event: CustomExpoCalendarEvent) in
-                event.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
+            Function("getAttendees") { (customEvent: CustomExpoCalendarEvent) in
+                customEvent.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
+            }
+            
+            Function("delete") { (customEvent: CustomExpoCalendarEvent, options: RecurringEventOptions) in
+                try customEvent.delete(options: options)
             }
         }
         
@@ -308,6 +316,10 @@ public final class CalendarNextModule: Module {
             Property("completionDate") { (reminder: CustomExpoCalendarReminder) in
                 dateFormatter.string(from: reminder.reminder?.completionDate ?? Date())
             }
+            
+            //            Function("delete") { (reminder: CustomExpoCalendarReminder) in
+            //                try reminder.delete()
+            //            }
         }
         
         Class(CustomExpoCalendarAttendee.self) {
@@ -335,6 +347,73 @@ public final class CalendarNextModule: Module {
                 attendee.attendee.url.absoluteString.removingPercentEncoding
             }
         }
+    }
+    
+    // TODO: Clean up, this is copied from CalendarModule
+    private func initializePermittedEntities() {
+        guard let permissionsManager = appContext?.permissions else {
+            return
+        }
+        var permittedEntities: EKEntityMask = []
+        if permissionsManager.hasGrantedPermission(usingRequesterClass: CalendarPermissionsRequester.self) {
+            permittedEntities.insert(.event)
+        }
+        
+        if permissionsManager.hasGrantedPermission(usingRequesterClass: RemindersPermissionRequester.self) {
+            permittedEntities.insert(.reminder)
+        }
+        
+        self.permittedEntities = permittedEntities
+    }
+    
+    // TODO: Clean up, this is copied from CalendarModule
+    private func checkCalendarPermissions() throws {
+        try self.checkPermissions(entity: .event)
+    }
+    
+    // TODO: Clean up, this is copied from CalendarModule
+    private func checkRemindersPermissions() throws {
+        try self.checkPermissions(entity: .reminder)
+    }
+    
+    // TODO: Clean up, this is copied from CalendarModule
+    private func checkPermissions(entity: EKEntityType) throws {
+        guard let permissionsManager = appContext?.permissions else {
+            throw PermissionsManagerNotFoundException()
+        }
+        
+        var requester: EXPermissionsRequester.Type?
+        switch entity {
+        case .event:
+            requester = CalendarPermissionsRequester.self
+        case .reminder:
+            requester = RemindersPermissionRequester.self
+        @unknown default:
+            requester = nil
+        }
+        if let requester, !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
+            let message = requester.permissionType().uppercased()
+            throw MissionPermissionsException(message)
+        }
+        
+        resetEventStoreIfPermissionWasChanged(entity: entity)
+    }
+    
+    // TODO: Clean up, this is copied from CalendarModule
+    func resetEventStoreIfPermissionWasChanged(entity: EKEntityType) {
+        // looks redundant but these are different types.
+        if entity == .event {
+            if permittedEntities.contains(.event) {
+                return
+            }
+        } else if entity == .reminder {
+            if permittedEntities.contains(.reminder) {
+                return
+            }
+        }
+        
+        eventStore.reset()
+        permittedEntities.insert(entity == .event ? .event : .reminder)
     }
     
     // TODO: Clean up, this is copied from CalendarModule
