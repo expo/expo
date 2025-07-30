@@ -1,10 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#if __has_include(<React/React-Core-umbrella.h>)
-#import <React/React-Core-umbrella.h>
-#else
-#import <React_Core/React_Core-umbrella.h>
-#endif
+@protocol RCTBridgeModule;
+
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 

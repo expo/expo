@@ -1,10 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if __has_include(<React/React-Core-umbrella.h>)
-  #import <React/React-Core-umbrella.h>
-#else
-  #import <React_Core/React_Core-umbrella.h>
-#endif
+#import <React/RCTLog.h>
+#import <React/RCTAssert.h>
 
 #import <ExpoModulesCore/EXReactLogHandler.h>
 #import <ExpoModulesCore/EXDefines.h>

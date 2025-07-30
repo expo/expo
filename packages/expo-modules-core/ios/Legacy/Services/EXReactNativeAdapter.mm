@@ -2,11 +2,8 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 
-#if __has_include(<React/React-Core-umbrella.h>)
-  #import <React/React-Core-umbrella.h>
-#else
-  #import <React_Core/React_Core-umbrella.h>
-#endif
+#import <React/RCTUIManager.h>
+#import <React/RCTUIManagerUtils.h>
 
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>

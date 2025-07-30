@@ -2,13 +2,11 @@
 
 #import <objc/runtime.h>
 
-#if __has_include(<React/React-Core-umbrella.h>)
-  #import <React/React-Core-umbrella.h>
-#else
-  #import <React_Core/React_Core-umbrella.h>
-#endif
+@class RCTBridge;
+@class RCTModuleData;
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
+#import <React/RCTUIManager.h>
 
 #import <jsi/jsi.h>
 

@@ -1,13 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <React/RCTBridgeModule.h>
+#import <React/RCTCallInvoker.h>
+
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
-#if __has_include(<React/React-Core-umbrella.h>)
-#import <React/React-Core-umbrella.h>
-#else
-#import <React_Core/React_Core-umbrella.h>
-#endif
 
 #ifdef __cplusplus
 

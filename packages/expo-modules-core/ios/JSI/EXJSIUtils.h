@@ -6,11 +6,6 @@
 
 #import <jsi/jsi.h>
 #import <React/RCTBridgeModule.h>
-#if __has_include(<React/React-Core-umbrella.h>)
-#import <React/React-Core-umbrella.h>
-#else
-#import <React_Core/React_Core-umbrella.h>
-#endif
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ExpoModulesCore/ObjectDeallocator.h>
 

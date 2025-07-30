@@ -1,10 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if __has_include(<React/React-Core-umbrella.h>)
-#import <React/React-Core-umbrella.h>
-#else
-#import <React_Core/React_Core-umbrella.h>
-#endif
+@protocol RCTBridgeModule;
+@class RCTBridge;
 
 // Escape hatch for modules that both have to depend on React Native
 // and want to be exported as an internal universal module.
