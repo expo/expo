@@ -45,10 +45,6 @@
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
-### 📚 3rd party library updates
-
-- Bumped `react-native-web` and `babel-plugin-react-native-web` to 0.21.0. ([#38425](https://github.com/expo/expo/pull/38425) by [@kudo](https://github.com/kudo))
-
 ## 0.24.20 - 2025-07-08
 
 _This version does not introduce any user-facing changes._
