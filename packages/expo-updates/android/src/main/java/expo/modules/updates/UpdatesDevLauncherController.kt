@@ -22,10 +22,12 @@ import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.reloadscreen.ReloadScreenManager
+import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
+import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
+import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.SelectionPolicy
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
@@ -68,9 +70,10 @@ class UpdatesDevLauncherController(
   private val controllerScope = CoroutineScope(Dispatchers.IO)
 
   private var mSelectionPolicy: SelectionPolicy? = null
-  private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
-    initialUpdatesConfiguration?.getRuntimeVersion() ?: "1",
-    initialUpdatesConfiguration
+  private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicy(
+    launcherSelectionPolicy = LauncherSelectionPolicyDevelopmentClient(initialUpdatesConfiguration?.getRuntimeVersion() ?: "1", initialUpdatesConfiguration),
+    loaderSelectionPolicy = LoaderSelectionPolicyDevelopmentClient(initialUpdatesConfiguration),
+    reaperSelectionPolicy = ReaperSelectionPolicyFilterAware()
   )
   private val selectionPolicy: SelectionPolicy
     get() = mSelectionPolicy ?: defaultSelectionPolicy

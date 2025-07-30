@@ -5,14 +5,11 @@ import expo.modules.updates.db.entity.UpdateEntity
 import org.json.JSONObject
 
 /**
- * LauncherSelectionPolicy which chooses an update to launch based on the manifest filters
- * provided by the server. If multiple updates meet the criteria, the newest one (using `commitTime`
- * for ordering) is chosen, but the manifest filters are always taken into account before the
- * `commitTime`.
+ * A policy like [LauncherSelectionPolicyFilterAware] for dev-client that allows nullable [UpdatesConfiguration]
  */
-class LauncherSelectionPolicyFilterAware(
+class LauncherSelectionPolicyDevelopmentClient(
   private val runtimeVersion: String,
-  private val config: UpdatesConfiguration
+  private val config: UpdatesConfiguration?
 ) : LauncherSelectionPolicy {
 
   override fun selectUpdateToLaunch(
@@ -22,9 +19,10 @@ class LauncherSelectionPolicyFilterAware(
     updates
       .filter { runtimeVersion == it.runtimeVersion && SelectionPolicies.matchesFilters(it, filters) }
       .let { candidates ->
-        if (config.hasUpdatesOverride) {
+        val hasUpdatesOverride = config?.hasUpdatesOverride ?: false
+        if (hasUpdatesOverride) {
           candidates.filter {
-            it.url == config.updateUrl && it.requestHeaders == config.requestHeaders
+            it.url == config?.updateUrl && it.requestHeaders == config?.requestHeaders
           }
         } else {
           candidates

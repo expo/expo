@@ -6,13 +6,9 @@ import expo.modules.updates.loader.UpdateDirective
 import org.json.JSONObject
 
 /**
- * LoaderSelectionPolicy which decides whether or not to load an update or directive, taking filters into
- * account. Returns true (should load the update) if we don't have an existing newer update that
- * matches the given manifest filters.
- *
- * Uses `commitTime` to determine ordering of updates.
+ * A policy like [LoaderSelectionPolicyFilterAware] for dev-client that allows nullable [UpdatesConfiguration]
  */
-class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration) : LoaderSelectionPolicy {
+class LoaderSelectionPolicyDevelopmentClient(private val config: UpdatesConfiguration?) : LoaderSelectionPolicy {
   override fun shouldLoadNewUpdate(
     newUpdate: UpdateEntity?,
     launchedUpdate: UpdateEntity?,
@@ -34,10 +30,11 @@ class LoaderSelectionPolicyFilterAware(private val config: UpdatesConfiguration)
       return true
     }
 
-    if (config.hasUpdatesOverride) {
+    val hasUpdatesOverride = config?.hasUpdatesOverride ?: false
+    if (hasUpdatesOverride) {
       return newUpdate.id != launchedUpdate.id &&
-        newUpdate.url == config.updateUrl &&
-        newUpdate.requestHeaders == config.requestHeaders
+        newUpdate.url == config?.updateUrl &&
+        newUpdate.requestHeaders == config?.requestHeaders
     }
 
     return newUpdate.commitTime.after(launchedUpdate.commitTime)
