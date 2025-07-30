@@ -148,8 +148,8 @@ class FileDownloaderSpec : ExpoSpec {
         embeddedUpdate.failedLaunchCount = 1
 
         db.databaseQueue.sync {
-          try! db.addUpdate(launchedUpdate)
-          try! db.addUpdate(embeddedUpdate)
+          try! db.addUpdate(launchedUpdate, config: config)
+          try! db.addUpdate(embeddedUpdate, config: config)
 
           try! db.setExtraParam(key: "hello", value: "world", withScopeKey: config.scopeKey)
           try! db.setExtraParam(key: "what", value: "123", withScopeKey: config.scopeKey)
