@@ -34,6 +34,7 @@
 - Add static rewrites support to export and server-side handling ([#37930](https://github.com/expo/expo/pull/37930) by [@hassankhan](https://github.com/hassankhan))
 - Fix old arch build with LinkPreview code ([#38305](https://github.com/expo/expo/pull/38305) by [@Ubax](https://github.com/Ubax))
 - [iOS] Add compiler flags for new arch to expo router ([#38397](https://github.com/expo/expo/pull/38397) by [@Ubax](https://github.com/Ubax))
+- Fix modal with detents fixToContents on Android ([#38440](https://github.com/expo/expo/pull/38440) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
