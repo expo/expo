@@ -15,11 +15,10 @@ export declare class Blob {
      */
     constructor(blobParts?: BlobPart[], options?: BlobPropertyBag);
     /**
-     * Returns a new Blob object containing the data in the specified range of bytes of the source Blob.
      * @param start The starting byte index (inclusive) represented as a signed 32 bit integer (up to 2^31 - 1).
      * @param end The ending byte index (exclusive) represented as a signed 32 bit integer (up to 2^31 - 1).
      * @param contentType The MIME type of the new Blob. If not provided, defaults to an empty string.
-     * @returns A new Blob object containing the specified bytes.
+     * @returns A new Blob object containing the data in the specified range of bytes of the source Blob.
      */
     slice(start?: number, end?: number, contentType?: string): Blob;
     /**
@@ -34,7 +33,7 @@ export declare class Blob {
     text(): Promise<string>;
     /**
      * Returns a ReadableStream that allows streaming the Blob's data in chunks.
-     * Note: The current implementation loads the entire Blob into memory before streaming.
+     * **Note**: The current implementation loads the entire Blob into memory before streaming.
      * @returns A ReadableStream of the Blob's data.
      */
     stream(): ReadableStream;

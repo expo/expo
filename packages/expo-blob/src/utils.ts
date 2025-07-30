@@ -82,13 +82,13 @@ export const preprocessOptions = (options?: BlobPropertyBag): BlobPropertyBag | 
 };
 
 /**
- * The default chunk size (64 KB) used for binary streaming operations.
+ * The default chunk size (64 kB) used for binary streaming operations.
  *
  * This value is not specified by the W3C File API specification or MDN documentation.
  * It is chosen as a widely adopted industry standard that balances performance
  * (by reducing the number of read operations) and memory usage (by avoiding excessively large buffers).
  * This value is commonly used in Node.js streams and V8 engine implementations.
  *
- * @see https://github.com/nodejs/node/commit/1abff073921bcb0631602032aef0135bccfaee0d#diff-b290649355ee6b2639720a644520e93878144584f931f60f06d5c15eecd9067fR12
+ * @see [Node.js commit: set default chunk size to 64kB](https://github.com/nodejs/node/commit/1abff073921bcb0631602032aef0135bccfaee0d#diff-b290649355ee6b2639720a644520e93878144584f931f60f06d5c15eecd9067fR12)
  */
 export const DEFAULT_CHUNK_SIZE = 65_536;

@@ -3,7 +3,6 @@ title: Blob
 description: A web standards-compliant Blob implementation for React Native.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-blob'
 packageName: 'expo-blob'
-iconUrl: '/static/images/packages/expo-file-system.png'
 platforms: ['android', 'ios', 'web']
 ---
 
@@ -11,7 +10,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-blob` provides a web standards-compliant Blob implementation for React Native that offers superior performance and reliability compared to the implementation exported from `react-native`. Unlike Blob from `react-native`, which has limitations with the `slice()` method and other Web API features, `expo-blob` provides a complete, standards-compliant implementation that works consistently across all platforms.
+`expo-blob` provides a web standards-compliant Blob implementation for React Native that offers superior performance and works consistently across all platforms. It is more reliable compared to the implementation exported from `react-native`, unlike Blob from `react-native`, which has limitations with the `slice()` method and other Web API features.
 
 ## Installation
 
@@ -19,7 +18,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Usage
 
-### Basic Blob Creation
+### Basic Blob creation
 
 ```typescript
 import { Blob } from 'expo-blob';
@@ -46,7 +45,7 @@ const mixedBlob = new Blob(
 );
 ```
 
-### Blob Properties
+### Blob properties
 
 ```typescript
 const blob = new Blob(['Hello, World!'], { type: 'text/plain' });
@@ -55,7 +54,7 @@ console.log(blob.size); // 13 (bytes)
 console.log(blob.type); // "text/plain"
 ```
 
-### Reading Blob Content
+### Reading Blob content
 
 ```typescript
 const blob = new Blob(['Hello, World!'], { type: 'text/plain' });
