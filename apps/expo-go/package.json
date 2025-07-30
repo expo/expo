@@ -75,7 +75,7 @@
     "react-native-infinite-scroll-view": "^0.4.5",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-keyboard-controller": "^1.17.5",
-    "react-native-maps": "1.20.1",
+    "react-native-maps": "1.24.13",
     "react-native-pager-view": "6.8.1",
     "react-native-paper": "^5.12.5",
     "react-native-worklets": "0.4.0",
