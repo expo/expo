@@ -23,28 +23,17 @@ export async function test({ describe, expect, it, ...t }) {
   describe('FileSystem', () => {
     if (Constants.appOwnership === 'expo') {
       describe('managed workflow', () => {
-        it('throws exceptions on constructors', () => {
+        it('throws out-of-scope exceptions', async () => {
           expect(() => {
-            // eslint-disable-next-line no-new
-            new File('file:///path/to/file');
+            new File(Paths.document, '..', 'file.txt').create();
           }).toThrow();
           expect(() => {
-            // eslint-disable-next-line no-new
-            new Directory('file:///path/to/file');
+            new File(Paths.document, '..', 'file.txt').textSync();
+          }).toThrow();
+          expect(() => {
+            new File(Paths.document, '..', 'file.txt').copy(new File(Paths.document, 'file.txt'));
           }).toThrow();
         });
-        // Not used now as the module is disabled in managed workflow
-        // it('throws out-of-scope exceptions', async () => {
-        //   expect(() => {
-        //     new File(Paths.document, '..', 'file.txt').create();
-        //   }).toThrow();
-        //   expect(() => {
-        //     new File(Paths.document, '..', 'file.txt').text();
-        //   }).toThrow();
-        //   expect(() => {
-        //     new File(Paths.document, '..', 'file.txt').copy(new File(Paths.document, 'file.txt'));
-        //   }).toThrow();
-        // });
       });
     } else {
       // This test fails on CI.
