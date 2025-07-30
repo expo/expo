@@ -1,12 +1,11 @@
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { learnMore } from '../utils/TerminalLink';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 
 export class VectorIconsCheck implements DoctorCheck {
   description =
     'Check that @expo/vector-icons package is not installed together with other potentially conflicting icon packages.';
 
-  sdkVersionRange = '>=53.0.0';
+  sdkVersionRange = '>=56.0.0';
 
   async runAsync({ projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     // Check what icon packages are installed
@@ -29,9 +28,7 @@ export class VectorIconsCheck implements DoctorCheck {
       issues,
       advice: issues.length
         ? [
-            `To resolve this, migrate to the scoped icon packages: ${learnMore(
-              'https://expo.fyi/migrating-from-expo-vector-icons'
-            )}`,
+            'If you wish to use the scoped icon packages, migrate your project by running the codemod: `npx @react-native-vector-icons/codemod`',
           ]
         : [],
     };
