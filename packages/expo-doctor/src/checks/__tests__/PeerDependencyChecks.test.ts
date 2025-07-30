@@ -6,7 +6,6 @@ jest.mock('fs');
 
 const projectRoot = '/tmp/project';
 
-// required by runAsync
 const additionalProjectProps = {
   exp: {
     name: 'name',
@@ -34,7 +33,6 @@ describe('PeerDependencyChecks', () => {
   });
 
   it('returns successful result when dependencies have no peer dependencies', async () => {
-    // Mock a package.json for a dependency without peer dependencies
     vol.fromJSON({
       [`${projectRoot}/node_modules/some-package/package.json`]: JSON.stringify({
         name: 'some-package',
@@ -58,14 +56,12 @@ describe('PeerDependencyChecks', () => {
   });
 
   it('detects missing required peer dependencies', async () => {
-    // Mock a package.json for a dependency with peer dependencies
     vol.fromJSON({
-      [`${projectRoot}/node_modules/react-hook-form/package.json`]: JSON.stringify({
-        name: 'react-hook-form',
-        version: '7.0.0',
+      [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
+        name: 'expo-router',
+        version: '5.1.4',
         peerDependencies: {
-          react: '>=16.8.0',
-          'react-dom': '>=16.8.0',
+          'react-native-safe-area-context': '*',
         },
       }),
     });
@@ -76,19 +72,111 @@ describe('PeerDependencyChecks', () => {
         name: 'test-project',
         version: '1.0.0',
         dependencies: {
-          'react-hook-form': '^7.0.0',
+          'expo-router': '^5.1.4',
+        },
+      },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toContain(
+      'Missing peer dependency: react-native-safe-area-context\nRequired by: expo-router'
+    );
+    expect(result.advice).toHaveLength(2);
+    expect(result.advice[0]).toContain(
+      'Install missing required peer dependency with "npx expo install react-native-safe-area-context"'
+    );
+    expect(result.advice[1]).toContain(
+      'Your app may crash outside of Expo Go without this dependency.'
+    );
+  });
+
+  it('detects multiple missing required peer dependencies', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
+        name: 'expo-router',
+        version: '5.1.4',
+        peerDependencies: {
+          'react-native-safe-area-context': '*',
+          'react-native-screens': '*',
+        },
+      }),
+    });
+
+    const check = new PeerDependencyChecks();
+    const result = await check.runAsync({
+      pkg: {
+        name: 'test-project',
+        version: '1.0.0',
+        dependencies: {
+          'expo-router': '^5.1.4',
         },
       },
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBeFalsy();
     expect(result.issues).toHaveLength(2);
-    expect(result.issues[0]).toContain('Required peer dependency "react');
-    expect(result.issues[1]).toContain('Required peer dependency "react-dom');
+    expect(result.issues[0]).toContain(
+      'Missing peer dependency: react-native-safe-area-context\nRequired by: expo-router'
+    );
+    expect(result.issues[1]).toContain(
+      'Missing peer dependency: react-native-screens\nRequired by: expo-router'
+    );
+    expect(result.advice).toHaveLength(2);
+    expect(result.advice[0]).toContain(
+      'Install missing required peer dependencies with "npx expo install react-native-safe-area-context react-native-screens"'
+    );
+    expect(result.advice[1]).toContain(
+      'Your app may crash outside of Expo Go without these dependencies.'
+    );
+  });
+
+  it('groups missing peer dependencies', async () => {
+    vol.fromJSON({
+      [`${projectRoot}/node_modules/expo-router/package.json`]: JSON.stringify({
+        name: 'expo-router',
+        version: '5.1.4',
+        peerDependencies: {
+          'react-native-safe-area-context': '*',
+        },
+      }),
+
+      [`${projectRoot}/node_modules/@react-navigation/bottom-tabs/package.json`]: JSON.stringify({
+        name: '@react-navigation/bottom-tabs',
+        version: '7.0.0',
+        peerDependencies: {
+          'react-native-safe-area-context': '>= 4.0.0',
+        },
+      }),
+    });
+
+    const check = new PeerDependencyChecks();
+    const result = await check.runAsync({
+      pkg: {
+        name: 'test-project',
+        version: '1.0.0',
+        dependencies: {
+          'expo-router': '^5.1.4',
+          '@react-navigation/bottom-tabs': '^7.0.0',
+        },
+      },
+      ...additionalProjectProps,
+    });
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toContain(
+      'Missing peer dependency: react-native-safe-area-context\nRequired by: expo-router, @react-navigation/bottom-tabs'
+    );
+    expect(result.advice).toHaveLength(2);
+    expect(result.advice[0]).toContain(
+      'Install missing required peer dependency with "npx expo install react-native-safe-area-context"'
+    );
+    expect(result.advice[1]).toContain(
+      'Your app may crash outside of Expo Go without this dependency.'
+    );
   });
 
   it('ignores optional peer dependencies', async () => {
-    // Mock a package.json for a dependency with optional peer dependencies
     vol.fromJSON({
       [`${projectRoot}/node_modules/some-ui-lib/package.json`]: JSON.stringify({
         name: 'some-ui-lib',
@@ -119,34 +207,6 @@ describe('PeerDependencyChecks', () => {
     expect(result.issues).toHaveLength(0);
   });
 
-  it('does not check version compatibility for installed peer dependencies', async () => {
-    // Mock a package.json for a dependency with peer dependencies
-    vol.fromJSON({
-      [`${projectRoot}/node_modules/react-hook-form/package.json`]: JSON.stringify({
-        name: 'react-hook-form',
-        version: '7.0.0',
-        peerDependencies: {
-          react: '^18.0.0',
-        },
-      }),
-    });
-
-    const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'react-hook-form': '^7.0.0',
-          react: '^17.0.0', // Version that doesn't satisfy ^18.0.0, but should not be flagged
-        },
-      },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeTruthy();
-    expect(result.issues).toHaveLength(0);
-  });
-
   it('handles missing package.json gracefully', async () => {
     const check = new PeerDependencyChecks();
     const result = await check.runAsync({
@@ -162,32 +222,4 @@ describe('PeerDependencyChecks', () => {
     expect(result.isSuccessful).toBeTruthy();
     expect(result.issues).toHaveLength(0);
   });
-
-  it('provides helpful advice when issues are found', async () => {
-    // Mock a package.json for a dependency with peer dependencies
-    vol.fromJSON({
-      [`${projectRoot}/node_modules/react-hook-form/package.json`]: JSON.stringify({
-        name: 'react-hook-form',
-        version: '7.0.0',
-        peerDependencies: {
-          react: '>=16.8.0',
-        },
-      }),
-    });
-
-    const check = new PeerDependencyChecks();
-    const result = await check.runAsync({
-      pkg: {
-        name: 'test-project',
-        version: '1.0.0',
-        dependencies: {
-          'react-hook-form': '^7.0.0',
-        },
-      },
-      ...additionalProjectProps,
-    });
-    expect(result.isSuccessful).toBeFalsy();
-    expect(result.advice).toHaveLength(1);
-    expect(result.advice[0]).toContain('Install missing required peer dependencies');
-  });
-}); 
+});
