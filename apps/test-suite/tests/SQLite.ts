@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import * as FS from 'expo-file-system';
+import * as FS from 'expo-file-system/legacy';
 import * as SQLite from 'expo-sqlite';
 import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import path from 'path';
@@ -1174,9 +1174,9 @@ INSERT INTO todo (title, group_id, counter) VALUES ('initial todo', 1, 0);
 }
 
 function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
-  let Paths: typeof import('expo-file-system/next').Paths | null = null;
+  let Paths: typeof import('expo-file-system').Paths | null = null;
   try {
-    Paths = require('expo-file-system/next').Paths as typeof import('expo-file-system/next').Paths;
+    Paths = require('expo-file-system').Paths as typeof import('expo-file-system').Paths;
   } catch {}
   const sharedContainerRoot = Paths ? Object.values(Paths.appleSharedContainers)?.[0] : null;
   const sharedContainerDir = sharedContainerRoot ? sharedContainerRoot.uri + 'SQLite' : null;

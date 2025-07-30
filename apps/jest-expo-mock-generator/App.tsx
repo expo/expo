@@ -4,7 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 
 // const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-const blacklist = ['ExpoCrypto', 'ExpoClipboard', 'ExpoLocalization', 'ExpoLinking', 'ExpoFont'];
+const blacklist = [
+  'ExpoCrypto',
+  'ExpoClipboard',
+  'ExpoLocalization',
+  'ExpoLinking',
+  'ExpoFont',
+  'ExpoFileSystem',
+];
 
 type ModuleRegistrySchema = [
   {
