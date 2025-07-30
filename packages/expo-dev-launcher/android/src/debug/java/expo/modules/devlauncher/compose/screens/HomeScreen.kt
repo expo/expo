@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -301,7 +302,7 @@ fun HomeScreen(
                   Image(
                     painter = painterResource(R.drawable.qr_code),
                     contentDescription = "QR Code Icon",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(Theme.spacing.medium)
                   )
                 }
               ) {
@@ -338,18 +339,24 @@ fun HomeScreen(
             "Recently",
             rightIcon = {
               Row {
-                Button(onClick = {
-                  onAction(HomeAction.ResetRecentlyOpenedApps)
-                }) {
-                  Text(
-                    "Reset",
-                    color = Theme.colors.text.secondary,
-                    fontSize = Theme.typography.small,
-                    fontWeight = FontWeight.Bold
-                  )
+                RoundedSurface(color = Color.Unspecified, borderRadius = Theme.sizing.borderRadius.extraSmall) {
+                  Button(
+                    onClick = {
+                      onAction(HomeAction.ResetRecentlyOpenedApps)
+                    }
+                  ) {
+                    Text(
+                      "Reset",
+                      color = Theme.colors.text.secondary,
+                      fontSize = Theme.typography.small,
+                      fontWeight = FontWeight.Bold,
+                      modifier = Modifier
+                        .padding(horizontal = Theme.spacing.tiny, vertical = Theme.spacing.micro)
+                    )
+                  }
                 }
 
-                Spacer(Theme.spacing.small)
+                Spacer(Theme.spacing.small - Theme.spacing.tiny)
               }
             }
           )

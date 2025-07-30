@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,24 +47,28 @@ fun BranchScreen(
   goBack: () -> Unit = {},
   onAction: (BranchAction) -> Unit = {}
 ) {
-  Column {
+  Column(modifier = Modifier.fillMaxSize()) {
     ScreenHeaderContainer {
       Box(
         modifier = Modifier
           .fillMaxWidth()
           .padding(Theme.spacing.small)
       ) {
-        Button(
-          onClick = goBack,
+        RoundedSurface(
+          color = Color.Transparent,
           modifier = Modifier.align(Alignment.CenterStart)
         ) {
-          DayNighIcon(
-            R.drawable.chevron_right_icon,
-            contentDescription = "Back icon",
-            modifier = Modifier
-              .rotate(180f)
-              .size(Theme.sizing.icon.medium)
-          )
+          Button(
+            onClick = goBack
+          ) {
+            DayNighIcon(
+              R.drawable.chevron_right_icon,
+              contentDescription = "Back icon",
+              modifier = Modifier
+                .rotate(180f)
+                .size(Theme.sizing.icon.small)
+            )
+          }
         }
 
         Heading(branchName, modifier = Modifier.align(Alignment.Center))
@@ -126,7 +132,7 @@ fun BranchScreen(
                 DayNighIcon(
                   painter = painterResource(R.drawable.chevron_right_icon),
                   contentDescription = "Chevron Right Icon",
-                  modifier = Modifier.size(Theme.sizing.icon.medium)
+                  modifier = Modifier.size(Theme.sizing.icon.extraSmall)
                 )
               }
 

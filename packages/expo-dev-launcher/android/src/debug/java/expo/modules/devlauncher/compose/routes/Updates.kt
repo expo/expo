@@ -1,5 +1,7 @@
 package expo.modules.devlauncher.compose.routes
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,7 +27,19 @@ fun UpdatesRoute(
   DefaultScreenContainer {
     NavHost(
       navController = updatesNavController,
-      startDestination = Routes.Updates.Branches
+      startDestination = Routes.Updates.Branches,
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentTransitionScope.SlideDirection.Up,
+          animationSpec = tween(400)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentTransitionScope.SlideDirection.Down,
+          animationSpec = tween(400)
+        )
+      }
     ) {
       composable<Routes.Updates.Branches> {
         val viewModel = viewModel<BranchesViewModel>()
