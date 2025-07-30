@@ -149,7 +149,7 @@
     "react-native-svg": "15.12.0",
     "react-native-view-shot": "4.0.3",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5",
+    "react-native-webview": "13.15.0",
     "regl": "^1.3.0",
     "three": "^0.137.4",
     "url": "^0.11.0",

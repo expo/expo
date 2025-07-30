@@ -43,7 +43,7 @@
     "react-native": "0.80.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "4.11.1-nightly-20250611-8b82e081e",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.15.0"
   },
   "devDependencies": {
     "compression": "^1.8.0",
