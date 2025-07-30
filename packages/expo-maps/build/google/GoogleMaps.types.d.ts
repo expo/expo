@@ -119,11 +119,11 @@ export type GoogleMapsPolygon = {
  */
 export type GoogleMapsContentPadding = {
     /**
-     * In LTR contexts `start` will be applied along the left edge. In RTL contexts, start will correspond to the right edge.
+     * In LTR contexts, `start` will be applied along the left edge. In RTL contexts, `start` will correspond to the right edge.
      */
     start?: number;
     /**
-     * In LTR contexts `end` will be applied along the right edge. In RTL contexts, end will correspond to the left edge.
+     * In LTR contexts, `end` will be applied along the right edge. In RTL contexts, `end` will correspond to the left edge.
      */
     end?: number;
     /**
