@@ -48,10 +48,11 @@ type StrictFocusedRouteParams =
 export function getRouteInfoFromState(state?: StrictState): UrlObject {
   if (!state) return defaultRouteInfo;
 
-  let route = state.routes[0];
+  const index = 'index' in state ? (state.index ?? 0) : 0;
+  let route = state.routes[index];
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
-    const path = route.path || `/${route.name}`;
+    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
     return {
       ...defaultRouteInfo,
       unstable_globalHref: appendBaseUrl(path),

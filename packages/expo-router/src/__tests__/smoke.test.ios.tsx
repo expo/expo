@@ -20,7 +20,7 @@ it('404', () => {
   expect(screen.getByText('Unmatched Route')).toBeOnTheScreen();
   expect(screen).toHavePathname('/404');
   expect(screen).toHaveSegments(['+not-found']);
-  expect(screen).toHaveSearchParams({ 'not-found': ['404'] });
+  expect(screen).toHaveSearchParams({});
 });
 
 it('can render a route', async () => {
@@ -290,8 +290,25 @@ it.skip('can navigate across the drawer navigator', () => {
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 });
 
+it('layout is never called with generated +not-found', () => {
+  const layoutCalled = jest.fn();
+  renderRouter({
+    _layout: function Layout() {
+      layoutCalled();
+
+      return <Stack />;
+    },
+    '/second': () => <Text>Second</Text>,
+  });
+
+  expect(layoutCalled).not.toHaveBeenCalled();
+});
+
 it('can redirect during the initial render', () => {
   renderRouter({
+    // This needs to be added, for the layout to be rendered
+    // Otherwise would fall back to the root 404
+    '+not-found': () => <Text>Unmatched Route</Text>,
     _layout: function Layout() {
       const pathName = usePathname();
 

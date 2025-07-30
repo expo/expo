@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { NoSSR } from './NoSSR';
 import { Pressable, PressableProps } from './Pressable';
 import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
@@ -59,15 +60,25 @@ export function getNavOptions(): NativeStackNavigationOptions {
 }
 
 export function Sitemap() {
+  // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
+  // we need to ensure that the Sitemap component is not rendered on the server.
+  return (
+    <NoSSR>
+      <SitemapInner />
+    </NoSSR>
+  );
+}
+
+function SitemapInner() {
   const sitemap = useSitemap();
   const children = React.useMemo(
     () => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [],
     [sitemap]
   );
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="expo-router-sitemap">
       {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={styles.scroll} contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (
           <View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child} />
