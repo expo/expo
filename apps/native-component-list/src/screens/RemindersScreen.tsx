@@ -1,12 +1,13 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
+import { ExportExpoCalendar, ExportExpoCalendarReminder } from 'expo-calendar/next';
 import React from 'react';
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface RowProps {
-  reminder: Calendar.Reminder;
-  getReminder: (reminder: Calendar.Reminder) => void;
-  updateReminder: (reminder: Calendar.Reminder) => void;
+  reminder: ExportExpoCalendarReminder;
+  getReminder: (reminder: ExportExpoCalendarReminder) => void;
+  updateReminder: (reminder: ExportExpoCalendarReminder) => void;
   deleteReminder: (remidnerId: string) => void;
 }
 
@@ -26,7 +27,8 @@ const ReminderRow: React.FunctionComponent<RowProps> = ({
 );
 
 interface State {
-  reminders: Calendar.Reminder[];
+  reminders: ExportExpoCalendarReminder[];
+  calendar: ExportExpoCalendar | null;
 }
 
 type Links = {
@@ -41,19 +43,28 @@ export default class RemindersScreen extends React.Component<Props, State> {
   };
 
   readonly state: State = {
+    calendar: null,
     reminders: [],
   };
 
   componentDidMount() {
     const { params } = this.props.route;
     if (params) {
-      this._findReminders(params.calendar.id!);
+      const calendar = new ExportExpoCalendar(params.calendar.id!);
+      this._findReminders(calendar);
     }
   }
 
-  _findReminders = async (id: string) => {
-    const reminders = await Calendar.getRemindersAsync([id], null, new Date(), new Date());
-    this.setState({ reminders });
+  _findReminders = async (calendar: ExportExpoCalendar) => {
+    try {
+      console.log('calendar', calendar);
+      const reminders = await calendar.listReminders(new Date(), new Date());
+      console.log('reminders', reminders);
+      this.setState({ reminders });
+    } catch (error) {
+      console.error('Error fetching reminders:', error);
+      this.setState({ reminders: [] });
+    }
   };
 
   _addReminder = async () => {

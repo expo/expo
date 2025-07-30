@@ -6,6 +6,8 @@ export class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarA
 }
 export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
 }
+export class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarReminder {
+}
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
     createEvent(details, options) {
         return super.createEvent(stringifyDateValues(details), options);
@@ -18,6 +20,15 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
             throw new Error('listEvents must be called with an endDate (date) to search for events');
         }
         return super.listEvents(stringifyIfDate(startDate), stringifyIfDate(endDate));
+    }
+    async listReminders(startDate, endDate, status) {
+        if (!startDate) {
+            throw new Error('listReminders must be called with a startDate (date) to search for reminders');
+        }
+        if (!endDate) {
+            throw new Error('listReminders must be called with an endDate (date) to search for reminders');
+        }
+        return super.listReminders(stringifyIfDate(startDate), stringifyIfDate(endDate), status || null);
     }
 }
 export function getDefaultCalendarNext() {

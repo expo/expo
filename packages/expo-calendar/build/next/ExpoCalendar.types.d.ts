@@ -1,4 +1,4 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus } from '../Calendar';
 export declare class CustomExpoCalendar {
     constructor(id: string);
     id: string;
@@ -14,6 +14,10 @@ export declare class CustomExpoCalendar {
      * Lists the event ids of the calendar.
      */
     listEvents(startDate: Date | string, endDate: Date | string): CustomExpoCalendarEvent[];
+    /**
+     * Lists the reminders of the calendar.
+     */
+    listReminders(startDate: Date | string, endDate: Date | string, status?: ReminderStatus | null): Promise<CustomExpoCalendarReminder[]>;
     createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
     delete(): void;
 }
@@ -42,6 +46,23 @@ export declare class CustomExpoCalendarEvent {
     originalId?: string;
     getAttendees(): CustomExpoCalendarAttendee[];
     delete(recurringEventOptions: RecurringEventOptions): void;
+}
+export declare class CustomExpoCalendarReminder {
+    id?: string;
+    calendarId?: string;
+    title?: string;
+    location?: string;
+    creationDate?: string | Date;
+    lastModifiedDate?: string | Date;
+    timeZone?: string;
+    url?: string;
+    notes?: string;
+    alarms?: Alarm[];
+    recurrenceRule?: RecurrenceRule | null;
+    startDate?: string | Date;
+    dueDate?: string | Date;
+    completed?: boolean;
+    completionDate?: string | Date;
 }
 export declare class CustomExpoCalendarAttendee {
     id?: string;

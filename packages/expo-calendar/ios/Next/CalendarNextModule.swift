@@ -135,6 +135,17 @@ public final class CalendarNextModule: Module {
                 
                 return try calendar.listEvents(startDate: startDate, endDate: endDate)
             }
+
+            AsyncFunction("listReminders") { (calendar: CustomExpoCalendar, startDateStr: Either<String, Double>, endDateStr: Either<String, Double>, status: String?, promise: Promise) throws in
+                guard let startDate = parse(date: startDateStr),
+                      let endDate = parse(date: endDateStr) else {
+                    throw InvalidDateFormatException()
+                }
+                
+                print("listReminders")l
+                
+                return calendar.listReminders(startDate: startDate, endDate: endDate, status: status, promise: promise)
+            }
             
             Function("createEvent") { (calendar: CustomExpoCalendar, event: Event, options: RecurringEventOptions) -> String in
                 // try checkCalendarPermissions()
@@ -238,7 +249,17 @@ public final class CalendarNextModule: Module {
                 event.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
             }
         }
-        
+
+        Class(CustomExpoCalendarReminder.self) {
+            Property("id") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.calendarItemIdentifier ?? ""
+            }
+
+            Property("title") { (reminder: CustomExpoCalendarReminder) in
+                reminder.reminder?.title ?? ""
+            }
+        }
+
         Class(CustomExpoCalendarAttendee.self) {
             Property("name") { (attendee: CustomExpoCalendarAttendee) in
                 attendee.attendee.name ?? ""
@@ -264,5 +285,28 @@ public final class CalendarNextModule: Module {
                 attendee.attendee.url.absoluteString.removingPercentEncoding
             }
         }
+    }
+    
+    // TODO: Clean up, this is copied from CalendarModule
+    private func createPredicate(for calendars: [EKCalendar], start startDate: Date?, end endDate: Date?, status: String?) throws -> NSPredicate {
+      guard let status else {
+        return eventStore.predicateForReminders(in: calendars)
+      }
+      switch status {
+      case "incomplete":
+        return eventStore.predicateForIncompleteReminders(
+          withDueDateStarting: startDate,
+          ending: endDate,
+          calendars: calendars
+        )
+      case "completed":
+        return eventStore.predicateForCompletedReminders(
+          withCompletionDateStarting: startDate,
+          ending: endDate,
+          calendars: calendars
+        )
+      default:
+        throw InvalidStatusExceptions(status)
+      }
     }
 }

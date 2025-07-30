@@ -29,7 +29,30 @@ internal final class CustomExpoCalendar: SharedObject {
         let customEvents = events.map { CustomExpoCalendarEvent(event: $0) }
         return customEvents
     }
-    
+
+    func listReminders(startDate: Date, endDate: Date, status: String?, promise: Promise) {
+        guard let calendar = self.calendar else {
+            promise.reject(CalendarNoLongerExistsException())
+            return
+        }
+        //   try checkRemindersPermissions()
+        let reminderCalendars: [EKCalendar] = [calendar]
+
+        do {
+            let predicate = try createPredicate(for: reminderCalendars, start: startDate, end: endDate, status: status)
+
+            eventStore.fetchReminders(matching: predicate) { [promise] reminders in
+              if let reminders {
+                promise.resolve(serialize(reminders: reminders))
+              } else {
+                promise.resolve([])
+              }
+            }
+        } catch {
+            promise.reject(error)
+        }
+    }
+
     func getEvent(from event: Event) throws -> EKEvent {
         let calendarEvent = EKEvent(eventStore: eventStore)
         calendarEvent.calendar = self.calendar
@@ -39,6 +62,7 @@ internal final class CustomExpoCalendar: SharedObject {
         return calendarEvent
     }
     
+    // TODO: Clean up, copied from CalendarModule
     func initializeEvent(calendarEvent: EKEvent, event: Event) throws {
         if let timeZone = event.timeZone {
             if let tz = TimeZone(identifier: timeZone) {
@@ -87,5 +111,27 @@ internal final class CustomExpoCalendar: SharedObject {
         }
         try eventStore.removeCalendar(calendar, commit: true)
         self.calendar = nil
+    }
+    
+    private func createPredicate(for calendars: [EKCalendar], start startDate: Date?, end endDate: Date?, status: String?) throws -> NSPredicate {
+      guard let status else {
+        return eventStore.predicateForReminders(in: calendars)
+      }
+      switch status {
+      case "incomplete":
+        return eventStore.predicateForIncompleteReminders(
+          withDueDateStarting: startDate,
+          ending: endDate,
+          calendars: calendars
+        )
+      case "completed":
+        return eventStore.predicateForCompletedReminders(
+          withCompletionDateStarting: startDate,
+          ending: endDate,
+          calendars: calendars
+        )
+      default:
+        throw InvalidStatusExceptions(status)
+      }
     }
 }

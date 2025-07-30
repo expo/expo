@@ -12,6 +12,7 @@ import {
   RecurrenceRule,
   EventStatus,
   Organizer,
+  ReminderStatus,
 } from '../Calendar';
 
 export declare class CustomExpoCalendar {
@@ -32,6 +33,15 @@ export declare class CustomExpoCalendar {
    * Lists the event ids of the calendar.
    */
   listEvents(startDate: Date | string, endDate: Date | string): CustomExpoCalendarEvent[];
+
+  /**
+   * Lists the reminders of the calendar.
+   */
+  listReminders(
+    startDate: Date | string,
+    endDate: Date | string,
+    status?: ReminderStatus | null,
+  ): Promise<CustomExpoCalendarReminder[]>;
 
   createEvent(details: Partial<Event>, options: RecurringEventOptions): CustomExpoCalendarEvent;
 
@@ -68,6 +78,24 @@ export declare class CustomExpoCalendarEvent {
 
   // TODO: Add delete method
   delete(recurringEventOptions: RecurringEventOptions): void;
+}
+
+export declare class CustomExpoCalendarReminder {
+  id?: string;
+  calendarId?: string;
+  title?: string;
+  location?: string;
+  creationDate?: string | Date;
+  lastModifiedDate?: string | Date;
+  timeZone?: string;
+  url?: string;
+  notes?: string;
+  alarms?: Alarm[];
+  recurrenceRule?: RecurrenceRule | null;
+  startDate?: string | Date;
+  dueDate?: string | Date;
+  completed?: boolean;
+  completionDate?: string | Date;
 }
 
 export declare class CustomExpoCalendarAttendee {
