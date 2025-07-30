@@ -49,7 +49,7 @@ public final class FileSystemModule: Module {
     }
 
     // swiftlint:disable:next closure_body_length
-    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptionsNext?, promise: Promise) in
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptions?, promise: Promise) in
       try to.validatePermission(.write)
 
       var request = URLRequest(url: url)

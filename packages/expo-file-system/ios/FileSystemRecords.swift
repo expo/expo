@@ -7,7 +7,7 @@ struct CreateOptions: Record {
   @Field var overwrite: Bool = false
 }
 
-struct DownloadOptionsNext: Record {
+struct DownloadOptions: Record {
   @Field var headers: [String: String]?
 }
 
