@@ -115,8 +115,43 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
     }
     
     // TODO: Copied from CalendarModule
+    // @deprecated, use implementation without `id` param
     private func getEvent(with id: String, startDate: Date?) -> EKEvent? {
         guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
+            return nil
+        }
+        
+        guard let startDate else {
+            return firstEvent
+        }
+        
+        guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+            return firstEvent
+        }
+        
+        let endDate = startDate.addingTimeInterval(2_592_000)
+        let events = eventStore.events(
+            matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
+        )
+        
+        for event in events {
+            if event.calendarItemIdentifier != id {
+                break
+            }
+            if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
+                return event
+            }
+        }
+        return nil
+    }
+    
+    // Custom getEvent to get exact instance, it is replacing the above old implementation
+    internal func getEvent(startDate: Date?) -> EKEvent? {
+        guard let firstEvent = self.event else {
+            return nil
+        }
+        
+        guard let id = firstEvent.eventIdentifier else {
             return nil
         }
         

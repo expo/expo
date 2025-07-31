@@ -175,16 +175,11 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   _openEventInCalendar = async (event: ExportExpoCalendarEvent) => {
-        const result = await Calendar.openEventInCalendarAsync(
-      {
-        id: event.id,
-      },
-      {
-        startNewActivityTask: false,
-        allowsEditing: true,
-        allowsCalendarPreview: true,
-      }
-    );
+    const result = await event.openInCalendarAsync({
+      startNewActivityTask: false,
+      allowsEditing: true,
+      allowsCalendarPreview: true,
+    });
     setTimeout(() => {
       Alert.alert('openEventInCalendarAsync result', JSON.stringify(result), undefined, {
         cancelable: true,

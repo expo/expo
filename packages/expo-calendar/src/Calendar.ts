@@ -637,6 +637,7 @@ export type PresentationOptions = {
    */
   startNewActivityTask?: boolean;
 };
+
 export type OpenEventPresentationOptions = PresentationOptions & {
   /**
    * Whether to allow the user to edit the previewed event.

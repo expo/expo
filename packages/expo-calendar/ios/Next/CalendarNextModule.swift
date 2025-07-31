@@ -1,4 +1,5 @@
 import EventKit
+import EventKitUI
 import ExpoModulesCore
 import Foundation
 
@@ -276,6 +277,34 @@ public final class CalendarNextModule: Module {
                 guard let organizer = event.event?.organizer else { return nil }
                 return serialize(attendee: organizer)
             }
+
+            AsyncFunction("openInCalendarAsync") {
+                (
+                    expoEvent: CustomExpoCalendarEvent,
+                    options: OpenInCalendarOptions?,
+                    promise: Promise
+                ) in
+                try checkCalendarPermissions()
+                
+                let startDate = parse(date: options?.instanceStartDate)
+                guard let calendarEvent = expoEvent.getEvent(startDate: startDate) else {
+                  throw ItemNoLongerExistsException()
+                }
+
+                guard let currentVc = appContext?.utilities?.currentViewController() else {
+                  throw Exception()
+                }
+                warnIfDialogInProgress()
+
+                let controller = EKEventViewController()
+                controller.event = calendarEvent
+                controller.allowsEditing = options?.allowsEditing == true
+                controller.allowsCalendarPreview = options?.allowsCalendarPreview == true
+                self.calendarDialogDelegate = CalendarDialogDelegate(promise: promise, onComplete: self.unsetDelegate)
+                controller.delegate = self.calendarDialogDelegate
+                let navController = ViewEventViewController(rootViewController: controller, promise: promise, onDismiss: self.unsetDelegate)
+                currentVc.present(navController, animated: true)
+            }.runOnQueue(.main)
 
             AsyncFunction("editInCalendarAsync") {
                 (

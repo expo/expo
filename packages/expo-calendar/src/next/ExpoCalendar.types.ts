@@ -16,10 +16,15 @@ import {
   Calendar,
   Reminder,
   Attendee,
-  PresentationOptions,
   CalendarDialogParams,
   DialogEventResult,
+  OpenEventPresentationOptions,
+  PresentationOptions,
 } from '../Calendar';
+
+type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
+
+type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
 export declare class CustomExpoCalendar {
   constructor(id: string);
@@ -85,12 +90,12 @@ export declare class CustomExpoCalendarEvent {
   organizer?: Organizer;
   originalId?: string;
 
-  // TODO
-  openInCalendarAsync(): void;
+  openInCalendarAsync(
+    params: CalendarDialogOpenParamsNext | null, // TODO: Support skipping this param instead of passing null, change needed in the core
+  ): void;
 
   editInCalendarAsync(
-    params: Omit<CalendarDialogParams, 'id'> | null, // TODO: Support skipping this param instead of passing null, change needed in the core
-    presentationOptions?: PresentationOptions
+    params: CalendarDialogParamsNext | null, // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
   // TODO: Add support for recurring events options

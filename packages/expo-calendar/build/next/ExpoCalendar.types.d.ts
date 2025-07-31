@@ -1,4 +1,6 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, Attendee, PresentationOptions, CalendarDialogParams, DialogEventResult } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, Attendee, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions } from '../Calendar';
+type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
+type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 export declare class CustomExpoCalendar {
     constructor(id: string);
     id: string;
@@ -46,9 +48,8 @@ export declare class CustomExpoCalendarEvent {
     status: EventStatus;
     organizer?: Organizer;
     originalId?: string;
-    openInCalendarAsync(): void;
-    editInCalendarAsync(params: Omit<CalendarDialogParams, 'id'> | null, // TODO: Support skipping this param instead of passing null, change needed in the core
-    presentationOptions?: PresentationOptions): Promise<DialogEventResult>;
+    openInCalendarAsync(params: CalendarDialogOpenParamsNext | null): void;
+    editInCalendarAsync(params: CalendarDialogParamsNext | null): Promise<DialogEventResult>;
     getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
     update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
     delete(recurringEventOptions?: RecurringEventOptions): void;
@@ -84,4 +85,5 @@ export declare class CustomExpoCalendarAttendee {
     update(details: Partial<Attendee>): void;
     delete(): void;
 }
+export {};
 //# sourceMappingURL=ExpoCalendar.types.d.ts.map
