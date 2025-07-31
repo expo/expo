@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [web] Update default crossOrigin value to "anonymous" to prevent common CORS issues ([#38341](https://github.com/expo/expo/pull/38341) by [@hirbod](https://github.com/hirbod))
+
 ### 🎉 New features
 
 - [iOS] Add complete support for AirPlay streaming. Add a device selection button and `VideoPlayer.isExternalPlaybackActive` property and appropriate listeners. ([#37207](https://github.com/expo/expo/pull/37207) by [@behenate](https://github.com/behenate))

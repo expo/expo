@@ -1,7 +1,9 @@
 'use client';
 
 import { requireNativeView } from 'expo';
-import { Platform, StyleSheet, type ViewProps } from 'react-native';
+import { StyleSheet, type ViewProps } from 'react-native';
+
+const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && global.RN$Bridgeless === true;
 
 // #region Action View
 export interface NativeLinkPreviewActionProps {
@@ -11,7 +13,7 @@ export interface NativeLinkPreviewActionProps {
   children?: React.ReactNode;
 }
 const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =
-  Platform.OS === 'ios'
+  areNativeViewsAvailable
     ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
     : null;
 export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
@@ -25,7 +27,7 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
 // #region Trigger View
 export type NativeLinkPreviewTriggerProps = ViewProps;
 const NativeLinkPreviewTriggerView: React.ComponentType<NativeLinkPreviewTriggerProps> | null =
-  Platform.OS === 'ios'
+  areNativeViewsAvailable
     ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewTrigger')
     : null;
 export function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps) {
@@ -49,7 +51,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
   children: React.ReactNode;
 }
 const NativeLinkPreviewView: React.ComponentType<NativeLinkPreviewProps> | null =
-  Platform.OS === 'ios'
+  areNativeViewsAvailable
     ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
     : null;
 export function NativeLinkPreview(props: NativeLinkPreviewProps) {
@@ -65,7 +67,7 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
   preferredContentSize?: { width: number; height: number };
 }
 const NativeLinkPreviewContentView: React.ComponentType<NativeLinkPreviewContentProps> | null =
-  Platform.OS === 'ios'
+  areNativeViewsAvailable
     ? requireNativeView('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
     : null;
 

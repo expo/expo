@@ -121,6 +121,7 @@ export const home = [
         makePage('config-plugins/mods.mdx'),
         makePage('config-plugins/dangerous-mods.mdx'),
         makePage('config-plugins/development-and-debugging.mdx'),
+        makePage('config-plugins/patch-project.mdx'),
       ],
       { expanded: false }
     ),
@@ -188,6 +189,7 @@ export const general = [
         makePage('guides/local-app-development.mdx'),
         makePage('guides/local-app-production.mdx'),
         makePage('guides/cache-builds-remotely.mdx'),
+        makePage('guides/prebuilt-expo-modules.mdx'),
       ],
       {
         expanded: false,
@@ -364,6 +366,7 @@ export const general = [
         makePage('guides/typescript.mdx'),
         makePage('guides/in-app-purchases.mdx'),
         makePage('guides/using-push-notifications-services.mdx'),
+        makePage('guides/using-feature-flags.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),

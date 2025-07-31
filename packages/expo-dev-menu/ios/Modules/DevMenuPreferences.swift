@@ -20,7 +20,7 @@ public class DevMenuPreferences: Module {
     }
   }
 
-  /**
+  /*
    Initializes dev menu preferences by registering user defaults
    and applying some preferences to static classes like interceptors.
    */
@@ -33,7 +33,7 @@ public class DevMenuPreferences: Module {
       isOnboardingFinishedKey: false
     ])
 
-    /**
+    /*
      We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
      So we added `isEnabled` to disable it, but not uninstall.
      */

@@ -4,36 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import chalk from 'chalk';
-import { ConfigT as MetroConfig } from 'metro-config';
-import type { ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
-import path from 'path';
+import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import type {
+  ResolutionContext,
+  CustomResolutionContext,
+  CustomResolver,
+} from '@expo/metro/metro-resolver';
+import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
 
-export type MetroResolver = NonNullable<MetroConfig['resolver']['resolveRequest']>;
+export type { CustomResolver as MetroResolver };
 
 /** Expo Metro Resolvers can return `null` to skip without throwing an error. Metro Resolvers will throw either a `FailedToResolveNameError` or `FailedToResolvePathError`. */
 export type ExpoCustomMetroResolver = (
-  ...args: Parameters<MetroResolver>
-) => ReturnType<MetroResolver> | null;
+  ...args: Parameters<CustomResolver>
+) => ReturnType<CustomResolver> | null;
 
 /** @returns `MetroResolver` utilizing the upstream `resolve` method. */
-export function getDefaultMetroResolver(projectRoot: string): MetroResolver {
+export function getDefaultMetroResolver(projectRoot: string): CustomResolver {
   return (context: ResolutionContext, moduleName: string, platform: string | null) => {
-    return metroResolver.resolve(context, moduleName, platform);
+    return metroResolver(context, moduleName, platform);
   };
-}
-
-function optionsKeyForContext(context: ResolutionContext) {
-  const canonicalize = require('metro-core/src/canonicalize');
-
-  // Compound key for the resolver cache
-  return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
 }
 
 /**
@@ -136,218 +130,6 @@ export function withMetroMutatedResolverContext(
         const firstResolver =
           originalResolveRequest ?? universalContext.resolveRequest ?? defaultResolveRequest;
         return firstResolver(universalContext, moduleName, platform);
-      },
-    },
-  };
-}
-
-export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfig {
-  if (!env.EXPO_METRO_UNSTABLE_ERRORS) {
-    return config;
-  }
-
-  const originalResolveRequest = config.resolver?.resolveRequest;
-
-  function mutateResolutionError(
-    error: Error,
-    context: ResolutionContext,
-    moduleName: string,
-    platform: string | null
-  ) {
-    const inputPlatform = platform ?? 'null';
-
-    const mapByOrigin = depGraph.get(optionsKeyForContext(context));
-    const mapByPlatform = mapByOrigin?.get(inputPlatform);
-
-    if (!mapByPlatform) {
-      return error;
-    }
-
-    // collect all references inversely using some expensive lookup
-
-    const getReferences = (origin: string) => {
-      const inverseOrigin: { origin: string; previous: string; request: string }[] = [];
-
-      if (!mapByPlatform) {
-        return inverseOrigin;
-      }
-
-      for (const [originKey, mapByTarget] of mapByPlatform) {
-        // search comparing origin to path
-
-        const found = [...mapByTarget.values()].find((resolution) => resolution.path === origin);
-        if (found) {
-          inverseOrigin.push({
-            origin,
-            previous: originKey,
-            request: found.request,
-          });
-        }
-      }
-
-      return inverseOrigin;
-    };
-
-    const pad = (num: number) => {
-      return new Array(num).fill(' ').join('');
-    };
-
-    const root = config.server?.unstable_serverRoot ?? config.projectRoot;
-
-    type InverseDepResult = {
-      origin: string;
-      request: string;
-      previous: InverseDepResult[];
-    };
-    const recurseBackWithLimit = (
-      req: { origin: string; request: string },
-      limit: number,
-      count: number = 0
-    ) => {
-      const results: InverseDepResult = {
-        origin: req.origin,
-        request: req.request,
-        previous: [],
-      };
-
-      if (count >= limit) {
-        return results;
-      }
-
-      const inverse = getReferences(req.origin);
-      for (const match of inverse) {
-        // Use more qualified name if possible
-        // results.origin = match.origin;
-        // Found entry point
-        if (req.origin === match.previous) {
-          continue;
-        }
-        results.previous.push(
-          recurseBackWithLimit({ origin: match.previous, request: match.request }, limit, count + 1)
-        );
-      }
-      return results;
-    };
-
-    const inverseTree = recurseBackWithLimit(
-      { origin: context.originModulePath, request: moduleName },
-      // TODO: Do we need to expose this?
-      35
-    );
-
-    if (inverseTree.previous.length > 0) {
-      debug('Found inverse graph:', JSON.stringify(inverseTree, null, 2));
-      let extraMessage = chalk.bold('Import stack:');
-      const printRecursive = (tree: InverseDepResult, depth: number = 0) => {
-        let filename = path.relative(root, tree.origin);
-        if (filename.match(/\?ctx=[\w\d]+$/)) {
-          filename = filename.replace(/\?ctx=[\w\d]+$/, chalk.dim(' (require.context)'));
-        } else {
-          let formattedRequest = chalk.green(`"${tree.request}"`);
-
-          if (
-            // If bundling for web and the import is pulling internals from outside of react-native
-            // then mark it as an invalid import.
-            inputPlatform === 'web' &&
-            !/^(node_modules\/)?react-native\//.test(filename) &&
-            tree.request.match(/^react-native\/.*/)
-          ) {
-            formattedRequest =
-              formattedRequest +
-              chalk`\n          {yellow Importing react-native internals is not supported on web.}`;
-          }
-
-          filename = filename + chalk`\n{gray  |} {cyan import} ${formattedRequest}\n`;
-        }
-        let line = '\n' + pad(depth) + chalk.gray(' ') + filename;
-        if (filename.match(/node_modules/)) {
-          line = chalk.gray(
-            // Bold the node module name
-            line.replace(/node_modules\/([^/]+)/, (_match, p1) => {
-              return 'node_modules/' + chalk.bold(p1);
-            })
-          );
-        }
-        extraMessage += line;
-        for (const child of tree.previous) {
-          printRecursive(
-            child,
-            // Only add depth if there are multiple children
-            tree.previous.length > 1 ? depth + 1 : depth
-          );
-        }
-      };
-      printRecursive(inverseTree);
-
-      debug('inverse graph message:', extraMessage);
-
-      // @ts-expect-error
-      error._expoImportStack = extraMessage;
-    } else {
-      debug('Found no inverse tree for:', context.originModulePath);
-    }
-
-    return error;
-  }
-
-  const depGraph: Map<
-    // custom options
-    string,
-    Map<
-      // platform
-      string,
-      Map<
-        // origin module name
-        string,
-        Set<{
-          // required module name
-          path: string;
-          // This isn't entirely accurate since a module can be imported multiple times in a file,
-          // and use different names. But it's good enough for now.
-          request: string;
-        }>
-      >
-    >
-  > = new Map();
-
-  return {
-    ...config,
-    resolver: {
-      ...config.resolver,
-      resolveRequest(context, moduleName, platform) {
-        const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
-          const inputPlatform = platform ?? 'null';
-
-          const key = optionsKeyForContext(context);
-          if (!depGraph.has(key)) depGraph.set(key, new Map());
-          const mapByTarget = depGraph.get(key);
-          if (!mapByTarget!.has(inputPlatform)) mapByTarget!.set(inputPlatform, new Map());
-          const mapByPlatform = mapByTarget!.get(inputPlatform);
-          if (!mapByPlatform!.has(context.originModulePath))
-            mapByPlatform!.set(context.originModulePath, new Set());
-          const setForModule = mapByPlatform!.get(context.originModulePath)!;
-
-          const qualifiedModuleName = res?.type === 'sourceFile' ? res.filePath : moduleName;
-          setForModule.add({ path: qualifiedModuleName, request: moduleName });
-        };
-
-        // If the user defined a resolver, run it first and depend on the documented
-        // chaining logic: https://facebook.github.io/metro/docs/resolution/#resolution-algorithm
-        //
-        // config.resolver.resolveRequest = (context, moduleName, platform) => {
-        //
-        //  // Do work...
-        //
-        //  return context.resolveRequest(context, moduleName, platform);
-        // };
-        try {
-          const firstResolver = originalResolveRequest ?? context.resolveRequest;
-          const res = firstResolver(context, moduleName, platform);
-          storeResult(res);
-          return res;
-        } catch (error: any) {
-          throw mutateResolutionError(error, context, moduleName, platform);
-        }
       },
     },
   };

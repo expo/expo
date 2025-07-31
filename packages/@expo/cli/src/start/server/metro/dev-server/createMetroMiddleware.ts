@@ -1,5 +1,5 @@
+import type { MetroConfig } from '@expo/metro/metro';
 import connect from 'connect';
-import type { MetroConfig } from 'metro';
 
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';

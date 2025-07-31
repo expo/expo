@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 - [iOS] Migrate dev menu UI to SwiftUI ([#37414](https://github.com/expo/expo/pull/37414) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Add floating action button that pulls up the dev menu. ([#38246](https://github.com/expo/expo/pull/38246) by [@behenate](https://github.com/behenate))
+- [iOS] Partial support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 

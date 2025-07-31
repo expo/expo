@@ -172,7 +172,7 @@ class ReactActivityDelegateWrapper(
             launchOptions,
             isFabricEnabled
           ) {
-            override fun createRootView(): ReactRootView {
+            override fun createRootView(): ReactRootView? {
               return this@ReactActivityDelegateWrapper.createRootView() ?: super.createRootView()
             }
           }
@@ -292,7 +292,7 @@ class ReactActivityDelegateWrapper(
     }
   }
 
-  override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
     if (!loadAppReady.isCompleted) {
       return false
     }
@@ -303,7 +303,7 @@ class ReactActivityDelegateWrapper(
       .fold(false) { accu, current -> accu || current } || delegate.onKeyDown(keyCode, event)
   }
 
-  override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     if (!loadAppReady.isCompleted) {
       return false
     }
@@ -314,7 +314,7 @@ class ReactActivityDelegateWrapper(
       .fold(false) { accu, current -> accu || current } || delegate.onKeyUp(keyCode, event)
   }
 
-  override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+  override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
     if (!loadAppReady.isCompleted) {
       return false
     }
@@ -354,14 +354,14 @@ class ReactActivityDelegateWrapper(
     }
   }
 
-  override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
+  override fun requestPermissions(permissions: Array<out String>, requestCode: Int, listener: PermissionListener?) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.requestPermissions(permissions, requestCode, listener)
     }
   }
 
-  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -388,7 +388,7 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("composeLaunchOptions")
   }
 
-  override fun onConfigurationChanged(newConfig: Configuration?) {
+  override fun onConfigurationChanged(newConfig: Configuration) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onConfigurationChanged(newConfig)
@@ -438,7 +438,7 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
-      reactDelegate.loadApp(appKey)
+      reactDelegate.loadApp(requireNotNull(appKey))
       val reactRootView = reactDelegate.reactRootView
       (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
       rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)

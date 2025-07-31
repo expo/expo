@@ -18,7 +18,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "react-native-reanimated" "react-native-svg"
+remove_dependencies "react-native-reanimated" "react-native-worklets" "react-native-svg"
 
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/

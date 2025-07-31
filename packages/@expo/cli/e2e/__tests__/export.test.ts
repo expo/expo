@@ -76,12 +76,6 @@ describe('server', () => {
 
   beforeAll(async () => {
     projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
-
-    // TODO(cedric): Remove this once we publish `@expo/metro-config` with `export --dev` fixes
-    // Or when we can build `@expo/metro-config` on Windows
-    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
-    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
-    await fs.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   });
 
   it('runs `npx expo export`', async () => {

@@ -53,14 +53,14 @@ exports.collectDependenciesForShaking = collectDependenciesForShaking;
  */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
-const JsFileWrapping_1 = __importDefault(require("metro/src/ModuleGraph/worker/JsFileWrapping"));
-const generateImportNames_1 = __importDefault(require("metro/src/ModuleGraph/worker/generateImportNames"));
-const importLocationsPlugin_1 = require("metro/src/ModuleGraph/worker/importLocationsPlugin");
-const metro_cache_1 = require("metro-cache");
-const metro_cache_key_1 = __importDefault(require("metro-cache-key"));
-const metro_source_map_1 = require("metro-source-map");
-const metro_transform_plugins_1 = __importDefault(require("metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("metro-transform-worker/src/utils/getMinifier"));
+const JsFileWrapping_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
+const generateImportNames_1 = __importDefault(require("@expo/metro/metro/ModuleGraph/worker/generateImportNames"));
+const importLocationsPlugin_1 = require("@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin");
+const metro_cache_1 = require("@expo/metro/metro-cache");
+const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
+const metro_source_map_1 = require("@expo/metro/metro-source-map");
+const metroTransformPlugins = __importStar(require("@expo/metro/metro-transform-plugins"));
+const getMinifier_1 = __importDefault(require("@expo/metro/metro-transform-worker/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
@@ -183,7 +183,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
     // has no ability to respect side-effects because the transformer hasn't collected all dependencies yet.
     if (options.inlineRequires) {
         plugins.push([
-            metro_transform_plugins_1.default.inlineRequiresPlugin,
+            metroTransformPlugins.inlineRequiresPlugin,
             {
                 ...babelPluginOpts,
                 ignoredRequires: options.nonInlinedRequires,
@@ -244,7 +244,7 @@ function performConstantFolding(ast, { filename }) {
         configFile: false,
         comments: true,
         filename,
-        plugins: [clearProgramScopePlugin, metro_transform_plugins_1.default.constantFoldingPlugin],
+        plugins: [clearProgramScopePlugin, metroTransformPlugins.constantFoldingPlugin],
         sourceMaps: false,
         // NOTE(kitten): In Metro, this is also false, but only works because the prior run of `transformFromAstSync` was always
         // running with `cloneInputAst: true`.
@@ -368,7 +368,7 @@ async function transformJS(file, { config, options }) {
         // TODO: If the module wrapping is disabled then the normalize function needs to change to account for not being in a body.
         !unstable_disableModuleWrapping) {
         // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
-        reserved.push(...metro_transform_plugins_1.default.normalizePseudoGlobals(wrappedAst, {
+        reserved.push(...metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
             reservedNames: reserved,
         }));
     }
@@ -590,16 +590,17 @@ async function transform(config, projectRoot, filename, data, options) {
 }
 function getCacheKey(config) {
     const { babelTransformerPath, minifierPath, ...remainingConfig } = config;
-    const filesKey = (0, metro_cache_key_1.default)([
+    // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
+    const filesKey = (0, metro_cache_key_1.getCacheKey)([
         require.resolve(babelTransformerPath),
         require.resolve(minifierPath),
-        require.resolve('metro-transform-worker/src/utils/getMinifier'),
+        require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
         require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),
         require.resolve('./resolveOptions'),
-        require.resolve('metro/src/ModuleGraph/worker/generateImportNames'),
-        require.resolve('metro/src/ModuleGraph/worker/JsFileWrapping'),
-        ...metro_transform_plugins_1.default.getTransformPluginCacheKeyFiles(),
+        require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),
+        require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
+        ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
     ]);
     const babelTransformer = require(babelTransformerPath);
     return [

@@ -278,3 +278,17 @@ data class CameraPositionStreetViewRecord(
   @Field
   val bearing: Float = 0f
 ) : Record
+
+data class MapContentPaddingRecord(
+  @Field
+  val start: Float = 0f,
+
+  @Field
+  val end: Float = 0f,
+
+  @Field
+  val top: Float = 0f,
+
+  @Field
+  val bottom: Float = 0f
+): Record

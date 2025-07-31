@@ -51,7 +51,7 @@ export function getTestModules() {
   modules.push(
     require('./tests/Asset'),
     require('./tests/Constants'),
-    require('./tests/FileSystem'),
+    require('./tests/FileSystem-legacy'),
     require('./tests/Font'),
     require('./tests/ImagePicker'),
     require('./tests/ModulesCore'),
@@ -75,7 +75,7 @@ export function getTestModules() {
   );
 
   if (['android', 'ios'].includes(Platform.OS)) {
-    modules.push(require('./tests/FileSystemNext'));
+    modules.push(require('./tests/FileSystem'));
   }
 
   if (Platform.OS === 'android') {

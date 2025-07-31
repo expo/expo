@@ -66,6 +66,15 @@ export interface ModalProps extends ViewProps {
    * @default 'fitToContents'
    */
   detents?: ModalConfig['detents'];
+  /**
+   * Determines whether the modal should close when navigating away from the screen that opened it.
+   *
+   * If set to `true`, the modal will close when the user navigates to a different screen.
+   *
+   * If set to `false`, the modal will remain open when pushing a new screen.
+   * However, it will still close when navigating back or replacing the current screen.
+   */
+  closeOnNavigation?: boolean;
 }
 
 /**
@@ -103,6 +112,7 @@ export function Modal(props: ModalProps) {
     presentationStyle,
     transparent,
     detents,
+    closeOnNavigation,
     ...viewProps
   } = props;
   const { openModal, updateModal, closeModal, addEventListener } = useModalContext();
@@ -138,7 +148,7 @@ export function Modal(props: ModalProps) {
         component: children,
         uniqueId: newId,
         parentNavigationProp: navigation,
-        detents: detents ?? 'fitToContents',
+        detents: detents ?? (presentationStyle === 'formSheet' ? 'fitToContents' : undefined),
       });
       setCurrentModalId(newId);
       return () => {
@@ -147,6 +157,17 @@ export function Modal(props: ModalProps) {
     }
     return () => {};
   }, [visible]);
+
+  useEffect(() => {
+    if (navigation.isFocused()) {
+      return navigation.addListener('blur', () => {
+        if (currentModalId && closeOnNavigation) {
+          closeModal(currentModalId);
+        }
+      });
+    }
+    return () => {};
+  }, [navigation, closeModal, currentModalId, closeOnNavigation]);
 
   useEffect(() => {
     if (currentModalId && visible) {

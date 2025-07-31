@@ -8,6 +8,7 @@ import ExpoModulesCore
  */
 public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
+  public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
   internal let config: UpdatesConfig
   private let database: UpdatesDatabase
@@ -106,7 +107,8 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       updatesDirectory: self.updatesDirectoryInternal,
       logger: self.logger,
       shouldRunReaper: false,
-      triggerReloadCommandListenersReason: "Relaunch after fatal error"
+      triggerReloadCommandListenersReason: "Relaunch after fatal error",
+      reloadScreenManager: self.reloadScreenManager
     ) {
       return self.startupProcedure.launchedUpdate()
     } setLauncher: { newLauncher in
@@ -134,7 +136,8 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
       updatesDirectory: self.updatesDirectoryInternal,
       logger: self.logger,
       shouldRunReaper: true,
-      triggerReloadCommandListenersReason: "Requested by JavaScript - Updates.reloadAsync()"
+      triggerReloadCommandListenersReason: "Requested by JavaScript - Updates.reloadAsync()",
+      reloadScreenManager: self.reloadScreenManager
     ) {
       return self.startupProcedure.launchedUpdate()
     } setLauncher: { newLauncher in

@@ -4,13 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig, Platform } from '@expo/config';
+import type { ExpoConfig, Platform } from '@expo/config';
+import type Bundler from '@expo/metro/metro/Bundler';
+import type { ConfigT } from '@expo/metro/metro-config';
+import type {
+  Resolution,
+  ResolutionContext,
+  CustomResolutionContext,
+} from '@expo/metro/metro-resolver';
+import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
 import fs from 'fs';
-import Bundler from 'metro/src/Bundler';
-import { ConfigT } from 'metro-config';
-import { Resolution, ResolutionContext, CustomResolutionContext } from 'metro-resolver';
-import * as metroResolver from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -24,11 +28,8 @@ import {
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
-import {
-  withMetroErrorReportingResolver,
-  withMetroMutatedResolverContext,
-  withMetroResolvers,
-} from './withMetroResolvers';
+import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
+import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
@@ -180,7 +181,7 @@ export function withExtendedResolver(
     Log.log(chalk.dim`Sticky resolver is enabled.`);
   }
 
-  const defaultResolver = metroResolver.resolve;
+  const defaultResolver = metroResolver;
   const resolver = isFastResolverEnabled
     ? createFastResolver({
         preserveSymlinks: true,
@@ -642,8 +643,17 @@ export function withExtendedResolver(
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
-          // // Disallow importing confusing native modules on web
-          if (moduleName.includes('react-native/Libraries/Utilities/codegenNativeCommands')) {
+          // Disallow importing confusing native modules on web
+          if (
+            [
+              'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
+              'react-native/Libraries/Utilities/codegenNativeCommands',
+              'react-native/Libraries/Utilities/codegenNativeComponent',
+            ].some((matcher) =>
+              // Support absolute and modules with .js extensions.
+              moduleName.includes(matcher)
+            )
+          ) {
             throw new FailedToResolvePathError(
               `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
             );
@@ -847,9 +857,10 @@ export async function withMetroMultiPlatformAsync(
   if (isNamedRequiresEnabled) {
     debug('Using Expo metro require runtime.');
     // Change the default metro-runtime to a custom one that supports bundle splitting.
-    require('metro-config/src/defaults/defaults').moduleSystem = require.resolve(
-      '@expo/cli/build/metro-require/require'
-    );
+    const metroDefaults: Mutable<
+      typeof import('@expo/metro/metro-config/defaults/defaults')
+    > = require('@expo/metro/metro-config/defaults/defaults');
+    metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
   }
 
   if (!config.projectRoot) {
@@ -862,6 +873,7 @@ export async function withMetroMultiPlatformAsync(
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
+    // TODO(@kitten): Remove ts-export-errors here and replace with cast for type safety
     if (!config.watchFolders) {
       // @ts-expect-error: watchFolders is readonly
       config.watchFolders = [];

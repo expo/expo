@@ -1,99 +1,68 @@
-// Copyright 2023-present 650 Industries. All rights reserved.
-
+import Foundation
 import ExpoModulesCore
 
-final class FileNotExistsException: GenericException<String> {
+internal final class CopyOrMoveDirectoryToFileException: Exception {
   override var reason: String {
-    "File '\(param)' does not exist"
+    "Unable to copy or move a directory to a file"
   }
 }
 
-final class FileAlreadyExistsException: GenericException<String> {
+internal final class UnableToDownloadException: GenericException<String> {
   override var reason: String {
-    "File '\(param)' already exists"
+    "Unable to download a file: \(param)"
   }
 }
 
-final class DirectoryNotExistsException: GenericException<String> {
+internal final class InvalidTypeFileException: Exception {
   override var reason: String {
-    "Directory '\(param)' does not exist"
+    "A folder with the same name already exists in the file location"
   }
 }
 
-final class FileNotReadableException: GenericException<String> {
+internal final class InvalidTypeDirectoryException: Exception {
   override var reason: String {
-    "File '\(param)' is not readable"
+    "A file with the same name already exists in the directory location"
   }
 }
 
-final class FileNotWritableException: GenericException<String> {
+internal final class UnableToGetFileAttribute: GenericException<String> {
   override var reason: String {
-    "File '\(param)' is not writable"
+    "Unable to get file attribute: \(param)"
   }
 }
 
-final class FileWriteFailedException: GenericException<String> {
+internal final class UnableToGetSizeException: GenericException<String> {
   override var reason: String {
-    "Writing to '\(param)' file has failed"
+    "Unable to get file or directory size: \(param)"
   }
 }
 
-final class FileCannotDeleteException: GenericException<String> {
+internal final class UnableToDeleteException: GenericException<String> {
   override var reason: String {
-    "File '\(param)' could not be deleted"
+    "Unable to delete file or directory: \(param)"
   }
 }
 
-final class InvalidFileUrlException: GenericException<URL> {
+internal final class UnableToCreateException: GenericException<String> {
   override var reason: String {
-    "'\(param.absoluteString)' is not a file URL"
+    "Unable to create file or directory: \(param)"
   }
 }
 
-final class UnsupportedSchemeException: GenericException<String?> {
+internal final class UnableToReadHandleException: GenericException<String> {
   override var reason: String {
-    "Unsupported URI scheme: '\(String(describing: param))'"
+    "Unable to read from a file handle: \(param)"
   }
 }
 
-final class HeaderEncodingFailedException: GenericException<String> {
+internal final class UnableToGetInfoException: GenericException<String> {
   override var reason: String {
-    "Unable to encode headers for request '\(param)' to UTF8"
+    "Unable to get info from a file: \(param)"
   }
 }
 
-final class DownloadTaskNotFoundException: GenericException<String> {
+internal final class DestinationAlreadyExistsException: Exception {
   override var reason: String {
-    "Cannot find a download task with id: '\(param)'"
-  }
-}
-
-final class CannotDetermineDiskCapacity: Exception {
-  override var reason: String {
-    "Unable to determine free disk storage capacity"
-  }
-}
-
-final class FailedToCreateBodyException: Exception {
-  override var reason: String {
-    "Unable to create multipart body"
-  }
-}
-
-final class FailedToAccessDirectoryException: Exception {
-  override var reason: String {
-    "Failed to access `Caches` directory"
-  }
-}
-
-final class FailedToCopyAssetException: GenericException<String> {
-  override var reason: String {
-    "Failed to copy photo library asset: \(param)"
-  }
-}
-
-final class FailedToFindAssetException: GenericException<String> {
-  override var reason: String {
-    "Failed to find photo library asset: \(param)"
+    "Destination already exists"
   }
 }

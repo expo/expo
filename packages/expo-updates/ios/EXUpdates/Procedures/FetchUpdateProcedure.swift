@@ -54,8 +54,11 @@ final class FetchUpdateProcedure: StateMachineProcedure {
 
   func run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(.download)
+    remoteAppLoader.assetLoadProgressBlock = { progress in
+      procedureContext.processStateEvent(.downloadProgress(progress: progress))
+    }
     remoteAppLoader.loadUpdate(
-      fromURL: self.config.updateUrl
+      fromURL: self.config.updateUrl,
     ) { updateResponse in
       if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
         switch updateDirective {

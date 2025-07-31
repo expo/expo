@@ -20,7 +20,8 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.80.1",
+    "@expo/metro": "~0.1.0",
+    "react-native": "0.81.0-rc.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "@types/babel__core": "^7.20.5",

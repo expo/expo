@@ -259,7 +259,9 @@ export async function resolvePostcssConfig(
 
 export function getPostcssConfigHash(projectRoot: string): string | null {
   // TODO: Maybe recurse plugins and add versions to the hash in the future.
-  const { stableHash } = require('metro-cache');
+  const {
+    stableHash,
+  }: typeof import('@expo/metro/metro-cache') = require('@expo/metro/metro-cache');
 
   for (const ext of ['.mjs', '.js']) {
     const configPath = path.join(projectRoot, CONFIG_FILE_NAME + ext);
