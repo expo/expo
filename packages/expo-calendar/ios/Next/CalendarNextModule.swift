@@ -312,7 +312,7 @@ public final class CalendarNextModule: Module {
                     options: OpenInCalendarOptions?,
                     promise: Promise
                 ) in
-                //                try checkCalendarPermissions()
+                try checkCalendarPermissions()
 
                 print("editInCalendarAsync")
                 warnIfDialogInProgress()
@@ -324,8 +324,21 @@ public final class CalendarNextModule: Module {
                 try presentEventEditViewController(event: event, promise: promise)
             }.runOnQueue(.main)
 
-            Function("getAttendees") { (customEvent: CustomExpoCalendarEvent) in
-                customEvent.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
+            Function("getAttendees") { (customEvent: CustomExpoCalendarEvent, options: RecurringEventOptions?) in
+                try checkCalendarPermissions()
+
+                let instanceStartDate = parse(date: options?.instanceStartDate)
+
+                let item = customEvent.getEvent(startDate: instanceStartDate)
+
+                guard let item, let attendees = item.attendees else {
+                    return []
+                }
+                
+                print("Names: \(attendees.map(\.name))")
+
+                // TODO: It is returning nulls for some reason?
+                return attendees.map { CustomExpoCalendarAttendee(attendee: $0) }
             }
 
             Function("update") {
@@ -424,6 +437,7 @@ public final class CalendarNextModule: Module {
             }
 
             Function("delete") { (reminder: CustomExpoCalendarReminder) in
+                try checkRemindersPermissions()
                 try reminder.delete()
             }
         }

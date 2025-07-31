@@ -91,11 +91,11 @@ export declare class CustomExpoCalendarEvent {
   originalId?: string;
 
   openInCalendarAsync(
-    params: CalendarDialogOpenParamsNext | null, // TODO: Support skipping this param instead of passing null, change needed in the core
+    params: CalendarDialogOpenParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): void;
 
   editInCalendarAsync(
-    params: CalendarDialogParamsNext | null, // TODO: Support skipping this param instead of passing null, change needed in the core
+    params: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
   // TODO: Add support for recurring events options
