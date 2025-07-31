@@ -308,6 +308,13 @@ export type BarcodeScanningResult = {
    * Corner points of the bounding box.
    * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
    * you don't get this value.
+   *
+   * **Note:** Corner points order is currently different across platforms. On Android,
+   * [Google MLKit's native order](https://developers.google.com/android/reference/com/google/mlkit/vision/barcode/common/Barcode#getCornerPoints())
+   * is used, which is `topLeft`, `topRight`, `bottomRight`, `bottomLeft`.
+   * On iOS, the order is `bottomLeft`, `bottomRight`, `topLeft`, `topRight`. On Web, the order is
+   * `topLeft`, `bottomLeft`, `topRight`, `bottomRight`.
+   *
    */
   cornerPoints: BarcodePoint[];
   /**

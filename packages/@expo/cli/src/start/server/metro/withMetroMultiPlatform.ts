@@ -28,11 +28,8 @@ import {
 import { isNodeExternal, shouldCreateVirtualCanary, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
-import {
-  withMetroErrorReportingResolver,
-  withMetroMutatedResolverContext,
-  withMetroResolvers,
-} from './withMetroResolvers';
+import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
+import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
@@ -646,8 +643,17 @@ export function withExtendedResolver(
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
-          // // Disallow importing confusing native modules on web
-          if (moduleName.includes('react-native/Libraries/Utilities/codegenNativeCommands')) {
+          // Disallow importing confusing native modules on web
+          if (
+            [
+              'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
+              'react-native/Libraries/Utilities/codegenNativeCommands',
+              'react-native/Libraries/Utilities/codegenNativeComponent',
+            ].some((matcher) =>
+              // Support absolute and modules with .js extensions.
+              moduleName.includes(matcher)
+            )
+          ) {
             throw new FailedToResolvePathError(
               `Importing native-only module "${moduleName}" on web from: ${context.originModulePath}`
             );

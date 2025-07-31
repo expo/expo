@@ -43,6 +43,12 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "null"}
     label: Assert downloadedManifestId is null
+- copyTextFrom:
+    label: Copy text from download progress
+    id: state.downloadProgress
+- assertTrue:
+    condition: ${maestro.copiedText == "0"}
+    label: Assert download progress is 0
 # Serve an update and then press checkForUpdate button, verify the state
 # (update is available but not downloaded)
 - evalScript:
@@ -114,6 +120,12 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == output.downloadedUpdateId}
     label: Assert downloadedManifestId is the downloaded update's id
+- copyTextFrom:
+    label: Copy text from download progress
+    id: state.downloadProgress
+- assertTrue:
+    condition: ${maestro.copiedText == "1"}
+    label: Assert download progress is 1
 # Restart the app and verify the state (update is launched)
 - evalScript:
     script:  ${output.api.restartUpdatesServer()}

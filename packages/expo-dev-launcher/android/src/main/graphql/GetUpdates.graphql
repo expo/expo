@@ -1,16 +1,3 @@
-query getUpdates($appId: String!) {
-  app {
-    byId(appId: $appId) {
-      updateChannels(offset: 0, limit: 10) {
-        name
-        updateBranches(offset: 0, limit: 10) {
-          name
-        }
-      }
-    }
-  }
-}
-
 query getUpdatesWithFilters(
   $appId: String!
   $branchName: String!

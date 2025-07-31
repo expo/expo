@@ -57,6 +57,7 @@ fun Accordion(
             contentDescription = "Accordion Arrow",
             modifier = Modifier
               .rotate(arrowRotation)
+              .size(Theme.sizing.icon.extraSmall)
           )
           Spacer(Modifier.size(Theme.spacing.small))
           Text(

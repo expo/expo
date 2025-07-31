@@ -670,9 +670,6 @@ module.exports = {
           { name: 'openBrowserAsync', argumentsCount: 2, key: 'openBrowserAsync' },
           { name: 'warmUpAsync', argumentsCount: 0, key: 'warmUpAsync' },
         ],
-        FileSystemNext: [
-          { name: 'downloadFileAsync', argumentsCount: 2, key: 'downloadFileAsync' },
-        ],
         NotificationsServerRegistrationModule: [
           { name: 'getInstallationIdAsync', argumentsCount: 0, key: 'getInstallationIdAsync' },
           { name: 'getRegistrationInfoAsync', argumentsCount: 0, key: 'getRegistrationInfoAsync' },
@@ -1327,15 +1324,6 @@ module.exports = {
           openBrowserAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           warmUpAsync: { type: 'function' },
-        },
-        FileSystemNext: {
-          addListener: { type: 'function' },
-          appleSharedContainers: { type: 'object' },
-          bundleDirectory: { type: 'string' },
-          cacheDirectory: { type: 'string' },
-          documentDirectory: { type: 'string' },
-          downloadFileAsync: { type: 'function' },
-          removeListeners: { type: 'function' },
         },
         NotificationsServerRegistrationModule: {
           addListener: { type: 'function' },

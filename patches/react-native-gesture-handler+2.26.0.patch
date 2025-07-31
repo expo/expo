@@ -1,0 +1,27 @@
+diff --git a/node_modules/react-native-gesture-handler/android/src/main/jni/cpp-adapter.cpp b/node_modules/react-native-gesture-handler/android/src/main/jni/cpp-adapter.cpp
+index cd2dfa7..e35c693 100644
+--- a/node_modules/react-native-gesture-handler/android/src/main/jni/cpp-adapter.cpp
++++ b/node_modules/react-native-gesture-handler/android/src/main/jni/cpp-adapter.cpp
+@@ -19,7 +19,8 @@ void decorateRuntime(jsi::Runtime &runtime) {
+                     return jsi::Value::null();
+                 }
+ 
+-                auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
++                auto shadowNodes = shadowNodeListFromValue(runtime, arguments[0]);
++                auto shadowNode = shadowNodes->at(0);
+                 bool isViewFlatteningDisabled = shadowNode->getTraits().check(
+                         ShadowNodeTraits::FormsStackingContext);
+ 
+diff --git a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm
+index 594eba3..d555a27 100644
+--- a/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm
++++ b/node_modules/react-native-gesture-handler/apple/RNGestureHandlerModule.mm
+@@ -101,7 +101,7 @@ void decorateRuntime(jsi::Runtime &runtime)
+         if (!arguments[0].isObject()) {
+           return jsi::Value::null();
+         }
+-        auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
++        auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(runtime, arguments[0]);
+ 
+         if (dynamic_pointer_cast<const ParagraphShadowNode>(shadowNode)) {
+           return jsi::Value(true);

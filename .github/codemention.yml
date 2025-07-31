@@ -18,6 +18,8 @@ rules:
     mentions: ['EvanBacon', 'douglowder']
   - patterns: ['packages/@expo/dev-server/**']
     mentions: ['bycedric']
+  - patterns: ['packages/@expo/devtools/**']
+    mentions: ['chrfalch', 'kudo']
   - patterns: ['packages/@expo/env/**']
     mentions: ['EvanBacon', 'bycedric']
   - patterns: ['packages/@expo/fingerprint/**']

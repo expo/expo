@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 const gifDir = FileSystem.cacheDirectory + 'giphy/';
 const gifFileUri = (gifId: string) => gifDir + `gif_${gifId}_200.gif`;

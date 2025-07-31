@@ -2,7 +2,6 @@
 
 #import <sstream>
 
-#import <React/React-Core-umbrella.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJSIUtils.h>
 #import <ExpoModulesCore/JSIUtils.h>

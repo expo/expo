@@ -42,7 +42,7 @@
         "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleDebug",
+        "gradleCommand": ":app:assembleMobileDebug",
         "withoutCredentials": true
       },
       "ios": {
@@ -63,14 +63,14 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleDebug",
+        "gradleCommand": ":app:assembleMobileDebug",
         "withoutCredentials": true
       },
       "ios": {
         "scheme": "Expo Go",
         "simulator": true,
         "buildConfiguration": "Release"
-      }
+      },
     },
     "release-client": {
       "extends": "versioned-client",
@@ -83,7 +83,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:bundleRelease"
+        "gradleCommand": ":app:bundleMobileRelease"
       },
       "ios": {
         "autoIncrement": "buildNumber",
@@ -105,7 +105,7 @@
           "disabled": true
         },
         "withoutCredentials": false,
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:assembleMobileRelease"
       },
       "ios": {
         "resourceClass": "large",
@@ -114,6 +114,39 @@
           "disabled": true
         },
         "simulator": true
+      }
+    },
+    "versioned-quest-client": {
+      "extends": "versioned-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestDebug"
+      }
+    },
+    "versioned-quest-client-add-sdk": {
+      "extends": "versioned-quest-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      }
+    },
+    "unversioned-quest-client": {
+      "extends": "unversioned-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestDebug"
+      }
+    },
+    "release-quest-client": {
+      "extends": "release-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "release-client"
+      },
+      "android": {
+        "gradleCommand": ":app:bundleQuestRelease"
+      }
+    },
+    "publish-quest-client": {
+      "extends": "publish-client",
+      "android": {
+        "gradleCommand": ":app:assembleQuestRelease"
       }
     }
   },
