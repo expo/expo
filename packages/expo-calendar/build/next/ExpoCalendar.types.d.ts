@@ -2,6 +2,7 @@ import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEve
 type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 export declare class CustomExpoCalendar {
+    constructor(id: string);
     id: string;
     title: string;
     sourceId?: string;

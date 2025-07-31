@@ -27,6 +27,8 @@ type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationO
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
 export declare class CustomExpoCalendar {
+  constructor(id: string);
+
   id: string;
   title: string;
   sourceId?: string;

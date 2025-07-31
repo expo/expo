@@ -8,6 +8,11 @@ internal final class CustomExpoCalendar: SharedObject {
     }
     var calendar: EKCalendar?
     
+    init(id: String) {
+        super.init()
+        self.calendar = eventStore.calendar(withIdentifier: id)
+    }
+    
     init(calendar: EKCalendar) {
         super.init()
         self.calendar = calendar

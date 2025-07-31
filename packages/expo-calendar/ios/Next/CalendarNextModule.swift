@@ -81,6 +81,10 @@ public final class CalendarNextModule: Module {
         }
 
         Class(CustomExpoCalendar.self) {
+            Constructor { (id: String) in
+                CustomExpoCalendar(id: id)
+            }
+
             Property("id") { (calendar: CustomExpoCalendar) in
                 calendar.calendar?.calendarIdentifier ?? ""
             }
