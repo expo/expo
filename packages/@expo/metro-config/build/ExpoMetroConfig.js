@@ -172,6 +172,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
+    const routerPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo-router');
     // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
     // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
     const metroConfig = mergeConfig(metroDefaultValues, {
@@ -270,6 +271,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
             // @ts-expect-error: not on type.
+            _expoRouterPath: routerPackageRoot ? path_1.default.relative(serverRoot, routerPackageRoot) : undefined,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg.browserslist
                 ? (0, metro_cache_1.stableHash)(JSON.stringify(pkg.browserslist)).toString('hex')
@@ -283,8 +285,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
-            // TODO: The absolute path invalidates caching across devices.
-            asyncRequireModulePath: require.resolve('./async-require'),
+            // NOTE: This cannot be an absolute path, as it is used in the cache key.
+            asyncRequireModulePath: '@expo/metro-config/build/async-require',
             assetRegistryPath: '@react-native/assets-registry/registry',
             // hermesParser: true,
             getTransformOptions: async () => ({

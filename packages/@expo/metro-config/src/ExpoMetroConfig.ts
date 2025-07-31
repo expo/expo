@@ -253,6 +253,7 @@ export function getDefaultConfig(
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
+  const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
   const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
@@ -357,6 +358,7 @@ export function getDefaultConfig(
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       unstable_renameRequire: false,
       // @ts-expect-error: not on type.
+      _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg.browserslist
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
@@ -370,8 +372,8 @@ export function getDefaultConfig(
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: require.resolve('./babel-transformer'),
-      // TODO: The absolute path invalidates caching across devices.
-      asyncRequireModulePath: require.resolve('./async-require'),
+      // NOTE: This cannot be an absolute path, as it is used in the cache key.
+      asyncRequireModulePath: '@expo/metro-config/build/async-require',
       assetRegistryPath: '@react-native/assets-registry/registry',
       // hermesParser: true,
       getTransformOptions: async () => ({
