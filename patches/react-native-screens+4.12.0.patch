@@ -1,11 +1,24 @@
+diff --git a/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h b/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h
+index 6b4b72e..3379f89 100644
+--- a/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h
++++ b/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenShadowNode.h
+@@ -28,7 +28,7 @@ class JSI_EXPORT RNSScreenShadowNode final : public ConcreteViewShadowNode<
+
+   Point getContentOriginOffset(bool includeTransform) const override;
+
+-  void appendChild(const ShadowNode::Shared &child) override;
++  void appendChild(const std::shared_ptr<const ShadowNode> &child) override;
+
+   void layout(LayoutContext layoutContext) override;
+
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.h b/node_modules/react-native-screens/ios/RNSScreenStack.h
 index 71dc7f3..0425e63 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.h
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.h
 @@ -9,6 +9,14 @@
- 
+
  NS_ASSUME_NONNULL_BEGIN
- 
+
 +@protocol RNSDismissibleModalProtocol <NSObject>
 +
 +// If NO is returned, the modal will not be dismissed when new modal is presented.
@@ -15,16 +28,16 @@ index 71dc7f3..0425e63 100644
 +@end
 +
  @interface RNSNavigationController : UINavigationController <RNSViewControllerDelegate>
- 
+
  @end
 diff --git a/node_modules/react-native-screens/ios/RNSScreenStack.mm b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-index b3970af..43bc304 100644
+index b3970af..475eb4c 100644
 --- a/node_modules/react-native-screens/ios/RNSScreenStack.mm
 +++ b/node_modules/react-native-screens/ios/RNSScreenStack.mm
-@@ -534,58 +534,66 @@ - (void)setModalViewControllers:(NSArray<UIViewController *> *)controllers
- 
+@@ -534,58 +534,66 @@ RNS_IGNORE_SUPER_CALL_END
+
    UIViewController *firstModalToBeDismissed = changeRootController.presentedViewController;
- 
+
 -  if (firstModalToBeDismissed != nil) {
 -    const BOOL firstModalToBeDismissedIsOwned = [firstModalToBeDismissed isKindOfClass:RNSScreen.class];
 -    const BOOL firstModalToBeDismissedIsOwnedByThisStack =
@@ -98,7 +111,7 @@ index b3970af..43bc304 100644
 -      return;
      }
 -  }
- 
+
 -  // changeRootController does not have presentedViewController but it does not mean that no modals are in presentation;
 -  // modals could be presented by another stack (nested / outer), third-party view controller or they could be using
 -  // UIModalPresentationCurrentContext / UIModalPresentationOverCurrentContext presentation styles; in the last case
@@ -136,4 +149,4 @@ index b3970af..43bc304 100644
 +      }
      }
    }
- 
+
