@@ -143,7 +143,12 @@ export async function exportAssetsAsync(
     files?: ExportAssetMap;
     hostedNative?: boolean;
   }
-) {
+): Promise<{
+  exp: ExpoConfig;
+  assets: BundleAssetWithFileHashes[];
+  embeddedHashSet: Set<string>;
+  files: ExportAssetMap;
+}> {
   const hostedAssets: BundleAssetWithFileHashes[] = web ? [...web.assets] : [];
 
   // If the native assets should be hosted like web, then we can add them to the hosted assets to export.
