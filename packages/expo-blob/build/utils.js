@@ -1,5 +1,5 @@
 /**
- * Normalizes the content type string for a Blob.
+ * Normalizes the content type string for a `Blob`.
  *
  * Returns the lowercased content type if it is valid, or an empty string otherwise.
  *
@@ -20,15 +20,15 @@ export function normalizedContentType(type) {
     return str.toLowerCase();
 }
 /**
- * Checks if the given object is a JavaScript TypedArray.
+ * Checks if the given object is a JavaScript `TypedArray`.
  *
- * This function detects all standard TypedArray types including:
- * - Int8Array, Int16Array, Int32Array, BigInt64Array
- * - Uint8Array, Uint16Array, Uint32Array, BigUint64Array
- * - Float32Array, Float64Array
+ * This function detects all standard `TypedArray` types including:
+ * - `Int8Array`, `Int16Array`, `Int32Array`, `BigInt64Array`
+ * - `Uint8Array`, `Uint16Array`, `Uint32Array`, `BigUint64Array`
+ * - `Float32Array`, `Float64Array`
  *
- * @param obj - The object to check
- * @returns `true` if the object is a TypedArray, `false` otherwise
+ * @param obj The object to check.
+ * @returns `true` if the object is a TypedArray, `false` otherwise.
  */
 export function isTypedArray(obj) {
     return (obj instanceof Int8Array ||
@@ -44,11 +44,11 @@ export function isTypedArray(obj) {
 }
 /**
  * Processes the options object if defined and not null.
- * The function coerces .type and .options to 'string' (if they are defined objects)
- * TypeError is thrown when the options is not an object or .endings are invalid.
+ * The function coerces `options.type` value and rest of `options` to `string` (if they are defined objects).
+ * `TypeError` is thrown when the options is not an object or `options.endings` value is invalid.
  *
- * @param options
- * @returns BlobPropertyBag object
+ * @param options The `BlobPropertyBag` object to preprocess.
+ * @returns `BlobPropertyBag` object.
  */
 export const preprocessOptions = (options) => {
     if (!options)
