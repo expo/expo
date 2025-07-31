@@ -5,7 +5,6 @@ import EventKit
 internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
     var event: EKEvent?
     
-    // Override the abstract property from ExpoCalendarItem
     override var calendarItem: EKCalendarItem? {
         return event
     }
@@ -14,14 +13,8 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
         self.event = event
     }
     
-    init(eventRecord: Event) throws {
+    convenience init(eventRecord: Event) throws {
         let sharedEventStore = CalendarModule.sharedEventStore
-        //        if let id = eventRecord.id {
-        //            guard let event = fromId(with: id, startDate: parse(date: eventRecord.instanceStartDate)) else {
-        //                throw EventNotFoundException(id)
-        //            }
-        //            return event
-        //        }
         
         guard let calendarId = eventRecord.calendarId else {
             throw CalendarIdRequiredException()
@@ -41,22 +34,17 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
         calendarEvent.location = eventRecord.location
         calendarEvent.notes = eventRecord.notes
         
-        self.event = calendarEvent
-    }
-    
-    init(with: String, startDate: Date) {
-        
+        self.init(event: calendarEvent)
     }
     
     func update(eventRecord: Event, options: RecurringEventOptions) throws {
-        //        try checkCalendarPermissions()
-        let expoEvent = try CustomExpoCalendarEvent(eventRecord: eventRecord)
+        // try checkCalendarPermissions()
         
-        guard let calendarEvent = expoEvent.event else {
+        guard let calendarEvent = self.event else {
             throw EventNotFoundException("EKevent not found")
         }
         
-        try expoEvent.initialize(eventRecord: eventRecord)
+        try self.initialize(eventRecord: eventRecord)
         
         let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
         
@@ -64,11 +52,20 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
     }
     
     func delete(options: RecurringEventOptions) throws {
+        // try checkCalendarPermissions()
         guard let id = self.event?.calendarItemIdentifier else {
-            throw EventIdRequiredException()
+            throw ItemNoLongerExistsException()
         }
-        print("ID: \(id)")
-        throw NotImplementedYetException()
+        
+        let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
+        let instanceStartDate = parse(date: options.instanceStartDate)
+        
+        guard let calendarEvent = getEvent(with: id, startDate: instanceStartDate) else {
+            return
+        }
+        
+        try eventStore.remove(calendarEvent, span: span)
+        self.event = nil
     }
     
     public func initialize(eventRecord: Event) throws {
@@ -115,5 +112,35 @@ internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
         event.notes = eventRecord.notes
         event.isAllDay = eventRecord.allDay
         event.availability = getAvailability(availability: eventRecord.availability)
+    }
+    
+    // TODO: Copied from CalendarModule
+    private func getEvent(with id: String, startDate: Date?) -> EKEvent? {
+        guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
+            return nil
+        }
+        
+        guard let startDate else {
+            return firstEvent
+        }
+        
+        guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+            return firstEvent
+        }
+        
+        let endDate = startDate.addingTimeInterval(2_592_000)
+        let events = eventStore.events(
+            matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
+        )
+        
+        for event in events {
+            if event.calendarItemIdentifier != id {
+                break
+            }
+            if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
+                return event
+            }
+        }
+        return nil
     }
 }

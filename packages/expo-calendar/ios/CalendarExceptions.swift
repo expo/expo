@@ -126,6 +126,12 @@ final internal class CalendarNoLongerExistsException: Exception {
   }
 }
 
+final internal class ItemNoLongerExistsException: Exception {
+  override var reason: String {
+    "The specified calendar item no longer exists."
+  }
+}
+
 final internal class NotImplementedYetException: Exception {
     override var reason: String {
         "Not implemented yet."

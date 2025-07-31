@@ -352,9 +352,9 @@ public final class CalendarNextModule: Module {
                 dateFormatter.string(from: reminder.reminder?.completionDate ?? Date())
             }
             
-            //            Function("delete") { (reminder: CustomExpoCalendarReminder) in
-            //                try reminder.delete()
-            //            }
+            Function("delete") { (reminder: CustomExpoCalendarReminder) in
+                try reminder.delete()
+            }
         }
         
         Class(CustomExpoCalendarAttendee.self) {

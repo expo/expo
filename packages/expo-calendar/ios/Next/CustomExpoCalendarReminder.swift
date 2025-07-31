@@ -9,8 +9,17 @@ internal final class CustomExpoCalendarReminder: ExpoCalendarItem {
     override var calendarItem: EKCalendarItem? {
         return reminder
     }
-
+    
     init(reminder: EKReminder) {
         self.reminder = reminder
+    }
+    
+    func delete() throws {
+        guard let reminder = self.reminder else {
+            throw ItemNoLongerExistsException()
+        }
+        
+        try eventStore.remove(reminder, commit: true)
+        self.reminder = nil
     }
 }

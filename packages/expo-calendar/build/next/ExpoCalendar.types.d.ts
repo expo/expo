@@ -48,9 +48,9 @@ export declare class CustomExpoCalendarEvent {
     originalId?: string;
     openInCalendar(): void;
     editInCalendar(): void;
-    getAttendees(recurringEventOptions: RecurringEventOptions): CustomExpoCalendarAttendee[];
-    update(details: Partial<Event>, recurringEventOptions: RecurringEventOptions): void;
-    delete(recurringEventOptions: RecurringEventOptions): void;
+    getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
+    update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
+    delete(recurringEventOptions?: RecurringEventOptions): void;
 }
 export declare class CustomExpoCalendarReminder {
     id?: string;

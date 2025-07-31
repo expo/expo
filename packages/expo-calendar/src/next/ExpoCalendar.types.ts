@@ -89,12 +89,11 @@ export declare class CustomExpoCalendarEvent {
   editInCalendar(): void;
 
   // TODO: Add support for recurring events options
-  getAttendees(recurringEventOptions: RecurringEventOptions): CustomExpoCalendarAttendee[];
+  getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
 
-  // TODO
-  update(details: Partial<Event>, recurringEventOptions: RecurringEventOptions): void;
+  update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
 
-  delete(recurringEventOptions: RecurringEventOptions): void;
+  delete(recurringEventOptions?: RecurringEventOptions): void;
 }
 
 export declare class CustomExpoCalendarReminder {
