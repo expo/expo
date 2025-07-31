@@ -53,9 +53,7 @@ data class AnchorRecord(
   @Field
   val y: Float = 1.0f
 ) : Record {
-  fun toOffset(): Offset {
-    return Offset(x = x, y = y)
-  }
+  fun toOffset() = Offset(x = x, y = y)
 }
 
 data class MarkerRecord(
