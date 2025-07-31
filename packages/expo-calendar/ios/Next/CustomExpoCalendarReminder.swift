@@ -27,12 +27,10 @@ internal final class CustomExpoCalendarReminder: ExpoCalendarItem {
         self.reminder = nil
     }
 
-    public func initialize(reminderRecord: Reminder, calendar: EKCalendar?) throws {
+    public func initialize(reminderRecord: Reminder, calendar: EKCalendar? = nil) throws {
         guard let reminder else {
             throw ItemNoLongerExistsException()
         }
-        
-        reminder.calendar = eventStore.defaultCalendarForNewReminders()
 
         if let calendar {
             reminder.calendar = calendar

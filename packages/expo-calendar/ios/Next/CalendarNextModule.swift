@@ -447,6 +447,12 @@ public final class CalendarNextModule: Module {
                 dateFormatter.string(from: reminder.reminder?.completionDate ?? Date())
             }
 
+            Function("update") { (reminder: CustomExpoCalendarReminder, reminderRecord: Reminder) in
+                try checkRemindersPermissions()
+                try reminder.initialize(reminderRecord: reminderRecord)
+                try eventStore.save(reminder.reminder!, commit: true)
+            }
+
             Function("delete") { (reminder: CustomExpoCalendarReminder) in
                 try checkRemindersPermissions()
                 try reminder.delete()
