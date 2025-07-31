@@ -175,7 +175,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   _openEventInCalendar = async (event: ExportExpoCalendarEvent) => {
-    const result = await Calendar.openEventInCalendarAsync(
+        const result = await Calendar.openEventInCalendarAsync(
       {
         id: event.id,
       },
@@ -193,7 +193,7 @@ export default class EventsScreen extends React.Component<Props, State> {
   };
 
   _editEventInCalendar = async (event: ExportExpoCalendarEvent) => {
-    const result = await Calendar.editEventInCalendarAsync({ id: event.id });
+    const result = await event.editInCalendarAsync(null);
     setTimeout(() => {
       Alert.alert('editEventInCalendarAsync result', JSON.stringify(result), undefined, {
         cancelable: true,

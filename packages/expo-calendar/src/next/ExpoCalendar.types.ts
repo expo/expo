@@ -16,6 +16,9 @@ import {
   Calendar,
   Reminder,
   Attendee,
+  PresentationOptions,
+  CalendarDialogParams,
+  DialogEventResult,
 } from '../Calendar';
 
 export declare class CustomExpoCalendar {
@@ -43,7 +46,7 @@ export declare class CustomExpoCalendar {
   listReminders(
     startDate: Date | string,
     endDate: Date | string,
-    status?: ReminderStatus | null,
+    status?: ReminderStatus | null
   ): Promise<CustomExpoCalendarReminder[]>;
 
   createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
@@ -83,10 +86,12 @@ export declare class CustomExpoCalendarEvent {
   originalId?: string;
 
   // TODO
-  openInCalendar(): void;
+  openInCalendarAsync(): void;
 
-  // TODO
-  editInCalendar(): void;
+  editInCalendarAsync(
+    params: Omit<CalendarDialogParams, 'id'> | null, // TODO: Support skipping this param instead of passing null, change needed in the core
+    presentationOptions?: PresentationOptions
+  ): Promise<DialogEventResult>;
 
   // TODO: Add support for recurring events options
   getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
