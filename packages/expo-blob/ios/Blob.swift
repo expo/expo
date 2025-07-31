@@ -1,7 +1,7 @@
 import Foundation
 import ExpoModulesCore
 
-public class Blob: SharedObject {
+internal class Blob: SharedObject {
   var blobParts: [BlobPart]
   var options: BlobOptions
 
@@ -82,6 +82,7 @@ public class Blob: SharedObject {
   func text() async -> String {
     let allBytes = await self.bytes()
     let data = Data(allBytes)
+    // swiftlint:disable:next optional_data_string_conversion - we need a fallback mechanism to handle invalid UTF-8 sequences properly.
     return String(data: data, encoding: .utf8) ?? String(decoding: allBytes, as: UTF8.self)
   }
 
