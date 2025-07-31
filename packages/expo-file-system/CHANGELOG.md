@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Make the modern filesystem API the default, move previous one to `expo-file-system/legacy`. ([#38404](https://github.com/expo/expo/pull/38404) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🎉 New features
 
 - Make file implement blob interface directly. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))

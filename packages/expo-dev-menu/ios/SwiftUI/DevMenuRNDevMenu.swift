@@ -13,7 +13,9 @@ struct DevMenuRNDevMenu: View {
       }
       .padding()
     }
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
     .cornerRadius(12)
     .padding(.horizontal)
     .padding(.vertical, 8)

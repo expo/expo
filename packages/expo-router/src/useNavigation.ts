@@ -67,7 +67,8 @@ export function useNavigation<
     getState(): NavigationState | undefined;
   },
 >(parent?: string | Href): T {
-  let navigation = useUpstreamNavigation<any>();
+  const rnNavigation = useUpstreamNavigation<any>();
+  let navigation = rnNavigation;
   let state = useStateForPath();
 
   if (parent === undefined) {
@@ -135,9 +136,10 @@ export function useNavigation<
 
   if (process.env.NODE_ENV !== 'production') {
     if (!navigation) {
+      navigation = rnNavigation;
       const ids: (string | undefined)[] = [];
       while (navigation) {
-        ids.push(navigation.getId() || '/');
+        if (navigation.getId()) ids.push(navigation.getId());
         navigation = navigation.getParent();
       }
 

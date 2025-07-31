@@ -3,6 +3,7 @@ package expo.modules.devlauncher.compose.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +27,7 @@ import expo.modules.devmenu.compose.theme.Theme
 
 @Composable
 fun NoUpdatesScreen(onProfileClick: () -> Unit = {}) {
-  Column {
+  Column(modifier = Modifier.fillMaxSize()) {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
       AppHeader(
         onProfileClick = onProfileClick

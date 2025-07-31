@@ -1,7 +1,7 @@
 package versioned.host.exp.exponent.modules.universal
 
 import expo.modules.core.ModuleRegistry
-import expo.modules.filesystem.FilePermissionModule
+import expo.modules.filesystem.legacy.FilePermissionModule
 import expo.modules.interfaces.filesystem.Permission
 import host.exp.exponent.utils.ScopedContext
 import java.io.File

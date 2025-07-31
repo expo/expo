@@ -5,6 +5,7 @@ package expo.modules.maps
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.location.Location
+import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.MapProperties
@@ -45,6 +46,16 @@ data class Coordinates(
   }
 }
 
+data class AnchorRecord(
+  @Field
+  val x: Float = 0.5f,
+
+  @Field
+  val y: Float = 1.0f
+) : Record {
+  fun toOffset() = Offset(x = x, y = y)
+}
+
 data class MarkerRecord(
   @Field
   val id: String = UUID.randomUUID().toString(),
@@ -65,7 +76,13 @@ data class MarkerRecord(
   val icon: Either<SharedRef<Drawable>, SharedRef<Bitmap>>? = null,
 
   @Field
-  val showCallout: Boolean = true
+  val showCallout: Boolean = true,
+
+  @Field
+  val anchor: AnchorRecord = AnchorRecord(),
+
+  @Field
+  val zIndex: Float = 0.0f
 ) : Record
 
 data class PolylineRecord(
@@ -278,3 +295,17 @@ data class CameraPositionStreetViewRecord(
   @Field
   val bearing: Float = 0f
 ) : Record
+
+data class MapContentPaddingRecord(
+  @Field
+  val start: Float = 0f,
+
+  @Field
+  val end: Float = 0f,
+
+  @Field
+  val top: Float = 0f,
+
+  @Field
+  val bottom: Float = 0f
+): Record

@@ -6,6 +6,7 @@
   border: var(--expo-router-modal-border, 1px solid rgba(61.2, 61.2, 66, 0.29));
   box-sizing: border-box;
   overflow: auto;
+  will-change: transform;
 }
 
 .overlay {
@@ -27,8 +28,11 @@
     max-height: min(var(--expo-router-modal-height, 640px), calc(100dvh - 2rem));
     /* Ensure modal retains a reasonable minimum but never bigger than viewport */
     min-height: min(var(--expo-router-modal-min-height, var(--expo-router-modal-height, 640px)), calc(100dvh - 2rem));
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-      0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /*
+      It is super expensive to calculate the shadow with box-shadow, so we have to use filter instead.
+      Do not change this to box-shadow. Box-shadow caused an INP of 600ms on the modal.
+    */
+    filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
     overflow: auto;
     outline: none;
   }
@@ -92,6 +96,7 @@ body>.transparentDrawerContent {
   position: relative;
   transform: none;
   box-shadow: none;
+  filter: none;
   border-radius: inherit;
   min-height: auto;
   max-height: none;
@@ -116,7 +121,11 @@ body>.transparentDrawerContent {
   min-width: var(--expo-router-modal-min-width, auto);
   max-width: var(--expo-router-modal-max-width, 90vw);
   margin: 0;
-  box-shadow: 0 25px 150px -12px rgb(0 0 0 / 0.4);
+  /*
+    It is super expensive to calculate the shadow with box-shadow, so we have to use filter instead.
+    Do not change this to box-shadow. Box-shadow caused an INP of 600ms on the modal.
+  */
+  filter: drop-shadow(0px 25px 50px rgba(0, 0, 0, 0.3));
   border-radius: var(--expo-router-modal-border-radius, 10px);
 }
 

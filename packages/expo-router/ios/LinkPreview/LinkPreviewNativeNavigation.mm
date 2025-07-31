@@ -6,12 +6,52 @@
 #import <RNScreens/RNSScreen.h>
 #import <RNScreens/RNSScreenStack.h>
 
-@implementation LinkPreviewNativeNavigation {
-  RNSScreenView *preloadedScreenView;
-  RNSScreenStackView *stackView;
+@implementation LinkPreviewNativeNavigationObjC {
 }
 
-- (void)pushPreloadedView {
++ (BOOL)isRNSScreenStackView:(UIView *)view {
+  if (view != nil) {
+    return [view isKindOfClass:[RNSScreenStackView class]];
+  }
+
+  return NO;
+}
+
++ (nonnull NSArray<NSString *> *)getStackViewScreenIds:(UIView *)view {
+  if (view != nil && [view isKindOfClass:[RNSScreenStackView class]]) {
+    RNSScreenStackView *stackView = (RNSScreenStackView *)view;
+    return stackView.screenIds;
+  }
+  return @[];
+}
+
++ (nonnull NSArray<UIView *> *)getScreenViews:(UIView *)view {
+  if (view != nil && [view isKindOfClass:[RNSScreenStackView class]]) {
+    RNSScreenStackView *stackView = (RNSScreenStackView *)view;
+    return stackView.reactSubviews;
+  }
+  return @[];
+}
+
++ (nonnull NSString *)getScreenId:(UIView *)view {
+  if (view != nil && [view isKindOfClass:[RNSScreenView class]]) {
+    RNSScreenView *screenView = (RNSScreenView *)view;
+    return screenView.screenId;
+  }
+  return nil;
+}
+
++ (void)pushPreloadedView:(UIView *)view ontoStackView:(UIView *)rawStackView {
+  if (![LinkPreviewNativeNavigationObjC isRNSScreenStackView:rawStackView]) {
+    NSLog(@"ExpoRouter: The provided stack view is not a RNSScreenStackView.");
+    return;
+  }
+  if (![view isKindOfClass:[RNSScreenView class]]) {
+    NSLog(@"ExpoRouter: The provided view is not a RNSScreenView.");
+    return;
+  }
+  RNSScreenStackView *stackView = (RNSScreenStackView *)rawStackView;
+  RNSScreenView *preloadedScreenView = (RNSScreenView *)view;
   if (preloadedScreenView != nil && stackView != nil) {
     // Instead of pushing the preloaded screen view, we set its activity state
     // React native screens will then handle the rest.
@@ -41,7 +81,8 @@
               [firstChild isKindOfClass:[RNSScreenView class]]) {
             RNSScreenView *screenContentView = (RNSScreenView *)firstChild;
             // Same as above, we let React Native Screens handle the transition.
-            // We need to set the activity of inner screen as well, because its react value is the same as the preloaded screen - 0.
+            // We need to set the activity of inner screen as well, because its
+            // react value is the same as the preloaded screen - 0.
             // https://github.com/software-mansion/react-native-screens/blob/8b82e081e8fdfa6e0864821134bda9e87a745b00/src/components/ScreenStackItem.tsx#L151
             [screenContentView setActivityState:2];
             [innerScreenStack markChildUpdated];
@@ -54,88 +95,6 @@
     NSLog(@"ExpoRouter: No preloaded screen view found. Relying on JS "
           @"navigation.");
   }
-}
-
-- (void)updatePreloadedView:(nullable NSString *)screenId
-            withUiResponder:(nonnull UIResponder *)responder {
-  if (screenId != nil && [screenId length] > 0) {
-    if ([self setPreloadedScreenViewWithScreenId:screenId
-                                 withUiResponder:responder]) {
-      NSLog(@"ExpoRouter: Preloaded screen view updated.");
-    } else {
-      NSLog(@"ExpoRouter: No native screen view found with screenId: %@",
-            screenId);
-    }
-  } else {
-    preloadedScreenView = nil;
-  }
-}
-
-- (nonnull NSArray<RNSScreenStackView *> *)
-    findAllScreenStackViewsInResponderChain:(nonnull UIResponder *)responder {
-  NSMutableArray<RNSScreenStackView *> *stackViews = [NSMutableArray array];
-
-  while (responder) {
-    responder = [responder nextResponder];
-    if ([responder isKindOfClass:[RNSScreenStackView class]]) {
-      [stackViews addObject:(RNSScreenStackView *)responder];
-    }
-  }
-
-  return stackViews;
-}
-
-- (nonnull NSArray<RNSScreenView *> *)extractScreenViewsFromSubviews:
-    (nonnull NSArray<UIView *> *)subviews {
-  NSMutableArray<RNSScreenView *> *screenViews = [NSMutableArray array];
-
-  for (UIView *subview in subviews) {
-    if ([subview isKindOfClass:[RNSScreenView class]]) {
-      [screenViews addObject:(RNSScreenView *)subview];
-    }
-  }
-  return screenViews;
-}
-
-- (BOOL)setPreloadedScreenViewWithScreenId:(nonnull NSString *)screenId
-                           withUiResponder:(nonnull UIResponder *)responder {
-  NSArray<RNSScreenStackView *> *stacks =
-      [self findAllScreenStackViewsInResponderChain:responder];
-
-  for (RNSScreenStackView *stack in stacks) {
-    if ([stack.screenIds containsObject:screenId] &&
-        [self setPreloadedScreenViewWithScreenId:screenId
-                                   withStackView:stack]) {
-      return YES;
-    }
-  }
-  return NO;
-}
-
-- (BOOL)setPreloadedScreenViewWithScreenId:(nonnull NSString *)screenId
-                             withStackView:(nonnull RNSScreenStackView *)stack {
-  NSArray<RNSScreenView *> *screenSubviews =
-      [self extractScreenViewsFromSubviews:stack.reactSubviews];
-  RNSScreenView *screenView = [self findPreloadedScreenView:screenSubviews
-                                               withScreenId:screenId];
-  if (screenView != nil) {
-    preloadedScreenView = screenView;
-    stackView = stack;
-    return YES;
-  }
-  return NO;
-}
-
-- (nullable RNSScreenView *)
-    findPreloadedScreenView:(nonnull NSArray<RNSScreenView *> *)screenViews
-               withScreenId:(nonnull NSString *)screenId {
-  for (RNSScreenView *screenView in screenViews) {
-    if (screenView.activityState == 0 &&
-        [screenView.screenId isEqualToString:screenId]) {
-      return screenView;
-    }
-  }
-  return nil;
 }
 
 @end

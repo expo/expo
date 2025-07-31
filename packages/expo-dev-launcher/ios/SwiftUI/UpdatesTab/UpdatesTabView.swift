@@ -2,17 +2,6 @@
 
 import SwiftUI
 
-func getDevLauncherBundle() -> Bundle? {
-  if let bundleURL = Bundle.main.url(forResource: "EXDevLauncher", withExtension: "bundle") {
-    if let bundle = Bundle(url: bundleURL) {
-      return bundle
-    }
-  }
-
-  // fallback to the main bundle
-  return .main
-}
-
 struct UpdatesTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
 
@@ -28,7 +17,9 @@ struct UpdatesTabView: View {
         UpdatesListView()
       }
     }
+    #if !os(tvOS)
     .background(Color(.systemGroupedBackground))
+    #endif
   }
 }
 
