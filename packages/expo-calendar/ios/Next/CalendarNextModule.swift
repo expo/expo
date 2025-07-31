@@ -316,13 +316,33 @@ public final class CalendarNextModule: Module {
                 customReminder.serializeRecurrenceRule()
             }
             
-            //           Property("startDate") { (reminder: CustomExpoCalendarReminder) in
-            //               dateFormatter.string(from: reminder.reminder?.calendar.startDate ?? Date())
-            //           }
+            Property("startDate") { (customReminder: CustomExpoCalendarReminder) -> String? in
+                let currentCalendar = Calendar.current
+                
+                guard let startDateComponents = customReminder.reminder?.startDateComponents else {
+                    return nil
+                }
+                
+                guard let startDate = currentCalendar.date(from: startDateComponents) else {
+                    return nil
+                }
+                
+                return dateFormatter.string(from: startDate)
+            }
             
-            //            Property("dueDate") { (reminder: CustomExpoCalendarReminder) in
-            //                dateFormatter.string(from: reminder.reminder?.dueDate ?? Date())
-            //            }
+            Property("dueDate") { (customReminder: CustomExpoCalendarReminder) -> String? in
+                let currentCalendar = Calendar.current
+                
+                guard let dueDateComponents = customReminder.reminder?.dueDateComponents else {
+                    return nil
+                }
+                
+                guard let dueDate = currentCalendar.date(from: dueDateComponents) else {
+                    return nil
+                }
+                
+                return dateFormatter.string(from: dueDate)
+            }
             
             Property("completed") { (reminder: CustomExpoCalendarReminder) in
                 reminder.reminder?.isCompleted ?? false
