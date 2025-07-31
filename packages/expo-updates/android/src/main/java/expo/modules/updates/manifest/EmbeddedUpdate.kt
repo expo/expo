@@ -27,7 +27,7 @@ class EmbeddedUpdate private constructor(
   private val assets: JSONArray?
 ) : Update {
   override val updateEntity: UpdateEntity by lazy {
-    UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@EmbeddedUpdate.manifest.getRawJson()).apply {
+    UpdateEntity(id, commitTime, runtimeVersion, scopeKey, this@EmbeddedUpdate.manifest.getRawJson(), null, null).apply {
       status = UpdateStatus.EMBEDDED
     }
   }

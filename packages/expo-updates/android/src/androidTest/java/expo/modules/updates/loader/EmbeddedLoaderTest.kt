@@ -258,7 +258,9 @@ class EmbeddedLoaderTest {
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       manifest.updateEntity!!.scopeKey,
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      null,
+      null
     )
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
@@ -283,7 +285,9 @@ class EmbeddedLoaderTest {
       manifest.updateEntity!!.commitTime,
       manifest.updateEntity!!.runtimeVersion,
       manifest.updateEntity!!.scopeKey,
-      manifest.updateEntity!!.manifest
+      manifest.updateEntity!!.manifest,
+      null,
+      null
     )
     update.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(update)

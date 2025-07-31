@@ -46,7 +46,7 @@ class BuildDataTest {
     val date = Date()
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
-    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId, JSONObject("{}"))
+    val testUpdate = UpdateEntity(uuid, date, runtimeVersion, projectId, JSONObject("{}"), Uri.parse("https://exp.host/@test/test"), mapOf("expo-channel-name" to "test"))
     db.updateDao().insertUpdate(testUpdate)
 
     spyBuildData = spyk(BuildData)

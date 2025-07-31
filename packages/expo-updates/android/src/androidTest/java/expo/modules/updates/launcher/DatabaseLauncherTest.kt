@@ -45,7 +45,7 @@ class DatabaseLauncherTest {
 
   @Test
   fun testLaunch_MarkUpdateAccessed() = runTest {
-    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"))
+    val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey", JSONObject("{}"), Uri.parse("https://example.com"), null)
     testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     db.updateDao().insertUpdate(testUpdate)
 

@@ -13,11 +13,11 @@ class ReaperSelectionPolicyDevelopmentClientTest {
   private val runtimeVersion = "1.0"
 
   // test updates with different scopes to ensure this policy ignores scopes
-  private val update1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), runtimeVersion, "scope1", JSONObject("{}"))
-  private val update2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), runtimeVersion, "scope2", JSONObject("{}"))
-  private val update3 = UpdateEntity(UUID.randomUUID(), Date(1608667857776L), runtimeVersion, "scope3", JSONObject("{}"))
-  private val update4 = UpdateEntity(UUID.randomUUID(), Date(1608667857777L), runtimeVersion, "scope4", JSONObject("{}"))
-  private val update5 = UpdateEntity(UUID.randomUUID(), Date(1608667857778L), runtimeVersion, "scope5", JSONObject("{}"))
+  private val update1 = UpdateEntity(UUID.randomUUID(), Date(1608667857774L), runtimeVersion, "scope1", JSONObject("{}"), null, null)
+  private val update2 = UpdateEntity(UUID.randomUUID(), Date(1608667857775L), runtimeVersion, "scope2", JSONObject("{}"), null, null)
+  private val update3 = UpdateEntity(UUID.randomUUID(), Date(1608667857776L), runtimeVersion, "scope3", JSONObject("{}"), null, null)
+  private val update4 = UpdateEntity(UUID.randomUUID(), Date(1608667857777L), runtimeVersion, "scope4", JSONObject("{}"), null, null)
+  private val update5 = UpdateEntity(UUID.randomUUID(), Date(1608667857778L), runtimeVersion, "scope5", JSONObject("{}"), null, null)
 
   // for readability/writability, test with a policy that keeps only 3 updates;
   // the actual functionality is independent of the number
