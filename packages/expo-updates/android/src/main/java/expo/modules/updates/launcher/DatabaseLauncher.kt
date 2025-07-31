@@ -147,16 +147,20 @@ class DatabaseLauncher(
   suspend fun getLaunchableUpdate(database: UpdatesDatabase): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
-    // We can only run an update marked as embedded if it's actually the update embedded in the
-    // current binary. We might have an older update from a previous binary still listed as
-    // "EMBEDDED" in the database so we need to do this check.
-    val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
+    val embeddedUpdate = EmbeddedManifestUtils.requireEmbeddedUpdate(context, configuration)
     val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
-      if (update.status == UpdateStatus.EMBEDDED) {
-        if (embeddedUpdate != null && embeddedUpdate.updateEntity.id != update.id) {
-          continue
-        }
+
+      // We can only run an update marked as embedded if it's actually the update embedded in the
+      // current binary. We might have an older update from a previous binary still listed as
+      // "EMBEDDED" in the database so we need to do this check.
+      if (update.status == UpdateStatus.EMBEDDED && embeddedUpdate.updateEntity.id != update.id) {
+        continue
+      }
+
+      // If embedded update is disabled, we should exclude embedded update from launchable updates
+      if (!configuration.hasEmbeddedUpdate && embeddedUpdate.updateEntity.id == update.id) {
+        continue
       }
       filteredLaunchableUpdates.add(update)
     }

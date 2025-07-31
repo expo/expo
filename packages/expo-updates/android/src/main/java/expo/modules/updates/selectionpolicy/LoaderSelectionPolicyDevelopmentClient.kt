@@ -30,13 +30,12 @@ class LoaderSelectionPolicyDevelopmentClient(private val config: UpdatesConfigur
       return true
     }
 
-    val hasUpdatesOverride = config?.hasUpdatesOverride ?: false
-    if (hasUpdatesOverride) {
-      return newUpdate.id != launchedUpdate.id &&
-        newUpdate.url == config?.updateUrl &&
-        newUpdate.requestHeaders == config?.requestHeaders
+    if (newUpdate.url != null && newUpdate.url != config?.updateUrl) {
+      return false
     }
-
+    if (newUpdate.requestHeaders != null && newUpdate.requestHeaders != config?.requestHeaders) {
+      return false
+    }
     return newUpdate.commitTime.after(launchedUpdate.commitTime)
   }
 

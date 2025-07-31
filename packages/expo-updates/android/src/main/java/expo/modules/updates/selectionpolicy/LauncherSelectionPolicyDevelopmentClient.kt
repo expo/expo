@@ -18,15 +18,6 @@ class LauncherSelectionPolicyDevelopmentClient(
   ): UpdateEntity? =
     updates
       .filter { runtimeVersion == it.runtimeVersion && SelectionPolicies.matchesFilters(it, filters) }
-      .let { candidates ->
-        val hasUpdatesOverride = config?.hasUpdatesOverride ?: false
-        if (hasUpdatesOverride) {
-          candidates.filter {
-            it.url == config?.updateUrl && it.requestHeaders == config?.requestHeaders
-          }
-        } else {
-          candidates
-        }
-      }
+      .filter { (it.url == null && it.requestHeaders == null) || (it.url == config?.updateUrl && it.requestHeaders == config?.requestHeaders) }
       .maxByOrNull { it.commitTime }
 }
