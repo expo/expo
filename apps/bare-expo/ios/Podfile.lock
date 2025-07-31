@@ -474,8 +474,35 @@ PODS:
   - ExpoImagePicker (16.1.4):
     - ExpoModulesCore
   - ExpoInsights (0.9.3):
+    - boost
+    - DoubleConversion
     - EASClient
     - ExpoModulesCore
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - ExpoKeepAwake (14.1.4):
     - ExpoModulesCore
   - ExpoLinearGradient (14.1.4):
@@ -4386,7 +4413,7 @@ SPEC CHECKSUMS:
   ExpoImage: 736d4bf4e14437d0e0c7dafdd3aa169c17d447a7
   ExpoImageManipulator: 8d088059bf4f6287edb451925cc280b0d12b7627
   ExpoImagePicker: 235489a513df4c70c402f2a49a47fdd94053d63d
-  ExpoInsights: 657d71d1bef38f0b832cfc9c8ea0dde28068dbfd
+  ExpoInsights: c4d32540336dbe7c2094794f721c9024fa33558f
   ExpoKeepAwake: 95037f8576ba678db79cbf558b933400c81997a7
   ExpoLinearGradient: 110244a240361e3351756225e5fcc4c6c07f5431
   ExpoLinking: 5d151d4a497d7e375308602f0a89b4e8acf7b5f8
