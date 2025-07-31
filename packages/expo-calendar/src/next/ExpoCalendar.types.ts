@@ -56,8 +56,7 @@ export declare class CustomExpoCalendar {
 
   createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
 
-  // TODO
-  createReminder(details: Partial<Reminder>): CustomExpoCalendarReminder;
+  createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): CustomExpoCalendarReminder;
 
   update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
 
@@ -98,7 +97,6 @@ export declare class CustomExpoCalendarEvent {
     params: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
-  // TODO: Add support for recurring events options
   getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
 
   update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
@@ -126,7 +124,6 @@ export declare class CustomExpoCalendarReminder {
   // TODO
   update(details: Partial<Reminder>): void;
 
-  // TODO
   delete(): void;
 }
 

@@ -5,6 +5,7 @@ import {
   Calendar,
   EntityTypes,
   Event,
+  Reminder,
   ReminderStatus,
   stringifyDateValues,
   stringifyIfDate,
@@ -20,6 +21,10 @@ export class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarR
 export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
   override createEvent(details: Partial<Event>): ExportExpoCalendarEvent {
     return super.createEvent(stringifyDateValues(details));
+  }
+
+  override createReminder(details: Partial<Reminder>): ExportExpoCalendarReminder {
+    return super.createReminder(stringifyDateValues(details));
   }
 
   override listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[] {

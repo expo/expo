@@ -185,6 +185,17 @@ public final class CalendarNextModule: Module {
                 return expoCalendarEvent
             }
 
+            Function("createReminder") {
+                (calendar: CustomExpoCalendar, eventRecord: Reminder, options: RecurringEventOptions?)
+                    -> CustomExpoCalendarReminder in
+                try checkRemindersPermissions()
+                let reminder = CustomExpoCalendarReminder()
+                try reminder.initialize(reminderRecord: eventRecord, calendar: calendar.calendar)
+
+                try eventStore.save(reminder.reminder!, commit: true)
+                return reminder
+            }
+
             Function("update") {
                 (calendar: CustomExpoCalendar, calendarRecord: CalendarRecord) throws in
                 try calendar.update(calendarRecord: calendarRecord)

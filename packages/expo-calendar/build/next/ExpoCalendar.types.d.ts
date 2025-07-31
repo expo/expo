@@ -21,7 +21,7 @@ export declare class CustomExpoCalendar {
      */
     listReminders(startDate: Date | string, endDate: Date | string, status?: ReminderStatus | null): Promise<CustomExpoCalendarReminder[]>;
     createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
-    createReminder(details: Partial<Reminder>): CustomExpoCalendarReminder;
+    createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): CustomExpoCalendarReminder;
     update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
     delete(): void;
 }

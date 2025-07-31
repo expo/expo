@@ -12,6 +12,9 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
     createEvent(details) {
         return super.createEvent(stringifyDateValues(details));
     }
+    createReminder(details) {
+        return super.createReminder(stringifyDateValues(details));
+    }
     listEvents(startDate, endDate) {
         if (!startDate) {
             throw new Error('listEvents must be called with a startDate (date) to search for events');
