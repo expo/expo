@@ -24,7 +24,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
 
     const workspaceInfo = await Workspace.getInfoAsync();
 
-    // Append project templates as they can't be a yarn workspace.
+    // Append project templates as they're not yarn workspaces.
     const templates = await getAvailableProjectTemplatesAsync();
     templates.forEach((template) => {
       workspaceInfo[template.packageName] = {

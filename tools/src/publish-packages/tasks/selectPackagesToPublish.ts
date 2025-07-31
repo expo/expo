@@ -87,10 +87,14 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
 
     // Enforce publishing expo-template-bare-minimum if expo is selected.
     const expoParcel = [...parcelsToPublish].find((parcel) => parcel.pkg.packageName === 'expo');
-    const bareTemplateNode = [...dependentNodes].find(
-      (node) => node.name === 'expo-template-bare-minimum'
-    );
-    if (expoParcel && bareTemplateNode) {
+    const isBareTemplateSelected =
+      [...parcelsToPublish].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      ) !== undefined;
+    if (expoParcel && !isBareTemplateSelected) {
+      const bareTemplateNode = [...dependentNodes].find(
+        (node) => node.pkg.packageName === 'expo-template-bare-minimum'
+      )!;
       const templateParcel = await createParcelAsync(bareTemplateNode);
 
       // Template don't not have changelog so we need to match Expo's release type.

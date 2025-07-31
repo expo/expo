@@ -18,14 +18,12 @@ export async function getAvailableProjectTemplatesAsync(): Promise<Package[]> {
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => path.join(TEMPLATES_DIR, dirent.name));
 
-  return Promise.all<Package>(
-    templates.map(async (templatePath) => {
-      const fullPackageJsonPath = path.join(templatePath, 'package.json');
-      const packageJson = require(fullPackageJsonPath);
+  return templates.map((templatePath) => {
+    const fullPackageJsonPath = path.join(templatePath, 'package.json');
+    const packageJson = require(fullPackageJsonPath);
 
-      return new Package(templatePath, packageJson);
-    })
-  );
+    return new Package(templatePath, packageJson);
+  });
 }
 
 /**
