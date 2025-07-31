@@ -1,11 +1,9 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/RCTComponentData+Privates.h>
-#if __has_include(<React/React-Core-umbrella.h>)
-  #import <React/React-Core-umbrella.h>
-#else
-  #import <React_Core/React_Core-umbrella.h>
-#endif
+#import "RCTComponentData+Privates.h"
+
+@class RCTBridge;
+@protocol RCTEventDispatcherProtocol;
 
 @implementation RCTComponentDataSwiftAdapter
 

@@ -1,11 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXAppDefines.h>
-#if __has_include(<React/React-Core-umbrella.h>)
-  #import <React/React-Core-umbrella.h>
-#else
-  #import <React_Core/React_Core-umbrella.h>
-#endif
 
 @implementation EXAppDefines
 

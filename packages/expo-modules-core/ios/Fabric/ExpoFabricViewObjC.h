@@ -4,12 +4,6 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 
-#if __has_include(<React/React-Core-umbrella.h>)
-#import <React/React-Core-umbrella.h>
-#else
-#import <React_Core/React_Core-umbrella.h>
-#endif
-
 #ifdef __cplusplus
 
 #import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -25,6 +19,8 @@
 
 #endif // __cplusplus
 #else  // Paper
+
+#import <React/RCTView.h>
 
 @interface ExpoFabricViewObjC : RCTView
 @end
