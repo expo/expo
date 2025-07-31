@@ -1,1 +1,1 @@
-export * from './build/devtools';
+export * from '@expo/devtools';

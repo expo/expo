@@ -33,14 +33,16 @@
 - Fix children update in modal ([#38064](https://github.com/expo/expo/pull/38064) by [@Ubax](https://github.com/Ubax))
 - Add static rewrites support to export and server-side handling ([#37930](https://github.com/expo/expo/pull/37930) by [@hassankhan](https://github.com/hassankhan))
 - Fix old arch build with LinkPreview code ([#38305](https://github.com/expo/expo/pull/38305) by [@Ubax](https://github.com/Ubax))
+- [web] fix modal INP lag and upgraded Vaul to 1.1.2 ([#38444](https://github.com/expo/expo/pull/38444) by [@hirbod](https://github.com/hirbod))
 - [iOS] Add compiler flags for new arch to expo router ([#38397](https://github.com/expo/expo/pull/38397) by [@Ubax](https://github.com/Ubax))
 - Fix modal with detents fixToContents on Android ([#38440](https://github.com/expo/expo/pull/38440) by [@Ubax](https://github.com/Ubax))
+- Fix detents in web modal ([#38446](https://github.com/expo/expo/pull/38446) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
 - Create href preview component ([#37335](https://github.com/expo/expo/pull/37335) by [@Ubax](https://github.com/Ubax))
 - Add formsheet warning ([#37982](https://github.com/expo/expo/pull/37982) by [@Ubax](https://github.com/Ubax))
-
+- Extract screen search logic to swift ([#38320](https://github.com/expo/expo/pull/38320) by [@Ubax](https://github.com/Ubax))
 
 ## 5.1.4 - 2025-07-18
 

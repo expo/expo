@@ -83,9 +83,6 @@ target 'Expo Go' do
     :path => react_native_path,
     :hermes_enabled => true,
   )
-  setup_jsc!(
-    :react_native_path => react_native_path,
-  )
 
   post_install do |installer|
     # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated

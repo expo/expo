@@ -36,7 +36,9 @@ struct HeaderView: View {
     }
     .padding(.horizontal)
     .padding(.vertical, 12)
+    #if !os(tvOS)
     .background(Color(.systemBackground))
+    #endif
   }
 
   private var versionInfo: some View {

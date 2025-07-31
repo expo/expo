@@ -93,7 +93,9 @@ struct RecentlyOpenedAppRow: View {
           .foregroundColor(.secondary)
       }
       .padding()
+      #if !os(tvOS)
       .background(Color(.systemBackground))
+      #endif
     }
     .buttonStyle(PlainButtonStyle())
   }

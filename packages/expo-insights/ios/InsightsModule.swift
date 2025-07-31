@@ -11,6 +11,8 @@ public final class InsightsModule: Module {
     Name("ExpoInsights")
 
     OnCreate {
+      self.subscribeToReactMarkers()
+
       DispatchQueue.main.async {
         // The app launch event should be sent only during the first launch
         // which means that we need to prevent dispatching them on app reload.
@@ -23,6 +25,23 @@ public final class InsightsModule: Module {
         }
       }
     }
+
+    OnDestroy {
+      NotificationCenter.default.removeObserver(self)
+    }
+  }
+
+  private func subscribeToReactMarkers() {
+    NotificationCenter.default.addObserver(self, selector: #selector(contentAppeared), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
+  }
+
+  @objc
+  private func contentAppeared(_ notification: Notification) {
+    let date = Date()
+    Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_START", at: ReactMarker.getRunJSBundleStartTime())
+    Insights.shared.sendOnce(event: "RUN_JS_BUNDLE_END", at: ReactMarker.getRunJSBundleEndTime())
+    Insights.shared.sendOnce(event: "APP_STARTUP_END", at: ReactMarker.getAppStartupEndTime())
+    Insights.shared.sendOnce(event: "CONTENT_APPEARED", at: date)
   }
 
   /**
