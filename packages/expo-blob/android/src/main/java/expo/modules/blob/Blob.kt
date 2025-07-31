@@ -12,7 +12,7 @@ import kotlin.math.min
 
 internal const val DEFAULT_TYPE = ""
 
-class Blob(
+internal class Blob(
   val blobParts: List<InternalBlobPart> = listOf(),
   rawType: String = DEFAULT_TYPE
 ) : SharedObject() {
@@ -25,7 +25,7 @@ class Blob(
   } else {
     DEFAULT_TYPE
   }
-  public override fun getAdditionalMemoryPressure(): Int {
+  override fun getAdditionalMemoryPressure(): Int {
     return size
   }
 
@@ -90,7 +90,7 @@ private fun validType(type: String): Boolean {
   return true
 }
 
-typealias BlobPart = EitherOfThree<String, Blob, TypedArray>
+internal typealias BlobPart = EitherOfThree<String, Blob, TypedArray>
 
 private fun TypedArray.bytes(): ByteArray {
   val byteArray = ByteArray(this.byteLength)
@@ -146,7 +146,7 @@ internal fun makeBlob(blobParts: List<BlobPart>?, options: BlobOptionsBag = Blob
   return Blob((blobParts ?: listOf()).internal(options.endings == EndingType.NATIVE), options.type)
 }
 
-sealed class InternalBlobPart {
+internal sealed class InternalBlobPart {
   class StringWrapper(string: String) : InternalBlobPart() {
     val cachedBytes: ByteArray by lazy {
       string.toByteArray()
@@ -172,12 +172,12 @@ sealed class InternalBlobPart {
   }
 }
 
-enum class EndingType(val str: String = "transparent") : Enumerable {
+internal enum class EndingType(val str: String = "transparent") : Enumerable {
   TRANSPARENT("transparent"),
   NATIVE("native")
 }
 
-class BlobOptionsBag : Record {
+internal class BlobOptionsBag : Record {
   @Field
   val type: String = DEFAULT_TYPE
 
