@@ -2,7 +2,12 @@
 
 #import <objc/runtime.h>
 
-#import <React/React-Core-umbrella.h>
+#if __has_include(<React/React-Core-umbrella.h>)
+  #import <React/React-Core-umbrella.h>
+#else
+  #import <React_Core/React_Core-umbrella.h>
+#endif
+
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
 
 #import <jsi/jsi.h>
@@ -141,7 +146,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   if (_nativeModulesConfig) {
     return _nativeModulesConfig;
   }
-  
+
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
@@ -167,13 +172,13 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
     }];
     [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
   }
-  
+
   EXModulesProxyConfig *config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
                                                                      methodNames:exportedMethodsNamesAccumulator
                                                                     viewManagers:[NSMutableDictionary new]];
   // decorate legacy config with sweet expo-modules config
   [config addEntriesFromConfig:[_appContext expoModulesConfig]];
-  
+
   _nativeModulesConfig = config;
   return config;
 }
