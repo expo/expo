@@ -70,7 +70,7 @@ export declare class CustomExpoCalendarReminder {
     dueDate?: string | Date;
     completed?: boolean;
     completionDate?: string | Date;
-    update(details: Partial<Reminder>): void;
+    update(details: Omit<Partial<Reminder>, 'id' | 'calendarId' | 'startDate' | 'dueDate' | 'completionDate'>): void;
     delete(): void;
 }
 export declare class CustomExpoCalendarAttendee {

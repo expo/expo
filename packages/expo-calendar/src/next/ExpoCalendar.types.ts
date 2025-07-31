@@ -121,8 +121,13 @@ export declare class CustomExpoCalendarReminder {
   completed?: boolean;
   completionDate?: string | Date;
 
-  // TODO
-  update(details: Partial<Reminder>): void;
+  // TODO: Add support for dates
+  update(
+    details: Omit<
+      Partial<Reminder>,
+      'id' | 'calendarId' | 'startDate' | 'dueDate' | 'completionDate'
+    >
+  ): void;
 
   delete(): void;
 }
