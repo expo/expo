@@ -15,24 +15,38 @@ object EmbeddedManifestUtils {
 
   private var sEmbeddedUpdate: EmbeddedUpdate? = null
 
+  /**
+   * Gets the embedded update.
+   * If the [UpdatesConfiguration.hasEmbeddedUpdate] is false, it returns null
+   */
   fun getEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate? {
     if (!configuration.hasEmbeddedUpdate) {
       return null
     }
-    if (sEmbeddedUpdate == null) {
-      try {
-        context.assets.open(MANIFEST_FILENAME).use { stream ->
-          val manifestString = stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
-          val manifestJson = JSONObject(manifestString)
-          // automatically verify embedded manifest since it was already codesigned
-          manifestJson.put("isVerified", true)
-          sEmbeddedUpdate = UpdateFactory.getEmbeddedUpdate(manifestJson, configuration)
-        }
-      } catch (e: Exception) {
-        Log.e(TAG, "Could not read embedded manifest", e)
-        throw AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle.", e)
-      }
-    }
-    return sEmbeddedUpdate!!
+    return requireEmbeddedUpdate(context, configuration)
   }
-}
+
+  /**
+   * Gets the embedded update even if [UpdatesConfiguration.hasEmbeddedUpdate] is false
+   */
+  fun requireEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate =
+    sEmbeddedUpdate ?: loadEmbeddedUpdate(context, configuration).also { sEmbeddedUpdate = it }
+
+  private fun loadEmbeddedUpdate(context: Context, configuration: UpdatesConfiguration): EmbeddedUpdate =
+    try {
+      context.assets.open(MANIFEST_FILENAME).use { stream ->
+        val manifestString = stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+        return JSONObject(manifestString)
+          .apply {
+            // automatically verify embedded manifest since it was already codesigned
+            put("isVerified", true)
+          }
+          .let {
+            UpdateFactory.getEmbeddedUpdate(it, configuration)
+          }
+      }
+    } catch (e: Exception) {
+      Log.e(TAG, "Could not read embedded manifest", e)
+      throw AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle.", e)
+    }
+  }
