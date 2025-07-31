@@ -14,7 +14,7 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
-import { Tabs, Tab } from '~/ui/components/Tabs'
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
@@ -103,8 +103,7 @@ export default function App() {
   }
 
   return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>SplashScreen Demo! 👋</Text>
       <Entypo name="rocket" size={30} />
     </View>
