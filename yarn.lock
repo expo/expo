@@ -13641,7 +13641,7 @@ react-native-worklets@0.4.1:
     "@babel/preset-typescript" "^7.16.7"
     convert-source-map "^2.0.0"
 
-react-native@0.80.1, react-native@0.81.0-rc.3:
+react-native@0.81.0-rc.3:
   version "0.81.0-rc.3"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.81.0-rc.3.tgz#2112e58184908d498d064421115d3a5247190c4b"
   integrity sha512-yTm+PrEeuEiNyvIAe2wb2+XoUxxRaFKX/48s01M0SrG50RG0DPamrRRfhZbhKCUBMQ7M3jJUj6DcdCsZylwDEA==
