@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.compose.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -40,6 +39,7 @@ import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
 import expo.modules.devlauncher.compose.ui.AppHeader
+import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionHelper
 import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.ScreenHeaderContainer
@@ -133,10 +133,27 @@ fun HomeScreen(
   onProfileClick: () -> Unit
 ) {
   val hasPackager = state.runningPackagers.isNotEmpty()
-  val dialogState = rememberDialogState(initiallyVisible = false)
+  val howToStartDevelopmentDialogState = rememberDialogState(initiallyVisible = false)
+  val errorDialogState = rememberDialogState(initiallyVisible = false)
   val scrollState = rememberScrollState()
 
-  HowToStartDevelopmentServerDialog(dialogState)
+  LaunchedEffect(state.loadingError) {
+    if (state.loadingError != null) {
+      errorDialogState.visible = true
+    }
+  }
+
+  LaunchedEffect(errorDialogState.visible) {
+    if (!errorDialogState.visible) {
+      onAction(HomeAction.ClearLoadingError)
+    }
+  }
+
+  HowToStartDevelopmentServerDialog(howToStartDevelopmentDialogState)
+  AppLoadingErrorDialog(
+    errorDialogState,
+    currentError = state.loadingError
+  )
 
   Column {
     ScreenHeaderContainer(modifier = Modifier.padding(Theme.spacing.medium)) {
@@ -175,7 +192,7 @@ fun HomeScreen(
             if (hasPackager) {
               Row {
                 Button(onClick = {
-                  dialogState.visible = true
+                  howToStartDevelopmentDialogState.visible = true
                 }) {
                   Theme.colors.icon
                   DayNighIcon(
@@ -219,7 +236,6 @@ fun HomeScreen(
           var fetchStartTime by remember { mutableStateOf<Instant?>(null) }
 
           LaunchedEffect(isFetching) {
-            Log.e("DevLauncher", "isFetchingPackagers changed: $isFetching")
             if (isFetching) {
               isFetchingUIState = true
               fetchStartTime = Clock.System.now()
