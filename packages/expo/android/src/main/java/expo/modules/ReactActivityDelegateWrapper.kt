@@ -25,7 +25,6 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.PermissionListener
-import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
@@ -439,7 +438,7 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
-      reactDelegate.loadApp(appKey ?: throw InvalidArgumentException("Expected string in appKey, got nullish value."))
+      reactDelegate.loadApp(requireNotNull(appKey))
       val reactRootView = reactDelegate.reactRootView
       (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
       rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
