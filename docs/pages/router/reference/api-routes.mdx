@@ -380,10 +380,6 @@ Write a server entry file that serves the static files and delegates requests to
 
 ```ts server.ts
 import { createRequestHandler } from '@expo/server/adapter/bun';
-import dotenv from 'dotenv';
-
-import { websocket } from './websocket';
-dotenv.config();
 
 const CLIENT_BUILD_DIR = `${process.cwd()}/dist/client`;
 const SERVER_BUILD_DIR = `${process.cwd()}/dist/server`;
