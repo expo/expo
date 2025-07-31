@@ -213,14 +213,53 @@ public final class CalendarNextModule: Module {
                 event.event?.notes ?? ""
             }
             
-            //            Property("alarms") { (event: CustomExpoCalendarEvent) in
-            //                let alarms = event.event?.alarms ?? []
-            //                serialize(alarms: alarms, with: dateFormatter)
-            //            }
+            Property("alarms") { (event: CustomExpoCalendarEvent) -> [[String: Any?]] in
+                let alarms: [EKAlarm]  = event.event?.alarms ?? []
+                return serialize(alarms: alarms, with: dateFormatter)
+            }
             
-            // Property("recurrenceRule") { (event: CustomExpoCalendarEvent) in
-            //     event.event?.recurrenceRule ?? nil
-            // }
+            Property("recurrenceRule") { (customEvent: CustomExpoCalendarEvent) -> [String: Any?] in
+                guard let rule = customEvent.event?.recurrenceRules?.first else {
+                    return [:]
+                }
+                let frequencyType = recurrenceToString(frequency: rule.frequency)
+                var recurrenceRule: [String: Any?] = ["frequency": frequencyType]
+
+                recurrenceRule["interval"] = rule.interval
+
+                if let endDate = rule.recurrenceEnd?.endDate {
+                  recurrenceRule["endDate"] = dateFormatter.string(from: endDate)
+                }
+
+                recurrenceRule["occurrence"] = rule.recurrenceEnd?.occurrenceCount
+
+                if let daysOfTheWeek = rule.daysOfTheWeek {
+                  recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
+                    [
+                      "dayOfTheWeek": day.dayOfTheWeek.rawValue,
+                      "weekNumber": day.weekNumber
+                    ]
+                  })
+                }
+
+                if let daysOfTheMonth = rule.daysOfTheMonth {
+                  recurrenceRule["daysOfTheMonth"] = daysOfTheMonth
+                }
+
+                if let daysOfTheYear = rule.daysOfTheYear {
+                  recurrenceRule["daysOfTheYear"] = daysOfTheYear
+                }
+
+                if let monthsOfTheYear = rule.monthsOfTheYear {
+                  recurrenceRule["monthsOfTheYear"] = monthsOfTheYear
+                }
+
+                if let setPositions = rule.setPositions {
+                  recurrenceRule["setPositions"] = setPositions
+                }
+                
+                return recurrenceRule
+            }
             
             Property("startDate") { (event: CustomExpoCalendarEvent) -> String? in
                 guard let startDate = event.event?.startDate else { return nil }
