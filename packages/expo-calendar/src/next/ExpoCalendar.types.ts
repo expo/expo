@@ -14,6 +14,8 @@ import {
   Organizer,
   ReminderStatus,
   Calendar,
+  Reminder,
+  Attendee,
 } from '../Calendar';
 
 export declare class CustomExpoCalendar {
@@ -44,9 +46,12 @@ export declare class CustomExpoCalendar {
     status?: ReminderStatus | null,
   ): Promise<CustomExpoCalendarReminder[]>;
 
-  createEvent(details: Partial<Event>): CustomExpoCalendarEvent;
+  createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
 
-  update(details: Partial<Calendar>): void;
+  // TODO
+  createReminder(details: Partial<Reminder>): CustomExpoCalendarReminder;
+
+  update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
 
   delete(): void;
 }
@@ -77,9 +82,19 @@ export declare class CustomExpoCalendarEvent {
   organizer?: Organizer;
   originalId?: string;
 
-  getAttendees(): CustomExpoCalendarAttendee[];
+  // TODO
+  openInCalendar(): void;
 
-  delete(options: RecurringEventOptions): void;
+  // TODO
+  editInCalendar(): void;
+
+  // TODO: Add support for recurring events options
+  getAttendees(recurringEventOptions: RecurringEventOptions): CustomExpoCalendarAttendee[];
+
+  // TODO
+  update(details: Partial<Event>, recurringEventOptions: RecurringEventOptions): void;
+
+  delete(recurringEventOptions: RecurringEventOptions): void;
 }
 
 export declare class CustomExpoCalendarReminder {
@@ -98,6 +113,12 @@ export declare class CustomExpoCalendarReminder {
   dueDate?: string | Date;
   completed?: boolean;
   completionDate?: string | Date;
+
+  // TODO
+  update(details: Partial<Reminder>): void;
+
+  // TODO
+  delete(): void;
 }
 
 export declare class CustomExpoCalendarAttendee {
@@ -109,4 +130,10 @@ export declare class CustomExpoCalendarAttendee {
   type: AttendeeType;
   url?: string;
   email?: string;
+
+  // TODO
+  update(details: Partial<Attendee>): void;
+
+  // TODO
+  delete(): void;
 }

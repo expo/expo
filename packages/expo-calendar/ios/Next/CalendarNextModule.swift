@@ -254,6 +254,10 @@ public final class CalendarNextModule: Module {
             Function("getAttendees") { (customEvent: CustomExpoCalendarEvent) in
                 customEvent.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
             }
+
+            Function("update") { (customEvent: CustomExpoCalendarEvent, event: Event, options: RecurringEventOptions) throws in
+                try customEvent.update(eventRecord: event, options: options)
+            }
             
             Function("delete") { (customEvent: CustomExpoCalendarEvent, options: RecurringEventOptions) in
                 try customEvent.delete(options: options)

@@ -12,49 +12,144 @@ internal final class CustomExpoCalendarEvent: SharedObject {
         self.event = event
     }
     
+    init(eventRecord: Event) throws {
+        let sharedEventStore = CalendarModule.sharedEventStore
+//        if let id = eventRecord.id {
+//            guard let event = fromId(with: id, startDate: parse(date: eventRecord.instanceStartDate)) else {
+//                throw EventNotFoundException(id)
+//            }
+//            return event
+//        }
+        
+        guard let calendarId = eventRecord.calendarId else {
+            throw CalendarIdRequiredException()
+        }
+        
+        guard let calendar = sharedEventStore.calendar(withIdentifier: calendarId) else {
+            throw CalendarIdNotFoundException(calendarId)
+        }
+        
+        if calendar.allowedEntityTypes.isDisjoint(with: [.event]) {
+            throw InvalidCalendarTypeException((calendarId, "event"))
+        }
+        
+        let calendarEvent = EKEvent(eventStore: sharedEventStore)
+        calendarEvent.calendar = calendar
+        calendarEvent.title = eventRecord.title
+        calendarEvent.location = eventRecord.location
+        calendarEvent.notes = eventRecord.notes
+        
+        self.event = calendarEvent
+    }
+    
+    init(with: String, startDate: Date) {
+        
+    }
+    
+    func update(eventRecord: Event, options: RecurringEventOptions) throws {
+        //        try checkCalendarPermissions()
+        let expoEvent = try CustomExpoCalendarEvent(eventRecord: eventRecord)
+        
+        guard let calendarEvent = expoEvent.event else {
+            throw EventNotFoundException("EKevent not found")
+        }
+        
+        try expoEvent.initialize(eventRecord: eventRecord)
+        
+        let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
+        
+        try eventStore.save(calendarEvent, span: span, commit: true)
+    }
+    
     func delete(options: RecurringEventOptions) throws {
         guard let id = self.event?.calendarItemIdentifier else {
             throw EventIdRequiredException()
         }
         print("ID: \(id)")
-        let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-        
-        let instanceStartDate = parse(date: options.instanceStartDate)
-        let calendarEvent = getEvent(with: id, startDate: instanceStartDate)
-        
-        guard let calendarEvent else {
-            return
-        }
-        print("calendarEvent: \(calendarEvent.calendarItemIdentifier)")
-        try eventStore.remove(calendarEvent, span: span)
+//        let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
+//        
+//        let instanceStartDate = parse(date: options.instanceStartDate)
+//        let calendarEvent = CustomExpoCalendarEvent(with: id, startDate: instanceStartDate)
+//        
+//        guard let calendarEvent else {
+//            return
+//        }
+//        print("calendarEvent: \(calendarEvent.calendarItemIdentifier)")
+//        try eventStore.remove(calendarEvent, span: span)
     }
     
-    private func getEvent(with id: String, startDate: Date?) -> EKEvent? {
-        guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
-            return nil
+//    public static func fromId(with id: String, startDate: Date?) -> EKEvent? {
+//        guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
+//            return nil
+//        }
+//        
+//        guard let startDate else {
+//            return firstEvent
+//        }
+//        
+//        guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+//            return firstEvent
+//        }
+//        
+//        let endDate = startDate.addingTimeInterval(2_592_000)
+//        let events = eventStore.events(
+//            matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
+//        )
+//        
+//        for event in events {
+//            if event.calendarItemIdentifier != id {
+//                break
+//            }
+//            if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
+//                return event
+//            }
+//        }
+//        return nil
+//    }
+    
+    public func initialize(eventRecord: Event) throws {
+        guard let event = self.event else {
+            throw EventNotFoundException("EKevent not found")
         }
         
-        guard let startDate else {
-            return firstEvent
-        }
-        
-        guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
-            return firstEvent
-        }
-        
-        let endDate = startDate.addingTimeInterval(2_592_000)
-        let events = eventStore.events(
-            matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
-        )
-        
-        for event in events {
-            if event.calendarItemIdentifier != id {
-                break
+        if let timeZone = eventRecord.timeZone {
+            if let tz = TimeZone(identifier: timeZone) {
+                event.timeZone = tz
+            } else {
+                throw InvalidTimeZoneException(timeZone)
             }
-            if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
-                return event
-            }
         }
-        return nil
+        
+        //      calendarEvent.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
+        //      if let rule = eventRecord.recurrenceRule {
+        //        let newRule = createRecurrenceRule(rule: rule)
+        //        if let newRule {
+        //          calendarEvent.recurrenceRules = [newRule]
+        //        }
+        //      }
+        
+        if let url = eventRecord.url {
+            event.url = URL(string: url)
+        }
+        
+        if let startDate = eventRecord.startDate {
+            event.startDate = parse(date: startDate)
+        }
+        if let endDate = eventRecord.endDate {
+            event.endDate = parse(date: endDate)
+        }
+        
+        if let calendarId = eventRecord.calendarId {
+            guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
+                throw CalendarIdNotFoundException(calendarId)
+            }
+            event.calendar = calendar
+        }
+        
+        event.title = eventRecord.title
+        event.location = eventRecord.location
+        event.notes = eventRecord.notes
+        event.isAllDay = eventRecord.allDay
+        event.availability = getAvailability(availability: eventRecord.availability)
     }
 }

@@ -34,6 +34,7 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
         const color = details.color ? processColor(details.color) : undefined;
         if (Platform.OS === 'android') {
             // TODO: Implement
+            throw new Error('Not implemented yet');
         }
         else {
             if (details.hasOwnProperty('source') ||

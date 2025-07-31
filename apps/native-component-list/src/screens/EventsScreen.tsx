@@ -146,12 +146,11 @@ export default class EventsScreen extends React.Component<Props, State> {
       return;
     }
     const newEvent = {
-      title: 'update test',
+      title: 'update test ' + new Date().toISOString(),
     };
     try {
-      await Calendar.updateEventAsync(event.id!, newEvent, {
+      event.update(newEvent, {
         futureEvents: false,
-        instanceStartDate: event.startDate,
       });
       Alert.alert('Event saved successfully');
       this._findEvents(calendar);

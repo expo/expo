@@ -1,4 +1,4 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar } from '../Calendar';
+import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, Attendee } from '../Calendar';
 export declare class CustomExpoCalendar {
     constructor(id: string);
     id: string;
@@ -18,8 +18,9 @@ export declare class CustomExpoCalendar {
      * Lists the reminders of the calendar.
      */
     listReminders(startDate: Date | string, endDate: Date | string, status?: ReminderStatus | null): Promise<CustomExpoCalendarReminder[]>;
-    createEvent(details: Partial<Event>): CustomExpoCalendarEvent;
-    update(details: Partial<Calendar>): void;
+    createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
+    createReminder(details: Partial<Reminder>): CustomExpoCalendarReminder;
+    update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
     delete(): void;
 }
 export declare class CustomExpoCalendarEvent {
@@ -45,8 +46,11 @@ export declare class CustomExpoCalendarEvent {
     status: EventStatus;
     organizer?: Organizer;
     originalId?: string;
-    getAttendees(): CustomExpoCalendarAttendee[];
-    delete(options: RecurringEventOptions): void;
+    openInCalendar(): void;
+    editInCalendar(): void;
+    getAttendees(recurringEventOptions: RecurringEventOptions): CustomExpoCalendarAttendee[];
+    update(details: Partial<Event>, recurringEventOptions: RecurringEventOptions): void;
+    delete(recurringEventOptions: RecurringEventOptions): void;
 }
 export declare class CustomExpoCalendarReminder {
     id?: string;
@@ -64,6 +68,8 @@ export declare class CustomExpoCalendarReminder {
     dueDate?: string | Date;
     completed?: boolean;
     completionDate?: string | Date;
+    update(details: Partial<Reminder>): void;
+    delete(): void;
 }
 export declare class CustomExpoCalendarAttendee {
     id?: string;
@@ -74,5 +80,7 @@ export declare class CustomExpoCalendarAttendee {
     type: AttendeeType;
     url?: string;
     email?: string;
+    update(details: Partial<Attendee>): void;
+    delete(): void;
 }
 //# sourceMappingURL=ExpoCalendar.types.d.ts.map

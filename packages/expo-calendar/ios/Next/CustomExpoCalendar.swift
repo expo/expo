@@ -109,7 +109,7 @@ internal final class CustomExpoCalendar: SharedObject {
         guard let calendar = self.calendar else {
             throw CalendarNoLongerExistsException()
         }
-        
+
         if calendar.isImmutable == true {
             throw CalendarNotSavedException(calendarRecord.title)
         }

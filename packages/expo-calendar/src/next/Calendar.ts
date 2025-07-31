@@ -59,6 +59,7 @@ export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
 
     if (Platform.OS === 'android') {
       // TODO: Implement
+      throw new Error('Not implemented yet');
     } else {
       if (
         details.hasOwnProperty('source') ||
