@@ -125,3 +125,9 @@ final internal class CalendarNoLongerExistsException: Exception {
     "The specified calendar no longer exists."
   }
 }
+
+final internal class NotImplementedYetException: Exception {
+    override var reason: String {
+        "Not implemented yet."
+    }
+}

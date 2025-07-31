@@ -148,15 +148,23 @@ public final class CalendarNextModule: Module {
                 return calendar.listReminders(startDate: startDate, endDate: endDate, status: status, promise: promise)
             }
             
-            Function("createEvent") { (calendar: CustomExpoCalendar, event: Event, options: RecurringEventOptions) -> String in
+            Function("createEvent") { (calendar: CustomExpoCalendar, eventRecord: Event, options: RecurringEventOptions?) -> CustomExpoCalendarEvent in
                 try checkCalendarPermissions()
                 
-                let calendarEvent = try calendar.getEvent(from: event)
-                try calendar.initializeEvent(calendarEvent: calendarEvent, event: event)
-                let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
+                let expoCalendarEvent = try CustomExpoCalendarEvent(eventRecord: eventRecord)
                 
-                try eventStore.save(calendarEvent, span: span, commit: true)
-                return calendarEvent.calendarItemIdentifier
+                // TODO: Maybe not needed?
+                try expoCalendarEvent.initialize(eventRecord: eventRecord)
+                
+                let span: EKSpan = options?.futureEvents == true ? .futureEvents : .thisEvent
+                
+                guard let ekEvent = expoCalendarEvent.event else {
+                    throw EventNotFoundException("Expo event could not be created")
+                }
+                
+                try eventStore.save(ekEvent, span: span, commit: true)
+                
+                return expoCalendarEvent
             }
             
             Function("update") { (calendar: CustomExpoCalendar, calendarRecord: CalendarRecord) throws in
@@ -254,7 +262,7 @@ public final class CalendarNextModule: Module {
             Function("getAttendees") { (customEvent: CustomExpoCalendarEvent) in
                 customEvent.event?.attendees?.map { CustomExpoCalendarAttendee(attendee: $0) } ?? []
             }
-
+            
             Function("update") { (customEvent: CustomExpoCalendarEvent, event: Event, options: RecurringEventOptions) throws in
                 try customEvent.update(eventRecord: event, options: options)
             }

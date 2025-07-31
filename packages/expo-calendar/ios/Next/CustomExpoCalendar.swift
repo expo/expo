@@ -53,63 +53,11 @@ internal final class CustomExpoCalendar: SharedObject {
         }
     }
     
-    func getEvent(from event: Event) throws -> EKEvent {
-        let calendarEvent = EKEvent(eventStore: eventStore)
-        calendarEvent.calendar = self.calendar
-        calendarEvent.title = event.title
-        calendarEvent.location = event.location
-        calendarEvent.notes = event.notes
-        return calendarEvent
-    }
-    
-    // TODO: Clean up, copied from CalendarModule
-    func initializeEvent(calendarEvent: EKEvent, event: Event) throws {
-        if let timeZone = event.timeZone {
-            if let tz = TimeZone(identifier: timeZone) {
-                calendarEvent.timeZone = tz
-            } else {
-                throw InvalidTimeZoneException(timeZone)
-            }
-        }
-        
-        calendarEvent.alarms = createCalendarEventAlarms(alarms: event.alarms)
-        if let rule = event.recurrenceRule {
-            let newRule = createRecurrenceRule(rule: rule)
-            if let newRule {
-                calendarEvent.recurrenceRules = [newRule]
-            }
-        }
-        
-        if let url = event.url {
-            calendarEvent.url = URL(string: url)
-        }
-        
-        if let startDate = event.startDate {
-            calendarEvent.startDate = parse(date: startDate)
-        }
-        if let endDate = event.endDate {
-            calendarEvent.endDate = parse(date: endDate)
-        }
-        
-        if let calendarId = event.calendarId {
-            guard let calendar = eventStore.calendar(withIdentifier: calendarId) else {
-                throw CalendarIdNotFoundException(calendarId)
-            }
-            calendarEvent.calendar = calendar
-        }
-        
-        calendarEvent.title = event.title
-        calendarEvent.location = event.location
-        calendarEvent.notes = event.notes
-        calendarEvent.isAllDay = event.allDay
-        calendarEvent.availability = getAvailability(availability: event.availability)
-    }
-    
     func update(calendarRecord: CalendarRecord) throws {
         guard let calendar = self.calendar else {
             throw CalendarNoLongerExistsException()
         }
-
+        
         if calendar.isImmutable == true {
             throw CalendarNotSavedException(calendarRecord.title)
         }

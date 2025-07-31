@@ -49,7 +49,7 @@ type Links = {
 
 type Props = StackScreenProps<Links, 'Events'>;
 
-function createEvent(calendarId: string, recurring: boolean = false) {
+function prepareEvent(calendarId: string, recurring: boolean = false) {
   const timeInOneHour = new Date();
   timeInOneHour.setHours(timeInOneHour.getHours() + 1);
   const newEvent: Parameters<typeof Calendar.createEventAsync>[1] = {
@@ -109,7 +109,7 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
 
     try {
-      const newEvent = createEvent(calendar.id, recurring);
+      const newEvent = prepareEvent(calendar.id, recurring);
       calendar.createEvent(newEvent);
       Alert.alert('Event saved successfully');
       this._findEvents(calendar);
@@ -215,8 +215,8 @@ export default class EventsScreen extends React.Component<Props, State> {
         <Button
           onPress={async () => {
             const { calendar } = this.props.route.params!;
-            const newEvent = createEvent(calendar.id);
-            const result = await Calendar.createEventInCalendarAsync(newEvent);
+            const newEvent = prepareEvent(calendar.id);
+            const result = calendar.createEvent(newEvent);
             setTimeout(() => {
               Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {
                 cancelable: true,

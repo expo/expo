@@ -14,12 +14,12 @@ internal final class CustomExpoCalendarEvent: SharedObject {
     
     init(eventRecord: Event) throws {
         let sharedEventStore = CalendarModule.sharedEventStore
-//        if let id = eventRecord.id {
-//            guard let event = fromId(with: id, startDate: parse(date: eventRecord.instanceStartDate)) else {
-//                throw EventNotFoundException(id)
-//            }
-//            return event
-//        }
+        //        if let id = eventRecord.id {
+        //            guard let event = fromId(with: id, startDate: parse(date: eventRecord.instanceStartDate)) else {
+        //                throw EventNotFoundException(id)
+        //            }
+        //            return event
+        //        }
         
         guard let calendarId = eventRecord.calendarId else {
             throw CalendarIdRequiredException()
@@ -66,46 +66,8 @@ internal final class CustomExpoCalendarEvent: SharedObject {
             throw EventIdRequiredException()
         }
         print("ID: \(id)")
-//        let span: EKSpan = options.futureEvents == true ? .futureEvents : .thisEvent
-//        
-//        let instanceStartDate = parse(date: options.instanceStartDate)
-//        let calendarEvent = CustomExpoCalendarEvent(with: id, startDate: instanceStartDate)
-//        
-//        guard let calendarEvent else {
-//            return
-//        }
-//        print("calendarEvent: \(calendarEvent.calendarItemIdentifier)")
-//        try eventStore.remove(calendarEvent, span: span)
+        throw NotImplementedYetException()
     }
-    
-//    public static func fromId(with id: String, startDate: Date?) -> EKEvent? {
-//        guard let firstEvent = eventStore.calendarItem(withIdentifier: id) as? EKEvent else {
-//            return nil
-//        }
-//        
-//        guard let startDate else {
-//            return firstEvent
-//        }
-//        
-//        guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
-//            return firstEvent
-//        }
-//        
-//        let endDate = startDate.addingTimeInterval(2_592_000)
-//        let events = eventStore.events(
-//            matching: eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [firstEvent.calendar])
-//        )
-//        
-//        for event in events {
-//            if event.calendarItemIdentifier != id {
-//                break
-//            }
-//            if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
-//                return event
-//            }
-//        }
-//        return nil
-//    }
     
     public func initialize(eventRecord: Event) throws {
         guard let event = self.event else {
@@ -120,13 +82,13 @@ internal final class CustomExpoCalendarEvent: SharedObject {
             }
         }
         
-        //      calendarEvent.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
-        //      if let rule = eventRecord.recurrenceRule {
-        //        let newRule = createRecurrenceRule(rule: rule)
-        //        if let newRule {
-        //          calendarEvent.recurrenceRules = [newRule]
-        //        }
-        //      }
+        event.alarms = createCalendarEventAlarms(alarms: eventRecord.alarms)
+        if let rule = eventRecord.recurrenceRule {
+            let newRule = createRecurrenceRule(rule: rule)
+            if let newRule {
+                event.recurrenceRules = [newRule]
+            }
+        }
         
         if let url = eventRecord.url {
             event.url = URL(string: url)
