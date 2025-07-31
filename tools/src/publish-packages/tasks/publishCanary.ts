@@ -194,11 +194,3 @@ async function getNextSdkVersion(): Promise<string> {
   }
   return nextMajorVersion;
 }
-
-/**
- * Returns the SDK tag to use for the given package version.
- */
-function getSdkTagForVersion(version: string): string {
-  const major = semver.major(version);
-  return `sdk-${major}`;
-}
