@@ -14,11 +14,11 @@ internal const val DEFAULT_TYPE = ""
 
 class Blob(
   val blobParts: List<InternalBlobPart> = listOf(),
-   rawType: String = DEFAULT_TYPE,
+  rawType: String = DEFAULT_TYPE
 ) : SharedObject() {
 
   val size: Int by lazy {
-    blobParts.sumOf{ it.size() }
+    blobParts.sumOf { it.size() }
   }
   val type = if (validType(rawType)) {
     rawType.lowercase()
