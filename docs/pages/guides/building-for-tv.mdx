@@ -46,7 +46,7 @@ The necessary changes to the native Android and iOS files are minimal and can be
 ### Apple TV
 
 - [Node.js (LTS)](https://nodejs.org/en/) on macOS.
-- Xcode 15 or later.
+- Xcode 16 or later.
 - tvOS SDK 17 or later. (This is not installed automatically with Xcode. You can install it later with `xcodebuild -downloadAllPlatforms`).
 
 ## Quick start
@@ -75,7 +75,9 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [BuildProperties](/versions/latest/sdk/build-properties/)
 - [Constants](/versions/latest/sdk/constants/)
 - [Crypto](/versions/latest/sdk/crypto/)
+- [DevClient](/versions/latest/sdk/dev-client/)
 - [Device](/versions/latest/sdk/device/)
+- [Expo UI](/versions/latest/sdk/ui/)
 - [FileSystem](/versions/latest/sdk/filesystem/)
 - [FlashList](/versions/latest/sdk/flash-list/)
 - [Font](/versions/latest/sdk/font/)
@@ -101,7 +103,9 @@ TV also works with [React Navigation](https://reactnavigation.org/), [React Nati
 
 #### Limitations
 
-- The [Expo DevClient](/versions/latest/sdk/dev-client/) library is not supported at this time.
+- The [Expo DevClient](/versions/latest/sdk/dev-client/) library is only supported in SDK 54 and later:
+  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
+  - **Android TV**: All operations are supported, similar to Android phone.
 - The [Expo Router](/router/introduction/) library is only supported in SDK 51 and later.
 
 </Collapsible>
