@@ -2,11 +2,13 @@ import Foundation
 import ExpoModulesCore
 import EventKit
 
-internal final class CustomExpoCalendarEvent: SharedObject {
-    private var eventStore: EKEventStore {
-        return CalendarModule.sharedEventStore
-    }
+internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
     var event: EKEvent?
+    
+    // Override the abstract property from ExpoCalendarItem
+    override var calendarItem: EKCalendarItem? {
+        return event
+    }
     
     init(event: EKEvent) {
         self.event = event

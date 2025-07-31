@@ -213,52 +213,12 @@ public final class CalendarNextModule: Module {
                 event.event?.notes ?? ""
             }
             
-            Property("alarms") { (event: CustomExpoCalendarEvent) -> [[String: Any?]] in
-                let alarms: [EKAlarm]  = event.event?.alarms ?? []
-                return serialize(alarms: alarms, with: dateFormatter)
+            Property("alarms") { (customEvent: CustomExpoCalendarEvent) -> [[String: Any?]]? in
+                customEvent.serializeAlarms()
             }
             
-            Property("recurrenceRule") { (customEvent: CustomExpoCalendarEvent) -> [String: Any?] in
-                guard let rule = customEvent.event?.recurrenceRules?.first else {
-                    return [:]
-                }
-                let frequencyType = recurrenceToString(frequency: rule.frequency)
-                var recurrenceRule: [String: Any?] = ["frequency": frequencyType]
-
-                recurrenceRule["interval"] = rule.interval
-
-                if let endDate = rule.recurrenceEnd?.endDate {
-                  recurrenceRule["endDate"] = dateFormatter.string(from: endDate)
-                }
-
-                recurrenceRule["occurrence"] = rule.recurrenceEnd?.occurrenceCount
-
-                if let daysOfTheWeek = rule.daysOfTheWeek {
-                  recurrenceRule["daysOfTheWeek"] = daysOfTheWeek.map({ day in
-                    [
-                      "dayOfTheWeek": day.dayOfTheWeek.rawValue,
-                      "weekNumber": day.weekNumber
-                    ]
-                  })
-                }
-
-                if let daysOfTheMonth = rule.daysOfTheMonth {
-                  recurrenceRule["daysOfTheMonth"] = daysOfTheMonth
-                }
-
-                if let daysOfTheYear = rule.daysOfTheYear {
-                  recurrenceRule["daysOfTheYear"] = daysOfTheYear
-                }
-
-                if let monthsOfTheYear = rule.monthsOfTheYear {
-                  recurrenceRule["monthsOfTheYear"] = monthsOfTheYear
-                }
-
-                if let setPositions = rule.setPositions {
-                  recurrenceRule["setPositions"] = setPositions
-                }
-                
-                return recurrenceRule
+            Property("recurrenceRule") { (customEvent: CustomExpoCalendarEvent) -> [String: Any?]? in
+                customEvent.serializeRecurrenceRule()
             }
             
             Property("startDate") { (event: CustomExpoCalendarEvent) -> String? in
@@ -348,13 +308,13 @@ public final class CalendarNextModule: Module {
                 reminder.reminder?.notes ?? ""
             }
             
-            Property("alarms") { (reminder: CustomExpoCalendarReminder) in
-                serialize(alarms: reminder.reminder?.alarms ?? [], with: dateFormatter)
+            Property("alarms") { (reminder: CustomExpoCalendarReminder) -> [[String: Any?]]? in
+                reminder.serializeAlarms()
             }
             
-            // Property("recurrenceRule") { (reminder: CustomExpoCalendarReminder) in
-            //     reminder.reminder?.recurrenceRule ?? nil
-            // }
+            Property("recurrenceRule") { (customReminder: CustomExpoCalendarReminder) -> [String: Any?]? in
+                customReminder.serializeRecurrenceRule()
+            }
             
             //           Property("startDate") { (reminder: CustomExpoCalendarReminder) in
             //               dateFormatter.string(from: reminder.reminder?.calendar.startDate ?? Date())
