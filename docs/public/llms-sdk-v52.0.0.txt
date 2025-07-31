@@ -27177,16 +27177,6 @@ Subject of the e-mail.
 
 # Expo Manifests
 
-[
-
-Changelog
-
-A library that provides types for Expo Manifests.
-
-Changelog
-
-tvOS
-
 ## Installation
 
 `npx expo install expo-manifests`
@@ -33988,18 +33978,6 @@ margin: 30,
 ---
 
 # registerRootComponent
-
-[
-
-Changelog
-
-A universal component that allows setting the initial React component to render natively in the app's root React Native view.
-
-Changelog
-
-tvOS
-
-Web
 
 Sets the initial React component to render natively in the app's root React Native view on Android, iOS, and the web. It also adds dev-only debugging tools for use with `npx expo start`.
 
@@ -41661,18 +41639,6 @@ The possible log levels for `expo-updates` log entries
 ---
 
 # URL
-
-[
-
-Changelog
-
-Standard URL API available on all Expo-supported platforms.
-
-Changelog
-
-tvOS
-
-Web
 
 The standard URL API is available on all Expo-supported platforms.
 
