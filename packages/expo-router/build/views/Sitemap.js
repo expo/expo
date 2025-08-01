@@ -53,7 +53,7 @@ function Sitemap() {
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
     return (<react_native_1.View style={styles.container}>
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
-      <react_native_1.ScrollView contentContainerStyle={styles.scroll}>
+      <react_native_1.ScrollView contentContainerStyle={styles.scroll} automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
             <SitemapItem node={child}/>
           </react_native_1.View>))}
@@ -129,33 +129,46 @@ function ArrowIcon({ rotation = 0 }) {
 }
 function SystemInfo() {
     const getHermesVersion = () => {
-        if (global.HermesInternal) {
-            const runtimeProps = global.HermesInternal.getRuntimeProperties?.();
-            if (runtimeProps) {
-                return runtimeProps['OSS Release Version'] || 'Unknown';
-            }
+        if (!global.HermesInternal) {
+            return null;
         }
-        return null;
+        const HERMES_RUNTIME = global.HermesInternal?.getRuntimeProperties?.() ?? {};
+        const HERMES_VERSION = HERMES_RUNTIME['OSS Release Version'];
+        const isStaticHermes = HERMES_RUNTIME['Static Hermes'];
+        if (!HERMES_RUNTIME) {
+            return null;
+        }
+        if (isStaticHermes) {
+            return `${HERMES_VERSION} (shermes)`;
+        }
+        return HERMES_VERSION;
     };
     const locationOrigin = window.location.origin;
     const expoSdkVersion = expo_constants_1.default.expoConfig?.sdkVersion || 'Unknown';
     const hermesVersion = getHermesVersion();
-    return (<react_native_1.View testID="sitemap-system-info" style={styles.systemInfoContainer}>
+    return (<react_native_1.View testID="sitemap-system-info" style={{
+            gap: 8,
+            marginTop: 16,
+        }}>
       <react_native_1.Text style={styles.systemInfoTitle}>System Information</react_native_1.Text>
-      {locationOrigin && (<react_native_1.View style={styles.systemInfoItem}>
-          <react_native_1.Text style={styles.systemInfoLabel}>Location origin:</react_native_1.Text>
-          <react_native_1.Text style={styles.systemInfoValue}>{locationOrigin}</react_native_1.Text>
-        </react_native_1.View>)}
-      <react_native_1.View style={styles.systemInfoItem}>
-        <react_native_1.Text style={styles.systemInfoLabel}>Expo SDK version:</react_native_1.Text>
-        <react_native_1.Text style={styles.systemInfoValue}>{expoSdkVersion}</react_native_1.Text>
+      <react_native_1.View style={styles.systemInfoContainer}>
+        <FormText right={process.env.NODE_ENV}>Mode</FormText>
+        <FormText right={expoSdkVersion}>Expo SDK</FormText>
+        {hermesVersion && <FormText right={hermesVersion}>Hermes version</FormText>}
+        {locationOrigin && <FormText right={locationOrigin}>Location origin</FormText>}
       </react_native_1.View>
-      {hermesVersion && (<react_native_1.View style={styles.systemInfoItem}>
-          <react_native_1.Text style={styles.systemInfoLabel}>Hermes version:</react_native_1.Text>
-          <react_native_1.Text style={styles.systemInfoValue} numberOfLines={1} ellipsizeMode="tail">
-            {hermesVersion}
-          </react_native_1.Text>
-        </react_native_1.View>)}
+    </react_native_1.View>);
+}
+function FormText({ children, right }) {
+    return (<react_native_1.View style={styles.systemInfoItem}>
+      <react_native_1.Text style={styles.systemInfoLabel} numberOfLines={1} ellipsizeMode="tail">
+        {children}
+      </react_native_1.Text>
+      <react_native_1.View style={{ flex: 1 }}/>
+
+      <react_native_1.Text selectable style={[styles.systemInfoValue, styles.code]} numberOfLines={1} ellipsizeMode="tail">
+        {right}
+      </react_native_1.Text>
     </react_native_1.View>);
 }
 const styles = react_native_1.StyleSheet.create({
@@ -212,6 +225,7 @@ const styles = react_native_1.StyleSheet.create({
         borderColor: '#313538',
         backgroundColor: '#151718',
         borderRadius: 12,
+        borderCurve: 'continuous',
         marginBottom: 12,
         overflow: 'hidden',
     },
@@ -244,32 +258,43 @@ const styles = react_native_1.StyleSheet.create({
         borderColor: '#313538',
         backgroundColor: '#151718',
         borderRadius: 12,
+        gap: 8,
+        borderCurve: 'continuous',
         padding: INDENT,
-        marginTop: 24,
     },
     systemInfoTitle: {
         color: 'white',
         fontSize: 18,
         fontWeight: '600',
         marginBottom: 12,
+        paddingHorizontal: INDENT,
     },
     systemInfoItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        gap: 8,
         alignItems: 'center',
-        paddingVertical: 8,
+        flexWrap: 'wrap',
     },
     systemInfoLabel: {
         color: 'white',
         fontSize: 16,
-        opacity: 0.7,
+        lineHeight: 24,
     },
     systemInfoValue: {
         color: 'white',
         fontSize: 16,
-        flex: 1,
-        textAlign: 'right',
-        marginLeft: 12,
+        opacity: 0.7,
+        flexShrink: 1,
+        letterSpacing: 0.5,
+    },
+    code: {
+        fontVariant: ['tabular-nums'],
+        fontFamily: react_native_1.Platform.select({
+            default: `SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace`,
+            ios: 'ui-monospace',
+            android: 'monospace',
+        }),
+        fontWeight: '500',
     },
 });
 //# sourceMappingURL=Sitemap.js.map
