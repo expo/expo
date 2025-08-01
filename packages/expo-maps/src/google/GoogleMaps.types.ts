@@ -364,6 +364,16 @@ export enum GoogleMapsColorScheme {
 /**
  * @platform android
  */
+export type GoogleMapsMapOptions = {
+  /**
+   * A map ID is a unique identifier that represents Google Map styling and configuration settings that are stored in Google Cloud.
+   */
+  mapId?: string;
+};
+
+/**
+ * @platform android
+ */
 export type GoogleMapsViewProps = {
   ref?: Ref<GoogleMapsViewType>;
   style?: StyleProp<ViewStyle>;
@@ -402,6 +412,11 @@ export type GoogleMapsViewProps = {
    * The properties for the map.
    */
   properties?: GoogleMapsProperties;
+
+  /**
+   * The options for the map.
+   */
+  mapOptions?: GoogleMapsMapOptions;
 
   /**
    * Defines the color scheme for the map.
