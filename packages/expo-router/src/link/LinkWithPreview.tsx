@@ -84,7 +84,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
     [children]
   );
 
-  if (previewElement && !triggerElement) {
+  if ((previewElement || menuElement) && !triggerElement) {
     if (process.env.NODE_ENV !== 'production') {
       throw new Error(
         'When you use Link.Preview, you must use Link.Trigger to specify the trigger element.'
@@ -108,10 +108,7 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
         : {},
     [menuElement]
   );
-  const preview = React.useMemo(
-    () => previewElement ?? <LinkPreview />,
-    [previewElement, rest.href]
-  );
+  const preview = React.useMemo(() => previewElement ?? null, [previewElement, rest.href]);
 
   const isPreviewTapped = useRef(false);
 

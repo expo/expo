@@ -22,6 +22,8 @@ const HomeIndex = () => {
       <Text>Home - Index</Text>
       <Text>Current Path: {pathname}</Text>
       <Text style={{ marginBottom: 16 }}>Time: {time}</Text>
+      <Link href="/(tabs)/home/nested">Normal link: /(tabs)/home/nested</Link>
+      <Spacer />
       <Link href="/home">
         <Link.Trigger>Link.Preview: /home</Link.Trigger>
         <Link.Preview />
@@ -68,6 +70,7 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview: /(tabs)/home/one</Link.Trigger>
         <Link.Preview />
       </Link>
+      <Spacer />
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Link.Preview 200x100: /(tabs)/home/one</Link.Trigger>
         <Link.Preview width={200} height={100} />
@@ -76,9 +79,50 @@ const HomeIndex = () => {
         <Link.Trigger>Link.Preview 16:9: /(tabs)/home/one</Link.Trigger>
         <Link.Preview width={width} height={width * (9 / 16)} />
       </Link>
+      <Spacer />
       <Link href="/(tabs)/home/one">
         <Link.Trigger>Link.Menu: /(tabs)/home/one</Link.Trigger>
         <Link.Preview />
+        <Link.Menu title="Actions" icon="ellipsis">
+          <Link.MenuAction
+            title="Share"
+            icon="square.and.arrow.up"
+            onPress={() => {
+              console.log('Share Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Copy"
+            icon="doc.on.doc"
+            onPress={() => {
+              console.log('Copy Pressed');
+            }}
+          />
+          <Link.MenuAction
+            title="Delete"
+            icon="trash"
+            onPress={() => {
+              console.log('Delete Pressed');
+            }}
+          />
+          <Link.Menu title="More" icon="ellipsis">
+            <Link.MenuAction
+              title="Submenu Item 1"
+              onPress={() => {
+                console.log('Submenu Item 1 Pressed');
+              }}
+            />
+            <Link.MenuAction
+              title="Submenu Item 2"
+              onPress={() => {
+                console.log('Submenu Item 2 Pressed');
+              }}
+            />
+          </Link.Menu>
+        </Link.Menu>
+      </Link>
+      <Link href="/(tabs)/home/one">
+        <Link.Trigger>Link.Menu no preview: /(tabs)/home/one</Link.Trigger>
         <Link.Menu title="Actions" icon="ellipsis">
           <Link.MenuAction
             title="Share"
