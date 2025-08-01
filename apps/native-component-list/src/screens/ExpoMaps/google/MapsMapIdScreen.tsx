@@ -11,8 +11,8 @@ export default function MapsMapIdScreen() {
         }}
         cameraPosition={{
           coordinates: {
-            latitude: 23.0225,
-            longitude: 72.5714,
+            latitude: 47.608597,
+            longitude: -122.504604,
           },
           zoom: 1,
         }}
