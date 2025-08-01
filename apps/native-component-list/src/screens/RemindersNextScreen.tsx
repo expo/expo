@@ -107,7 +107,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
     }
     const newReminder = {
       title: 'updated reminder',
-    //   startDate: new Date(),
+      //   startDate: new Date(),
     };
     try {
       reminder.update(newReminder);
