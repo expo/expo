@@ -2,7 +2,7 @@ import Foundation
 import ExpoModulesCore
 import EventKit
 
-internal final class CustomExpoCalendar: SharedObject {
+internal final class ExpoCalendar: SharedObject {
     private var eventStore: EKEventStore {
         return CalendarModule.sharedEventStore
     }
@@ -18,7 +18,7 @@ internal final class CustomExpoCalendar: SharedObject {
         self.calendar = calendar
     }
     
-    func listEvents(startDate: Date, endDate: Date) throws -> [CustomExpoCalendarEvent] {
+    func listEvents(startDate: Date, endDate: Date) throws -> [ExpoCalendarEvent] {
         guard let calendar = self.calendar else {
             throw CalendarNoLongerExistsException()
         }
@@ -26,7 +26,7 @@ internal final class CustomExpoCalendar: SharedObject {
         let events = self.eventStore.events(matching: predicate).sorted {
             $0.startDate.compare($1.startDate) == .orderedAscending
         }
-        let customEvents = events.map { CustomExpoCalendarEvent(event: $0) }
+        let customEvents = events.map { ExpoCalendarEvent(event: $0) }
         return customEvents
     }
     
@@ -43,7 +43,7 @@ internal final class CustomExpoCalendar: SharedObject {
             
             eventStore.fetchReminders(matching: predicate) { [promise] reminders in
                 if let reminders {
-                    promise.resolve(reminders.map { CustomExpoCalendarReminder(reminder: $0) })
+                    promise.resolve(reminders.map { ExpoCalendarReminder(reminder: $0) })
                 } else {
                     promise.resolve([])
                 }

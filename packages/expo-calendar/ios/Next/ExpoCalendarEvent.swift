@@ -2,7 +2,7 @@ import Foundation
 import ExpoModulesCore
 import EventKit
 
-internal final class CustomExpoCalendarEvent: ExpoCalendarItem {
+internal final class ExpoCalendarEvent: ExpoCalendarItem {
     var event: EKEvent?
     
     override var calendarItem: EKCalendarItem? {

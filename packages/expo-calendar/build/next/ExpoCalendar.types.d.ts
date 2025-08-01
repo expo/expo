@@ -1,7 +1,7 @@
 import { AttendeeRole, AttendeeStatus, AttendeeType, Source, Event, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, RecurrenceRule, EventStatus, Organizer, ReminderStatus, Calendar, Reminder, Attendee, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions } from '../Calendar';
 type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
-export declare class CustomExpoCalendar {
+export declare class ExpoCalendar {
     constructor(id: string);
     id: string;
     title: string;
@@ -15,17 +15,17 @@ export declare class CustomExpoCalendar {
     /**
      * Lists the event ids of the calendar.
      */
-    listEvents(startDate: Date | string, endDate: Date | string): CustomExpoCalendarEvent[];
+    listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
     /**
      * Lists the reminders of the calendar.
      */
-    listReminders(startDate: Date | string, endDate: Date | string, status?: ReminderStatus | null): Promise<CustomExpoCalendarReminder[]>;
-    createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
-    createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): CustomExpoCalendarReminder;
+    listReminders(startDate: Date | string, endDate: Date | string, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
+    createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): ExpoCalendarEvent;
+    createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
     update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
     delete(): void;
 }
-export declare class CustomExpoCalendarEvent {
+export declare class ExpoCalendarEvent {
     constructor(id: string);
     readonly id: string;
     readonly calendarId: string;
@@ -50,11 +50,11 @@ export declare class CustomExpoCalendarEvent {
     originalId?: string;
     openInCalendarAsync(params: CalendarDialogOpenParamsNext | null): void;
     editInCalendarAsync(params: CalendarDialogParamsNext | null): Promise<DialogEventResult>;
-    getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
+    getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
     update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
     delete(recurringEventOptions: RecurringEventOptions): void;
 }
-export declare class CustomExpoCalendarReminder {
+export declare class ExpoCalendarReminder {
     id?: string;
     calendarId?: string;
     title?: string;
@@ -73,7 +73,7 @@ export declare class CustomExpoCalendarReminder {
     update(details: Omit<Partial<Reminder>, 'id' | 'calendarId' | 'startDate' | 'dueDate' | 'completionDate'>): void;
     delete(): void;
 }
-export declare class CustomExpoCalendarAttendee {
+export declare class ExpoCalendarAttendee {
     id?: string;
     name: string;
     isCurrentUser: boolean;

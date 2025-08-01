@@ -2,7 +2,7 @@ import EventKit
 import ExpoModulesCore
 import Foundation
 
-internal final class CustomExpoCalendarReminder: ExpoCalendarItem {
+internal final class ExpoCalendarReminder: ExpoCalendarItem {
     var reminder: EKReminder?
 
     // Override the abstract property from ExpoCalendarItem

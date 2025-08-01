@@ -1,7 +1,7 @@
-import { CustomExpoCalendar, CustomExpoCalendarEvent } from './ExpoCalendar.types';
+import { ExpoCalendar, ExpoCalendarEvent } from './ExpoCalendar.types';
 class ExpoGoCalendarNextStub {
-    Calendar = CustomExpoCalendar;
-    Event = CustomExpoCalendarEvent;
+    Calendar = ExpoCalendar;
+    Event = ExpoCalendarEvent;
     getDefaultCalendar() {
         throw new Error('Calendar functionality is not available in Expo Go');
     }

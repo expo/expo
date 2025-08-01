@@ -26,7 +26,7 @@ type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationO
 
 type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
-export declare class CustomExpoCalendar {
+export declare class ExpoCalendar {
   constructor(id: string);
 
   id: string;
@@ -42,7 +42,7 @@ export declare class CustomExpoCalendar {
   /**
    * Lists the event ids of the calendar.
    */
-  listEvents(startDate: Date | string, endDate: Date | string): CustomExpoCalendarEvent[];
+  listEvents(startDate: Date | string, endDate: Date | string): ExpoCalendarEvent[];
 
   /**
    * Lists the reminders of the calendar.
@@ -51,18 +51,18 @@ export declare class CustomExpoCalendar {
     startDate: Date | string,
     endDate: Date | string,
     status?: ReminderStatus | null
-  ): Promise<CustomExpoCalendarReminder[]>;
+  ): Promise<ExpoCalendarReminder[]>;
 
-  createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): CustomExpoCalendarEvent;
+  createEvent(eventData: Omit<Partial<Event>, 'id' | 'organizer'>): ExpoCalendarEvent;
 
-  createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): CustomExpoCalendarReminder;
+  createReminder(details: Omit<Partial<Reminder>, 'id' | 'calendarId'>): ExpoCalendarReminder;
 
   update(details: Partial<Pick<Calendar, 'title' | 'color'>>): void;
 
   delete(): void;
 }
 
-export declare class CustomExpoCalendarEvent {
+export declare class ExpoCalendarEvent {
   constructor(id: string);
 
   readonly id: string;
@@ -96,14 +96,14 @@ export declare class CustomExpoCalendarEvent {
     params: CalendarDialogParamsNext | null // TODO: Support skipping this param instead of passing null, change needed in the core
   ): Promise<DialogEventResult>;
 
-  getAttendees(recurringEventOptions?: RecurringEventOptions): CustomExpoCalendarAttendee[];
+  getAttendees(recurringEventOptions?: RecurringEventOptions): ExpoCalendarAttendee[];
 
   update(details: Partial<Event>, recurringEventOptions?: RecurringEventOptions): void;
 
   delete(recurringEventOptions: RecurringEventOptions): void; // TODO: Support skipping this param instead of passing null, change needed in the core
 }
 
-export declare class CustomExpoCalendarReminder {
+export declare class ExpoCalendarReminder {
   id?: string;
   calendarId?: string;
   title?: string;
@@ -131,7 +131,7 @@ export declare class CustomExpoCalendarReminder {
   delete(): void;
 }
 
-export declare class CustomExpoCalendarAttendee {
+export declare class ExpoCalendarAttendee {
   id?: string;
   name: string;
   isCurrentUser: boolean;

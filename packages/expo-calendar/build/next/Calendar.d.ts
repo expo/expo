@@ -1,12 +1,12 @@
 import { Calendar, EntityTypes, Event, Reminder, ReminderStatus } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
-export declare class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {
+export declare class ExportExpoCalendarAttendee extends ExpoCalendar.ExpoCalendarAttendee {
 }
-export declare class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {
+export declare class ExportExpoCalendarEvent extends ExpoCalendar.ExpoCalendarEvent {
 }
-export declare class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarReminder {
+export declare class ExportExpoCalendarReminder extends ExpoCalendar.ExpoCalendarReminder {
 }
-export declare class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
+export declare class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
     createEvent(details: Partial<Event>): ExportExpoCalendarEvent;
     createReminder(details: Partial<Reminder>): ExportExpoCalendarReminder;
     listEvents(startDate: Date, endDate: Date): ExportExpoCalendarEvent[];

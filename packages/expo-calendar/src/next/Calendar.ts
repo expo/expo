@@ -12,13 +12,13 @@ import {
 } from '../Calendar';
 import ExpoCalendar from './ExpoCalendar';
 
-export class ExportExpoCalendarAttendee extends ExpoCalendar.CustomExpoCalendarAttendee {}
+export class ExportExpoCalendarAttendee extends ExpoCalendar.ExpoCalendarAttendee {}
 
-export class ExportExpoCalendarEvent extends ExpoCalendar.CustomExpoCalendarEvent {}
+export class ExportExpoCalendarEvent extends ExpoCalendar.ExpoCalendarEvent {}
 
-export class ExportExpoCalendarReminder extends ExpoCalendar.CustomExpoCalendarReminder {}
+export class ExportExpoCalendarReminder extends ExpoCalendar.ExpoCalendarReminder {}
 
-export class ExportExpoCalendar extends ExpoCalendar.CustomExpoCalendar {
+export class ExportExpoCalendar extends ExpoCalendar.ExpoCalendar {
   override createEvent(details: Partial<Event>): ExportExpoCalendarEvent {
     return super.createEvent(stringifyDateValues(details));
   }
