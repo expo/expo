@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 4.1.10 — 2025-08-01
+
+_This version does not introduce any user-facing changes. Usually, this means that internal dependency versions were updated, necessitating this release._
+
+
+<details>
+<summary>Changes from the following commits are part of this release:</summary>
+
+- [refactor(expo,doctor,cli,metro-config): switch to `@expo/metro` wrapper pinned to `metro@0.83.0` (#38166)](https://github.com/expo/expo/commit/2b5b77d75de3a09d2418d6f001d4bb414a791794)
+- [[script] run `npx` through `pnpm exec` when appropriate (#37976)](https://github.com/expo/expo/commit/fd70157a61d1741aa7e77f7b4c1db80e7a21c10c)
+- [sync changelog from sdk-53 [skip ci] (#37890)](https://github.com/expo/expo/commit/abb843f65aae611af76d0e979d882b5d12e7b376)
+- [sync SDK 53 changelogs (#37691)](https://github.com/expo/expo/commit/b549c0b6350e00b94b44174dcc533dbdaff93b71)
+
+</details>
+
 ## 4.1.9 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

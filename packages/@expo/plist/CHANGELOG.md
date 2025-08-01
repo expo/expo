@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 0.3.6 — 2025-08-01
+
+_This version does not introduce any user-facing changes. Usually, this means that internal dependency versions were updated, necessitating this release._
+
+
+<details>
+<summary>Changes from the following commits are part of this release:</summary>
+
+- [sync changelog from sdk-53 [skip ci] (#37890)](https://github.com/expo/expo/commit/abb843f65aae611af76d0e979d882b5d12e7b376)
+- [Publish packages](https://github.com/expo/expo/commit/49c9d53cf0a9fc8179d1c8f5268beadd141f70ca)
+
+</details>
+
 ## 0.3.5 - 2025-07-03
 
 _This version does not introduce any user-facing changes._

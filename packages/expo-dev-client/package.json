@@ -39,7 +39,7 @@
     "expo-updates-interface": "~1.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^4.1.7",
+    "expo-module-scripts": "^4.1.10",
     "expo-test-runner": "0.2.5"
   },
   "peerDependencies": {

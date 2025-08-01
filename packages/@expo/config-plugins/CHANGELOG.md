@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Support building activities with aliases. ([#38263](https://github.com/expo/expo/pull/38263) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.2.0 — 2025-08-01
+
+### 🎉 New features
+
+- Support building activities with aliases. ([#38263](https://github.com/expo/expo/pull/38263) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 11.0.14 — 2025-08-01
+
+_This version does not introduce any user-facing changes. Usually, this means that internal dependency versions were updated, necessitating this release._
+
+
+<details>
+<summary>Changes from the following commits are part of this release:</summary>
+
+- [[changelog] Sync to sdk-53 [skip ci]](https://github.com/expo/expo/commit/2078bb76c898a72052c05091a0c11c163b08ae83)
+- [sync changelog from sdk-53 [skip ci] (#37890)](https://github.com/expo/expo/commit/abb843f65aae611af76d0e979d882b5d12e7b376)
+- [sync changelogs [skip ci] (#37760)](https://github.com/expo/expo/commit/9d45bb915efb2650e723d3bebc04b6c8cdc1067e)
+- [Remove flipper hack support (#37532)](https://github.com/expo/expo/commit/13176c50651128dbec0ef24c35d2837de393868c)
+- [refactor: replace deprecated jest expect and matchers with their replacements (#37362)](https://github.com/expo/expo/commit/64e44a3f00b34d6504c29816f12c52a3090e23c8)
+- [Remove "Please" from warnings and errors (#36862)](https://github.com/expo/expo/commit/84079fa454e3498329f127b8e71fb08d2390bbd0)
+- [refactor: update `getenv@2.0.0` to support upper case boolean values (#36840)](https://github.com/expo/expo/commit/a3bc16fc968cab9e19943c37f1ac9376229ca4f4)
+
+</details>
+
 ## 11.0.13 - 2025-07-08
 
 _This version does not introduce any user-facing changes._

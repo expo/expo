@@ -31,7 +31,7 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^4.1.7"
+    "expo-module-scripts": "^4.1.10"
   },
   "peerDependencies": {
     "expo": "*",
