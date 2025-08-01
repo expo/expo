@@ -37,6 +37,7 @@
 - [iOS] Add compiler flags for new arch to expo router ([#38397](https://github.com/expo/expo/pull/38397) by [@Ubax](https://github.com/Ubax))
 - Fix modal with detents fixToContents on Android ([#38440](https://github.com/expo/expo/pull/38440) by [@Ubax](https://github.com/Ubax))
 - Fix detents in web modal ([#38446](https://github.com/expo/expo/pull/38446) by [@Ubax](https://github.com/Ubax))
+- Fix Link Preview between two separate stacks ([#38299](https://github.com/expo/expo/pull/38299) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
