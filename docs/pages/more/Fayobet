@@ -1,0 +1,455 @@
+```javascript
+const plateformeInfo = {
+  nom: "Fayobet",
+  acces: ["Web", "Android"],
+  design: {
+    description: "interface agréable et moderne",
+    complexite: "peut sembler dense",
+    raison: "grand nombre d'informations utiles"
+},
+  navigation: {
+    organisation: "catégories claires",
+    objectif: "faciliter l'utilisation et éviter la confusion"
+},
+  afficherInfo: function () {
+    console.log(`Découvrir la plateforme ${this.nom}:`);
+    console.log(`Accessible via: ${this.acces.join(" et ")}.`);
+    console.log(`Design: ${this.design.description} (chargée par ${this.design.raison}).`);
+    console.log(`Navigation fluide grâce à des ${this.navigation.organisation}.`);
+    console.log(`Objectif: ${this.navigation.objectif}.`);
+}
+};
+
+plateformeInfo.afficherInfo();
+```
+
+```javascript
+const fayobetFootballGames = {
+  plateforme: "Fayobet",
+  domaine: "Sportif",
+  specialite: "Football uniquement",
+  categories: [
+    {
+      nom: "Matchs en direct",
+      description: "Parier sur des rencontres de football en cours",
+      exemples: ["Premier League", "Liga", "Serie A", "Champions League"]
+},
+    {
+      nom: "Matchs pré-match",
+      description: "Parier avant le coup d’envoi",
+      exemples: ["Cotes simples", "Double chance", "Score exact", "Buts totaux"]
+},
+    {
+      nom: "Football virtuel",
+      description: "Simulations rapides pour des paris instantanés",
+      exemples: ["Virtual Premier League", "Virtual Champions Cup", "Golden Race"]
+},
+    {
+      nom: "Compétitions spéciales",
+      description: "Événements avec jackpots et challenges exclusifs",
+      exemples: ["Tournoi Fayobet Pro", "Défi Score Plus"]
+}
+  ],
+  afficherOffres: function () {
+    console.log(`🎯 Bienvenue sur ${this.platforme} - expert en ${this.specialite}`);
+    this.categories.forEach(categorie => {
+      console.log(`📂 ${categorie.nom}: ${categorie.description}`);
+      console.log(`👉 Exemples: ${categorie.exemples.join(", ")}`);
+});
+}
+};
+
+fayobetFootballGames.afficherOffres();
+```
+
+```javascript
+const fayobetFIFA = {
+  plateforme: "Fayobet",
+  jeu: "FIFA Virtuel",
+  typePari: ["Score exact", "Vainqueur", "Nombre de buts", "Mi-temps/Fin du match"],
+  matchsVirtuels: [
+    {
+      id: 1,
+      equipes: ["Real Madrid", "Manchester City"],
+      heureDebut: "14:00",
+      cote: {
+        realMadrid: 2.10,
+        manCity: 1.85,
+        matchNul: 3.25
+}
+},
+    {
+      id: 2,
+      equipes: ["PSG", "Bayern Munich"],
+      heureDebut: "15:00",
+      cote: {
+        psg: 1.95,
+        bayern: 2.20,
+        matchNul: 3.10
+}
+}
+  ],
+  parier: function(matchID, choix) {
+    const match = this.matchsVirtuels.find(m => m.id === matchID);
+    if (!match) {
+      console.log("⛔ Match non trouvé!");
+      return;
+}
+    const coteChoisie = match.cote[choix];
+    if (!coteChoisie) {
+      console.log("⛔ Choix invalide!");
+      return;
+}
+    console.log(`🎲 Pari validé sur ${choix} pour le match ${match.equipes.join(" vs ")} avec une cote de ${coteChoisie}`);
+}
+};
+
+fayobetFIFA.parier(2, "psg");
+```
+
+```javascript
+const typesDeParis = {
+  plateforme: "Fayobet",
+  jeu: "Football",
+  parisDisponibles: [
+    {
+      type: "Pari simple",
+      description: "Miser sur une seule option pour un seul match",
+      exemple: "Victoire de Lome FC"
+},
+    {
+      type: "Pari combiné",
+      description: "Combiner plusieurs matchs ou événements pour un seul ticket",
+      exemple: ["Victoire de Lome FC", "Match nul entre Kara FC et Mango United"]
+},
+    {
+      type: "Score exact",
+      description: "Prédire le score final du match",
+      exemple: "2-1 en faveur de Lome FC"
+},
+    {
+      type: "Handicap",
+      description: "Appliquer un avantage ou désavantage à une équipe",
+      exemple: "Lome FC -1 contre Sokodé FC"
+},
+    {
+      type: "Pari système",
+      description: "Combinaison avancée de plusieurs paris avec sécurité partielle",
+      exemple: "Système 2/3 (2 bonnes prédictions sur 3 nécessaires)"
+},
+    {
+      type: "Pari sur mi-temps / fin du match", description: "Parier sur le score à la mi-temps ou à la fin",
+      exemple: "0-0 à la mi-temps, victoire de Lome FC en fin de match"
+}
+  ],
+  afficherParis: function () {
+    console.log(`🎯 Types de paris disponibles sur ${this.plateforme} (${this.jeu}):`);
+    this.parisDisponibles.forEach(pari => {
+      console.log(`📌 ${pari.type}: ${pari.description}`);
+      console.log(`🧪 Exemple: ${Array.isArray(pari.exemple)? pari.exemple.join(", "): pari.exemple}`);
+});
+}
+};
+
+typesDeParis.afficherParis();
+```
+
+```javascript
+const utilisateurFayobet = {
+  compte: {
+    estCree: false,
+    infos: {
+      localite: null,
+      codeBonus: null,
+      monnaie: null,
+      email: null,
+      nomUtilisateur: null
+},
+    securite2FA: false
+},
+
+  inscription: function(localite, codeBonus, monnaie, email, nomUtilisateur) {
+    console.log("📋 Démarrage de l’inscription sur Fayobet...");
+    this.compte.infos = {
+      localite,
+      codeBonus,
+      monnaie,
+      email,
+      nomUtilisateur
+};
+    this.compte.estCree = true;
+    console.log(`✅ Compte créé pour ${nomUtilisateur} avec la monnaie ${monnaie}`);
+    this.configurer2FA();
+},
+
+  configurer2FA: function() {
+    this.compte.securite2FA = true;
+    console.log("🔒 Double authentification activée pour plus de sécurité.");
+},
+
+  effectuerDepot: function(montant, methodePaiement) {
+    const minimumDepot = 3000;
+    if (montant < minimumDepot) {
+      console.log(`⛔ Montant trop faible. Le dépôt minimum est de ${minimumDepot} XOF.`);
+} else {
+      console.log(`💰 Dépôt de ${montant} XOF via ${methodePaiement} réussi.`);
+}
+},
+
+  effectuerRetrait: function(montant, methodeRetrait) {
+    const minimumRetrait = 3000;
+    if (montant < minimumRetrait) {
+      console.log(`⛔ Le montant minimum à retirer est ${minimumRetrait} XOF.`);
+} else {
+      console.log(`🏧 Retrait de ${montant} XOF via ${methodeRetrait} en cours de traitement...`);
+}
+}
+};
+
+utilisateurFayobet.inscription("Togo", "FAYO100", "XOF", "user@fayobet.tg", "JoeParisien");
+utilisateurFayobet.effectuerDepot(3000, "Moov Money");
+utilisateurFayobet.effectuerRetrait(4500, "Mixx by Yas");
+```
+
+```javascript
+const FayobetPariSystem = {
+  utilisateur: {
+    nom: "UtilisateurTest",
+    solde: 10000,
+    historique: [],
+    bonus: {
+      inscription: 0,
+      parrainage: 0
+}
+},
+
+  afficherEvenements: function() {
+    const evenements = ["Lome FC vs Kara FC", "Togo United vs Mango City"];
+    console.log("📅 Événements disponibles pour parier:", evenements);
+    return evenements;
+},
+
+  placerPari: function(evenement, typePari, cote, mise) {
+    if (mise> this.utilisateur.solde) {
+      console.log("⛔ Solde insuffisant pour ce pari.");
+      return;
+}
+    const gainPotentiel = mise * cote;
+    this.utilisateur.solde -= mise;
+    const pari = {
+      evenement,
+      typePari,
+      mise,
+      cote,
+      gainPotentiel,
+      statut: "en cours"
+};
+    this.utilisateur.historique.push(pari);
+    console.log(`✅ Pari placé sur ${evenement} (${typePari}) avec une mise de ${mise} XOF.`);
+},
+
+  afficherHistorique: function() {
+    console.log("🕘 Historique des paris:");
+    this.utilisateur.historique.forEach((pari, index) => {
+      console.log(`${index + 1}. ${pari.evenement} - ${pari.typePari} | Mise: ${pari.mise} | Statut: ${pari.statut}`);
+});
+}, ```javascript
+const FayobetApp = {
+  utilisateur: {
+    estInscrit: false,
+    infos: {
+      nom: null,
+      email: null,
+      pays: null,
+      monnaie: null,
+      codeBonus: null
+},
+    solde: 0,
+    historiqueTransferts: [],
+    authentifie2FA: false
+},
+
+  politiqueConfidentialite: {
+    collecte: "Coordonnées, localisation, paiements, historique de paris",
+    consentement: "Traitement des données avec consentement explicite",
+    securite: "Mesures RGPD pour confidentialité et protection",
+    cookies: ["session", "persistents", "analytiques"],
+    droitsUtilisateur: [
+      "Modification",
+      "Vérification",
+      "Suppression des données personnelles"
+    ],
+    afficher: function() {
+      console.log("🔐 Politique de confidentialité de Fayobet");
+      console.log(`📄 Collecte: ${this.collecte}`);
+      console.log(`✅ Consentement: ${this.consentement}`);
+      console.log(`🔒 Sécurité: ${this.securite}`);
+      console.log(`🍪 Cookies utilisés: ${this.cookies.join(", ")}`);
+      console.log(`🧾 Droits: ${this.droitsUtilisateur.join(", ")}`);
+}
+},
+
+  inscrireUtilisateur: function(nom, email, pays, monnaie, codeBonus) {
+    console.log("📝 Inscription en cours...");
+    this.utilisateur.infos = { nom, email, pays, monnaie, codeBonus};
+    this.utilisateur.estInscrit = true;
+    console.log(`✅ Inscription réussie pour ${nom} (${email})`);
+    this.activer2FA();
+},
+
+  activer2FA: function() {
+    this.utilisateur.authentifie2FA = true;
+    console.log("🔐 Authentification double facteur activée.");
+},
+
+  deposerFonds: function(montant, moyenPaiement) {
+    const minimum = 3000;
+    if (montant>= minimum) {
+      this.utilisateur.solde += montant;
+      this.utilisateur.historiqueTransferts.push(`Dépôt de ${montant} via ${moyenPaiement}`);
+      console.log(`💰 Dépôt de ${montant} XOF via ${moyenPaiement} effectué.`);
+} else {
+      console.log("⛔ Montant de dépôt insuffisant.");
+}
+},
+
+  retirerFonds: function(montant, moyenRetrait) {
+    const minimumRetrait = 3000;
+    if (montant <= this.utilisateur.solde && montant>= minimumRetrait) {
+      this.utilisateur.solde -= montant;
+      this.utilisateur.historiqueTransferts.push(`Retrait de ${montant} via ${moyenRetrait}`);
+      console.log(`🏧 Retrait de ${montant} XOF via ${moyenRetrait} lancé.`);
+} else {
+      console.log("⛔ Retrait impossible: solde insuffisant ou montant trop bas.");
+}
+}
+};
+
+FayobetApp.inscrireUtilisateur("Jean Togo", "jean@fayobet.tg", "Togo", "XOF", "FAYO50");
+FayobetApp.deposerFonds(5000, "Flooz Moov");
+FayobetApp.retirerFonds(4500, "Mixx by Yas");
+FayobetApp.politiqueConfidentialite.afficher();
+```
+
+```javascript
+const programmeParrainage = {
+  tauxCommission: {
+    niveau1: 0.15,
+    niveau2: 0.08,
+    niveau3: 0.05,
+    niveau4: 0.02
+},
+  paiementsMobiles: ["Flooz Moov Togo", "Mixx by Yas Togo"],
+
+  utilisateur: {
+    nom: "Parieur1",
+    filleuls: {
+      niveau1: 50,
+      niveau2: 20,
+      niveau3: 10,
+      niveau4: 5
+},
+    gainsTotaux: 0
+},
+
+  calculerGains: function(beneficeParFilleul = 30000) {
+    let total = 0;
+    for (let niveau in this.utilisateur.filleuls) {
+      const nombre = this.utilisateur.filleuls[niveau];
+      const taux = this.tauxCommission[niveau];
+      const gain = nombre * beneficeParFilleul * taux;
+      console.log(`💰 ${niveau}: ${nombre} filleuls × ${beneficeParFilleul} XOF × ${taux * 100}% = ${gain} XOF`);
+      total += gain;
+}
+    this.utilisateur.gainsTotaux = total;
+    console.log(`🎯 Gain total mensuel estimé: ${total} XOF`);
+    return total;
+},
+
+  retraitMobile: function(montant, moyenPaiement) {
+    if (!this.paiementsMobiles.includes(moyenPaiement)) {
+      console.log("⛔ Moyen de paiement non autorisé.");
+      return;
+}
+    if (montant> this.utilisateur.gainsTotaux) {
+      console.log("⛔ Montant de retrait trop élevé par rapport au solde.");
+} else {
+      this.utilisateur.gainsTotaux -= montant;
+      console.log(`🏧 Retrait de ${montant} XOF via ${moyenPaiement} effectué avec succès.`);
+}
+}
+};
+programmeParrainage.calculerGains();
+programmeParrainage.retraitMobile(120000, "Flooz Moov Togo ou Mixx by yas Togo");
+```
+
+```javascript
+const FayobetParrainage = {
+  tauxCommission: {
+    niveau1: 0.15,
+    niveau2: 0.08,
+    niveau3: 0.05,
+    niveau4: 0.02
+},
+  paiementsMobiles: ["Flooz Moov Togo", "Mixx by Yas Togo"],
+  baseLienParrainage: "https://fayobet.tg/parrainage?code=",
+
+  utilisateur: {
+    nom: "Parieur1",
+    id: 1007,
+    filleuls: {
+      niveau1: 50,
+      niveau2: 20,
+      niveau3: 10,
+      niveau4: 5
+},
+    gainsTotaux: 0
+},
+
+  genererCodeParrainage: function() {
+    return `FAYO-${this.utilisateur.nom.toUpperCase()}-${this.utilisateur.id}`;
+},
+
+  afficherLienParrainage: function() {
+    const code = this.genererCodeParrainage();
+    console.log(`🔗 Ton lien de parrainage: ${this.baseLienParrainage}${code}`);
+    return `${this.baseLienParrainage}${code}`;
+},
+
+  calculerGains: function(beneficeParFilleul = 30000) {
+    let total = 0;
+    for (let niveau in this.utilisateur.filleuls) {
+      const nombre = this.utilisateur.filleuls[niveau];
+      const taux = this.tauxCommission[niveau];
+      const gain = nombre * beneficeParFilleul * taux;
+      console.log(`💰 ${niveau}: ${nombre} filleuls × ${beneficeParFilleul} XOF × ${taux * 100}% = ${gain} XOF`);
+      total += gain;
+}
+    this.utilisateur.gainsTotaux = total;
+    console.log(`🎯 Gain total estimé: ${total} XOF`);
+    return total;
+},
+
+  retraitMobile: function(montant, moyenPaiement) {
+    if (!this.paiementsMobiles.includes(moyenPaiement)) {
+      console.log("⛔ Paiement non pris en charge.");
+      return;
+}
+    if (montant> this.utilisateur.gainsTotaux) {
+      console.log("⛔ Solde insuffisant.");
+} else {
+      this.utilisateur.gainsTotaux -= montant;
+      console.log(`🏧 Retrait de ${montant} XOF via ${moyenPaiement} confirmé.`);
+}
+}
+};
+
+FayobetParrainage.afficherLienParrainage();
+FayobetParrainage.calculerGains();
+FayobetParrainage.retraitMobile(120000, "Mixx by Yas Togo");
+```
+
+```jsx
+<input type="text" placeholder="Entrez le nom du filleul" />
+<button onClick={() => generateCodeFilleul(name)}>Générer le lien</button>
+```
